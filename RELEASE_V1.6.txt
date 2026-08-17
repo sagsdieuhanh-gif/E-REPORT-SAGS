@@ -1,0 +1,25 @@
+E-REPORT SAGS V1.6 TÍCH HỢP AI — 18/08/2026
+Build: V1.6-20260818-01
+
+V1.6 TÍCH HỢP AI — AI FAST HYBRID + GIỮ R&S DELIVERY RECOVERY
+- Kế thừa toàn bộ V1.5 Build 01 và giữ nguyên cơ chế nhận READ & SIGN đã sửa: RTDB realtime + Firestore mailbox fallback, retry RTDB 01 lần.
+- AI CROSSCHECK mặc định dùng Gemini 3.5 Flash-Lite (FAST). Gemini 3.6 Flash chỉ dùng làm lượt xác minh sâu khi cần.
+- Mỗi lần AI bình thường chỉ gửi 01 ảnh giấy CHECK + FINAL JSON. Không dựng/gửi ảnh FINAL cho AI nữa, giúp giảm đáng kể payload multimodal.
+- Ảnh CHECK được chuẩn hóa tối đa 1400 px, ưu tiên JPEG quality 0.72; FINAL JSON vẫn loại ảnh/chữ ký/token và dữ liệu nhạy cảm không cần thiết.
+- FAST timeout chủ động 40 giây. Xác minh sâu Gemini 3.6 Flash timeout 55 giây. Timeout được nhận diện riêng bằng mã AI-TIMEOUT thay vì AI-UNKNOWN.
+- Chỉ gọi Gemini 3.6 Flash khi FAST trả UNREADABLE, confidence < 78, nghi nhầm revision, vùng quan trọng không đọc được, sai lệch HIGH, hoặc REVIEW có confidence < 90.
+- Nếu lượt xác minh sâu lỗi/timeout nhưng FAST đã trả kết quả hợp lệ, hệ thống giữ kết quả FAST và ghi chú thay vì làm mất cả lần check.
+- Mỗi model chỉ retry 01 lần nếu output bị MAX_TOKENS / JSON invalid / empty response; không retry request đã hợp lệ.
+- Schema gọn: tối đa 10 differences + 4 observations; FAST maxOutputTokens 2300, xác minh sâu 2700.
+- Giao diện hiển thị công đoạn + số giây, kết quả ghi FAST hoặc XÁC MINH 3.6 và thời gian init/image/fast/accurate/total.
+- Cấu hình AI hỗ trợ hai model: fastModel và accurateModel; config cũ dùng gemini-3.6-flash được tự coi là model xác minh sâu, FAST vẫn mặc định gemini-3.5-flash-lite.
+- Đồng bộ HDSD, lịch sử phiên bản, nhãn hiển thị "V1.6 TÍCH HỢP AI", version.json, APP_BUILD_VERSION, cache-bust và Service Worker.
+- Không đưa thay đổi Firebase Authentication/Security vào bản này theo yêu cầu hiện tại.
+
+LƯU Ý TEST
+1. Cập nhật máy lên V1.6 TÍCH HỢP AI và bấm CẬP NHẬT khi thông báo xuất hiện; không cần xóa dữ liệu đang làm.
+2. Mở CROSSCHECK có ảnh CHECK → bấm AI CHECK LẠI để ép chạy engine V1.6 nếu package trước đó đã lưu kết quả AI V1.5.
+3. Case MATCH bình thường: panel nên hiện AI FAST và chỉ dùng gemini-3.5-flash-lite.
+4. Case ảnh mờ/confidence thấp/sai lệch HIGH: panel chuyển sang bước xác minh sâu gemini-3.6-flash.
+5. Nếu FAST quá 40 giây: phải báo AI-TIMEOUT, không chờ timeout mặc định 180 giây của SDK.
+6. R&S: test cả máy AD và máy nhận sau cập nhật; cơ chế RTDB + Firestore fallback của V1.5 được giữ nguyên.
