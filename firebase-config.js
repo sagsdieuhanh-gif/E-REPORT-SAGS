@@ -3,7 +3,7 @@
 // GitHub Pages hosts the web app; Firebase is used only as backend services.
 // Firebase Web config is client-side configuration. Do not place service-account/private keys here.
 window.SAGS_FIREBASE_CONFIG = Object.freeze({
-  apiKey: "AIzaSyCImOnRxvqbl-sRGbiS2eFE_Wmvktgc8oI",
+  apiKey: "AIzaSyCImOnRxvqbL-sRGbiS2eFE_Wmvktgc8oI",
   authDomain: "e-report-sags.firebaseapp.com",
   databaseURL: "https://e-report-sags-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "e-report-sags",
