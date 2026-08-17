@@ -1,0 +1,10 @@
+E-REPORT SAGS V1.4 — 18/08/2026
+Build: V1.4-20260818-01
+
+- Sửa Firebase Web API key bị sai 1 ký tự hoa/thường trong V1.3.
+- AI CROSSCHECK: thêm CHẨN ĐOÁN AI (CONFIG → APP CHECK → FIREBASE AI LOGIC → MODEL).
+- Khi AI lỗi: hiển thị mã lỗi, vị trí lỗi, việc cần làm và chi tiết kỹ thuật.
+- GIAO CA: hiển thị chính xác lỗi Firestore.
+- GỬI FINAL: không còn nuốt lỗi RTDB do Promise.allSettled; nếu Firestore lưu được nhưng RTDB FINAL/CROSS_STATE thất bại sẽ cảnh báo ngay.
+- HDSD, version.json, APP_BUILD_VERSION, APP_DISPLAY_VERSION và Service Worker cache đã đồng bộ V1.4.
+- Frontend tiếp tục chỉ host trên GitHub Pages; Firebase chỉ là backend.

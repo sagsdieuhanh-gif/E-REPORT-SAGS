@@ -2,51 +2,47 @@
   "rules": {
     ".read": false,
     ".write": false,
-
-    "sags_live_v12": {
-      ".read": "auth != null",
-      ".write": "auth != null",
-
+    "sags_live_v470": {
+      ".read": true,
+      ".write": true,
       "finals": {
-        ".indexOn": ["eventAtMs"]
+        ".indexOn": [
+          "eventAtMs"
+        ]
       },
       "cross_mail": {
         "$user": {
           "events": {
-            ".indexOn": ["eventAtMs"]
+            ".indexOn": [
+              "eventAtMs"
+            ]
           }
         }
       },
       "ops": {
         "events": {
-          ".indexOn": ["eventAtMs"]
+          ".indexOn": [
+            "eventAtMs"
+          ]
         }
       },
-      "activity": {
-        "events": {
-          ".indexOn": ["eventAtMs"]
-        }
-      },
-      "closeouts": {
-        ".indexOn": ["eventAtMs"]
-      },
-      "ramp_presence": {},
-      "ramp_presence_lookup": {},
-      "rs_mail": {},
+      "activity": {},
       "cross_state": {},
       "kh208": {},
-      "account_permissions": {},
+      "rs_mail": {},
       "usage": {},
-      "ramp_progress": {}
-    },
-
-    "sags_live_v470": {
-      ".read": false,
-      ".write": false
+      "account_permissions": {},
+      "ramp_progress": {},
+      "test": {}
     },
     "sags_live_v469": {
-      ".read": false,
-      ".write": false
+      ".read": true,
+      ".write": true,
+      "finals": {
+        ".indexOn": [
+          "eventAtMs"
+        ]
+      }
     }
   }
 }
