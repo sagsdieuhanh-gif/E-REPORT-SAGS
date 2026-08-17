@@ -44,6 +44,8 @@ async function initModel(force=false){
   if(model&&!force)return model;
   const conf=window.SAGS_FIREBASE_CONFIG;
   if(!conf?.projectId)throw new Error("Không tìm thấy Firebase config.");
+  if(String(conf.projectId)!=="e-report-sags")throw new Error("AI chỉ được phép dùng Firebase project e-report-sags.");
+  if(!conf.apiKey||!conf.appId)throw new Error("firebase-config.js chưa có đủ Web App config của e-report-sags (thiếu apiKey/appId). Copy config từ Firebase Console rồi commit/push file này lên GitHub.");
   const list=getApps();aiApp=list.find(a=>a.name==="SAGS_AI")||initializeApp(conf,"SAGS_AI");
   try{initializeAppCheck(aiApp,{provider:new ReCaptchaEnterpriseProvider(siteKey),isTokenAutoRefreshEnabled:true});}catch(e){if(!/already|initialized/i.test(String(e?.message||e)))console.warn("AI AppCheck",e);}
   const ai=getAI(aiApp,{backend:new GoogleAIBackend()});

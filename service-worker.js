@@ -1,7 +1,8 @@
-const CACHE_NAME="sags-v1-ai-20260817-01";
+const CACHE_NAME="sags-v1-3-20260818-01";
 const APP_SHELL=[
   "./index.html",
   "./version.json",
+  "./firebase-config.js",
   "./v488-archive.js",
   "./ai-crosscheck.js",
   "./alert-mva.mp3",
@@ -46,7 +47,7 @@ self.addEventListener("install", event => {
     const cache=await caches.open(CACHE_NAME);
     await Promise.all(APP_SHELL.map(async path=>{
       const u=new URL(path,self.location.href);
-      u.searchParams.set("__swbuild","V1AI-20260817-01");
+      u.searchParams.set("__swbuild","V1.3-20260818-01");
       const req=new Request(u.toString(),{cache:"reload"});
       const res=await fetch(req);
       if(!res.ok) throw new Error("Precache failed: "+path+" HTTP "+res.status);
@@ -76,6 +77,7 @@ self.addEventListener("fetch", event => {
 
   const isNavigation = event.request.mode === "navigate";
   const isFreshFile = url.pathname.endsWith("/version.json") ||
+                      url.pathname.endsWith("/firebase-config.js") ||
                       url.pathname.endsWith("/index.html") ||
                       isNavigation;
 
