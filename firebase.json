@@ -1,0 +1,21 @@
+{
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "database": {
+    "rules": "database.rules.json"
+  },
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**",
+      "*.txt",
+      "*.rules",
+      "database.rules.json"
+    ],
+    "cleanUrls": false,
+    "trailingSlash": false
+  }
+}

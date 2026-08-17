@@ -1,0 +1,17 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // GIAO NHAN CA + FSAGS 09 KET SO
+    // Ca hai dang dung chung collection sags_handovers.
+    match /sags_handovers/{document=**} {
+      allow read, write: if true;
+    }
+
+    // Khong mo quyen cho cac collection khac.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
