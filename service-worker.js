@@ -1,4 +1,4 @@
-const CACHE_NAME="sags-v1-7-update-ai-20260818-01";
+const CACHE_NAME="sags-v1-8-phan-quyen-chuan-20260818-01";
 const APP_SHELL=[
   "./index.html",
   "./version.json",
@@ -47,7 +47,7 @@ self.addEventListener("install", event => {
     const cache=await caches.open(CACHE_NAME);
     await Promise.all(APP_SHELL.map(async path=>{
       const u=new URL(path,self.location.href);
-      u.searchParams.set("__swbuild","V1.7-20260818-01");
+      u.searchParams.set("__swbuild","V1.8-20260818-01");
       const req=new Request(u.toString(),{cache:"reload"});
       const res=await fetch(req);
       if(!res.ok) throw new Error("Precache failed: "+path+" HTTP "+res.status);

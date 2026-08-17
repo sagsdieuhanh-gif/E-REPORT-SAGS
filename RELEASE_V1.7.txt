@@ -1,3 +1,11 @@
+E-REPORT V1.7 UPDATE AI — BUILD 02 (18/08/2026)
+
+- Sửa phân quyền FINAL: CBTT/AD được tạo, sửa và gửi FINAL; ĐH thực hiện CHECK; VIEWER chỉ xem.
+- CBTT tạo FINAL độc lập, không còn bắt buộc phải chọn CHUYẾN/Ramp trước. DATE + FLIGHT + A/C REG vẫn bắt buộc nhập trên chính FINAL và vẫn đối chiếu Ramp local/cloud khi gửi.
+- Sửa lỗi đổi vai trò nhưng còn featureOverrides của vai trò cũ: khi AD đổi vai trò, quyền ghi đè cũ được xóa và mặc định vai trò mới được áp lại; phát tín hiệu permission revision cho tài khoản đang online.
+- Ẩn thao tác xóa FINAL/xóa ngày khỏi các vai trò chỉ xem.
+- Giữ nguyên AI V1.7 Build 01 và toàn bộ luồng CROSSCHECK/R&S hiện có.
+
 E-REPORT V1.7 UPDATE AI — BUILD 01 (18/08/2026)
 
 - Kế thừa đầy đủ V1.6 TÍCH HỢP AI Build 02.
