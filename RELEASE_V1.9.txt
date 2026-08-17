@@ -1,0 +1,25 @@
+E-REPORT/SAGS V1.9 UPDATE AI + PHÂN QUYỀN + CAMSCANER — BUILD 01
+Build: V1.9-20260818-01
+
+1. UPDATE AI
+- Kế thừa AI CROSSCHECK nhanh + xác minh sâu hiện hành.
+- Giữ kiểm tra phần dưới ảnh và đối chiếu COMPARTMENT/HOLD/ZONE/POSITION đúng từng dòng.
+- AI version nội bộ: E_REPORT_AI_CROSSCHECK_V1_9_UPDATE_AI.
+
+2. PHÂN QUYỀN
+- Kế thừa V1.8 PHÂN QUYỀN CHUẨN: PĐH / PVHK / PVSĐ / ADMIN.
+- PVHK không FINAL; CBTT/AD tạo FINAL; Lost & Found và PVHLNG có BBBT thủ công.
+
+3. CAMSCANER TRONG ỨNG DỤNG
+- Tích hợp document-scanner.js do người dùng cung cấp.
+- Camera sau, đèn nếu hỗ trợ, đổi camera, tối đa 20 trang.
+- Tự nhận mép giấy, chỉnh 4 góc, cắt phối cảnh, xoay, sắp xếp, xóa và lọc ảnh.
+- Đưa ảnh scan trực tiếp vào ingestAttachmentFiles() để giữ đúng attachmentTarget hiện tại.
+
+4. FIX UPDATE
+- Sửa lỗi V1.8 bị lệch APP_BUILD_VERSION trong index.html so với version.json/Service Worker.
+- Đồng bộ toàn bộ build về V1.9-20260818-01.
+- Service Worker precache document-scanner.js và network-first cho các file lõi thay đổi theo version.
+
+5. GIAO DIỆN
+- Đã loại bỏ toàn bộ chức năng hướng dẫn sử dụng khỏi toolbar, modal và scanner.

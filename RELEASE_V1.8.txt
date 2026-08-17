@@ -28,6 +28,4 @@ E-REPORT V1.8 PHÂN QUYỀN CHUẨN — BUILD 01 (18/08/2026)
 - Tự nhập Flight No., A/C Regn., A/C Type, Date, Route và toàn bộ trường còn lại trên BBBT.
 - Có nút TẠO BBBT MỚI và xuất PDF BBBT theo Flight/Date nhập tay.
 
-5. HDSD / UPDATE
-- HDSD cập nhật hướng dẫn tài khoản 4 tầng và BBBT thủ công.
 - Đồng bộ version.json, APP_BUILD_VERSION, APP_DISPLAY_VERSION, cache-bust và Service Worker sang V1.8-20260818-01.

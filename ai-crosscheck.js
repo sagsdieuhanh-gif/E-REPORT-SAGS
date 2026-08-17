@@ -2,7 +2,7 @@ import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/12.16
 import { initializeAppCheck, ReCaptchaEnterpriseProvider, getToken } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app-check.js";
 import { getAI, getGenerativeModel, GoogleAIBackend, Schema } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-ai.js";
 
-const AI_VERSION="E_REPORT_AI_CROSSCHECK_V1_7_UPDATE_AI_BUILD02";
+const AI_VERSION="E_REPORT_AI_CROSSCHECK_V1_9_UPDATE_AI";
 const FAST_MODEL="gemini-3.5-flash-lite";
 const ACCURATE_MODEL="gemini-3.6-flash";
 const FAST_TIMEOUT_MS=40000;

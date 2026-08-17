@@ -15,7 +15,6 @@ E-REPORT V1.7 UPDATE AI — BUILD 01 (18/08/2026)
 - Màn CROSSCHECK tự co FINAL và ảnh giấy để hạn chế phải cuộn xuống mới thấy hết.
 - Tăng nhẹ cỡ hiển thị/nhập ZONE khách.
 - Giữ nguyên cơ chế R&S RTDB + Firestore fallback từ V1.5.
-- Cập nhật HDSD tương ứng.
 - Đồng bộ version.json, APP_BUILD_VERSION, APP_DISPLAY_VERSION, cache-bust AI và Service Worker sang V1.7-20260818-01.
 
 LỊCH SỬ TRƯỚC ĐÓ
@@ -41,7 +40,6 @@ V1.6 TÍCH HỢP AI — AI FAST HYBRID + GIỮ R&S DELIVERY RECOVERY
 - Schema gọn: tối đa 10 differences + 4 observations; FAST maxOutputTokens 2300, xác minh sâu 2700.
 - Giao diện hiển thị công đoạn + số giây, kết quả ghi FAST hoặc XÁC MINH 3.6 và thời gian init/image/fast/accurate/total.
 - Cấu hình AI hỗ trợ hai model: fastModel và accurateModel; config cũ dùng gemini-3.6-flash được tự coi là model xác minh sâu, FAST vẫn mặc định gemini-3.5-flash-lite.
-- Đồng bộ HDSD, lịch sử phiên bản, nhãn hiển thị "V1.6 TÍCH HỢP AI", version.json, APP_BUILD_VERSION, cache-bust và Service Worker.
 - Không đưa thay đổi Firebase Authentication/Security vào bản này theo yêu cầu hiện tại.
 
 LƯU Ý TEST
