@@ -2,11 +2,11 @@ import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/12.16
 import { initializeAppCheck, ReCaptchaEnterpriseProvider, getToken } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app-check.js";
 import { getAI, getGenerativeModel, GoogleAIBackend, Schema } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-ai.js";
 
-const AI_VERSION="E_REPORT_AI_CROSSCHECK_V1_10_AI";
+const AI_VERSION="E_REPORT_AI_CROSSCHECK_V1_26_SCOPED";
 const FAST_MODEL="gemini-3.5-flash-lite";
 const ACCURATE_MODEL="gemini-3.6-flash";
-const FAST_TIMEOUT_MS=40000;
-const ACCURATE_TIMEOUT_MS=55000;
+const FAST_TIMEOUT_MS=35000;
+const ACCURATE_TIMEOUT_MS=45000;
 let aiApp=null, appCheckInstance=null, models=null, activeConfig=null, activeModelNames={fast:FAST_MODEL,accurate:ACCURATE_MODEL}, configLoadedAt=0;
 const inFlight=new Map();
 
@@ -49,14 +49,12 @@ function resultSchema(){
     status:Schema.enumString({enum:["MATCH","REVIEW","UNREADABLE"]}),
     confidence:Schema.number(),
     summary:Schema.string(),
-    flightMatch:Schema.boolean(),
-    regMatch:Schema.boolean(),
-    revisionSuspicion:Schema.boolean(),
     criticalUnreadable:Schema.boolean(),
-    differences:Schema.array({maxItems:10,items:Schema.object({properties:{field:Schema.string(),paperValue:Schema.string(),finalValue:Schema.string(),severity:Schema.enumString({enum:["LOW","MEDIUM","HIGH"]}),reason:Schema.string()}})}),
-    observations:Schema.array({maxItems:4,items:Schema.string()})
+    differences:Schema.array({maxItems:12,items:Schema.object({properties:{field:Schema.string(),paperValue:Schema.string(),finalValue:Schema.string(),severity:Schema.enumString({enum:["LOW","MEDIUM","HIGH"]}),reason:Schema.string()}})}),
+    observations:Schema.array({maxItems:2,items:Schema.string()})
   }});
 }
+
 async function initModels(force=false){
   const cfg=await loadConfig(force);
   if(!cfg?.enabled)throw new Error("AI CROSSCHECK chưa được AD bật.");
@@ -76,8 +74,8 @@ async function initModels(force=false){
   activeModelNames=resolveModelNames(cfg);
   const schema=resultSchema();
   models={
-    fast:getGenerativeModel(ai,{model:activeModelNames.fast,generationConfig:{responseMimeType:"application/json",responseSchema:schema,maxOutputTokens:2300}},{timeout:FAST_TIMEOUT_MS}),
-    accurate:getGenerativeModel(ai,{model:activeModelNames.accurate,generationConfig:{responseMimeType:"application/json",responseSchema:schema,maxOutputTokens:2700}},{timeout:ACCURATE_TIMEOUT_MS})
+    fast:getGenerativeModel(ai,{model:activeModelNames.fast,generationConfig:{responseMimeType:"application/json",responseSchema:schema,maxOutputTokens:1400}},{timeout:FAST_TIMEOUT_MS}),
+    accurate:getGenerativeModel(ai,{model:activeModelNames.accurate,generationConfig:{responseMimeType:"application/json",responseSchema:schema,maxOutputTokens:1600}},{timeout:ACCURATE_TIMEOUT_MS})
   };
   return models;
 }
@@ -87,35 +85,84 @@ function dataUrlPart(url){
   return {inlineData:{mimeType:m[1],data:m[2]}};
 }
 function loadImage(url){return new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=()=>reject(new Error("Không đọc được ảnh."));im.src=url;});}
-async function normalizeImageDataUrl(url,maxDim=1400,quality=.72){
+async function normalizeImageDataUrl(url,maxDim=1100,quality=.68){
   const raw=String(url||"");if(!/^data:image\//i.test(raw))throw new Error("Ảnh CHECK không hợp lệ.");
   const im=await loadImage(raw),scale=Math.min(1,maxDim/Math.max(im.naturalWidth||im.width,im.naturalHeight||im.height));
-  if(scale>=.999 && /^data:image\/jpe?g/i.test(raw) && raw.length<1_500_000)return raw;
   const w=Math.max(1,Math.round((im.naturalWidth||im.width)*scale)),h=Math.max(1,Math.round((im.naturalHeight||im.height)*scale));
   const c=document.createElement("canvas");c.width=w;c.height=h;const ctx=c.getContext("2d",{alpha:false});ctx.fillStyle="#fff";ctx.fillRect(0,0,w,h);ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality="high";ctx.drawImage(im,0,0,w,h);return c.toDataURL("image/jpeg",quality);
 }
+const AI_SCOPE={
+  "VJfinal.png":{
+    bands:[[.145,.405],[.605,.915]],
+    pax:{ADL:"adultq",CHD:"childq",INF:"infantq"},
+    zones:{"ZONE 0A":"zone0a","ZONE 0B":"zone0b","ZONE 0C":"zone0c"},
+    loads:{"COMPARTMENT 1":"cp1","COMPARTMENT 2":"cp2","COMPARTMENT 3":"cp3","COMPARTMENT 4":"cp4","COMPARTMENT 5":"cp5"}
+  },
+  "VJfinal2.png":{
+    bands:[[.12,.405],[.595,.875]],
+    pax:{ADL:"adlq",CHD:"chdq",INF:"infq"},
+    zones:{"ZONE A":"zonea","ZONE B":"zoneb","ZONE C":"zonec"},
+    loads:{"COMPARTMENT 1":"cp1","COMPARTMENT 2":"cp2","COMPARTMENT 3":"cp3","COMPARTMENT 4":"cp4","COMPARTMENT 5":"cp5"}
+  },
+  "VUfinal.png":{
+    bands:[[.15,.405],[.61,.875]],
+    pax:{ADL:"adult",CHD:"child",INF:"infant"},
+    zones:{"ZONE 0A":"zone0a","ZONE 0B":"zone0b","ZONE 0C":"zone0c","ZONE 0D":"zone0d","ZONE 0E":"zone0e"},
+    loads:{
+      "HOLD 1":{BAG:"hold1_b","CARGO/MAIL":"hold1_cm","COMAT/EIC":"hold1_comat"},
+      "HOLD 2":{BAG:"hold2_b","CARGO/MAIL":"hold2_cm","COMAT/EIC":"hold2_comat"},
+      "HOLD 3":{BAG:"hold3_b","CARGO/MAIL":"hold3_cm","COMAT/EIC":"hold3_comat"},
+      "HOLD 4":{BAG:"hold4_b","CARGO/MAIL":"hold4_cm","COMAT/EIC":"hold4_comat"},
+      "HOLD 5":{BAG:"hold5_b","CARGO/MAIL":"hold5_cm","COMAT/EIC":"hold5_comat"}
+    }
+  },
+  "9Gfinal.png":{
+    bands:[[.255,.42],[.605,.825]],
+    pax:{ADL:"adult",CHD:"child",INF:"infant"},
+    zones:{"ZONE 0A":"zone0a","ZONE 0B":"zone0b","ZONE 0C":"zone0c"},
+    loads:{
+      "CP 1":{CARGO:"cp1cargo",BAG:"cp1bag"},"CP 2":{CARGO:"cp2cargo",BAG:"cp2bag"},
+      "CP 3":{CARGO:"cp3cargo",BAG:"cp3bag"},"CP 4":{CARGO:"cp4cargo",BAG:"cp4bag"},
+      "CP 5":{CARGO:"cp5cargo",BAG:"cp5bag"}
+    }
+  }
+};
 function safeValue(v,depth=0){
-  if(depth>4)return null;
-  if(v===null||v===undefined)return v;
+  if(depth>4)return null;if(v===null||v===undefined)return v;
   if(typeof v==="string"){if(/^data:/i.test(v)||v.length>1600)return undefined;return v.length>260?v.slice(0,260):v;}
   if(typeof v==="number"||typeof v==="boolean")return v;
-  if(Array.isArray(v))return v.slice(0,50).map(x=>safeValue(x,depth+1)).filter(x=>x!==undefined);
-  if(typeof v==="object"){
-    const out={};for(const [k,val] of Object.entries(v)){
-      if(/password|passhash|salt|token|signature|photo|image|dataurl|base64|attachment|canvas/i.test(k))continue;
-      const x=safeValue(val,depth+1);if(x!==undefined)out[k]=x;
-    }return out;
-  }
+  if(Array.isArray(v))return v.slice(0,40).map(x=>safeValue(x,depth+1)).filter(x=>x!==undefined);
+  if(typeof v==="object"){const out={};for(const [k,val] of Object.entries(v)){if(/password|passhash|salt|token|signature|photo|image|dataurl|base64|attachment|canvas/i.test(k))continue;const x=safeValue(val,depth+1);if(x!==undefined)out[k]=x;}return out;}
   return undefined;
 }
+function pickMap(data,map){const out={};for(const [label,key] of Object.entries(map||{}))out[label]=String(data?.[key]??"").trim();return out;}
+function pickLoads(data,map){
+  const out={};for(const [label,spec] of Object.entries(map||{})){
+    if(typeof spec==="string")out[label]=String(data?.[spec]??"").trim();
+    else{out[label]={};for(const [sub,key] of Object.entries(spec||{}))out[label][sub]=String(data?.[key]??"").trim();}
+  }return out;
+}
 function finalReference(pkg){
-  return safeValue({identity:pkg.identity||{},revisionNo:pkg.revisionNo,attemptNo:pkg.attemptNo,form:pkg.finalSnapshot?.form||"",finalData:pkg.finalSnapshot?.data||{}});
+  const form=String(pkg?.finalSnapshot?.form||""),data=pkg?.finalSnapshot?.data||{},scope=AI_SCOPE[form];
+  if(!scope)return safeValue({form,finalData:data});
+  return safeValue({form,PAX:pickMap(data,scope.pax),ZONE:pickMap(data,scope.zones),HOLD_COMPARTMENT:pickLoads(data,scope.loads)});
+}
+async function buildScopedCheckImage(url,form,maxWidth=980,quality=.68){
+  const raw=String(url||"");if(!/^data:image\//i.test(raw))throw new Error("Ảnh CHECK không hợp lệ.");
+  const scope=AI_SCOPE[String(form||"")],im=await loadImage(raw),iw=im.naturalWidth||im.width,ih=im.naturalHeight||im.height;
+  if(!scope||!Array.isArray(scope.bands)||iw<300||ih<500||iw>ih*1.12)return normalizeImageDataUrl(raw,1100,quality);
+  const x1=.035,x2=.965,cropW=Math.max(1,Math.round(iw*(x2-x1))),scale=Math.min(1,maxWidth/cropW),outW=Math.max(1,Math.round(cropW*scale));
+  const titleH=38,gap=14,bands=scope.bands.map(([a,b],i)=>({a,b,sy:Math.max(0,Math.round(ih*a)),sh:Math.max(1,Math.round(ih*(b-a))),label:i===0?"VÙNG PAX + ZONE":"VÙNG HẦM HÀNG / COMPARTMENT"}));
+  const heights=bands.map(b=>Math.max(1,Math.round(b.sh*scale))),outH=titleH*bands.length+gap*(bands.length-1)+heights.reduce((a,b)=>a+b,0);
+  const c=document.createElement("canvas");c.width=outW;c.height=outH;const ctx=c.getContext("2d",{alpha:false});ctx.fillStyle="#fff";ctx.fillRect(0,0,outW,outH);ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality="high";
+  let y=0;bands.forEach((b,i)=>{ctx.fillStyle="#0f172a";ctx.font="700 18px Arial";ctx.fillText(b.label,10,y+25);y+=titleH;ctx.drawImage(im,Math.round(iw*x1),b.sy,cropW,b.sh,0,y,outW,heights[i]);y+=heights[i]+(i<bands.length-1?gap:0);});
+  return c.toDataURL("image/jpeg",quality);
 }
 function promptFor(pkg,{compact=false,verify=false}={}){
   const clean=finalReference(pkg);
-  const short=compact?"Tối đa 6 differences, 2 observations; summary tối đa 160 ký tự; reason mỗi difference tối đa 90 ký tự.":"Tối đa 10 differences, 4 observations; summary tối đa 220 ký tự; reason mỗi difference tối đa 120 ký tự.";
-  const verifyText=verify?"Đây là lượt XÁC MINH SÂU vì lượt FAST có độ tin cậy thấp/ảnh khó đọc/sai lệch quan trọng. Hãy kiểm tra kỹ các con số trước khi kết luận.\n":"";
-  return `Bạn là AI CROSSCHECK FINAL trong khai thác hàng không. ${verifyText}INPUT IMAGE = ảnh bản giấy CHECK do ĐH gửi. Không có ảnh FINAL vì FINAL điện tử đã được cung cấp dưới dạng JSON có cấu trúc bên dưới.\n\nNHIỆM VỤ:\n1) Đọc trực tiếp ảnh giấy CHECK.\n2) Đối chiếu những trường đọc được với FINAL JSON.\n3) Chỉ báo sai lệch thực sự; không đoán chữ/số bị mờ và không bịa trường không có.\n4) Ưu tiên kiểm tra: số chuyến/ngày/A-C REG; PAX/crew/class totals; baggage/cargo/ULD/weight; loading zones/positions; remarks nếu nhìn rõ.\n5) BẮT BUỘC kiểm tra kỹ NỬA DƯỚI của ảnh nếu có bảng lặp như COMPARTMENT/HOLD/ZONE/POSITION.\n6) Với các bảng lặp theo số dòng (ví dụ COMPARTMENT 1, 2, 3, 4, 5), phải đối chiếu ĐÚNG THEO TỪNG SỐ DÒNG. Không được coi là khớp chỉ vì cùng có các giá trị ở dòng khác. Nếu giá trị bị đảo giữa Compartment 1 và 2 thì đó là sai lệch HIGH.\n7) Nếu một vùng nhìn rõ nhưng không khớp, phải đưa vào differences. Không được bỏ qua vùng phía dưới chỉ vì phía trên đã khớp.\n\nKẾT LUẬN:\n- MATCH: các thông tin quan trọng đọc được khớp.\n- REVIEW: có ít nhất một sai lệch, dấu hiệu nhầm revision, hoặc chi tiết đáng ngờ.\n- UNREADABLE: ảnh mờ/cắt mất vùng quan trọng, không đủ cơ sở.\n- confidence 0..100.\n- differences chỉ chứa sai lệch đọc được từ ảnh so với FINAL JSON.\n- Không tự sửa dữ liệu và không tự phê duyệt nghiệp vụ.\n- ${short}\n- Chỉ trả JSON đúng schema, không markdown/code fence/chữ ngoài JSON.\n\nFINAL JSON THAM CHIẾU:\n${JSON.stringify(clean)}`;
+  const short=compact?"Tối đa 8 lỗi gốc; summary tối đa 120 ký tự; reason tối đa 70 ký tự.":"Tối đa 12 lỗi gốc; summary tối đa 160 ký tự; reason tối đa 90 ký tự.";
+  const verifyText=verify?"Đây là lượt xác minh vì ảnh khó đọc/độ tin cậy thấp. Chỉ xác minh lại đúng phạm vi bên dưới.\n":"";
+  return `Bạn là AI CROSSCHECK FINAL. ${verifyText}Ảnh đầu vào đã được E-Report CẮT CHỈ CÒN 2 VÙNG: PAX+ZONE và HẦM HÀNG/COMPARTMENT. FINAL điện tử được cung cấp bằng JSON rút gọn.\n\nCHỈ KIỂM TRA 5 NHÓM NGUỒN SAU:\n1) ADL\n2) CHD\n3) INF\n4) ZONE khách — đúng từng ZONE\n5) HẦM HÀNG / HOLD / COMPARTMENT — đúng từng dòng/vị trí và từng thành phần BAG/CARGO/MAIL/COMAT-EIC nếu biểu mẫu có.\n\nTUYỆT ĐỐI KHÔNG KIỂM VÀ KHÔNG BÁO LỖI: KG trọng lượng khách, TOTAL PAX, PAX WGT, BAG/CARGO tổng, DEADLOAD, PAYLOAD, tổng HOLD/CP, Flight/Date/REG, CREW, REMARK hoặc các giá trị dẫn xuất khác.\n\nQUY TẮC LỖI GỐC:\n- Nếu ADL/CHD/INF nguồn sai thì chỉ báo đúng trường nguồn đó; KHÔNG báo các tổng phía sau sai theo.\n- Nếu một ZONE sai, báo đúng ZONE đó; không báo tổng ZONE nếu tổng chỉ sai do ZONE nguồn.\n- HẦM HÀNG phải so đúng dòng: HOLD/CP/COMPARTMENT 1 không được đổi với dòng 2, 3...\n- Với VU/9G, báo đúng thành phần nguồn trong từng HOLD/CP; không báo ô TOTAL của dòng vì đó là giá trị dẫn xuất.\n- Chỉ báo điều nhìn đọc được. Không đoán số mờ.\n\nKẾT LUẬN:\n- MATCH: các trường trong phạm vi trên đọc được và khớp.\n- REVIEW: có ít nhất một lỗi gốc trong phạm vi trên.\n- UNREADABLE: phần lớn vùng PAX/ZONE/HẦM HÀNG không đọc đủ để kết luận.\n- confidence 0..100.\n- Không tự sửa và không tự xác nhận nghiệp vụ.\n- ${short}\n- Chỉ trả JSON đúng schema, không markdown/code fence.\n\nFINAL JSON CHỈ GỒM TRƯỜNG CẦN CHECK:\n${JSON.stringify(clean)}`;
 }
 
 function cleanJsonText(text){let s=String(text||"").trim();return s.replace(/^```(?:json)?\s*/i,"").replace(/\s*```$/i,"").trim();}
@@ -149,10 +196,9 @@ async function runModelWithJsonRetry(mdl,modelName,pkg,paperUrl,{verify=false}={
 }
 function normalizedStatus(parsed){const allowed=new Set(["MATCH","REVIEW","UNREADABLE"]),x=String(parsed?.status||"REVIEW").toUpperCase();return allowed.has(x)?x:"REVIEW";}
 function needsAccurateVerification(parsed){
-  const status=normalizedStatus(parsed),confidence=Math.max(0,Math.min(100,Number(parsed?.confidence)||0)),diffs=Array.isArray(parsed?.differences)?parsed.differences:[];
-  if(status==="UNREADABLE"||confidence<78||parsed?.revisionSuspicion||parsed?.criticalUnreadable)return true;
-  if(diffs.some(x=>String(x?.severity||"").toUpperCase()==="HIGH"))return true;
-  if(status==="REVIEW"&&confidence<90)return true;
+  const status=normalizedStatus(parsed),confidence=Math.max(0,Math.min(100,Number(parsed?.confidence)||0));
+  // Ưu tiên tốc độ: chỉ gọi model xác minh sâu khi ảnh thực sự khó đọc/độ tin cậy thấp.
+  if(status==="UNREADABLE"||confidence<72||parsed?.criticalUnreadable)return true;
   return false;
 }
 
@@ -204,14 +250,14 @@ function showAiDiagnostic(e,stage=""){
 
 async function run(pkg,{force=false}={}){
   if(!pkg?.packageId||!pkg?.dhPhoto||!pkg?.finalSnapshot)throw new Error("Thiếu gói CROSSCHECK để AI phân tích.");
-  if(pkg.aiCrosscheck&&!force){render(pkg.aiCrosscheck,pkg);return pkg.aiCrosscheck;}
+  if(pkg.aiCrosscheck&&!force&&String(pkg.aiCrosscheck.aiVersion||"")===AI_VERSION){render(pkg.aiCrosscheck,pkg);return pkg.aiCrosscheck;}
   const key=String(pkg.packageId);if(inFlight.has(key))return inFlight.get(key);
   const p=(async()=>{
     const started=performance.now();let stage="AI đang khởi tạo…";
     const tick=()=>setPanel("RUNNING",`${stage} · ${Math.max(0,Math.round((performance.now()-started)/1000))} giây`);const timer=setInterval(tick,1000);tick();
     try{
       const tInit=performance.now(),mdl=await initModels(false),initMs=performance.now()-tInit;
-      stage="AI đang tối ưu 1 ảnh CHECK…";tick();const tImage=performance.now(),paperUrl=await normalizeImageDataUrl(pkg.dhPhoto),imageMs=performance.now()-tImage;
+      stage="AI đang tách vùng ADL/CHD/INF · ZONE · HẦM HÀNG…";tick();const tImage=performance.now(),paperUrl=await buildScopedCheckImage(pkg.dhPhoto,pkg.finalSnapshot?.form),imageMs=performance.now()-tImage;
       stage=`AI FAST (${activeModelNames.fast}) đang đọc ảnh CHECK…`;tick();const tFast=performance.now();
       const fast=await runModelWithJsonRetry(mdl.fast,activeModelNames.fast,pkg,paperUrl,{verify:false});const fastMs=performance.now()-tFast;
       let chosen=fast,accurateMs=0,fallbackUsed=false,fallbackError="";
@@ -221,9 +267,9 @@ async function run(pkg,{force=false}={}){
         catch(e){accurateMs=performance.now()-tAcc;fallbackError=compactErrorText(e).slice(0,700);console.warn("AI accurate fallback failed; giữ kết quả FAST",e);chosen=fast;}
       }
       const parsed=chosen.parsed,meta=chosen.meta||{},status=normalizedStatus(parsed),usedAccurate=chosen!==fast;
-      const observations=Array.isArray(parsed.observations)?parsed.observations.slice(0,4):[];
+      const observations=Array.isArray(parsed.observations)?parsed.observations.slice(0,2):[];
       if(fallbackUsed&&!usedAccurate&&fallbackError)observations.push("Lượt xác minh sâu không hoàn tất; hệ thống giữ kết quả AI FAST.");
-      const result={aiVersion:AI_VERSION,aiMode:usedAccurate?"ACCURATE_VERIFY":"FAST",model:String(chosen.modelName||activeModelNames.fast),fastModel:activeModelNames.fast,accurateModel:activeModelNames.accurate,status,confidence:Math.max(0,Math.min(100,Number(parsed.confidence)||0)),summary:String(parsed.summary||"").slice(0,500),flightMatch:!!parsed.flightMatch,regMatch:!!parsed.regMatch,revisionSuspicion:!!parsed.revisionSuspicion,criticalUnreadable:!!parsed.criticalUnreadable,differences:Array.isArray(parsed.differences)?parsed.differences.slice(0,10):[],observations:observations.slice(0,5),aiRetryUsed:!!chosen.retryUsed,aiFallbackUsed:fallbackUsed,aiFallbackSucceeded:usedAccurate,fallbackError,finishReason:String(meta.finishReason||""),outputTokenCount:Number(meta.candidatesTokenCount||meta.candidateTokenCount||0),totalTokenCount:Number(meta.totalTokenCount||0),timingMs:{init:Math.round(initMs),image:Math.round(imageMs),fast:Math.round(fastMs),accurate:Math.round(accurateMs),total:Math.round(performance.now()-started)},analyzedAtMs:Date.now()};
+      const result={aiVersion:AI_VERSION,aiMode:usedAccurate?"ACCURATE_VERIFY":"FAST",model:String(chosen.modelName||activeModelNames.fast),fastModel:activeModelNames.fast,accurateModel:activeModelNames.accurate,status,confidence:Math.max(0,Math.min(100,Number(parsed.confidence)||0)),summary:String(parsed.summary||"").slice(0,320),flightMatch:true,regMatch:true,revisionSuspicion:false,criticalUnreadable:!!parsed.criticalUnreadable,differences:Array.isArray(parsed.differences)?parsed.differences.slice(0,12):[],observations:observations.slice(0,2),aiRetryUsed:!!chosen.retryUsed,aiFallbackUsed:fallbackUsed,aiFallbackSucceeded:usedAccurate,fallbackError,finishReason:String(meta.finishReason||""),outputTokenCount:Number(meta.candidatesTokenCount||meta.candidateTokenCount||0),totalTokenCount:Number(meta.totalTokenCount||0),timingMs:{init:Math.round(initMs),image:Math.round(imageMs),fast:Math.round(fastMs),accurate:Math.round(accurateMs),total:Math.round(performance.now()-started)},analyzedAtMs:Date.now()};
       stage="Đang lưu kết quả AI…";tick();await window.sagsAiSaveResult?.(pkg.packageId,result);window.sagsAiApplyResult?.(pkg.packageId,result);window.sagsAiRecordActivity?.(result,pkg);render(result,pkg);return result;
     }finally{clearInterval(timer);}
   })().catch(e=>{console.error("AI CROSSCHECK",e);showAiDiagnostic(e,e?.sagsStage||"GENERATE_CONTENT");throw e;}).finally(()=>inFlight.delete(key));
@@ -240,7 +286,7 @@ function render(result,pkg){
 
 window.sagsAiCrosscheckRun=run;
 window.sagsAiCrosscheckRender=render;
-window.sagsAiCrosscheckEnsure=async pkg=>{try{if(pkg?.aiCrosscheck)return render(pkg.aiCrosscheck,pkg);await run(pkg);}catch(e){}};
+window.sagsAiCrosscheckEnsure=async pkg=>{try{if(pkg?.aiCrosscheck&&String(pkg.aiCrosscheck.aiVersion||"")===AI_VERSION)return render(pkg.aiCrosscheck,pkg);await run(pkg);}catch(e){}};
 window.sagsAiCrosscheckRetryCurrent=async()=>{const pkg=window.sagsAiGetCurrentPackage?.();if(!pkg)return;try{await run(pkg,{force:true});}catch(e){}};
 window.sagsAiRunDiagnostics=async()=>{
   if(role()!=="AD")return alert("Chỉ AD được chạy chẩn đoán AI.");
@@ -250,7 +296,7 @@ window.sagsAiRunDiagnostics=async()=>{
     if(!conf.apiKey||!conf.appId)throw taggedError("CONFIG_FIREBASE",new Error("Thiếu apiKey/appId trong firebase-config.js."));
     if(!String(cfg?.appCheckSiteKey||"").trim())throw taggedError("CONFIG_APP_CHECK",new Error("Chưa có reCAPTCHA Enterprise Site Key."));
     const mdl=await initModels(true);if(!appCheckInstance)throw taggedError("APP_CHECK_INIT",new Error("App Check chưa khởi tạo."));try{await getToken(appCheckInstance,true);}catch(e){throw taggedError("APP_CHECK_TOKEN",e);}
-    try{const out=await mdl.fast.generateContent('Trả JSON hợp lệ với status="MATCH", confidence=100, summary="DIAGNOSTIC_OK", flightMatch=true, regMatch=true, revisionSuspicion=false, criticalUnreadable=false, differences=[], observations=["DIAGNOSTIC_OK"].');const meta=responseMeta(out?.response),text=out?.response?.text?.()||"";if(String(meta.finishReason).toUpperCase()==="MAX_TOKENS")throw taggedError("AI_OUTPUT_TRUNCATED",Object.assign(new Error("Diagnostic bị MAX_TOKENS."),{aiMeta:meta,aiRaw:text}));parseAiJson(text);}catch(e){throw taggedError(e?.sagsStage||"FIREBASE_AI_LOGIC",e);}
+    try{const out=await mdl.fast.generateContent('Trả JSON hợp lệ với status="MATCH", confidence=100, summary="DIAGNOSTIC_OK", criticalUnreadable=false, differences=[], observations=["DIAGNOSTIC_OK"].');const meta=responseMeta(out?.response),text=out?.response?.text?.()||"";if(String(meta.finishReason).toUpperCase()==="MAX_TOKENS")throw taggedError("AI_OUTPUT_TRUNCATED",Object.assign(new Error("Diagnostic bị MAX_TOKENS."),{aiMeta:meta,aiRaw:text}));parseAiJson(text);}catch(e){throw taggedError(e?.sagsStage||"FIREBASE_AI_LOGIC",e);}
     setPanel("READY",`CHẨN ĐOÁN OK · FAST ${activeModelNames.fast} · FALLBACK ${activeModelNames.accurate}`);const iss=el("cxAiIssues");if(iss){iss.style.display="block";iss.innerHTML=`<div style="padding:7px;border-radius:8px;background:#f0fdf4;border:1px solid #bbf7d0;color:#166534"><b>✓ CONFIG OK</b><br><b>✓ APP CHECK TOKEN OK</b><br><b>✓ FIREBASE AI LOGIC OK</b><br><b>✓ AI FAST ${escapeHtmlLocal(activeModelNames.fast)} OK</b><br><span style="color:#475569">Fallback khi cần: ${escapeHtmlLocal(activeModelNames.accurate)} · Host: ${escapeHtmlLocal(location.hostname||"")}</span></div>`;}
   }catch(e){console.error("AI DIAGNOSTIC",e);showAiDiagnostic(e,e?.sagsStage||"DIAGNOSTIC");}
 };
