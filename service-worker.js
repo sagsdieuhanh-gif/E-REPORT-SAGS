@@ -1,5 +1,5 @@
-const CACHE_NAME="sags-v1-20-ai-build02-20260818-02";
-const BUILD="V1.20-20260818-02";
+const CACHE_NAME="sags-v1-21-ai-build01-20260818-01";
+const BUILD="V1.21-20260818-01";
 const APP_SHELL=[
   "./index.html","./version.json","./firebase-config.js","./v488-archive.js","./ai-crosscheck.js","./document-scanner.js",
   "./alert-mva.mp3","./alert-mvt.mp3","./alert-pushback-missing.mp3","./alert-read-sign.mp3",
