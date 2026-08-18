@@ -1,8 +1,8 @@
-/* E-REPORT/SAGS · In-app Document Scanner · V1.14 · LIVE 4-CORNER DETECTION */
+/* E-REPORT/SAGS · In-app Document Scanner · V1.19 · WORKER LIVE 4-CORNER DETECTION */
 (() => {
   'use strict';
 
-  const BUILD = 'V1.14-20260818-01';
+  const BUILD = 'V1.19-20260818-01';
   if (window.SAGSDocumentScanner && window.SAGSDocumentScanner.build === BUILD) return;
 
   const MAX_PAGES = 20;
@@ -11,6 +11,10 @@
   const PREVIEW_DIM = 1200;
   const THUMB_DIM = 180;
   const DEFAULT_FILTER = 'clear';
+  const LIVE_ANALYSIS_DIM = 240;
+  const LIVE_SEARCH_MS = 500;
+  const LIVE_STABLE_MS = 680;
+  const LIVE_MISS_HOLD = 4;
 
   const state = {
     root: null,
@@ -31,10 +35,22 @@
     liveTimer: 0,
     liveBusy: false,
     liveCorners: null,
+    liveDisplayCorners: null,
     liveConfidence: 0,
     liveStableCount: 0,
     liveLastCorners: null,
     liveSourceSize: null,
+    livePendingCorners: null,
+    livePendingHits: 0,
+    liveMissCount: 0,
+    liveAnimFrame: 0,
+    liveAnalysisCanvas: null,
+    liveAnalysisCtx: null,
+    liveWorker: null,
+    liveWorkerFailed: false,
+    liveWorkerSentAt: 0,
+    liveFrameSeq: 0,
+    liveGeneration: 0,
   };
 
   const CSS = `
@@ -114,7 +130,7 @@
           <video id="sdsVideo" autoplay muted playsinline></video>
           <canvas id="sdsLiveOverlay" aria-hidden="true"></canvas>
           <div class="sds-guide"></div>
-          <div class="sds-camera-tip" id="sdsCameraTip">Đặt trọn tờ giấy trong khung · hệ thống sẽ tự khoanh 4 góc</div>
+          <div class="sds-camera-tip" id="sdsCameraTip">Đặt trọn tờ giấy trong khung · giữ máy ổn định để khóa 4 góc</div>
           <div class="sds-live-status search" id="sdsLiveStatus">ĐANG TÌM 4 GÓC TỜ GIẤY…</div>
         </div>
         <div class="sds-view" id="sdsCropView"><div class="sds-crop-wrap"><canvas id="sdsCropCanvas"></canvas><div class="sds-crop-help">Kéo 4 chấm xanh vào đúng 4 góc tờ giấy</div></div></div>
@@ -127,7 +143,7 @@
             <ol>
               <li>Bấm <b>📄 CAMSCANER</b> trên thanh chức năng của đơn vị hoặc mở từ vùng Đính kèm.</li>
               <li>Đặt trọn tờ giấy trong khung. Khi camera đang mở, hệ thống <b>tự nhận diện 4 góc trực tiếp trên hình live</b> và vẽ viền xanh quanh tờ giấy.</li>
-              <li>Khi hiện <b>ĐÃ NHẬN 4 GÓC · CÓ THỂ CHỤP</b>, bấm nút tròn. Sau khi chụp vẫn có thể kéo 4 chấm để chỉnh chính xác hoặc dùng <b>TỰ NHẬN MÉP</b>.</li>
+              <li>Khi hiện <b>ĐÃ KHÓA 4 GÓC · CÓ THỂ CHỤP</b>, bấm nút tròn. Nhận diện live chạy nền để ưu tiên camera mượt; sau khi chụp vẫn có thể kéo 4 chấm hoặc dùng <b>TỰ NHẬN MÉP</b>.</li>
               <li>Bấm <b>LƯU TRANG</b>. Hệ thống cắt phối cảnh để làm thẳng tài liệu.</li>
               <li>Ở màn kiểm tra, có thể <b>XOAY</b>, đổi thứ tự bằng <b>← TRANG / TRANG →</b>, <b>XÓA</b> và chọn <b>GỐC / RÕ / XÁM / ĐEN TRẮNG</b>.</li>
               <li>Bấm <b>ĐÍNH KÈM</b> để đưa toàn bộ trang đã quét vào vùng ảnh của biểu mẫu hiện tại.</li>
@@ -250,7 +266,7 @@
     stopCamera();
     if(!navigator.mediaDevices?.getUserMedia) throw new Error('Thiết bị/trình duyệt không hỗ trợ camera web.');
     const video=$('sdsVideo');
-    const videoConstraints=deviceId?{deviceId:{exact:deviceId},width:{ideal:2560},height:{ideal:1920}}:{facingMode:{ideal:'environment'},width:{ideal:2560},height:{ideal:1920}};
+    const videoConstraints=deviceId?{deviceId:{exact:deviceId},width:{ideal:1280,max:1600},height:{ideal:960,max:1200},frameRate:{ideal:30,max:30}}:{facingMode:{ideal:'environment'},width:{ideal:1280,max:1600},height:{ideal:960,max:1200},frameRate:{ideal:30,max:30}};
     const stream=await navigator.mediaDevices.getUserMedia({audio:false,video:videoConstraints});
     state.stream=stream; state.track=stream.getVideoTracks()[0]||null; state.torch=false;
     video.srcObject=stream; await video.play();
@@ -262,12 +278,13 @@
     updateCameraButtons();
     resetLiveDetection();
     startLiveDetection();
-    if($('sdsCameraMsg')) $('sdsCameraMsg').textContent='Camera đang tự nhận diện 4 góc. Khi viền xanh bám đúng mép giấy thì có thể chụp.';
+    if($('sdsCameraMsg')) $('sdsCameraMsg').textContent='Camera preview chạy độc lập; nhận mép được xử lý nền để giảm lag. Khi viền xanh ổn định thì có thể chụp.';
   }
 
   function stopCamera(){
     stopLiveDetection();
     resetLiveDetection();
+    destroyLiveWorker();
     try{state.stream?.getTracks?.().forEach(t=>t.stop());}catch(_){ }
     state.stream=null;state.track=null;state.torch=false;
     const v=$('sdsVideo');if(v)v.srcObject=null;
@@ -335,82 +352,186 @@
   }
 
   function resetLiveDetection(){
-    state.liveCorners=null;state.liveConfidence=0;state.liveStableCount=0;state.liveLastCorners=null;state.liveSourceSize=null;state.liveBusy=false;
+    state.liveGeneration=(state.liveGeneration+1)>>>0;
+    state.liveCorners=null;state.liveDisplayCorners=null;state.liveConfidence=0;state.liveStableCount=0;state.liveLastCorners=null;state.liveSourceSize=null;
+    state.livePendingCorners=null;state.livePendingHits=0;state.liveMissCount=0;state.liveBusy=false;state.liveWorkerSentAt=0;
+    if(state.liveAnimFrame){cancelAnimationFrame(state.liveAnimFrame);state.liveAnimFrame=0;}
     clearLiveOverlay();
     const st=$('sdsLiveStatus');if(st){st.textContent='ĐANG TÌM 4 GÓC TỜ GIẤY…';st.classList.remove('ok');st.classList.add('search');}
   }
 
+  function destroyLiveWorker(){
+    if(state.liveWorker){try{state.liveWorker.terminate();}catch(_){ }state.liveWorker=null;}
+    state.liveWorkerFailed=false;state.liveBusy=false;state.liveWorkerSentAt=0;
+  }
+
+  function ensureLiveWorker(){
+    if(state.liveWorker)return true;
+    if(state.liveWorkerFailed || typeof Worker==='undefined')return false;
+    try{
+      const w=new Worker(`./scanner-edge-worker.js?v=${encodeURIComponent(BUILD)}`);
+      w.onmessage=(event)=>handleLiveWorkerResult(event.data||{});
+      w.onerror=(event)=>{
+        console.warn('[Scanner live worker]',event?.message||event);
+        state.liveWorkerFailed=true;state.liveBusy=false;
+        try{w.terminate();}catch(_){ }
+        if(state.liveWorker===w)state.liveWorker=null;
+        setLiveCompatibilityMode();
+      };
+      state.liveWorker=w;
+      return true;
+    }catch(e){
+      console.warn('[Scanner live worker init]',e);
+      state.liveWorkerFailed=true;
+      setLiveCompatibilityMode();
+      return false;
+    }
+  }
+
+  function setLiveCompatibilityMode(){
+    const st=$('sdsLiveStatus');
+    if(st){st.textContent='CAMERA MƯỢT · TỰ NHẬN MÉP SAU KHI CHỤP';st.classList.remove('ok');st.classList.add('search');}
+    if($('sdsCameraMsg'))$('sdsCameraMsg').textContent='Thiết bị không chạy được xử lý nền. Camera được ưu tiên mượt; mép giấy sẽ tự nhận ngay sau khi chụp.';
+  }
+
   function stopLiveDetection(){
     if(state.liveTimer){clearTimeout(state.liveTimer);state.liveTimer=0;}
-    state.liveBusy=false;
+    if(state.liveAnimFrame){cancelAnimationFrame(state.liveAnimFrame);state.liveAnimFrame=0;}
+    state.liveBusy=false;state.liveWorkerSentAt=0;
   }
 
   function startLiveDetection(){
     stopLiveDetection();
-    const tick=async()=>{
-      if(!state.root?.classList.contains('sds-open') || state.mode!=='camera' || !state.stream){state.liveTimer=setTimeout(tick,360);return;}
-      if(document.hidden){state.liveTimer=setTimeout(tick,500);return;}
+    if(!ensureLiveWorker()){setLiveCompatibilityMode();return;}
+    const tick=()=>{
+      if(!state.root?.classList.contains('sds-open') || state.mode!=='camera' || !state.stream){state.liveTimer=setTimeout(tick,600);return;}
+      if(document.hidden){state.liveTimer=setTimeout(tick,750);return;}
       const v=$('sdsVideo');
-      if(!v || v.readyState<2 || !v.videoWidth || !v.videoHeight || state.liveBusy){state.liveTimer=setTimeout(tick,180);return;}
-      state.liveBusy=true;
-      try{detectLiveFrame(v);}catch(e){console.warn('[Scanner live edge]',e);}
-      finally{state.liveBusy=false;state.liveTimer=setTimeout(tick,240);}
+      if(!v || v.readyState<2 || !v.videoWidth || !v.videoHeight){state.liveTimer=setTimeout(tick,280);return;}
+      if(state.liveBusy){
+        // Worker treo quá lâu thì bỏ frame đó và dựng worker mới, không để camera bị chờ.
+        if(state.liveWorkerSentAt && performance.now()-state.liveWorkerSentAt>1800){destroyLiveWorker();ensureLiveWorker();state.liveBusy=false;}
+        state.liveTimer=setTimeout(tick,180);return;
+      }
+      try{sendLiveFrameToWorker(v);}catch(e){console.warn('[Scanner live sample]',e);state.liveBusy=false;}
+      const locked=state.liveStableCount>=2 && state.liveConfidence>=.50;
+      state.liveTimer=setTimeout(tick,locked?LIVE_STABLE_MS:LIVE_SEARCH_MS);
     };
-    state.liveTimer=setTimeout(tick,80);
-  }
-
-  function smoothLiveCorners(next){
-    if(!state.liveCorners || state.liveCorners.length!==4)return next.map(p=>({x:p.x,y:p.y}));
-    const a=.38;
-    return next.map((p,i)=>({x:state.liveCorners[i].x*(1-a)+p.x*a,y:state.liveCorners[i].y*(1-a)+p.y*a}));
+    state.liveTimer=setTimeout(tick,180);
   }
 
   function normalizedCornerMotion(a,b,w,h){
-    if(!a||!b)return 1;
-    let sum=0;for(let i=0;i<4;i++)sum+=Math.hypot((a[i].x-b[i].x)/w,(a[i].y-b[i].y)/h);
+    if(!a||!b||a.length!==4||b.length!==4)return 1;
+    let sum=0;for(let i=0;i<4;i++)sum+=Math.hypot((a[i].x-b[i].x)/Math.max(1,w),(a[i].y-b[i].y)/Math.max(1,h));
     return sum/4;
   }
 
-  function detectLiveFrame(video){
-    const max=520,scale=Math.min(1,max/Math.max(video.videoWidth,video.videoHeight));
-    const c=makeCanvas(video.videoWidth*scale,video.videoHeight*scale),ctx=c.getContext('2d',{alpha:false,willReadFrequently:true});
-    ctx.drawImage(video,0,0,c.width,c.height);
-    const r=detectDocumentCorners(c);
-    const confident=r.confidence>=.42;
-    if(confident){
-      const mapped=r.corners.map(p=>({x:p.x/scale,y:p.y/scale}));
-      const motion=normalizedCornerMotion(state.liveLastCorners,mapped,video.videoWidth,video.videoHeight);
-      state.liveStableCount=motion<.018?Math.min(8,state.liveStableCount+1):Math.max(0,state.liveStableCount-1);
-      state.liveCorners=smoothLiveCorners(mapped);
-      state.liveLastCorners=mapped;
-      state.liveConfidence=r.confidence;
-      state.liveSourceSize={w:video.videoWidth,h:video.videoHeight};
-    }else{
-      state.liveConfidence=r.confidence;
-      state.liveStableCount=Math.max(0,state.liveStableCount-1);
-      if(state.liveStableCount===0){state.liveCorners=null;state.liveLastCorners=null;state.liveSourceSize=null;}
+  function smoothLiveCorners(next,w,h){
+    const prev=state.liveCorners;
+    if(!prev || prev.length!==4)return next.map(p=>({x:p.x,y:p.y}));
+    return next.map((p,i)=>{
+      const q=prev[i],m=Math.hypot((p.x-q.x)/Math.max(1,w),(p.y-q.y)/Math.max(1,h));
+      if(m<.003)return {x:q.x,y:q.y};
+      const a=m<.012?.24:m<.03?.34:.48;
+      return {x:q.x*(1-a)+p.x*a,y:q.y*(1-a)+p.y*a};
+    });
+  }
+
+  function ensureLiveSampleCanvas(video){
+    const scale=Math.min(1,LIVE_ANALYSIS_DIM/Math.max(video.videoWidth,video.videoHeight));
+    const w=Math.max(96,Math.round(video.videoWidth*scale)),h=Math.max(96,Math.round(video.videoHeight*scale));
+    let c=state.liveAnalysisCanvas;
+    if(!c){c=state.liveAnalysisCanvas=makeCanvas(w,h);state.liveAnalysisCtx=c.getContext('2d',{alpha:false,willReadFrequently:true});}
+    if(c.width!==w||c.height!==h){c.width=w;c.height=h;state.liveAnalysisCtx=c.getContext('2d',{alpha:false,willReadFrequently:true});}
+    return {canvas:c,ctx:state.liveAnalysisCtx,w,h};
+  }
+
+  function sendLiveFrameToWorker(video){
+    if(!state.liveWorker||state.liveBusy)return;
+    const f=ensureLiveSampleCanvas(video);
+    // Main thread chỉ thu ảnh rất nhỏ; toàn bộ Otsu + connected-component chạy trong Worker.
+    f.ctx.drawImage(video,0,0,f.w,f.h);
+    const image=f.ctx.getImageData(0,0,f.w,f.h);
+    const seq=++state.liveFrameSeq,generation=state.liveGeneration;
+    state.liveBusy=true;state.liveWorkerSentAt=performance.now();
+    state.liveWorker.postMessage({type:'detect',seq,generation,width:f.w,height:f.h,sourceW:video.videoWidth,sourceH:video.videoHeight,buffer:image.data.buffer},[image.data.buffer]);
+  }
+
+  function animateLiveOverlayTo(video,target){
+    if(!target||target.length!==4){drawLiveOverlay(video);return;}
+    if(state.liveAnimFrame){cancelAnimationFrame(state.liveAnimFrame);state.liveAnimFrame=0;}
+    if(!state.liveDisplayCorners||state.liveDisplayCorners.length!==4){
+      state.liveDisplayCorners=target.map(p=>({x:p.x,y:p.y}));drawLiveOverlay(video);return;
     }
+    const from=state.liveDisplayCorners.map(p=>({x:p.x,y:p.y})),to=target.map(p=>({x:p.x,y:p.y}));
+    const motion=normalizedCornerMotion(from,to,state.liveSourceSize?.w||video.videoWidth,state.liveSourceSize?.h||video.videoHeight);
+    if(motion<.0015){state.liveDisplayCorners=to;drawLiveOverlay(video);return;}
+    const started=performance.now(),duration=330;
+    const step=(now)=>{
+      if(state.mode!=='camera'||!state.stream){state.liveAnimFrame=0;return;}
+      const t=clamp((now-started)/duration,0,1),e=t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+      state.liveDisplayCorners=from.map((p,i)=>({x:p.x+(to[i].x-p.x)*e,y:p.y+(to[i].y-p.y)*e}));
+      drawLiveOverlay(video);
+      if(t<1)state.liveAnimFrame=requestAnimationFrame(step);else state.liveAnimFrame=0;
+    };
+    state.liveAnimFrame=requestAnimationFrame(step);
+  }
+
+  function handleLiveWorkerResult(r){
+    state.liveBusy=false;state.liveWorkerSentAt=0;
+    if(r.generation!==state.liveGeneration || state.mode!=='camera' || !state.stream)return;
+    const video=$('sdsVideo');if(!video)return;
+    const confident=!!r.found && Array.isArray(r.corners) && r.corners.length===4 && Number(r.confidence)>=.43;
+    if(confident){
+      let mapped=r.corners.map(p=>({x:Number(p.x),y:Number(p.y)}));
+      const sourceW=Number(r.sourceW)||video.videoWidth,sourceH=Number(r.sourceH)||video.videoHeight;
+      state.liveMissCount=0;
+      const motion=normalizedCornerMotion(state.liveCorners,mapped,sourceW,sourceH);
+      let accept=!state.liveCorners || motion<=.055;
+      if(!accept){
+        const pendingMotion=normalizedCornerMotion(state.livePendingCorners,mapped,sourceW,sourceH);
+        if(state.livePendingCorners && pendingMotion<.025)state.livePendingHits++;
+        else{state.livePendingCorners=mapped.map(p=>({x:p.x,y:p.y}));state.livePendingHits=1;}
+        if(state.livePendingHits>=2){mapped=state.livePendingCorners.map(p=>({x:p.x,y:p.y}));accept=true;state.livePendingCorners=null;state.livePendingHits=0;}
+      }else{state.livePendingCorners=null;state.livePendingHits=0;}
+
+      if(accept){
+        const stableMotion=normalizedCornerMotion(state.liveLastCorners,mapped,sourceW,sourceH);
+        if(stableMotion<.013)state.liveStableCount=Math.min(10,state.liveStableCount+1);
+        else if(stableMotion>.035)state.liveStableCount=Math.max(0,state.liveStableCount-2);
+        else state.liveStableCount=Math.max(0,state.liveStableCount-1);
+        state.liveCorners=smoothLiveCorners(mapped,sourceW,sourceH);
+        state.liveLastCorners=mapped.map(p=>({x:p.x,y:p.y}));
+        state.liveConfidence=Number(r.confidence)||0;
+        state.liveSourceSize={w:sourceW,h:sourceH};
+        animateLiveOverlayTo(video,state.liveCorners);
+        return;
+      }
+      state.liveStableCount=Math.max(0,state.liveStableCount-1);drawLiveOverlay(video);return;
+    }
+    state.liveMissCount++;state.liveConfidence*=.96;state.liveStableCount=Math.max(0,state.liveStableCount-1);
+    if(state.liveMissCount>LIVE_MISS_HOLD){state.liveCorners=null;state.liveDisplayCorners=null;state.liveLastCorners=null;state.liveSourceSize=null;state.livePendingCorners=null;state.livePendingHits=0;}
     drawLiveOverlay(video);
   }
 
   function drawLiveOverlay(video){
     const overlay=$('sdsLiveOverlay'),view=$('sdsCameraView');if(!overlay||!view)return;
-    const rect=view.getBoundingClientRect(),dpr=Math.min(2,window.devicePixelRatio||1),cw=Math.max(1,Math.round(rect.width*dpr)),ch=Math.max(1,Math.round(rect.height*dpr));
+    const rect=view.getBoundingClientRect(),dpr=Math.min(1.5,window.devicePixelRatio||1),cw=Math.max(1,Math.round(rect.width*dpr)),ch=Math.max(1,Math.round(rect.height*dpr));
     if(overlay.width!==cw||overlay.height!==ch){overlay.width=cw;overlay.height=ch;}
     const ctx=overlay.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,rect.width,rect.height);
-    const st=$('sdsLiveStatus');
-    if(!state.liveCorners || !state.liveSourceSize){
+    const st=$('sdsLiveStatus'),shown=state.liveDisplayCorners||state.liveCorners;
+    if(!shown || !state.liveSourceSize){
       if(st){st.textContent='ĐANG TÌM 4 GÓC TỜ GIẤY…';st.classList.remove('ok');st.classList.add('search');}
       return;
     }
     const vw=state.liveSourceSize.w,vh=state.liveSourceSize.h,fit=Math.min(rect.width/vw,rect.height/vh),dx=(rect.width-vw*fit)/2,dy=(rect.height-vh*fit)/2;
-    const pts=state.liveCorners.map(p=>({x:dx+p.x*fit,y:dy+p.y*fit}));
+    const pts=shown.map(p=>({x:dx+p.x*fit,y:dy+p.y*fit}));
     const stable=state.liveStableCount>=2 && state.liveConfidence>=.50;
-    ctx.save();ctx.lineJoin='round';ctx.lineCap='round';ctx.lineWidth=stable?4:3;ctx.strokeStyle=stable?'#32f28a':'#45d7ff';ctx.fillStyle=stable?'rgba(42,225,125,.10)':'rgba(32,190,255,.08)';ctx.shadowColor='rgba(0,0,0,.5)';ctx.shadowBlur=4;
+    ctx.save();ctx.lineJoin='round';ctx.lineCap='round';ctx.lineWidth=stable?3.4:2.7;ctx.strokeStyle=stable?'#32f28a':'#45d7ff';ctx.fillStyle=stable?'rgba(42,225,125,.09)':'rgba(32,190,255,.07)';
     ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);for(let i=1;i<4;i++)ctx.lineTo(pts[i].x,pts[i].y);ctx.closePath();ctx.fill();ctx.stroke();
-    ctx.shadowBlur=0;for(const p of pts){ctx.beginPath();ctx.arc(p.x,p.y,stable?7:6,0,Math.PI*2);ctx.fillStyle=stable?'#32f28a':'#45d7ff';ctx.fill();ctx.lineWidth=2;ctx.strokeStyle='#fff';ctx.stroke();}
+    for(const p of pts){ctx.beginPath();ctx.arc(p.x,p.y,stable?6.3:5.4,0,Math.PI*2);ctx.fillStyle=stable?'#32f28a':'#45d7ff';ctx.fill();ctx.lineWidth=1.6;ctx.strokeStyle='#fff';ctx.stroke();}
     ctx.restore();
-    if(st){st.textContent=stable?'✓ ĐÃ NHẬN 4 GÓC · CÓ THỂ CHỤP':'GIỮ MÁY ỔN ĐỊNH · ĐANG BÁM MÉP GIẤY';st.classList.toggle('ok',stable);st.classList.toggle('search',!stable);}
+    if(st){st.textContent=stable?'✓ ĐÃ KHÓA 4 GÓC · CÓ THỂ CHỤP':'GIỮ MÁY ỔN ĐỊNH · ĐANG BÁM MÉP GIẤY';st.classList.toggle('ok',stable);st.classList.toggle('search',!stable);}
   }
 
   function qualityMessage(canvas,confidence){
@@ -446,9 +567,11 @@
     const mx=w*.055,my=h*.055;return [{x:mx,y:my},{x:w-mx,y:my},{x:w-mx,y:h-my},{x:mx,y:h-my}];
   }
 
-  function detectDocumentCorners(canvas){
-    const max=360,sc=Math.min(1,max/Math.max(canvas.width,canvas.height)),w=Math.max(80,Math.round(canvas.width*sc)),h=Math.max(80,Math.round(canvas.height*sc));
-    const c=makeCanvas(w,h),ctx=c.getContext('2d',{willReadFrequently:true,alpha:false});ctx.drawImage(canvas,0,0,w,h);
+  function detectDocumentCorners(canvas,maxDim=360){
+    const max=maxDim,sc=Math.min(1,max/Math.max(canvas.width,canvas.height)),w=Math.max(80,Math.round(canvas.width*sc)),h=Math.max(80,Math.round(canvas.height*sc));
+    let c=canvas,ctx=null;
+    if(sc<.999){c=makeCanvas(w,h);ctx=c.getContext('2d',{willReadFrequently:true,alpha:false});ctx.drawImage(canvas,0,0,w,h);}
+    else{ctx=c.getContext('2d',{willReadFrequently:true,alpha:false});}
     const rgba=ctx.getImageData(0,0,w,h).data,gray=new Uint8Array(w*h);
     for(let i=0,j=0;i<rgba.length;i+=4,j++)gray[j]=Math.round(.299*rgba[i]+.587*rgba[i+1]+.114*rgba[i+2]);
     const otsu=otsuThreshold(gray),thr=clamp(otsu+6,112,218),bin=new Uint8Array(w*h);
@@ -463,7 +586,10 @@
         if(xx<=2||yy<=2||xx>=w-3||yy>=h-3)touch++;
         const sp=xx+yy,sm=xx-yy;
         if(!tl||sp<tl.v)tl={v:sp,x:xx,y:yy};if(!br||sp>br.v)br={v:sp,x:xx,y:yy};if(!tr||sm>tr.v)tr={v:sm,x:xx,y:yy};if(!bl||sm<bl.v)bl={v:sm,x:xx,y:yy};
-        const nbs=[idx-1,idx+1,idx-w,idx+w];for(let k=0;k<4;k++){const z=nbs[k];if(z>0&&z<bin.length&&bin[z]&&!seen[z]){seen[z]=1;queue[qt++]=z;}}
+        let z=idx-1;if(z>0&&bin[z]&&!seen[z]){seen[z]=1;queue[qt++]=z;}
+        z=idx+1;if(z<bin.length&&bin[z]&&!seen[z]){seen[z]=1;queue[qt++]=z;}
+        z=idx-w;if(z>0&&bin[z]&&!seen[z]){seen[z]=1;queue[qt++]=z;}
+        z=idx+w;if(z<bin.length&&bin[z]&&!seen[z]){seen[z]=1;queue[qt++]=z;}
       }
       if(n<w*h*.025)continue;
       const mx=sumX/n,my=sumY/n,centerDist=Math.hypot((mx-cx)/w,(my-cy)/h),touchRatio=touch/Math.max(1,n),areaRatio=n/(w*h);
