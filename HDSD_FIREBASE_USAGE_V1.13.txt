@@ -1,0 +1,7 @@
+HDSD FIREBASE USAGE — E-REPORT/SAGS V1.13
+
+1. Chỉ AD mở mục FIREBASE USAGE.
+2. Bộ đếm READ/WRITE/DELETE chỉ bắt đầu sau khi ứng dụng xác định được tài khoản/vai trò đang đăng nhập.
+3. Nếu ứng dụng chưa xác định được người dùng, lượt phát sinh ở giai đoạn đó không được ghi vào telemetry và không tạo tên anon.
+4. TẢI CHI TIẾT THIẾT BỊ chỉ hiển thị các tài khoản có usage trong đúng ngày hiện tại; record anon cũ từ phiên bản trước bị ẩn.
+5. BẮT ĐẦU TEST 24H dùng tổng tích lũy làm mốc; RESET TEST chỉ xóa mốc test trên thiết bị, không xóa dữ liệu usage.

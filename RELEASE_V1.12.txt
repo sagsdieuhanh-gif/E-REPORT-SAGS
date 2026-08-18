@@ -1,0 +1,11 @@
+E-REPORT V1.12 AI — BUILD 01 (18/08/2026)
+
+CAMSCANER LIVE 4-CORNER DETECTION
+- Bổ sung nhận diện mép/4 góc liên tục ngay trên camera preview trước khi chụp.
+- Vẽ overlay tứ giác + 4 điểm góc trực tiếp trên camera.
+- Có trạng thái bám mép và xác nhận khi 4 góc đã ổn định.
+- Làm mượt vị trí góc giữa các frame để hạn chế rung.
+- Khi chụp, ưu tiên sử dụng 4 góc live đã nhận; màn sau chụp vẫn cho chỉnh tay và TỰ NHẬN MÉP.
+- Nhận diện live chạy trên frame thu nhỏ và theo chu kỳ để giảm tải CPU/điện thoại.
+- Cập nhật HDSD CAMSCANER theo luồng live mới.
+- Đồng bộ APP_BUILD_VERSION, version.json, cache-bust document-scanner.js và Service Worker: V1.12-20260818-01.

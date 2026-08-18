@@ -1,0 +1,13 @@
+HDSD HÌNH NỀN SAU ĐĂNG NHẬP — V1.15
+
+1. Đăng nhập bằng tài khoản cá nhân do AD cấp.
+2. Ứng dụng đọc hồ sơ tài khoản gồm Phòng, Nhóm/chức năng, Vai trò và Chức danh.
+3. Màn chờ sau đăng nhập tự chọn ảnh theo Nhóm/Vai trò nghiệp vụ, không theo chức danh cá nhân:
+   - Nhóm/Vai trò CBTT – Cân bằng trọng tải: CBTT.png
+   - Nhóm/Vai trò PVHK: PVHK.png
+   - Nhóm LNF / Vai trò LOSTFOUND: LNF.png
+   - Nhóm/Vai trò PVHLNG (và legacy PVHLSD): PVHLNG.png
+4. Thứ tự nhận diện: groupCode -> role/roleCode -> tên đơn vị.
+5. Vì vậy các chức danh Trưởng phòng/Đội trưởng/Ca trưởng/Nhân viên trong cùng nhóm CBTT đều nhận cùng nền CBTT.png.
+6. Nếu nghiệp vụ chưa có ảnh riêng, hệ thống dùng login-bg.jpg.
+7. Khi AD sửa hồ sơ/quyền, sau khi máy nhận đồng bộ hệ thống áp lại hình nền theo hồ sơ mới.

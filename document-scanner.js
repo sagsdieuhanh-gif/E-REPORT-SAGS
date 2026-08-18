@@ -1,8 +1,8 @@
-/* E-REPORT/SAGS · In-app Document Scanner · V1.11 */
+/* E-REPORT/SAGS · In-app Document Scanner · V1.14 · LIVE 4-CORNER DETECTION */
 (() => {
   'use strict';
 
-  const BUILD = 'V1.11-20260818-01';
+  const BUILD = 'V1.14-20260818-01';
   if (window.SAGSDocumentScanner && window.SAGSDocumentScanner.build === BUILD) return;
 
   const MAX_PAGES = 20;
@@ -28,6 +28,13 @@
     opening: false,
     busy: false,
     qualityText: '',
+    liveTimer: 0,
+    liveBusy: false,
+    liveCorners: null,
+    liveConfidence: 0,
+    liveStableCount: 0,
+    liveLastCorners: null,
+    liveSourceSize: null,
   };
 
   const CSS = `
@@ -41,6 +48,9 @@
   .sds-btn:disabled{opacity:.42}.sds-stage{position:relative;flex:1;min-height:0;overflow:hidden;background:#000;display:flex;align-items:center;justify-content:center}
   .sds-view{position:absolute;inset:0;display:none;align-items:center;justify-content:center}.sds-view.active{display:flex}
   #sdsVideo{width:100%;height:100%;object-fit:contain;background:#000}
+  #sdsLiveOverlay{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
+  .sds-live-status{position:absolute;z-index:3;left:50%;bottom:12px;transform:translateX(-50%);max-width:92%;padding:7px 11px;border-radius:18px;background:rgba(0,0,0,.62);font-size:12px;font-weight:800;text-align:center;pointer-events:none;white-space:nowrap}
+  .sds-live-status.ok{background:rgba(10,121,71,.82)}.sds-live-status.search{background:rgba(0,0,0,.62)}
   .sds-guide{position:absolute;inset:7% 5%;border:2px solid rgba(94,219,255,.75);border-radius:10px;box-shadow:0 0 0 999px rgba(0,0,0,.10);pointer-events:none}
   .sds-guide:before,.sds-guide:after{content:"";position:absolute;inset:20% 0;border-top:1px dashed rgba(255,255,255,.2);border-bottom:1px dashed rgba(255,255,255,.2)}
   .sds-camera-tip{position:absolute;top:12px;left:50%;transform:translateX(-50%);max-width:90%;padding:7px 10px;border-radius:18px;background:rgba(0,0,0,.58);font-size:12px;text-align:center;pointer-events:none}
@@ -102,8 +112,10 @@
       <div class="sds-stage">
         <div class="sds-view active" id="sdsCameraView">
           <video id="sdsVideo" autoplay muted playsinline></video>
+          <canvas id="sdsLiveOverlay" aria-hidden="true"></canvas>
           <div class="sds-guide"></div>
-          <div class="sds-camera-tip" id="sdsCameraTip">Đặt trọn tờ giấy trong khung · giữ máy ổn định</div>
+          <div class="sds-camera-tip" id="sdsCameraTip">Đặt trọn tờ giấy trong khung · hệ thống sẽ tự khoanh 4 góc</div>
+          <div class="sds-live-status search" id="sdsLiveStatus">ĐANG TÌM 4 GÓC TỜ GIẤY…</div>
         </div>
         <div class="sds-view" id="sdsCropView"><div class="sds-crop-wrap"><canvas id="sdsCropCanvas"></canvas><div class="sds-crop-help">Kéo 4 chấm xanh vào đúng 4 góc tờ giấy</div></div></div>
         <div class="sds-view" id="sdsReviewView"><div class="sds-review-wrap"><canvas id="sdsReviewCanvas"></canvas></div></div>
@@ -114,8 +126,8 @@
             <h3>HDSD · CAMSCANER</h3>
             <ol>
               <li>Bấm <b>📄 CAMSCANER</b> trên thanh chức năng của đơn vị hoặc mở từ vùng Đính kèm.</li>
-              <li>Đặt trọn tờ giấy trong khung rồi bấm nút tròn để chụp. Có thể chụp liên tiếp nhiều trang.</li>
-              <li>Sau mỗi ảnh, kiểm tra 4 chấm xanh. Kéo từng chấm vào đúng 4 góc giấy; dùng <b>TỰ NHẬN MÉP</b> nếu cần.</li>
+              <li>Đặt trọn tờ giấy trong khung. Khi camera đang mở, hệ thống <b>tự nhận diện 4 góc trực tiếp trên hình live</b> và vẽ viền xanh quanh tờ giấy.</li>
+              <li>Khi hiện <b>ĐÃ NHẬN 4 GÓC · CÓ THỂ CHỤP</b>, bấm nút tròn. Sau khi chụp vẫn có thể kéo 4 chấm để chỉnh chính xác hoặc dùng <b>TỰ NHẬN MÉP</b>.</li>
               <li>Bấm <b>LƯU TRANG</b>. Hệ thống cắt phối cảnh để làm thẳng tài liệu.</li>
               <li>Ở màn kiểm tra, có thể <b>XOAY</b>, đổi thứ tự bằng <b>← TRANG / TRANG →</b>, <b>XÓA</b> và chọn <b>GỐC / RÕ / XÁM / ĐEN TRẮNG</b>.</li>
               <li>Bấm <b>ĐÍNH KÈM</b> để đưa toàn bộ trang đã quét vào vùng ảnh của biểu mẫu hiện tại.</li>
@@ -190,6 +202,7 @@
     $('sdsReviewBottom').style.display=mode==='review'?'grid':'none';
     $('sdsTitle').textContent=mode==='crop'?'CẮT TÀI LIỆU':mode==='review'?'KIỂM TRA TÀI LIỆU':'QUÉT TÀI LIỆU';
     $('sdsSubtitle').textContent=mode==='review'?`${state.pages.length} trang đã quét`:mode==='crop'?'Chỉnh 4 góc trước khi lưu':`Camera tài liệu · ${BUILD}`;
+    if(mode==='camera'&&state.stream)startLiveDetection();else stopLiveDetection();
     updateCounts();
   }
 
@@ -247,10 +260,14 @@
       const idx=state.devices.findIndex(d=>d.deviceId===current);if(idx>=0)state.deviceIndex=idx;
     }catch(_){ state.devices=[]; }
     updateCameraButtons();
-    if($('sdsCameraMsg')) $('sdsCameraMsg').textContent='Chụp liên tiếp nhiều trang; mỗi trang sẽ được tự tìm mép giấy.';
+    resetLiveDetection();
+    startLiveDetection();
+    if($('sdsCameraMsg')) $('sdsCameraMsg').textContent='Camera đang tự nhận diện 4 góc. Khi viền xanh bám đúng mép giấy thì có thể chụp.';
   }
 
   function stopCamera(){
+    stopLiveDetection();
+    resetLiveDetection();
     try{state.stream?.getTracks?.().forEach(t=>t.stop());}catch(_){ }
     state.stream=null;state.track=null;state.torch=false;
     const v=$('sdsVideo');if(v)v.srcObject=null;
@@ -291,7 +308,16 @@
       const ctx=c.getContext('2d',{alpha:false,willReadFrequently:true});
       ctx.drawImage(v,0,0,c.width,c.height);
       state.captureCanvas=c;
-      const detected=detectDocumentCorners(c);
+      let detected;
+      if(state.liveCorners && state.liveSourceSize && state.liveConfidence>=.42){
+        const sx=c.width/state.liveSourceSize.w, sy=c.height/state.liveSourceSize.h;
+        detected={
+          corners:state.liveCorners.map(p=>({x:clamp(p.x*sx,0,c.width-1),y:clamp(p.y*sy,0,c.height-1)})),
+          confidence:state.liveConfidence
+        };
+      }else{
+        detected=detectDocumentCorners(c);
+      }
       state.corners=detected.corners;
       state.qualityText=qualityMessage(c,detected.confidence);
       $('sdsCropMsg').textContent=state.qualityText;
@@ -300,6 +326,91 @@
       drawCropEditor();
     }catch(e){console.error('[Scanner capture]',e);toast('Không xử lý được ảnh vừa chụp.');}
     finally{setBusy(false);}
+  }
+
+
+  function clearLiveOverlay(){
+    const c=$('sdsLiveOverlay');if(!c)return;
+    const ctx=c.getContext('2d');ctx.clearRect(0,0,c.width,c.height);
+  }
+
+  function resetLiveDetection(){
+    state.liveCorners=null;state.liveConfidence=0;state.liveStableCount=0;state.liveLastCorners=null;state.liveSourceSize=null;state.liveBusy=false;
+    clearLiveOverlay();
+    const st=$('sdsLiveStatus');if(st){st.textContent='ĐANG TÌM 4 GÓC TỜ GIẤY…';st.classList.remove('ok');st.classList.add('search');}
+  }
+
+  function stopLiveDetection(){
+    if(state.liveTimer){clearTimeout(state.liveTimer);state.liveTimer=0;}
+    state.liveBusy=false;
+  }
+
+  function startLiveDetection(){
+    stopLiveDetection();
+    const tick=async()=>{
+      if(!state.root?.classList.contains('sds-open') || state.mode!=='camera' || !state.stream){state.liveTimer=setTimeout(tick,360);return;}
+      if(document.hidden){state.liveTimer=setTimeout(tick,500);return;}
+      const v=$('sdsVideo');
+      if(!v || v.readyState<2 || !v.videoWidth || !v.videoHeight || state.liveBusy){state.liveTimer=setTimeout(tick,180);return;}
+      state.liveBusy=true;
+      try{detectLiveFrame(v);}catch(e){console.warn('[Scanner live edge]',e);}
+      finally{state.liveBusy=false;state.liveTimer=setTimeout(tick,240);}
+    };
+    state.liveTimer=setTimeout(tick,80);
+  }
+
+  function smoothLiveCorners(next){
+    if(!state.liveCorners || state.liveCorners.length!==4)return next.map(p=>({x:p.x,y:p.y}));
+    const a=.38;
+    return next.map((p,i)=>({x:state.liveCorners[i].x*(1-a)+p.x*a,y:state.liveCorners[i].y*(1-a)+p.y*a}));
+  }
+
+  function normalizedCornerMotion(a,b,w,h){
+    if(!a||!b)return 1;
+    let sum=0;for(let i=0;i<4;i++)sum+=Math.hypot((a[i].x-b[i].x)/w,(a[i].y-b[i].y)/h);
+    return sum/4;
+  }
+
+  function detectLiveFrame(video){
+    const max=520,scale=Math.min(1,max/Math.max(video.videoWidth,video.videoHeight));
+    const c=makeCanvas(video.videoWidth*scale,video.videoHeight*scale),ctx=c.getContext('2d',{alpha:false,willReadFrequently:true});
+    ctx.drawImage(video,0,0,c.width,c.height);
+    const r=detectDocumentCorners(c);
+    const confident=r.confidence>=.42;
+    if(confident){
+      const mapped=r.corners.map(p=>({x:p.x/scale,y:p.y/scale}));
+      const motion=normalizedCornerMotion(state.liveLastCorners,mapped,video.videoWidth,video.videoHeight);
+      state.liveStableCount=motion<.018?Math.min(8,state.liveStableCount+1):Math.max(0,state.liveStableCount-1);
+      state.liveCorners=smoothLiveCorners(mapped);
+      state.liveLastCorners=mapped;
+      state.liveConfidence=r.confidence;
+      state.liveSourceSize={w:video.videoWidth,h:video.videoHeight};
+    }else{
+      state.liveConfidence=r.confidence;
+      state.liveStableCount=Math.max(0,state.liveStableCount-1);
+      if(state.liveStableCount===0){state.liveCorners=null;state.liveLastCorners=null;state.liveSourceSize=null;}
+    }
+    drawLiveOverlay(video);
+  }
+
+  function drawLiveOverlay(video){
+    const overlay=$('sdsLiveOverlay'),view=$('sdsCameraView');if(!overlay||!view)return;
+    const rect=view.getBoundingClientRect(),dpr=Math.min(2,window.devicePixelRatio||1),cw=Math.max(1,Math.round(rect.width*dpr)),ch=Math.max(1,Math.round(rect.height*dpr));
+    if(overlay.width!==cw||overlay.height!==ch){overlay.width=cw;overlay.height=ch;}
+    const ctx=overlay.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,rect.width,rect.height);
+    const st=$('sdsLiveStatus');
+    if(!state.liveCorners || !state.liveSourceSize){
+      if(st){st.textContent='ĐANG TÌM 4 GÓC TỜ GIẤY…';st.classList.remove('ok');st.classList.add('search');}
+      return;
+    }
+    const vw=state.liveSourceSize.w,vh=state.liveSourceSize.h,fit=Math.min(rect.width/vw,rect.height/vh),dx=(rect.width-vw*fit)/2,dy=(rect.height-vh*fit)/2;
+    const pts=state.liveCorners.map(p=>({x:dx+p.x*fit,y:dy+p.y*fit}));
+    const stable=state.liveStableCount>=2 && state.liveConfidence>=.50;
+    ctx.save();ctx.lineJoin='round';ctx.lineCap='round';ctx.lineWidth=stable?4:3;ctx.strokeStyle=stable?'#32f28a':'#45d7ff';ctx.fillStyle=stable?'rgba(42,225,125,.10)':'rgba(32,190,255,.08)';ctx.shadowColor='rgba(0,0,0,.5)';ctx.shadowBlur=4;
+    ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);for(let i=1;i<4;i++)ctx.lineTo(pts[i].x,pts[i].y);ctx.closePath();ctx.fill();ctx.stroke();
+    ctx.shadowBlur=0;for(const p of pts){ctx.beginPath();ctx.arc(p.x,p.y,stable?7:6,0,Math.PI*2);ctx.fillStyle=stable?'#32f28a':'#45d7ff';ctx.fill();ctx.lineWidth=2;ctx.strokeStyle='#fff';ctx.stroke();}
+    ctx.restore();
+    if(st){st.textContent=stable?'✓ ĐÃ NHẬN 4 GÓC · CÓ THỂ CHỤP':'GIỮ MÁY ỔN ĐỊNH · ĐANG BÁM MÉP GIẤY';st.classList.toggle('ok',stable);st.classList.toggle('search',!stable);}
   }
 
   function qualityMessage(canvas,confidence){
@@ -531,7 +642,8 @@
     $('sdsRetake').addEventListener('click',retake);$('sdsAutoEdge').addEventListener('click',autoEdge);$('sdsRotateCapture').addEventListener('click',rotateCapture);$('sdsSavePage').addEventListener('click',savePage);
     const cc=$('sdsCropCanvas');cc.addEventListener('pointerdown',onCropDown);cc.addEventListener('pointermove',onCropMove);cc.addEventListener('pointerup',onCropUp);cc.addEventListener('pointercancel',onCropUp);
     $('sdsFilterTools').addEventListener('click',e=>{const b=e.target.closest('[data-filter]');if(b)setFilter(b.dataset.filter);});$('sdsRotatePage').addEventListener('click',rotatePage);$('sdsMoveLeft').addEventListener('click',()=>movePage(-1));$('sdsMoveRight').addEventListener('click',()=>movePage(1));$('sdsDeletePage').addEventListener('click',deletePage);$('sdsAddPage').addEventListener('click',addPage);$('sdsAttach').addEventListener('click',exportFiles);
-    document.addEventListener('visibilitychange',()=>{if(document.hidden&&state.root?.classList.contains('sds-open')&&state.mode==='camera'){try{$('sdsVideo').pause();}catch(_){ }}else if(!document.hidden&&state.mode==='camera'&&state.stream){$('sdsVideo').play().catch(()=>{});}});
+    document.addEventListener('visibilitychange',()=>{if(document.hidden&&state.root?.classList.contains('sds-open')&&state.mode==='camera'){stopLiveDetection();try{$('sdsVideo').pause();}catch(_){ }}else if(!document.hidden&&state.mode==='camera'&&state.stream){$('sdsVideo').play().then(()=>startLiveDetection()).catch(()=>{});}});
+    window.addEventListener('resize',()=>{if(state.mode==='camera')drawLiveOverlay($('sdsVideo'));},{passive:true});
   }
 
   function installSourceButton(){

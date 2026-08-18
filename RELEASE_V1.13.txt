@@ -1,0 +1,10 @@
+E-REPORT V1.13 AI — BUILD 01 (18/08/2026)
+Build: V1.13-20260818-01
+
+FIREBASE USAGE — KHÔNG CÒN ANON
+- Chỉ đếm READ/WRITE/DELETE sau khi đã xác định được tài khoản hoặc vai trò hiện tại.
+- Bỏ fallback username "anon".
+- Pending usage cũ chưa gắn actor bị loại bỏ để không quy nhầm cho tài khoản đăng nhập sau.
+- RTDB usage device key gắn actor + device để tránh trộn thống kê khi một thiết bị đổi tài khoản.
+- Màn AD lọc record anon cũ và chỉ hiện tài khoản có phát sinh trong ngày.
+- Đồng bộ APP_BUILD_VERSION, version.json, cache-bust module và Service Worker sang V1.13-20260818-01.

@@ -1,0 +1,6 @@
+HDSD V1.16 — AD CONTROL CENTER / TIẾN ĐỘ
+
+- TIẾN ĐỘ chỉ hiển thị chuyến được tạo trong đúng ngày hiện tại.
+- Các chuyến cũ từ ngày trước không đưa vào danh sách theo dõi của ngày mới.
+- Khi đã nhập mốc PUSHBACK, chuyến được xem là đã kết thúc theo dõi turnaround và tự rời khỏi danh sách TIẾN ĐỘ.
+- Nếu snapshot cũ từ phiên bản trước không có thông tin ngày tạo chuyến, V1.16 không hiển thị snapshot đó để tránh kéo dữ liệu cũ vào ngày hiện tại.

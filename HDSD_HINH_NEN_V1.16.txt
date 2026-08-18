@@ -1,0 +1,11 @@
+HDSD V1.16 — HÌNH NỀN SAU ĐĂNG NHẬP
+
+Ảnh nền được chọn theo hồ sơ Phòng/Nhóm/Vai trò của tài khoản:
+- ĐH → ĐH.png
+- CBTT → CBTT.png
+- KTTB → KTTB.png
+- PVHK → PVHK.png
+- PVHLNG → PVHLNG.png
+- Lost & Found → LNF.png
+
+Ứng dụng giữ nguyên đúng tên file trên. Nếu hồ sơ không khớp nhóm có ảnh riêng hoặc file bị thiếu, màn chờ dùng login-bg.jpg để không làm lỗi giao diện.

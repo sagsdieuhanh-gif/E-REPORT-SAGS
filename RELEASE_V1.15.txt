@@ -1,0 +1,12 @@
+E-REPORT V1.15 AI — BUILD 01 (18/08/2026)
+Build: V1.15-20260818-01
+
+THÊM HÌNH NỀN RIÊNG CBTT
+- Tích hợp file CBTT.png do người dùng cung cấp vào gói ứng dụng.
+- Nhóm/vai trò CBTT – Cân bằng trọng tải tự dùng CBTT.png ở màn chờ sau đăng nhập.
+- Chọn nền theo nghiệp vụ: groupCode -> role/roleCode -> unit; không phụ thuộc chức danh cá nhân.
+- Giữ các mapping đã có: PVHK -> PVHK.png; LNF/LOSTFOUND -> LNF.png; PVHLNG/PVHLSD -> PVHLNG.png.
+- Bổ sung CBTT.png vào Service Worker App Shell để PWA tải/cập nhật ảnh cùng build mới.
+- Đồng bộ version.json, APP_BUILD_VERSION, cache-bust và Service Worker sang V1.15-20260818-01.
+
+Không thay đổi quyền nghiệp vụ, FINAL/CROSSCHECK, CAMSCANER hay Firebase Usage.
