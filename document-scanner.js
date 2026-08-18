@@ -1,8 +1,8 @@
-/* E-REPORT/SAGS · In-app Document Scanner · V1.19 · WORKER LIVE 4-CORNER DETECTION */
+/* E-REPORT/SAGS · In-app Document Scanner · V1.20 · MANUAL CROP + PDF SHARE */
 (() => {
   'use strict';
 
-  const BUILD = 'V1.19-20260818-01';
+  const BUILD = 'V1.20-20260818-02';
   if (window.SAGSDocumentScanner && window.SAGSDocumentScanner.build === BUILD) return;
 
   const MAX_PAGES = 20;
@@ -11,10 +11,8 @@
   const PREVIEW_DIM = 1200;
   const THUMB_DIM = 180;
   const DEFAULT_FILTER = 'clear';
-  const LIVE_ANALYSIS_DIM = 240;
-  const LIVE_SEARCH_MS = 500;
-  const LIVE_STABLE_MS = 680;
-  const LIVE_MISS_HOLD = 4;
+  const MAX_PDF_DIM = 1800;
+  const PDF_SOFT_TARGET_BYTES = 12 * 1024 * 1024;
 
   const state = {
     root: null,
@@ -32,25 +30,9 @@
     opening: false,
     busy: false,
     qualityText: '',
-    liveTimer: 0,
-    liveBusy: false,
-    liveCorners: null,
-    liveDisplayCorners: null,
-    liveConfidence: 0,
-    liveStableCount: 0,
-    liveLastCorners: null,
-    liveSourceSize: null,
-    livePendingCorners: null,
-    livePendingHits: 0,
-    liveMissCount: 0,
-    liveAnimFrame: 0,
-    liveAnalysisCanvas: null,
-    liveAnalysisCtx: null,
-    liveWorker: null,
-    liveWorkerFailed: false,
-    liveWorkerSentAt: 0,
-    liveFrameSeq: 0,
-    liveGeneration: 0,
+    pdfFile: null,
+    pdfBuiltForRevision: -1,
+    documentRevision: 0,
   };
 
   const CSS = `
@@ -64,9 +46,6 @@
   .sds-btn:disabled{opacity:.42}.sds-stage{position:relative;flex:1;min-height:0;overflow:hidden;background:#000;display:flex;align-items:center;justify-content:center}
   .sds-view{position:absolute;inset:0;display:none;align-items:center;justify-content:center}.sds-view.active{display:flex}
   #sdsVideo{width:100%;height:100%;object-fit:contain;background:#000}
-  #sdsLiveOverlay{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
-  .sds-live-status{position:absolute;z-index:3;left:50%;bottom:12px;transform:translateX(-50%);max-width:92%;padding:7px 11px;border-radius:18px;background:rgba(0,0,0,.62);font-size:12px;font-weight:800;text-align:center;pointer-events:none;white-space:nowrap}
-  .sds-live-status.ok{background:rgba(10,121,71,.82)}.sds-live-status.search{background:rgba(0,0,0,.62)}
   .sds-guide{position:absolute;inset:7% 5%;border:2px solid rgba(94,219,255,.75);border-radius:10px;box-shadow:0 0 0 999px rgba(0,0,0,.10);pointer-events:none}
   .sds-guide:before,.sds-guide:after{content:"";position:absolute;inset:20% 0;border-top:1px dashed rgba(255,255,255,.2);border-bottom:1px dashed rgba(255,255,255,.2)}
   .sds-camera-tip{position:absolute;top:12px;left:50%;transform:translateX(-50%);max-width:90%;padding:7px 10px;border-radius:18px;background:rgba(0,0,0,.58);font-size:12px;text-align:center;pointer-events:none}
@@ -78,14 +57,14 @@
   .sds-crop-wrap,.sds-review-wrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:8px}
   .sds-crop-help{position:absolute;top:10px;left:10px;right:10px;text-align:center;font-size:12px;background:rgba(0,0,0,.58);padding:7px;border-radius:10px;pointer-events:none}
   .sds-row{display:flex;gap:7px;overflow-x:auto;padding-bottom:2px}.sds-row .sds-btn{flex:0 0 auto}
-  .sds-crop-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.sds-crop-actions .sds-btn{padding:7px 4px;font-size:12px}
+  .sds-crop-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.sds-crop-actions .sds-btn{padding:7px 4px;font-size:12px}
   .sds-review-bottom{display:grid;gap:8px}.sds-thumbs{display:flex;gap:7px;overflow-x:auto;min-height:82px;padding:2px}.sds-thumb{position:relative;flex:0 0 66px;height:78px;border-radius:8px;border:2px solid transparent;background:#1b2837;overflow:hidden;padding:0}.sds-thumb.active{border-color:#44a5ff}.sds-thumb canvas{width:100%;height:100%;object-fit:contain;display:block}.sds-thumb span{position:absolute;left:3px;top:3px;background:rgba(0,0,0,.7);border-radius:9px;padding:2px 5px;font-size:10px;color:#fff}
   .sds-tools{display:flex;gap:6px;overflow-x:auto}.sds-tools .sds-btn{min-height:37px;padding:6px 9px;font-size:12px;flex:0 0 auto}.sds-tools .sds-btn.active{outline:2px solid #65b7ff;background:#155b8f;color:#fff}
   .sds-final{display:grid;grid-template-columns:1fr 1.25fr;gap:8px}.sds-final .sds-btn{min-height:46px}
   .sds-busy{position:absolute;inset:0;z-index:10;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.68);text-align:center;padding:24px}.sds-busy.show{display:flex}.sds-busy-box{background:#13263a;border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:18px;max-width:300px;font-weight:800}.sds-spinner{width:34px;height:34px;border:4px solid rgba(255,255,255,.28);border-top-color:#fff;border-radius:50%;animation:sdsSpin .8s linear infinite;margin:0 auto 10px}@keyframes sdsSpin{to{transform:rotate(360deg)}}
   .sds-msg{font-size:12px;line-height:1.35;opacity:.85;text-align:center;min-height:17px;margin-top:5px}.sds-toast{position:absolute;z-index:20;left:50%;bottom:110px;transform:translateX(-50%);background:rgba(10,24,38,.94);color:#fff;border:1px solid rgba(255,255,255,.16);border-radius:12px;padding:9px 12px;font-size:12px;max-width:88%;text-align:center;display:none}.sds-toast.show{display:block}
   .sds-help{position:fixed;inset:0;z-index:30080;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.72);padding:14px;touch-action:manipulation}.sds-help.show{display:flex}.sds-help-box{width:min(94vw,520px);max-height:86vh;overflow:auto;background:#fff;color:#13263a;border-radius:14px;padding:16px;box-shadow:0 16px 44px rgba(0,0,0,.4)}.sds-help-box h3{margin:0 0 10px;color:#0b5cab}.sds-help-box ol{padding-left:22px;margin:8px 0}.sds-help-box li{margin:7px 0;line-height:1.38}.sds-help-note{padding:9px 10px;border-radius:9px;background:#eef7ff;font-size:12px;line-height:1.4;margin:10px 0}
-  @media(max-width:430px){.sds-top{grid-template-columns:64px 1fr 64px}.sds-btn{font-size:12px;padding:7px 7px}.sds-camera-actions{grid-template-columns:1fr 76px 1fr}.sds-shutter{width:66px;height:66px}.sds-crop-actions{grid-template-columns:repeat(4,minmax(0,1fr))}}
+  @media(max-width:430px){.sds-top{grid-template-columns:64px 1fr 64px}.sds-btn{font-size:12px;padding:7px 7px}.sds-camera-actions{grid-template-columns:1fr 76px 1fr}.sds-shutter{width:66px;height:66px}.sds-crop-actions{grid-template-columns:repeat(3,minmax(0,1fr))}}
   @media(orientation:landscape) and (max-height:560px){.sds-top{padding-top:max(5px,env(safe-area-inset-top));padding-bottom:5px}.sds-bottom{padding-top:5px}.sds-shutter{width:56px;height:56px}.sds-camera-actions{grid-template-columns:1fr 66px 1fr}.sds-thumbs{min-height:62px}.sds-thumb{height:58px;width:52px;flex-basis:52px}}
   `;
 
@@ -128,10 +107,8 @@
       <div class="sds-stage">
         <div class="sds-view active" id="sdsCameraView">
           <video id="sdsVideo" autoplay muted playsinline></video>
-          <canvas id="sdsLiveOverlay" aria-hidden="true"></canvas>
           <div class="sds-guide"></div>
-          <div class="sds-camera-tip" id="sdsCameraTip">Đặt trọn tờ giấy trong khung · giữ máy ổn định để khóa 4 góc</div>
-          <div class="sds-live-status search" id="sdsLiveStatus">ĐANG TÌM 4 GÓC TỜ GIẤY…</div>
+          <div class="sds-camera-tip" id="sdsCameraTip">Đặt trọn tờ giấy trong khung · bấm chụp · chỉnh 4 góc bằng tay sau khi chụp</div>
         </div>
         <div class="sds-view" id="sdsCropView"><div class="sds-crop-wrap"><canvas id="sdsCropCanvas"></canvas><div class="sds-crop-help">Kéo 4 chấm xanh vào đúng 4 góc tờ giấy</div></div></div>
         <div class="sds-view" id="sdsReviewView"><div class="sds-review-wrap"><canvas id="sdsReviewCanvas"></canvas></div></div>
@@ -142,13 +119,14 @@
             <h3>HDSD · CAMSCANER</h3>
             <ol>
               <li>Bấm <b>📄 CAMSCANER</b> trên thanh chức năng của đơn vị hoặc mở từ vùng Đính kèm.</li>
-              <li>Đặt trọn tờ giấy trong khung. Khi camera đang mở, hệ thống <b>tự nhận diện 4 góc trực tiếp trên hình live</b> và vẽ viền xanh quanh tờ giấy.</li>
-              <li>Khi hiện <b>ĐÃ KHÓA 4 GÓC · CÓ THỂ CHỤP</b>, bấm nút tròn. Nhận diện live chạy nền để ưu tiên camera mượt; sau khi chụp vẫn có thể kéo 4 chấm hoặc dùng <b>TỰ NHẬN MÉP</b>.</li>
-              <li>Bấm <b>LƯU TRANG</b>. Hệ thống cắt phối cảnh để làm thẳng tài liệu.</li>
+              <li>Đặt trọn tờ giấy trong khung rồi bấm nút tròn. Camera <b>không chạy tự nhận diện mép</b> để ưu tiên hình live mượt.</li>
+              <li>Sau khi chụp, kéo <b>4 chấm xanh</b> bằng tay vào đúng 4 góc tờ giấy; có thể XOAY 90° nếu cần.</li>
+              <li>Bấm <b>LƯU TRANG</b>. Hệ thống cắt phối cảnh theo đúng 4 góc đã chỉnh.</li>
               <li>Ở màn kiểm tra, có thể <b>XOAY</b>, đổi thứ tự bằng <b>← TRANG / TRANG →</b>, <b>XÓA</b> và chọn <b>GỐC / RÕ / XÁM / ĐEN TRẮNG</b>.</li>
-              <li>Bấm <b>ĐÍNH KÈM</b> để đưa toàn bộ trang đã quét vào vùng ảnh của biểu mẫu hiện tại.</li>
+              <li>Bấm <b>GHÉP PDF &amp; CHIA SẺ</b> để tạo 01 file PDF nhiều trang. Khi điện thoại hỗ trợ Share Sheet, có thể chọn Zalo hoặc ứng dụng chia sẻ khác.</li>
+              <li>Nút <b>ĐÍNH KÈM</b> vẫn giữ để đưa các trang scan vào vùng ảnh của biểu mẫu E‑Report/SAGS khi cần.</li>
             </ol>
-            <div class="sds-help-note"><b>Lưu ý:</b> cho phép Camera khi trình duyệt hỏi quyền; nên giữ điện thoại song song với mặt giấy và đủ sáng để nhận mép chính xác hơn.</div>
+            <div class="sds-help-note"><b>Lưu ý:</b> cho phép Camera khi trình duyệt hỏi quyền. Không còn xử lý nhận góc tự động; 4 góc được chỉnh hoàn toàn thủ công sau khi chụp để giảm lag tối đa.</div>
             <button class="sds-btn primary" id="sdsHelpClose" style="width:100%">ĐÃ HIỂU</button>
           </div>
         </div>
@@ -165,7 +143,6 @@
       <div class="sds-bottom" id="sdsCropBottom" style="display:none">
         <div class="sds-crop-actions">
           <button class="sds-btn ghost" id="sdsRetake">CHỤP LẠI</button>
-          <button class="sds-btn ghost" id="sdsAutoEdge">TỰ NHẬN MÉP</button>
           <button class="sds-btn ghost" id="sdsRotateCapture">XOAY 90°</button>
           <button class="sds-btn good" id="sdsSavePage">LƯU TRANG</button>
         </div>
@@ -183,8 +160,8 @@
           <button class="sds-btn ghost" id="sdsMoveRight">TRANG →</button>
           <button class="sds-btn danger" id="sdsDeletePage">XÓA</button>
         </div>
-        <div class="sds-final"><button class="sds-btn ghost" id="sdsAddPage">+ QUÉT THÊM</button><button class="sds-btn good" id="sdsAttach">ĐÍNH KÈM <span id="sdsAttachCount">0</span> TRANG</button></div>
-        <div class="sds-msg" id="sdsReviewMsg">Có thể xoay, đổi bộ lọc hoặc sắp xếp từng trang trước khi đính kèm.</div>
+        <div class="sds-final"><button class="sds-btn ghost" id="sdsAddPage">+ QUÉT THÊM</button><button class="sds-btn good" id="sdsAttach">ĐÍNH KÈM <span id="sdsAttachCount">0</span> TRANG</button><button class="sds-btn primary" id="sdsSharePdf" style="grid-column:1/-1">📤 GHÉP PDF &amp; CHIA SẺ</button></div>
+        <div class="sds-msg" id="sdsReviewMsg">Chỉnh trang xong có thể ghép thành 01 PDF để chia sẻ nhanh qua Share Sheet (ví dụ Zalo).</div>
       </div>`;
     document.body.appendChild(root);
     state.root=root;
@@ -218,7 +195,6 @@
     $('sdsReviewBottom').style.display=mode==='review'?'grid':'none';
     $('sdsTitle').textContent=mode==='crop'?'CẮT TÀI LIỆU':mode==='review'?'KIỂM TRA TÀI LIỆU':'QUÉT TÀI LIỆU';
     $('sdsSubtitle').textContent=mode==='review'?`${state.pages.length} trang đã quét`:mode==='crop'?'Chỉnh 4 góc trước khi lưu':`Camera tài liệu · ${BUILD}`;
-    if(mode==='camera'&&state.stream)startLiveDetection();else stopLiveDetection();
     updateCounts();
   }
 
@@ -229,6 +205,7 @@
     if($('sdsPageCount')) $('sdsPageCount').textContent=`${n}/${MAX_PAGES} trang`;
     if($('sdsDone')) $('sdsDone').disabled=n===0;
     if($('sdsAttach')) $('sdsAttach').disabled=n===0;
+    if($('sdsSharePdf')) $('sdsSharePdf').disabled=n===0;
   }
 
   async function open(){
@@ -256,7 +233,7 @@
       if(!ok)return;
     }
     stopCamera();
-    state.pages.length=0;state.captureCanvas=null;state.corners=null;state.selected=0;
+    state.pages.length=0;state.captureCanvas=null;state.corners=null;state.selected=0;state.pdfFile=null;state.pdfBuiltForRevision=-1;
     state.root?.classList.remove('sds-open');state.root?.setAttribute('aria-hidden','true');
     document.documentElement.style.overflow='';document.body.style.overflow='';
     setMode('camera');
@@ -276,15 +253,10 @@
       const idx=state.devices.findIndex(d=>d.deviceId===current);if(idx>=0)state.deviceIndex=idx;
     }catch(_){ state.devices=[]; }
     updateCameraButtons();
-    resetLiveDetection();
-    startLiveDetection();
-    if($('sdsCameraMsg')) $('sdsCameraMsg').textContent='Camera preview chạy độc lập; nhận mép được xử lý nền để giảm lag. Khi viền xanh ổn định thì có thể chụp.';
+    if($('sdsCameraMsg')) $('sdsCameraMsg').textContent='Camera chỉ dùng để chụp, không chạy nhận diện góc. Sau khi chụp hãy kéo 4 góc bằng tay.';
   }
 
   function stopCamera(){
-    stopLiveDetection();
-    resetLiveDetection();
-    destroyLiveWorker();
     try{state.stream?.getTracks?.().forEach(t=>t.stop());}catch(_){ }
     state.stream=null;state.track=null;state.torch=false;
     const v=$('sdsVideo');if(v)v.srcObject=null;
@@ -317,26 +289,16 @@
     if(state.busy || state.pages.length>=MAX_PAGES)return;
     const v=$('sdsVideo');
     if(!v || !v.videoWidth || !v.videoHeight){toast('Camera chưa sẵn sàng.');return;}
-    setBusy(true,'Đang chụp và tìm mép giấy…');
-    await sleep(30);
+    setBusy(true,'Đang chụp ảnh…');
+    await sleep(20);
     try{
       const scale=Math.min(1,MAX_CAPTURE_DIM/Math.max(v.videoWidth,v.videoHeight));
       const c=makeCanvas(v.videoWidth*scale,v.videoHeight*scale);
-      const ctx=c.getContext('2d',{alpha:false,willReadFrequently:true});
+      const ctx=c.getContext('2d',{alpha:false});
       ctx.drawImage(v,0,0,c.width,c.height);
       state.captureCanvas=c;
-      let detected;
-      if(state.liveCorners && state.liveSourceSize && state.liveConfidence>=.42){
-        const sx=c.width/state.liveSourceSize.w, sy=c.height/state.liveSourceSize.h;
-        detected={
-          corners:state.liveCorners.map(p=>({x:clamp(p.x*sx,0,c.width-1),y:clamp(p.y*sy,0,c.height-1)})),
-          confidence:state.liveConfidence
-        };
-      }else{
-        detected=detectDocumentCorners(c);
-      }
-      state.corners=detected.corners;
-      state.qualityText=qualityMessage(c,detected.confidence);
+      state.corners=defaultCorners(c.width,c.height);
+      state.qualityText=qualityMessage(c);
       $('sdsCropMsg').textContent=state.qualityText;
       try{v.pause();}catch(_){ }
       setMode('crop');
@@ -346,195 +308,7 @@
   }
 
 
-  function clearLiveOverlay(){
-    const c=$('sdsLiveOverlay');if(!c)return;
-    const ctx=c.getContext('2d');ctx.clearRect(0,0,c.width,c.height);
-  }
-
-  function resetLiveDetection(){
-    state.liveGeneration=(state.liveGeneration+1)>>>0;
-    state.liveCorners=null;state.liveDisplayCorners=null;state.liveConfidence=0;state.liveStableCount=0;state.liveLastCorners=null;state.liveSourceSize=null;
-    state.livePendingCorners=null;state.livePendingHits=0;state.liveMissCount=0;state.liveBusy=false;state.liveWorkerSentAt=0;
-    if(state.liveAnimFrame){cancelAnimationFrame(state.liveAnimFrame);state.liveAnimFrame=0;}
-    clearLiveOverlay();
-    const st=$('sdsLiveStatus');if(st){st.textContent='ĐANG TÌM 4 GÓC TỜ GIẤY…';st.classList.remove('ok');st.classList.add('search');}
-  }
-
-  function destroyLiveWorker(){
-    if(state.liveWorker){try{state.liveWorker.terminate();}catch(_){ }state.liveWorker=null;}
-    state.liveWorkerFailed=false;state.liveBusy=false;state.liveWorkerSentAt=0;
-  }
-
-  function ensureLiveWorker(){
-    if(state.liveWorker)return true;
-    if(state.liveWorkerFailed || typeof Worker==='undefined')return false;
-    try{
-      const w=new Worker(`./scanner-edge-worker.js?v=${encodeURIComponent(BUILD)}`);
-      w.onmessage=(event)=>handleLiveWorkerResult(event.data||{});
-      w.onerror=(event)=>{
-        console.warn('[Scanner live worker]',event?.message||event);
-        state.liveWorkerFailed=true;state.liveBusy=false;
-        try{w.terminate();}catch(_){ }
-        if(state.liveWorker===w)state.liveWorker=null;
-        setLiveCompatibilityMode();
-      };
-      state.liveWorker=w;
-      return true;
-    }catch(e){
-      console.warn('[Scanner live worker init]',e);
-      state.liveWorkerFailed=true;
-      setLiveCompatibilityMode();
-      return false;
-    }
-  }
-
-  function setLiveCompatibilityMode(){
-    const st=$('sdsLiveStatus');
-    if(st){st.textContent='CAMERA MƯỢT · TỰ NHẬN MÉP SAU KHI CHỤP';st.classList.remove('ok');st.classList.add('search');}
-    if($('sdsCameraMsg'))$('sdsCameraMsg').textContent='Thiết bị không chạy được xử lý nền. Camera được ưu tiên mượt; mép giấy sẽ tự nhận ngay sau khi chụp.';
-  }
-
-  function stopLiveDetection(){
-    if(state.liveTimer){clearTimeout(state.liveTimer);state.liveTimer=0;}
-    if(state.liveAnimFrame){cancelAnimationFrame(state.liveAnimFrame);state.liveAnimFrame=0;}
-    state.liveBusy=false;state.liveWorkerSentAt=0;
-  }
-
-  function startLiveDetection(){
-    stopLiveDetection();
-    if(!ensureLiveWorker()){setLiveCompatibilityMode();return;}
-    const tick=()=>{
-      if(!state.root?.classList.contains('sds-open') || state.mode!=='camera' || !state.stream){state.liveTimer=setTimeout(tick,600);return;}
-      if(document.hidden){state.liveTimer=setTimeout(tick,750);return;}
-      const v=$('sdsVideo');
-      if(!v || v.readyState<2 || !v.videoWidth || !v.videoHeight){state.liveTimer=setTimeout(tick,280);return;}
-      if(state.liveBusy){
-        // Worker treo quá lâu thì bỏ frame đó và dựng worker mới, không để camera bị chờ.
-        if(state.liveWorkerSentAt && performance.now()-state.liveWorkerSentAt>1800){destroyLiveWorker();ensureLiveWorker();state.liveBusy=false;}
-        state.liveTimer=setTimeout(tick,180);return;
-      }
-      try{sendLiveFrameToWorker(v);}catch(e){console.warn('[Scanner live sample]',e);state.liveBusy=false;}
-      const locked=state.liveStableCount>=2 && state.liveConfidence>=.50;
-      state.liveTimer=setTimeout(tick,locked?LIVE_STABLE_MS:LIVE_SEARCH_MS);
-    };
-    state.liveTimer=setTimeout(tick,180);
-  }
-
-  function normalizedCornerMotion(a,b,w,h){
-    if(!a||!b||a.length!==4||b.length!==4)return 1;
-    let sum=0;for(let i=0;i<4;i++)sum+=Math.hypot((a[i].x-b[i].x)/Math.max(1,w),(a[i].y-b[i].y)/Math.max(1,h));
-    return sum/4;
-  }
-
-  function smoothLiveCorners(next,w,h){
-    const prev=state.liveCorners;
-    if(!prev || prev.length!==4)return next.map(p=>({x:p.x,y:p.y}));
-    return next.map((p,i)=>{
-      const q=prev[i],m=Math.hypot((p.x-q.x)/Math.max(1,w),(p.y-q.y)/Math.max(1,h));
-      if(m<.003)return {x:q.x,y:q.y};
-      const a=m<.012?.24:m<.03?.34:.48;
-      return {x:q.x*(1-a)+p.x*a,y:q.y*(1-a)+p.y*a};
-    });
-  }
-
-  function ensureLiveSampleCanvas(video){
-    const scale=Math.min(1,LIVE_ANALYSIS_DIM/Math.max(video.videoWidth,video.videoHeight));
-    const w=Math.max(96,Math.round(video.videoWidth*scale)),h=Math.max(96,Math.round(video.videoHeight*scale));
-    let c=state.liveAnalysisCanvas;
-    if(!c){c=state.liveAnalysisCanvas=makeCanvas(w,h);state.liveAnalysisCtx=c.getContext('2d',{alpha:false,willReadFrequently:true});}
-    if(c.width!==w||c.height!==h){c.width=w;c.height=h;state.liveAnalysisCtx=c.getContext('2d',{alpha:false,willReadFrequently:true});}
-    return {canvas:c,ctx:state.liveAnalysisCtx,w,h};
-  }
-
-  function sendLiveFrameToWorker(video){
-    if(!state.liveWorker||state.liveBusy)return;
-    const f=ensureLiveSampleCanvas(video);
-    // Main thread chỉ thu ảnh rất nhỏ; toàn bộ Otsu + connected-component chạy trong Worker.
-    f.ctx.drawImage(video,0,0,f.w,f.h);
-    const image=f.ctx.getImageData(0,0,f.w,f.h);
-    const seq=++state.liveFrameSeq,generation=state.liveGeneration;
-    state.liveBusy=true;state.liveWorkerSentAt=performance.now();
-    state.liveWorker.postMessage({type:'detect',seq,generation,width:f.w,height:f.h,sourceW:video.videoWidth,sourceH:video.videoHeight,buffer:image.data.buffer},[image.data.buffer]);
-  }
-
-  function animateLiveOverlayTo(video,target){
-    if(!target||target.length!==4){drawLiveOverlay(video);return;}
-    if(state.liveAnimFrame){cancelAnimationFrame(state.liveAnimFrame);state.liveAnimFrame=0;}
-    if(!state.liveDisplayCorners||state.liveDisplayCorners.length!==4){
-      state.liveDisplayCorners=target.map(p=>({x:p.x,y:p.y}));drawLiveOverlay(video);return;
-    }
-    const from=state.liveDisplayCorners.map(p=>({x:p.x,y:p.y})),to=target.map(p=>({x:p.x,y:p.y}));
-    const motion=normalizedCornerMotion(from,to,state.liveSourceSize?.w||video.videoWidth,state.liveSourceSize?.h||video.videoHeight);
-    if(motion<.0015){state.liveDisplayCorners=to;drawLiveOverlay(video);return;}
-    const started=performance.now(),duration=330;
-    const step=(now)=>{
-      if(state.mode!=='camera'||!state.stream){state.liveAnimFrame=0;return;}
-      const t=clamp((now-started)/duration,0,1),e=t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
-      state.liveDisplayCorners=from.map((p,i)=>({x:p.x+(to[i].x-p.x)*e,y:p.y+(to[i].y-p.y)*e}));
-      drawLiveOverlay(video);
-      if(t<1)state.liveAnimFrame=requestAnimationFrame(step);else state.liveAnimFrame=0;
-    };
-    state.liveAnimFrame=requestAnimationFrame(step);
-  }
-
-  function handleLiveWorkerResult(r){
-    state.liveBusy=false;state.liveWorkerSentAt=0;
-    if(r.generation!==state.liveGeneration || state.mode!=='camera' || !state.stream)return;
-    const video=$('sdsVideo');if(!video)return;
-    const confident=!!r.found && Array.isArray(r.corners) && r.corners.length===4 && Number(r.confidence)>=.43;
-    if(confident){
-      let mapped=r.corners.map(p=>({x:Number(p.x),y:Number(p.y)}));
-      const sourceW=Number(r.sourceW)||video.videoWidth,sourceH=Number(r.sourceH)||video.videoHeight;
-      state.liveMissCount=0;
-      const motion=normalizedCornerMotion(state.liveCorners,mapped,sourceW,sourceH);
-      let accept=!state.liveCorners || motion<=.055;
-      if(!accept){
-        const pendingMotion=normalizedCornerMotion(state.livePendingCorners,mapped,sourceW,sourceH);
-        if(state.livePendingCorners && pendingMotion<.025)state.livePendingHits++;
-        else{state.livePendingCorners=mapped.map(p=>({x:p.x,y:p.y}));state.livePendingHits=1;}
-        if(state.livePendingHits>=2){mapped=state.livePendingCorners.map(p=>({x:p.x,y:p.y}));accept=true;state.livePendingCorners=null;state.livePendingHits=0;}
-      }else{state.livePendingCorners=null;state.livePendingHits=0;}
-
-      if(accept){
-        const stableMotion=normalizedCornerMotion(state.liveLastCorners,mapped,sourceW,sourceH);
-        if(stableMotion<.013)state.liveStableCount=Math.min(10,state.liveStableCount+1);
-        else if(stableMotion>.035)state.liveStableCount=Math.max(0,state.liveStableCount-2);
-        else state.liveStableCount=Math.max(0,state.liveStableCount-1);
-        state.liveCorners=smoothLiveCorners(mapped,sourceW,sourceH);
-        state.liveLastCorners=mapped.map(p=>({x:p.x,y:p.y}));
-        state.liveConfidence=Number(r.confidence)||0;
-        state.liveSourceSize={w:sourceW,h:sourceH};
-        animateLiveOverlayTo(video,state.liveCorners);
-        return;
-      }
-      state.liveStableCount=Math.max(0,state.liveStableCount-1);drawLiveOverlay(video);return;
-    }
-    state.liveMissCount++;state.liveConfidence*=.96;state.liveStableCount=Math.max(0,state.liveStableCount-1);
-    if(state.liveMissCount>LIVE_MISS_HOLD){state.liveCorners=null;state.liveDisplayCorners=null;state.liveLastCorners=null;state.liveSourceSize=null;state.livePendingCorners=null;state.livePendingHits=0;}
-    drawLiveOverlay(video);
-  }
-
-  function drawLiveOverlay(video){
-    const overlay=$('sdsLiveOverlay'),view=$('sdsCameraView');if(!overlay||!view)return;
-    const rect=view.getBoundingClientRect(),dpr=Math.min(1.5,window.devicePixelRatio||1),cw=Math.max(1,Math.round(rect.width*dpr)),ch=Math.max(1,Math.round(rect.height*dpr));
-    if(overlay.width!==cw||overlay.height!==ch){overlay.width=cw;overlay.height=ch;}
-    const ctx=overlay.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,rect.width,rect.height);
-    const st=$('sdsLiveStatus'),shown=state.liveDisplayCorners||state.liveCorners;
-    if(!shown || !state.liveSourceSize){
-      if(st){st.textContent='ĐANG TÌM 4 GÓC TỜ GIẤY…';st.classList.remove('ok');st.classList.add('search');}
-      return;
-    }
-    const vw=state.liveSourceSize.w,vh=state.liveSourceSize.h,fit=Math.min(rect.width/vw,rect.height/vh),dx=(rect.width-vw*fit)/2,dy=(rect.height-vh*fit)/2;
-    const pts=shown.map(p=>({x:dx+p.x*fit,y:dy+p.y*fit}));
-    const stable=state.liveStableCount>=2 && state.liveConfidence>=.50;
-    ctx.save();ctx.lineJoin='round';ctx.lineCap='round';ctx.lineWidth=stable?3.4:2.7;ctx.strokeStyle=stable?'#32f28a':'#45d7ff';ctx.fillStyle=stable?'rgba(42,225,125,.09)':'rgba(32,190,255,.07)';
-    ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);for(let i=1;i<4;i++)ctx.lineTo(pts[i].x,pts[i].y);ctx.closePath();ctx.fill();ctx.stroke();
-    for(const p of pts){ctx.beginPath();ctx.arc(p.x,p.y,stable?6.3:5.4,0,Math.PI*2);ctx.fillStyle=stable?'#32f28a':'#45d7ff';ctx.fill();ctx.lineWidth=1.6;ctx.strokeStyle='#fff';ctx.stroke();}
-    ctx.restore();
-    if(st){st.textContent=stable?'✓ ĐÃ KHÓA 4 GÓC · CÓ THỂ CHỤP':'GIỮ MÁY ỔN ĐỊNH · ĐANG BÁM MÉP GIẤY';st.classList.toggle('ok',stable);st.classList.toggle('search',!stable);}
-  }
-
-  function qualityMessage(canvas,confidence){
+  function qualityMessage(canvas){
     try{
       const max=220,scale=Math.min(1,max/Math.max(canvas.width,canvas.height)),c=makeCanvas(canvas.width*scale,canvas.height*scale),x=c.getContext('2d',{willReadFrequently:true});x.drawImage(canvas,0,0,c.width,c.height);
       const d=x.getImageData(0,0,c.width,c.height).data;let white=0,dark=0,grad=0,count=0;
@@ -544,7 +318,7 @@
       if(g<5.0)return '⚠ Ảnh có thể hơi mờ. Nếu chữ khó đọc, hãy CHỤP LẠI.';
       if(w>.48)return '⚠ Ảnh khá chói/sáng. Tránh phản chiếu đèn lên giấy.';
       if(dk>.52)return '⚠ Ảnh khá tối. Có thể bật ĐÈN và chụp lại.';
-      return confidence>.66?'Đã tự nhận mép giấy. Kiểm tra 4 góc rồi LƯU TRANG.':'Mép giấy chưa chắc chắn. Kéo 4 chấm xanh vào đúng góc giấy.';
+      return 'Kéo 4 chấm xanh vào đúng 4 góc tờ giấy rồi bấm LƯU TRANG.';
     }catch(_){return 'Kiểm tra 4 góc rồi LƯU TRANG.';}
   }
 
@@ -559,60 +333,8 @@
     return thr;
   }
 
-  function quadArea(p){
-    let a=0;for(let i=0;i<4;i++){const q=p[(i+1)%4];a+=p[i].x*q.y-q.x*p[i].y;}return Math.abs(a)/2;
-  }
-
   function defaultCorners(w,h){
     const mx=w*.055,my=h*.055;return [{x:mx,y:my},{x:w-mx,y:my},{x:w-mx,y:h-my},{x:mx,y:h-my}];
-  }
-
-  function detectDocumentCorners(canvas,maxDim=360){
-    const max=maxDim,sc=Math.min(1,max/Math.max(canvas.width,canvas.height)),w=Math.max(80,Math.round(canvas.width*sc)),h=Math.max(80,Math.round(canvas.height*sc));
-    let c=canvas,ctx=null;
-    if(sc<.999){c=makeCanvas(w,h);ctx=c.getContext('2d',{willReadFrequently:true,alpha:false});ctx.drawImage(canvas,0,0,w,h);}
-    else{ctx=c.getContext('2d',{willReadFrequently:true,alpha:false});}
-    const rgba=ctx.getImageData(0,0,w,h).data,gray=new Uint8Array(w*h);
-    for(let i=0,j=0;i<rgba.length;i+=4,j++)gray[j]=Math.round(.299*rgba[i]+.587*rgba[i+1]+.114*rgba[i+2]);
-    const otsu=otsuThreshold(gray),thr=clamp(otsu+6,112,218),bin=new Uint8Array(w*h);
-    for(let i=0;i<gray.length;i++)bin[i]=gray[i]>=thr?1:0;
-    const seen=new Uint8Array(w*h),queue=new Int32Array(w*h);let best=null;
-    const cx=w/2,cy=h/2;
-    for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){
-      const start=y*w+x;if(!bin[start]||seen[start])continue;
-      let qh=0,qt=0;queue[qt++]=start;seen[start]=1;let n=0,sumX=0,sumY=0,touch=0;
-      let tl=null,tr=null,br=null,bl=null;
-      while(qh<qt){const idx=queue[qh++],yy=(idx/w)|0,xx=idx-yy*w;n++;sumX+=xx;sumY+=yy;
-        if(xx<=2||yy<=2||xx>=w-3||yy>=h-3)touch++;
-        const sp=xx+yy,sm=xx-yy;
-        if(!tl||sp<tl.v)tl={v:sp,x:xx,y:yy};if(!br||sp>br.v)br={v:sp,x:xx,y:yy};if(!tr||sm>tr.v)tr={v:sm,x:xx,y:yy};if(!bl||sm<bl.v)bl={v:sm,x:xx,y:yy};
-        let z=idx-1;if(z>0&&bin[z]&&!seen[z]){seen[z]=1;queue[qt++]=z;}
-        z=idx+1;if(z<bin.length&&bin[z]&&!seen[z]){seen[z]=1;queue[qt++]=z;}
-        z=idx-w;if(z>0&&bin[z]&&!seen[z]){seen[z]=1;queue[qt++]=z;}
-        z=idx+w;if(z<bin.length&&bin[z]&&!seen[z]){seen[z]=1;queue[qt++]=z;}
-      }
-      if(n<w*h*.025)continue;
-      const mx=sumX/n,my=sumY/n,centerDist=Math.hypot((mx-cx)/w,(my-cy)/h),touchRatio=touch/Math.max(1,n),areaRatio=n/(w*h);
-      let score=n*(1.25-clamp(centerDist,0,.7));if(touchRatio>.04)score*=.45;if(areaRatio>.92)score*=.25;
-      if(!best||score>best.score)best={score,n,tl,tr,br,bl,areaRatio,touchRatio};
-    }
-    if(!best)return {corners:defaultCorners(canvas.width,canvas.height),confidence:.15};
-    const small=[best.tl,best.tr,best.br,best.bl].map(z=>({x:z.x/sc,y:z.y/sc}));
-    const area=quadArea(small)/(canvas.width*canvas.height);
-    const lens=[dist(small[0],small[1]),dist(small[1],small[2]),dist(small[2],small[3]),dist(small[3],small[0])];
-    const valid=area>.12&&area<.98&&Math.min(...lens)>Math.min(canvas.width,canvas.height)*.18;
-    if(!valid)return {corners:defaultCorners(canvas.width,canvas.height),confidence:.2};
-    const conf=clamp(.42 + area*.45 - best.touchRatio*1.8, .25, .92);
-    return {corners:small.map(p=>({x:clamp(p.x,0,canvas.width-1),y:clamp(p.y,0,canvas.height-1)})),confidence:conf};
-  }
-
-  function autoEdge(){
-    if(!state.captureCanvas)return;
-    setBusy(true,'Đang nhận lại mép giấy…');
-    setTimeout(()=>{
-      try{const r=detectDocumentCorners(state.captureCanvas);state.corners=r.corners;$('sdsCropMsg').textContent=r.confidence>.6?'Đã nhận lại mép giấy. Kiểm tra 4 góc.':'Chưa nhận chắc chắn; hãy kéo 4 chấm vào đúng góc.';drawCropEditor();}
-      finally{setBusy(false);}
-    },30);
   }
 
   function drawCropEditor(){
@@ -683,13 +405,19 @@
     }dctx.putImageData(out,0,0);return dst;
   }
 
+  function invalidatePdf(){
+    state.documentRevision=(state.documentRevision+1)>>>0;
+    state.pdfFile=null;state.pdfBuiltForRevision=-1;
+    const b=$('sdsSharePdf');if(b)b.innerHTML='📤 GHÉP PDF &amp; CHIA SẺ';
+  }
+
   async function savePage(){
     if(state.busy||!state.captureCanvas||!state.corners)return;
     if(state.pages.length>=MAX_PAGES){toast(`Tối đa ${MAX_PAGES} trang.`);return;}
     setBusy(true,'Đang cắt và chỉnh phối cảnh…');await sleep(35);
     try{
       const cropped=perspectiveCrop(state.captureCanvas,state.corners);
-      state.pages.push({base:cropped,filter:DEFAULT_FILTER,rotation:0});state.captureCanvas=null;state.corners=null;updateCounts();
+      state.pages.push({base:cropped,filter:DEFAULT_FILTER,rotation:0});state.captureCanvas=null;state.corners=null;invalidatePdf();updateCounts();
       if(state.pages.length>=MAX_PAGES){setMode('review');state.selected=state.pages.length-1;renderReview();}
       else{setMode('camera');try{await $('sdsVideo').play();}catch(_){ }toast(`Đã lưu trang ${state.pages.length}. Chụp trang tiếp theo.`);}
     }catch(e){console.error('[Scanner perspective]',e);toast('Không cắt được trang này. Hãy chỉnh lại 4 góc.');}
@@ -730,11 +458,99 @@
     updateCounts();
   }
 
-  function setFilter(mode){if(!state.pages.length)return;state.pages[state.selected].filter=mode;renderReview();}
-  function rotatePage(){if(!state.pages.length)return;state.pages[state.selected].rotation=((state.pages[state.selected].rotation||0)+90)%360;renderReview();}
-  function movePage(dir){const i=state.selected,j=i+dir;if(j<0||j>=state.pages.length)return;[state.pages[i],state.pages[j]]=[state.pages[j],state.pages[i]];state.selected=j;renderReview();}
-  function deletePage(){if(!state.pages.length)return;state.pages.splice(state.selected,1);state.selected=Math.min(state.selected,state.pages.length-1);if(!state.pages.length){setMode('camera');$('sdsVideo').play().catch(()=>{});}else renderReview();updateCounts();}
+  function setFilter(mode){if(!state.pages.length)return;state.pages[state.selected].filter=mode;invalidatePdf();renderReview();}
+  function rotatePage(){if(!state.pages.length)return;state.pages[state.selected].rotation=((state.pages[state.selected].rotation||0)+90)%360;invalidatePdf();renderReview();}
+  function movePage(dir){const i=state.selected,j=i+dir;if(j<0||j>=state.pages.length)return;[state.pages[i],state.pages[j]]=[state.pages[j],state.pages[i]];state.selected=j;invalidatePdf();renderReview();}
+  function deletePage(){if(!state.pages.length)return;state.pages.splice(state.selected,1);state.selected=Math.min(state.selected,state.pages.length-1);invalidatePdf();if(!state.pages.length){setMode('camera');$('sdsVideo').play().catch(()=>{});}else renderReview();updateCounts();}
   function addPage(){if(state.pages.length>=MAX_PAGES){toast(`Đã đủ ${MAX_PAGES} trang.`);return;}setMode('camera');$('sdsVideo').play().catch(()=>{});}
+
+  function formatBytes(n){
+    n=Number(n)||0;if(n<1024)return `${n} B`;if(n<1024*1024)return `${(n/1024).toFixed(1)} KB`;return `${(n/1024/1024).toFixed(1)} MB`;
+  }
+
+  function asciiBytes(s){return new TextEncoder().encode(String(s));}
+  function concatBytes(parts){const total=parts.reduce((a,b)=>a+b.length,0),out=new Uint8Array(total);let o=0;for(const p of parts){out.set(p,o);o+=p.length;}return out;}
+  function pdfNum(v){return Number(v).toFixed(2).replace(/\.00$/,'').replace(/(\.\d)0$/,'$1');}
+
+  async function preparePdfImages(maxDim=MAX_PDF_DIM,quality=.80){
+    const out=[];
+    for(let i=0;i<state.pages.length;i++){
+      $('sdsBusyText').textContent=`Đang nén trang ${i+1}/${state.pages.length} cho PDF…`;
+      await sleep(8);
+      const c=filteredCanvas(state.pages[i],maxDim),blob=await canvasToBlob(c,'image/jpeg',quality);
+      out.push({width:c.width,height:c.height,bytes:new Uint8Array(await blob.arrayBuffer())});
+    }
+    return out;
+  }
+
+  function buildPdfBytes(images){
+    const enc=asciiBytes,parts=[],offsets=[0];let offset=0;
+    const push=(b)=>{parts.push(b);offset+=b.length;};
+    push(enc('%PDF-1.4\n% SAGS E-REPORT SCAN\n'));
+    const pageCount=images.length,objCount=2+pageCount*3;
+    const kids=[];for(let i=0;i<pageCount;i++)kids.push(`${3+i*3} 0 R`);
+    const objects=new Array(objCount+1);
+    objects[1]=()=>enc('<< /Type /Catalog /Pages 2 0 R >>');
+    objects[2]=()=>enc(`<< /Type /Pages /Count ${pageCount} /Kids [${kids.join(' ')}] >>`);
+    for(let i=0;i<pageCount;i++){
+      const img=images[i],pageObj=3+i*3,imgObj=pageObj+1,contentObj=pageObj+2;
+      const portrait=img.height>=img.width,pageW=portrait?595.28:841.89,pageH=portrait?841.89:595.28,margin=18;
+      const scale=Math.min((pageW-margin*2)/img.width,(pageH-margin*2)/img.height),dw=img.width*scale,dh=img.height*scale,x=(pageW-dw)/2,y=(pageH-dh)/2;
+      const content=`q\n${pdfNum(dw)} 0 0 ${pdfNum(dh)} ${pdfNum(x)} ${pdfNum(y)} cm\n/Im0 Do\nQ\n`;
+      const contentBytes=enc(content);
+      objects[pageObj]=()=>enc(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pdfNum(pageW)} ${pdfNum(pageH)}] /Resources << /XObject << /Im0 ${imgObj} 0 R >> >> /Contents ${contentObj} 0 R >>`);
+      objects[imgObj]=()=>concatBytes([enc(`<< /Type /XObject /Subtype /Image /Width ${img.width} /Height ${img.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${img.bytes.length} >>\nstream\n`),img.bytes,enc('\nendstream')]);
+      objects[contentObj]=()=>concatBytes([enc(`<< /Length ${contentBytes.length} >>\nstream\n`),contentBytes,enc('endstream')]);
+    }
+    for(let i=1;i<=objCount;i++){
+      offsets[i]=offset;push(enc(`${i} 0 obj\n`));push(objects[i]());push(enc('\nendobj\n'));
+    }
+    const xrefOffset=offset;let xref=`xref\n0 ${objCount+1}\n0000000000 65535 f \n`;
+    for(let i=1;i<=objCount;i++)xref+=`${String(offsets[i]).padStart(10,'0')} 00000 n \n`;
+    push(enc(xref));push(enc(`trailer\n<< /Size ${objCount+1} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF\n`));
+    return concatBytes(parts);
+  }
+
+  async function createPdfFile(){
+    if(!state.pages.length)throw new Error('Chưa có trang nào để tạo PDF.');
+    let images=await preparePdfImages(MAX_PDF_DIM,.80);
+    let total=images.reduce((a,x)=>a+x.bytes.length,0);
+    if(total>PDF_SOFT_TARGET_BYTES){
+      $('sdsBusyText').textContent='PDF khá lớn · đang nén thêm để chia sẻ nhanh…';await sleep(20);
+      images=await preparePdfImages(1500,.68);
+    }
+    const bytes=buildPdfBytes(images),stamp=new Date().toISOString().replace(/[-:TZ.]/g,'').slice(0,14);
+    return new File([bytes],`SAGS_SCAN_${stamp}.pdf`,{type:'application/pdf',lastModified:Date.now()});
+  }
+
+  function downloadPdfFile(file){
+    const url=URL.createObjectURL(file),a=document.createElement('a');a.href=url;a.download=file.name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);
+  }
+
+  async function sharePdf(){
+    if(state.busy||!state.pages.length)return;
+    let file=state.pdfFile;
+    if(!file || state.pdfBuiltForRevision!==state.documentRevision){
+      setBusy(true,`Đang ghép ${state.pages.length} trang thành PDF…`);await sleep(25);
+      try{
+        file=await createPdfFile();state.pdfFile=file;state.pdfBuiltForRevision=state.documentRevision;
+        const b=$('sdsSharePdf');if(b)b.innerHTML=`📤 CHIA SẺ PDF · ${formatBytes(file.size)}`;
+      }catch(e){console.error('[Scanner PDF]',e);toast('Không tạo được PDF: '+(e?.message||e),5000);setBusy(false);return;}
+      setBusy(false);
+    }
+    const shareData={files:[file],title:'Tài liệu SAGS',text:'Tài liệu scan từ E‑Report/SAGS'};
+    const canFileShare=!!navigator.share && (!navigator.canShare || navigator.canShare({files:[file]}));
+    if(canFileShare){
+      try{await navigator.share(shareData);return;}
+      catch(e){
+        if(e?.name==='AbortError')return;
+        if(e?.name==='NotAllowedError'){toast('PDF đã sẵn sàng. Bấm lại CHIA SẺ PDF để mở Share Sheet.',3500);return;}
+        console.warn('[Scanner share]',e);
+      }
+    }
+    downloadPdfFile(file);
+    toast('Thiết bị không mở được Share Sheet cho file. PDF đã được tải xuống; mở file rồi chọn Chia sẻ → Zalo.',5000);
+  }
 
   async function exportFiles(){
     if(state.busy||!state.pages.length)return;
@@ -755,7 +571,7 @@
         const input=document.getElementById('attachmentInput');if(!input)throw new Error('Không tìm thấy vùng đính kèm của E‑Report/SAGS.');
         const dt=new DataTransfer();files.forEach(f=>dt.items.add(f));input.files=dt.files;input.dispatchEvent(new Event('change',{bubbles:true}));
       }
-      const n=files.length;stopCamera();state.pages.length=0;state.captureCanvas=null;state.corners=null;state.selected=0;state.root.classList.remove('sds-open');state.root.setAttribute('aria-hidden','true');document.documentElement.style.overflow='';document.body.style.overflow='';
+      const n=files.length;stopCamera();state.pages.length=0;state.captureCanvas=null;state.corners=null;state.selected=0;state.pdfFile=null;state.pdfBuiltForRevision=-1;state.root.classList.remove('sds-open');state.root.setAttribute('aria-hidden','true');document.documentElement.style.overflow='';document.body.style.overflow='';
       setMode('camera');
       setTimeout(()=>{try{alert(`Đã quét và đính kèm ${n} trang.`);}catch(_){ }},80);
     }catch(e){console.error('[Scanner export]',e);toast('Không đính kèm được tài liệu: '+(e?.message||e),5000);}
@@ -765,11 +581,10 @@
   function bindUI(){
     $('sdsClose').addEventListener('click',()=>close(false));$('sdsTorch').addEventListener('click',toggleTorch);$('sdsSwitch').addEventListener('click',switchCamera);$('sdsShutter').addEventListener('click',capture);$('sdsDone').addEventListener('click',()=>renderReview());
     $('sdsHelp').addEventListener('click',()=>$('sdsHelpPanel').classList.add('show'));$('sdsHelpClose').addEventListener('click',()=>$('sdsHelpPanel').classList.remove('show'));$('sdsHelpPanel').addEventListener('click',e=>{if(e.target===$('sdsHelpPanel'))$('sdsHelpPanel').classList.remove('show');});
-    $('sdsRetake').addEventListener('click',retake);$('sdsAutoEdge').addEventListener('click',autoEdge);$('sdsRotateCapture').addEventListener('click',rotateCapture);$('sdsSavePage').addEventListener('click',savePage);
+    $('sdsRetake').addEventListener('click',retake);$('sdsRotateCapture').addEventListener('click',rotateCapture);$('sdsSavePage').addEventListener('click',savePage);
     const cc=$('sdsCropCanvas');cc.addEventListener('pointerdown',onCropDown);cc.addEventListener('pointermove',onCropMove);cc.addEventListener('pointerup',onCropUp);cc.addEventListener('pointercancel',onCropUp);
-    $('sdsFilterTools').addEventListener('click',e=>{const b=e.target.closest('[data-filter]');if(b)setFilter(b.dataset.filter);});$('sdsRotatePage').addEventListener('click',rotatePage);$('sdsMoveLeft').addEventListener('click',()=>movePage(-1));$('sdsMoveRight').addEventListener('click',()=>movePage(1));$('sdsDeletePage').addEventListener('click',deletePage);$('sdsAddPage').addEventListener('click',addPage);$('sdsAttach').addEventListener('click',exportFiles);
-    document.addEventListener('visibilitychange',()=>{if(document.hidden&&state.root?.classList.contains('sds-open')&&state.mode==='camera'){stopLiveDetection();try{$('sdsVideo').pause();}catch(_){ }}else if(!document.hidden&&state.mode==='camera'&&state.stream){$('sdsVideo').play().then(()=>startLiveDetection()).catch(()=>{});}});
-    window.addEventListener('resize',()=>{if(state.mode==='camera')drawLiveOverlay($('sdsVideo'));},{passive:true});
+    $('sdsFilterTools').addEventListener('click',e=>{const b=e.target.closest('[data-filter]');if(b)setFilter(b.dataset.filter);});$('sdsRotatePage').addEventListener('click',rotatePage);$('sdsMoveLeft').addEventListener('click',()=>movePage(-1));$('sdsMoveRight').addEventListener('click',()=>movePage(1));$('sdsDeletePage').addEventListener('click',deletePage);$('sdsAddPage').addEventListener('click',addPage);$('sdsAttach').addEventListener('click',exportFiles);$('sdsSharePdf').addEventListener('click',sharePdf);
+    document.addEventListener('visibilitychange',()=>{if(document.hidden&&state.root?.classList.contains('sds-open')&&state.mode==='camera'){try{$('sdsVideo').pause();}catch(_){ }}else if(!document.hidden&&state.mode==='camera'&&state.stream){$('sdsVideo').play().catch(()=>{});}});
   }
 
   function installSourceButton(){
