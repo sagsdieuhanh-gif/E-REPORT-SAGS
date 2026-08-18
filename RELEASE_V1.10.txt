@@ -1,0 +1,9 @@
+E-REPORT V1.10 AI — BUILD 01 (18/08/2026)
+- Màn hình chờ sau đăng nhập dùng ảnh nền theo vai trò/tài khoản nghiệp vụ.
+- PVHK -> PVHK.png.
+- PVHLNG -> PVHLNG.png.
+- LOSTFOUND -> LNF.png.
+- CBTT -> CBTT.png khi file này có trong app; nếu chưa có, tự fallback login-bg.jpg để không làm lỗi ứng dụng.
+- Giữ nguyên AI CROSSCHECK, phân quyền chuẩn và CAMSCANER của V1.9.
+- Không khôi phục HDSD.
+- Đồng bộ version.json, APP_BUILD_VERSION, APP_DISPLAY_VERSION, AI/scanner cache-bust và Service Worker: V1.10-20260818-01.

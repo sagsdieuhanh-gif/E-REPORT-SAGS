@@ -1,0 +1,8 @@
+E-REPORT V1.11 AI — BUILD 01 (18/08/2026)
+- Tạo nút 📄 CAMSCANER riêng trên thanh chức năng của các đơn vị nghiệp vụ; VIEWER không có nút ghi/scan.
+- Giữ lối mở máy quét từ vùng Đính kèm để tương thích quy trình cũ.
+- Nút CAMSCANER riêng đặt lại đích đính kèm theo biểu mẫu đang dùng: BBBT / FSAGS 42.1 / FSAGS 55.1 / Trang 3 mặc định.
+- CAMSCANER giữ đầy đủ: chụp nhiều trang, nhận mép, kéo 4 góc, cắt phối cảnh, xoay, đổi thứ tự, xóa, GỐC/RÕ/XÁM/ĐEN TRẮNG.
+- Bổ sung HDSD ngay trong màn CAMSCANER.
+- Đồng bộ version.json, APP_BUILD_VERSION, APP_DISPLAY_VERSION, scanner cache-bust và Service Worker: V1.11-20260818-01.
+- Giữ cơ chế cập nhật an toàn: không tự reload, chỉ đổi bản sau khi người dùng bấm CẬP NHẬT.

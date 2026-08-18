@@ -1,9 +1,9 @@
-const CACHE_NAME="sags-v1-9-update-ai-permission-camscanner-20260818-01";
-const BUILD="V1.9-20260818-01";
+const CACHE_NAME="sags-v1-11-ai-camscaner-button-20260818-01";
+const BUILD="V1.11-20260818-01";
 const APP_SHELL=[
   "./index.html","./version.json","./firebase-config.js","./v488-archive.js","./ai-crosscheck.js","./document-scanner.js",
   "./alert-mva.mp3","./alert-mvt.mp3","./alert-pushback-missing.mp3","./alert-read-sign.mp3",
-  "./9Gfinal.png","./VJfinal.png","./VJfinal2.png","./VUfinal.png","./apple-touch-icon.png","./favicon-16.png","./favicon-32.png","./icon-192.png","./icon-512.png","./login-bg.jpg","./login-logo-10years.png",
+  "./9Gfinal.png","./VJfinal.png","./VJfinal2.png","./VUfinal.png","./PVHK.png","./PVHLNG.png","./LNF.png","./apple-touch-icon.png","./favicon-16.png","./favicon-32.png","./icon-192.png","./icon-512.png","./login-bg.jpg","./login-logo-10years.png",
   "./page1.png","./page2.png","./page4.png","./page6.png","./page7.png","./page9.png","./page10.png","./page11.png","./page12.png","./page13.png","./sags-logo.png",
   "./fsags13-official-page1.png","./fsags13-official-page2.png","./fsags13-official-continuation.png","./rns-lj-page1.png","./rns-lj-continuation.png","./rns-tw-page1.png","./rns-tw-participants.png","./rns-ke-page1.png","./rns-ke-continuation.png"
 ];

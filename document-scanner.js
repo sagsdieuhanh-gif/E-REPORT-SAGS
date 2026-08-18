@@ -1,8 +1,8 @@
-/* E-REPORT/SAGS · In-app Document Scanner · V1.8 */
+/* E-REPORT/SAGS · In-app Document Scanner · V1.11 */
 (() => {
   'use strict';
 
-  const BUILD = 'V1.9-20260818-01';
+  const BUILD = 'V1.11-20260818-01';
   if (window.SAGSDocumentScanner && window.SAGSDocumentScanner.build === BUILD) return;
 
   const MAX_PAGES = 20;
@@ -58,6 +58,7 @@
   .sds-final{display:grid;grid-template-columns:1fr 1.25fr;gap:8px}.sds-final .sds-btn{min-height:46px}
   .sds-busy{position:absolute;inset:0;z-index:10;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.68);text-align:center;padding:24px}.sds-busy.show{display:flex}.sds-busy-box{background:#13263a;border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:18px;max-width:300px;font-weight:800}.sds-spinner{width:34px;height:34px;border:4px solid rgba(255,255,255,.28);border-top-color:#fff;border-radius:50%;animation:sdsSpin .8s linear infinite;margin:0 auto 10px}@keyframes sdsSpin{to{transform:rotate(360deg)}}
   .sds-msg{font-size:12px;line-height:1.35;opacity:.85;text-align:center;min-height:17px;margin-top:5px}.sds-toast{position:absolute;z-index:20;left:50%;bottom:110px;transform:translateX(-50%);background:rgba(10,24,38,.94);color:#fff;border:1px solid rgba(255,255,255,.16);border-radius:12px;padding:9px 12px;font-size:12px;max-width:88%;text-align:center;display:none}.sds-toast.show{display:block}
+  .sds-help{position:fixed;inset:0;z-index:30080;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.72);padding:14px;touch-action:manipulation}.sds-help.show{display:flex}.sds-help-box{width:min(94vw,520px);max-height:86vh;overflow:auto;background:#fff;color:#13263a;border-radius:14px;padding:16px;box-shadow:0 16px 44px rgba(0,0,0,.4)}.sds-help-box h3{margin:0 0 10px;color:#0b5cab}.sds-help-box ol{padding-left:22px;margin:8px 0}.sds-help-box li{margin:7px 0;line-height:1.38}.sds-help-note{padding:9px 10px;border-radius:9px;background:#eef7ff;font-size:12px;line-height:1.4;margin:10px 0}
   @media(max-width:430px){.sds-top{grid-template-columns:64px 1fr 64px}.sds-btn{font-size:12px;padding:7px 7px}.sds-camera-actions{grid-template-columns:1fr 76px 1fr}.sds-shutter{width:66px;height:66px}.sds-crop-actions{grid-template-columns:repeat(4,minmax(0,1fr))}}
   @media(orientation:landscape) and (max-height:560px){.sds-top{padding-top:max(5px,env(safe-area-inset-top));padding-bottom:5px}.sds-bottom{padding-top:5px}.sds-shutter{width:56px;height:56px}.sds-camera-actions{grid-template-columns:1fr 66px 1fr}.sds-thumbs{min-height:62px}.sds-thumb{height:58px;width:52px;flex-basis:52px}}
   `;
@@ -96,7 +97,7 @@
       <div class="sds-top">
         <button class="sds-btn ghost" id="sdsClose">ĐÓNG</button>
         <div class="sds-title"><span id="sdsTitle">QUÉT TÀI LIỆU</span><span class="sds-sub" id="sdsSubtitle">Camera tài liệu · ${BUILD}</span></div>
-        <span aria-hidden="true"></span>
+        <button class="sds-btn ghost" id="sdsHelp">HDSD</button>
       </div>
       <div class="sds-stage">
         <div class="sds-view active" id="sdsCameraView">
@@ -108,6 +109,21 @@
         <div class="sds-view" id="sdsReviewView"><div class="sds-review-wrap"><canvas id="sdsReviewCanvas"></canvas></div></div>
         <div class="sds-busy" id="sdsBusy"><div class="sds-busy-box"><div class="sds-spinner"></div><div id="sdsBusyText">Đang xử lý…</div></div></div>
         <div class="sds-toast" id="sdsToast"></div>
+        <div class="sds-help" id="sdsHelpPanel" role="dialog" aria-modal="true" aria-label="Hướng dẫn CAMSCANER">
+          <div class="sds-help-box">
+            <h3>HDSD · CAMSCANER</h3>
+            <ol>
+              <li>Bấm <b>📄 CAMSCANER</b> trên thanh chức năng của đơn vị hoặc mở từ vùng Đính kèm.</li>
+              <li>Đặt trọn tờ giấy trong khung rồi bấm nút tròn để chụp. Có thể chụp liên tiếp nhiều trang.</li>
+              <li>Sau mỗi ảnh, kiểm tra 4 chấm xanh. Kéo từng chấm vào đúng 4 góc giấy; dùng <b>TỰ NHẬN MÉP</b> nếu cần.</li>
+              <li>Bấm <b>LƯU TRANG</b>. Hệ thống cắt phối cảnh để làm thẳng tài liệu.</li>
+              <li>Ở màn kiểm tra, có thể <b>XOAY</b>, đổi thứ tự bằng <b>← TRANG / TRANG →</b>, <b>XÓA</b> và chọn <b>GỐC / RÕ / XÁM / ĐEN TRẮNG</b>.</li>
+              <li>Bấm <b>ĐÍNH KÈM</b> để đưa toàn bộ trang đã quét vào vùng ảnh của biểu mẫu hiện tại.</li>
+            </ol>
+            <div class="sds-help-note"><b>Lưu ý:</b> cho phép Camera khi trình duyệt hỏi quyền; nên giữ điện thoại song song với mặt giấy và đủ sáng để nhận mép chính xác hơn.</div>
+            <button class="sds-btn primary" id="sdsHelpClose" style="width:100%">ĐÃ HIỂU</button>
+          </div>
+        </div>
       </div>
       <div class="sds-bottom" id="sdsCameraBottom">
         <div class="sds-camera-actions">
@@ -511,6 +527,7 @@
 
   function bindUI(){
     $('sdsClose').addEventListener('click',()=>close(false));$('sdsTorch').addEventListener('click',toggleTorch);$('sdsSwitch').addEventListener('click',switchCamera);$('sdsShutter').addEventListener('click',capture);$('sdsDone').addEventListener('click',()=>renderReview());
+    $('sdsHelp').addEventListener('click',()=>$('sdsHelpPanel').classList.add('show'));$('sdsHelpClose').addEventListener('click',()=>$('sdsHelpPanel').classList.remove('show'));$('sdsHelpPanel').addEventListener('click',e=>{if(e.target===$('sdsHelpPanel'))$('sdsHelpPanel').classList.remove('show');});
     $('sdsRetake').addEventListener('click',retake);$('sdsAutoEdge').addEventListener('click',autoEdge);$('sdsRotateCapture').addEventListener('click',rotateCapture);$('sdsSavePage').addEventListener('click',savePage);
     const cc=$('sdsCropCanvas');cc.addEventListener('pointerdown',onCropDown);cc.addEventListener('pointermove',onCropMove);cc.addEventListener('pointerup',onCropUp);cc.addEventListener('pointercancel',onCropUp);
     $('sdsFilterTools').addEventListener('click',e=>{const b=e.target.closest('[data-filter]');if(b)setFilter(b.dataset.filter);});$('sdsRotatePage').addEventListener('click',rotatePage);$('sdsMoveLeft').addEventListener('click',()=>movePage(-1));$('sdsMoveRight').addEventListener('click',()=>movePage(1));$('sdsDeletePage').addEventListener('click',deletePage);$('sdsAddPage').addEventListener('click',addPage);$('sdsAttach').addEventListener('click',exportFiles);

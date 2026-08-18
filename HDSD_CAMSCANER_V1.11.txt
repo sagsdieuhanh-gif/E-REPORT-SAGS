@@ -1,0 +1,12 @@
+HDSD CAMSCANER — E-REPORT/SAGS V1.11
+
+1. Đăng nhập tài khoản nghiệp vụ và bấm nút 📄 CAMSCANER trên thanh chức năng.
+2. Cho phép quyền Camera nếu thiết bị hỏi.
+3. Đặt trọn tờ giấy trong khung, giữ máy ổn định và bấm nút chụp tròn.
+4. Kiểm tra 4 chấm xanh; kéo đúng vào bốn góc tờ giấy. Có thể bấm TỰ NHẬN MÉP.
+5. Bấm LƯU TRANG để cắt phối cảnh.
+6. Tiếp tục chụp các trang còn lại.
+7. Ở màn KIỂM TRA TÀI LIỆU: chọn GỐC/RÕ/XÁM/ĐEN TRẮNG, xoay, đổi thứ tự hoặc xóa từng trang.
+8. Bấm ĐÍNH KÈM để đưa các trang đã scan vào vùng ảnh của biểu mẫu hiện tại.
+
+Nút CAMSCANER riêng tự đặt lại đích ảnh theo biểu mẫu đang dùng để tránh mang nhầm đích đính kèm của thao tác trước.
