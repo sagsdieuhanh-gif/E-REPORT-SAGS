@@ -1,0 +1,33 @@
+﻿HDSD V1.43 — NHẬP GIỜ CHỈ GIỮ MỐC THỰC TẾ
+
+1. BỎ KHỎI MÀN NHẬP GIỜ
+- STA
+- ETA
+- STD
+- ETD
+
+Các trường này vẫn tồn tại trên biểu mẫu gốc và vẫn được các logic khai thác sử dụng bình thường.
+
+2. MÀN ⏱ NHẬP GIỜ
+Chỉ hiển thị các mốc thao tác thực tế trên FSAGS 42.1 / 42.3.
+
+3. CẶP START / FINISH
+- Các mốc có START và FINISH được đặt cạnh nhau trên cùng một hàng.
+- Mỗi ô có trạng thái CHƯA NHẬP / đã có giờ.
+- Chưa có giờ: GHI BÂY GIỜ.
+- Đã có giờ: SỬA.
+
+4. MỐC ĐƠN
+- Hiển thị dạng thẻ đơn.
+- Chưa có giờ: GHI BÂY GIỜ.
+- Đã có giờ: SỬA.
+
+5. PHÂN QUYỀN
+- Chỉ ĐH / AD.
+- Chỉ khi đang mở flight-session 42.1 hoặc 42.3.
+- Không hiện ở màn chờ.
+
+6. LOGIC DỮ LIỆU
+Không thay đổi:
+- Ghi vào đúng field gốc.
+- Giữ kiểm tra Start/Finish, thứ tự thời gian và các quy tắc hiện hành.
