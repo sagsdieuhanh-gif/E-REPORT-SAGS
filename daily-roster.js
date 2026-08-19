@@ -1,8 +1,8 @@
-/* E-REPORT SAGS · DAILY ROSTER ROLE MAP + DIRECT REASSIGN + DELEGATED PERMISSION · V1.68 */
+/* E-REPORT SAGS · DAILY ROSTER ROLE MAP + DIRECT REASSIGN + DELEGATED PERMISSION · V1.69 */
 (function(root){
   "use strict";
 
-  const BUILD="V1.68-20260819-01";
+  const BUILD="V1.69-20260819-01";
   const ENGINE="DAILY_ROSTER_V1";
   const MAIL_PATH="roster_mail";
   const MANIFEST_PATH="roster_manifests";
@@ -224,9 +224,18 @@
         const id="RA_"+hashId([base.opDate,base.flightRaw,roleKey,u].join("|"));
         out.push({...base,assignmentId:id,targetUser:u,originalTargetUser:u,formGroup,sourceColumn,roleKey});
       };
-      for(const u of common)add(u,"fsags","Grnd_Cor + Grnd_Ld","BOTH");
-      for(const u of corOnly)add(u,"fsags","Grnd_Cor","COR");
-      for(const u of ldOnly)add(u,"fsags551","Grnd_Ld","LD");
+      // V1.69:
+      // - Không có Grnd_Ld: mọi Grnd_Cor nhận 42.3.
+      // - Có Grnd_Ld:
+      //   + cùng username ở cả Cor + Ld => 42.3
+      //   + Cor khác người Ld => Cor 42.1, Ld 55.1
+      if(!ldUsers.length){
+        for(const u of corUsers)add(u,"fsags","Grnd_Cor","COR");
+      }else{
+        for(const u of common)add(u,"fsags","Grnd_Cor + Grnd_Ld","BOTH");
+        for(const u of corOnly)add(u,"fsags421","Grnd_Cor","COR");
+        for(const u of ldOnly)add(u,"fsags551","Grnd_Ld","LD");
+      }
     }
     return {records:out,headerMap:map,headerRow:hi+1,rosterDate:rosterDate?.iso||""};
   }

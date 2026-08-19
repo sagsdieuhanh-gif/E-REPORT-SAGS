@@ -1,0 +1,39 @@
+﻿HDSD V1.69 — DAILY ROSTER: MAPPING Grnd_Cor / Grnd_Ld
+
+QUY TẮC CHÍNH
+
+1. CÓ Grnd_Cor, KHÔNG CÓ Grnd_Ld
+- Grnd_Cor có 1 người:
+  BANGTD => 42.3
+- Grnd_Cor có nhiều người:
+  DATVH / DUYTK => DATVH 42.3 + DUYTK 42.3
+
+2. CÓ CẢ Grnd_Cor VÀ Grnd_Ld, KHÁC NGƯỜI
+Ví dụ:
+Grnd_Cor = THANGDT
+Grnd_Ld  = KIENNT
+Kết quả:
+- THANGDT => 42.1
+- KIENNT  => 55.1
+
+3. CÙNG MỘT NGƯỜI Ở CẢ Grnd_Cor VÀ Grnd_Ld
+Ví dụ:
+Grnd_Cor = BANGTD
+Grnd_Ld  = BANGTD
+Kết quả:
+- BANGTD => 42.3
+- Không tạo thêm 55.1 trùng.
+
+4. HỖN HỢP NHIỀU NGƯỜI
+Ví dụ:
+Grnd_Cor = DATVH / DUYTK
+Grnd_Ld  = DUYTK / NAMNV
+Kết quả:
+- DUYTK => 42.3 (trùng cả Cor + Ld)
+- DATVH => 42.1
+- NAMNV => 55.1
+
+Các chức năng khác giữ nguyên:
+- DAILY ROSTER có thể được AD phân quyền cho tài khoản khác.
+- Người có quyền được upload, publish, xem và chuyển người phụ trách.
+- Không cần GIAO CA để AD/người có quyền DAILY ROSTER chuyển assignment trực tiếp.
