@@ -1,0 +1,30 @@
+﻿HDSD V1.41 — FIX HIỂN THỊ NÚT NHẬP GIỜ
+
+1. LỖI V1.40
+Nút ⏱ NHẬP GIỜ đã tồn tại trong HTML nhưng CSS mặc định đặt display:none.
+Khi đủ điều kiện, JavaScript V1.40 chỉ gán display="" nên CSS display:none tiếp tục có hiệu lực.
+Vì vậy người dùng ở đúng V1.40, đúng chuyến 42.1/42.3 vẫn không thấy nút.
+
+2. SỬA V1.41
+Khi đủ điều kiện:
+- Role = ĐH hoặc AD.
+- Đã chọn một flight-session.
+- Biểu mẫu hiện tại = FSAGS 42.1 hoặc FSAGS 42.3.
+- Không ở màn hình chờ.
+
+Nút được ép:
+display:inline-flex
+
+Khi không đủ điều kiện:
+display:none
+
+3. VỊ TRÍ
+Nút ⏱ NHẬP GIỜ nằm ngay sau CHUYẾN và trước KH trên thanh chức năng.
+
+4. LOGIC NHẬP GIỜ
+Không thay đổi so với V1.40:
+- Mặc định hiện các mốc còn thiếu.
+- Mốc thực tế trống: GHI BÂY GIỜ.
+- STA/ETA/STD/ETD: NHẬP GIỜ.
+- HIỆN TẤT CẢ để sửa giờ đã nhập.
+- Vẫn sử dụng các kiểm tra thời gian/Start-Finish/thứ tự 42.1 hiện có.
