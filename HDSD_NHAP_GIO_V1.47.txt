@@ -1,0 +1,20 @@
+﻿HDSD V1.47 — NHẬP GIỜ THEO LOGIC KHAI THÁC
+
+Thay đổi chính:
+- Danh sách không còn sắp theo vị trí in trên form.
+- Sắp theo logic khai thác thực tế:
+  1. A/C checked & coned
+  2. Walk around (đến)
+  3. Door open / nhận chứng từ
+  4. Pax disembarkation
+  5. OFFLOAD
+  6. Phục vụ / chuẩn bị chuyến đi
+  7. ONLOAD / boarding
+  8. Final load / đóng cửa / thu hồi thiết bị
+  9. Walk around (đi)
+ 10. Pushback
+
+Các nút thao tác:
+- BÂY GIỜ: ghi giờ hiện tại
+- NHẬP TAY: nhập HH:MM
+- SỬA: chỉnh giờ đã có
