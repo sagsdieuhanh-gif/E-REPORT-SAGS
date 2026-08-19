@@ -1,0 +1,34 @@
+﻿HDSD V1.68 — DAILY ROSTER: Grnd_Cor LUÔN TẠO 42.3
+
+QUY TẮC Grnd_Cor
+- Mọi username trong cột Grnd_Cor đều được tạo FSAGS 42.3.
+- Grnd_Cor có 1 người:
+  BANGTD => BANGTD nhận 01 FSAGS 42.3.
+- Grnd_Cor có nhiều người:
+  DATVH / DUYTK => DATVH nhận 01 FSAGS 42.3 và DUYTK nhận 01 FSAGS 42.3.
+- Không còn tạo FSAGS 42.1 từ Grnd_Cor.
+
+QUY TẮC Grnd_Ld
+- Username chỉ có ở Grnd_Ld => FSAGS 55.1.
+
+TRƯỜNG HỢP TRÙNG NGƯỜI
+- Nếu cùng một username xuất hiện đồng thời trong Grnd_Cor và Grnd_Ld của cùng chuyến:
+  chỉ tạo 01 FSAGS 42.3 cho username đó.
+- Không tạo thêm FSAGS 55.1 trùng cho cùng người.
+- Ví dụ:
+  Grnd_Cor = BANGTD
+  Grnd_Ld  = BANGTD
+  => BANGTD nhận 01 FSAGS 42.3.
+
+VÍ DỤ HỖN HỢP
+Grnd_Cor = DATVH / DUYTK
+Grnd_Ld  = DUYTK / NAMNV
+Kết quả:
+- DATVH => FSAGS 42.3
+- DUYTK => FSAGS 42.3 (trùng Cor + Ld nên chỉ 1 form)
+- NAMNV => FSAGS 55.1
+
+Các chức năng V1.67 giữ nguyên:
+- AD có thể phân quyền DAILY ROSTER cho tài khoản khác.
+- Người có quyền DAILY ROSTER được upload, publish, xem phân công và chuyển người phụ trách.
+- Không trở thành AD và không được cấp quyền cho người khác.

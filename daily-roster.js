@@ -1,8 +1,8 @@
-/* E-REPORT SAGS · DAILY ROSTER ROLE MAP + DIRECT REASSIGN · V1.66 */
+/* E-REPORT SAGS · DAILY ROSTER ROLE MAP + DIRECT REASSIGN + DELEGATED PERMISSION · V1.68 */
 (function(root){
   "use strict";
 
-  const BUILD="V1.66-20260819-01";
+  const BUILD="V1.68-20260819-01";
   const ENGINE="DAILY_ROSTER_V1";
   const MAIL_PATH="roster_mail";
   const MANIFEST_PATH="roster_manifests";
@@ -225,7 +225,7 @@
         out.push({...base,assignmentId:id,targetUser:u,originalTargetUser:u,formGroup,sourceColumn,roleKey});
       };
       for(const u of common)add(u,"fsags","Grnd_Cor + Grnd_Ld","BOTH");
-      for(const u of corOnly)add(u,"fsags421","Grnd_Cor","COR");
+      for(const u of corOnly)add(u,"fsags","Grnd_Cor","COR");
       for(const u of ldOnly)add(u,"fsags551","Grnd_Ld","LD");
     }
     return {records:out,headerMap:map,headerRow:hi+1,rosterDate:rosterDate?.iso||""};
@@ -254,6 +254,10 @@
   let preview=null,mailRef=null,mailCb=null,revRef=null,revCb=null,lastToastSig="";
   const rosterSyncTimers=new Map(),rosterSyncSig=new Map();
   function isAD(){try{return upper(currentRole)==="AD";}catch(e){return false;}}
+  function canManageDailyRoster(){
+    if(isAD())return true;
+    try{return typeof v485Can==="function"&&v485Can("DAILY_ROSTER");}catch(e){return false;}
+  }
   function ensureUI(){
     if(document.getElementById("dailyRosterModal"))return;
     const style=document.createElement("style");
@@ -264,7 +268,7 @@
     `;
     document.head.appendChild(style);
     const m=document.createElement("div");m.id="dailyRosterModal";
-    m.innerHTML=`<div class="drPanel"><div class="drHead"><div><h3>📋 DAILY ROSTER · TỰ PHÂN BIỂU MẪU</h3><div class="drSub">Quy tắc cố định: <b>Grnd_Cor → 42.1</b> · <b>Grnd_Ld → 55.1</b> · cùng một username có ở cả hai cột → <b>42.3</b>. Nhân viên đúng username sẽ tự nhận, không cần bấm NHẬN.</div></div><button class="drBtn secondary" onclick="closeDailyRosterManager()">ĐÓNG</button></div>
+    m.innerHTML=`<div class="drPanel"><div class="drHead"><div><h3>📋 DAILY ROSTER · TỰ PHÂN BIỂU MẪU</h3><div class="drSub">Quy tắc cố định: <b>Grnd_Cor → 42.3</b> · <b>Grnd_Ld → 55.1</b> · cùng một username có ở cả hai cột → <b>42.3</b>. Nhân viên đúng username sẽ tự nhận, không cần bấm NHẬN.</div></div><button class="drBtn secondary" onclick="closeDailyRosterManager()">ĐÓNG</button></div>
       <div class="drField"><label>File DAILY ROSTER</label><input id="drFile" type="file" accept=".xlsx,.xlsm,.csv"></div>
       <div class="drStatus"><b>QUY TẮC TẠO FORM</b><br>• Grnd_Cor có tên → 42.1<br>• Grnd_Ld có tên → 55.1<br>• Cùng một người nằm ở cả Grnd_Cor và Grnd_Ld của cùng chuyến → chỉ tạo 01 form 42.3.</div>
       <div class="drActions"><button class="drBtn" onclick="dailyRosterReadPreview()">ĐỌC & XEM TRƯỚC</button><button class="drBtn publish" id="drPublishBtn" onclick="dailyRosterPublish()" disabled>TẠO & PHÂN CÔNG</button></div>
@@ -279,7 +283,7 @@
     const bar=document.querySelector(".toolbar-row.main-actions");if(!bar)return;
     let b=document.getElementById("roleBtnDailyRoster");
     if(!b){b=document.createElement("button");b.id="roleBtnDailyRoster";b.textContent="📋 DAILY ROSTER";b.onclick=()=>openDailyRosterManager();b.style.display="none";const anchor=document.getElementById("roleBtnActivity");if(anchor?.parentNode)anchor.parentNode.insertBefore(b,anchor.nextSibling);else bar.appendChild(b);}
-    b.style.display=isAD()?"":"none";
+    b.style.display=canManageDailyRoster()?"":"none";
   }
   function setStatus(msg,err=false){const e=document.getElementById("drStatus");if(e){e.textContent=msg;e.classList.toggle("err",!!err);}}
   function renderPreview(data){
@@ -295,10 +299,10 @@
     host.innerHTML=`<div class="drStatus">Đọc được <b>${grouped.size}</b> dòng chuyến · <b>${recs.length}</b> biểu mẫu · <b>${users.length}</b> username.<br>Ngày roster: ${esc(data.rosterDate||"không xác định")} · Sheet: ${esc(data.sheetName||"")}</div>${rows.length?`<div class="drTableWrap"><table class="drTable"><thead><tr><th>Ngày</th><th>Flight</th><th>STA</th><th>STD</th><th>Grnd_Cor</th><th>Grnd_Ld</th><th>Biểu mẫu sinh ra</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.date)}</td><td><b>${esc(r.flightRaw)}</b></td><td>${esc(r.sta)}</td><td>${esc(r.std)}</td><td>${(r.grndCor||[]).map(u=>`<span class="drBadge">${esc(u)}</span>`).join(" ")}</td><td>${(r.grndLd||[]).map(u=>`<span class="drBadge">${esc(u)}</span>`).join(" ")}</td><td>${r.assignments.map(a=>`<span class="drBadge">${esc(a.user)} · ${formLabel(a.formGroup)}</span>`).join(" ")}</td></tr>`).join("")}</tbody></table></div>`:'<div class="drEmpty">Không có tên hợp lệ ở Grnd_Cor / Grnd_Ld.</div>'}`;
   }
 
-  root.openDailyRosterManager=function(){if(!isAD()){try{roleDenied?.("Chỉ AD được nhập DAILY ROSTER.");}catch(e){}return;}ensureUI();document.getElementById("dailyRosterModal")?.classList.add("show");};
+  root.openDailyRosterManager=function(){if(!canManageDailyRoster()){try{roleDenied?.("Tài khoản chưa được cấp quyền DAILY ROSTER.");}catch(e){}return;}ensureUI();document.getElementById("dailyRosterModal")?.classList.add("show");};
   root.closeDailyRosterManager=function(){document.getElementById("dailyRosterModal")?.classList.remove("show");};
   root.dailyRosterReadPreview=async function(){
-    if(!isAD())return;
+    if(!canManageDailyRoster())return;
     const file=document.getElementById("drFile")?.files?.[0];if(!file)return setStatus("Chưa chọn file roster.",true);
     try{
       setStatus("Đang đọc "+file.name+"…");
@@ -323,30 +327,30 @@
         const effectiveUser=manual?normUser(oldItem.user):baseRec.targetUser;
         if(manual)overrides++;
         const r={...baseRec,targetUser:effectiveUser};
-        const payload={engine:ENGINE,schema:2,assignmentId:r.assignmentId,targetUser:r.targetUser,originalTargetUser:baseRec.originalTargetUser||baseRec.targetUser,opDate:r.opDate,date:r.date,flightRaw:r.flightRaw,arrFlight:r.arrFlight,depFlight:r.depFlight,sta:r.sta,std:r.std,acReg:r.acReg,acType:r.acType,route:r.route,route1:r.route1,route3:r.route3,bay:r.bay,formGroup:r.formGroup,sourceColumn:r.sourceColumn,roleKey:r.roleKey,sourceFile:data.fileName||"",active:true,manualOverride:manual,publishedAtMs:Date.now(),publishedBy:normUser(currentUserProfile?.username||"AD")};
+        const payload={engine:ENGINE,schema:2,assignmentId:r.assignmentId,targetUser:r.targetUser,originalTargetUser:baseRec.originalTargetUser||baseRec.targetUser,opDate:r.opDate,date:r.date,flightRaw:r.flightRaw,arrFlight:r.arrFlight,depFlight:r.depFlight,sta:r.sta,std:r.std,acReg:r.acReg,acType:r.acType,route:r.route,route1:r.route1,route3:r.route3,bay:r.bay,formGroup:r.formGroup,sourceColumn:r.sourceColumn,roleKey:r.roleKey,sourceFile:data.fileName||"",active:true,manualOverride:manual,publishedAtMs:Date.now(),publishedBy:normUser(currentUserProfile?.username||"")};
         patch[`${MAIL_PATH}/${safeKey(r.targetUser)}/items/${safeKey(r.assignmentId)}`]=payload;
         patch[`${REVOKE_PATH}/${safeKey(r.targetUser)}/items/${safeKey(r.assignmentId)}`]=null;
         if(oldItem.user&&normUser(oldItem.user)!==normUser(r.targetUser)){
           patch[`${MAIL_PATH}/${safeKey(oldItem.user)}/items/${safeKey(r.assignmentId)}`]=null;
-          patch[`${REVOKE_PATH}/${safeKey(oldItem.user)}/items/${safeKey(r.assignmentId)}`]={assignmentId:r.assignmentId,reason:"REASSIGNED",atMs:Date.now(),by:normUser(currentUserProfile?.username||"AD")};
+          patch[`${REVOKE_PATH}/${safeKey(oldItem.user)}/items/${safeKey(r.assignmentId)}`]={assignmentId:r.assignmentId,reason:"REASSIGNED",atMs:Date.now(),by:normUser(currentUserProfile?.username||"")};
         }
         nextItems[r.assignmentId]={assignmentId:r.assignmentId,user:r.targetUser,originalUser:baseRec.originalTargetUser||baseRec.targetUser,flightRaw:r.flightRaw,formGroup:r.formGroup,sourceColumn:r.sourceColumn,roleKey:r.roleKey,manualOverride:manual};writes++;
       }
       for(const [id,x] of Object.entries(oldItems)){
         if(!nextItems[id]&&x?.user){
           patch[`${MAIL_PATH}/${safeKey(x.user)}/items/${safeKey(id)}`]=null;
-          patch[`${REVOKE_PATH}/${safeKey(x.user)}/items/${safeKey(id)}`]={assignmentId:id,reason:"ROSTER_REMOVED",atMs:Date.now(),by:normUser(currentUserProfile?.username||"AD")};
+          patch[`${REVOKE_PATH}/${safeKey(x.user)}/items/${safeKey(id)}`]={assignmentId:id,reason:"ROSTER_REMOVED",atMs:Date.now(),by:normUser(currentUserProfile?.username||"")};
           removes++;
         }
       }
-      patch[`${MANIFEST_PATH}/${safeKey(opDate)}`]={engine:ENGINE,schema:2,opDate,fileName:data.fileName||"",columns:FIXED_ROLE_COLUMNS,publishedAtMs:Date.now(),publishedBy:normUser(currentUserProfile?.username||"AD"),items:nextItems};
+      patch[`${MANIFEST_PATH}/${safeKey(opDate)}`]={engine:ENGINE,schema:2,opDate,fileName:data.fileName||"",columns:FIXED_ROLE_COLUMNS,publishedAtMs:Date.now(),publishedBy:normUser(currentUserProfile?.username||""),items:nextItems};
       await sagsV470Ref("").update(patch);
     }
     return {writes,removes,overrides,dates:byDate.size};
   }
   root.dailyRosterPublish=async function(){
-    if(!isAD()||!preview?.records?.length)return;const btn=document.getElementById("drPublishBtn");if(btn)btn.disabled=true;
-    try{setStatus("Đang tạo mailbox và phân công biểu mẫu…");const r=await publishRecords(preview);setStatus(`✓ Đã phân công ${r.writes} biểu mẫu cho ${r.dates} ngày. Xóa ${r.removes} phân công cũ. Giữ ${r.overrides} chuyển người thủ công của AD.\nGrnd_Cor→42.1 · Grnd_Ld→55.1 · trùng người→42.3.`);void root.dailyRosterLoadAssignments();}
+    if(!canManageDailyRoster()||!preview?.records?.length)return;const btn=document.getElementById("drPublishBtn");if(btn)btn.disabled=true;
+    try{setStatus("Đang tạo mailbox và phân công biểu mẫu…");const r=await publishRecords(preview);setStatus(`✓ Đã phân công ${r.writes} biểu mẫu cho ${r.dates} ngày. Xóa ${r.removes} phân công cũ. Giữ ${r.overrides} chuyển người thủ công.\nGrnd_Cor→42.1 · Grnd_Ld→55.1 · trùng người→42.3.`);void root.dailyRosterLoadAssignments();}
     catch(e){setStatus("Không phân công được: "+S(e?.message||e),true);}
     finally{if(btn)btn.disabled=false;}
   };
@@ -423,6 +427,7 @@
     try{mailRef=sagsV470Ref(`${MAIL_PATH}/${safeKey(me)}/items`);mailCb=s=>void processMailbox(s.val()||{});mailRef.on("value",mailCb,e=>console.warn("Daily roster mailbox",e));}catch(e){console.warn("Daily roster mailbox start",e);}
   }
   root.dailyRosterRestartMailbox=startMailbox;
+  root.dailyRosterCanManage=canManageDailyRoster;
 
 
   function manifestDate(){return S(document.getElementById("drManageDate")?.value||preview?.rosterDate||"");}
@@ -430,10 +435,10 @@
   function renderManage(man){
     const host=document.getElementById("drManage");if(!host)return;
     const items=Object.values(man?.items||{}).filter(Boolean).sort((a,b)=>S(a.flightRaw).localeCompare(S(b.flightRaw))||S(a.formGroup).localeCompare(S(b.formGroup)));
-    host.innerHTML=items.length?`<div class="drTableWrap"><table class="drTable"><thead><tr><th>Flight</th><th>Form</th><th>Vai trò</th><th>Người hiện tại</th><th>Thao tác</th></tr></thead><tbody>${items.map(x=>`<tr><td><b>${esc(x.flightRaw||"")}</b></td><td>${esc(formLabel(x.formGroup))}</td><td>${esc(x.sourceColumn||"")}</td><td>${esc(x.user||"")}${x.manualOverride?` <span class="drBadge">AD chuyển</span>`:""}</td><td><button class="drBtn" style="padding:6px 9px" onclick="dailyRosterReassign('${esc(x.assignmentId||"")}')">CHUYỂN</button>${x.manualOverride&&x.originalUser?` <button class="drBtn secondary" style="padding:6px 9px" onclick="dailyRosterResetToRoster('${esc(x.assignmentId||"")}')">THEO ROSTER</button>`:""}</td></tr>`).join("")}</tbody></table></div>`:'<div class="drEmpty">Ngày này chưa có phân công DAILY ROSTER.</div>';
+    host.innerHTML=items.length?`<div class="drTableWrap"><table class="drTable"><thead><tr><th>Flight</th><th>Form</th><th>Vai trò</th><th>Người hiện tại</th><th>Thao tác</th></tr></thead><tbody>${items.map(x=>`<tr><td><b>${esc(x.flightRaw||"")}</b></td><td>${esc(formLabel(x.formGroup))}</td><td>${esc(x.sourceColumn||"")}</td><td>${esc(x.user||"")}${x.manualOverride?` <span class="drBadge">chuyển tay</span>`:""}</td><td><button class="drBtn" style="padding:6px 9px" onclick="dailyRosterReassign('${esc(x.assignmentId||"")}')">CHUYỂN</button>${x.manualOverride&&x.originalUser?` <button class="drBtn secondary" style="padding:6px 9px" onclick="dailyRosterResetToRoster('${esc(x.assignmentId||"")}')">THEO ROSTER</button>`:""}</td></tr>`).join("")}</tbody></table></div>`:'<div class="drEmpty">Ngày này chưa có phân công DAILY ROSTER.</div>';
   }
   root.dailyRosterLoadAssignments=async function(){
-    if(!isAD())return;const d=manifestDate();if(!d)return setStatus("Chọn ngày để tải phân công.",true);
+    if(!canManageDailyRoster())return;const d=manifestDate();if(!d)return setStatus("Chọn ngày để tải phân công.",true);
     try{const man=await loadManifest(d);renderManage(man);if(!man)setStatus("Ngày "+d+" chưa có manifest DAILY ROSTER.",true);}catch(e){setStatus("Không tải được phân công: "+S(e?.message||e),true);}
   };
   async function transferAssignment(id,newUser,reset=false){
@@ -441,26 +446,26 @@
     const item=man.items[id],oldUser=normUser(item.user),target=normUser(newUser);if(!target)throw new Error("Username mới không hợp lệ.");if(target===oldUser&&!reset)return {same:true};
     let payload=null;try{payload=(await sagsV470Ref(`${MAIL_PATH}/${safeKey(oldUser)}/items/${safeKey(id)}`).once("value")).val();}catch(e){}
     payload=payload||{engine:ENGINE,schema:2,assignmentId:id,opDate:d,flightRaw:item.flightRaw||"",formGroup:item.formGroup||"fsags",sourceColumn:item.sourceColumn||"",roleKey:item.roleKey||""};
-    payload={...payload,targetUser:target,originalTargetUser:item.originalUser||payload.originalTargetUser||oldUser,manualOverride:!reset,reassignedFrom:oldUser,reassignedAtMs:Date.now(),reassignedBy:normUser(currentUserProfile?.username||"AD"),active:true};
+    payload={...payload,targetUser:target,originalTargetUser:item.originalUser||payload.originalTargetUser||oldUser,manualOverride:!reset,reassignedFrom:oldUser,reassignedAtMs:Date.now(),reassignedBy:normUser(currentUserProfile?.username||""),active:true};
     const patch={};
     patch[`${MAIL_PATH}/${safeKey(oldUser)}/items/${safeKey(id)}`]=null;
     patch[`${MAIL_PATH}/${safeKey(target)}/items/${safeKey(id)}`]=payload;
-    patch[`${REVOKE_PATH}/${safeKey(oldUser)}/items/${safeKey(id)}`]={assignmentId:id,reason:"ADMIN_REASSIGN",toUser:target,atMs:Date.now(),by:normUser(currentUserProfile?.username||"AD")};
+    patch[`${REVOKE_PATH}/${safeKey(oldUser)}/items/${safeKey(id)}`]={assignmentId:id,reason:"ROSTER_REASSIGN",toUser:target,atMs:Date.now(),by:normUser(currentUserProfile?.username||"")};
     patch[`${REVOKE_PATH}/${safeKey(target)}/items/${safeKey(id)}`]=null;
     patch[`${MANIFEST_PATH}/${safeKey(d)}/items/${safeKey(id)}`]={...item,user:target,originalUser:item.originalUser||payload.originalTargetUser||oldUser,manualOverride:!reset,assignmentId:id};
     patch[`${SESSION_PATH}/${safeKey(id)}/ownerUser`]=target;
     patch[`${SESSION_PATH}/${safeKey(id)}/reassignedAtMs`]=Date.now();
-    patch[`${SESSION_PATH}/${safeKey(id)}/reassignedBy`]=normUser(currentUserProfile?.username||"AD");
+    patch[`${SESSION_PATH}/${safeKey(id)}/reassignedBy`]=normUser(currentUserProfile?.username||"");
     await sagsV470Ref("").update(patch);
     return {oldUser,target,item};
   }
   root.dailyRosterReassign=async function(id){
-    if(!isAD())return;const man=await loadManifest(manifestDate()),item=man?.items?.[id];if(!item)return setStatus("Không tìm thấy phân công để chuyển.",true);
+    if(!canManageDailyRoster())return;const man=await loadManifest(manifestDate()),item=man?.items?.[id];if(!item)return setStatus("Không tìm thấy phân công để chuyển.",true);
     const u=prompt(`CHUYỂN ${item.flightRaw||""} · ${formLabel(item.formGroup)}\\nTừ: ${item.user||""}\\nNhập username người mới:`);if(u===null)return;
     try{const r=await transferAssignment(id,u,false);if(r.same)return setStatus("Username mới đang là người phụ trách hiện tại.");setStatus(`✓ Đã chuyển ${r.item.flightRaw||""} · ${formLabel(r.item.formGroup)} từ ${r.oldUser} → ${r.target}. Không cần GIAO CA.`);await root.dailyRosterLoadAssignments();}catch(e){setStatus("Không chuyển được: "+S(e?.message||e),true);}
   };
   root.dailyRosterResetToRoster=async function(id){
-    if(!isAD())return;const man=await loadManifest(manifestDate()),item=man?.items?.[id],u=normUser(item?.originalUser||"");if(!item||!u)return setStatus("Không xác định được người gốc trong roster.",true);
+    if(!canManageDailyRoster())return;const man=await loadManifest(manifestDate()),item=man?.items?.[id],u=normUser(item?.originalUser||"");if(!item||!u)return setStatus("Không xác định được người gốc trong roster.",true);
     try{const r=await transferAssignment(id,u,true);setStatus(`✓ Đã trả ${r.item.flightRaw||""} · ${formLabel(r.item.formGroup)} về ${r.target} theo roster.`);await root.dailyRosterLoadAssignments();}catch(e){setStatus("Không trả về roster được: "+S(e?.message||e),true);}
   };
 
@@ -480,7 +485,7 @@
         try{for(const k of Object.keys(state))delete state[k];activeKey=null;editing=null;signing=null;updateBagTotals();draw();renderAttachments();renderBBBTAttachments();renderFSAGS421Attachments();renderFSAGS551Attachments?.();renderFlightSessionList();showRoleHomeIdle?.();}catch(e){console.info("Roster revoke idle",e);}
       }
     }else try{renderFlightSessionList?.();}catch(e){}
-    showToast(`DAILY ROSTER: AD đã chuyển ${affected.length} biểu mẫu sang người khác.`);return true;
+    showToast(`DAILY ROSTER: người phụ trách đã được chuyển cho ${affected.length} biểu mẫu.`);return true;
   }
   async function processRevocations(raw){for(const x of Object.values(raw||{})){if(x?.assignmentId)try{await revokeLocalAssignment(x.assignmentId,x);}catch(e){console.info("Roster revoke",e?.message||e);}}}
   function stopRevocations(){try{if(revRef&&revCb)revRef.off("value",revCb);}catch(e){}revRef=null;revCb=null;}
