@@ -1,0 +1,30 @@
+﻿HDSD V1.64 — ĐIỀU KIỆN BẮT ĐẦU THEO DÕI
+
+Chỉ bắt đầu theo dõi khi đủ:
+- NGÀY
+- SỐ HIỆU CHUYẾN BAY
+- STA hoặc STD tương ứng
+
+ARR:
+Flight đến + STA.
+
+DEP:
+Flight đi + STD.
+
+Chỉ cần một trong hai hướng ARR hoặc DEP đủ điều kiện, cùng với NGÀY.
+
+Không bắt buộc để bắt đầu theo dõi:
+- A/C Reg
+- A/C Type
+- Bay/Stand
+
+Chưa đủ:
+- Không tạo card TIẾN ĐỘ.
+- Không ghi snapshot mới vào ramp_progress.
+
+Khi đủ và dữ liệu được lưu:
+- Tạo snapshot ngay.
+- AD nhận realtime.
+
+Không dùng ETA/ETD để thay thế điều kiện STA/STD ở bước bắt đầu theo dõi.
+Không heartbeat.
