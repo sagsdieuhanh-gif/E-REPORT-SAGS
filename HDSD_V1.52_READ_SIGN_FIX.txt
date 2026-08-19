@@ -1,0 +1,19 @@
+﻿HDSD V1.52 — FIX READ & SIGN KHÔNG MỞ
+
+NGUYÊN NHÂN
+- Nút READ & SIGN vẫn có onclick=openReadSignManager().
+- Hàm openReadSignManager() vẫn tồn tại và vẫn thêm class "show" cho #rsOverlay.
+- Tuy nhiên CSS nền của READ & SIGN đã bị xóa nhầm trong một đợt dọn code trước đó.
+- Vì thiếu #rsOverlay.show { display:flex }, bấm nút không làm modal hiển thị.
+
+ĐÃ SỬA
+- Khôi phục #rsOverlay và #rsOverlay.show.
+- Khôi phục .rsPanel / .rsHead / .rsBody.
+- Khôi phục card, input, button, task/status.
+- Khôi phục sheet ký, chữ ký, vùng xác nhận.
+- Khôi phục cảnh báo READ & SIGN quá hạn.
+- Khôi phục responsive mobile.
+
+KHÔNG THAY ĐỔI
+- Logic READ & SIGN nghiệp vụ hiện tại.
+- Logic NIGHT STOP/TIẾN ĐỘ V1.51.
