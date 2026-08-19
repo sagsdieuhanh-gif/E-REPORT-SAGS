@@ -1,0 +1,26 @@
+﻿HDSD V1.36 — AD CONTROL CENTER / TIẾN ĐỘ
+
+1. Nhân viên KHÔNG phải bấm thêm nút xác nhận hay nút tạo tiến độ.
+2. TIẾN ĐỘ tự bắt đầu theo dõi khi dữ liệu của flight-session có đủ:
+   - Ngày khai thác;
+   - A/C Reg;
+   - Loại tàu bay;
+   - Bãi đỗ;
+   - và ít nhất MỘT chiều khai thác hợp lệ:
+     + Chuyến đến + STA hoặc ETA; HOẶC
+     + Chuyến đi + STD hoặc ETD.
+3. Có thể chỉ có chuyến đến, chỉ có chuyến đi, hoặc có cả cặp đến–đi.
+4. Một chiều đang nhập dở/chưa có giờ tương ứng chưa được đưa vào identity của card TIẾN ĐỘ.
+5. Mỗi flight-session chỉ có 01 node/card TIẾN ĐỘ. Bổ sung hoặc thay đổi A/C Reg, loại tàu bay, bãi đỗ, ETA/ETD chỉ UPDATE cùng card; không tạo chuyến mới.
+6. Khi chiều còn lại được nhập đủ Flight No + giờ tương ứng, card hiện tại tự mở rộng thành cặp đến–đi.
+7. TIẾN ĐỘ chỉ hiển thị chuyến được tạo trong đúng ngày hiện tại.
+8. Khi đã có PUSHBACK, chuyến tự rời TIẾN ĐỘ và ngừng theo dõi.
+9. Snapshot cũ hoặc snapshot không đạt điều kiện V1.36 không hiển thị trong TIẾN ĐỘ.
+
+Ví dụ hợp lệ:
+- ARR only: 19/08/2026 + N4-3576 + ETA 10:20 + A/C Reg + A/C Type + Bay.
+- DEP only: 19/08/2026 + N4-3577 + ETD 11:30 + A/C Reg + A/C Type + Bay.
+- ARR/DEP: N4-3576 / N4-3577 với các thông tin tương ứng.
+
+Ví dụ KHÔNG đưa vào TIẾN ĐỘ:
+- Chỉ mới nhập N4-12 hoặc một Flight No nhưng chưa đủ các tín hiệu bắt buộc ở trên.
