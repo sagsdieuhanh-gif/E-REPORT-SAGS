@@ -1,0 +1,42 @@
+﻿HDSD V1.66 — DAILY ROSTER PHÂN FORM + AD CHUYỂN THẲNG
+
+QUY TẮC TẠO BIỂU MẪU
+1. Có tên ở Grnd_Cor, không có cùng username ở Grnd_Ld:
+   -> tạo FSAGS 42.1 cho username đó.
+2. Có tên ở Grnd_Ld, không có cùng username ở Grnd_Cor:
+   -> tạo FSAGS 55.1 cho username đó.
+3. Cùng một username có ở cả Grnd_Cor và Grnd_Ld của cùng dòng chuyến:
+   -> chỉ tạo 01 FSAGS 42.3.
+4. Nếu Grnd_Cor và Grnd_Ld là hai người khác nhau:
+   -> tạo 02 biểu mẫu riêng tương ứng.
+5. Nếu một ô có nhiều tên, hệ thống xử lý theo tập hợp username. Username giao nhau giữa hai cột được gộp thành 42.3.
+
+VÍ DỤ
+Grnd_Cor = LOCND, Grnd_Ld = CUONGNM1
+-> LOCND nhận 42.1; CUONGNM1 nhận 55.1.
+
+Grnd_Cor = BANGTD, Grnd_Ld = BANGTD
+-> BANGTD nhận duy nhất 42.3.
+
+Grnd_Cor = THANGDT / DUCHM, Grnd_Ld = THANGDT
+-> THANGDT nhận 42.3; DUCHM nhận 42.1.
+
+AD CHUYỂN NGƯỜI TRỰC TIẾP
+- Mở DAILY ROSTER.
+- Chọn ngày tại mục AD · CHUYỂN NGƯỜI PHỤ TRÁCH TRỰC TIẾP.
+- Bấm TẢI PHÂN CÔNG.
+- Bấm CHUYỂN tại đúng biểu mẫu.
+- Nhập username người mới và OK.
+- Không cần GIAO CA.
+- Mailbox người cũ bị gỡ; người mới nhận assignment realtime.
+- Người cũ nhận revocation và form roster bị gỡ khỏi danh sách CHUYẾN trên bản V1.66.
+
+GIỮ DỮ LIỆU KHI CHUYỂN
+- Form roster V1.66 sync state nghiệp vụ vào RTDB roster_sessions sau persist.
+- Người mới nhận tiếp state đã sync, không tạo trắng.
+- Attachment/file lớn không được copy vào roster_sessions để tránh lưu dữ liệu lớn trong RTDB.
+- Không heartbeat; chỉ sync khi persist.
+
+IMPORT LẠI ROSTER
+- Chuyển người thủ công của AD được giữ bằng manualOverride.
+- Nếu muốn về đúng người gốc trong file roster, bấm THEO ROSTER.
