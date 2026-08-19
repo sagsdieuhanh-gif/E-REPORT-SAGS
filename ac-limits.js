@@ -1,10 +1,10 @@
-/* E-Report SAGS · V1.35 A/C LIMITS / AIRCRAFT RESTRICTIONS
+/* E-Report SAGS · V1.37 A/C LIMITS / AIRCRAFT RESTRICTIONS
    Admin: manual entry + quick paste only. No image/AI import.
    Runtime: match active flight/A-C REG; general limits alert at STA-10, ASU-related limits alert at ETD-10 (fallback STD-10).
 */
 (()=>{
 'use strict';
-const ACL_VERSION='1.4.0';
+const ACL_VERSION='1.4.1';
 const ACL_DOC='AC_LIMITS_CATALOG_V1';
 const ACL_HISTORY_PREFIX='AC_LIMITS_HISTORY_';
 const ACL_KIND='sags_ac_limits_catalog_v1';
@@ -56,7 +56,7 @@ function aclInjectCss(){if($('aclStyle'))return;const s=document.createElement('
 @media(max-width:650px){.aclGrid,.aclGrid3{grid-template-columns:1fr}.aclRoleGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.aclDraftRow{grid-template-columns:1fr 1fr}.aclDraftRow textarea{grid-column:1/-1}.aclDraftRow .aclDraftDel{grid-column:1/-1}}
 `;document.head.appendChild(s)}
 function aclEnsureButton(){if($('roleBtnAcLimits'))return;const row=document.querySelector('.toolbar-row.main-actions');if(!row)return;const b=document.createElement('button');b.id='roleBtnAcLimits';b.textContent='A/C LIMITS';b.style.display='none';b.onclick=()=>aclOpenAdmin();const anchor=$('roleBtnAdminBuilder')||$('roleBtnManual');if(anchor)row.insertBefore(b,anchor);else row.appendChild(b)}
-function aclRefreshRoleUI(){aclEnsureButton();const b=$('roleBtnAcLimits');if(b)b.style.display=aclIsAdmin()?'inline-flex':'none'}
+function aclRefreshRoleUI(){aclEnsureButton();const b=$('roleBtnAcLimits');if(b)b.style.display=(aclIsAdmin()&&!window.SAGS_ADMIN_HUB_V137)?'inline-flex':'none'}
 function aclEnsureUi(){aclInjectCss();aclEnsureButton();if(!$('aclAdminModal')){const d=document.createElement('div');d.id='aclAdminModal';d.innerHTML=`<div class="aclPanel"><div class="aclTop"><h3>A/C LIMITS · AIRCRAFT RESTRICTIONS</h3><button class="aclClose" onclick="aclCloseAdmin()">ĐÓNG</button></div><div class="aclTabs">
 <button class="aclTab active" data-acltab="manual" onclick="aclTab('manual')">1 · THÊM CẢNH BÁO</button><button class="aclTab" data-acltab="quick" onclick="aclTab('quick')">2 · DÁN NHANH</button><button class="aclTab" data-acltab="list" onclick="aclTab('list')">3 · ĐANG HIỆU LỰC</button><button class="aclTab" data-acltab="help" onclick="aclTab('help')">HDSD</button></div>
 <div id="aclAdminStatus" style="min-height:20px;font-weight:800"></div>

@@ -1,0 +1,43 @@
+﻿HDSD V1.37 — CHỨC NĂNG ADMIN
+
+MỤC TIÊU
+- Làm gọn thanh chức năng của tài khoản AD.
+- Các chức năng nghiệp vụ của từng đơn vị vẫn để riêng để AD mở nhanh.
+- Các chức năng quản trị và tiện ích chung được gom vào một nút CHỨC NĂNG ADMIN.
+
+1. TÀI KHOẢN AD
+Trên thanh chính có nút CHỨC NĂNG ADMIN.
+
+2. CÁC CHỨC NĂNG ĐƯỢC GOM
+THEO DÕI / KIỂM SOÁT
+- AD CONTROL CENTER / TIẾN ĐỘ
+- NHẬT KÝ
+- A/C LIMITS
+
+QUẢN TRỊ HỆ THỐNG
+- QUẢN LÝ TÀI KHOẢN
+- FIREBASE USAGE
+- ADMIN BUILDER
+
+TIỆN ÍCH DÙNG CHUNG
+- READ & SIGN
+- CAMSCANER
+- CHỮ KÝ
+
+3. CÁC NÚT VẪN ĐỂ NGOÀI
+Các chức năng nghiệp vụ theo đơn vị và các thao tác phụ thuộc biểu mẫu hiện hành vẫn giữ ngoài thanh chính, ví dụ:
+- CHUYẾN / PVHK / KH / FINAL / BBBT
+- XUẤT / GIAO CA / N/A / TẠO MỚI khi role và ngữ cảnh cho phép.
+
+4. PHÂN QUYỀN
+- Việc gom menu chỉ áp dụng cho giao diện AD.
+- Tài khoản các đơn vị khác vẫn thấy công cụ của họ như trước.
+- Không thay đổi quyền nghiệp vụ hoặc quyền Firebase.
+
+5. READ & SIGN
+- Khi AD có READ & SIGN mới, badge đỏ được phản chiếu lên nút CHỨC NĂNG ADMIN để không bỏ sót thông báo.
+
+6. A/C LIMITS
+- Nút A/C LIMITS riêng không còn hiện trên thanh chính của AD.
+- Mở tại CHỨC NĂNG ADMIN → A/C LIMITS.
+- Logic cảnh báo STA-10 / ETD-10 / STD-10 không thay đổi.
