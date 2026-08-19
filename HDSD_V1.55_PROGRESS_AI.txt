@@ -1,0 +1,15 @@
+﻿HDSD V1.55
+
+FIX TIẾN ĐỘ OFFLOAD
+- FSAGS 42.3 dùng key offloadBag/offloadCargo.
+- FSAGS 42.1 dùng các key tương ứng có tiền tố f421_.
+- V1.55 đọc đồng thời cả hai bộ key.
+- OFFLOAD DONE được xác nhận khi những phần đã phát sinh có FINISH.
+- Nếu Cargo ARR được đánh dấu thì CARGO FINISH là bắt buộc.
+- Với NIGHT STOP: PAX DISEMBARK FINISH + OFFLOAD thực tế hoàn tất => NIGHT STOP COMPLETED => tự gỡ khỏi TIẾN ĐỘ.
+
+AI CROSSCHECK
+- Bỏ qua mọi số/chữ đã bị gạch/xóa.
+- Chỉ check giá trị cuối cùng không bị gạch.
+- Không đưa số cũ bị gạch vào cảnh báo, observations hoặc summary.
+- Nếu một ô chỉ có giá trị đã gạch và không có giá trị mới rõ ràng thì bỏ qua ô đó.
