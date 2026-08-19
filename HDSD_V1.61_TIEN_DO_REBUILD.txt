@@ -1,0 +1,43 @@
+﻿HDSD V1.61 — TIẾN ĐỘ VIẾT LẠI HOÀN TOÀN
+
+1. RESET DỮ LIỆU CŨ
+- Khi AD chạy V1.61 lần đầu, toàn bộ RTDB ops/progress cũ được xóa.
+- Sau reset hệ thống ghi marker __V161_RESET__.
+- Chỉ snapshot schema 2 của engine mới được hiển thị.
+- Nếu client cũ ghi lại node legacy, AD mở TIẾN ĐỘ hoặc bấm LÀM MỚI sẽ xóa các node không phải schema 2.
+- LocalStorage progress legacy cũng được dọn.
+
+2. KIẾN TRÚC MỚI
+- Không dùng code V4.81 / V1.25 / V1.50 / repair V1.57–V1.60.
+- 01 flight-session = 01 RTDB node V2_SESSION_...
+- State của 42.1/42.3 được đọc trực tiếp để tạo snapshot.
+- Không merge, không dedupe legacy, không heartbeat.
+- Chỉ WRITE khi dữ liệu nghiệp vụ thay đổi.
+
+3. ĐIỀU KIỆN ĐƯỢC THEO DÕI
+- Chỉ FSAGS 42.1 hoặc 42.3.
+- Session tạo trong ngày hiện tại.
+- Có Ngày + A/C Reg + A/C Type + Bãi đỗ.
+- Có ít nhất ARR Flight + STA/ETA hoặc DEP Flight + STD/ETD.
+
+4. OFFLOAD
+- BAG FINISH là điều kiện chính để OFFLOAD DONE.
+- 42.3: ưu tiên offloadBagFinish trang 1; nếu trống dùng Completed time muộn nhất của OFFLOADED BAG trang 2.
+- 42.1: tương tự với f421_offCompleted1..6.
+- Chỉ khi Cargo ARR được chọn mới bắt buộc Cargo FINISH.
+- Cargo ARR không chọn => tuyệt đối không chờ Cargo FINISH.
+
+5. ONLOAD
+- Cargo chỉ bắt buộc khi Cargo DEP được chọn.
+- Nếu có thao tác BAG thì BAG FINISH phải có.
+- Không suy có cargo từ giờ cũ/thừa.
+
+6. KẾT THÚC THEO DÕI
+- Chuyến thường: có PUSHBACK => xóa node ngay.
+- NIGHT STOP: có PAX DISEMBARK FINISH + OFFLOAD DONE => xóa node ngay.
+- NIGHT STOP không yêu cầu ONLOAD/BOARDING/CLOSE/PUSHBACK.
+
+7. AD TIẾN ĐỘ
+- Chỉ AD xem.
+- Màn chỉ đọc schema 2, chuyến tạo trong ngày.
+- LÀM MỚI đồng thời dọn node legacy nếu client cũ còn ghi.
