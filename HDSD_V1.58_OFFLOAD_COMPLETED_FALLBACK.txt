@@ -1,0 +1,21 @@
+﻿HDSD V1.58 — OFFLOAD DONE NHẬN COMPLETED TIME
+
+42.3
+Nguồn xác định hành lý đã offload xong:
+1. Ưu tiên offloadBagFinish ở trang 1.
+2. Nếu trống, lấy giờ hợp lệ muộn nhất trong:
+   bag0completed ... bag5completed
+   thuộc bảng OFFLOADED BAG trang 2.
+
+42.1
+1. Ưu tiên f421_offloadBagFinish trang 1.
+2. Nếu trống, lấy giờ hợp lệ muộn nhất trong:
+   f421_offCompleted1 ... f421_offCompleted6.
+
+NIGHT STOP
+- NIGHT STOP đã chọn.
+- PAX DISEMBARKATION FINISH có giờ.
+- Hành lý đã hoàn tất theo một trong các nguồn trên.
+- Nếu không Cargo ARR và không có giờ cargo: không chờ cargo.
+- Nếu có Cargo ARR/có thao tác cargo: phải có CARGO FINISH.
+=> NIGHT STOP COMPLETED và tự gỡ khỏi TIẾN ĐỘ.
