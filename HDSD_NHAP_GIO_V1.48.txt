@@ -1,0 +1,11 @@
+﻿HDSD V1.48 — NHẬP GIỜ NHANH RÚT GỌN
+
+Điểm mới:
+- Chỉ giữ các mốc nghiệp vụ từ đầu chuyến đến PUSHBACK.
+- Bỏ toàn bộ các mốc RELOAD / RELOADED.
+- Bỏ luôn các mốc sau PUSHBACK.
+- Giữ thao tác BÂY GIỜ / NHẬP TAY / SỬA như bản trước.
+
+Mục tiêu:
+- Danh sách ngắn hơn, đúng nhu cầu nhập giờ thực tế của ĐH.
+- Đỡ phải cuộn và đỡ rối khi thao tác trên điện thoại.
