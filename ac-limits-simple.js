@@ -5,7 +5,7 @@
 (()=>{
 'use strict';
 
-const BUILD='V1.88-20260820-01';
+const BUILD='V1.103-20260820-01';
 const DOC='AC_LIMITS_CATALOG_V1';
 const HISTORY_PREFIX='AC_LIMITS_HISTORY_';
 const KIND='sags_ac_limits_catalog_v1';
@@ -25,7 +25,7 @@ const todayISO=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.get
 const uid=()=>`ACL_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,8)}`.toUpperCase();
 const clone=v=>JSON.parse(JSON.stringify(v??null));
 function role(){try{return String(currentRole||currentUserProfile?.role||'').trim().toUpperCase()}catch(_){return ''}}
-function isAdmin(){return role()==='AD'}
+function isAdmin(){return role()==='AD'||(typeof window.v485Can==='function'&&window.v485Can('AC_LIMITS'))}
 function actor(){try{return currentActor?.()||{role:role(),username:String(currentUserProfile?.username||'')}}catch(_){return {role:role()}}}
 function collectionName(){try{if(typeof HANDOVER_COLLECTION!=='undefined'&&HANDOVER_COLLECTION)return HANDOVER_COLLECTION}catch(_){}throw new Error('Không xác định được HANDOVER_COLLECTION.')}
 function db(){if(typeof initHandoverFirebase!=='function')throw new Error('Firebase chưa sẵn sàng.');return initHandoverFirebase()}
@@ -78,7 +78,7 @@ async function loadCatalog(force=false){
   return catalog;
 }
 async function writeCatalog(items,action='SIMPLE_UPDATE'){
-  if(!isAdmin())throw new Error('Chỉ AD được cập nhật A/C LIMITS.');
+  if(!isAdmin())throw new Error('Tài khoản chưa được AD cấp quyền A/C LIMITS.');
   const now=Date.now(),old=clone(catalog),next={kind:KIND,version:now,dailyDate:catalog.dailyDate||'',dailyVersion:catalog.dailyVersion||'',items:(items||[]).map(normalizeItem),updatedAtMs:now,updatedBy:actor()};
   const dbase=db(),col=collectionName();
   await dbase.collection(col).doc(DOC).set(next,{merge:false});
@@ -183,13 +183,13 @@ function ensureUi(){
   $('aclSFilter').addEventListener('input',renderList);
 }
 async function open(){
-  if(!isAdmin())return alert('Chỉ AD được dùng A/C LIMITS.');ensureUi();
+  if(!isAdmin())return alert('Tài khoản chưa được AD cấp quyền A/C LIMITS.');ensureUi();
   try{const old=$('aclAdminModal');if(old)old.style.display='none'}catch(_){}
   $('aclSimpleModal').style.display='flex';status('Đang tải LIMIT...');
   try{await Promise.all([loadCatalog(true),refreshFleet()]);renderRegOptions();renderList();if(!editingId)clearForm(false);status('')}catch(e){status('Không tải được A/C LIMITS: '+String(e?.message||e),true)}
 }
 function close(){const m=$('aclSimpleModal');if(m)m.style.display='none'}
-function patchButton(){const b=$('roleBtnAcLimits');if(b&&!b.dataset.aclSimple){b.dataset.aclSimple='1';b.onclick=e=>{e?.preventDefault?.();open();return false}}}
+function patchButton(){const b=$('roleBtnAcLimits');if(!b)return;if(!b.dataset.aclSimple){b.dataset.aclSimple='1';b.onclick=e=>{e?.preventDefault?.();open();return false}}if(typeof window.v485Can==='function')b.style.display=window.v485Can('AC_LIMITS')?'inline-flex':'none'}
 function init(){ensureUi();patchButton();refreshFleet();const mo=new MutationObserver(patchButton);mo.observe(document.documentElement,{childList:true,subtree:true});setInterval(patchButton,2500);window.aclOpenAdmin=open;window.aclCloseAdmin=close}
 
 window.aclSimpleOpen=open;window.aclSimpleClose=close;window.aclSimpleSave=save;window.aclSimpleClear=()=>{clearForm(false);status('')};window.aclSimpleEdit=editItem;window.aclSimpleToggle=toggleItem;window.aclSimpleDelete=deleteItem;window.ACLSimple={build:BUILD,open,close,refresh:async()=>{await loadCatalog(true);renderList()}};
