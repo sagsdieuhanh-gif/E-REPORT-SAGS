@@ -4,6 +4,7 @@
  */
 (()=>{
 'use strict';
+const ACL_AI_MODEL='gemini-3.6-flash';
 const BUILD='V1.97-20260820-01';
 const APP_CHECK_SITE_KEY='6LeJjYotAAAAAELyLTYPzugn_Zn37U5qOz9tHjqV';
 const $=id=>document.getElementById(id);
@@ -59,7 +60,7 @@ async function sdk(){
     const token=await appCheckMod.getToken(appCheck,false);
     if(!token?.token)throw new Error('Không lấy được Firebase App Check token.');
     const ai=aiMod.getAI(app,{backend:new aiMod.GoogleAIBackend()});
-    const model=aiMod.getGenerativeModel(ai,{model:'gemini-2.5-flash',generationConfig:{responseMimeType:'application/json',temperature:0.1}});
+    const model=aiMod.getGenerativeModel(ai,{model:ACL_AI_MODEL,generationConfig:{responseMimeType:'application/json',temperature:0.1}});
     return {model,appCheck};
   })();
   return aiSdkPromise;
@@ -105,7 +106,7 @@ async function saveSelected(){
   const rows=aiRows.filter(x=>x.selected&&x.action!=='CLEAR');if(!rows.length)return status('Chưa tích dòng nào để lưu.',true);const btn=$('aclAISave');if(btn)btn.disabled=true;let ok=0;
   try{for(const r of rows){if(!r.reg||!r.restriction&&r.category!=='APU INOP')continue;setSimple(r);await window.aclSimpleSave?.();if($('aclSStatus')?.classList.contains('err'))throw new Error($('aclSStatus')?.textContent||('Không lưu được '+r.reg));ok++;}status(`✓ Đã chuyển ${ok} dòng AI đã duyệt vào A/C LIMITS. Kiểm tra danh sách đang lưu bên dưới.`);try{await window.ACLSimple?.refresh?.()}catch(_){}}finally{if(btn)btn.disabled=false}
 }
-function patchHelp(){const p=$('aclSimplePanel');if(!p||p.dataset.aiHelpV197)return;p.dataset.aiHelpV197='1';const details=[...p.querySelectorAll('details.acls-help')].pop();if(details){const li=document.createElement('div');li.className='aclai-note';li.innerHTML='<b>V1.97:</b> AI LIMITS dùng Firebase App Check + reCAPTCHA Enterprise key đã đăng ký của E-REPORT. Token được lấy trước khi gọi AI và tự refresh; AI vẫn chỉ đề xuất, AD phải kiểm tra trước khi lưu; CLEAR không tự xóa.';details.appendChild(li)}}
+function patchHelp(){const p=$('aclSimplePanel');if(!p||p.dataset.aiHelpV197)return;p.dataset.aiHelpV197='1';const details=[...p.querySelectorAll('details.acls-help')].pop();if(details){const li=document.createElement('div');li.className='aclai-note';li.innerHTML='<b>V1.99:</b> AI LIMITS dùng Firebase App Check + reCAPTCHA Enterprise và model <b>gemini-3.6-flash</b>. Token được lấy trước khi gọi AI và tự refresh; AI vẫn chỉ đề xuất, AD phải kiểm tra trước khi lưu; CLEAR không tự xóa.';details.appendChild(li)}}
 function install(){if(ensureUi())patchHelp();else if(!$('aclAIBox'))setTimeout(install,350)}
 function hookSimpleOpen(){
   try{
@@ -119,6 +120,7 @@ function hookSimpleOpen(){
   }catch(_){}
   if(!$('aclAIBox'))setTimeout(hookSimpleOpen,500);
 }
+window.ACL_AI_MODEL=ACL_AI_MODEL;
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{install();hookSimpleOpen()},{once:true});else setTimeout(()=>{install();hookSimpleOpen()},0);
 window.ACLLimitAI={build:BUILD,read:readAI,clear:clearAI};
 })();

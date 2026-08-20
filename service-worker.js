@@ -1,5 +1,5 @@
-const CACHE_NAME="sags-v1-98-qte-wizard-20260820-01";
-const BUILD="V1.98-20260820-01";
+const CACHE_NAME="sags-v1-99-ai-model-20260820-01";
+const BUILD="V1.99-20260820-01";
 const APP_SHELL=[
   "./index.html","./version.json","./firebase-config.js","./daily-roster.js","./roster-extra-seed.js","./v488-archive.js","./ai-crosscheck.js","./document-scanner.js","./admin-builder.js","./ac-limits.js","./ac-limits-simple.js","./ac-limits-ai-review.js","./bbbt-quick-entry.js","./roster-completed.js","./roster-leg-workspace.js",
   "./alert-mva.mp3","./alert-mvt.mp3","./alert-pushback-missing.mp3","./alert-read-sign.mp3","./alert-ket-so-moi.mp3","./alert-ket-so-thay-doi.mp3",
