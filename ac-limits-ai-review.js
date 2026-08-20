@@ -1,10 +1,11 @@
-/* E-REPORT SAGS · A/C LIMITS AI IMAGE REVIEW · V1.94
+/* E-REPORT SAGS · A/C LIMITS AI IMAGE REVIEW · V1.97
  * AI is input assistance only: image -> proposed rows -> AD reviews -> save.
  * Never auto-applies an unread/uncertain row and never auto-deletes CLEAR rows.
  */
 (()=>{
 'use strict';
-const BUILD='V1.96-20260820-01';
+const BUILD='V1.97-20260820-01';
+const APP_CHECK_SITE_KEY='6LeJjYotAAAAAELyLTYPzugn_Zn37U5qOz9tHjqV';
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const normReg=v=>String(v??'').trim().toUpperCase().replace(/\s+/g,'').replace(/^([A-Z]{2})A(?=\d)/,'$1-A');
@@ -38,15 +39,28 @@ async function filePart(file){const data=await new Promise((resolve,reject)=>{co
 async function sdk(){
   if(aiSdkPromise)return aiSdkPromise;
   aiSdkPromise=(async()=>{
-    const [appMod,aiMod]=await Promise.all([
+    const [appMod,appCheckMod,aiMod]=await Promise.all([
       import('https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js'),
+      import('https://www.gstatic.com/firebasejs/12.1.0/firebase-app-check.js'),
       import('https://www.gstatic.com/firebasejs/12.1.0/firebase-ai.js')
     ]);
-    const opts=window.firebase?.app?.().options;if(!opts?.apiKey||!opts?.projectId)throw new Error('Không lấy được Firebase config của SAGS.');
+    const opts=window.firebase?.app?.().options;if(!opts?.apiKey||!opts?.projectId||!opts?.appId)throw new Error('Không lấy được Firebase config đầy đủ của SAGS.');
     let app;try{app=appMod.getApp('sags-acl-ai')}catch(_){app=appMod.initializeApp(opts,'sags-acl-ai')}
+    let appCheck;
+    try{
+      appCheck=appCheckMod.initializeAppCheck(app,{
+        provider:new appCheckMod.ReCaptchaEnterpriseProvider(APP_CHECK_SITE_KEY),
+        isTokenAutoRefreshEnabled:true
+      });
+    }catch(e){
+      // initializeAppCheck chỉ được gọi một lần/app. Nếu module đã được khởi tạo, lấy instance hiện có.
+      try{appCheck=appCheckMod.getAppCheck(app)}catch(_){throw e}
+    }
+    const token=await appCheckMod.getToken(appCheck,false);
+    if(!token?.token)throw new Error('Không lấy được Firebase App Check token.');
     const ai=aiMod.getAI(app,{backend:new aiMod.GoogleAIBackend()});
     const model=aiMod.getGenerativeModel(ai,{model:'gemini-2.5-flash',generationConfig:{responseMimeType:'application/json',temperature:0.1}});
-    return {model};
+    return {model,appCheck};
   })();
   return aiSdkPromise;
 }
@@ -91,7 +105,7 @@ async function saveSelected(){
   const rows=aiRows.filter(x=>x.selected&&x.action!=='CLEAR');if(!rows.length)return status('Chưa tích dòng nào để lưu.',true);const btn=$('aclAISave');if(btn)btn.disabled=true;let ok=0;
   try{for(const r of rows){if(!r.reg||!r.restriction&&r.category!=='APU INOP')continue;setSimple(r);await window.aclSimpleSave?.();if($('aclSStatus')?.classList.contains('err'))throw new Error($('aclSStatus')?.textContent||('Không lưu được '+r.reg));ok++;}status(`✓ Đã chuyển ${ok} dòng AI đã duyệt vào A/C LIMITS. Kiểm tra danh sách đang lưu bên dưới.`);try{await window.ACLSimple?.refresh?.()}catch(_){}}finally{if(btn)btn.disabled=false}
 }
-function patchHelp(){const p=$('aclSimplePanel');if(!p||p.dataset.aiHelpV194)return;p.dataset.aiHelpV194='1';const details=[...p.querySelectorAll('details.acls-help')].pop();if(details){const li=document.createElement('div');li.className='aclai-note';li.innerHTML='<b>V1.94:</b> UP ẢNH + AI chỉ tạo đề xuất. AD phải kiểm tra trước khi lưu; CLEAR không tự xóa.';details.appendChild(li)}}
+function patchHelp(){const p=$('aclSimplePanel');if(!p||p.dataset.aiHelpV197)return;p.dataset.aiHelpV197='1';const details=[...p.querySelectorAll('details.acls-help')].pop();if(details){const li=document.createElement('div');li.className='aclai-note';li.innerHTML='<b>V1.97:</b> AI LIMITS dùng Firebase App Check + reCAPTCHA Enterprise key đã đăng ký của E-REPORT. Token được lấy trước khi gọi AI và tự refresh; AI vẫn chỉ đề xuất, AD phải kiểm tra trước khi lưu; CLEAR không tự xóa.';details.appendChild(li)}}
 function install(){if(ensureUi())patchHelp();else if(!$('aclAIBox'))setTimeout(install,350)}
 function hookSimpleOpen(){
   try{
