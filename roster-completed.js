@@ -1,12 +1,15 @@
-/* E-REPORT SAGS · DAILY ROSTER COMPLETED TASKS · V1.86 BUILD 02
+/* E-REPORT SAGS · DAILY ROSTER COMPLETED TASKS + CUMULATIVE IMPORT · V1.87
    Shared flight completion status: one DATE + flight pair => all roster assignments complete together.
    No heartbeat. RTDB is used only for lightweight completion state. */
 (function(root){
   "use strict";
 
-  const BUILD="V1.86-20260820-02";
+  const BUILD="V1.87-20260820-01";
   const SESSION_PATH="roster_sessions";
   const STATUS_PATH="roster_flight_status";
+  const MANIFEST_PATH="roster_manifests";
+  const MAIL_PATH="roster_mail";
+  const REVOKE_PATH="roster_revocations";
   let activeTab="pending";
   let renderGuard=false;
   let statusRef=null,statusCb=null,statusDate="",statusCache={};
@@ -93,7 +96,7 @@
       const tools=document.createElement("div");tools.id="rosterCompletedTools";tools.innerHTML=`<button id="rosterCompletedClear" type="button">🗑 XÓA DANH SÁCH HOÀN THÀNH</button><button id="rosterCompletedGuideBtn" type="button">HDSD</button>`;tabs.insertAdjacentElement("afterend",tools);
       document.getElementById("rosterCompletedClear").onclick=clearCompletedList;
       document.getElementById("rosterCompletedGuideBtn").onclick=()=>{const g=document.getElementById("rosterCompletedGuide");if(g)g.style.display=g.style.display==="block"?"none":"block";};
-      const guide=document.createElement("div");guide.id="rosterCompletedGuide";guide.innerHTML=`<b>HDSD:</b> Chỉ DAILY ROSTER <b>ngày hiện tại</b> được tính. Khi 42.1/42.3 của cùng chuyến lưu <b>PUSHBACK</b>, trạng thái hoàn thành nhẹ được đồng bộ theo <b>Ngày + cặp chuyến</b>; 55.1 và các assignment khác của đúng chuyến tự chuyển sang <b>✅ ĐÃ HOÀN THÀNH</b>. Xóa PUSHBACK sẽ đưa chuyến về CHUYẾN. Dọn cuối ca chỉ ẩn danh sách hoàn thành, không xóa hồ sơ.`;tools.insertAdjacentElement("afterend",guide);
+      const guide=document.createElement("div");guide.id="rosterCompletedGuide";guide.innerHTML=`<b>HDSD:</b> Chỉ DAILY ROSTER <b>ngày hiện tại</b> được tính. Khi 42.1/42.3 của cùng chuyến lưu <b>PUSHBACK</b>, trạng thái hoàn thành nhẹ được đồng bộ theo <b>Ngày + cặp chuyến</b>; 55.1 và các assignment khác của đúng chuyến tự chuyển sang <b>✅ ĐÃ HOÀN THÀNH</b>. Xóa PUSHBACK sẽ đưa chuyến về CHUYẾN. Dọn cuối ca chỉ ẩn danh sách hoàn thành, không xóa hồ sơ. <b>ROSTER CỘNG DỒN:</b> có thể tạo roster nhiều đợt trong cùng ngày; đợt sau chỉ thêm chuyến mới hoặc cập nhật assignment trùng, không tự gỡ các chuyến đã tạo từ đợt trước.`;tools.insertAdjacentElement("afterend",guide);
       const empty=document.createElement("div");empty.id="rosterTaskEmpty";listEl.insertAdjacentElement("afterend",empty);
     }
     return tabs;
@@ -182,6 +185,86 @@
   }
   root.dailyRosterClearCompletedList=clearCompletedList;
 
+  // V1.87: DAILY ROSTER is cumulative within the operating day.
+  // A later import adds/updates assignments but never removes assignments that were
+  // created by an earlier batch on the same date. Explicit reassignment/revoke flows
+  // remain untouched. This is implemented at the one RTDB multi-path update used by
+  // DAILY ROSTER publishing, so the original parser/role mapping stays unchanged.
+  function installCumulativeRosterMerge(){
+    if(root.__rosterCumulativeMergeV187)return true;
+    const originalRef=root.sagsV470Ref;
+    if(typeof originalRef!=="function")return false;
+    root.__rosterCumulativeMergeV187=true;
+
+    root.sagsV470Ref=function(path=""){
+      const ref=originalRef(path);
+      if(S(path)!==""||!ref||typeof ref.update!=="function")return ref;
+      const originalUpdate=ref.update.bind(ref);
+      ref.update=async function(patch){
+        if(!patch||typeof patch!=="object"||Array.isArray(patch))return originalUpdate(patch);
+        const manifestKeys=Object.keys(patch).filter(k=>/^roster_manifests\/[^/]+$/.test(k));
+        if(!manifestKeys.length)return originalUpdate(patch);
+
+        let preserved=0,updated=0,added=0;
+        for(const manifestKey of manifestKeys){
+          const incoming=patch[manifestKey];
+          if(!incoming||typeof incoming!=="object"||!incoming.items)continue;
+          const dateKey=manifestKey.slice((MANIFEST_PATH+"/").length);
+          let old={};
+          try{old=(await originalRef(`${MANIFEST_PATH}/${dateKey}`).once("value")).val()||{};}catch(e){old={};}
+          const oldItems=(old.items&&typeof old.items==="object")?old.items:{};
+          const newItems=(incoming.items&&typeof incoming.items==="object")?incoming.items:{};
+          const merged={...oldItems,...newItems};
+          for(const id of Object.keys(newItems)){if(oldItems[id])updated++;else added++;}
+
+          // DAILY ROSTER legacy publish marks assignments missing from the new file as
+          // ROSTER_REMOVED. In cumulative mode those entries are deliberately cancelled.
+          for(const [id,item] of Object.entries(oldItems)){
+            if(Object.prototype.hasOwnProperty.call(newItems,id))continue;
+            preserved++;
+            const user=safeId(item?.user||"");
+            const aid=safeId(id);
+            if(user&&aid){
+              const mailKey=`${MAIL_PATH}/${user}/items/${aid}`;
+              if(Object.prototype.hasOwnProperty.call(patch,mailKey)&&patch[mailKey]===null)delete patch[mailKey];
+              const revokeKey=`${REVOKE_PATH}/${user}/items/${aid}`;
+              if(patch[revokeKey]?.reason==="ROSTER_REMOVED")delete patch[revokeKey];
+            }
+          }
+
+          patch[manifestKey]={
+            ...old,
+            ...incoming,
+            schema:Math.max(Number(old.schema||0),Number(incoming.schema||0),2),
+            cumulative:true,
+            cumulativeMode:"MERGE_SAME_DAY",
+            lastBatchFileName:S(incoming.fileName||""),
+            lastBatchAtMs:Number(incoming.publishedAtMs||now()),
+            items:merged
+          };
+        }
+        root.__ROSTER_CUMULATIVE_LAST={preserved,updated,added,atMs:now()};
+        return originalUpdate(patch);
+      };
+      return ref;
+    };
+
+    // Rewrite the legacy success text so operators are not told that older assignments
+    // were deleted when V1.87 intentionally preserved them.
+    const basePublish=root.dailyRosterPublish;
+    if(typeof basePublish==="function")root.dailyRosterPublish=async function(){
+      const result=await basePublish.apply(this,arguments);
+      try{
+        const e=document.getElementById("drStatus"),m=root.__ROSTER_CUMULATIVE_LAST||{};
+        if(e&&!e.classList.contains("err")&&/Đã phân công|phân công/i.test(S(e.textContent))){
+          e.textContent=`✓ ROSTER CỘNG DỒN: thêm ${Number(m.added||0)} · cập nhật ${Number(m.updated||0)} · giữ ${Number(m.preserved||0)} phân công đã có trong ngày. Không tự xóa chuyến cũ.`;
+        }
+      }catch(e){}
+      return result;
+    };
+    return true;
+  }
+
   function installHooks(){
     if(root.__rosterCompletedHooksV186B02)return;root.__rosterCompletedHooksV186B02=true;
     try{const baseRender=root.renderFlightSessionList;if(typeof baseRender==="function")root.renderFlightSessionList=function(){const out=baseRender.apply(this,arguments);setTimeout(enhanceList,0);return out;};}catch(e){}
@@ -192,5 +275,6 @@
     setInterval(()=>{if(statusDate&&statusDate!==todayIso()){statusCache={};startStatusListener();try{root.renderFlightSessionList?.();}catch(e){}}},60000);
   }
 
-  installHooks();root.__ROSTER_COMPLETED_BUILD=BUILD;
+  installCumulativeRosterMerge();
+  installHooks();root.__ROSTER_COMPLETED_BUILD=BUILD;root.__ROSTER_CUMULATIVE_BUILD=BUILD;
 })(window);
