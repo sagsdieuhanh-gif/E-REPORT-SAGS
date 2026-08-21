@@ -1,5 +1,5 @@
-const CACHE_NAME="sags-v3-30-work-part-group-permissions-20260821-02";
-const BUILD="V3.30-20260821-02";
+const CACHE_NAME="sags-v3-31-no-pilot-control-20260821-01";
+const BUILD="V3.31-20260821-01";
 const APP_SHELL=[
   "./9Gfinal.png",
   "./CBTT.png",
