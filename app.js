@@ -1,4 +1,4 @@
-/* E-REPORT/SAGS V3.11 CLEAN NAV FIX - consolidated runtime. Do not split without updating index phase calls. */
+/* E-REPORT/SAGS V3.14 CONTEXTUAL BACK - consolidated runtime. Do not split without updating index phase calls. */
 (function(){
 'use strict';
 var phase=(document.currentScript&&document.currentScript.dataset&&document.currentScript.dataset.phase)||'';
@@ -1651,162 +1651,156 @@ if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",
 
 /* ===== END archive-export-v34.js ===== */
 
-/* ===== BEGIN global-back-v35.js ===== */
-/* E-REPORT/SAGS V3.5 · GLOBAL BACK NAVIGATION
-   Một nút QUAY LẠI thống nhất cho mọi màn sau đăng nhập.
-   - Nếu đang ở popup/màn con: đóng đúng lớp trên cùng để trở về màn trước.
-   - Nếu đang ở biểu mẫu/màn nghiệp vụ: trở về màn chờ sau đăng nhập.
-   - Không can thiệp login, không dùng browser history, không xóa dữ liệu/draft.
+/* ===== BEGIN contextual-back-v314.js ===== */
+/* E-REPORT/SAGS V3.14 · CONTEXTUAL BACK NAVIGATION
+   QUAY LẠI nằm trong chính màn/popup đang mở, không còn nút nổi đè giao diện.
+   Ưu tiên nút back nội bộ của màn. Nếu màn hiện tại không có back riêng thì đóng đúng
+   lớp hiện tại để lộ lại màn ngay trước đó. Không xóa draft/flight data.
 */
 (function(){
   "use strict";
-  const BTN_ID="sagsGlobalBackBtn";
-  const BUILD="V3.5-20260821-01";
+  const ROW_ID="sagsContextBackRow";
+  const BTN_ID="sagsContextBackBtn";
+  const BUILD="V3.14-20260821-01";
 
   function visible(el){
     if(!el || !el.isConnected)return false;
-    const s=getComputedStyle(el);
-    if(s.display==="none" || s.visibility==="hidden" || Number(s.opacity||1)===0)return false;
+    const st=getComputedStyle(el);
+    if(st.display==="none" || st.visibility==="hidden" || Number(st.opacity||1)===0)return false;
     const r=el.getBoundingClientRect();
     return r.width>4 && r.height>4;
   }
-  function isHomeVisible(){return visible(document.getElementById("roleHomeIdle"));}
-  function isLoginVisible(){return visible(document.getElementById("roleLoginModal"));}
   function zOf(el){const z=parseInt(getComputedStyle(el).zIndex,10);return Number.isFinite(z)?z:0;}
+  function logged(){return !!String(window.currentRole||window.__sagsGetSession?.()?.role||'');}
+  function isLoginVisible(){return visible(document.getElementById('roleLoginModal'));}
 
-  function layerCandidates(){
+  function layers(){
     const q=[
       '[role="dialog"]','[aria-modal="true"]','.sagsAdminModal',
       '[id$="Modal"]','[id$="Overlay"]','[id$="Scanner"]',
       '#flightSessionsModal','#flightSessionModal','#handoverMenu','#handoverQrScanner',
       '#quickTimeModal','#fs09QuickModal','#rsOverlay','#finalFormsModal'
     ].join(',');
-    const seen=new Set(), out=[];
+    const out=[],seen=new Set();
     document.querySelectorAll(q).forEach(el=>{
-      if(seen.has(el))return;seen.add(el);
-      if(!visible(el))return;
-      if(el.id===BTN_ID || el.id==="roleLoginModal" || el.id==="roleHomeIdle")return;
-      // Toast/cảnh báo nhỏ không được coi là "trang" để nút quay lại chiếm thao tác ĐÃ BIẾT.
-      const r=el.getBoundingClientRect();
-      const screenArea=Math.max(1,innerWidth*innerHeight);
-      const area=Math.max(1,r.width*r.height);
-      const modalLike=el.getAttribute('aria-modal')==='true' || el.getAttribute('role')==='dialog' || /modal|overlay|scanner|manager|panel/i.test((el.id||'')+' '+(el.className||''));
+      if(seen.has(el) || !visible(el))return;seen.add(el);
+      if(el.id==='roleLoginModal' || el.id==='roleHomeIdle')return;
+      if(el.id===ROW_ID || el.id===BTN_ID)return;
+      const r=el.getBoundingClientRect(), area=Math.max(1,r.width*r.height), screen=Math.max(1,innerWidth*innerHeight);
+      const modalLike=el.getAttribute('aria-modal')==='true'||el.getAttribute('role')==='dialog'||/modal|overlay|scanner|manager|panel/i.test((el.id||'')+' '+(el.className||''));
       if(!modalLike)return;
-      if(area/screenArea<0.12 && zOf(el)<10000)return;
+      if(area/screen<0.12 && zOf(el)<10000)return;
       out.push(el);
     });
     out.sort((a,b)=>zOf(a)-zOf(b));
     return out;
   }
-  function topLayer(){const a=layerCandidates();return a.length?a[a.length-1]:null;}
+  function topLayer(){const a=layers();return a.length?a[a.length-1]:null;}
+  function txt(b){return String(b?.textContent||b?.getAttribute?.('aria-label')||'').replace(/\s+/g,' ').trim().toUpperCase();}
 
-  function textOf(b){return String(b?.textContent||b?.getAttribute?.('aria-label')||'').replace(/\s+/g,' ').trim().toUpperCase();}
-  function findBackControl(layer){
-    if(!layer)return null;
-    const controls=[...layer.querySelectorAll('button,[role="button"],a')].filter(visible);
-    const scored=controls.map((b,i)=>{
-      const txt=textOf(b), oc=String(b.getAttribute?.('onclick')||'');
+  function controls(layer){
+    return [...layer.querySelectorAll('button,[role="button"],a')].filter(b=>visible(b)&&b.id!==BTN_ID&&!b.closest('#'+ROW_ID));
+  }
+  function findNativeBack(layer){
+    const arr=controls(layer).map((b,i)=>{
+      const t=txt(b), oc=String(b.getAttribute?.('onclick')||''), meta=String(b.id||'')+' '+String(b.className||'');
       let score=0;
-      if(/QUAY LẠI|TRỞ LẠI|DANH SÁCH/.test(txt))score+=100;
-      if(/^←|^‹/.test(txt))score+=95;
-      if(/ĐỂ SAU|HỦY|HUỶ/.test(txt))score+=88;
-      if(/ĐÓNG|CLOSE/.test(txt))score+=70;
-      if(/^[×✕X]$/.test(txt))score+=72;
-      if(/close|back/i.test(oc))score+=65;
-      if(/close|back/i.test(String(b.id||'')+' '+String(b.className||'')))score+=80;
-      if(/quay lại|đóng/i.test(String(b.getAttribute?.('aria-label')||'')))score+=15;
-      // Ưu tiên nút trên header hoặc nằm phía trên của panel.
-      const r=b.getBoundingClientRect(), lr=layer.getBoundingClientRect();
-      if(r.top < lr.top + Math.min(110,lr.height*.20))score+=15;
+      if(/QUAY LẠI|TRỞ LẠI/.test(t))score+=120;
+      if(/^←|^‹/.test(t))score+=100;
+      if(/DANH SÁCH CHUYẾN|DANH SÁCH/.test(t))score+=90;
+      if(/back/i.test(oc)||/back/i.test(meta))score+=70;
+      // Không coi nút đóng là back native; nó chỉ là fallback khi màn không có back riêng.
+      if(/ĐÓNG|CLOSE|HỦY|HUỶ/.test(t)||/close/i.test(oc)||/close/i.test(meta))score-=100;
       return {b,score,i};
-    }).filter(x=>x.score>0).sort((a,b)=>b.score-a.score || a.i-b.i);
-    return scored[0]?.b||null;
+    }).filter(x=>x.score>0).sort((a,b)=>b.score-a.score||a.i-b.i);
+    return arr[0]?.b||null;
+  }
+  function findClose(layer){
+    const arr=controls(layer).map((b,i)=>{
+      const t=txt(b), oc=String(b.getAttribute?.('onclick')||''), meta=String(b.id||'')+' '+String(b.className||'');
+      let score=0;
+      if(/ĐÓNG|CLOSE/.test(t))score+=100;
+      if(/^[×✕X]$/.test(t))score+=95;
+      if(/HỦY|HUỶ|ĐỂ SAU/.test(t))score+=75;
+      if(/close/i.test(oc)||/close/i.test(meta))score+=85;
+      const r=b.getBoundingClientRect(), lr=layer.getBoundingClientRect();
+      if(r.top<lr.top+Math.min(120,lr.height*.22))score+=10;
+      return {b,score,i};
+    }).filter(x=>x.score>0).sort((a,b)=>b.score-a.score||a.i-b.i);
+    return arr[0]?.b||null;
   }
 
-  function returnHome(){
-    try{if(typeof window.closeFormMenu==='function')window.closeFormMenu();}catch(_){ }
-    try{if(typeof window.showRoleHomeIdle==='function')window.showRoleHomeIdle();}catch(_){ }
-    try{if(typeof window.v114ApplyRoleHomeBackground==='function')window.v114ApplyRoleHomeBackground();}catch(_){ }
-    try{window.scrollTo({top:0,left:0,behavior:'smooth'});}catch(_){window.scrollTo(0,0);}
-    update();
+  function panelFor(layer){
+    if(!layer)return null;
+    const preferred=layer.querySelector('.ahPanel,.fwcPanel,.rsPanel,.finalPanel,.modal-content,.modalContent,[class*="ModalPanel"],[class*="modalPanel"],[class*="Panel"]');
+    if(preferred && visible(preferred))return preferred;
+    const kids=[...layer.children].filter(visible).sort((a,b)=>{
+      const ar=a.getBoundingClientRect(), br=b.getBoundingClientRect();
+      return (br.width*br.height)-(ar.width*ar.height);
+    });
+    return kids[0]||layer;
   }
 
   function goBack(ev){
     try{ev?.preventDefault?.();ev?.stopPropagation?.();ev?.stopImmediatePropagation?.();}catch(_){ }
     const layer=topLayer();
-    if(layer){
-      const control=findBackControl(layer);
-      if(control){
-        control.click();
-        setTimeout(update,30);
-        setTimeout(update,180);
-        return;
+    if(!layer)return;
+    const native=findNativeBack(layer);
+    if(native){native.click();setTimeout(sync,40);setTimeout(sync,180);return;}
+    const close=findClose(layer);
+    if(close){close.click();setTimeout(sync,40);setTimeout(sync,180);return;}
+    const id=String(layer.id||''),stem=id.replace(/(Modal|Overlay|Scanner)$/i,'');
+    for(const name of [`close${stem}`,`close${id}`,`stop${stem}`]){
+      if(typeof window[name]==='function'){
+        try{window[name]();setTimeout(sync,50);return;}catch(_){ }
       }
-      // Nếu lớp trên cùng có API close theo id, thử quy ước tên hàm an toàn.
-      const id=String(layer.id||'');
-      const stem=id.replace(/(Modal|Overlay|Scanner)$/i,'');
-      const guesses=[`close${stem}`,`close${id}`,`stop${stem}`];
-      for(const name of guesses){
-        if(typeof window[name]==='function'){
-          try{window[name]();setTimeout(update,30);return;}catch(_){ }
-        }
-      }
-      // Không ẩn cưỡng bức lớp chưa biết để tránh bỏ cleanup camera/listener.
-      returnHome();
-      return;
     }
-    if(!isHomeVisible())returnHome();
+    // Không ẩn cưỡng bức DOM chưa biết vì có thể bỏ cleanup camera/listener.
   }
 
-  function ensure(){
-    let b=document.getElementById(BTN_ID);
-    if(b)return b;
-    b=document.createElement('button');
-    b.id=BTN_ID;
-    b.type='button';
-    b.setAttribute('aria-label','Quay lại trang trước');
-    b.innerHTML='<span aria-hidden="true">←</span><span>QUAY LẠI</span>';
-    b.addEventListener('click',goBack,true);
-    document.body.appendChild(b);
-    return b;
-  }
-  function update(){
-    const b=ensure();
-    const logged=!!String(window.currentRole||window.__sagsGetSession?.()?.role||'');
-    const hasLayer=!!topLayer();
-    const show=logged && !isLoginVisible() && (hasLayer || !isHomeVisible());
-    b.classList.toggle('show',show);
-    b.setAttribute('aria-hidden',show?'false':'true');
+  function removeInjected(){document.getElementById(ROW_ID)?.remove();}
+  function sync(){
+    // Dọn nút nổi legacy nếu DOM cache cũ còn sót.
+    document.getElementById('sagsGlobalBackBtn')?.remove();
+    document.getElementById('sags-global-back-v35-style')?.remove();
+    const layer=topLayer();
+    if(!logged() || isLoginVisible() || !layer){removeInjected();return;}
+    // Nếu màn đã có nút quay lại đúng ngữ cảnh thì không chèn thêm.
+    if(findNativeBack(layer)){removeInjected();return;}
+    const panel=panelFor(layer);
+    if(!panel){removeInjected();return;}
+    let row=document.getElementById(ROW_ID);
+    if(row && !panel.contains(row)){row.remove();row=null;}
+    if(!row){
+      row=document.createElement('div');row.id=ROW_ID;row.className='sagsContextBackRow';
+      const b=document.createElement('button');b.id=BTN_ID;b.type='button';b.className='sagsContextBackBtn';
+      b.setAttribute('aria-label','Quay lại trang trước');b.innerHTML='<span aria-hidden="true">←</span> QUAY LẠI';
+      b.addEventListener('click',goBack,true);row.appendChild(b);
+      // Nằm trong trang/panel, ngay đầu nội dung; không fixed/overlay.
+      panel.insertBefore(row,panel.firstChild||null);
+    }
   }
 
-  const css=document.createElement('style');
-  css.id='sags-global-back-v35-style';
-  css.textContent=`
-#${BTN_ID}{position:fixed;top:max(28px,calc(env(safe-area-inset-top) + 24px));left:max(8px,env(safe-area-inset-left));z-index:2147482990;display:none;align-items:center;gap:6px;min-height:38px;padding:7px 11px;border:2px solid rgba(255,255,255,.95);border-radius:12px;background:#003B8E;color:#fff;box-shadow:0 4px 14px rgba(0,0,0,.28);font:900 12px/1 Arial;letter-spacing:.1px;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
-#${BTN_ID}.show{display:inline-flex}
-#${BTN_ID} span:first-child{font-size:20px;line-height:1;margin-top:-1px}
+  const css=document.createElement('style');css.id='sags-context-back-v314-style';css.textContent=`
+#${ROW_ID}{display:flex;align-items:center;justify-content:flex-start;gap:8px;margin:0 0 10px 0;padding:0;position:relative;z-index:2}
+#${BTN_ID}{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:42px;padding:9px 14px;border:1px solid #d2dde8;border-radius:12px;background:#eef3f8;color:#27384b;font:900 14px/1.1 Arial;cursor:pointer;box-shadow:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+#${BTN_ID} span{font-size:20px;line-height:1}
 #${BTN_ID}:active{transform:translateY(1px)}
-@media(max-width:480px){#${BTN_ID}{min-height:36px;padding:6px 9px;font-size:11px;border-radius:10px}}
-@media print{#${BTN_ID}{display:none!important}}
+@media(max-width:480px){#${BTN_ID}{min-height:40px;padding:8px 12px;font-size:13px;border-radius:11px}}
+@media print{#${ROW_ID}{display:none!important}}
 `;
   document.head.appendChild(css);
 
-  // Theo dõi thay đổi màn/modal mà không cần sửa hàng chục hàm open/close cũ.
-  let raf=0;
-  const requestUpdate=()=>{if(raf)return;raf=requestAnimationFrame(()=>{raf=0;update();});};
-  new MutationObserver(requestUpdate).observe(document.documentElement,{subtree:true,attributes:true,attributeFilter:['style','class','aria-hidden']});
-  document.addEventListener('click',()=>setTimeout(update,0),true);
-  document.addEventListener('keydown',e=>{if(e.key==='Escape' && document.getElementById(BTN_ID)?.classList.contains('show'))goBack(e);},true);
-  window.addEventListener('pageshow',update);
-  window.addEventListener('resize',requestUpdate);
-  window.sagsGlobalGoBack=goBack;
-  window.__SAGS_GLOBAL_BACK_BUILD=BUILD;
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(update,80),{once:true});
-  else setTimeout(update,80);
-  setTimeout(update,500);
+  let raf=0;const requestSync=()=>{if(raf)return;raf=requestAnimationFrame(()=>{raf=0;sync();});};
+  new MutationObserver(requestSync).observe(document.documentElement,{subtree:true,attributes:true,childList:true,attributeFilter:['style','class','aria-hidden']});
+  document.addEventListener('click',()=>setTimeout(sync,0),true);
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById(BTN_ID))goBack(e);},true);
+  window.addEventListener('pageshow',sync);window.addEventListener('resize',requestSync);
+  window.sagsContextGoBack=goBack;window.sagsGlobalGoBack=goBack;window.__SAGS_CONTEXT_BACK_BUILD=BUILD;
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(sync,100),{once:true});else setTimeout(sync,100);
 })();
 
-/* ===== END global-back-v35.js ===== */
+/* ===== END contextual-back-v314.js ===== */
 }
 if(phase==='tools'){
 
@@ -5467,7 +5461,7 @@ body.v38-clean-workflow #roleHomeIdle{pointer-events:none}
     // every few seconds caused READ & SIGN and GIAO CA to visibly blink on mobile.
     if(nav.dataset.v311Sig===sig && document.getElementById('v38NavFlights') && document.getElementById('v38NavMulti'))return;
     nav.dataset.v311Sig=sig;
-    nav.innerHTML=`<button class="v38NavBtn" id="v38NavFlights">✈ CHUYẾN HÔM NAY</button><button class="v38NavBtn purple" id="v38NavMulti">⇄ MULTITASK</button>${shiftAvailable?'<button class="v38NavBtn" style="background:#b45309" id="v310ShiftNav">🔄 GIAO CA</button>':''}${rsAvailable?'<button class="v38NavBtn rs" id="v38NavRS">READ & SIGN</button>':''}<span class="v38NavSpacer"></span><span id="v38FlowHint">FLIGHT WORKSPACE · V3.11</span>${isAD()?'<button class="v38NavBtn admin" id="v38NavAdmin">⚙ QUẢN LÝ</button>':''}`;
+    nav.innerHTML=`<button class="v38NavBtn" id="v38NavFlights">✈ CHUYẾN HÔM NAY</button><button class="v38NavBtn purple" id="v38NavMulti">⇄ MULTITASK</button>${shiftAvailable?'<button class="v38NavBtn" style="background:#b45309" id="v310ShiftNav">🔄 GIAO CA</button>':''}${rsAvailable?'<button class="v38NavBtn rs" id="v38NavRS">READ & SIGN</button>':''}<span class="v38NavSpacer"></span><span id="v38FlowHint">FLIGHT WORKSPACE · V3.14</span>${isAD()?'<button class="v38NavBtn admin" id="v38NavAdmin">⚙ QUẢN LÝ</button>':''}`;
     document.getElementById('v38NavFlights').onclick=()=>root.flightWorkspaceOpenList?.(today());
     document.getElementById('v38NavMulti').onclick=()=>root.sagsV36OpenMultitask?.();
     const sh=document.getElementById('v310ShiftNav');if(sh)sh.onclick=()=>root.v310ShiftOpen?.('create');
@@ -5515,7 +5509,6 @@ body.v38-clean-workflow #roleHomeIdle{pointer-events:none}
     const r=role();
     if((r==='CBTT'||isAD())&&canFeature('FINAL'))buttons.push('<button class="v38OpBtn" onclick="v38OpenLegacyModule(\'FINAL\')">⚖ FINAL / CROSSCHECK</button>');
     if((r==='KH'||r==='CARGO'||isAD())&&canFeature('FSAGS208'))buttons.push('<button class="v38OpBtn orange" onclick="v38OpenLegacyModule(\'CARGO\')">📦 KHO HÀNG / FSAGS 208</button>');
-    if((r==='DH'||isAD())&&canFeature('QUICK_TIME'))buttons.push('<button class="v38OpBtn gray" onclick="v38OpenLegacyModule(\'QUICK_TIME\')">⏱ NHẬP GIỜ</button>');
     const box=document.createElement('div');box.className='v38MyOps';box.innerHTML=`<div class="v38MyOpsTitle">NGHIỆP VỤ CỦA TÔI · ${esc(flightName(dataCache.flights?.[fid]||{}))}</div><div class="v38MyOpsSub">Chỉ các chức năng gắn với chuyến/assignment hiện tại được đưa ra đây. Các nút chức năng cũ ngoài Flight Workspace đã bị loại khỏi luồng.</div><div class="v38MyOpsBtns">${buttons.join('')||'<span class="v38ListHint">Chuyến thuộc MY FLIGHT nhưng chưa có module thao tác trực tiếp được cấu hình cho tài khoản này.</span>'}</div>`;head.insertAdjacentElement('afterend',box);
   }
 
@@ -5707,3 +5700,90 @@ body.v38-clean-workflow #roleHomeIdle{pointer-events:none}
 
 }
 })();
+
+
+/* ===== BEGIN contextual-quick-time-v313.js ===== */
+/* E-REPORT/SAGS V3.13 · CONTEXTUAL QUICK TIME
+ * NHẬP GIỜ NHANH is not a permanent legacy navigation button.
+ * It appears only while an eligible assigned form is actually open:
+ * FSAGS 42.3 / FSAGS 42.1 / FSAGS 09.
+ */
+(function(root){'use strict';
+  const BUILD='V3.13-20260821-01';
+  const firstInstall=!root.__SAGS_V313_QUICK_CONTEXT;
+  const S=v=>String(v??'').trim();
+  const U=v=>S(v).toUpperCase();
+  function group(){try{return S(activeFormGroup).toLowerCase()}catch(_){return S(root.activeFormGroup).toLowerCase()}}
+  function sessionId(){try{return S(activeFlightSessionId)}catch(_){return S(root.activeFlightSessionId)}}
+  function currentRole(){try{return U(window.currentRole||root.currentRole)}catch(_){return U(root.currentRole)}}
+  function feature(name){try{return currentRole()==='AD'||(typeof v485Can==='function'&&v485Can(name))}catch(_){return currentRole()==='AD'}}
+  function idleVisible(){
+    const el=document.getElementById('roleHomeIdle');
+    if(!el)return false;
+    try{return getComputedStyle(el).display!=='none'}catch(_){return false}
+  }
+  function eligible(){
+    const g=group();
+    if(!sessionId()||idleVisible())return false;
+    if(g==='fsags'||g==='fsags421')return feature('QUICK_TIME');
+    if(g==='fsags09')return feature('FSAGS09');
+    return false;
+  }
+  function label(){return group()==='fsags09'?'⏱ NHẬP GIỜ NHANH · FSAGS 09':'⏱ NHẬP GIỜ NHANH'}
+  function ensureStyle(){
+    if(document.getElementById('v313QuickContextStyle'))return;
+    const st=document.createElement('style');st.id='v313QuickContextStyle';st.textContent=`
+#v313QuickContext{display:none;align-items:center;gap:7px;width:100%;box-sizing:border-box;padding:2px 0 0}
+#v313QuickContext.show{display:flex}
+#v313QuickContextBtn{min-height:42px;border:0;border-radius:10px;padding:9px 14px;background:#075b9e;color:#fff;font:900 13px Arial;box-shadow:0 2px 6px rgba(0,0,0,.16);cursor:pointer}
+#v313QuickContextHint{font:800 10px/1.3 Arial;color:#45647d}
+@media(max-width:620px){#v313QuickContext{display:none;grid-template-columns:1fr}#v313QuickContext.show{display:grid}#v313QuickContextBtn{width:100%;font-size:14px;min-height:46px}#v313QuickContextHint{text-align:center}}
+@media print{#v313QuickContext{display:none!important}}
+`;
+    document.head.appendChild(st);
+  }
+  function ensure(){
+    ensureStyle();
+    const toolbar=document.querySelector('.toolbar');
+    if(!toolbar)return null;
+    let box=document.getElementById('v313QuickContext');
+    if(!box){
+      box=document.createElement('div');box.id='v313QuickContext';
+      box.innerHTML='<button id="v313QuickContextBtn" type="button">⏱ NHẬP GIỜ NHANH</button><span id="v313QuickContextHint">Chỉ hiện khi đang mở biểu mẫu hỗ trợ.</span>';
+      const nav=document.getElementById('v38CleanNav');
+      if(nav?.parentNode===toolbar)nav.insertAdjacentElement('afterend',box);else toolbar.appendChild(box);
+      document.getElementById('v313QuickContextBtn').onclick=()=>{
+        if(!eligible()){refresh();return alert('NHẬP GIỜ NHANH chỉ dùng khi đang mở đúng FSAGS 42.3 / 42.1 / 09 và tài khoản có quyền thao tác.');}
+        try{root.openQuickTimePanel?.()}catch(e){alert('Không mở được NHẬP GIỜ NHANH: '+S(e?.message||e))}
+      };
+    }
+    return box;
+  }
+  function refresh(){
+    const box=ensure();if(!box)return;
+    const ok=eligible();box.classList.toggle('show',ok);
+    const btn=document.getElementById('v313QuickContextBtn');if(btn)btn.textContent=label();
+    const hint=document.getElementById('v313QuickContextHint');
+    if(hint)hint.textContent=ok?`Đang mở ${group()==='fsags'?'FSAGS 42.3':group()==='fsags421'?'FSAGS 42.1':'FSAGS 09'} · nhập nhanh các mốc giờ của biểu mẫu này.`:'Chỉ hiện khi đang mở biểu mẫu hỗ trợ.';
+  }
+  function wrap(name){
+    const fn=root[name];if(typeof fn!=='function'||fn.__v313QuickContext)return;
+    const w=function(){const r=fn.apply(this,arguments);Promise.resolve(r).finally(()=>setTimeout(refresh,30));return r};
+    w.__v313QuickContext=1;root[name]=w;
+    try{if(name==='showFormGroup')showFormGroup=w;else if(name==='showRoleHomeIdle')showRoleHomeIdle=w;else if(name==='hideRoleHomeIdle')hideRoleHomeIdle=w;else if(name==='applyRoleUI')applyRoleUI=w;else if(name==='switchFlightSession')switchFlightSession=w}catch(_){}
+  }
+  ['showFormGroup','showRoleHomeIdle','hideRoleHomeIdle','applyRoleUI','switchFlightSession','selectFormGroup'].forEach(wrap);
+  // Keep legacy button state logic alive for compatibility, but the legacy toolbar itself remains hidden in CLEAN workflow.
+  const oldRefresh=root.quickTimeRefreshVisibility;
+  if(typeof oldRefresh==='function'&&!oldRefresh.__v313QuickContext){
+    root.quickTimeRefreshVisibility=function(){const r=oldRefresh.apply(this,arguments);setTimeout(refresh,0);return r};
+    root.quickTimeRefreshVisibility.__v313QuickContext=1;
+  }
+  if(firstInstall){
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden)root.v313QuickTimeRefresh?.()});
+    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>root.v313QuickTimeRefresh?.(),250),{once:true});else setTimeout(()=>root.v313QuickTimeRefresh?.(),250);
+  }
+  root.v313QuickTimeRefresh=refresh;
+  root.__SAGS_V313_QUICK_CONTEXT=BUILD;
+})(typeof window!=='undefined'?window:globalThis);
+/* ===== END contextual-quick-time-v313.js ===== */

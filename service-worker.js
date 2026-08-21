@@ -1,5 +1,5 @@
-const CACHE_NAME="sags-v3-12-export-na-20260821-01";
-const BUILD="V3.12-20260821-01";
+const CACHE_NAME="sags-v3-14-contextual-back-20260821-01";
+const BUILD="V3.14-20260821-01";
 const APP_SHELL=[
   "./9Gfinal.png",
   "./CBTT.png",
@@ -25,7 +25,6 @@ const APP_SHELL=[
   "./favicon-32.png",
   "./fsags13-official-continuation.png",
   "./fsags13-official-page1.png",
-  "./fsags13-official-page2.png",
   "./icon-192.png",
   "./icon-512.png",
   "./index.html",

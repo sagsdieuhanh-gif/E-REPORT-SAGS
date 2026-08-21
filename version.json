@@ -1,1 +1,1 @@
-{"version":"V3.12","build":"V3.12-20260821-01","releasedAt":"2026-08-21T12:18:00+07:00","notes":"Fix duplicate export/share cards with singleton + async render guard. Auto-fill blank eligible form fields with N/A silently before export. Retains V3.11 nav fix and V3.10 shift handover."}
+{"version":"V3.14","build":"V3.14-20260821-01","releasedAt":"2026-08-21T12:33:00+07:00","notes":"Contextual Back: remove floating global back button; use in-page back navigation that returns to the immediately previous screen/layer."}
