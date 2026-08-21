@@ -6076,3 +6076,88 @@ body.v38-clean-workflow #v38NavRS,body.v38-clean-workflow #readSignQuickBtn,body
 })(typeof window!=='undefined'?window:globalThis);
 /* ===== END v324-direct-myflight-handover.js ===== */
 
+
+
+/* ===== BEGIN dynamic-permission-actions-v326.js ===== */
+/* E-REPORT SAGS · V3.26 DYNAMIC PERMISSION ACTIONS
+ * Extra permissions explicitly granted by AD surface as compact direct action buttons.
+ * Context-only permissions (forms / Quick Time / Export) keep their controls inside the relevant flight/form.
+ */
+(function(root){
+  'use strict';
+  const BUILD='V3.26-20260821-01';
+  const DIRECT=[
+    {key:'DAILY_ROSTER',label:'📋 DAILY ROSTER',run:()=>root.openDailyRosterManager?.()},
+    {key:'AC_LIMITS',label:'⚠ A/C LIMITS',run:()=>{if(typeof root.aclSimpleOpen==='function')return root.aclSimpleOpen();return root.aclOpenAdmin?.();}},
+    {key:'FLEET',label:'🛫 FLEET',run:()=>root.openFleetManager?.()},
+    {key:'FSAGS09',label:'PVHK · FSAGS 09',run:()=>root.openFS09SheetManager?.()},
+    {key:'FSAGS208',label:'KH · FSAGS 208',run:()=>root.openKH208Manager?.()},
+    {key:'FINAL',label:'FINAL',run:()=>root.openFinalSheetManager?.()}
+  ];
+  const S=v=>String(v??'').trim();
+  const U=v=>S(v).toUpperCase();
+  let toolbarObserver=null,navObserver=null,syncTimer=0;
+  function profile(){try{return (typeof currentUserProfile!=='undefined'&&currentUserProfile)||root.currentUserProfile||{}}catch(_){return root.currentUserProfile||{}}}
+  function role(){try{return U((typeof currentRole!=='undefined'&&currentRole)||profile().role||root.currentRole)}catch(_){return U(profile().role||root.currentRole)}}
+  function defaultsFor(r){try{const fn=root.v485RoleDefaults||(typeof v485RoleDefaults==='function'?v485RoleDefaults:null);return typeof fn==='function'?(fn(r)||{}):{}}catch(_){return {}}}
+  function ready(){const def=root.v485RoleDefaults||(typeof v485RoleDefaults==='function'?v485RoleDefaults:null);return !!document.querySelector('script[data-phase="control"][src*="app.js"]')&&typeof root.v485Can==='function'&&typeof def==='function'&&typeof root.applyRoleUI==='function';}
+  function extras(){
+    if(role()==='AD')return [];
+    const o=profile().featureOverridesV485;
+    if(!o||typeof o!=='object')return [];
+    const d=defaultsFor(role());
+    return DIRECT.filter(x=>o[x.key]===true&&!d[x.key]&&root.v485Can(x.key));
+  }
+  function css(){
+    if(document.getElementById('v326GrantedPermissionStyle'))return;
+    const st=document.createElement('style');st.id='v326GrantedPermissionStyle';st.textContent=`
+body.v38-clean-workflow #v38CleanNav .v326GrantedPermission{background:#ecfdf7!important;color:#0f6b55!important;border-color:#a9dccd!important}
+body.v38-clean-workflow #v38CleanNav .v326GrantedPermission:active{transform:translateY(1px)}
+body.v38-clean-workflow #v38CleanNav .v326GrantedPermission::after{content:'+';display:inline-flex;align-items:center;justify-content:center;margin-left:5px;width:14px;height:14px;border-radius:99px;background:#0f766e;color:#fff;font:900 9px Arial}
+`;
+    document.head.appendChild(st);
+  }
+  function invoke(key){
+    const a=DIRECT.find(x=>x.key===key);if(!a)return;
+    if(!root.v485Can?.(key)){try{root.roleDenied?.('Quyền này đã bị thu hồi.');}catch(_){}schedule();return;}
+    try{const r=a.run();if(r&&typeof r.catch==='function')r.catch(e=>alert('Không mở được chức năng: '+S(e?.message||e)));}catch(e){alert('Không mở được chức năng: '+S(e?.message||e));}
+  }
+  function schedule(){clearTimeout(syncTimer);syncTimer=setTimeout(sync,30);}
+  function sync(){
+    css();const nav=document.getElementById('v38CleanNav');if(!nav)return;
+    const wanted=extras(),keys=new Set(wanted.map(x=>x.key));
+    nav.querySelectorAll('[data-v326-feature]').forEach(b=>{if(!keys.has(b.dataset.v326Feature))b.remove();});
+    const anchor=document.getElementById('v38NavAdmin')||nav.querySelector('.v38NavSpacer')||null;
+    let cursor=anchor;
+    for(const a of [...wanted].reverse()){
+      let b=nav.querySelector(`[data-v326-feature="${a.key}"]`);
+      if(!b){b=document.createElement('button');b.type='button';b.className='v38NavBtn v326GrantedPermission';b.dataset.v326Feature=a.key;b.title='Chức năng được AD cấp thêm';b.onclick=()=>invoke(a.key);}
+      if(b.textContent!==a.label)b.textContent=a.label;
+      if(cursor){if(b.nextElementSibling!==cursor)nav.insertBefore(b,cursor);}else if(b.parentNode!==nav||b!==nav.lastElementChild)nav.appendChild(b);
+      cursor=b;
+    }
+    // Permission-dependent existing chips keep their native location.
+    const shift=document.getElementById('v310ShiftNav');if(shift)shift.style.display=root.v485Can?.('HANDOVER')?'':'none';
+    attachNavObserver(nav);
+  }
+  function attachNavObserver(nav){
+    if(navObserver&&navObserver.__nav===nav)return;
+    try{navObserver?.disconnect?.()}catch(_){}
+    navObserver=new MutationObserver(()=>schedule());navObserver.__nav=nav;navObserver.observe(nav,{childList:true});
+  }
+  function install(){
+    if(root.__SAGS_V326_PERMISSION_ACTIONS)return true;if(!ready())return false;
+    root.__SAGS_V326_PERMISSION_ACTIONS=BUILD;css();
+    const base=root.applyRoleUI;
+    if(!base.__v326Wrapped){
+      const wrapped=function(){const out=base.apply(this,arguments);schedule();return out;};wrapped.__v326Wrapped=true;wrapped.__v326Base=base;root.applyRoleUI=wrapped;try{applyRoleUI=wrapped}catch(_){}
+    }
+    const tb=document.querySelector('.toolbar.compact-main-toolbar')||document.querySelector('.toolbar');
+    if(tb){toolbarObserver=new MutationObserver(()=>schedule());toolbarObserver.observe(tb,{childList:true,subtree:true});}
+    root.sagsV326RefreshGrantedActions=sync;
+    root.__SAGS_V326_HDSD='V3.26: Quyền AD cấp thêm cho từng tài khoản tự sinh nút chức năng tương ứng trên thanh CLEAN khi chức năng có điểm vào trực tiếp. Ví dụ Ca Phó được cấp DAILY ROSTER sẽ thấy nút 📋 DAILY ROSTER mà không cần đổi role. Thu hồi quyền thì nút tự mất sau tín hiệu permission. Các quyền theo ngữ cảnh như NHẬP GIỜ NHANH/XUẤT vẫn chỉ hiện trong đúng biểu mẫu.';
+    schedule();window.addEventListener('pageshow',schedule,{passive:true});document.addEventListener('visibilitychange',()=>{if(!document.hidden)schedule()});return true;
+  }
+  let tries=0;const t=setInterval(()=>{if(install()||++tries>80)clearInterval(t)},100);
+})(typeof window!=='undefined'?window:globalThis);
+/* ===== END dynamic-permission-actions-v326.js ===== */
