@@ -1,4 +1,4 @@
-/* E-REPORT/SAGS V3.14 CONTEXTUAL BACK - consolidated runtime. Do not split without updating index phase calls. */
+/* E-REPORT/SAGS V3.16 ROSTER SAFE UPDATE - consolidated runtime. Do not split without updating index phase calls. */
 (function(){
 'use strict';
 var phase=(document.currentScript&&document.currentScript.dataset&&document.currentScript.dataset.phase)||'';
@@ -1652,7 +1652,7 @@ if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",
 /* ===== END archive-export-v34.js ===== */
 
 /* ===== BEGIN contextual-back-v314.js ===== */
-/* E-REPORT/SAGS V3.14 · CONTEXTUAL BACK NAVIGATION
+/* E-REPORT/SAGS V3.16 · ROSTER SAFE UPDATE + SIGNATURE + CONTEXTUAL BACK
    QUAY LẠI nằm trong chính màn/popup đang mở, không còn nút nổi đè giao diện.
    Ưu tiên nút back nội bộ của màn. Nếu màn hiện tại không có back riêng thì đóng đúng
    lớp hiện tại để lộ lại màn ngay trước đó. Không xóa draft/flight data.
@@ -1661,7 +1661,7 @@ if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",
   "use strict";
   const ROW_ID="sagsContextBackRow";
   const BTN_ID="sagsContextBackBtn";
-  const BUILD="V3.14-20260821-01";
+  const BUILD="V3.16-20260821-01";
 
   function visible(el){
     if(!el || !el.isConnected)return false;
@@ -3969,6 +3969,39 @@ if(phase==='flight'){
     }catch(e){preview=null;const createBtn=document.getElementById("drPublishBtn");if(createBtn){createBtn.disabled=true;createBtn.classList.remove("ready");createBtn.style.display="none";}setStatus("Không đọc được roster: "+S(e?.message||e),true);}
   };
 
+  async function syncRosterFlightActivity(opDate, manifestItems){
+    // Re-upload cùng ngày KHÔNG xóa Flight Record hay dữ liệu nghiệp vụ.
+    // Flight không còn trong roster mới chỉ chuyển trạng thái ROSTER_REMOVED/INACTIVE.
+    try{
+      const activeFlightIds=new Set(Object.values(manifestItems||{}).map(x=>S(x?.flightId)).filter(Boolean));
+      let flights={};
+      try{flights=typeof root.sagsFlightHubRead==='function'?(await root.sagsFlightHubRead(opDate)):((await sagsV470Ref(`flight_records/${safeKey(opDate)}`).once('value')).val()||{});}catch(_){flights={}}
+      const statusPatch={},at=Date.now(),by=normUser(currentUserProfile?.username||'');
+      for(const [fid0,rec0] of Object.entries(flights||{})){
+        const rec=rec0||{},fid=S(rec.flightId||fid0);
+        if(!fid||U(rec.createdFrom)!=='DAILY_ROSTER')continue;
+        const base=`flight_records/${safeKey(opDate)}/${safeKey(fid)}`;
+        if(activeFlightIds.has(fid)){
+          statusPatch[`${base}/active`]=true;
+          statusPatch[`${base}/rosterActive`]=true;
+          statusPatch[`${base}/rosterStatus`]='ACTIVE';
+          statusPatch[`${base}/rosterRemovedAtMs`]=null;
+          statusPatch[`${base}/rosterRemovedBy`]=null;
+          statusPatch[`${base}/inactiveReason`]=null;
+        }else{
+          statusPatch[`${base}/active`]=false;
+          statusPatch[`${base}/rosterActive`]=false;
+          statusPatch[`${base}/rosterStatus`]='ROSTER_REMOVED';
+          statusPatch[`${base}/rosterRemovedAtMs`]=at;
+          statusPatch[`${base}/rosterRemovedBy`]=by;
+          statusPatch[`${base}/inactiveReason`]='ROSTER_REMOVED';
+          statusPatch[`${base}/updatedAtMs`]=at;
+        }
+      }
+      if(Object.keys(statusPatch).length)await sagsV470Ref('').update(statusPatch);
+    }catch(e){console.warn('Daily roster flight activity sync',e?.message||e)}
+  }
+
   async function publishRecords(data){
     const byDate=new Map();for(const r of data.records||[]){if(!byDate.has(r.opDate))byDate.set(r.opDate,[]);byDate.get(r.opDate).push(r);}
     let writes=0,removes=0,overrides=0;
@@ -3999,6 +4032,9 @@ if(phase==='flight'){
       }
       patch[`${MANIFEST_PATH}/${safeKey(opDate)}`]={engine:ENGINE,schema:2,opDate,fileName:data.fileName||"",columns:FIXED_ROLE_COLUMNS,publishedAtMs:Date.now(),publishedBy:normUser(currentUserProfile?.username||""),items:nextItems};
       await sagsV470Ref("").update(patch);
+      // Flight Hub wrapper enriches manifest items with flightId before the write resolves.
+      // Use the resulting manifest as the sole roster-active set for this operation date.
+      await syncRosterFlightActivity(opDate,patch[`${MANIFEST_PATH}/${safeKey(opDate)}`]?.items||nextItems);
     }
     return {writes,removes,overrides,dates:byDate.size};
   }
@@ -5425,7 +5461,10 @@ function boot(){css();modal();patch();document.addEventListener('pointerdown',pr
       dbref(`${HANDOFF}/${safe(date)}`).once('value').catch(()=>({val:()=>({})}))
     ]);
     const flights=fs.val()||{},manifest=ms.val()||{},handoffs=hs.val?.()||{},u=me(),myIds=new Set(),pendingIds=new Set();
-    for(const rec of Object.values(flights))for(const a of Object.values(rec?.unitAssignments||{}))if(normUser(a?.username)===u)myIds.add(S(rec.flightId));
+    for(const rec of Object.values(flights)){
+      if(!rec||rec.active===false||U(rec.rosterStatus)==='ROSTER_REMOVED')continue;
+      for(const a of Object.values(rec?.unitAssignments||{}))if(normUser(a?.username)===u)myIds.add(S(rec.flightId));
+    }
     for(const item of Object.values(manifest?.items||{}))if(item?.active!==false&&normUser(item.user||item.targetUser)===u&&S(item.flightId))myIds.add(S(item.flightId));
     for(const h of Object.values(handoffs||{})){
       if(U(h?.status)!=='APPROVED_WAITING_ACCEPT'||normUser(h?.toUser)!==u)continue;
@@ -5456,15 +5495,17 @@ body.v38-clean-workflow #roleHomeIdle{pointer-events:none}
     let nav=document.getElementById('v38CleanNav');if(!nav){nav=document.createElement('div');nav.id='v38CleanNav';bar.appendChild(nav)}
     const rsAvailable=typeof root.openReadSignManager==='function';
     const shiftAvailable=typeof root.v310ShiftOpen==='function';
-    const sig=[logged()?'1':'0',rsAvailable?'1':'0',shiftAvailable?'1':'0',isAD()?'1':'0'].join('|');
+    const signAvailable=typeof root.openTemplateMenu==='function' && ['AD','DH','PVHK','CBTT','KH'].includes(role());
+    const sig=[logged()?'1':'0',rsAvailable?'1':'0',shiftAvailable?'1':'0',signAvailable?'1':'0',isAD()?'1':'0'].join('|');
     // V3.11: do not rebuild the navigation bar on polling/sync. Replacing innerHTML
     // every few seconds caused READ & SIGN and GIAO CA to visibly blink on mobile.
     if(nav.dataset.v311Sig===sig && document.getElementById('v38NavFlights') && document.getElementById('v38NavMulti'))return;
     nav.dataset.v311Sig=sig;
-    nav.innerHTML=`<button class="v38NavBtn" id="v38NavFlights">✈ CHUYẾN HÔM NAY</button><button class="v38NavBtn purple" id="v38NavMulti">⇄ MULTITASK</button>${shiftAvailable?'<button class="v38NavBtn" style="background:#b45309" id="v310ShiftNav">🔄 GIAO CA</button>':''}${rsAvailable?'<button class="v38NavBtn rs" id="v38NavRS">READ & SIGN</button>':''}<span class="v38NavSpacer"></span><span id="v38FlowHint">FLIGHT WORKSPACE · V3.14</span>${isAD()?'<button class="v38NavBtn admin" id="v38NavAdmin">⚙ QUẢN LÝ</button>':''}`;
+    nav.innerHTML=`<button class="v38NavBtn" id="v38NavFlights">✈ CHUYẾN HÔM NAY</button><button class="v38NavBtn purple" id="v38NavMulti">⇄ MULTITASK</button>${shiftAvailable?'<button class="v38NavBtn" style="background:#b45309" id="v310ShiftNav">🔄 GIAO CA</button>':''}${signAvailable?'<button class="v38NavBtn" style="background:#334155" id="v38NavSignature">✍ KÝ TÊN</button>':''}${rsAvailable?'<button class="v38NavBtn rs" id="v38NavRS">READ & SIGN</button>':''}<span class="v38NavSpacer"></span><span id="v38FlowHint">FLIGHT WORKSPACE · V3.16</span>${isAD()?'<button class="v38NavBtn admin" id="v38NavAdmin">⚙ QUẢN LÝ</button>':''}`;
     document.getElementById('v38NavFlights').onclick=()=>root.flightWorkspaceOpenList?.(today());
     document.getElementById('v38NavMulti').onclick=()=>root.sagsV36OpenMultitask?.();
     const sh=document.getElementById('v310ShiftNav');if(sh)sh.onclick=()=>root.v310ShiftOpen?.('create');
+    const sign=document.getElementById('v38NavSignature');if(sign)sign.onclick=()=>root.openTemplateMenu?.();
     const rs=document.getElementById('v38NavRS');if(rs)rs.onclick=()=>root.openReadSignManager?.();
     const ad=document.getElementById('v38NavAdmin');if(ad)ad.onclick=()=>root.adminHubOpen?.();
   }
@@ -5481,6 +5522,9 @@ body.v38-clean-workflow #roleHomeIdle{pointer-events:none}
     const tog=document.getElementById('v38MyFlightToggle');if(tog)tog.checked=myOnlyDefault();
     for(const card of host.querySelectorAll('.fwcFlight')){
       const fid=flightIdFromCard(card);if(!fid)continue;card.dataset.v38Fid=fid;
+      const rec=dataCache.flights?.[fid]||{};
+      if(rec.active===false||U(rec.rosterStatus)==='ROSTER_REMOVED'){card.dataset.v38Inactive='1';card.style.display='none';continue;}
+      card.dataset.v38Inactive='0';
       let flags=card.querySelector('.v38Flags');if(!flags){flags=document.createElement('div');flags.className='v38Flags';card.querySelector('.fwcFlightTitle')?.insertAdjacentElement('beforebegin',flags)}
       const mine=isMine(fid),pending=dataCache.pendingIds.has(fid);flags.innerHTML=`${mine?'<span class="v38Flag my">MY</span>':'<span class="v38Flag view">VIEW</span>'}${pending?'<span class="v38Flag hand">HANDOVER</span>':''}`;
     }
@@ -5488,7 +5532,7 @@ body.v38-clean-workflow #roleHomeIdle{pointer-events:none}
   }
   function applyListFilter(){
     const only=!!document.getElementById('v38MyFlightToggle')?.checked;setMyOnly(only);const lab=document.getElementById('v38MyFlightLabel');lab?.classList.toggle('on',only);
-    let shown=0,total=0,myCount=0;for(const card of document.querySelectorAll('#fwcList .fwcFlight')){total++;const mine=isMine(card.dataset.v38Fid);if(mine)myCount++;const show=!only||mine;card.style.display=show?'grid':'none';if(show)shown++}
+    let shown=0,total=0,myCount=0;for(const card of document.querySelectorAll('#fwcList .fwcFlight')){if(card.dataset.v38Inactive==='1'){card.style.display='none';continue;}total++;const mine=isMine(card.dataset.v38Fid);if(mine)myCount++;const show=!only||mine;card.style.display=show?'grid':'none';if(show)shown++}
     const h=document.getElementById('v38ListHint');if(h)h.textContent=only?`MY FLIGHT: ${shown} chuyến được phân/đang phụ trách · bỏ tích để xem mở rộng ${total} chuyến.`:`ĐANG XEM MỞ RỘNG: ${shown} chuyến · ${myCount} chuyến có badge MY. Chuyến VIEW không được tự nhận nhiệm vụ.`;
     const status=document.getElementById('fwcStatus');if(status){if(only)status.textContent=shown?`✓ MY FLIGHT · ${shown} chuyến được phân/đang phụ trách.`:'Tài khoản hiện tại chưa có chuyến được Daily Roster phân hoặc đã tiếp nhận hợp lệ.';else status.textContent=`✓ DANH SÁCH MỞ RỘNG · ${shown} chuyến · MY ${myCount}. Chuyến VIEW không được tự nhận nhiệm vụ.`;}
   }
@@ -5528,7 +5572,7 @@ body.v38-clean-workflow #roleHomeIdle{pointer-events:none}
     if(!root.flightWorkspaceOpenList.__v38){
       const baseList=root.flightWorkspaceOpenList,baseFlight=root.flightWorkspaceOpenFlight,baseClaim=root.flightWorkspaceClaim;
       root.flightWorkspaceOpenList=function(d){d=S(d)||today();const r=baseList.apply(this,arguments);Promise.resolve(r).finally(()=>setTimeout(()=>decorateList(d),80));return r};root.flightWorkspaceOpenList.__v38=1;
-      root.flightWorkspaceOpenFlight=function(fid){const r=baseFlight.apply(this,arguments);(async()=>{try{if(dataCache.date!==dateFromUi())await loadContext(dateFromUi())}catch(_){}setTimeout(()=>injectWorkspace(fid),50)})();return r};root.flightWorkspaceOpenFlight.__v38=1;
+      root.flightWorkspaceOpenFlight=function(fid){const rec=dataCache.flights?.[S(fid)];if(rec&&(rec.active===false||U(rec.rosterStatus)==='ROSTER_REMOVED')){alert('Chuyến này đã bị bỏ khỏi DAILY ROSTER hiện hành và đang ở trạng thái INACTIVE. Hồ sơ cũ vẫn được giữ để truy vết.');return;}const r=baseFlight.apply(this,arguments);(async()=>{try{if(dataCache.date!==dateFromUi())await loadContext(dateFromUi())}catch(_){}setTimeout(()=>injectWorkspace(fid),50)})();return r};root.flightWorkspaceOpenFlight.__v38=1;
       if(typeof baseClaim==='function'){root.flightWorkspaceClaim=async function(fid,unit){try{if(dataCache.date!==dateFromUi())await loadContext(dateFromUi());if(!isMine(fid))return alert('Không được nhận nhiệm vụ: chuyến này không thuộc MY FLIGHT của tài khoản hiện tại. Muốn đổi người phải qua BÀN GIAO → DUYỆT → TIẾP NHẬN.');return await baseClaim.apply(this,arguments)}catch(e){alert(S(e?.message||e))}};root.flightWorkspaceClaim.__v38=1}
     }
     return true;

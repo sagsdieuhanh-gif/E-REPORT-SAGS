@@ -1,1 +1,1 @@
-{"version":"V3.14","build":"V3.14-20260821-01","releasedAt":"2026-08-21T12:33:00+07:00","notes":"Contextual Back: remove floating global back button; use in-page back navigation that returns to the immediately previous screen/layer."}
+{"version":"V3.16","build":"V3.16-20260821-01","releasedAt":"2026-08-21T12:59:56+07:00","notes":"Safe same-day Daily Roster re-upload: preserve Flight Record and all operational data; flights removed from the new roster become ROSTER_REMOVED/INACTIVE and disappear from today operational lists; reappearing flights reactivate."}
