@@ -1,5 +1,5 @@
-const CACHE_NAME="sags-v3-26-dynamic-permission-actions-20260821-01";
-const BUILD="V3.26-20260821-01";
+const CACHE_NAME="sags-v3-27-reassign-direct-handover-20260821-01";
+const BUILD="V3.27-20260821-01";
 const APP_SHELL=[
   "./9Gfinal.png",
   "./CBTT.png",
