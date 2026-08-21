@@ -3051,7 +3051,7 @@ user-select:none;-webkit-user-select:none;touch-action:none;-webkit-tap-highligh
   </div>
 </div>
 
-<div id="buildMarker">V3.42</div>
+<div id="buildMarker">V3.43</div>
 <div aria-live="polite" id="currentFerryFlag"><span class="dot"></span><span id="currentFerryFlagText">FERRY</span></div>
 <div class="toolbar compact-main-toolbar">
 <div class="badge">PĐH SAGS-CXR</div>
@@ -12349,8 +12349,8 @@ try {
   alert("Lỗi JavaScript: "+err.message);
 }
 
-const APP_BUILD_VERSION="V3.42-20260821-01";
-const APP_DISPLAY_VERSION="V3.42";
+const APP_BUILD_VERSION="V3.43-20260821-01";
+const APP_DISPLAY_VERSION="V3.43";
 
 // V4.21 — SAFE UPDATE SAVE
 // Before switching to a newly installed app version, force-save all current
@@ -24658,7 +24658,7 @@ window.openCamScanner=openCamScanner;
     const no=Math.max(1,Number(payload?.closeoutNo||payload?.revisionNo||1)||1),id=payload?.identity||{},flight=(id.flights||[]).join(" / ")||"CHUYẾN",reg=id.acRegToken||payload?.f09?.f09_regn||"";
     let h=`<div><b>${esc(flight)}</b>${reg?' · A/C '+esc(reg):''} · KẾT SỔ LẦN ${no}</div>`;
     if(no>=2){if(changes.length)h+=`<div style="margin-top:9px"><b>CÁC TRƯỜNG THAY ĐỔI:</b></div>`+changes.slice(0,14).map(x=>`<div class="chg">${esc(x.label)}: <span>${esc(x.oldValue)}</span> → <span class="strong">${esc(x.newValue)}</span></div>`).join("")+(changes.length>14?`<div class="chg">+ ${changes.length-14} trường khác</div>`:"");else h+='<div class="chg">KẾT SỔ lần mới đã được gửi nhưng không phát hiện thay đổi giá trị trong dữ liệu so với lần trước.</div>';if(hasFinal)h+='<div class="chg"><span class="strong">⚠ FINAL CÙNG CHUYẾN ĐÃ CÓ TRÊN MÁY CBTT.</span><br>Kiểm tra/cập nhật FINAL theo KẾT SỔ mới; hệ thống không tự ghi đè FINAL.</div>';}
-    else h+='<div style="margin-top:9px">KẾT SỔ mới đã được PVHK gửi. CBTT có thể dùng dữ liệu này để lập/đối chiếu FINAL; ĐH nhận để biết trạng thái KẾT SỔ.</div>';
+    else h+='<div style="margin-top:9px">KẾT SỔ mới đã được PVHK gửi. FINAL CBTT cùng DATE + FLIGHT sẽ tự điền ADL/CHD/INF/BAG; ĐH nhận để biết trạng thái KẾT SỔ.</div>';
     return h;
   }
 
@@ -24709,7 +24709,7 @@ window.openCamScanner=openCamScanner;
   function stopCloseoutListener(){if(v121CloseoutRef&&v121CloseoutCb)try{v121CloseoutRef.off("value",v121CloseoutCb);}catch(e){}v121CloseoutRef=null;v121CloseoutCb=null;v121LastCloseoutEvent="";}
   function startCloseoutListener(){
     const role=String(currentRole||"");if(!["CBTT","DH","AD"].includes(role)||(!currentUserProfile?.username&&role!=="AD")){stopCloseoutListener();return;}
-    if(v121CloseoutRef)return;try{v121CloseoutListenAtMs=Date.now();const ref=sagsV470Ref(V121_RTDB_PATH),cb=s=>{const d=s.val()||{},at=Number(d.eventAtMs||0),eventId=String(d.eventId||"");if(!eventId||eventId===v121LastCloseoutEvent||at<v121CloseoutListenAtMs-1500)return;if(String(d.sourceDeviceId||"")===String((typeof fs09DeviceId==="function"?fs09DeviceId():"")||""))return;v121LastCloseoutEvent=eventId;const p=d.payload||null;if(!p)return;storeCloseout(p);const no=Math.max(1,Number(p.closeoutNo||p.revisionNo||1)||1),changes=Array.isArray(p.changeSummary)?p.changeSummary:[];if(no>=2&&!changes.length){setTimeout(refreshValidation,80);return;}const hasFinal=(role==="CBTT"||role==="AD")?markFinalPending(p):false;enqueuePopup({id:eventId,severity:no>=2?"critical":"info",title:no>=2?"⚠ KẾT SỔ ĐÃ THAY ĐỔI · LẦN "+no:"🔔 CÓ KẾT SỔ MỚI",html:popupHtml(p,changes,hasFinal),payload:p,soundType:no>=2?"changed":"new"});setTimeout(refreshValidation,80);};ref.on("value",cb,e=>console.warn("V1.81 closeout listener",e));v121CloseoutRef=ref;v121CloseoutCb=cb;}catch(e){console.warn("V1.81 closeout listener start",e);}
+    if(v121CloseoutRef)return;try{v121CloseoutListenAtMs=Date.now();const ref=sagsV470Ref(V121_RTDB_PATH),cb=s=>{const d=s.val()||{},at=Number(d.eventAtMs||0),eventId=String(d.eventId||"");if(!eventId||eventId===v121LastCloseoutEvent||at<v121CloseoutListenAtMs-1500)return;if(String(d.sourceDeviceId||"")===String((typeof fs09DeviceId==="function"?fs09DeviceId():"")||""))return;v121LastCloseoutEvent=eventId;const p=d.payload||null;if(!p)return;storeCloseout(p);void window.sagsV343ApplyCloseoutToFinals?.(p,{notify:true});const no=Math.max(1,Number(p.closeoutNo||p.revisionNo||1)||1),changes=Array.isArray(p.changeSummary)?p.changeSummary:[];if(no>=2&&!changes.length){setTimeout(refreshValidation,80);return;}const hasFinal=(role==="CBTT"||role==="AD")?markFinalPending(p):false;enqueuePopup({id:eventId,severity:no>=2?"critical":"info",title:no>=2?"⚠ KẾT SỔ ĐÃ THAY ĐỔI · LẦN "+no:"🔔 CÓ KẾT SỔ MỚI",html:popupHtml(p,changes,hasFinal),payload:p,soundType:no>=2?"changed":"new"});setTimeout(refreshValidation,80);};ref.on("value",cb,e=>console.warn("V1.81 closeout listener",e));v121CloseoutRef=ref;v121CloseoutCb=cb;}catch(e){console.warn("V1.81 closeout listener start",e);}
   }
 
   // Late hooks: keep validation live but cheap; no camera/main-thread processing involved.
@@ -27247,7 +27247,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })(window);
 </script>
 
-<script src="./action-center-v342.js?v=V3.42"></script>
+<script src="./action-center-v342.js?v=V3.43"></script>
+<script src="./closeout-final-autofill-v343.js?v=V3.43"></script>
 
 </body>
 </html>

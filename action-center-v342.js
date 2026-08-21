@@ -1,4 +1,4 @@
-/* E-REPORT/SAGS V3.42 · Unified Action Center
+/* E-REPORT/SAGS V3.43 · Unified Action Center visibility fix
  * One persistent place for approvals, handoffs, crosscheck, R&S and manual-flight recovery.
  * Realtime refresh is event-driven. SLA clocks are display-only and never write heartbeats.
  */
@@ -7,7 +7,7 @@
 if(root.__SAGS_V342_ACTION_CENTER_LOADED)return;
 root.__SAGS_V342_ACTION_CENTER_LOADED=true;
 
-const BUILD="V3.42-20260821-01";
+const BUILD="V3.43-20260821-01";
 const S=v=>String(v??"").trim();
 const U=v=>S(v).toUpperCase();
 const esc=v=>S(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -31,6 +31,7 @@ function ensureUi(){
   if(!document.getElementById("v342Style")){
     const st=document.createElement("style");st.id="v342Style";st.textContent=`
       #roleBtnActionCenter{position:relative!important;order:-120!important;flex:0 0 auto!important;background:#b42318!important;color:#fff!important;border-color:#b42318!important}
+      body.v38-clean-workflow #v38CleanNav #roleBtnActionCenter{background:#b42318!important;color:#fff!important;border-color:#8f1d15!important;order:-120!important}
       #v342Badge{position:absolute;right:3px;top:2px;min-width:19px;height:19px;border-radius:999px;background:#fff;color:#b42318;border:2px solid #b42318;font:900 10px/15px Arial;text-align:center;padding:0 3px;box-sizing:border-box}
       body.v342ActionReady #roleBtnApprovalQueue{display:none!important}
       #v342Modal{position:fixed;inset:0;z-index:31020;display:none;align-items:center;justify-content:center;background:rgba(4,18,31,.76);padding:10px;box-sizing:border-box;font-family:Arial,sans-serif}#v342Modal.show{display:flex}
@@ -49,7 +50,8 @@ function ensureUi(){
   ensureButton();document.body.classList.add("v342ActionReady");injectReleaseNote();
 }
 
-function ensureButton(){const bar=document.querySelector(".compact-main-toolbar .toolbar-row.main-actions")||document.querySelector(".toolbar-row.main-actions");if(!bar)return;let b=document.getElementById("roleBtnActionCenter");if(!b){b=document.createElement("button");b.id="roleBtnActionCenter";b.type="button";b.innerHTML='🔔 CẦN XỬ LÝ <span id="v342Badge" style="display:none"></span>';b.onclick=()=>root.sagsV342Open();bar.appendChild(b)}b.style.display=me()||role()?"inline-flex":"none"}
+function ensureButton(){const nav=document.getElementById("v38CleanNav"),bar=nav||document.querySelector(".compact-main-toolbar .toolbar-row.main-actions")||document.querySelector(".toolbar-row.main-actions");if(!bar)return;let b=document.getElementById("roleBtnActionCenter");if(!b){b=document.createElement("button");b.id="roleBtnActionCenter";b.type="button";b.innerHTML='🔔 CẦN XỬ LÝ <span id="v342Badge" style="display:none"></span>';b.onclick=()=>root.sagsV342Open()}if(nav){b.classList.add("v38NavBtn","v342ActionNav");if(b.parentNode!==nav)nav.insertBefore(b,nav.firstChild);else if(nav.firstChild!==b)nav.insertBefore(b,nav.firstChild)}else if(b.parentNode!==bar)bar.appendChild(b);b.style.display=me()||role()?"inline-flex":"none"}
+function watchToolbar(){const host=document.querySelector(".toolbar.compact-main-toolbar")||document.querySelector(".toolbar");if(!host||state.navObserved===host)return;try{state.navObserver?.disconnect?.()}catch(_){}state.navObserved=host;state.navObserver=new MutationObserver(()=>{const nav=document.getElementById("v38CleanNav"),b=document.getElementById("roleBtnActionCenter");if(!b||nav&&b.parentNode!==nav)setTimeout(()=>{ensureButton();updateBadge()},0)});state.navObserver.observe(host,{childList:true,subtree:true})}
 function injectReleaseNote(){const panel=document.querySelector("#updateInfoModal>div");if(!panel||document.getElementById("v342ReleaseNote"))return;const d=document.createElement("div");d.id="v342ReleaseNote";d.innerHTML='<p style="margin:10px 0 4px"><b>V3.42 · 21/08/2026 — TRUNG TÂM CẦN XỬ LÝ</b></p><p style="margin:4px 0">• Gom KẾT SỔ/FINAL chờ duyệt, bàn giao, CROSSCHECK, R&amp;S và lỗi đồng bộ chuyến tạo tay vào một nút có badge.</p><p style="margin:4px 0">• Mỗi thẻ mở thẳng đúng hàng chờ, biểu mẫu hoặc Flight Cockpit; công việc không mất khi đóng popup.</p><p style="margin:4px 0">• Hiển thị trạng thái kết nối, dữ liệu cục bộ, thời gian chờ và các mốc nhắc/quá hạn hiện có; đồng bộ theo sự kiện, không heartbeat.</p>';panel.prepend(d)}
 
 function activeItem(x){return ["mine","approval","returned"].includes(x.bucket)}
@@ -87,12 +89,12 @@ root.sagsV342OpenItem=async function(encoded){const id=decodeURIComponent(S(enco
 root.sagsV342OpenFlight=function(encoded){const id=decodeURIComponent(S(encoded)),x=state.items.find(v=>v.id===id);if(x)openFlight(x).catch(e=>alert("Không mở được chuyến: "+S(e?.message||e)))};
 root.sagsV342RetrySync=async function(silent=false){if(navigator.onLine===false){if(!silent)alert("Thiết bị đang mất mạng. Dữ liệu cục bộ vẫn được giữ; hãy thử lại khi có kết nối.");return false}const text=document.getElementById("v342SyncText");if(text)text.textContent="ĐANG THỬ ĐỒNG BỘ LẠI…";try{await root.sagsV341RepairManualAssignments?.();try{root.dailyRosterRestartMailbox?.()}catch(_){}if(root.__SAGS_READ_SIGN_ENABLED!==false)await root.rsLoadTasksOnce?.(true);await refresh(true);if(!silent)alert("✓ Đã kiểm tra kết nối và đồng bộ lại các nguồn công việc.");return true}catch(e){if(!silent)alert("Chưa đồng bộ lại được: "+S(e?.message||e));return false}};
 
-function install(){ensureUi();const u=me();if(u!==state.user){state.user=u;state.sources={approval:[],handoff:[],cross:[],rs:[],manual:[]};loadCache();startRealtime();scheduleRefresh(450)}else{updateBadge();renderSync()}}
+function install(){ensureUi();ensureButton();watchToolbar();const u=me();if(u!==state.user){state.user=u;state.sources={approval:[],handoff:[],cross:[],rs:[],manual:[]};loadCache();startRealtime();scheduleRefresh(450)}else{updateBadge();renderSync()}}
 const baseApply=root.applyRoleUI;if(typeof baseApply==="function"&&!baseApply.__v342){const w=function(){const r=baseApply.apply(this,arguments);setTimeout(install,30);return r};w.__v342=true;w.__v342Base=baseApply;root.applyRoleUI=w;try{applyRoleUI=w}catch(_){}}
 window.addEventListener("online",()=>{state.connected=null;renderSync();scheduleRefresh(200)},{passive:true});window.addEventListener("offline",()=>{state.connected=false;renderSync()},{passive:true});window.addEventListener("pageshow",()=>setTimeout(install,180),{passive:true});
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>setTimeout(install,450),{once:true});else setTimeout(install,450);
 setInterval(()=>{if(state.items.length){render();updateBadge()}},60000);
-root.__SAGS_V342_HDSD="V3.42: CẦN XỬ LÝ gom duyệt KẾT SỔ/FINAL, bàn giao/tiếp nhận, CROSSCHECK, READ & SIGN khi bật và lỗi đồng bộ chuyến tạo tay. Popup chỉ gây chú ý; công việc còn tồn tại tại badge cho tới khi trạng thái nghiệp vụ thay đổi. Mỗi thẻ mở đúng hàng chờ/biểu mẫu/Flight Cockpit. Trạng thái cloud và dữ liệu cục bộ được hiển thị; THỬ ĐỒNG BỘ LẠI dùng cơ chế repair/restart hiện có. SLA chỉ dùng mốc đã có và đồng hồ hiển thị cục bộ, không heartbeat.";
+root.__SAGS_V342_HDSD="V3.43: CẦN XỬ LÝ được gắn vào đầu thanh Flight Workspace đang hiển thị và tự phục hồi nếu thanh được dựng lại. Trung tâm gom duyệt KẾT SỔ/FINAL, bàn giao/tiếp nhận, CROSSCHECK, READ & SIGN khi bật và lỗi đồng bộ chuyến tạo tay. Popup chỉ gây chú ý; công việc còn tồn tại tại badge cho tới khi trạng thái nghiệp vụ thay đổi. Mỗi thẻ mở đúng hàng chờ/biểu mẫu/Flight Cockpit. Trạng thái cloud và dữ liệu cục bộ được hiển thị; THỬ ĐỒNG BỘ LẠI dùng cơ chế repair/restart hiện có. SLA chỉ dùng mốc đã có và đồng hồ hiển thị cục bộ, không heartbeat.";
 root.__SAGS_V342_BUILD=BUILD;
 root.__SAGS_V342_TEST__={activeItem,overdue,statusLabel,ageLabel,dueLabel,loadCross,loadManual,loadRs};
 })(typeof window!=="undefined"?window:globalThis);
