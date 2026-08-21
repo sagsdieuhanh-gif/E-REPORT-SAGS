@@ -3713,12 +3713,33 @@ if(phase==='flight'){
     if(Number.isFinite(d.getTime()))return {iso:`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`,display:`${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}/${d.getFullYear()}`};
     return null;
   }
-  function fmtTime(v){
-    let s=S(v);if(!s)return "";
-    s=s.replace(/\.0+$/,"");
-    if(/^\d{1,4}$/.test(s)){s=s.padStart(4,"0");const h=Number(s.slice(0,2)),m=Number(s.slice(2));if(h<24&&m<60)return `${s.slice(0,2)}:${s.slice(2)}`;}
-    const m=/^(\d{1,2}):(\d{2})/.exec(s);if(m&&Number(m[1])<24&&Number(m[2])<60)return `${String(Number(m[1])).padStart(2,"0")}:${m[2]}`;
-    return "";
+  function addIsoDays(iso,n){
+    const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(S(iso));if(!m)return S(iso);
+    const d=new Date(Date.UTC(Number(m[1]),Number(m[2])-1,Number(m[3])+Number(n||0)));
+    return `${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,"0")}-${String(d.getUTCDate()).padStart(2,"0")}`;
+  }
+  function isoDayDiff(base,target){
+    const a=/^(\d{4})-(\d{2})-(\d{2})$/.exec(S(base)),b=/^(\d{4})-(\d{2})-(\d{2})$/.exec(S(target));if(!a||!b)return 0;
+    return Math.round((Date.UTC(Number(b[1]),Number(b[2])-1,Number(b[3]))-Date.UTC(Number(a[1]),Number(a[2])-1,Number(a[3])))/86400000);
+  }
+  function parseRosterTime(v){
+    let raw=S(v);if(!raw)return {clock:"",display:"",nextDay:false,dayOffset:0,raw:""};
+    raw=raw.replace(/\.0+$/,'').trim();
+    const nextDay=/\+\s*$/.test(raw);
+    let s=raw.replace(/\+\s*$/,'').trim(),clock="";
+    if(/^\d{1,4}$/.test(s)){s=s.padStart(4,"0");const h=Number(s.slice(0,2)),m=Number(s.slice(2));if(h<24&&m<60)clock=`${s.slice(0,2)}:${s.slice(2)}`;}
+    if(!clock){const m=/^(\d{1,2}):(\d{2})/.exec(s);if(m&&Number(m[1])<24&&Number(m[2])<60)clock=`${String(Number(m[1])).padStart(2,"0")}:${m[2]}`;}
+    return {clock,display:clock?(clock+(nextDay?"+":"")):"",nextDay:!!nextDay,dayOffset:nextDay?1:0,raw};
+  }
+  function fmtTime(v){return parseRosterTime(v).display;}
+  function resolveEventDate(opIso,explicitIso,timeInfo){
+    const base=S(opIso),exp=S(explicitIso);let out=exp||base;
+    if(timeInfo?.dayOffset>0 && isoDayDiff(base,out)<timeInfo.dayOffset)out=addIsoDays(base,timeInfo.dayOffset);
+    return out||base;
+  }
+  function sortMinuteFor(opIso,eventIso,clock){
+    const m=/^(\d{2}):(\d{2})$/.exec(S(clock));if(!m)return 999999;
+    return isoDayDiff(opIso,eventIso)*1440+Number(m[1])*60+Number(m[2]);
   }
   function splitFlights(raw){
     const parts=upper(raw).replace(/[\/]+/g," ").split(/\s+/).filter(Boolean);
@@ -3758,7 +3779,10 @@ if(phase==='flight'){
       const row=parsed.rows[i]||[],flightRaw=getCell(row,map,"FlightNo");if(!flightRaw)continue;
       const arrDate=parseDate(getCell(row,map,"ArrFlightDate")),depDate=parseDate(getCell(row,map,"DepFlightDate"));
       const opDate=arrDate||depDate||rosterDate;if(!opDate)continue;
-      const flights=splitFlights(flightRaw),sta=fmtTime(getCell(row,map,"STA")),std=fmtTime(getCell(row,map,"STD"));
+      const staInfo=parseRosterTime(getCell(row,map,"STA")),stdInfo=parseRosterTime(getCell(row,map,"STD")),etaInfo=parseRosterTime(getCell(row,map,"ETA")),etdInfo=parseRosterTime(getCell(row,map,"ETD"));
+      const sta=staInfo.display,std=stdInfo.display,arrFlightDate=resolveEventDate(opDate.iso,arrDate?.iso,staInfo),depFlightDate=resolveEventDate(opDate.iso,depDate?.iso,stdInfo);
+      const etaFlightDate=resolveEventDate(opDate.iso,arrDate?.iso||arrFlightDate,etaInfo),etdFlightDate=resolveEventDate(opDate.iso,depDate?.iso||depFlightDate,etdInfo);
+      const flights=splitFlights(flightRaw);
       let arrFlight="",depFlight="";
       if(flights.length>=2){arrFlight=flights[0];depFlight=flights[1];}
       else if(flights.length===1){if(arrDate||sta)arrFlight=flights[0];else if(depDate||std)depFlight=flights[0];}
@@ -3767,8 +3791,11 @@ if(phase==='flight'){
       const rec={
         rowNo:i+1,opDate:opDate.iso,date:opDate.display,flightRaw:upper(flightRaw),
         flightName:[arrFlight,depFlight].filter(Boolean).join(" / ")||upper(flightRaw),
-        arrFlight,depFlight,sta,std,
-        eta:fmtTime(getCell(row,map,"ETA")),etd:fmtTime(getCell(row,map,"ETD")),
+        arrFlight,depFlight,sta,std,eta:etaInfo.display,etd:etdInfo.display,
+        arrFlightDate,depFlightDate,etaFlightDate,etdFlightDate,
+        staClock:staInfo.clock,stdClock:stdInfo.clock,etaClock:etaInfo.clock,etdClock:etdInfo.clock,
+        staDayOffset:isoDayDiff(opDate.iso,arrFlightDate),stdDayOffset:isoDayDiff(opDate.iso,depFlightDate),etaDayOffset:isoDayDiff(opDate.iso,etaFlightDate),etdDayOffset:isoDayDiff(opDate.iso,etdFlightDate),
+        staSortMinute:sortMinuteFor(opDate.iso,arrFlightDate,staInfo.clock),stdSortMinute:sortMinuteFor(opDate.iso,depFlightDate,stdInfo.clock),etaSortMinute:sortMinuteFor(opDate.iso,etaFlightDate,etaInfo.clock),etdSortMinute:sortMinuteFor(opDate.iso,etdFlightDate,etdInfo.clock),
         acReg:upper(getCell(row,map,"ACRegNo")),acType:upper(getCell(row,map,"ACType")),
         route:upper(getCell(row,map,"Route")),route1:rp.route1,route3:rp.route3,
         bay:S(getCell(row,map,"ParkingBay")),gate:S(getCell(row,map,"Gate")),
@@ -3802,7 +3829,10 @@ if(phase==='flight'){
       const row=parsed.rows[i]||[],flightRaw=getCell(row,map,"FlightNo");if(!flightRaw)continue;
       const arrDate=parseDate(getCell(row,map,"ArrFlightDate")),depDate=parseDate(getCell(row,map,"DepFlightDate"));
       const opDate=arrDate||depDate||rosterDate;if(!opDate)continue;
-      const flights=splitFlights(flightRaw),sta=fmtTime(getCell(row,map,"STA")),std=fmtTime(getCell(row,map,"STD"));
+      const staInfo=parseRosterTime(getCell(row,map,"STA")),stdInfo=parseRosterTime(getCell(row,map,"STD")),etaInfo=parseRosterTime(getCell(row,map,"ETA")),etdInfo=parseRosterTime(getCell(row,map,"ETD"));
+      const sta=staInfo.display,std=stdInfo.display,arrFlightDate=resolveEventDate(opDate.iso,arrDate?.iso,staInfo),depFlightDate=resolveEventDate(opDate.iso,depDate?.iso,stdInfo);
+      const etaFlightDate=resolveEventDate(opDate.iso,arrDate?.iso||arrFlightDate,etaInfo),etdFlightDate=resolveEventDate(opDate.iso,depDate?.iso||depFlightDate,etdInfo);
+      const flights=splitFlights(flightRaw);
       let arrFlight="",depFlight="";
       if(flights.length>=2){arrFlight=flights[0];depFlight=flights[1];}
       else if(flights.length===1){if(arrDate||sta)arrFlight=flights[0];else if(depDate||std)depFlight=flights[0];}
@@ -3817,7 +3847,11 @@ if(phase==='flight'){
       if(!common.length&&!corOnly.length&&!ldOnly.length&&!paxUsers.length)continue;
 
       const base={
-        rowNo:i+1,opDate:opDate.iso,date:opDate.display,flightRaw:upper(flightRaw),arrFlight,depFlight,sta,std,
+        rowNo:i+1,opDate:opDate.iso,date:opDate.display,flightRaw:upper(flightRaw),arrFlight,depFlight,sta,std,eta:etaInfo.display,etd:etdInfo.display,
+        arrFlightDate,depFlightDate,etaFlightDate,etdFlightDate,
+        staClock:staInfo.clock,stdClock:stdInfo.clock,etaClock:etaInfo.clock,etdClock:etdInfo.clock,
+        staDayOffset:isoDayDiff(opDate.iso,arrFlightDate),stdDayOffset:isoDayDiff(opDate.iso,depFlightDate),etaDayOffset:isoDayDiff(opDate.iso,etaFlightDate),etdDayOffset:isoDayDiff(opDate.iso,etdFlightDate),
+        staSortMinute:sortMinuteFor(opDate.iso,arrFlightDate,staInfo.clock),stdSortMinute:sortMinuteFor(opDate.iso,depFlightDate,stdInfo.clock),etaSortMinute:sortMinuteFor(opDate.iso,etaFlightDate,etaInfo.clock),etdSortMinute:sortMinuteFor(opDate.iso,etdFlightDate,etdInfo.clock),
         acReg:upper(getCell(row,map,"ACRegNo")),acType:upper(getCell(row,map,"ACType")),route:upper(getCell(row,map,"Route")),
         route1:rp.route1,route3:rp.route3,bay:S(getCell(row,map,"ParkingBay")),
         grndCor:corUsers,grndLd:ldUsers,paxSupr:paxUsers,
@@ -3871,7 +3905,7 @@ if(phase==='flight'){
 
 
   // Pure helpers exposed for validation/tests.
-  root.__SAGS_DAILY_ROSTER_TEST__={parseXlsxBytes,parseCsvText,headerRowInfo,parseDate,fmtTime,splitFlights,usersFromCell,allFlightRows,pvhk09SeedFor,rosterRecords,seedFor};
+  root.__SAGS_DAILY_ROSTER_TEST__={parseXlsxBytes,parseCsvText,headerRowInfo,parseDate,parseRosterTime,fmtTime,addIsoDays,isoDayDiff,resolveEventDate,sortMinuteFor,splitFlights,usersFromCell,allFlightRows,pvhk09SeedFor,rosterRecords,seedFor};
   if(typeof document==="undefined")return;
 
   let preview=null,mailRef=null,mailCb=null,revRef=null,revCb=null,lastToastSig="";
@@ -3939,7 +3973,7 @@ if(phase==='flight'){
       grouped.get(k).assignments.push({user:r.targetUser,formGroup:r.formGroup,sourceColumn:r.sourceColumn});
     }
     const rows=[...grouped.values()].slice(0,100);
-    host.innerHTML=`<div class="drStatus">Đọc được <b>${grouped.size}</b> dòng chuyến · <b>${recs.length}</b> biểu mẫu · <b>${users.length}</b> username.<br>Ngày roster: ${esc(data.rosterDate||"không xác định")} · Sheet: ${esc(data.sheetName||"")}</div>${rows.length?`<div class="drTableWrap"><table class="drTable"><thead><tr><th>Ngày</th><th>Flight</th><th>STA</th><th>STD</th><th>Grnd_Cor</th><th>Grnd_Ld</th><th>Pax_Supr</th><th>Biểu mẫu sinh ra</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.date)}</td><td><b>${esc(r.flightRaw)}</b></td><td>${esc(r.sta)}</td><td>${esc(r.std)}</td><td>${(r.grndCor||[]).map(u=>`<span class="drBadge">${esc(u)}</span>`).join(" ")}</td><td>${(r.grndLd||[]).map(u=>`<span class="drBadge">${esc(u)}</span>`).join(" ")}</td><td>${(r.paxSupr||[]).map(u=>`<span class="drBadge">${esc(u)}</span>`).join(" ")}</td><td>${r.assignments.map(a=>`<span class="drBadge">${esc(a.user)} · ${formLabel(a.formGroup)}</span>`).join(" ")}</td></tr>`).join("")}</tbody></table></div>`:'<div class="drEmpty">Không có tên hợp lệ ở Grnd_Cor / Grnd_Ld / Pax_Supr.</div>'}`;
+    host.innerHTML=`<div class="drStatus">Đọc được <b>${grouped.size}</b> dòng chuyến · <b>${recs.length}</b> biểu mẫu · <b>${users.length}</b> username.<br>Ngày roster: ${esc(data.rosterDate||"không xác định")} · Sheet: ${esc(data.sheetName||"")}</div>${rows.length?`<div class="drTableWrap"><table class="drTable"><thead><tr><th>Ngày KT</th><th>Flight</th><th>STA</th><th>STD</th><th>Ngày đi</th><th>Grnd_Cor</th><th>Grnd_Ld</th><th>Pax_Supr</th><th>Biểu mẫu sinh ra</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.date)}</td><td><b>${esc(r.flightRaw)}</b></td><td>${esc(r.sta)}</td><td>${esc(r.std)}</td><td>${esc(r.depFlightDate||r.opDate)}${Number(r.stdDayOffset||0)>0?' <span class="drBadge">NEXT DAY</span>':''}</td><td>${(r.grndCor||[]).map(u=>`<span class="drBadge">${esc(u)}</span>`).join(" ")}</td><td>${(r.grndLd||[]).map(u=>`<span class="drBadge">${esc(u)}</span>`).join(" ")}</td><td>${(r.paxSupr||[]).map(u=>`<span class="drBadge">${esc(u)}</span>`).join(" ")}</td><td>${r.assignments.map(a=>`<span class="drBadge">${esc(a.user)} · ${formLabel(a.formGroup)}</span>`).join(" ")}</td></tr>`).join("")}</tbody></table></div>`:'<div class="drEmpty">Không có tên hợp lệ ở Grnd_Cor / Grnd_Ld / Pax_Supr.</div>'}`;
   }
 
   root.dailyRosterLoadFile=async function(file){
@@ -3985,14 +4019,14 @@ if(phase==='flight'){
         const effectiveUser=manual?normUser(oldItem.user):baseRec.targetUser;
         if(manual)overrides++;
         const r={...baseRec,targetUser:effectiveUser};
-        const payload={engine:ENGINE,schema:2,assignmentId:r.assignmentId,targetUser:r.targetUser,originalTargetUser:baseRec.originalTargetUser||baseRec.targetUser,opDate:r.opDate,date:r.date,flightRaw:r.flightRaw,flightName:r.flightName||"",arrFlight:r.arrFlight,depFlight:r.depFlight,sta:r.sta,std:r.std,acReg:r.acReg,acType:r.acType,route:r.route,route1:r.route1,route3:r.route3,bay:r.bay,formGroup:r.formGroup,sourceColumn:r.sourceColumn,roleKey:r.roleKey,sourceFile:data.fileName||"",active:true,manualOverride:manual,publishedAtMs:now,publishedBy:by};
+        const payload={engine:ENGINE,schema:2,assignmentId:r.assignmentId,targetUser:r.targetUser,originalTargetUser:baseRec.originalTargetUser||baseRec.targetUser,opDate:r.opDate,date:r.date,flightRaw:r.flightRaw,flightName:r.flightName||"",arrFlight:r.arrFlight,depFlight:r.depFlight,sta:r.sta,std:r.std,eta:r.eta||"",etd:r.etd||"",arrFlightDate:r.arrFlightDate||r.opDate,depFlightDate:r.depFlightDate||r.opDate,etaFlightDate:r.etaFlightDate||r.arrFlightDate||r.opDate,etdFlightDate:r.etdFlightDate||r.depFlightDate||r.opDate,staClock:r.staClock||"",stdClock:r.stdClock||"",etaClock:r.etaClock||"",etdClock:r.etdClock||"",staDayOffset:Number(r.staDayOffset||0),stdDayOffset:Number(r.stdDayOffset||0),etaDayOffset:Number(r.etaDayOffset||0),etdDayOffset:Number(r.etdDayOffset||0),staSortMinute:Number(r.staSortMinute),stdSortMinute:Number(r.stdSortMinute),etaSortMinute:Number(r.etaSortMinute),etdSortMinute:Number(r.etdSortMinute),acReg:r.acReg,acType:r.acType,route:r.route,route1:r.route1,route3:r.route3,bay:r.bay,formGroup:r.formGroup,sourceColumn:r.sourceColumn,roleKey:r.roleKey,sourceFile:data.fileName||"",active:true,manualOverride:manual,publishedAtMs:now,publishedBy:by};
         patch[`${MAIL_PATH}/${safeKey(r.targetUser)}/items/${safeKey(r.assignmentId)}`]=payload;
         patch[`${REVOKE_PATH}/${safeKey(r.targetUser)}/items/${safeKey(r.assignmentId)}`]=null;
         if(oldItem.user&&normUser(oldItem.user)!==normUser(r.targetUser)){
           patch[`${MAIL_PATH}/${safeKey(oldItem.user)}/items/${safeKey(r.assignmentId)}`]=null;
           patch[`${REVOKE_PATH}/${safeKey(oldItem.user)}/items/${safeKey(r.assignmentId)}`]={assignmentId:r.assignmentId,reason:"REASSIGNED",atMs:now,by};
         }
-        nextItems[r.assignmentId]={assignmentId:r.assignmentId,user:r.targetUser,originalUser:baseRec.originalTargetUser||baseRec.targetUser,flightRaw:r.flightRaw,flightName:r.flightName||"",formGroup:r.formGroup,sourceColumn:r.sourceColumn,roleKey:r.roleKey,manualOverride:manual,active:true,flightId:S(oldItem.flightId)};writes++;
+        nextItems[r.assignmentId]={assignmentId:r.assignmentId,user:r.targetUser,originalUser:baseRec.originalTargetUser||baseRec.targetUser,flightRaw:r.flightRaw,flightName:r.flightName||"",arrFlight:r.arrFlight||"",depFlight:r.depFlight||"",sta:r.sta||"",std:r.std||"",arrFlightDate:r.arrFlightDate||r.opDate,depFlightDate:r.depFlightDate||r.opDate,staDayOffset:Number(r.staDayOffset||0),stdDayOffset:Number(r.stdDayOffset||0),staSortMinute:Number(r.staSortMinute),stdSortMinute:Number(r.stdSortMinute),formGroup:r.formGroup,sourceColumn:r.sourceColumn,roleKey:r.roleKey,manualOverride:manual,active:true,flightId:S(oldItem.flightId)};writes++;
       }
       const removedFlightIds=new Set();
       for(const [id,x] of Object.entries(oldItems)){
@@ -4595,8 +4629,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   function splitFlights(raw){const s=U(raw).replace(/[\/]+/g,' '),out=[];let prefix='';for(const p0 of s.split(/\s+/).filter(Boolean)){const p=p0.replace(/[^A-Z0-9]/g,'');let m=/^([A-Z0-9]{2,3}?)(\d{1,5})$/.exec(p);if(m&&/[A-Z]/.test(m[1])){prefix=m[1];out.push(prefix+m[2]);continue}m=/^(\d{1,5})$/.exec(p);if(m&&prefix)out.push(prefix+m[1]);}return [...new Set(out)]}
   function flightId(date,arr,dep,raw){const flights=[normFlight(arr),normFlight(dep)].filter(Boolean);if(!flights.length)flights.push(...splitFlights(raw).map(normFlight));const sig=`${isoDate(date)}|${flights.join('|')||normFlight(raw)||'UNKNOWN'}`;return `FLT_${hash(sig)}`}
   function extractMailByAssignment(patch){const out={};for(const [k,v] of Object.entries(patch||{})){const m=/^roster_mail\/[^/]+\/items\/([^/]+)$/.exec(k);if(m&&v&&typeof v==='object')out[S(v.assignmentId||m[1])]=v;}return out}
-  function enrichRosterPatch(patch){const mails=extractMailByAssignment(patch);for(const [k,v] of Object.entries(patch||{})){const m=/^roster_manifests\/([^/]+)$/.exec(k);if(!m||!v?.items)continue;const date=m[1],records={};for(const [aid,item0] of Object.entries(v.items||{})){const item={...item0},mail=mails[aid]||{};const fid=flightId(date,mail.arrFlight,mail.depFlight,item.flightRaw||mail.flightRaw);item.flightId=fid;v.items[aid]=item;if(mails[aid])mails[aid].flightId=fid;const rec=records[fid]||(records[fid]={flightId:fid,opDate:date,flightRaw:S(item.flightRaw||mail.flightRaw),flightName:S(item.flightName||mail.flightName),arrFlight:S(mail.arrFlight),depFlight:S(mail.depFlight),sta:S(mail.sta),std:S(mail.std),acReg:S(mail.acReg),acType:S(mail.acType),route:S(mail.route),bay:S(mail.bay),createdFrom:'DAILY_ROSTER',createdAtMs:Date.now(),updatedAtMs:Date.now(),assignments:{}});rec.assignments[aid]={assignmentId:aid,user:S(item.user||mail.targetUser),originalUser:S(item.originalUser||mail.originalTargetUser),formGroup:S(item.formGroup||mail.formGroup),sourceColumn:S(item.sourceColumn||mail.sourceColumn),roleKey:S(item.roleKey||mail.roleKey),workspaceKey:S(item.workspaceKey||item.rosterWorkspaceKey||mail.workspaceKey||mail.rosterWorkspaceKey),assignmentScope:S(item.assignmentScope||mail.assignmentScope||'BOTH'),active:item.active!==false};}
-      for(const [fid,rec] of Object.entries(records)){const base=`${ROOT}/${safe(date)}/${safe(fid)}`;for(const k of ['flightId','opDate','flightRaw','flightName','arrFlight','depFlight','sta','std','acReg','acType','route','bay','createdFrom'])patch[`${base}/${k}`]=rec[k]??'';patch[`${base}/updatedAtMs`]=Date.now();patch[`${base}/createdAtMs`]=rec.createdAtMs||Date.now();patch[`${base}/rosterActive`]=true;patch[`${base}/rosterStatus`]="ACTIVE";patch[`${base}/rosterRemovedAtMs`]=null;patch[`${base}/rosterRemovedBy`]=null;patch[`${base}/rosterRemovedSourceFile`]=null;patch[`${base}/assignments`]=rec.assignments||{};}
+  function enrichRosterPatch(patch){const mails=extractMailByAssignment(patch);for(const [k,v] of Object.entries(patch||{})){const m=/^roster_manifests\/([^/]+)$/.exec(k);if(!m||!v?.items)continue;const date=m[1],records={};for(const [aid,item0] of Object.entries(v.items||{})){const item={...item0},mail=mails[aid]||{};const fid=flightId(date,mail.arrFlight,mail.depFlight,item.flightRaw||mail.flightRaw);item.flightId=fid;v.items[aid]=item;if(mails[aid])mails[aid].flightId=fid;const rec=records[fid]||(records[fid]={flightId:fid,opDate:date,flightRaw:S(item.flightRaw||mail.flightRaw),flightName:S(item.flightName||mail.flightName),arrFlight:S(mail.arrFlight),depFlight:S(mail.depFlight),sta:S(mail.sta),std:S(mail.std),eta:S(mail.eta),etd:S(mail.etd),arrFlightDate:S(mail.arrFlightDate||date),depFlightDate:S(mail.depFlightDate||date),etaFlightDate:S(mail.etaFlightDate||mail.arrFlightDate||date),etdFlightDate:S(mail.etdFlightDate||mail.depFlightDate||date),staClock:S(mail.staClock),stdClock:S(mail.stdClock),etaClock:S(mail.etaClock),etdClock:S(mail.etdClock),staDayOffset:Number(mail.staDayOffset||0),stdDayOffset:Number(mail.stdDayOffset||0),etaDayOffset:Number(mail.etaDayOffset||0),etdDayOffset:Number(mail.etdDayOffset||0),staSortMinute:Number(mail.staSortMinute),stdSortMinute:Number(mail.stdSortMinute),etaSortMinute:Number(mail.etaSortMinute),etdSortMinute:Number(mail.etdSortMinute),acReg:S(mail.acReg),acType:S(mail.acType),route:S(mail.route),bay:S(mail.bay),createdFrom:'DAILY_ROSTER',createdAtMs:Date.now(),updatedAtMs:Date.now(),assignments:{}});rec.assignments[aid]={assignmentId:aid,user:S(item.user||mail.targetUser),originalUser:S(item.originalUser||mail.originalTargetUser),formGroup:S(item.formGroup||mail.formGroup),sourceColumn:S(item.sourceColumn||mail.sourceColumn),roleKey:S(item.roleKey||mail.roleKey),workspaceKey:S(item.workspaceKey||item.rosterWorkspaceKey||mail.workspaceKey||mail.rosterWorkspaceKey),assignmentScope:S(item.assignmentScope||mail.assignmentScope||'BOTH'),active:item.active!==false};}
+      for(const [fid,rec] of Object.entries(records)){const base=`${ROOT}/${safe(date)}/${safe(fid)}`;for(const k of ['flightId','opDate','flightRaw','flightName','arrFlight','depFlight','sta','std','eta','etd','arrFlightDate','depFlightDate','etaFlightDate','etdFlightDate','staClock','stdClock','etaClock','etdClock','staDayOffset','stdDayOffset','etaDayOffset','etdDayOffset','staSortMinute','stdSortMinute','etaSortMinute','etdSortMinute','acReg','acType','route','bay','createdFrom'])patch[`${base}/${k}`]=rec[k]??'';patch[`${base}/updatedAtMs`]=Date.now();patch[`${base}/createdAtMs`]=rec.createdAtMs||Date.now();patch[`${base}/rosterActive`]=true;patch[`${base}/rosterStatus`]="ACTIVE";patch[`${base}/rosterRemovedAtMs`]=null;patch[`${base}/rosterRemovedBy`]=null;patch[`${base}/rosterRemovedSourceFile`]=null;patch[`${base}/assignments`]=rec.assignments||{};}
       v.flightHubSchema=1;
     }}
   async function readDate(date){try{return (await root.sagsV470Ref(`${ROOT}/${safe(date)}`).once('value')).val()||{}}catch(_){return {}}}
@@ -4999,7 +5033,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     for(const [k,re] of tests)if(re.test(text))return k;
     return '';
   }
-  function timeScore(v){const s=S(v).replace(/[^0-9]/g,'');if(s.length<3)return 99999;const hh=Number(s.slice(0,-2)),mm=Number(s.slice(-2));return (Number.isFinite(hh)?hh:99)*60+(Number.isFinite(mm)?mm:99);}
+  function timeScore(v){const raw=S(v),plus=/\+\s*$/.test(raw),s=raw.replace(/[^0-9]/g,'');if(s.length<3)return 99999;const hh=Number(s.slice(0,-2)),mm=Number(s.slice(-2));return (plus?1440:0)+(Number.isFinite(hh)?hh:99)*60+(Number.isFinite(mm)?mm:99);}
+  function recordTimeScore(rec,key='std'){const n=Number(rec?.[`${key}SortMinute`]);return Number.isFinite(n)&&n>=0?n:timeScore(rec?.[key]);}
   function dbref(path){if(typeof root.sagsV470Ref!=='function')throw new Error('Firebase RTDB chưa sẵn sàng.');return root.sagsV470Ref(path);}
   async function readFlights(date){if(typeof root.sagsFlightHubRead==='function')return await root.sagsFlightHubRead(date);const s=await dbref(`${ROOT}/${safe(date)}`).once('value');return s.val()||{};}
   async function readManifest(date){try{const s=await dbref(`${MANIFEST}/${safe(date)}`).once('value');return s.val()||null}catch(_){return null}}
@@ -5021,7 +5056,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   }
   function status(msg,err=false){const e=document.getElementById('fwcStatus');if(e){e.textContent=msg;e.classList.toggle('err',!!err)}}
   function moduleBadges(rec){try{return root.sagsFlightHubModuleBadges?.(rec)||[]}catch(_){return []}}
-  function listHtml(date,flights){const arr=Object.values(flights||{}).filter(rec=>rec&&rec.rosterActive!==false&&U(rec.rosterStatus)!=='ROSTER_REMOVED').sort((a,b)=>timeScore(a.std)-timeScore(b.std)||S(a.depFlight||a.arrFlight||a.flightRaw).localeCompare(S(b.depFlight||b.arrFlight||b.flightRaw),'vi'));if(!arr.length)return '<div class="fwcEmpty">Ngày này chưa có chuyến. AD hãy vào ⚙ QUẢN LÝ → VẬN HÀNH CHUYẾN → DAILY ROSTER và chọn file.</div>';
+  function listHtml(date,flights){const arr=Object.values(flights||{}).filter(rec=>rec&&rec.rosterActive!==false&&U(rec.rosterStatus)!=='ROSTER_REMOVED').sort((a,b)=>recordTimeScore(a,'std')-recordTimeScore(b,'std')||S(a.depFlight||a.arrFlight||a.flightRaw).localeCompare(S(b.depFlight||b.arrFlight||b.flightRaw),'vi'));if(!arr.length)return '<div class="fwcEmpty">Ngày này chưa có chuyến. AD hãy vào ⚙ QUẢN LÝ → VẬN HÀNH CHUYẾN → DAILY ROSTER và chọn file.</div>';
     return arr.map(rec=>{const name=S(rec.depFlight||rec.arrFlight||rec.flightName||rec.flightRaw||rec.flightId),mods=moduleBadges(rec),assign=rec.unitAssignments||{},owners=Object.keys(assign).filter(k=>assign[k]?.username).length;return `<div class="fwcFlight"><div><div class="fwcFlightTitle">${esc(name)}</div><div class="fwcMeta">${esc(rec.route||'')} · A/C ${esc(rec.acReg||'—')} · STA ${esc(rec.sta||'—')} · <b>STD ${esc(rec.std||'—')}</b></div><div class="fwcMeta">${esc(rec.flightId||'')}</div></div><div><div class="fwcBadges">${mods.length?mods.map(x=>`<span class="fwcBadge">${esc(x.kind)}: ${esc(x.status)}</span>`).join(''):'<span class="fwcBadge warn">CHƯA CÓ DỮ LIỆU NGHIỆP VỤ</span>'}</div><div class="fwcMeta">Đơn vị đã nhận: ${owners}/${UNITS.filter(x=>!x.requestOnly).length}</div></div><button class="fwcBtn" onclick="flightWorkspaceOpenFlight('${esc(rec.flightId)}')">MỞ CHUYẾN</button></div>`}).join('');}
   async function renderList(date){ensureUI();const body=document.getElementById('fwcBody');body.innerHTML=`<div class="fwcTools"><input id="fwcDate" type="date" value="${esc(date)}"><button class="fwcBtn" onclick="flightWorkspaceRefresh()">TẢI DANH SÁCH</button>${role()==='AD'?'<button class="fwcBtn green" onclick="flightWorkspacePickRoster()">📋 CHỌN DAILY ROSTER</button>':''}<button class="fwcBtn gray" onclick="rosterHandoffOpen?.()">BÀN GIAO / DUYỆT</button></div><div id="fwcStatus" class="fwcStatus">Đang tải danh sách chuyến…</div><div id="fwcList"></div>`;
     try{const [flights,manifest]=await Promise.all([readFlights(date),readManifest(date)]),fixed=await reconcileRosterClaims(date,flights,manifest);cache={date,flights,manifest,selected:null};document.getElementById('fwcList').innerHTML=listHtml(date,flights);const activeCount=Object.values(flights||{}).filter(rec=>rec&&rec.rosterActive!==false&&U(rec.rosterStatus)!=='ROSTER_REMOVED').length;status(`✓ ${activeCount} Flight Workspace đang ACTIVE · xếp theo STD. Chuyến bị bỏ khỏi roster mới được giữ hồ sơ nhưng ẩn khỏi danh sách khai thác.${fixed.length?` Đã tự gỡ ${fixed.length} claim cũ không khớp roster.`:''}`);}catch(e){status('Không tải được danh sách chuyến: '+S(e?.message||e),true)}}
@@ -5055,7 +5090,8 @@ const normUser=v=>{try{return typeof root.normalizePersonalUsername==='function'
 const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
 const sess=()=>{try{return root.__sagsGetSession?.()||{role:root.currentRole||'',profile:root.currentUserProfile||{}}}catch(_){return {role:root.currentRole||'',profile:root.currentUserProfile||{}}}}, role=()=>U(sess().role||sess().profile?.role), me=()=>normUser(sess().profile?.username||(role()==='AD'?'AD':''));
 function dbref(path){if(typeof root.sagsV470Ref!=='function')throw new Error('Firebase RTDB chưa sẵn sàng.');return root.sagsV470Ref(path)}
-function timeScore(v){const s=S(v).replace(/[^0-9]/g,'');if(s.length<3)return 99999;return Number(s.slice(0,-2))*60+Number(s.slice(-2))}
+function timeScore(v){const raw=S(v),plus=/\+\s*$/.test(raw),s=raw.replace(/[^0-9]/g,'');if(s.length<3)return 99999;return (plus?1440:0)+Number(s.slice(0,-2))*60+Number(s.slice(-2))}
+function recordTimeScore(rec,key='std'){const n=Number(rec?.[`${key}SortMinute`]);return Number.isFinite(n)&&n>=0?n:timeScore(rec?.[key])}
 const flightName=r=>S(r?.depFlight||r?.arrFlight||r?.flightName||r?.flightRaw||r?.flightId);
 const opDate=()=>S(sessionStorage.getItem('sagsV36FwcDate'))||S(document.getElementById('fwcDate')?.value)||today(), selected=()=>S(sessionStorage.getItem('sagsV36FwcSelected'));
 function setCtx(d,f=''){if(d)sessionStorage.setItem('sagsV36FwcDate',d);if(f)sessionStorage.setItem('sagsV36FwcSelected',f);else sessionStorage.removeItem('sagsV36FwcSelected')}
@@ -5075,7 +5111,7 @@ function multiSet(){try{return new Set(JSON.parse(sessionStorage.getItem(multiKe
 function multiSave(set){try{sessionStorage.setItem(multiKey(),JSON.stringify([...set].filter(Boolean)))}catch(_){}}
 function multiAdd(fid){fid=S(fid);if(!fid)return;const set=multiSet();set.add(fid);multiSave(set)}
 function multiRemove(fid){const set=multiSet();set.delete(S(fid));multiSave(set)}
-async function assignedData(){const d=opDate(),u=me();if(!u)throw new Error('Không xác định được tài khoản.');const [a,b]=await Promise.all([dbref(`${ROOT}/${safe(d)}`).once('value'),dbref(`${MANIFEST}/${safe(d)}`).once('value')]),fl=a.val()||{},man=b.val()||{},ids=new Set();Object.values(fl).forEach(r=>Object.values(r?.unitAssignments||{}).forEach(x=>{if(normUser(x?.username)===u)ids.add(S(r.flightId))}));Object.values(man?.items||{}).forEach(x=>{if(x?.active!==false&&normUser(x?.user||x?.targetUser)===u&&S(x?.flightId))ids.add(S(x.flightId))});if(role()==='AD'&&selected())ids.add(selected());const list=[...ids].map(id=>fl[id]).filter(Boolean).sort((x,y)=>timeScore(x.std)-timeScore(y.std)||flightName(x).localeCompare(flightName(y),'vi'));return {d,list}}
+async function assignedData(){const d=opDate(),u=me();if(!u)throw new Error('Không xác định được tài khoản.');const [a,b]=await Promise.all([dbref(`${ROOT}/${safe(d)}`).once('value'),dbref(`${MANIFEST}/${safe(d)}`).once('value')]),fl=a.val()||{},man=b.val()||{},ids=new Set();Object.values(fl).forEach(r=>Object.values(r?.unitAssignments||{}).forEach(x=>{if(normUser(x?.username)===u)ids.add(S(r.flightId))}));Object.values(man?.items||{}).forEach(x=>{if(x?.active!==false&&normUser(x?.user||x?.targetUser)===u&&S(x?.flightId))ids.add(S(x.flightId))});if(role()==='AD'&&selected())ids.add(selected());const list=[...ids].map(id=>fl[id]).filter(Boolean).sort((x,y)=>recordTimeScore(x,'std')-recordTimeScore(y,'std')||flightName(x).localeCompare(flightName(y),'vi'));return {d,list}}
 async function data(){const all=await assignedData(),set=multiSet(),cur=selected();if(cur&&all.list.some(r=>S(r.flightId)===cur)){set.add(cur);multiSave(set)}const list=all.list.filter(r=>set.has(S(r.flightId)));const clean=new Set(list.map(r=>S(r.flightId)));if([...set].some(id=>!clean.has(id)))multiSave(clean);return {d:all.d,list,totalMyFlight:all.list.length}}
 function alerting(r){const x=r?.modules?.FINAL||{},s=U(x.crosscheckStatus||'');return !!s&&!/(COMPLETE|COMPLETED|OK)/.test(s)}
 async function count(){const e=document.getElementById('fwcMultitaskCount');if(!e)return;try{e.textContent=String((await data()).list.length)}catch(_){e.textContent='0'}}
@@ -5722,7 +5758,7 @@ body.v38-clean-workflow #v38NavRS,body.v38-clean-workflow #readSignQuickBtn,body
     const stored=S(sessionStorage.getItem('sagsV36FwcDate'));
     const today=iso(),prev=yesterday();
     if(stored===today||stored===prev)return stored;
-    return new Date().getHours()<4?prev:today;
+    return new Date().getHours()<=4?prev:today;
   }
   function selectedDate(){return S(document.getElementById('fwcDate')?.value)||currentOpDate()}
   function selectedFid(){return S(sessionStorage.getItem('sagsV36FwcSelected')||root.__v320SelectedFlight||'')}
@@ -6138,3 +6174,6 @@ body.v38-clean-workflow #v38CleanNav .v326GrantedPermission::after{content:'+';d
 
 /* V3.31 · REMOVE UNUSED PILOT CONTROL */
 (function(root){root.__SAGS_V331_BUILD='V3.31-20260821-01';root.__SAGS_V331_HDSD='V3.31: đã loại bỏ toàn bộ module PILOT CONTROL chưa sử dụng khỏi runtime và Admin Hub. Các luồng vận hành khác giữ nguyên.';})(typeof window!=='undefined'?window:globalThis);
+
+/* E-REPORT/SAGS V3.32 · NEXT-DAY TIME (+) */
+(function(root){root.__SAGS_V332_BUILD='V3.32-20260821-01';root.__SAGS_V332_HDSD='V3.32: DAILY ROSTER hiểu dấu + sau STA/STD/ETA/ETD là NEXT DAY. Ví dụ 0400+ = 04:00 ngày kế tiếp. Parser giữ dấu + khi hiển thị, lưu clock/date/dayOffset/sortMinute vào roster mail, manifest và Flight Record; Preview hiện NEXT DAY; Flight list, MY FLIGHT và MULTITASK sắp xếp theo phút khai thác có cộng ngày thay vì coi 04:00+ là 04:00 cùng ngày. Seed biểu mẫu giữ 04:00+ để nhân viên nhận biết. Operational-day rollover giữ ngày trước qua khung 04:xx.';})(typeof window!=='undefined'?window:globalThis);

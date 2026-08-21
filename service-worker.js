@@ -1,5 +1,5 @@
-const CACHE_NAME="sags-v3-31-no-pilot-control-20260821-01";
-const BUILD="V3.31-20260821-01";
+const CACHE_NAME="sags-v3-32-next-day-time-20260821-01";
+const BUILD="V3.32-20260821-01";
 const APP_SHELL=[
   "./9Gfinal.png",
   "./CBTT.png",
