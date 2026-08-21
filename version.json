@@ -1,1 +1,1 @@
-{"version":"V3.4","build":"V3.4-20260821-01","releasedAt":"2026-08-21T09:36:39+07:00","notes":"AD archive export: select document types and export either PDF or a checksum-protected working file. AD-only import restores editable form data into a new local flight session; sent FINAL/CROSSCHECK/KET SO/AUDIT remain reference-only."}
+{"version":"V3.6","build":"V3.6-20260821-01","releasedAt":"2026-08-21T10:55:00+07:00","notes":"Sticky Flight Workspace header, single-button MULTITASK, and centered CROSSCHECK COMPLETE alert for exact DH with custom audio and vibration."}
