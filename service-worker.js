@@ -1,5 +1,5 @@
-const CACHE_NAME="sags-v3-22-ai-limit-fix-20260821-01";
-const BUILD="V3.22-20260821-01";
+const CACHE_NAME="sags-v3-23-limit-archive-multitask-20260821-01";
+const BUILD="V3.23-20260821-01";
 const APP_SHELL=[
   "./9Gfinal.png",
   "./CBTT.png",
