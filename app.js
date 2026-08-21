@@ -3991,7 +3991,7 @@ if(phase==='flight'){
     if(!preview?.records?.length)return false;
     setStatus(`✓ DAILY ROSTER hợp lệ (${preview.records.length} phân công). Đang tự tạo Flight Workspace…`);
     const ok=await root.dailyRosterPublish();
-    if(ok){setStatus("✓ ĐÃ TỰ TẠO CHUYẾN. Đang mở DANH SÁCH CHUYẾN HÔM NAY…");setTimeout(()=>{try{root.closeDailyRosterManager?.();root.flightWorkspaceOpenList?.();}catch(_){ }},350);}
+    if(ok)setStatus("✓ ĐÃ TỰ TẠO CHUYẾN. Bấm CHUYẾN khi muốn mở danh sách.");
     return !!ok;
   };
 
@@ -4082,7 +4082,7 @@ if(phase==='flight'){
     try{
       setStatus("Đang đồng bộ chuyến và phân công công việc…");
       const r=await publishRecords(preview);ok=true;
-      setStatus(`✓ ĐÃ ĐỒNG BỘ DAILY ROSTER. Đã phân công ${r.writes} công việc cho ${r.dates} ngày. Thu hồi ${r.removes} phân công cũ. ${r.removedFlights?`Đánh dấu ${r.removedFlights} chuyến ROSTER_REMOVED/INACTIVE. `:""}Giữ ${r.overrides} chuyển người thủ công.\nKhông xóa Flight Record hoặc dữ liệu nghiệp vụ cũ. Hệ thống sẽ mở DANH SÁCH CHUYẾN HÔM NAY.`);
+      setStatus(`✓ ĐÃ ĐỒNG BỘ DAILY ROSTER. Đã phân công ${r.writes} công việc cho ${r.dates} ngày. Thu hồi ${r.removes} phân công cũ. ${r.removedFlights?`Đánh dấu ${r.removedFlights} chuyến ROSTER_REMOVED/INACTIVE. `:""}Giữ ${r.overrides} chuyển người thủ công.\nKhông xóa Flight Record hoặc dữ liệu nghiệp vụ cũ. Bấm CHUYẾN khi muốn mở danh sách.`);
       void root.dailyRosterLoadAssignments();
     }catch(e){setStatus("Không đồng bộ DAILY ROSTER được: "+S(e?.message||e),true);}
     finally{if(btn)btn.disabled=false;}
@@ -4690,7 +4690,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   function installDailyRosterUi(){
     try{const b=document.getElementById('drPublishBtn');if(b)b.textContent='✈ TẠO CHUYẾN';}catch(_){}
     if(root.__FLIGHT_HUB_DAILY_HOOK)return;const base=root.dailyRosterPublish;if(typeof base!=='function'){setTimeout(installDailyRosterUi,500);return}
-    root.__FLIGHT_HUB_DAILY_HOOK=1;root.dailyRosterPublish=async function(){const r=await base.apply(this,arguments);if(r===true){try{root.closeDailyRosterManager?.();setTimeout(()=>{if(typeof root.flightWorkspaceOpenList==='function')root.flightWorkspaceOpenList();else root.rosterHandoffOpen?.()},250)}catch(_){}}return r};
+    root.__FLIGHT_HUB_DAILY_HOOK=1;root.dailyRosterPublish=async function(){return await base.apply(this,arguments)};
   }
   root.sagsFlightHubModuleBadges=function(rec){const mods=rec?.modules||{},order=['KẾT SỔ','FINAL','RAMP','HÀNG HÓA','ULD','MVT','MVA'];return order.filter(k=>mods[k]).map(k=>({kind:k,status:S(mods[k]?.status||'ĐÃ CÓ'),revisionNo:Number(mods[k]?.revisionNo||0)}));};
 
@@ -5106,7 +5106,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   root.flightWorkspaceOpenList=function(date){ensureUI();document.getElementById('fwcModal').classList.add('show');return renderList(S(date)||today());};
   root.flightWorkspaceClose=function(){document.getElementById('fwcModal')?.classList.remove('show');};
   root.flightWorkspaceRefresh=function(){return renderList(S(document.getElementById('fwcDate')?.value)||cache.date||today());};
-  root.flightWorkspacePickRoster=function(){if(role()!=='AD')return;let inp=document.getElementById('fwcRosterFile');if(!inp){inp=document.createElement('input');inp.id='fwcRosterFile';inp.type='file';inp.accept='.xlsx,.xlsm,.csv';inp.style.position='fixed';inp.style.left='-9999px';inp.addEventListener('change',async()=>{const f=inp.files?.[0];inp.value='';if(!f)return;try{status('Đang đọc DAILY ROSTER và tự tạo chuyến…');const ok=await root.dailyRosterLoadFile?.(f);if(ok)setTimeout(()=>root.flightWorkspaceOpenList?.(),500);}catch(e){status('Không tạo chuyến từ DAILY ROSTER: '+S(e?.message||e),true)}});document.body.appendChild(inp);}inp.click();};
+  root.flightWorkspacePickRoster=function(){if(role()!=='AD')return;let inp=document.getElementById('fwcRosterFile');if(!inp){inp=document.createElement('input');inp.id='fwcRosterFile';inp.type='file';inp.accept='.xlsx,.xlsm,.csv';inp.style.position='fixed';inp.style.left='-9999px';inp.addEventListener('change',async()=>{const f=inp.files?.[0];inp.value='';if(!f)return;try{status('Đang đọc DAILY ROSTER và tự tạo chuyến…');const ok=await root.dailyRosterLoadFile?.(f);if(ok)setTimeout(()=>root.flightWorkspaceRefresh?.(),500);}catch(e){status('Không tạo chuyến từ DAILY ROSTER: '+S(e?.message||e),true)}});document.body.appendChild(inp);}inp.click();};
   root.flightWorkspaceOpenFlight=function(fid){const rec=cache.flights?.[fid];if(!rec)return;cache.selected=fid;const body=document.getElementById('fwcBody'),myUnit=unitForProfile(),isAdmin=role()==='AD',mods=moduleBadges(rec);body.innerHTML=`<div class="fwcBack"><button class="fwcBtn gray" onclick="flightWorkspaceOpenList('${esc(cache.date)}')">← DANH SÁCH CHUYẾN</button> <button class="fwcBtn gray" onclick="rosterHandoffOpen?.()">BÀN GIAO / DUYỆT</button></div><div class="fwcWorkspaceHead"><div class="fwcWorkspaceTitle">${esc(rec.depFlight||rec.arrFlight||rec.flightName||rec.flightRaw||fid)}</div><div class="fwcMeta">${esc(rec.route||'')} · STA ${esc(rec.sta||'—')} · STD ${esc(rec.std||'—')} · A/C ${esc(rec.acReg||'—')} · ${esc(fid)}</div><div class="fwcModules">${mods.length?mods.map(x=>`<span class="fwcBadge">${esc(x.kind)}: ${esc(x.status)}</span>`).join(''):'<span class="fwcBadge warn">Chưa phát sinh dữ liệu module</span>'}</div></div><div class="fwcUnitGrid">${UNITS.map(u=>unitHtml(rec,u,myUnit,isAdmin)).join('')}</div>`;};
   function unitHtml(rec,u,myUnit,isAdmin){const a=rec.unitAssignments?.[u.key]||{},mine=myUnit===u.key,ownerUser=normUser(a.username),owner=S(a.name||a.username),rosterUsers=rosterUsersForUnit(rec,u.key,cache.manifest),meUser=normUser(me()),rosterLocked=rosterUsers.length>0,eligible=!rosterLocked||rosterUsers.includes(meUser),ownerValid=!ownerUser||!rosterLocked||rosterUsers.includes(ownerUser),isOwner=!!ownerUser&&ownerUser===meUser&&ownerValid,canClaim=!u.requestOnly&&!owner&&mine&&eligible;const rosterLine=rosterLocked?`<div class="fwcNotice"><b>DAILY ROSTER:</b> ${esc(rosterUsers.join(', '))}${mine&&!eligible?' · Tài khoản này không được phân nhiệm vụ.':''}${ownerUser&&!ownerValid?' · ⚠ Người đang nhận KHÔNG KHỚP roster.':''}</div>`:'';return `<div class="fwcUnit ${mine?'mine':''}"><h4>${u.icon} ${esc(u.label)}</h4><div class="fwcOwner">${u.requestOnly?'Loại công việc: tiếp nhận yêu cầu theo sự kiện':`Người phụ trách: ${owner?esc(owner):'<span style="color:#9b1c1c">CHƯA NHẬN</span>'}`}</div>${rosterLine}<ul class="fwcTasks">${u.tasks.map(t=>`<li>${esc(t)}</li>`).join('')}</ul><div class="fwcUnitActions">${canClaim?`<button class="fwcBtn green" onclick="flightWorkspaceClaim('${esc(rec.flightId)}','${u.key}')">NHẬN CÔNG VIỆC</button>`:''}${isOwner?'<span class="fwcBadge">BẠN ĐANG PHỤ TRÁCH</span>':''}${ownerUser&&!ownerValid?'<span class="fwcBadge warn">⚠ NHẬN SAI DAILY ROSTER</span>':''}${mine&&rosterLocked&&!eligible?'<span class="fwcBadge warn">KHÔNG ĐÚNG NGƯỜI ROSTER</span>':''}${isAdmin&&!u.requestOnly?`<span class="fwcNotice">AD theo dõi; đổi người phải dùng CHUYỂN/BÀN GIAO theo quy trình.</span>`:''}</div>${!myUnit&&!isAdmin?'<div class="fwcNotice">Tài khoản chưa map được đơn vị; AD cần kiểm tra Department/Group/Role trong hồ sơ.</div>':''}</div>`;}
   root.flightWorkspaceClaim=async function(fid,unit){try{const rec=cache.flights?.[fid];if(!rec)throw new Error('Không tìm thấy chuyến.');const myUnit=unitForProfile();if(myUnit!==unit)throw new Error('Tài khoản không thuộc đơn vị này.');const liveManifest=await readManifest(cache.date),rosterUsers=rosterUsersForUnit(rec,unit,liveManifest),meUser=normUser(me());cache.manifest=liveManifest;if(rosterUsers.length&&!rosterUsers.includes(meUser))throw new Error(`DAILY ROSTER đã phân nhiệm vụ cho ${rosterUsers.join(', ')}. Tài khoản ${meUser||'hiện tại'} không được nhận thay. Muốn đổi người phải dùng CHUYỂN/BÀN GIAO theo quy trình.`);const snap=await dbref(`${ROOT}/${safe(cache.date)}/${safe(fid)}/unitAssignments/${safe(unit)}`).once('value'),current=snap.val()||null;if(current?.username)throw new Error(`Đơn vị đã có người phụ trách: ${S(current.name||current.username)}. Hãy dùng quy trình bàn giao.`);const t=Date.now(),p=profile(),value={unit,username:meUser||me(),name:myName(),departmentCode:S(p.departmentCode||p.systemDepartment||p.department),groupCode:S(p.groupCode||p.group),claimedAtMs:t,updatedAtMs:t,status:'ACTIVE',claimSource:rosterUsers.length?'DAILY_ROSTER':'OPEN_UNIT',rosterEligibleUsers:rosterUsers};await dbref(`${ROOT}/${safe(cache.date)}/${safe(fid)}/unitAssignments/${safe(unit)}`).set(value);cache.flights[fid].unitAssignments=cache.flights[fid].unitAssignments||{};cache.flights[fid].unitAssignments[unit]=value;root.flightWorkspaceOpenFlight(fid);}catch(e){alert('Không nhận được công việc: '+S(e?.message||e));}};
@@ -5409,6 +5409,7 @@ body.v38-clean-workflow #v38CleanNav{display:flex}
 .v38ViewOnly{margin:0 0 10px;padding:10px 12px;border:2px solid #e0a400;border-radius:11px;background:#fff9df;color:#705100;font:900 12px/1.45 Arial}
 .v38MyOps{margin:0 0 12px;border:2px solid #0b67b2;border-radius:13px;padding:11px;background:#f4faff}.v38MyOpsTitle{font:900 15px Arial;color:#0b4f91;margin-bottom:4px}.v38MyOpsSub{font:700 11px/1.4 Arial;color:#607383;margin-bottom:8px}.v38MyOpsBtns{display:flex;gap:7px;flex-wrap:wrap}.v38OpBtn{border:0;border-radius:9px;padding:9px 11px;background:#0b67b2;color:#fff;font:900 12px Arial;cursor:pointer}.v38OpBtn.green{background:#15803d}.v38OpBtn.orange{background:#b45309}.v38OpBtn.gray{background:#e8eef3;color:#31485a}.v38OpBtn:disabled{opacity:.5}
 body.v38-clean-workflow #roleHomeIdle{pointer-events:none}
+body.v344-login-settling #v38CleanNav{pointer-events:none!important}
 @media(max-width:620px){#v38CleanNav{display:grid!important;grid-template-columns:1fr 1fr}.v38NavBtn{width:100%;padding:8px 7px;font-size:11px}.v38NavSpacer,#v38FlowHint{display:none}.v38MyOpsBtns{display:grid;grid-template-columns:1fr}.v38OpBtn{width:100%}}
 /* V3.21 · compact flat operator action bar */
 body.v38-clean-workflow .toolbar.compact-main-toolbar{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:6px!important;row-gap:5px!important;padding:6px 8px calc(6px + env(safe-area-inset-bottom))!important;align-items:center!important;background:linear-gradient(180deg,#0869b6,#075d9f)!important;border-radius:14px 14px 0 0!important;box-shadow:0 -2px 10px rgba(0,45,82,.12)!important}
@@ -5520,19 +5521,19 @@ body.v38-clean-workflow #v38NavRS,body.v38-clean-workflow #readSignQuickBtn,body
     return true;
   }
 
-  let autoOpenedFor='';
+  let loginSettledFor='';
   function sync(){
     ensureStyle();document.body.classList.toggle('v38-clean-workflow',logged());ensureCleanNav();patchWorkspace();
     const nav=document.getElementById('v38CleanNav');if(nav)nav.style.display=logged()?'flex':'none';
     const key=logged()?`${me()}|${today()}`:'';
-    if(key&&key!==autoOpenedFor){autoOpenedFor=key;setTimeout(()=>{if(!document.querySelector('.sagsAdminModal[style*="display: flex"],#fwcModal.show'))root.flightWorkspaceOpenList?.(today())},650)}
-    if(!logged())autoOpenedFor='';
+    if(key&&key!==loginSettledFor){loginSettledFor=key;try{root.flightWorkspaceClose?.()}catch(_){}document.body.classList.add('v344-login-settling');setTimeout(()=>document.body.classList.remove('v344-login-settling'),850)}
+    if(!logged())loginSettledFor='';
   }
   const baseApply=root.applyRoleUI;if(typeof baseApply==='function'&&!baseApply.__v38){root.applyRoleUI=function(){const r=baseApply.apply(this,arguments);setTimeout(sync,0);return r};root.applyRoleUI.__v38=1}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(sync,350),{once:true});else setTimeout(sync,350);
   setInterval(sync,2200);
   root.__SAGS_V38_BUILD=BUILD;
-  root.__SAGS_V38_HDSD='V3.8 CLEAN WORKFLOW: ẩn toàn bộ toolbar nghiệp vụ cũ. Login mở CHUYẾN HÔM NAY. MY FLIGHT mặc định bật cho nhân viên và chỉ hiện chuyến Daily Roster phân/đã tiếp nhận; bỏ tích để xem danh sách mở rộng với badge VIEW. Chuyến VIEW không được nhận việc. Nghiệp vụ chỉ mở từ đúng Flight Workspace/assignment; Multitask chỉ lấy MY FLIGHT. AD dùng QUẢN LÝ qua Admin Hub.';
+  root.__SAGS_V38_HDSD='V3.44 CLEAN WORKFLOW: ẩn toàn bộ toolbar nghiệp vụ cũ. Sau đăng nhập giữ nguyên màn hình chờ; CHUYẾN HÔM NAY chỉ mở khi người dùng bấm CHUYẾN. MY FLIGHT mặc định bật cho nhân viên và chỉ hiện chuyến Daily Roster phân/đã tiếp nhận; bỏ tích để xem danh sách mở rộng với badge VIEW. Chuyến VIEW không được nhận việc. Nghiệp vụ chỉ mở từ đúng Flight Workspace/assignment; Multitask chỉ lấy MY FLIGHT. AD dùng QUẢN LÝ qua Admin Hub.';
 })(typeof window!=='undefined'?window:globalThis);
 
 /* ===== END clean-workflow-v38.js ===== */
@@ -6444,7 +6445,7 @@ body.v38-clean-workflow #v38CleanNav .v326GrantedPermission::after{content:'+';d
       if(!man?.opDate){patch[`roster_manifests/${safe(date)}/engine`]='daily-roster-v2';patch[`roster_manifests/${safe(date)}/schema`]=2;patch[`roster_manifests/${safe(date)}/opDate`]=date}patch[`roster_manifests/${safe(date)}/manualUpdatedAtMs`]=now;patch[`roster_manifests/${safe(date)}/manualUpdatedBy`]=user;
       const ev=`MANUAL_CREATE_${now}_${safe(aid)}`;patch[`${base}/assignmentHistory/${safe(ev)}`]={eventId:ev,action:createdAssignment?'MANUAL_ASSIGNMENT_CREATED':'MANUAL_ASSIGNMENT_REUSED',assignmentId:aid,unit,user,formGroup,reusedFlight,atMs:now,by:user,build:BUILD};
       await db('').update(patch);try{await ensureLocalSession({...item,...payload})}catch(e){console.info('V3.41 manual local session',e?.message||e)}try{root.dailyRosterRestartMailbox?.()}catch(_){}if(U(item.formGroup)==='FINAL'&&typeof root.sagsV340EnsureFinalForRoster==='function')await root.sagsV340EnsureFinalForRoster({...payload,...item},{open:false});try{await root.sagsTaskStatusSyncDate?.(date,true)}catch(_){}
-      root.sagsV340CloseManualFlight();await root.flightWorkspaceOpenList?.(date);alert(`${createdAssignment?'✓ ĐÃ TẠO CÔNG VIỆC THỦ CÔNG':'✓ ĐÃ DÙNG LẠI PHÂN CÔNG HIỆN CÓ'}\n\n${flightName} · ${UNITS[unit]}\n${reusedFlight?'Dùng chung Flight Record đã có.':'Đã tạo một Flight Record mới.'}\nKhông tạo chuyến trùng.`);
+      root.sagsV340CloseManualFlight();if(document.getElementById('fwcModal')?.classList.contains('show'))await root.flightWorkspaceRefresh?.();alert(`${createdAssignment?'✓ ĐÃ TẠO CÔNG VIỆC THỦ CÔNG':'✓ ĐÃ DÙNG LẠI PHÂN CÔNG HIỆN CÓ'}\n\n${flightName} · ${UNITS[unit]}\n${reusedFlight?'Dùng chung Flight Record đã có.':'Đã tạo một Flight Record mới.'}\nKhông tạo chuyến trùng. Bấm CHUYẾN khi muốn mở danh sách.`);
     }catch(e){alert('Không tạo được chuyến thủ công: '+S(e?.message||e))}finally{if(btn)btn.disabled=false}
   };
   async function repairMyManualAssignments(){
