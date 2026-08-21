@@ -3,7 +3,7 @@
  * but register a compact pointer/status under the same flightId so every department works in one flight workspace.
  */
 (function(root){'use strict';
-  const BUILD='V3.0-20260820-01';
+  const BUILD='V3.3-20260821-01';
   const ROOT='flight_records', MANIFEST='roster_manifests', MAIL='roster_mail';
   const S=v=>String(v??'').trim(), U=v=>S(v).toUpperCase();
   const safe=v=>S(v).replace(/[.#$\[\]\/]/g,'_');
@@ -16,7 +16,7 @@
   function flightId(date,arr,dep,raw){const flights=[normFlight(arr),normFlight(dep)].filter(Boolean);if(!flights.length)flights.push(...splitFlights(raw).map(normFlight));const sig=`${isoDate(date)}|${flights.join('|')||normFlight(raw)||'UNKNOWN'}`;return `FLT_${hash(sig)}`}
   function extractMailByAssignment(patch){const out={};for(const [k,v] of Object.entries(patch||{})){const m=/^roster_mail\/[^/]+\/items\/([^/]+)$/.exec(k);if(m&&v&&typeof v==='object')out[S(v.assignmentId||m[1])]=v;}return out}
   function enrichRosterPatch(patch){const mails=extractMailByAssignment(patch);for(const [k,v] of Object.entries(patch||{})){const m=/^roster_manifests\/([^/]+)$/.exec(k);if(!m||!v?.items)continue;const date=m[1],records={};for(const [aid,item0] of Object.entries(v.items||{})){const item={...item0},mail=mails[aid]||{};const fid=flightId(date,mail.arrFlight,mail.depFlight,item.flightRaw||mail.flightRaw);item.flightId=fid;v.items[aid]=item;if(mails[aid])mails[aid].flightId=fid;const rec=records[fid]||(records[fid]={flightId:fid,opDate:date,flightRaw:S(item.flightRaw||mail.flightRaw),flightName:S(item.flightName||mail.flightName),arrFlight:S(mail.arrFlight),depFlight:S(mail.depFlight),sta:S(mail.sta),std:S(mail.std),acReg:S(mail.acReg),acType:S(mail.acType),route:S(mail.route),bay:S(mail.bay),createdFrom:'DAILY_ROSTER',createdAtMs:Date.now(),updatedAtMs:Date.now(),assignments:{}});rec.assignments[aid]={assignmentId:aid,user:S(item.user||mail.targetUser),originalUser:S(item.originalUser||mail.originalTargetUser),formGroup:S(item.formGroup||mail.formGroup),sourceColumn:S(item.sourceColumn||mail.sourceColumn),roleKey:S(item.roleKey||mail.roleKey),workspaceKey:S(item.workspaceKey||item.rosterWorkspaceKey||mail.workspaceKey||mail.rosterWorkspaceKey),assignmentScope:S(item.assignmentScope||mail.assignmentScope||'BOTH'),active:item.active!==false};}
-      for(const [fid,rec] of Object.entries(records))patch[`${ROOT}/${safe(date)}/${safe(fid)}`]=rec;
+      for(const [fid,rec] of Object.entries(records)){const base=`${ROOT}/${safe(date)}/${safe(fid)}`;for(const k of ['flightId','opDate','flightRaw','flightName','arrFlight','depFlight','sta','std','acReg','acType','route','bay','createdFrom'])patch[`${base}/${k}`]=rec[k]??'';patch[`${base}/updatedAtMs`]=Date.now();patch[`${base}/createdAtMs`]=rec.createdAtMs||Date.now();patch[`${base}/assignments`]=rec.assignments||{};}
       v.flightHubSchema=1;
     }}
   async function readDate(date){try{return (await root.sagsV470Ref(`${ROOT}/${safe(date)}`).once('value')).val()||{}}catch(_){return {}}}
@@ -30,7 +30,7 @@
   function installRefHook(){if(root.__FLIGHT_HUB_REF_HOOK)return;const prev=root.sagsV470Ref;if(typeof prev!=='function'){setTimeout(installRefHook,500);return}root.__FLIGHT_HUB_REF_HOOK=1;root.sagsV470Ref=function(path=''){const ref=prev(path);if(S(path)===''&&ref&&typeof ref.update==='function'){const base=ref.update.bind(ref);ref.update=function(patch){if(patch&&typeof patch==='object'&&!Array.isArray(patch))try{enrichRosterPatch(patch)}catch(e){console.warn('FlightHub roster enrich',e)}return base(patch)}}return ref};}
   root.sagsFlightHubRead=async function(date){return await readDate(isoDate(date))};
   root.sagsFlightHubFlightId=flightId;
-  root.__FLIGHT_HUB_HDSD='DAILY ROSTER tạo 1 flightId/hồ sơ mẹ cho mỗi chuyến. FINAL, KẾT SỔ, RAMP/hàng hóa và module liên quan không nhân bản dữ liệu chính thức; mỗi module đăng ký trạng thái + đường dẫn dữ liệu chuẩn vào đúng flightId. Mở chuyến thấy toàn bộ trạng thái trong cùng hồ sơ.';
+  root.__FLIGHT_HUB_HDSD='V3.3: DAILY ROSTER tạo 1 flightId/hồ sơ mẹ cho mỗi chuyến. FINAL, KẾT SỔ, RAMP/hàng hóa và module liên quan không nhân bản dữ liệu chính thức; mỗi module đăng ký trạng thái + đường dẫn dữ liệu chuẩn vào đúng flightId. Mở chuyến thấy toàn bộ trạng thái trong cùng hồ sơ.';
 
   function installDailyRosterUi(){
     try{const b=document.getElementById('drPublishBtn');if(b)b.textContent='✈ TẠO CHUYẾN';}catch(_){}

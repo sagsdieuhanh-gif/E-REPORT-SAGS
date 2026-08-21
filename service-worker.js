@@ -1,5 +1,5 @@
-const CACHE_NAME="sags-v3-2-20260821-01";
-const BUILD="V3.2-20260821-01";
+const CACHE_NAME="sags-v3-3-20260821-01";
+const BUILD="V3.3-20260821-01";
 const APP_SHELL=[
   "./index.html","./version.json","./manifest.webmanifest","./firebase-config.js","./qr-local.js","./daily-roster.js","./roster-extra-seed.js","./v488-archive.js","./ai-crosscheck.js","./document-scanner.js","./admin-builder.js","./ac-limits.js","./ac-limits-simple.js","./ac-limits-ai-review.js","./bbbt-quick-entry.js","./roster-completed.js","./roster-leg-workspace.js","./flight-hub.js","./roster-handoff.js","./admin-hub.js","./flight-workspace-core.js","./permission-authority-v31.js","./quick-time-save-v32.js",
   "./alert-mva.mp3","./alert-mvt.mp3","./alert-pushback-missing.mp3","./alert-read-sign.mp3","./alert-ket-so-moi.mp3","./alert-ket-so-thay-doi.mp3",
