@@ -1,1 +1,1 @@
-{"version":"V3.1","build":"V3.1-20260821-01","releasedAt":"2026-08-21T09:02:00+07:00","notes":"Fix Admin permission save: replace entire override map, verify Firestore readback, and reapply live permission UI on revision changes."}
+{"version":"V3.2","build":"V3.2-20260821-01","releasedAt":"2026-08-21T09:14:00+07:00","notes":"Fix quick time entry save on mobile/iOS: flush visible inputs before save/tab navigation and verify/repair state for FSAGS 42.3/42.1 and FSAGS 09."}
