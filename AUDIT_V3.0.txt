@@ -1,0 +1,28 @@
+E-REPORT/SAGS V3.0 – FLIGHT WORKSPACE CORE
+AUDIT BUILD: V3.0-20260820-01
+
+NGUỒN FULL
+- Nền: E_REPORT_SAGS_V2.5_STABLE_FULL.zip (toàn bộ core hiện có).
+- V3.0 được dựng bằng cách giải nén FULL V2.5, giữ toàn bộ tài nguyên/core rồi áp thay đổi V3.0.
+- Không dùng UPDATE_LITE làm nền FULL.
+
+THAY ĐỔI CHÍNH
+1. DAILY ROSTER: AD chọn file → tự đọc → tự publish → tự tạo Flight Workspace; không cần nút TẠO CHUYẾN.
+2. Flight Workspace Core mới: danh sách chuyến xếp STD tăng dần; một chuyến = một flightId.
+3. Các phân hệ hiển thị: ĐH, CBTT, PVHK, HLNG, Cargo, VSTB, VHTTB, KTTB, LNF.
+4. Nhận công việc theo đơn vị; KTTB/LNF nhận yêu cầu theo sự kiện trong bản Core.
+5. Bàn giao roster: người nhận ACTIVE + cùng phòng/đơn vị, không bắt buộc cùng role/chức danh; vẫn cần quản lý/AD duyệt và B tiếp nhận.
+6. Admin Hub cập nhật luồng DAILY ROSTER tự tạo chuyến.
+7. Version/index/Service Worker đồng bộ V3.0.
+8. HDSD V3.0 đã cập nhật trong index.html và kèm HDSD_V3.0.txt.
+
+KIỂM TRA TĨNH
+- Tất cả file *.js: PASS node --check.
+- Inline JavaScript index.html: 25 script, 0 lỗi cú pháp.
+- Local HTML refs thiếu: 0.
+- Service Worker APP_SHELL: 65 mục, thiếu 0.
+- Build đồng bộ: APP_BUILD_VERSION / version.json / Service Worker = V3.0-20260820-01.
+
+LƯU Ý TEST
+- Chưa thể chứng nhận end-to-end đa tài khoản/Firebase chỉ bằng static audit.
+- Các module nghiệp vụ cũ vẫn được giữ nguyên để giảm rủi ro; V3.0 tập trung lớp Flight Workspace Core và luồng Daily Roster tự tạo chuyến.

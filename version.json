@@ -1,6 +1,1 @@
-{
-  "version": "V1.106",
-  "label": "V1.106 AI",
-  "build": "V1.106-20260820-01",
-  "displayVersion": "V1.106 AI"
-}
+{"version":"V3.0","build":"V3.0-20260820-01","releasedAt":"2026-08-20T17:05:00+07:00","notes":"Flight Workspace Core: DAILY ROSTER auto-creates flights; STD-sorted flight list; company-wide unit workspace; same-department approved handoff"}
