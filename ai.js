@@ -310,7 +310,7 @@ window.sagsAiConfigure=async()=>{
 };
 setTimeout(()=>{try{const cfg=el("cxAiConfigBtn"),diag=el("cxAiDiagBtn");if(cfg)cfg.style.display=(role()==="AD")?"inline-flex":"none";if(diag)diag.style.display=(role()==="AD")?"inline-flex":"none";}catch(e){}},500);
 
-/* ===== V3.22 · A/C LIMITS IMAGE AI · 400 FALLBACK FIX (AD review only) ===== */
+/* ===== V3.28 · A/C LIMITS IMAGE AI · permission-aware review ===== */
 let aclLimitsAiModelCache=new Map();
 function aclLimitsSchema(){
   return Schema.object({properties:{
@@ -388,7 +388,8 @@ async function aclGenerateWithFallback(parts){
   throw aclAiFriendlyError(lastErr||new Error("AI LIMIT không có phản hồi."));
 }
 window.acLimitsAiParseImage=async function(dataUrl){
-  if(role()!=="AD")throw new Error("Chỉ AD được dùng AI đọc A/C LIMITS.");
+  const canLimit=role()==="AD"||(typeof window.v485Can==="function"&&window.v485Can("AC_LIMITS"));
+  if(!canLimit)throw new Error("Tài khoản chưa được cấp quyền AI A/C LIMITS.");
   const normalized=await normalizeImageDataUrl(dataUrl,1600,.76);
   const prompt=`Bạn là trợ lý nhập A/C LIMITS/AIRCRAFT RESTRICTIONS cho khai thác mặt đất tại sân bay.
 Đọc CHỈ nội dung nhìn thấy rõ trong ảnh. Không suy đoán, không tự bổ sung.
@@ -401,7 +402,7 @@ JSON cần có dạng: {"date":"","version":"","items":[{"flightNo":"","acReg":"
 - restriction: nội dung hạn chế/yêu cầu ngắn gọn nhưng giữ đúng ý nguồn.
 - effectiveFrom/effectiveTo: YYYY-MM-DD nếu ảnh ghi rõ; không rõ thì để rỗng.
 - date và version: chỉ điền nếu nhìn thấy rõ trên ảnh.
-Không tự áp dụng cảnh báo. Kết quả chỉ là PREVIEW để AD kiểm tra và xác nhận.
+Không tự áp dụng cảnh báo. Kết quả chỉ là PREVIEW để người được cấp quyền A/C LIMITS kiểm tra và xác nhận.
 Nếu chữ/giá trị không đọc chắc chắn thì bỏ trường đó thay vì đoán. Chỉ trả JSON, không markdown/code fence.`;
   let run;
   try{run=await aclGenerateWithFallback([prompt,dataUrlPart(normalized)]);}catch(e){throw taggedError(e?.sagsStage||"AC_LIMITS_AI",e);}
