@@ -1,5 +1,5 @@
-const CACHE_NAME="sags-v3-44-durable-final-manual-login-20260821-01";
-const BUILD="V3.44-20260821-01";
+const CACHE_NAME="sags-v3-45-roster-time-normalization-20260821-01";
+const BUILD="V3.45-20260821-01";
 const APP_SHELL=[
   "./9Gfinal.png",
   "./CBTT.png",
