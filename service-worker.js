@@ -1,5 +1,5 @@
-const CACHE_NAME="sags-v3-24-direct-myflight-handover-20260821-01";
-const BUILD="V3.24-20260821-01";
+const CACHE_NAME="sags-v3-25-quick-time-clear-20260821-01";
+const BUILD="V3.25-20260821-01";
 const APP_SHELL=[
   "./9Gfinal.png",
   "./CBTT.png",

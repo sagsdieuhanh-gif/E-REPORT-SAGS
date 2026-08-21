@@ -1,4 +1,4 @@
-/* E-REPORT/SAGS V3.24 DIRECT MY FLIGHT + ROSTER HANDOVER - consolidated runtime. */
+/* E-REPORT/SAGS V3.25 QUICK TIME CLEAR - consolidated runtime. */
 (function(){
 'use strict';
 var phase=(document.currentScript&&document.currentScript.dataset&&document.currentScript.dataset.phase)||'';
@@ -5995,7 +5995,7 @@ body.v38-clean-workflow #v38NavRS,body.v38-clean-workflow #readSignQuickBtn,body
 
 /* ===== BEGIN v324-direct-myflight-handover.js ===== */
 (function(root){'use strict';
-  const BUILD='V3.24-20260821-01';
+  const BUILD='V3.25-20260821-01';
   const S=v=>String(v??'').trim(), U=v=>S(v).toUpperCase();
   const norm=v=>{try{return typeof root.normalizePersonalUsername==='function'?root.normalizePersonalUsername(v):U(v).replace(/\s+/g,'').replace(/[^A-Z0-9._-]/g,'_').slice(0,40)}catch(_){return U(v)}};
   const safe=v=>S(v).replace(/[.#$\[\]\/]/g,'_');
@@ -6069,10 +6069,10 @@ body.v38-clean-workflow #v38NavRS,body.v38-clean-workflow #readSignQuickBtn,body
   function patchList(){if(typeof root.flightWorkspaceOpenList==='function'&&!root.flightWorkspaceOpenList.__v324){const b=root.flightWorkspaceOpenList;const w=function(d){d=S(d)||opDate();const r=b.apply(this,arguments);Promise.resolve(r).finally(()=>{setTimeout(()=>decorateList(d),130);setTimeout(()=>decorateList(d),520)});return r};w.__v324=1;root.flightWorkspaceOpenList=w}}
   function patchMulti(){if(typeof root.sagsV36SwitchFlight==='function'&&!root.sagsV36SwitchFlight.__v324){const w=function(fid){root.sagsV36CloseMultitask?.();return root.v324ReceiveOrOpen?.(fid)};w.__v324=1;root.sagsV36SwitchFlight=w}}
   function patchFormHooks(){for(const name of ['switchFlightSession','showFormGroup','showRoleHomeIdle','hideRoleHomeIdle']){const fn=root[name];if(typeof fn!=='function'||fn.__v324)continue;const w=function(){const r=fn.apply(this,arguments);Promise.resolve(r).finally(()=>setTimeout(syncFormActions,70));return r};w.__v324=1;root[name]=w;try{if(name==='switchFlightSession')switchFlightSession=w;else if(name==='showFormGroup')showFormGroup=w;else if(name==='showRoleHomeIdle')showRoleHomeIdle=w;else if(name==='hideRoleHomeIdle')hideRoleHomeIdle=w}catch(_){}}}
-  function install(){ensureCss();patchList();patchMulti();patchFormHooks();patchAiSave();setTimeout(syncFormActions,120);const h=document.getElementById('v38FlowHint');if(h)h.textContent='MY FLIGHT · V3.24'}
+  function install(){ensureCss();patchList();patchMulti();patchFormHooks();patchAiSave();setTimeout(syncFormActions,120);const h=document.getElementById('v38FlowHint');if(h)h.textContent='MY FLIGHT · V3.25'}
   install();setTimeout(install,350);setTimeout(install,1200);
   root.__SAGS_V324_BUILD=BUILD;
-  root.__SAGS_V324_HDSD='V3.24: MY FLIGHT chỉ liệt kê tổng chuyến được phân công; người dùng phải bấm NHẬN CHUYẾN trước khi vào thẳng biểu mẫu, không qua Flight Workspace trung gian. Trên biểu mẫu có XUẤT/CHIA SẺ và XÁC NHẬN GIAO CA theo thứ tự username trong chính ô Daily Roster của chuyến. Khi giao ca, dữ liệu hiện tại được persist + snapshot sang assignment người kế tiếp; người sau vào MY FLIGHT → NHẬN CHUYẾN để tiếp tục đúng dữ liệu đang dở. MULTITASK chỉ chứa chuyến đã nhận/đang làm. AI LIMIT bấm LƯU VÀO HỒ SƠ LIMIT là bước lưu cuối cùng.';
+  root.__SAGS_V325_HDSD='V3.25: Giữ toàn bộ V3.24. NHẬP GIỜ NHANH có nút XÓA GIỜ nhỏ cạnh CẬP NHẬT; người dùng chạm đúng ô giờ cần sửa rồi bấm XÓA GIỜ để xóa giá trị của ô đó trong draft, tự focus lại ô và nhập giờ mới bằng bàn phím số. Không xóa các mốc khác; chỉ ghi chính thức khi bấm CẬP NHẬT.';
 })(typeof window!=='undefined'?window:globalThis);
 /* ===== END v324-direct-myflight-handover.js ===== */
 
