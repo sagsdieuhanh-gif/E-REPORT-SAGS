@@ -310,8 +310,8 @@ window.sagsAiConfigure=async()=>{
 };
 setTimeout(()=>{try{const cfg=el("cxAiConfigBtn"),diag=el("cxAiDiagBtn");if(cfg)cfg.style.display=(role()==="AD")?"inline-flex":"none";if(diag)diag.style.display=(role()==="AD")?"inline-flex":"none";}catch(e){}},500);
 
-/* ===== V3.20 · A/C LIMITS IMAGE AI (AD review only) ===== */
-let aclLimitsAiModel=null;
+/* ===== V3.22 · A/C LIMITS IMAGE AI · 400 FALLBACK FIX (AD review only) ===== */
+let aclLimitsAiModelCache=new Map();
 function aclLimitsSchema(){
   return Schema.object({properties:{
     date:Schema.string(),
@@ -324,16 +324,8 @@ function aclLimitsSchema(){
       restriction:Schema.string(),
       effectiveFrom:Schema.string(),
       effectiveTo:Schema.string()
-    }})})
-  }});
-}
-async function getAclLimitsAiModel(){
-  await initModels(false); // Reuse the same Firebase AI/App Check configuration already approved for E-REPORT.
-  if(aclLimitsAiModel)return aclLimitsAiModel;
-  if(!aiApp)throw new Error("Firebase AI chưa khởi tạo.");
-  const ai=getAI(aiApp,{backend:new GoogleAIBackend()});
-  aclLimitsAiModel=getGenerativeModel(ai,{model:activeModelNames.fast||FAST_MODEL,generationConfig:{responseMimeType:"application/json",responseSchema:aclLimitsSchema(),maxOutputTokens:3600}},{timeout:FAST_TIMEOUT_MS});
-  return aclLimitsAiModel;
+    },optionalProperties:["flightNo","acReg","aircraftRegs","effectiveFrom","effectiveTo"]})})
+  },optionalProperties:["date","version"]});
 }
 function aclNormalizeCategory(v){
   const s=String(v||"").toUpperCase();
@@ -342,13 +334,66 @@ function aclNormalizeCategory(v){
   if(/SEAT/.test(s))return "SEAT INOP";
   return "OTHERS";
 }
+function aclAiErrorText(e){
+  try{return compactErrorText(e)}catch(_){return String(e?.message||e||"")}
+}
+function aclAiCanFallback(e){
+  const x=aclAiErrorText(e).toLowerCase();
+  return /invalid argument|\[400\]|400\b|model.*not found|not found.*model|\b404\b|max_tokens|json/.test(x)||isTimeoutError(e);
+}
+function aclAiFriendlyError(e){
+  const raw=aclAiErrorText(e),x=raw.toLowerCase();
+  let msg="AI LIMIT chưa xử lý được ảnh.";
+  if(/invalid argument|\[400\]|400\b/.test(x))msg="Firebase AI Logic từ chối request AI LIMIT (400). Hệ thống đã thử model/schema dự phòng nhưng vẫn chưa thành công.";
+  else if(/permission|unauthenticated|unauthorized|\b403\b/.test(x))msg="AI LIMIT đang bị chặn quyền/App Check (403).";
+  else if(/model.*not found|not found.*model|\b404\b/.test(x))msg="Model AI LIMIT chưa khả dụng cho cấu hình Firebase hiện tại.";
+  else if(/quota|resource[_ -]?exhausted|\b429\b/.test(x))msg="AI LIMIT đang chạm quota/rate limit (429).";
+  else if(isTimeoutError(e))msg="AI LIMIT xử lý quá thời gian; hãy thử lại khi mạng ổn định.";
+  const err=new Error(msg);err.sagsStage="AC_LIMITS_AI";err.cause=e;err.aiTechnical=raw.slice(0,1800);return err;
+}
+async function aclBuildModel(modelName,useSchema=true){
+  await initModels(false); // reuse approved Firebase/App Check config
+  if(!aiApp)throw new Error("Firebase AI chưa khởi tạo.");
+  const key=modelName+"|"+(useSchema?"schema":"json");
+  if(aclLimitsAiModelCache.has(key))return aclLimitsAiModelCache.get(key);
+  const ai=getAI(aiApp,{backend:new GoogleAIBackend()});
+  const generationConfig={responseMimeType:"application/json",maxOutputTokens:3600};
+  if(useSchema)generationConfig.responseSchema=aclLimitsSchema();
+  const mdl=getGenerativeModel(ai,{model:modelName,generationConfig},{timeout:ACCURATE_TIMEOUT_MS});
+  aclLimitsAiModelCache.set(key,mdl);return mdl;
+}
+async function aclGenerateWithFallback(parts){
+  await initModels(false);
+  const primary=String(activeModelNames?.accurate||ACCURATE_MODEL).trim()||ACCURATE_MODEL;
+  const fast=String(activeModelNames?.fast||FAST_MODEL).trim()||FAST_MODEL;
+  const attempts=[];
+  const add=(name,useSchema,label)=>{if(name&&!attempts.some(x=>x.name===name&&x.useSchema===useSchema))attempts.push({name,useSchema,label})};
+  // A/C LIMITS is OCR-heavy: use full Flash first, then progressively loosen output constraints.
+  add(primary,true,"FLASH_SCHEMA");
+  add(primary,false,"FLASH_JSON");
+  add(fast,false,"FAST_JSON");
+  add("gemini-3.1-flash-lite",false,"COMPAT_JSON");
+  let lastErr=null;
+  for(let i=0;i<attempts.length;i++){
+    const a=attempts[i];
+    try{
+      const mdl=await aclBuildModel(a.name,a.useSchema);
+      const out=await mdl.generateContent(parts);
+      return {out,model:a.name,mode:a.label,fallbackUsed:i>0};
+    }catch(e){
+      lastErr=e;console.warn("A/C LIMITS AI attempt failed",a.label,a.name,e);
+      if(i===attempts.length-1||!aclAiCanFallback(e))break;
+    }
+  }
+  throw aclAiFriendlyError(lastErr||new Error("AI LIMIT không có phản hồi."));
+}
 window.acLimitsAiParseImage=async function(dataUrl){
   if(role()!=="AD")throw new Error("Chỉ AD được dùng AI đọc A/C LIMITS.");
-  const normalized=await normalizeImageDataUrl(dataUrl,1600,.78);
-  const mdl=await getAclLimitsAiModel();
+  const normalized=await normalizeImageDataUrl(dataUrl,1600,.76);
   const prompt=`Bạn là trợ lý nhập A/C LIMITS/AIRCRAFT RESTRICTIONS cho khai thác mặt đất tại sân bay.
 Đọc CHỈ nội dung nhìn thấy rõ trong ảnh. Không suy đoán, không tự bổ sung.
 Trích xuất từng hạn chế thành items riêng.
+JSON cần có dạng: {"date":"","version":"","items":[{"flightNo":"","acReg":"","aircraftRegs":[],"category":"OTHERS","restriction":"","effectiveFrom":"","effectiveTo":""}]}.
 - flightNo: số hiệu chuyến nếu ảnh có; không có thì chuỗi rỗng.
 - aircraftRegs: tất cả đăng bạ liên quan tới đúng hạn chế; giữ nguyên ký hiệu đọc được.
 - acReg: đăng bạ chính nếu chỉ có một đăng bạ, nếu nhiều có thể để rỗng.
@@ -357,10 +402,10 @@ Trích xuất từng hạn chế thành items riêng.
 - effectiveFrom/effectiveTo: YYYY-MM-DD nếu ảnh ghi rõ; không rõ thì để rỗng.
 - date và version: chỉ điền nếu nhìn thấy rõ trên ảnh.
 Không tự áp dụng cảnh báo. Kết quả chỉ là PREVIEW để AD kiểm tra và xác nhận.
-Nếu chữ/giá trị không đọc chắc chắn thì bỏ trường đó thay vì đoán. Chỉ trả JSON đúng schema.`;
-  let out;
-  try{out=await mdl.generateContent([prompt,dataUrlPart(normalized)]);}catch(e){throw taggedError(isTimeoutError(e)?"AI_TIMEOUT":"AC_LIMITS_AI",e);}
-  const txt=out?.response?.text?.()||"";
+Nếu chữ/giá trị không đọc chắc chắn thì bỏ trường đó thay vì đoán. Chỉ trả JSON, không markdown/code fence.`;
+  let run;
+  try{run=await aclGenerateWithFallback([prompt,dataUrlPart(normalized)]);}catch(e){throw taggedError(e?.sagsStage||"AC_LIMITS_AI",e);}
+  const txt=run?.out?.response?.text?.()||"";
   const parsed=parseAiJson(txt);
   const items=(Array.isArray(parsed?.items)?parsed.items:[]).map(x=>({
     flightNo:String(x?.flightNo||"").trim().toUpperCase(),
@@ -371,6 +416,6 @@ Nếu chữ/giá trị không đọc chắc chắn thì bỏ trường đó thay
     effectiveFrom:String(x?.effectiveFrom||"").trim(),
     effectiveTo:String(x?.effectiveTo||"").trim()
   })).filter(x=>x.restriction&&(x.flightNo||x.acReg||x.aircraftRegs.length));
-  return {date:String(parsed?.date||"").trim(),version:String(parsed?.version||"").trim(),items,model:activeModelNames.fast||FAST_MODEL,analyzedAtMs:Date.now(),reviewRequired:true};
+  return {date:String(parsed?.date||"").trim(),version:String(parsed?.version||"").trim(),items,model:run.model,mode:run.mode,fallbackUsed:!!run.fallbackUsed,analyzedAtMs:Date.now(),reviewRequired:true};
 };
-/* ===== END V3.20 A/C LIMITS IMAGE AI ===== */
+/* ===== END V3.22 A/C LIMITS IMAGE AI ===== */
