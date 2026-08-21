@@ -1,0 +1,31 @@
+E-REPORT/SAGS V3.1 – AUDIT FIX ADMIN PERMISSIONS
+Date: 21/08/2026
+Build: V3.1-20260821-01
+
+BUG CONFIRMED
+- Permission editor stored featureOverridesV485 with Firestore set(...,{merge:true}).
+- featureOverridesV485 is a nested map. When a later save omitted an old override key (for example revoking a previously granted permission or RESET TO ROLE DEFAULT), merge semantics could preserve old nested keys.
+- Result: UI could report saved while an older override remained effective.
+
+FIX
+1. Permission save now uses DocumentReference.update() with featureOverridesV485 as one complete field, replacing the whole override map.
+2. After write, app immediately reads the same Firestore document back.
+3. Saved map and permissionRevV485 must exactly match the requested values before success is shown.
+4. RTDB account_permissions revision signal remains event-based (no heartbeat) for online clients.
+5. Personal-session verification now repaints role/form UI when only permission overrides/revision changed.
+6. Permission realtime listener is restarted on pageshow/session restoration.
+7. Service Worker cache/build bumped to V3.1 and new permission-authority-v31.js is precached/fresh-networked.
+
+STATIC CHECKS
+- index.html inline JavaScript: 25 checked / 0 syntax errors.
+- permission-authority-v31.js: PASS node --check.
+- service-worker.js: PASS node --check.
+- Local <script src> references: no missing files.
+- Service Worker APP_SHELL: no missing files.
+
+RECOMMENDED TEST
+- Grant a default-OFF permission -> save -> reopen editor: remains checked.
+- Revoke the same permission -> save -> reopen editor: remains unchecked.
+- Grant multiple overrides, then remove only one -> removed item must not reappear.
+- Press MẶC ĐỊNH VAI TRÒ -> LƯU QUYỀN -> all stale overrides must disappear.
+- Keep target account online while AD changes permission -> target UI should refresh via RTDB revision without heartbeat.

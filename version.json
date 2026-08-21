@@ -1,1 +1,1 @@
-{"version":"V3.0","build":"V3.0-20260820-01","releasedAt":"2026-08-20T17:05:00+07:00","notes":"Flight Workspace Core: DAILY ROSTER auto-creates flights; STD-sorted flight list; company-wide unit workspace; same-department approved handoff"}
+{"version":"V3.1","build":"V3.1-20260821-01","releasedAt":"2026-08-21T09:02:00+07:00","notes":"Fix Admin permission save: replace entire override map, verify Firestore readback, and reapply live permission UI on revision changes."}
