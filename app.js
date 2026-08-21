@@ -5451,12 +5451,36 @@ body.v38-clean-workflow #v38CleanNav{display:flex}
 .v38MyOps{margin:0 0 12px;border:2px solid #0b67b2;border-radius:13px;padding:11px;background:#f4faff}.v38MyOpsTitle{font:900 15px Arial;color:#0b4f91;margin-bottom:4px}.v38MyOpsSub{font:700 11px/1.4 Arial;color:#607383;margin-bottom:8px}.v38MyOpsBtns{display:flex;gap:7px;flex-wrap:wrap}.v38OpBtn{border:0;border-radius:9px;padding:9px 11px;background:#0b67b2;color:#fff;font:900 12px Arial;cursor:pointer}.v38OpBtn.green{background:#15803d}.v38OpBtn.orange{background:#b45309}.v38OpBtn.gray{background:#e8eef3;color:#31485a}.v38OpBtn:disabled{opacity:.5}
 body.v38-clean-workflow #roleHomeIdle{pointer-events:none}
 @media(max-width:620px){#v38CleanNav{display:grid!important;grid-template-columns:1fr 1fr}.v38NavBtn{width:100%;padding:8px 7px;font-size:11px}.v38NavSpacer,#v38FlowHint{display:none}.v38MyOpsBtns{display:grid;grid-template-columns:1fr}.v38OpBtn{width:100%}}
+/* V3.21 · compact flat operator action bar */
+body.v38-clean-workflow .toolbar.compact-main-toolbar{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:6px!important;row-gap:5px!important;padding:6px 8px calc(6px + env(safe-area-inset-bottom))!important;align-items:center!important;background:linear-gradient(180deg,#0869b6,#075d9f)!important;border-radius:14px 14px 0 0!important;box-shadow:0 -2px 10px rgba(0,45,82,.12)!important}
+body.v38-clean-workflow .toolbar.compact-main-toolbar>.badge{display:none!important}
+body.v38-clean-workflow #roleAccountCluster{grid-column:1/-1!important;justify-self:end!important;display:flex!important;gap:4px!important;margin:0!important;min-height:0!important;align-items:center!important}
+body.v38-clean-workflow #roleStatusBadge{font-size:10px!important;line-height:1.15!important;padding:5px 8px!important;border-radius:8px!important}
+body.v38-clean-workflow #roleChangePasswordBtn,body.v38-clean-workflow #roleLogoutBtn{min-height:30px!important;padding:5px 8px!important;border-radius:8px!important;font-size:10px!important;box-shadow:none!important}
+body.v38-clean-workflow #v313QuickContext{grid-column:1!important;width:100%!important;padding:0!important;margin:0!important;min-width:0!important}
+body.v38-clean-workflow #v320NaContext{grid-column:2!important;width:100%!important;padding:0!important;margin:0!important;min-width:0!important}
+body.v38-clean-workflow #v313QuickContext.show,body.v38-clean-workflow #v320NaContext.show{display:block!important}
+body.v38-clean-workflow #v313QuickContextBtn,body.v38-clean-workflow #v320NaBtn{width:100%!important;min-height:39px!important;height:39px!important;padding:6px 8px!important;border-radius:9px!important;font:900 11px/1.1 Arial!important;box-shadow:none!important;white-space:normal!important;touch-action:manipulation!important}
+body.v38-clean-workflow #v313QuickContextBtn{background:#0b77d1!important;border:1px solid rgba(255,255,255,.18)!important}
+body.v38-clean-workflow #v320NaBtn{background:#3f5366!important;border:1px solid rgba(255,255,255,.14)!important}
+body.v38-clean-workflow #v313QuickContextHint,body.v38-clean-workflow #v320NaHint{display:none!important}
+body.v38-clean-workflow #v38CleanNav{grid-column:1/-1!important;display:flex!important;flex-wrap:nowrap!important;overflow-x:auto!important;overflow-y:hidden!important;gap:5px!important;width:100%!important;padding:0 0 1px!important;margin:0!important;align-items:stretch!important;scrollbar-width:none!important;-webkit-overflow-scrolling:touch!important;overscroll-behavior-x:contain!important}
+body.v38-clean-workflow #v38CleanNav::-webkit-scrollbar{display:none!important}
+body.v38-clean-workflow .v38NavBtn{flex:0 0 auto!important;width:auto!important;min-width:96px!important;min-height:34px!important;height:34px!important;padding:5px 9px!important;border-radius:9px!important;font:900 10.5px/1 Arial!important;box-shadow:none!important;border:1px solid #d8e3ec!important;background:#f8fbfd!important;color:#23455f!important;white-space:nowrap!important}
+body.v38-clean-workflow .v38NavBtn.flights{background:#eef7ff!important;color:#07599d!important;border-color:#bad9f1!important}
+body.v38-clean-workflow .v38NavBtn.multi{background:#f5f1ff!important;color:#5b21b6!important;border-color:#d9ccfa!important}
+body.v38-clean-workflow .v38NavBtn.shift{background:#fff7e9!important;color:#a65400!important;border-color:#f0d3aa!important}
+body.v38-clean-workflow .v38NavBtn.sign{background:#f4f6f8!important;color:#35495a!important;border-color:#d7dee4!important}
+body.v38-clean-workflow .v38NavBtn.admin{background:#fff0ed!important;color:#9a3412!important;border-color:#efc2b5!important}
+body.v38-clean-workflow .v38NavSpacer,body.v38-clean-workflow #v38FlowHint{display:none!important}
+body.v38-clean-workflow #v38NavRS,body.v38-clean-workflow #readSignQuickBtn,body.v38-clean-workflow .readSignNotifyBadge{display:none!important}
+@media(max-width:620px){body.v38-clean-workflow #v38CleanNav{display:flex!important;grid-template-columns:none!important}.v38NavBtn{width:auto!important}.v38MyOpsBtns{display:grid;grid-template-columns:1fr}.v38OpBtn{width:100%}}
 `;document.head.appendChild(st)}
 
   function ensureCleanNav(){
     ensureStyle();const bar=document.querySelector('.toolbar');if(!bar)return;
     let nav=document.getElementById('v38CleanNav');if(!nav){nav=document.createElement('div');nav.id='v38CleanNav';bar.appendChild(nav)}
-    const rsAvailable=typeof root.openReadSignManager==='function';
+    const rsAvailable=false; // V3.21: READ & SIGN is not enabled for operation yet.
     const shiftAvailable=typeof root.v310ShiftOpen==='function';
     const signAvailable=typeof root.openTemplateMenu==='function' && ['AD','DH','PVHK','CBTT','KH'].includes(role());
     const sig=[logged()?'1':'0',rsAvailable?'1':'0',shiftAvailable?'1':'0',signAvailable?'1':'0',isAD()?'1':'0'].join('|');
@@ -5464,12 +5488,11 @@ body.v38-clean-workflow #roleHomeIdle{pointer-events:none}
     // every few seconds caused READ & SIGN and GIAO CA to visibly blink on mobile.
     if(nav.dataset.v311Sig===sig && document.getElementById('v38NavFlights') && document.getElementById('v38NavMulti'))return;
     nav.dataset.v311Sig=sig;
-    nav.innerHTML=`<button class="v38NavBtn" id="v38NavFlights">✈ CHUYẾN HÔM NAY</button><button class="v38NavBtn purple" id="v38NavMulti">⇄ MULTITASK</button>${shiftAvailable?'<button class="v38NavBtn" style="background:#b45309" id="v310ShiftNav">🔄 GIAO CA</button>':''}${signAvailable?'<button class="v38NavBtn" style="background:#334155" id="v38NavSignature">✍ KÝ TÊN</button>':''}${rsAvailable?'<button class="v38NavBtn rs" id="v38NavRS">READ & SIGN</button>':''}<span class="v38NavSpacer"></span><span id="v38FlowHint">FLIGHT WORKSPACE · V3.16</span>${isAD()?'<button class="v38NavBtn admin" id="v38NavAdmin">⚙ QUẢN LÝ</button>':''}`;
+    nav.innerHTML=`<button class="v38NavBtn flights" id="v38NavFlights">✈ CHUYẾN</button><button class="v38NavBtn multi" id="v38NavMulti">⇄ MULTITASK</button>${shiftAvailable?'<button class="v38NavBtn shift" id="v310ShiftNav">↔ GIAO CA</button>':''}${signAvailable?'<button class="v38NavBtn sign" id="v38NavSignature">✍ KÝ TÊN</button>':''}<span class="v38NavSpacer"></span><span id="v38FlowHint">FLIGHT WORKSPACE · V3.21</span>${isAD()?'<button class="v38NavBtn admin" id="v38NavAdmin">⚙ QUẢN LÝ</button>':''}`;
     document.getElementById('v38NavFlights').onclick=()=>root.flightWorkspaceOpenList?.(today());
     document.getElementById('v38NavMulti').onclick=()=>root.sagsV36OpenMultitask?.();
     const sh=document.getElementById('v310ShiftNav');if(sh)sh.onclick=()=>root.v310ShiftOpen?.('create');
     const sign=document.getElementById('v38NavSignature');if(sign)sign.onclick=()=>root.openTemplateMenu?.();
-    const rs=document.getElementById('v38NavRS');if(rs)rs.onclick=()=>root.openReadSignManager?.();
     const ad=document.getElementById('v38NavAdmin');if(ad)ad.onclick=()=>root.adminHubOpen?.();
   }
 
@@ -5956,6 +5979,6 @@ body.v38-clean-workflow #roleHomeIdle{pointer-events:none}
   const baseApply=root.applyRoleUI;if(typeof baseApply==='function'&&!baseApply.__v320){root.applyRoleUI=function(){const r=baseApply.apply(this,arguments);setTimeout(sync,20);return r};root.applyRoleUI.__v320=1;try{applyRoleUI=root.applyRoleUI}catch(_){}}
   ['showFormGroup','showRoleHomeIdle','hideRoleHomeIdle','switchFlightSession'].forEach(name=>{const fn=root[name];if(typeof fn!=='function'||fn.__v320)return;const w=function(){const r=fn.apply(this,arguments);Promise.resolve(r).finally(()=>setTimeout(refreshNa,35));return r};w.__v320=1;root[name]=w;try{if(name==='showFormGroup')showFormGroup=w;else if(name==='showRoleHomeIdle')showRoleHomeIdle=w;else if(name==='hideRoleHomeIdle')hideRoleHomeIdle=w;else if(name==='switchFlightSession')switchFlightSession=w}catch(_){}});
   setTimeout(sync,1200);
-  root.__SAGS_V320_HDSD='V3.20 CONSOLIDATED OPS: DAILY ROSTER chỉ preview cho tới khi AD bấm XÁC NHẬN TẠO CHUYẾN; giữ safe same-day sync và operational-day rollover qua 00:00. Flight Workspace bổ sung tiến độ đơn vị, hồ sơ, timeline chính, cảnh báo. Tờ RAMP có CHUYỂN CA trực tiếp không duyệt/không xác nhận. N/A chỉ điền khi người dùng bấm N/A · ĐIỀN CÁC Ô TRỐNG; xuất PDF không tự N/A. A/C LIMITS cho phép AD chọn ảnh, AI tạo preview, AD sửa/xác nhận rồi mới lưu. Nhập giờ nhanh dùng numeric keypad ổn định, không render lại khi focus/input.';
+  root.__SAGS_V320_HDSD='V3.20 CONSOLIDATED OPS: DAILY ROSTER chỉ preview cho tới khi AD bấm XÁC NHẬN TẠO CHUYẾN; giữ safe same-day sync và operational-day rollover qua 00:00. Flight Workspace bổ sung tiến độ đơn vị, hồ sơ, timeline chính, cảnh báo. Tờ RAMP có CHUYỂN CA trực tiếp không duyệt/không xác nhận. N/A chỉ điền khi người dùng bấm N/A · ĐIỀN CÁC Ô TRỐNG; xuất PDF không tự N/A. A/C LIMITS cho phép AD chọn ảnh, AI tạo preview, AD sửa/xác nhận rồi mới lưu. Nhập giờ nhanh dùng numeric keypad ổn định, không render lại khi focus/input.'; root.__SAGS_V321_HDSD='V3.21: Thanh chức năng mobile chuyển sang dạng phẳng, gọn: NHẬP GIỜ NHANH và N/A nằm cùng một hàng; CHUYẾN/MULTITASK/GIAO CA/KÝ TÊN/QUẢN LÝ là chip ngang cuộn một hàng. READ & SIGN tạm vô hiệu hóa và không hiển thị cho tới khi được cho phép sử dụng.';
 })(typeof window!=='undefined'?window:globalThis);
 /* ===== END consolidated-ops-v320.js ===== */

@@ -1,5 +1,5 @@
-const CACHE_NAME="sags-v3-20-consolidated-ops-20260821-01";
-const BUILD="V3.20-20260821-01";
+const CACHE_NAME="sags-v3-21-compact-action-bar-20260821-01";
+const BUILD="V3.21-20260821-01";
 const APP_SHELL=[
   "./9Gfinal.png",
   "./CBTT.png",
@@ -18,7 +18,6 @@ const APP_SHELL=[
   "./alert-mva.mp3",
   "./alert-mvt.mp3",
   "./alert-pushback-missing.mp3",
-  "./alert-read-sign.mp3",
   "./app.js",
   "./apple-touch-icon.png",
   "./favicon-16.png",
