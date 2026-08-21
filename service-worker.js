@@ -1,5 +1,5 @@
-const CACHE_NAME="sags-v3-29-quick-account-permissions-20260821-01";
-const BUILD="V3.29-20260821-01";
+const CACHE_NAME="sags-v3-30-work-part-group-permissions-20260821-02";
+const BUILD="V3.30-20260821-02";
 const APP_SHELL=[
   "./9Gfinal.png",
   "./CBTT.png",
