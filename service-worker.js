@@ -1,5 +1,5 @@
-const CACHE_NAME="sags-v3-41-manual-flight-sync-fix-20260821-01";
-const BUILD="V3.41-20260821-01";
+const CACHE_NAME="sags-v3-42-action-center-20260821-01";
+const BUILD="V3.42-20260821-01";
 const APP_SHELL=[
   "./9Gfinal.png",
   "./CBTT.png",
@@ -12,6 +12,7 @@ const APP_SHELL=[
   "./VJfinal2.png",
   "./VUfinal.png",
   "./ai.js",
+  "./action-center-v342.js",
   "./alert-crosscheck-complete.mp3",
   "./alert-ket-so-moi.mp3",
   "./alert-ket-so-thay-doi.mp3",
@@ -56,7 +57,7 @@ self.addEventListener("activate",event=>{event.waitUntil(caches.keys().then(keys
 self.addEventListener("message",event=>{if(event.data&&event.data.type==="SKIP_WAITING")self.skipWaiting();});
 self.addEventListener("fetch",event=>{
  if(event.request.method!=="GET")return;const url=new URL(event.request.url);if(url.origin!==self.location.origin)return;
- const fresh=event.request.mode==="navigate"||["/version.json","/manifest.webmanifest","/index.html","/app.js","/ai.js"].some(x=>url.pathname.endsWith(x));
+ const fresh=event.request.mode==="navigate"||["/version.json","/manifest.webmanifest","/index.html","/app.js","/action-center-v342.js","/ai.js"].some(x=>url.pathname.endsWith(x));
  if(fresh){event.respondWith((async()=>{try{const r=await fetch(event.request,{cache:"no-store"});if(r&&r.ok){const copy=r.clone();caches.open(CACHE_NAME).then(c=>c.put(event.request,copy)).catch(()=>{});}return r;}catch(_){return await caches.match(event.request)||(event.request.mode==="navigate"?await caches.match("./index.html"):undefined);}})());return;}
  event.respondWith(caches.match(event.request).then(c=>c||fetch(event.request).then(r=>{if(r&&r.ok){const copy=r.clone();caches.open(CACHE_NAME).then(cc=>cc.put(event.request,copy)).catch(()=>{});}return r;})));
 });
