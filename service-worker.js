@@ -1,5 +1,5 @@
-const CACHE_NAME="sags-v3-16-roster-safe-update-20260821-01";
-const BUILD="V3.16-20260821-01";
+const CACHE_NAME="sags-v3-20-consolidated-ops-20260821-01";
+const BUILD="V3.20-20260821-01";
 const APP_SHELL=[
   "./9Gfinal.png",
   "./CBTT.png",

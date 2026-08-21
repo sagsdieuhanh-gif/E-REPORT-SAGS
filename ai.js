@@ -309,3 +309,68 @@ window.sagsAiConfigure=async()=>{
   try{await window.sagsAiSaveConfig?.({enabled:true,appCheckSiteKey:site.trim(),model:(fast.trim()||FAST_MODEL),fastModel:(fast.trim()||FAST_MODEL),accurateModel:(accurate.trim()||ACCURATE_MODEL)});activeConfig=null;models=null;await loadConfig(true);alert("Đã lưu cấu hình AI V1.6. Mặc định chạy FAST; chỉ xác minh sâu khi cần.");}catch(e){alert("Không lưu được cấu hình AI: "+String(e?.message||e));}
 };
 setTimeout(()=>{try{const cfg=el("cxAiConfigBtn"),diag=el("cxAiDiagBtn");if(cfg)cfg.style.display=(role()==="AD")?"inline-flex":"none";if(diag)diag.style.display=(role()==="AD")?"inline-flex":"none";}catch(e){}},500);
+
+/* ===== V3.20 · A/C LIMITS IMAGE AI (AD review only) ===== */
+let aclLimitsAiModel=null;
+function aclLimitsSchema(){
+  return Schema.object({properties:{
+    date:Schema.string(),
+    version:Schema.string(),
+    items:Schema.array({maxItems:40,items:Schema.object({properties:{
+      flightNo:Schema.string(),
+      acReg:Schema.string(),
+      aircraftRegs:Schema.array({maxItems:12,items:Schema.string()}),
+      category:Schema.enumString({enum:["APU INOP","HOLD INOP/ISSUES","SEAT INOP","OTHERS"]}),
+      restriction:Schema.string(),
+      effectiveFrom:Schema.string(),
+      effectiveTo:Schema.string()
+    }})})
+  }});
+}
+async function getAclLimitsAiModel(){
+  await initModels(false); // Reuse the same Firebase AI/App Check configuration already approved for E-REPORT.
+  if(aclLimitsAiModel)return aclLimitsAiModel;
+  if(!aiApp)throw new Error("Firebase AI chưa khởi tạo.");
+  const ai=getAI(aiApp,{backend:new GoogleAIBackend()});
+  aclLimitsAiModel=getGenerativeModel(ai,{model:activeModelNames.fast||FAST_MODEL,generationConfig:{responseMimeType:"application/json",responseSchema:aclLimitsSchema(),maxOutputTokens:3600}},{timeout:FAST_TIMEOUT_MS});
+  return aclLimitsAiModel;
+}
+function aclNormalizeCategory(v){
+  const s=String(v||"").toUpperCase();
+  if(/APU|GPU|ASU|ACU/.test(s))return "APU INOP";
+  if(/HOLD|COMPARTMENT|CARGO DOOR/.test(s))return "HOLD INOP/ISSUES";
+  if(/SEAT/.test(s))return "SEAT INOP";
+  return "OTHERS";
+}
+window.acLimitsAiParseImage=async function(dataUrl){
+  if(role()!=="AD")throw new Error("Chỉ AD được dùng AI đọc A/C LIMITS.");
+  const normalized=await normalizeImageDataUrl(dataUrl,1600,.78);
+  const mdl=await getAclLimitsAiModel();
+  const prompt=`Bạn là trợ lý nhập A/C LIMITS/AIRCRAFT RESTRICTIONS cho khai thác mặt đất tại sân bay.
+Đọc CHỈ nội dung nhìn thấy rõ trong ảnh. Không suy đoán, không tự bổ sung.
+Trích xuất từng hạn chế thành items riêng.
+- flightNo: số hiệu chuyến nếu ảnh có; không có thì chuỗi rỗng.
+- aircraftRegs: tất cả đăng bạ liên quan tới đúng hạn chế; giữ nguyên ký hiệu đọc được.
+- acReg: đăng bạ chính nếu chỉ có một đăng bạ, nếu nhiều có thể để rỗng.
+- category chỉ một trong: APU INOP, HOLD INOP/ISSUES, SEAT INOP, OTHERS.
+- restriction: nội dung hạn chế/yêu cầu ngắn gọn nhưng giữ đúng ý nguồn.
+- effectiveFrom/effectiveTo: YYYY-MM-DD nếu ảnh ghi rõ; không rõ thì để rỗng.
+- date và version: chỉ điền nếu nhìn thấy rõ trên ảnh.
+Không tự áp dụng cảnh báo. Kết quả chỉ là PREVIEW để AD kiểm tra và xác nhận.
+Nếu chữ/giá trị không đọc chắc chắn thì bỏ trường đó thay vì đoán. Chỉ trả JSON đúng schema.`;
+  let out;
+  try{out=await mdl.generateContent([prompt,dataUrlPart(normalized)]);}catch(e){throw taggedError(isTimeoutError(e)?"AI_TIMEOUT":"AC_LIMITS_AI",e);}
+  const txt=out?.response?.text?.()||"";
+  const parsed=parseAiJson(txt);
+  const items=(Array.isArray(parsed?.items)?parsed.items:[]).map(x=>({
+    flightNo:String(x?.flightNo||"").trim().toUpperCase(),
+    acReg:String(x?.acReg||"").trim().toUpperCase(),
+    aircraftRegs:(Array.isArray(x?.aircraftRegs)?x.aircraftRegs:[]).map(v=>String(v||"").trim().toUpperCase()).filter(Boolean),
+    category:aclNormalizeCategory(x?.category),
+    restriction:String(x?.restriction||"").trim(),
+    effectiveFrom:String(x?.effectiveFrom||"").trim(),
+    effectiveTo:String(x?.effectiveTo||"").trim()
+  })).filter(x=>x.restriction&&(x.flightNo||x.acReg||x.aircraftRegs.length));
+  return {date:String(parsed?.date||"").trim(),version:String(parsed?.version||"").trim(),items,model:activeModelNames.fast||FAST_MODEL,analyzedAtMs:Date.now(),reviewRequired:true};
+};
+/* ===== END V3.20 A/C LIMITS IMAGE AI ===== */
