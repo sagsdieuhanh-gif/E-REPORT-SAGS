@@ -1,5 +1,5 @@
-const CACHE_NAME="sags-v3-40-auto-final-manual-flight-20260821-01";
-const BUILD="V3.40-20260821-01";
+const CACHE_NAME="sags-v3-41-manual-flight-sync-fix-20260821-01";
+const BUILD="V3.41-20260821-01";
 const APP_SHELL=[
   "./9Gfinal.png",
   "./CBTT.png",
