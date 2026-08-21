@@ -6243,3 +6243,70 @@ body.v38-clean-workflow #v38CleanNav .v326GrantedPermission::after{content:'+';d
   root.__SAGS_V334_HDSD='V3.34: Thứ tự username trong cùng ô DAILY ROSTER là thứ tự bắt buộc nhận/làm. Ví dụ KIENNT / BANGTD => KIENNT là phần 1 và được NHẬN CHUYẾN trước; BANGTD vẫn thấy MY FLIGHT nhưng CHỜ PHẦN TRƯỚC, chỉ được nhận sau khi KIENNT bấm HOÀN TẤT PHẦN CỦA TÔI. A / B / C chạy A → B → C. Phân công lại chuyến có quyền vẫn là override hợp lệ nhưng không cho assignment đứng sau vượt qua phần trước chưa hoàn tất.';
 })(typeof window!=='undefined'?window:globalThis);
 /* ===== END strict-roster-sequence-v334.js ===== */
+
+
+/* ===== BEGIN authoritative-roster-sync-v335.js ===== */
+/* E-REPORT/SAGS V3.35 · AUTHORITATIVE DAILY ROSTER REPLACEMENT
+ * The newest confirmed roster for an operational date is the only ACTIVE assignment set.
+ * Stale authority is removed from mailbox, MY FLIGHT, sequence, claims and unit ownership.
+ * Business form envelopes and historical/audit data are preserved.
+ */
+(function(root){'use strict';
+  const BUILD='V3.35-20260821-01';
+  const S=v=>String(v??'').trim(), U=v=>S(v).toUpperCase();
+  const safe=v=>S(v).replace(/[.#$\[\]\/]/g,'_');
+  const norm=v=>{try{return typeof root.normalizePersonalUsername==='function'?root.normalizePersonalUsername(v):U(v).replace(/\s+/g,'').replace(/[^A-Z0-9._-]/g,'_').slice(0,40)}catch(_){return U(v)}};
+  const db=p=>{if(typeof root.sagsV470Ref!=='function')throw new Error('Firebase RTDB chưa sẵn sàng.');return root.sagsV470Ref(p)};
+  const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
+  const opDate=()=>S(document.getElementById('drManageDate')?.value)||S(sessionStorage.getItem('sagsV36FwcDate'))||today();
+  const activeItems=man=>Object.values(man?.items||{}).filter(x=>x&&x.active!==false);
+  const unitOf=item=>{const rk=U(item?.roleKey),src=U(item?.sourceColumn),fg=U(item?.formGroup);if(rk==='PAX09'||src.includes('PAX_SUPR')||fg==='FSAGS09')return 'PVHK';if(['COR','LD','BOTH'].includes(rk)||src.includes('GRND_COR')||src.includes('GRND_LD')||['FSAGS','FSAGS421','FSAGS551'].includes(fg))return 'DH';return ''};
+  const sameFlight=(a,b)=>{const af=S(a?.flightId),bf=S(b?.flightId);if(af&&bf)return af===bf;const ar=U(a?.flightRaw||a?.flightName),br=U(b?.flightRaw||b?.flightName);return !!ar&&!!br&&ar===br};
+  function iso(v){const x=S(v);let m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(x);if(m)return x;m=/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(x);if(m)return `${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;return ''}
+  function sessionDate(st){const e=st?.envelope||{},q=e?.state||{},r=e?.rosterSeed||{};for(const x of [st?.opDate,st?.rosterOpDate,e?.rosterOpDate,q?.f421_date,q?.f551_date,q?.f09_date,q?.date,r?.f421_date,r?.f551_date,r?.f09_date,r?.date]){const d=iso(x);if(d)return d}return ''}
+  function currentUsersForFlight(man,rec,unit){const out=[];for(const x of activeItems(man)){if(unitOf(x)!==unit||!sameFlight(x,rec))continue;const u=norm(x.user||x.targetUser);if(u&&!out.includes(u))out.push(u)}return out}
+  async function readManifest(date){try{return (await db(`roster_manifests/${safe(date)}`).once('value')).val()||{}}catch(_){return {}}}
+  function flightIdFor(date,item){let fid=S(item?.flightId);if(fid)return fid;try{if(typeof root.sagsFlightHubFlightId==='function')fid=S(root.sagsFlightHubFlightId(date,item?.arrFlight||'',item?.depFlight||'',item?.flightRaw||item?.flightName||''))}catch(_){}return fid}
+
+  async function cleanup(date,oldMan,newMan,repair=false){
+    const newItems=newMan?.items||{}, activeIds=new Set(Object.keys(newItems).filter(id=>newItems[id]&&newItems[id].active!==false));
+    const [mailSnap,sessSnap,flightSnap]=await Promise.all([db('roster_mail').once('value').catch(()=>null),db('roster_sessions').once('value').catch(()=>null),db(`flight_records/${safe(date)}`).once('value').catch(()=>null)]);
+    const allMail=mailSnap?.val?.()||{}, sessions=sessSnap?.val?.()||{}, flights=flightSnap?.val?.()||{};
+    const stale=new Map();
+    const add=(aid,item={})=>{aid=S(aid);if(!aid||activeIds.has(aid))return;stale.set(aid,{...(stale.get(aid)||{}),...item,assignmentId:aid})};
+    for(const [aid,x] of Object.entries(oldMan?.items||{}))if(x&&!activeIds.has(aid))add(aid,x);
+    for(const [user,node] of Object.entries(allMail||{}))for(const [aid,x] of Object.entries(node?.items||{})){if(!x||S(x.opDate)!==date||activeIds.has(aid))continue;add(aid,{...x,user:norm(x.targetUser||user)})}
+    for(const [fid,rec] of Object.entries(flights||{}))for(const [aid,x] of Object.entries(rec?.assignments||{}))if(!activeIds.has(aid))add(aid,{...x,flightId:S(rec?.flightId||fid),flightRaw:S(rec?.flightRaw),flightName:S(rec?.flightName)});
+    for(const [key,st] of Object.entries(sessions||{})){const aid=S(st?.assignmentId||key);if(activeIds.has(aid))continue;if(stale.has(aid)||sessionDate(st)===date)add(aid,{ownerUser:norm(st?.ownerUser),sessionMatched:true})}
+
+    const patch={},t=Date.now(),by=norm(root.currentUserProfile?.username||root.currentRole||'SYSTEM');
+    for(const [aid,item] of stale){
+      const oldUser=norm(item.user||item.targetUser||item.ownerUser||item.originalUser),fid=flightIdFor(date,item),unit=unitOf(item);
+      // Remove every stale mailbox copy, not just the username stored in the old manifest.
+      for(const [mailUser,node] of Object.entries(allMail||{})){if(node?.items?.[aid]&&S(node.items[aid]?.opDate)===date){patch[`roster_mail/${safe(mailUser)}/items/${safe(aid)}`]=null;patch[`roster_revocations/${safe(mailUser)}/items/${safe(aid)}`]={assignmentId:aid,reason:'ROSTER_REPLACED_BY_LATEST',atMs:t,by,opDate:date,sourceFile:S(newMan?.fileName)}}}
+      if(oldUser)patch[`roster_revocations/${safe(oldUser)}/items/${safe(aid)}`]={assignmentId:aid,reason:'ROSTER_REPLACED_BY_LATEST',atMs:t,by,opDate:date,sourceFile:S(newMan?.fileName)};
+      // Preserve envelope/draft and historical completion payload, but revoke ACTIVE authority.
+      patch[`roster_sessions/${safe(aid)}/rosterActive`]=false;patch[`roster_sessions/${safe(aid)}/active`]=false;patch[`roster_sessions/${safe(aid)}/rosterStatus`]='ROSTER_REMOVED';patch[`roster_sessions/${safe(aid)}/rosterRemovedAtMs`]=t;patch[`roster_sessions/${safe(aid)}/rosterRemovedBy`]=by;patch[`roster_sessions/${safe(aid)}/rosterRemovedSourceFile`]=S(newMan?.fileName);patch[`roster_sessions/${safe(aid)}/handoverReady`]=false;patch[`roster_sessions/${safe(aid)}/workPartReady`]=false;patch[`roster_sessions/${safe(aid)}/taskAvailabilityV333`]='ROSTER_REMOVED';
+      if(fid){patch[`flight_records/${safe(date)}/${safe(fid)}/assignments/${safe(aid)}`]=null;patch[`flight_records/${safe(date)}/${safe(fid)}/taskStatus/${safe(aid)}`]=null;if(oldUser){patch[`flight_records/${safe(date)}/${safe(fid)}/taskClaims/${safe(oldUser)}/${safe(aid)}/status`]='ROSTER_REMOVED';patch[`flight_records/${safe(date)}/${safe(fid)}/taskClaims/${safe(oldUser)}/${safe(aid)}/taskStatus`]='ROSTER_REMOVED';patch[`flight_records/${safe(date)}/${safe(fid)}/taskClaims/${safe(oldUser)}/${safe(aid)}/rosterRemovedAtMs`]=t}const ev=`ROSTER_REPLACE_${t}_${safe(aid)}`;patch[`flight_records/${safe(date)}/${safe(fid)}/assignmentHistory/${safe(ev)}`]={eventId:ev,action:'ROSTER_ASSIGNMENT_REMOVED',assignmentId:aid,removedUser:oldUser,unit,atMs:t,by,sourceFile:S(newMan?.fileName)}}
+    }
+    // Current assignments are explicitly ACTIVE again if they existed historically.
+    for(const [aid,item] of Object.entries(newItems)){if(!item||item.active===false)continue;patch[`roster_sessions/${safe(aid)}/rosterActive`]=true;patch[`roster_sessions/${safe(aid)}/active`]=true;patch[`roster_sessions/${safe(aid)}/rosterStatus`]='ACTIVE';patch[`roster_sessions/${safe(aid)}/rosterRemovedAtMs`]=null;patch[`roster_sessions/${safe(aid)}/rosterRemovedBy`]=null;patch[`roster_sessions/${safe(aid)}/rosterRemovedSourceFile`]=null}
+    if(Object.keys(patch).length)await db('').update(patch);
+
+    // Reconcile live unit owners against the newest manifest for every flight, including pre-V3.35 ghosts.
+    let claims=0;const p2={};
+    for(const [fid,rec] of Object.entries(flights||{})){for(const unit of ['DH','PVHK']){const a=rec?.unitAssignments?.[unit],owner=norm(a?.username);if(!owner)continue;const allowed=currentUsersForFlight(newMan,{...rec,flightId:S(rec?.flightId||fid)},unit);if(allowed.includes(owner))continue;const ev=`ROSTER_OWNER_CLEAR_${t}_${safe(unit)}`;p2[`flight_records/${safe(date)}/${safe(fid)}/assignmentHistory/${safe(ev)}`]={eventId:ev,action:'INVALID_ROSTER_CLAIM_REMOVED',unit,removedUser:owner,rosterEligibleUsers:allowed,atMs:t,by:'SYSTEM_V3.35'};p2[`flight_records/${safe(date)}/${safe(fid)}/unitAssignments/${safe(unit)}`]=null;claims++}}
+    if(Object.keys(p2).length)await db('').update(p2);
+    root.__SAGS_V335_LAST={date,removed:stale.size,claims,repair,atMs:t};return {removed:stale.size,claims};
+  }
+
+  async function repairCurrent(date=opDate()){const man=await readManifest(date);if(!man?.publishedAtMs||!man?.items)return {removed:0,claims:0};return cleanup(date,{},man,true)}
+  function install(){const fn=root.dailyRosterPublish;if(typeof fn!=='function'||fn.__v335)return false;const wrapped=async function(){const date=opDate(),oldMan=await readManifest(date),r=await fn.apply(this,arguments);if(r===true){const newMan=await readManifest(date),c=await cleanup(date,oldMan,newMan,false);try{root.dailyRosterRestartMailbox?.()}catch(_){}try{await root.sagsTaskStatusSync?.(date,true)}catch(_){}const el=document.getElementById('drStatus');if(el&&c.removed)el.textContent+=`\nRoster mới đã thu hồi ${c.removed} assignment cũ; dữ liệu nghiệp vụ cũ vẫn được giữ.`}return r};wrapped.__v335=1;root.dailyRosterPublish=wrapped;return true}
+  install();setTimeout(install,350);setTimeout(install,1200);
+  // One safe repair pass makes V3.35 also clean ghosts left by earlier builds without requiring another roster upload.
+  setTimeout(()=>repairCurrent(opDate()).then(c=>{if(c.removed||c.claims){try{root.dailyRosterRestartMailbox?.()}catch(_){}try{root.flightWorkspaceRefresh?.()}catch(_){}}}).catch(e=>console.info('V3.35 repair',e?.message||e)),1800);
+  root.sagsRosterAuthoritativeRepair=repairCurrent;
+  root.__SAGS_V335_BUILD=BUILD;
+  root.__SAGS_V335_HDSD='V3.35: Daily Roster mới nhất đã XÁC NHẬN là tập assignment ACTIVE duy nhất. Assignment cũ bị loại khỏi roster_mail, MY FLIGHT, thứ tự nhận chuyến, taskStatus/claim và unitAssignment; roster_sessions chỉ bị thu hồi quyền ACTIVE, giữ nguyên envelope/draft và dữ liệu nghiệp vụ để làm lịch sử. Bản này có một lượt repair an toàn để dọn ghost assignment do các bản cũ để lại.';
+})(typeof window!=='undefined'?window:globalThis);
+/* ===== END authoritative-roster-sync-v335.js ===== */
