@@ -1,0 +1,26 @@
+E-REPORT/SAGS V3.10 CLEAN OPS - FILE MAP
+
+RUNTIME CHÍNH
+- index.html : UI/biểu mẫu hiện hành.
+- app.js : toàn bộ JavaScript classic đã gộp, gồm Flight Workspace, Daily Roster, handoff, Pilot Control, Clean Workflow, XUẤT/CHIA SẺ và GIAO CA.
+- ai.js : AI Crosscheck (ES module, giữ riêng vì module semantics).
+- service-worker.js : offline/cache/update.
+- version.json : version/update metadata.
+
+CẤU HÌNH DEPLOY
+- firebase.json, .firebaserc, firestore.rules, database.rules.json, .nojekyll, manifest.webmanifest.
+
+TÀI NGUYÊN GIỮ RIÊNG
+- Các PNG/JPG là nền biểu mẫu, logo, hình nền role và FINAL hãng.
+- Các MP3/WAV là âm thanh cảnh báo nghiệp vụ.
+Không nhúng ảnh/audio vào app.js để tránh app.js quá nặng và phải tải lại toàn bộ media mỗi lần cập nhật code.
+
+TÀI LIỆU HIỆN HÀNH
+- HDSD_V3.10.txt
+- FILE_MAP_V3.10.txt
+- AUDIT_V3.10.txt
+
+KHÔNG CÒN DÙNG
+- Không cần các JS rời V3.8 trở về trước.
+- Không cần HDSD/AUDIT/patch của các phiên bản cũ trong thư mục deploy.
+- Không đưa ac-limits-ai.js, ac-limits-ai-review.js, scanner-edge-worker.js trở lại runtime.

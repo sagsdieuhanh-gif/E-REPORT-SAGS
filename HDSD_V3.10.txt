@@ -1,0 +1,27 @@
+E-REPORT/SAGS V3.10 CLEAN OPS - HƯỚNG DẪN NHANH
+
+1. MY FLIGHT / XUẤT - CHIA SẺ
+- Đăng nhập -> CHUYẾN HÔM NAY -> tích MY FLIGHT -> mở chuyến.
+- Trong NGHIỆP VỤ CỦA TÔI có thêm khối XUẤT / CHIA SẺ TÀI LIỆU CỦA TÔI.
+- Bấm đúng biểu mẫu -> hệ thống mở đúng assignment và hộp xuất PDF.
+- Sau khi PDF được tạo: GỬI PDF mở Share Sheet của thiết bị. Có thể chọn Zalo nếu Zalo/thiết bị hỗ trợ nhận file từ Web Share.
+- Nếu thiết bị không hỗ trợ chia sẻ file trực tiếp: bấm MỞ PDF rồi dùng nút Chia sẻ của iOS/Android, hoặc TẢI PDF.
+- FINAL: mở FINAL, chọn đúng tờ; cạnh XUẤT PDF có nút CHIA SẺ.
+
+2. GIAO CA
+- Bấm 🔄 GIAO CA trên thanh Clean Workflow.
+- Chọn người nhận ACTIVE cùng phòng/đơn vị.
+- Chọn các công việc/chuyến cần chuyển ca; nhập ghi chú các việc đang dở/cảnh báo tồn.
+- Bấm GỬI BÀN GIAO CA.
+- A vẫn là người phụ trách hiện tại.
+- AD hoặc Quản lý cùng đơn vị vào GIAO CA -> CHỜ DUYỆT -> DUYỆT CA.
+- B vào GIAO CA -> TIẾP NHẬN -> TIẾP NHẬN CA.
+- Chỉ sau bước này assignment mới chuyển A -> B; MY FLIGHT cập nhật sang B.
+- Giao ca không copy hồ sơ/dữ liệu; B tiếp tục trên cùng Flight Record.
+
+3. BÀN GIAO MỘT VIỆC
+- Luồng BÀN GIAO / DUYỆT cũ vẫn dùng khi chỉ chuyển một assignment.
+- GIAO CA dùng khi cần chuyển nhiều assignment/chuyến cùng lúc.
+
+4. LƯU Ý
+- V3.10 vẫn PRE-AUTH. Firebase Authentication + server-side Rules + MFA/session hardening vẫn là bước bắt buộc trước Pilot chuyến thật.
