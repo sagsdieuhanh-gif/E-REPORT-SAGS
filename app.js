@@ -1,4 +1,4 @@
-/* E-REPORT/SAGS V3.10 CLEAN OPS - consolidated runtime. Do not split without updating index phase calls. */
+/* E-REPORT/SAGS V3.11 CLEAN NAV FIX - consolidated runtime. Do not split without updating index phase calls. */
 (function(){
 'use strict';
 var phase=(document.currentScript&&document.currentScript.dataset&&document.currentScript.dataset.phase)||'';
@@ -5461,9 +5461,16 @@ body.v38-clean-workflow #roleHomeIdle{pointer-events:none}
     ensureStyle();const bar=document.querySelector('.toolbar');if(!bar)return;
     let nav=document.getElementById('v38CleanNav');if(!nav){nav=document.createElement('div');nav.id='v38CleanNav';bar.appendChild(nav)}
     const rsAvailable=typeof root.openReadSignManager==='function';
-    nav.innerHTML=`<button class="v38NavBtn" id="v38NavFlights">✈ CHUYẾN HÔM NAY</button><button class="v38NavBtn purple" id="v38NavMulti">⇄ MULTITASK</button>${rsAvailable?'<button class="v38NavBtn rs" id="v38NavRS">READ & SIGN</button>':''}<span class="v38NavSpacer"></span><span id="v38FlowHint">FLIGHT WORKSPACE · V3.8</span>${isAD()?'<button class="v38NavBtn admin" id="v38NavAdmin">⚙ QUẢN LÝ</button>':''}`;
+    const shiftAvailable=typeof root.v310ShiftOpen==='function';
+    const sig=[logged()?'1':'0',rsAvailable?'1':'0',shiftAvailable?'1':'0',isAD()?'1':'0'].join('|');
+    // V3.11: do not rebuild the navigation bar on polling/sync. Replacing innerHTML
+    // every few seconds caused READ & SIGN and GIAO CA to visibly blink on mobile.
+    if(nav.dataset.v311Sig===sig && document.getElementById('v38NavFlights') && document.getElementById('v38NavMulti'))return;
+    nav.dataset.v311Sig=sig;
+    nav.innerHTML=`<button class="v38NavBtn" id="v38NavFlights">✈ CHUYẾN HÔM NAY</button><button class="v38NavBtn purple" id="v38NavMulti">⇄ MULTITASK</button>${shiftAvailable?'<button class="v38NavBtn" style="background:#b45309" id="v310ShiftNav">🔄 GIAO CA</button>':''}${rsAvailable?'<button class="v38NavBtn rs" id="v38NavRS">READ & SIGN</button>':''}<span class="v38NavSpacer"></span><span id="v38FlowHint">FLIGHT WORKSPACE · V3.11</span>${isAD()?'<button class="v38NavBtn admin" id="v38NavAdmin">⚙ QUẢN LÝ</button>':''}`;
     document.getElementById('v38NavFlights').onclick=()=>root.flightWorkspaceOpenList?.(today());
     document.getElementById('v38NavMulti').onclick=()=>root.sagsV36OpenMultitask?.();
+    const sh=document.getElementById('v310ShiftNav');if(sh)sh.onclick=()=>root.v310ShiftOpen?.('create');
     const rs=document.getElementById('v38NavRS');if(rs)rs.onclick=()=>root.openReadSignManager?.();
     const ad=document.getElementById('v38NavAdmin');if(ad)ad.onclick=()=>root.adminHubOpen?.();
   }
@@ -5560,7 +5567,7 @@ body.v38-clean-workflow #roleHomeIdle{pointer-events:none}
  *   A requests -> AD/department manager approves -> B accepts -> ownership changes atomically.
  */
 (function(root){'use strict';
-  const BUILD='V3.10-20260821-01';
+  const BUILD='V3.12-20260821-01';
   const MANIFEST='roster_manifests', MAIL='roster_mail', SESSION='roster_sessions', REVOKE='roster_revocations';
   const HANDOFF='roster_handoffs', SHIFT='shift_handoffs', SHIFT_MAIL='shift_handoff_mail', FLIGHTS='flight_records';
   const S=v=>String(v??'').trim(), U=v=>S(v).toUpperCase();
@@ -5590,12 +5597,22 @@ body.v38-clean-workflow #roleHomeIdle{pointer-events:none}
   /* ---------- TASK EXPORT / SHARE ---------- */
   async function currentManifest(date=today()){const s=await ref(`${MANIFEST}/${safe(date)}`).once('value');return s.val()||{}}
   async function assignmentMeta(aid){let m=null;try{m=(root.readFlightSessionList?.()||[]).find(x=>S(x.rosterAssignmentId)===S(aid))}catch(_){}if(!m){try{root.dailyRosterRestartMailbox?.();await new Promise(r=>setTimeout(r,650));m=(root.readFlightSessionList?.()||[]).find(x=>S(x.rosterAssignmentId)===S(aid))}catch(_){}}return m}
+  function v312AutoFillNA(){
+    try{
+      if(typeof root.fillBlankNA!=='function')return 0;
+      const count=Number(root.fillBlankNA({silent:true,source:'EXPORT'}))||0;
+      if(count>0)void pilotAudit('AUTO_FILL_NA_BEFORE_EXPORT',{count,flightSessionId:S(root.activeFlightSessionId||''),formGroup:S(root.activeFormGroup||'')});
+      return count;
+    }catch(e){console.warn('V3.12 auto N/A',e);return 0}
+  }
+
   root.v310ExportAssignment=async function(aid){
     try{
       aid=S(aid);const date=S(document.getElementById('fwcDate')?.value)||today(),man=await currentManifest(date),item=man?.items?.[aid];
       if(!item||item.active===false||norm(item.user||item.targetUser)!==me())throw new Error('Công việc này không còn thuộc MY FLIGHT của tài khoản hiện tại.');
       const meta=await assignmentMeta(aid);if(!meta)throw new Error('Biểu mẫu chưa đồng bộ xuống thiết bị. Hãy mở công việc một lần rồi thử lại.');
       root.flightWorkspaceClose?.();root.switchFlightSession?.(meta.id);await new Promise(r=>setTimeout(r,180));
+      v312AutoFillNA();
       if(typeof root.openExportChoiceMenu==='function')root.openExportChoiceMenu();else if(typeof openExportChoiceMenu==='function')openExportChoiceMenu();else throw new Error('Chức năng xuất PDF chưa sẵn sàng.');
       await pilotAudit('TASK_EXPORT_OPENED',{assignmentId:aid,flightId:S(item.flightId),formGroup:S(item.formGroup)});
     }catch(e){alert('Không mở được XUẤT / CHIA SẺ: '+S(e?.message||e))}
@@ -5618,14 +5635,29 @@ body.v38-clean-workflow #roleHomeIdle{pointer-events:none}
       await pilotAudit('FINAL_SHARE_PREPARED',{name,revision:rev,flightToken:ident.flightToken||''});
     }catch(e){if(e?.name!=='AbortError')alert('Không chia sẻ được FINAL: '+S(e?.message||e))}
   };
+  let v312ExportRenderToken=0;
   async function injectTaskExports(fid){
+    const token=++v312ExportRenderToken;
     const body=document.getElementById('fwcBody'),ops=body?.querySelector('.v38MyOps');if(!body||!ops)return;
-    body.querySelectorAll('.v310TaskDocs').forEach(x=>x.remove());
-    const date=S(document.getElementById('fwcDate')?.value)||today();let man={};try{man=await currentManifest(date)}catch(_){return}
+    let box=body.querySelector('#v310TaskDocsSingleton');
+    body.querySelectorAll('.v310TaskDocs').forEach(x=>{if(x!==box)x.remove()});
+    if(!box){box=document.createElement('div');box.id='v310TaskDocsSingleton';box.className='v310TaskDocs';ops.insertAdjacentElement('afterend',box)}
+    else if(box.previousElementSibling!==ops)ops.insertAdjacentElement('afterend',box);
+    box.dataset.flightId=S(fid);
+    box.innerHTML='<div class="v310DocsTitle">📤 XUẤT / CHIA SẺ TÀI LIỆU CỦA TÔI</div><div class="v310DocsSub">Đang tải tài liệu của chuyến...</div>';
+    const date=S(document.getElementById('fwcDate')?.value)||today();let man={};try{man=await currentManifest(date)}catch(_){if(token===v312ExportRenderToken)box.remove();return}
+    if(token!==v312ExportRenderToken||!document.body.contains(box)||box.dataset.flightId!==S(fid))return;
     const items=Object.values(man?.items||{}).filter(x=>x&&x.active!==false&&S(x.flightId)===S(fid)&&norm(x.user||x.targetUser)===me());
     const buttons=items.map(x=>`<button class="v310DocBtn" onclick="v310ExportAssignment('${esc(x.assignmentId)}')">📤 ${esc(formLabel(x.formGroup))}</button>`);
     if(['CBTT','AD'].includes(role()))buttons.push('<button class="v310DocBtn final" onclick="v38OpenLegacyModule(\'FINAL\')">⚖ MỞ FINAL · PDF/CHIA SẺ</button>');
-    const box=document.createElement('div');box.className='v310TaskDocs';box.innerHTML=`<div class="v310DocsTitle">📤 XUẤT / CHIA SẺ TÀI LIỆU CỦA TÔI</div><div class="v310DocsSub">Tạo PDF của đúng công việc/chuyến đang phụ trách. Sau khi tạo PDF, chọn <b>GỬI PDF</b> để mở Share Sheet và chọn Zalo/ứng dụng khác nếu thiết bị hỗ trợ.</div><div class="v310DocsBtns">${buttons.join('')||'<span>Chưa có tài liệu được gắn cho tài khoản này.</span>'}</div>`;ops.insertAdjacentElement('afterend',box);
+    body.querySelectorAll('.v310TaskDocs').forEach(x=>{if(x!==box)x.remove()});
+    box.innerHTML=`<div class="v310DocsTitle">📤 XUẤT / CHIA SẺ TÀI LIỆU CỦA TÔI</div><div class="v310DocsSub">Tạo PDF của đúng công việc/chuyến đang phụ trách. Ô biểu mẫu phù hợp còn trống sẽ tự điền <b>N/A</b> trước khi xuất. Sau khi tạo PDF, chọn <b>GỬI PDF</b> để mở Share Sheet và chọn Zalo/ứng dụng khác nếu thiết bị hỗ trợ.</div><div class="v310DocsBtns">${buttons.join('')||'<span>Chưa có tài liệu được gắn cho tài khoản này.</span>'}</div>`;
+  }
+  function patchAutoNAExportMenu(){
+    const fn=root.openExportChoiceMenu;
+    if(typeof fn!=='function'||fn.__v312AutoNA)return;
+    root.openExportChoiceMenu=function(){v312AutoFillNA();return fn.apply(this,arguments)};
+    root.openExportChoiceMenu.__v312AutoNA=1;
   }
   function injectFinalShare(){const exp=document.getElementById('ffExportBtn'),host=exp?.parentElement;if(!exp||!host)return;let b=document.getElementById('ffShareBtnV310');if(!b){b=document.createElement('button');b.id='ffShareBtnV310';b.className='finalHeaderBtn choose';b.textContent='CHIA SẺ';b.onclick=()=>root.v310ShareCurrentFinal();host.insertBefore(b,exp.nextSibling)}b.style.display=exp.style.display==='none'?'none':''}
 
@@ -5664,12 +5696,12 @@ body.v38-clean-workflow #roleHomeIdle{pointer-events:none}
   function ensureNav(){ensureUI();const nav=document.getElementById('v38CleanNav');if(nav&&!document.getElementById('v310ShiftNav')){const b=document.createElement('button');b.id='v310ShiftNav';b.className='v38NavBtn';b.style.background='#b45309';b.textContent='🔄 GIAO CA';b.onclick=()=>root.v310ShiftOpen('create');const multi=document.getElementById('v38NavMulti');multi?.insertAdjacentElement('afterend',b)}injectFinalShare()}
   function startShiftMail(){const u=me();if(!u)return;try{if(mailRef&&mailCb)mailRef.off('child_added',mailCb);mailRef=ref(`${SHIFT_MAIL}/${safe(u)}`);mailCb=async s=>{const x=s.val()||{};if(!x.id)return;const key=`sags_shift_seen_${safe(u)}_${safe(x.id)}_${safe(x.status)}`;try{if(localStorage.getItem(key))return;localStorage.setItem(key,'1')}catch(_){}if(U(x.status)==='APPROVED_WAITING_ACCEPT')setTimeout(()=>{if(confirm('🔄 GIAO CA ĐÃ ĐƯỢC DUYỆT\nCó ca/công việc chờ bạn TIẾP NHẬN. Mở ngay?'))root.v310ShiftOpen('accept')},80);else if(U(x.status)==='PENDING_APPROVAL'&&(role()==='AD'||isManager(profile())))setTimeout(()=>{if(confirm('🔄 CÓ GIAO CA CHỜ DUYỆT. Mở danh sách?'))root.v310ShiftOpen('approve')},80)};mailRef.on('child_added',mailCb)}catch(e){console.warn('V3.10 shift mail',e)}}
   function patchFlight(){if(typeof root.flightWorkspaceOpenFlight!=='function'||root.flightWorkspaceOpenFlight.__v310)return;const base=root.flightWorkspaceOpenFlight;root.flightWorkspaceOpenFlight=function(fid){const r=base.apply(this,arguments);setTimeout(()=>injectTaskExports(fid),180);return r};root.flightWorkspaceOpenFlight.__v310=1}
-  function sync(){ensureNav();patchFlight();injectFinalShare();startShiftMail()}
+  function sync(){ensureNav();patchFlight();patchAutoNAExportMenu();injectFinalShare();startShiftMail()}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(sync,500),{once:true});else setTimeout(sync,500);
-  setInterval(()=>{ensureNav();patchFlight();injectFinalShare()},1800);
+  setInterval(()=>{ensureNav();patchFlight();patchAutoNAExportMenu();injectFinalShare()},1800);
   const baseApply=root.applyRoleUI;if(typeof baseApply==='function'&&!baseApply.__v310){root.applyRoleUI=function(){const r=baseApply.apply(this,arguments);setTimeout(()=>{sync()},0);return r};root.applyRoleUI.__v310=1}
   root.__SAGS_V310_BUILD=BUILD;
-  root.__SAGS_V310_HDSD='V3.10: Flight Workspace có XUẤT/CHIA SẺ cho từng assignment; PDF dùng Share Sheet để gửi Zalo/ứng dụng khác khi thiết bị hỗ trợ. FINAL có nút CHIA SẺ cạnh XUẤT PDF. GIAO CA là batch nhiều assignment: A chọn công việc + B ACTIVE cùng đơn vị → Quản lý/AD duyệt → B TIẾP NHẬN → mới chuyển manifest/mail/session/Flight Workspace; A vẫn chịu trách nhiệm cho tới lúc B tiếp nhận.';
+  root.__SAGS_V310_HDSD='V3.12: Chỉ 01 khối XUẤT/CHIA SẺ trong Flight Workspace; chống async render trùng. Trước khi xuất biểu mẫu, ô phù hợp còn trống tự điền N/A. FINAL/Critical Data không tự suy diễn. V3.10: Flight Workspace có XUẤT/CHIA SẺ cho từng assignment; PDF dùng Share Sheet để gửi Zalo/ứng dụng khác khi thiết bị hỗ trợ. FINAL có nút CHIA SẺ cạnh XUẤT PDF. GIAO CA là batch nhiều assignment: A chọn công việc + B ACTIVE cùng đơn vị → Quản lý/AD duyệt → B TIẾP NHẬN → mới chuyển manifest/mail/session/Flight Workspace; A vẫn chịu trách nhiệm cho tới lúc B tiếp nhận.';
 })(typeof window!=='undefined'?window:globalThis);
 /* ===== END clean-ops-v310.js ===== */
 

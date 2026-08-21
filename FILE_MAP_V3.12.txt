@@ -1,0 +1,5 @@
+V3.12 CLEAN FULL
+JS runtime: app.js + ai.js + service-worker.js
+Main UI: index.html
+Current docs only: HDSD_V3.12.txt, AUDIT_V3.12.txt, FILE_MAP_V3.12.txt
+All existing form images/audio/config files retained.
