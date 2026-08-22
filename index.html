@@ -2172,7 +2172,7 @@ body.role-viewer #ffSendBtn{
 </div>
 <div id="rsOverdueHost"></div>
 
-<script src="./app.js?v=V3.72" data-phase="qr"></script>
+<script src="./app.js?v=V3.75" data-phase="qr"></script>
 <style>
 /* ===== V6.3.5 FINAL RECEIVER SCROLL + PERFORMANCE ===== */
 #finalFormsModal{
@@ -3091,7 +3091,7 @@ body.v368-layout-mode .sheet{outline:2px dashed rgba(124,58,237,.35);outline-off
   </div>
 </div>
 
-<div id="buildMarker">V3.72</div>
+<div id="buildMarker">V3.75</div>
 <div aria-live="polite" id="currentFerryFlag"><span class="dot"></span><span id="currentFerryFlagText">FERRY</span></div>
 <div class="toolbar compact-main-toolbar">
 <div class="badge">PĐH SAGS-CXR</div>
@@ -3140,9 +3140,9 @@ body.v368-layout-mode .sheet{outline:2px dashed rgba(124,58,237,.35);outline-off
 <button onclick="closeUpdateInfo()" aria-label="Đóng" style="border:0;background:#eee;border-radius:50%;width:34px;height:34px;font-size:21px;line-height:30px">×</button>
 </div>
 <div style="padding:11px 12px;border:1px solid #b7d7ef;border-radius:11px;background:#eef7ff">
-<p style="margin:0 0 6px;color:#075985"><b>V3.72 · 22/08/2026 — XUẤT LAYOUT THÀNH FILE DÙNG CHUNG</b></p>
-<p style="margin:4px 0">• <b>⚙ CĂN CHỈNH</b> FSAGS 42.3 và 55.1 chỉ hiển thị cho tài khoản <b>AD</b>. Nhân viên vẫn dùng layout đã lưu nhưng không thể mở/chỉnh/reset cấu hình.</p>
-<p style="margin:4px 0">• V3.72: AD có thể căn CHẠM + HIỂN THỊ rồi <b>XUẤT FILE form-layout.js</b>. Upload file này cùng index.html/app.js để mọi máy dùng chung layout mới.</p>
+<p style="margin:0 0 6px;color:#075985"><b>V3.75 · 22/08/2026 — HOTFIX KIỂM TRA / THÔNG BÁO CẬP NHẬT</b></p>
+<p style="margin:4px 0">• <b>⚙ CĂN CHỈNH</b> mở cho <b>FSAGS42.3 / FSAGS42.1 / FSAGS55.1 / FSAGS09 / FSAGS208 / BBBT</b>, chỉ tài khoản <b>AD</b> được chỉnh. Form mới có SVG + field sẽ tự được nhận diện để AD căn chỉnh.</p>
+<p style="margin:4px 0">• Ô nhiều dòng có <b>khung HIỂN THỊ riêng từng dòng</b>; có CẢ KHỐI / DÒNG trước-sau và <b>CĂN TRÁI / GIỮA / PHẢI</b>. Tên panel/export dùng đúng tên biểu mẫu (FSAGS09, FSAGS208...).</p>
 <p style="margin:4px 0">• <b>LƯU</b> = bản nháp trên máy AD. <b>XUẤT FILE</b> = tạo form-layout.js để đưa lên GitHub. Nhân viên tự nhận layout từ file này; không dùng Firebase.</p>
 <p style="margin:4px 0">• Có thể khôi phục riêng từng ô hoặc toàn bộ biểu mẫu về vị trí mặc định bất cứ lúc nào.</p>
 <p style="margin:4px 0">• Khi import lại cùng ngày, hệ thống so sánh từng assignment với roster đã có.</p>
@@ -3152,7 +3152,7 @@ body.v368-layout-mode .sheet{outline:2px dashed rgba(124,58,237,.35);outline-off
 </div>
 <details style="margin-top:10px;padding:9px 11px;border:1px solid #dbe4eb;border-radius:10px;background:#fafcfd">
 <summary style="cursor:pointer;font-weight:800;color:#334155">Lưu ý sau khi cập nhật</summary>
-<p style="margin:8px 0 0">Dữ liệu hồ sơ nghiệp vụ trên Firebase không bị xóa. Chỉ cập nhật khi người dùng bấm CẬP NHẬT và chờ nhãn góc trái hiện V3.72.</p>
+<p style="margin:8px 0 0">Dữ liệu hồ sơ nghiệp vụ trên Firebase không bị xóa. Chỉ cập nhật khi người dùng bấm CẬP NHẬT và chờ nhãn góc trái hiện V3.75.</p>
 </details>
 <button onclick="closeUpdateInfo()" style="width:100%;margin-top:12px;border:0;border-radius:10px;padding:10px 14px;background:#0b67b2;color:#fff;font-weight:800">ĐÓNG</button>
 </div>
@@ -4124,7 +4124,7 @@ body.v368-layout-mode .sheet{outline:2px dashed rgba(124,58,237,.35);outline-off
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
-<script src="./app.js?v=V3.72" data-phase="config"></script>
+<script src="./app.js?v=V3.75" data-phase="config"></script>
 <script>
 let suppressModalClickUntil=0;
 function armModalGhostClickBlock(ms=650){
@@ -7045,7 +7045,7 @@ function draw(){
       : [{x:a.x-px,y:a.y-py,w:a.w+px*2,h:a.h+py*2}];
 
     for(const hrBase of hitRects){
-      // V3.72: touch zone is independent from displayed text. Apply device-local
+      // V3.75: touch zone is independent from displayed text. Apply device-local
       // touch calibration (hx/hy/hw/hh) to the REAL hit rectangle used in normal mode.
       let tc={};
       try{
@@ -7221,7 +7221,7 @@ function draw(){
 
 
   /* =========================================================
-     V3.72 — FSAGS 42.3 DOT-LINE DISPLAY ENGINE
+     V3.75 — FSAGS 42.3 DOT-LINE DISPLAY ENGINE
      IMPORTANT:
      - These printed rows are NOT ordinary input boxes. Their dotted guides
        sit inside the same visual row as the labels.
@@ -7484,7 +7484,7 @@ function draw(){
     continue;
   }
 
-  // V4.78 legacy DEP Remarks renderer (V3.72 handles this earlier via measured dot-line engine).
+  // V4.78 legacy DEP Remarks renderer (V3.75 handles this earlier via measured dot-line engine).
   // Safari/iOS intermittently fails to paint HTML inside SVG foreignObject after
   // the editor closes, even though state is saved and PDF export still contains it.
   // Render this one-line printed Remarks field directly as SVG <text> so live view
@@ -12271,8 +12271,8 @@ try {
   alert("Lỗi JavaScript: "+err.message);
 }
 
-const APP_BUILD_VERSION="V3.72-20260822-01";
-const APP_DISPLAY_VERSION="V3.72";
+const APP_BUILD_VERSION="V3.75-20260822-01";
+const APP_DISPLAY_VERSION="V3.75";
 
 // V4.21 — SAFE UPDATE SAVE
 // Before switching to a newly installed app version, force-save all current
@@ -12331,6 +12331,8 @@ let appUpdateTarget="";
 let appUpdateDisplayTarget="";
 let appUpdateApplyRequested=false;
 let appUpdateCheckBusy=false;
+let appUpdatePendingServerBuild="";
+let appUpdatePendingDisplay="";
 
 function getDismissedUpdate(){
   try{
@@ -12393,25 +12395,37 @@ async function fetchServerVersion(){
     data=await res.json();
   }catch(_e){ data=null; }
 
-  appUpdateDisplayTarget=String(data?.label||data?.displayVersion||data?.version||"").trim();
-  let candidate=String(data?.build||"").trim();
+  const declaredDisplay=String(data?.label||data?.displayVersion||data?.version||"").trim();
+  const declaredBuild=String(data?.build||"").trim();
+  appUpdateDisplayTarget=declaredDisplay;
+  appUpdatePendingServerBuild="";
+  appUpdatePendingDisplay="";
 
-  // V1.104: index.html is the final source of truth for the runnable build.
-  // GitHub Pages/CDN can expose version.json before index.html. In that window,
-  // do NOT prompt/update into a build that is not actually available yet.
+  // Verify the actual runnable index. If GitHub Pages has already propagated it,
+  // the index build remains the source of truth.
   try{
-    const fresh=await fetchFreshIndexBuild(candidate||"");
+    const fresh=await fetchFreshIndexBuild(declaredBuild||"");
     const actual=String(fresh.version||"").trim();
-    if(actual){
-      candidate=actual;
+    if(actual && actual!==APP_BUILD_VERSION){
       if(fresh.displayVersion) appUpdateDisplayTarget=fresh.displayVersion;
+      return actual;
     }
+    if(actual===APP_BUILD_VERSION && declaredBuild && declaredBuild!==APP_BUILD_VERSION){
+      // version.json is already new but index.html is still propagating through GitHub Pages/CDN.
+      // Do not stay silent: surface the new version and keep retrying until index.html matches.
+      appUpdatePendingServerBuild=declaredBuild;
+      appUpdatePendingDisplay=declaredDisplay;
+      return declaredBuild;
+    }
+    if(actual) return actual;
   }catch(_e){
-    // If index verification fails, keep version.json only when it points to the
-    // currently-running build; otherwise wait for the next check instead of looping.
-    if(candidate && candidate!==APP_BUILD_VERSION) return "";
+    if(declaredBuild && declaredBuild!==APP_BUILD_VERSION){
+      appUpdatePendingServerBuild=declaredBuild;
+      appUpdatePendingDisplay=declaredDisplay;
+      return declaredBuild;
+    }
   }
-  return candidate;
+  return declaredBuild;
 }
 
 function openAppUpdatePrompt(serverVersion){
@@ -12430,7 +12444,16 @@ function openAppUpdatePrompt(serverVersion){
   if(!nextLabel) nextLabel="bản mới";
   if(title) title.textContent=nextLabel==="bản mới" ? "Có bản cập nhật mới" : ("Có bản cập nhật "+nextLabel);
   if(txt) txt.textContent="Bạn đang dùng "+APP_DISPLAY_VERSION+" • Có bản cập nhật "+nextLabel+" trên máy chủ.";
-  if(btn){ btn.disabled=false; btn.textContent="LƯU & CẬP NHẬT"+(nextLabel==="bản mới"?"":" "+nextLabel); }
+  const propagating=!!(appUpdatePendingServerBuild && appUpdatePendingServerBuild===serverVersion);
+  if(propagating){
+    if(title) title.textContent="Đã phát hiện "+nextLabel;
+    if(txt) txt.textContent="GitHub đã có phiên bản "+nextLabel+" nhưng index.html đang đồng bộ. Hệ thống sẽ tự kiểm tra lại vài giây nữa.";
+    if(btn){ btn.disabled=true; btn.textContent="ĐANG CHỜ GITHUB ĐỒNG BỘ…"; }
+    setTimeout(()=>checkForNewestBuild(appUpdateRegistration),3000);
+  }else if(btn){
+    btn.disabled=false;
+    btn.textContent="LƯU & CẬP NHẬT"+(nextLabel==="bản mới"?"":" "+nextLabel);
+  }
   if(modal) modal.style.display="flex";
 }
 
@@ -12495,6 +12518,13 @@ async function applyAppUpdate(){
     if(verified.displayVersion) appUpdateDisplayTarget=verified.displayVersion;
     if(!actualTarget) throw new Error("Không xác định được build của index.html mới.");
     if(actualTarget===APP_BUILD_VERSION){
+      // GitHub Pages may publish version.json before index.html. Keep the notification
+      // visible and retry instead of silently closing it.
+      if(appUpdatePendingServerBuild && appUpdatePendingServerBuild!==APP_BUILD_VERSION){
+        openAppUpdatePrompt(appUpdatePendingServerBuild);
+        setTimeout(()=>checkForNewestBuild(appUpdateRegistration),3000);
+        return;
+      }
       appUpdateTarget="";
       const modal=document.getElementById("appUpdateModal");
       if(modal) modal.style.display="none";
@@ -12584,7 +12614,7 @@ if("serviceWorker" in navigator){
       wireUpdateSignals(reg);
       await checkForNewestBuild(reg);
       // Retry đầu phiên để chống mạng/CDN chậm ở một số máy.
-      [2500,10000,30000].forEach(ms=>setTimeout(()=>checkForNewestBuild(reg),ms));
+      [500,2500,10000,30000].forEach(ms=>setTimeout(()=>checkForNewestBuild(reg),ms));
       // Định kỳ kiểm tra nhưng chỉ THÔNG BÁO, không tự reload.
       setInterval(()=>checkForNewestBuild(reg),2*60*1000);
       document.addEventListener("visibilitychange",()=>{
@@ -21064,7 +21094,7 @@ function applyRoleUI(){
   // Nếu ứng dụng được mở từ QR Giao Ca, xử lý sau khi đã xác định tài khoản.
   setTimeout(tryOpenPendingHandoverDeepLink,120);
 
-  // V3.72: nút căn chỉnh 42.3 / 55.1 chỉ dành cho AD.
+  // V3.75: nút căn chỉnh tất cả biểu mẫu chỉ dành cho AD; form mới tự nhận diện khi có SVG + field.
   try{if(typeof window.v368RefreshTuneButton==="function")window.v368RefreshTuneButton();}catch(e){}
 
   // V6.4.0: Sau đăng nhập KHÔNG tự mở bất kỳ màn chức năng nào.
@@ -24242,7 +24272,7 @@ window.openCamScanner=openCamScanner;
 <script type="module" src="./ai.js?v=V3.58"></script>
 
 
-<script src="./app.js?v=V3.72" data-phase="archive"></script>
+<script src="./app.js?v=V3.75" data-phase="archive"></script>
 <script id="v120-build02-fixes">
 /* V1.20 BUILD 02 — background persistence, VHTTB, per-account usage detail, progress dedupe. */
 (function(){
@@ -24683,7 +24713,7 @@ window.openCamScanner=openCamScanner;
 
 
 
-<script src="./app.js?v=V3.72" data-phase="tools"></script>
+<script src="./app.js?v=V3.75" data-phase="tools"></script>
 <script id="v173-quick-time">
 (function(){
   "use strict";
@@ -26739,7 +26769,7 @@ window.openCamScanner=openCamScanner;
 }
 </style>
 
-<script src="./app.js?v=V3.72" data-phase="flight"></script>
+<script src="./app.js?v=V3.75" data-phase="flight"></script>
 <script id="v191IOSInteractionFix">
 (()=>{
   'use strict';
@@ -27003,7 +27033,7 @@ window.openCamScanner=openCamScanner;
 })();
 </script>
 
-<script src="./app.js?v=V3.72" data-phase="control"></script>
+<script src="./app.js?v=V3.75" data-phase="control"></script>
 
 <style id="v330-group-permission-style">
 #v330GroupPermPanel{margin:12px 0 8px;padding:11px;border:1px solid #cbd9e6;border-radius:12px;background:#f7fbff;box-sizing:border-box}
@@ -27254,15 +27284,30 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 
 <script id="v368LayoutTuneScript">
 /* =========================================================
-   V3.72 — DUAL LAYOUT TUNER + EXPORT FILE · FSAGS 42.3 / 55.1 · AD ONLY
-   - DISPLAY zone: dx/dy/font/line-height
-   - TOUCH zone: hx/hy/width/height
-   AD draft is local. Published layout comes from form-layout.js. No Firebase read/write.
+   V3.75 — UNIVERSAL / PER-LINE DUAL LAYOUT TUNER · AD ONLY
+   Built-in: FSAGS42.3 / FSAGS42.1 / FSAGS55.1 / FSAGS09 / FSAGS208 / BBBT.
+   Future forms: automatically discovered from the active form's visible SVG pages + field definitions.
+   - TOUCH zone: one independent click/tap region per field.
+   - DISPLAY zone: single-line fields or per-line frames for multiline fields.
+   - Per line: X/Y, font, LEFT/CENTER/RIGHT.
+   - Whole block: X/Y, font, line spacing, alignment.
+   - AD draft is local; published layout comes from form-layout.js.
    ========================================================= */
 (function(){
   const STORE_KEY="SAGS_FORM_LAYOUT_V368";
   const LOCAL_META_KEY="SAGS_FORM_LAYOUT_LOCAL_META_V372";
-  const SUPPORTED={fsags:[1,2],fsags551:[9,10]};
+  // Canonical registry for all current printed forms. Attachment-only pages are intentionally omitted.
+  // New forms do not need a tuner code change: if activeFormGroup is new, visible SVG pages containing fields
+  // are auto-discovered. Optional explicit registration is also exposed via SAGS_LAYOUT_REGISTER_FORM().
+  const FORM_REGISTRY={
+    fsags:{id:"FSAGS423",label:"FSAGS42.3",pages:[1,2]},
+    fsags421:{id:"FSAGS421",label:"FSAGS42.1",pages:[6,7]},
+    fsags551:{id:"FSAGS551",label:"FSAGS55.1",pages:[9,10]},
+    fsags09:{id:"FSAGS09",label:"FSAGS09",pages:[11,12]},
+    loading208:{id:"FSAGS208",label:"FSAGS208",pages:[13]},
+    bbbt:{id:"BBBT",label:"BBBT",pages:[4]}
+  };
+  const CUSTOM_FORMS={};
   let saved=loadStore(),draft=clone(saved),mode=false,selected=null,drag=null,zone='display';
   const q=(s,r=document)=>r.querySelector(s);
   const qa=(s,r=document)=>Array.from(r.querySelectorAll(s));
@@ -27274,176 +27319,247 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   function loadStore(){
     let local={};try{const v=JSON.parse(localStorage.getItem(STORE_KEY)||"{}");local=v&&typeof v==="object"?v:{}}catch(e){}
     const pub=publishedPayload(),pf=publishedFields(),pm=Number(pub?.publishedAt||0),lm=Number(localMeta().savedAt||0);
-    // Published file wins on every device when it is newer. AD can still make a newer local draft until the next export.
     if(pm>lm)return pf;
     return Object.assign({},pf,local);
   }
   function saveStore(){saved=clone(draft);try{localStorage.setItem(STORE_KEY,JSON.stringify(saved));localStorage.setItem(LOCAL_META_KEY,JSON.stringify({savedAt:Date.now()}))}catch(e){}}
-  function pages(){return SUPPORTED[String(window.activeFormGroup||activeFormGroup||"")]||[]}
+  function group(){try{return String(window.activeFormGroup||activeFormGroup||"")}catch(e){return ""}}
+  function allFields(){try{return Array.isArray(window.fields)?window.fields:(Array.isArray(fields)?fields:[])}catch(e){return []}}
+  function pageHasFields(page){return allFields().some(f=>Number(f?.page)===Number(page))}
+  function pageIsVisible(page){
+    const el=document.getElementById("page"+page),svg=document.getElementById("svg"+page);if(!el||!svg)return false;
+    const cs=getComputedStyle(el);return !el.classList.contains("hide")&&cs.display!=="none"&&cs.visibility!=="hidden";
+  }
+  function visibleFieldPages(){
+    const out=[];for(const svg of qa('svg[id^="svg"]')){const m=String(svg.id||"").match(/^svg(\d+)$/);if(!m)continue;const p=Number(m[1]);if(pageHasFields(p)&&pageIsVisible(p))out.push(p)}
+    return [...new Set(out)].sort((a,b)=>a-b);
+  }
+  function sanitizeFormId(v){let x=String(v||"FORM").toUpperCase().replace(/[^A-Z0-9.]+/g,"");if(!x)x="FORM";return x}
+  function menuLabelFor(g){
+    try{
+      const escaped=String(g||"").replace(/[\"']/g,"\$&");
+      const btn=qa('button[onclick], [role="button"][onclick]').find(el=>{const oc=String(el.getAttribute('onclick')||'');return oc.includes("selectFormGroup('"+g+"')")||oc.includes('selectFormGroup("'+g+'")')});
+      if(btn){const strong=btn.querySelector('strong');const raw=String(strong?.textContent||btn.textContent||'').trim();if(raw)return raw.replace(/\s+/g,' ')}
+    }catch(e){}
+    return '';
+  }
+  function inferredFormDef(){
+    const g=group();if(FORM_REGISTRY[g])return FORM_REGISTRY[g];if(CUSTOM_FORMS[g])return CUSTOM_FORMS[g];
+    const ps=visibleFieldPages();if(!ps.length)return null;
+    const menu=menuLabelFor(g),label=menu?menu.replace(/\s+/g,''):sanitizeFormId(g);
+    return {id:sanitizeFormId(label||g),label:label||sanitizeFormId(g),pages:ps,auto:true};
+  }
+  function pages(){return inferredFormDef()?.pages||[]}
+  function formLabel(){return inferredFormDef()?.label||sanitizeFormId(group())}
+  function formId(){return inferredFormDef()?.id||sanitizeFormId(group())}
+  window.SAGS_LAYOUT_REGISTER_FORM=function(formGroup,label,pageList){
+    const g=String(formGroup||'').trim();const ps=(Array.isArray(pageList)?pageList:[]).map(Number).filter(Number.isFinite);if(!g||!ps.length)return false;
+    CUSTOM_FORMS[g]={id:sanitizeFormId(label||g),label:String(label||sanitizeFormId(g)).trim(),pages:[...new Set(ps)]};
+    try{window.v368RefreshTuneButton?.()}catch(e){}return true;
+  };
   function k(page,key){return String(page)+":"+String(key)}
   function cfg(page,key,create=false){const id=k(page,key);if(!draft[id]&&create)draft[id]={};return draft[id]||null}
   function currentLayout(){return mode?draft:saved}
-  function fieldFor(page,key){return (window.fields||fields||[]).find(f=>Number(f.page)===Number(page)&&String(f.key)===String(key))||null}
-  function displayRect(f){const a=abs(f);return {x:a.vx,y:a.vy,w:a.vw,h:a.vh}}
-  function targetEls(page,key){
-    const svg=document.getElementById("svg"+page);if(!svg)return[];
+  function fieldFor(page,key){return allFields().find(f=>Number(f.page)===Number(page)&&String(f.key)===String(key))||null}
+  function absRect(f){const a=abs(f);return {x:a.vx,y:a.vy,w:a.vw,h:a.vh}}
+  function svgFor(page){return document.getElementById("svg"+page)}
+  function targetEls(page,key,includeGenerated=true){
+    const svg=svgFor(page);if(!svg)return[];
     return qa('[data-field-key="'+String(key).replace(/"/g,'\\"')+'"]',svg)
-      .filter(el=>!el.classList.contains('v368-layout-hit')&&!el.classList.contains('hit'));
+      .filter(el=>!el.classList.contains('v368-layout-hit')&&!el.classList.contains('hit')&&(includeGenerated||!el.classList.contains('v373-line-render')));
   }
-  function realHitEls(page,key){
-    const svg=document.getElementById("svg"+page);if(!svg)return[];
-    return qa('.hit[data-field-key="'+String(key).replace(/"/g,'\\"')+'"]',svg);
+  function originalTargetEls(page,key){return targetEls(page,key,false)}
+  function generatedLineEls(page,key){return targetEls(page,key,true).filter(el=>el.classList.contains('v373-line-render'))}
+  function realHitEls(page,key){const svg=svgFor(page);if(!svg)return[];return qa('.hit[data-field-key="'+String(key).replace(/"/g,'\\"')+'"]',svg)}
+  function baseFont(page,key){
+    const el=originalTargetEls(page,key)[0];if(!el){const f=fieldFor(page,key);return Number(f?.font)||16}
+    if(el.tagName.toLowerCase()==="foreignobject"){const d=el.querySelector('div');const n=parseFloat(d?.style?.fontSize||getComputedStyle(d||el).fontSize);return Number.isFinite(n)?n:(Number(fieldFor(page,key)?.font)||16)}
+    const n=parseFloat(el.getAttribute('font-size')||getComputedStyle(el).fontSize);return Number.isFinite(n)?n:(Number(fieldFor(page,key)?.font)||16);
   }
-  function renderedRect(page,key,fallback){
-    const els=targetEls(page,key);let x1=Infinity,y1=Infinity,x2=-Infinity,y2=-Infinity,found=false;
-    for(const el of els){
-      try{const b=el.getBBox();if(!b||!Number.isFinite(b.x)||!Number.isFinite(b.y)||!Number.isFinite(b.width)||!Number.isFinite(b.height))continue;if(b.width<=0&&b.height<=0)continue;x1=Math.min(x1,b.x);y1=Math.min(y1,b.y);x2=Math.max(x2,b.x+b.width);y2=Math.max(y2,b.y+b.height);found=true}catch(e){}
-    }
-    if(!found)return fallback;
-    const padX=5,padY=4;let x=x1-padX,y=y1-padY,w=(x2-x1)+padX*2,h=(y2-y1)+padY*2;
-    if(w<34){x-=(34-w)/2;w=34}if(h<20){y-=(20-h)/2;h=20}
-    return {x,y,w,h};
+  function baseLine(page,key){
+    const f=fieldFor(page,key),el=originalTargetEls(page,key).find(x=>x.tagName.toLowerCase()==="foreignobject"),d=el?.querySelector('div');
+    if(d){const raw=d.style.lineHeight||getComputedStyle(d).lineHeight,n=parseFloat(raw),fs=baseFont(page,key);if(Number.isFinite(n)&&n>0)return n<5?Math.max(10,fs*n):n}
+    const fs=baseFont(page,key);return f?.dotted?26:Math.max(12,fs*1.12);
   }
+  function isMulti(f){if(!f)return false;const els=originalTargetEls(f.page,f.key);return !!f.multiline||els.length>1}
+  function lineCapacity(f){
+    if(!f)return 1;const c=cfg(f.page,f.key,false)||{},els=originalTargetEls(f.page,f.key);let n=els.length>1?els.length:0;
+    if(Array.isArray(f.dotRects)&&f.dotRects.length>1)n=Math.max(n,f.dotRects.length);
+    if(Number(f.page)===1&&String(f.key)==='lmcDetails')n=Math.max(n,4);
+    if(Number(f.page)===6&&String(f.key)==='f421_lmcDetails')n=Math.max(n,4);
+    const d=absRect(f),lh=Number(c.lh)||baseLine(f.page,f.key)||26;
+    if(f.multiline)n=Math.max(n,Math.max(2,Math.min(12,Math.round(d.h/Math.max(12,lh)))));
+    if(c.lines&&typeof c.lines==='object')for(const x of Object.keys(c.lines)){const i=Number(x);if(Number.isFinite(i))n=Math.max(n,i+1)}
+    return Math.max(1,n||1);
+  }
+  function lineCfg(c,i,create=false){if(i===null||i===undefined)return c;if(!c.lines&&create)c.lines={};if(!c.lines)return null;const id=String(i);if(!c.lines[id]&&create)c.lines[id]={};return c.lines[id]||null}
+  function hasLineOverrides(c){return !!(c&&c.lines&&Object.keys(c.lines).some(i=>c.lines[i]&&Object.keys(c.lines[i]).length))}
+  function cleanFieldCfg(c){if(c?.lines&&Object.keys(c.lines).every(i=>!c.lines[i]||!Object.keys(c.lines[i]).length))delete c.lines}
   function rawTouchRects(f){
     const a=abs(f),px=(f.hitPadX||0)*BASE_W,py=(f.hitPadY||0)*BASE_H;
     return Array.isArray(f.dotRects)&&f.dotRects.length
       ? f.dotRects.map(r=>({x:r[0]*BASE_W,y:r[1]*BASE_H,w:r[2]*BASE_W,h:r[3]*BASE_H}))
       : [{x:a.x-px,y:a.y-py,w:a.w+px*2,h:a.h+py*2}];
   }
-  function adjustedTouchRects(f,c){
-    c=c||{};const hx=Number(c.hx)||0,hy=Number(c.hy)||0,hw=Number(c.hw)||0,hh=Number(c.hh)||0;
-    return rawTouchRects(f).map(r=>{const w=Math.max(8,r.w+hw),h=Math.max(8,r.h+hh);return{x:r.x+hx-(w-r.w)/2,y:r.y+hy-(h-r.h)/2,w,h}});
+  function adjustedTouchRects(f,c){c=c||{};const hx=Number(c.hx)||0,hy=Number(c.hy)||0,hw=Number(c.hw)||0,hh=Number(c.hh)||0;return rawTouchRects(f).map(r=>{const w=Math.max(8,r.w+hw),h=Math.max(8,r.h+hh);return{x:r.x+hx-(w-r.w)/2,y:r.y+hy-(h-r.h)/2,w,h}})}
+  function unionRect(rects,fallback){if(!rects||!rects.length)return fallback;let x1=Infinity,y1=Infinity,x2=-Infinity,y2=-Infinity;for(const r of rects){x1=Math.min(x1,r.x);y1=Math.min(y1,r.y);x2=Math.max(x2,r.x+r.w);y2=Math.max(y2,r.y+r.h)}return{x:x1,y:y1,w:Math.max(8,x2-x1),h:Math.max(8,y2-y1)}}
+  function touchRect(f,c){return unionRect(adjustedTouchRects(f,c),absRect(f))}
+  function lineBaseRect(f,i){
+    const d=absRect(f),c=cfg(f.page,f.key,false)||{},count=lineCapacity(f),lh=Number(c.lh)||baseLine(f.page,f.key)||Math.max(12,d.h/count);
+    const h=Math.max(12,Math.min(lh,d.h));let y=d.y+i*lh;if(y+h>d.y+d.h)y=Math.max(d.y,d.y+d.h-h);
+    return{x:d.x,y,w:d.w,h};
   }
-  function unionRect(rects,fallback){
-    if(!rects||!rects.length)return fallback;let x1=Infinity,y1=Infinity,x2=-Infinity,y2=-Infinity;
-    for(const r of rects){x1=Math.min(x1,r.x);y1=Math.min(y1,r.y);x2=Math.max(x2,r.x+r.w);y2=Math.max(y2,r.y+r.h)}
-    return {x:x1,y:y1,w:Math.max(8,x2-x1),h:Math.max(8,y2-y1)};
-  }
-  function touchRect(f,c){return unionRect(adjustedTouchRects(f,c),displayRect(f))}
-  function baseFont(page,key){
-    const el=targetEls(page,key)[0];if(!el){const f=fieldFor(page,key);return Number(f?.font)||16}
-    if(el.tagName.toLowerCase()==="foreignobject"){const d=el.querySelector('div');const n=parseFloat(d?.style?.fontSize||getComputedStyle(d||el).fontSize);return Number.isFinite(n)?n:16}
-    const n=parseFloat(el.getAttribute('font-size')||getComputedStyle(el).fontSize);return Number.isFinite(n)?n:16;
-  }
-  function baseLine(page,key){
-    const el=targetEls(page,key).find(x=>x.tagName.toLowerCase()==="foreignobject"),d=el?.querySelector('div');if(!d)return 0;
-    const n=parseFloat(d.style.lineHeight||getComputedStyle(d).lineHeight);return Number.isFinite(n)?n:0;
-  }
-  function applyTouchOne(page,key){
-    const c=cfg(page,key,false)||{},hx=Number(c.hx)||0,hy=Number(c.hy)||0,hw=Number(c.hw)||0,hh=Number(c.hh)||0;
-    for(const hit of realHitEls(page,key)){
-      const bx=Number(hit.dataset.v371BaseX),by=Number(hit.dataset.v371BaseY),bw=Number(hit.dataset.v371BaseW),bh=Number(hit.dataset.v371BaseH);
-      if(![bx,by,bw,bh].every(Number.isFinite))continue;
-      const w=Math.max(8,bw+hw),h=Math.max(8,bh+hh);
-      hit.setAttribute('x',String(bx+hx-(w-bw)/2));hit.setAttribute('y',String(by+hy-(h-bh)/2));hit.setAttribute('width',String(w));hit.setAttribute('height',String(h));
+  function displayTransform(c,i){const lc=i===null||i===undefined?null:lineCfg(c,i,false),dx=(Number(c?.dx)||0)+(Number(lc?.dx)||0),dy=(Number(c?.dy)||0)+(Number(lc?.dy)||0);return(dx||dy)?`translate(${dx} ${dy})`:''}
+  function alignOf(f,c,i){const lc=i===null||i===undefined?null:lineCfg(c,i,false);return String(lc?.align||c?.align||f.align||'left').toLowerCase()}
+  function fontOf(f,c,i){const lc=i===null||i===undefined?null:lineCfg(c,i,false);return Number(lc?.fs)||Number(c?.fs)||baseFont(f.page,f.key)||Number(f.font)||16}
+  function textState(key){try{return String((window.state||state||{})[key]??'')}catch(e){return ''}}
+  function wrapText(text,width,fs){
+    const cvs=(window.__v373Measure ||= document.createElement('canvas')),ctx=cvs.getContext('2d');ctx.font=`700 ${fs}px "Times New Roman"`;const out=[];
+    for(const para of String(text||'').replace(/\r\n/g,'\n').split('\n')){
+      if(!para){out.push('');continue}const words=para.split(/\s+/).filter(Boolean);let line='';
+      for(const w of words){const test=line?line+' '+w:w;if(!line||ctx.measureText(test).width<=Math.max(20,width)){line=test}else{out.push(line);line=w}}
+      out.push(line);
     }
-    const f=fieldFor(page,key),ov=q('.v368-layout-hit.touch-zone[data-v368-id="'+CSS.escape(k(page,key))+'"]');
-    if(f&&ov){const r=touchRect(f,c);ov.setAttribute('x',r.x);ov.setAttribute('y',r.y);ov.setAttribute('width',r.w);ov.setAttribute('height',r.h)}
+    return out;
   }
-  function applyDisplayOne(page,key){
-    const c=cfg(page,key,false)||{},dx=Number(c.dx)||0,dy=Number(c.dy)||0;
-    for(const el of targetEls(page,key)){
-      if(!el.dataset.v368BaseTransform)el.dataset.v368BaseTransform=el.getAttribute('transform')||'__NONE__';
-      const base=el.dataset.v368BaseTransform==='__NONE__'?'':el.dataset.v368BaseTransform,tr=(base?base+' ':'')+((dx||dy)?`translate(${dx} ${dy})`:'');
-      if(tr.trim())el.setAttribute('transform',tr.trim());else el.removeAttribute('transform');
-      if(Number.isFinite(Number(c.fs))&&Number(c.fs)>0){const fs=Number(c.fs);if(el.tagName.toLowerCase()==='foreignobject'){const d=el.querySelector('div');if(d)d.style.fontSize=fs+'px'}else if(el.tagName.toLowerCase()==='text')el.setAttribute('font-size',String(fs))}
-      if(Number.isFinite(Number(c.lh))&&Number(c.lh)>0&&el.tagName.toLowerCase()==='foreignobject'){const d=el.querySelector('div');if(d)d.style.lineHeight=Number(c.lh)+'px'}
+  function removeGenerated(f){const svg=svgFor(f.page);if(svg)qa('.v373-line-render[data-field-key="'+String(f.key).replace(/"/g,'\\"')+'"]',svg).forEach(x=>x.remove());for(const el of originalTargetEls(f.page,f.key)){if(el.dataset.v373Hidden==='1'){el.style.opacity=el.dataset.v373OldOpacity||'';delete el.dataset.v373Hidden;delete el.dataset.v373OldOpacity}}}
+  function makeSplitLines(f,c){
+    removeGenerated(f);const originals=originalTargetEls(f.page,f.key);if(!f.multiline||originals.length>1)return originals;
+    const svg=svgFor(f.page);if(!svg)return originals;for(const el of originals){el.dataset.v373OldOpacity=el.style.opacity||'';el.dataset.v373Hidden='1';el.style.opacity='0'}
+    const d=absRect(f),count=lineCapacity(f),globalFs=Number(c.fs)||baseFont(f.page,f.key),lh=Number(c.lh)||baseLine(f.page,f.key),lines=wrapText(textState(f.key),Math.max(20,d.w-6),globalFs);
+    if(lines.length>count){lines.splice(count-1,lines.length-count+1,lines.slice(count-1).join(' '))}
+    const made=[];
+    for(let i=0;i<count;i++){
+      const lc=lineCfg(c,i,false)||{},fs=Number(lc.fs)||globalFs,al=alignOf(f,c,i),r=lineBaseRect(f,i),x=al==='center'?r.x+r.w/2:(al==='right'?r.x+r.w-3:r.x+3),y=r.y+Math.min(r.h-2,Math.max(fs,fs*.88+2));
+      const t=document.createElementNS('http://www.w3.org/2000/svg','text');t.setAttribute('x',String(x));t.setAttribute('y',String(y));t.setAttribute('class','value manual-value v373-line-render '+(al==='center'?'center':'left'));t.setAttribute('font-size',String(fs));t.setAttribute('font-weight','700');t.setAttribute('text-anchor',al==='center'?'middle':(al==='right'?'end':'start'));t.setAttribute('dominant-baseline','alphabetic');t.setAttribute('data-field-key',f.key);t.setAttribute('data-v373-line-index',String(i));t.style.pointerEvents='none';t.textContent=lines[i]||'';svg.appendChild(t);made.push(t);
     }
-    const ov=q('.v368-layout-hit.display-zone[data-v368-id="'+CSS.escape(k(page,key))+'"]');if(ov)ov.setAttribute('transform',(dx||dy)?`translate(${dx} ${dy})`:'');
+    return made;
   }
-  function applyOne(page,key){applyDisplayOne(page,key);applyTouchOne(page,key)}
-  window.v371GetTouchConfig=function(page,key){const c=(currentLayout()||{})[k(page,key)]||{};return{hx:Number(c.hx)||0,hy:Number(c.hy)||0,hw:Number(c.hw)||0,hh:Number(c.hh)||0}};
-  window.v368ApplySavedLayout=function(){
-    const active=currentLayout();
-    for(const id of Object.keys(active||{})){const m=id.match(/^(\d+):(.*)$/);if(!m)continue;const page=Number(m[1]),key=m[2];if(![1,2,9,10].includes(page))continue;applyOne(page,key)}
-    if(mode)buildOverlays();
-  };
-  function eligibleField(f){if(!f||!pages().includes(Number(f.page)))return false;if(f.type==='check'||f.type==='displayCheck'||f.type==='signature')return false;return true}
-  function addOverlay(svg,f,r,kind){
-    const rect=document.createElementNS('http://www.w3.org/2000/svg','rect'),isSel=selected&&selected.page===Number(f.page)&&selected.key===String(f.key)&&zone===kind;
-    rect.setAttribute('x',r.x);rect.setAttribute('y',r.y);rect.setAttribute('width',Math.max(8,r.w));rect.setAttribute('height',Math.max(8,r.h));
-    rect.setAttribute('class','v368-layout-hit '+kind+'-zone'+(isSel?' selected':''));rect.setAttribute('data-v368-id',k(f.page,f.key));
-    if(kind==='display'){const c=cfg(f.page,f.key,false)||{},dx=Number(c.dx)||0,dy=Number(c.dy)||0;rect.setAttribute('transform',(dx||dy)?`translate(${dx} ${dy})`:'')}
-    rect.addEventListener('pointerdown',ev=>startDrag(ev,f,rect,kind),{passive:false});rect.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();selectField(f,kind)});svg.appendChild(rect);
+  function lineTargets(f,c){
+    const originals=originalTargetEls(f.page,f.key);
+    if(!isMulti(f))return originals;
+    if(hasLineOverrides(c)&&originals.length<=1)return makeSplitLines(f,c);
+    removeGenerated(f);return originals;
   }
-  function buildOverlays(){
-    for(const page of pages()){
-      const svg=document.getElementById('svg'+page);if(!svg)continue;qa('.v368-layout-hit',svg).forEach(x=>x.remove());
-      for(const f of (window.fields||fields||[]).filter(x=>Number(x.page)===page)){
-        if(!eligibleField(f))continue;const c=cfg(page,f.key,false)||{},fallback=displayRect(f),dr=renderedRect(page,f.key,fallback),tr=touchRect(f,c);
-        addOverlay(svg,f,tr,'touch');addOverlay(svg,f,dr,'display');
+  function setTextAlignment(el,f,c,i){
+    const al=alignOf(f,c,i),r=lineBaseRect(f,Math.max(0,i||0));
+    if(el.tagName.toLowerCase()==='foreignobject'){const d=el.querySelector('div');if(d)d.style.textAlign=al==='right'?'right':(al==='center'?'center':'left');return}
+    if(el.tagName.toLowerCase()==='text'){
+      if(!el.dataset.v373BaseX)el.dataset.v373BaseX=el.getAttribute('x')||'0';
+      if((c?.align)||(i!==null&&i!==undefined&&lineCfg(c,i,false)?.align)){
+        el.setAttribute('x',String(al==='center'?r.x+r.w/2:(al==='right'?r.x+r.w-3:r.x+3)));el.setAttribute('text-anchor',al==='center'?'middle':(al==='right'?'end':'start'));
       }
     }
   }
-  function setZone(z){if(!['display','touch'].includes(z))return;zone=z;document.body.classList.toggle('v368-zone-display',z==='display');document.body.classList.toggle('v368-zone-touch',z==='touch');buildOverlays();renderPanel()}
-  function selectField(f,z){selected={page:Number(f.page),key:String(f.key)};if(z)setZone(z);else{buildOverlays();renderPanel()}}
-  function startDrag(ev,f,rect,kind){
-    ev.preventDefault();ev.stopPropagation();selected={page:Number(f.page),key:String(f.key)};zone=kind;document.body.classList.toggle('v368-zone-display',kind==='display');document.body.classList.toggle('v368-zone-touch',kind==='touch');
-    try{rect.setPointerCapture(ev.pointerId)}catch(e){}
-    const svg=document.getElementById('svg'+f.page),box=svg.getBoundingClientRect(),c=cfg(f.page,f.key,true);
-    drag={pid:ev.pointerId,page:f.page,key:f.key,kind,x:ev.clientX,y:ev.clientY,dx:Number(kind==='display'?c.dx:c.hx)||0,dy:Number(kind==='display'?c.dy:c.hy)||0,sx:BASE_W/Math.max(1,box.width),sy:BASE_H/Math.max(1,box.height),rect,f};
-    const move=e=>{
-      if(!drag||e.pointerId!==drag.pid)return;e.preventDefault();const cc=cfg(drag.page,drag.key,true),nx=Math.round((drag.dx+(e.clientX-drag.x)*drag.sx)*10)/10,ny=Math.round((drag.dy+(e.clientY-drag.y)*drag.sy)*10)/10;
-      if(drag.kind==='display'){cc.dx=nx;cc.dy=ny;applyDisplayOne(drag.page,drag.key)}else{cc.hx=nx;cc.hy=ny;applyTouchOne(drag.page,drag.key)}renderPanel(false);
-    };
+  function applyTouchOne(page,key){
+    const c=cfg(page,key,false)||{},hx=Number(c.hx)||0,hy=Number(c.hy)||0,hw=Number(c.hw)||0,hh=Number(c.hh)||0;
+    for(const hit of realHitEls(page,key)){const bx=Number(hit.dataset.v371BaseX),by=Number(hit.dataset.v371BaseY),bw=Number(hit.dataset.v371BaseW),bh=Number(hit.dataset.v371BaseH);if(![bx,by,bw,bh].every(Number.isFinite))continue;const w=Math.max(8,bw+hw),h=Math.max(8,bh+hh);hit.setAttribute('x',String(bx+hx-(w-bw)/2));hit.setAttribute('y',String(by+hy-(h-bh)/2));hit.setAttribute('width',String(w));hit.setAttribute('height',String(h))}
+    const f=fieldFor(page,key),ov=q('.v368-layout-hit.touch-zone[data-v368-id="'+CSS.escape(k(page,key))+'"]');if(f&&ov){const r=touchRect(f,c);ov.setAttribute('x',r.x);ov.setAttribute('y',r.y);ov.setAttribute('width',r.w);ov.setAttribute('height',r.h)}
+  }
+  function applyDisplayOne(page,key){
+    const f=fieldFor(page,key);if(!f)return;const c=cfg(page,key,false)||{},els=lineTargets(f,c),multi=isMulti(f);
+    if(multi&&hasLineOverrides(c)&&els.length){
+      els.forEach((el,idx)=>{const i=Number(el.getAttribute('data-v373-line-index'));const li=Number.isFinite(i)?i:idx,lc=lineCfg(c,li,false)||{},dx=(Number(c.dx)||0)+(Number(lc.dx)||0),dy=(Number(c.dy)||0)+(Number(lc.dy)||0);if(!el.dataset.v368BaseTransform)el.dataset.v368BaseTransform=el.getAttribute('transform')||'__NONE__';const base=el.dataset.v368BaseTransform==='__NONE__'?'':el.dataset.v368BaseTransform,tr=(base?base+' ':'')+((dx||dy)?`translate(${dx} ${dy})`:'');if(tr.trim())el.setAttribute('transform',tr.trim());else el.removeAttribute('transform');const fs=fontOf(f,c,li);if(el.tagName.toLowerCase()==='foreignobject'){const d=el.querySelector('div');if(d)d.style.fontSize=fs+'px'}else if(el.tagName.toLowerCase()==='text')el.setAttribute('font-size',String(fs));setTextAlignment(el,f,c,li)});
+    }else{
+      for(const el of els){if(!el.dataset.v368BaseTransform)el.dataset.v368BaseTransform=el.getAttribute('transform')||'__NONE__';const base=el.dataset.v368BaseTransform==='__NONE__'?'':el.dataset.v368BaseTransform,dx=Number(c.dx)||0,dy=Number(c.dy)||0,tr=(base?base+' ':'')+((dx||dy)?`translate(${dx} ${dy})`:'');if(tr.trim())el.setAttribute('transform',tr.trim());else el.removeAttribute('transform');if(Number(c.fs)>0){if(el.tagName.toLowerCase()==='foreignobject'){const d=el.querySelector('div');if(d)d.style.fontSize=Number(c.fs)+'px'}else if(el.tagName.toLowerCase()==='text')el.setAttribute('font-size',String(c.fs))}if(Number(c.lh)>0&&el.tagName.toLowerCase()==='foreignobject'){const d=el.querySelector('div');if(d)d.style.lineHeight=Number(c.lh)+'px'}setTextAlignment(el,f,c,null)}
+    }
+  }
+  function applyOne(page,key){applyDisplayOne(page,key);applyTouchOne(page,key)}
+  window.v371GetTouchConfig=function(page,key){const c=(currentLayout()||{})[k(page,key)]||{};return{hx:Number(c.hx)||0,hy:Number(c.hy)||0,hw:Number(c.hw)||0,hh:Number(c.hh)||0}};
+  window.v368ApplySavedLayout=function(){const active=currentLayout();const allowed=new Set(allFields().map(f=>Number(f?.page)).filter(Number.isFinite));for(const id of Object.keys(active||{})){const m=id.match(/^(\d+):(.*)$/);if(!m)continue;const page=Number(m[1]),key=m[2];if(!allowed.has(page))continue;applyOne(page,key)}if(mode)buildOverlays()};
+  function eligibleField(f){if(!f||!pages().includes(Number(f.page)))return false;if(f.type==='check'||f.type==='displayCheck'||f.type==='signature')return false;return true}
+  function renderedRect(page,key,fallback){
+    const els=targetEls(page,key,true).filter(el=>!el.classList.contains('v373-line-render'));let x1=Infinity,y1=Infinity,x2=-Infinity,y2=-Infinity,found=false;
+    for(const el of els){try{const b=el.getBBox();if(!b||!Number.isFinite(b.x)||!Number.isFinite(b.y)||!Number.isFinite(b.width)||!Number.isFinite(b.height))continue;if(b.width<=0&&b.height<=0)continue;x1=Math.min(x1,b.x);y1=Math.min(y1,b.y);x2=Math.max(x2,b.x+b.width);y2=Math.max(y2,b.y+b.height);found=true}catch(e){}}
+    if(!found)return fallback;const padX=5,padY=4;let x=x1-padX,y=y1-padY,w=x2-x1+padX*2,h=y2-y1+padY*2;if(w<34){x-=(34-w)/2;w=34}if(h<20){y-=(20-h)/2;h=20}return{x,y,w,h};
+  }
+  function addOverlay(svg,f,r,kind,lineIndex=null){
+    const rect=document.createElementNS('http://www.w3.org/2000/svg','rect'),isSel=selected&&selected.page===Number(f.page)&&selected.key===String(f.key)&&zone===kind&&(kind==='touch'||selected.line===lineIndex);
+    rect.setAttribute('x',r.x);rect.setAttribute('y',r.y);rect.setAttribute('width',Math.max(8,r.w));rect.setAttribute('height',Math.max(8,r.h));rect.setAttribute('class','v368-layout-hit '+kind+'-zone'+(isSel?' selected':''));rect.setAttribute('data-v368-id',k(f.page,f.key));if(lineIndex!==null)rect.setAttribute('data-v373-line',String(lineIndex));
+    if(kind==='display'){const c=cfg(f.page,f.key,false)||{},tr=displayTransform(c,lineIndex);if(tr)rect.setAttribute('transform',tr)}
+    rect.addEventListener('pointerdown',ev=>startDrag(ev,f,rect,kind,lineIndex),{passive:false});rect.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();selectField(f,kind,lineIndex)});svg.appendChild(rect);
+  }
+  function buildOverlays(){
+    for(const page of pages()){
+      const svg=svgFor(page);if(!svg)continue;qa('.v368-layout-hit',svg).forEach(x=>x.remove());
+      for(const f of allFields().filter(x=>Number(x.page)===page)){
+        if(!eligibleField(f))continue;const c=cfg(page,f.key,false)||{},tr=touchRect(f,c);addOverlay(svg,f,tr,'touch',null);
+        if(isMulti(f)){const n=lineCapacity(f);for(let i=0;i<n;i++)addOverlay(svg,f,lineBaseRect(f,i),'display',i)}else{addOverlay(svg,f,renderedRect(page,f.key,absRect(f)),'display',null)}
+      }
+    }
+  }
+  function setZone(z){if(!['display','touch'].includes(z))return;zone=z;if(z==='touch'&&selected)selected.line=null;document.body.classList.toggle('v368-zone-display',z==='display');document.body.classList.toggle('v368-zone-touch',z==='touch');buildOverlays();renderPanel()}
+  function selectField(f,z,lineIndex=null){selected={page:Number(f.page),key:String(f.key),line:(z==='display'&&isMulti(f))?lineIndex:null};if(z)setZone(z);else{buildOverlays();renderPanel()}}
+  function startDrag(ev,f,rect,kind,lineIndex=null){
+    ev.preventDefault();ev.stopPropagation();selected={page:Number(f.page),key:String(f.key),line:(kind==='display'&&isMulti(f))?lineIndex:null};zone=kind;document.body.classList.toggle('v368-zone-display',kind==='display');document.body.classList.toggle('v368-zone-touch',kind==='touch');try{rect.setPointerCapture(ev.pointerId)}catch(e){}
+    const svg=svgFor(f.page),box=svg.getBoundingClientRect(),c=cfg(f.page,f.key,true),cc=(kind==='display'&&lineIndex!==null)?lineCfg(c,lineIndex,true):c;
+    drag={pid:ev.pointerId,page:f.page,key:f.key,line:lineIndex,kind,x:ev.clientX,y:ev.clientY,dx:Number(kind==='display'?cc.dx:c.hx)||0,dy:Number(kind==='display'?cc.dy:c.hy)||0,sx:BASE_W/Math.max(1,box.width),sy:BASE_H/Math.max(1,box.height),rect,f};
+    const move=e=>{if(!drag||e.pointerId!==drag.pid)return;e.preventDefault();const fc=cfg(drag.page,drag.key,true),dc=(drag.kind==='display'&&drag.line!==null)?lineCfg(fc,drag.line,true):fc,nx=Math.round((drag.dx+(e.clientX-drag.x)*drag.sx)*10)/10,ny=Math.round((drag.dy+(e.clientY-drag.y)*drag.sy)*10)/10;if(drag.kind==='display'){dc.dx=nx;dc.dy=ny;applyDisplayOne(drag.page,drag.key)}else{fc.hx=nx;fc.hy=ny;applyTouchOne(drag.page,drag.key)}renderPanel(false)};
     const end=e=>{if(!drag||e.pointerId!==drag.pid)return;try{rect.releasePointerCapture(e.pointerId)}catch(x){}drag=null;rect.removeEventListener('pointermove',move);rect.removeEventListener('pointerup',end);rect.removeEventListener('pointercancel',end);buildOverlays();renderPanel()};
     rect.addEventListener('pointermove',move,{passive:false});rect.addEventListener('pointerup',end,{passive:false});rect.addEventListener('pointercancel',end,{passive:false});renderPanel();
   }
+  function selectedField(){return selected?fieldFor(selected.page,selected.key):null}
+  function selectedDisplayCfg(create=false){if(!selected)return null;const c=cfg(selected.page,selected.key,create);return selected.line!==null&&selected.line!==undefined?lineCfg(c,selected.line,create):c}
   function dirty(){return JSON.stringify(saved)!==JSON.stringify(draft)}
   function status(msg=''){const el=q('#v368LayoutStatus');if(el)el.textContent=msg}
   function renderPanel(full=true){
-    const f=selected?fieldFor(selected.page,selected.key):null,c=f?(cfg(f.page,f.key,false)||{}):{},name=q('#v368LayoutFieldName'),meta=q('#v368LayoutMeta');
+    const f=selectedField(),c=f?(cfg(f.page,f.key,false)||{}):{},dc=f&&zone==='display'?(selectedDisplayCfg(false)||{}):c,name=q('#v368LayoutFieldName'),meta=q('#v368LayoutMeta'),lineLabel=q('#v373LineLabel');
+    const formName=formLabel();const title=q('#v368LayoutTitle');if(title)title.textContent='CĂN CHỈNH · '+formName+' · AD';
     if(name)name.textContent=f?(f.label||f.key):'Chọn CĂN CHẠM hoặc CĂN HIỂN THỊ rồi chạm vùng cần chỉnh';
     if(meta){
-      if(!f)meta.textContent='🟦 xanh = vùng bấm/chạm · 🟪 tím = vùng chữ hiển thị. Hai vùng độc lập và lưu riêng.';
+      if(!f)meta.textContent='🟦 xanh = vùng bấm/chạm · 🟪 tím = từng vùng chữ hiển thị. Ô nhiều dòng có khung riêng cho từng dòng.';
       else if(zone==='touch')meta.textContent=`🟦 CĂN CHẠM · Trang ${f.page} · ${f.key} · X ${Number(c.hx||0).toFixed(1)} · Y ${Number(c.hy||0).toFixed(1)} · Rộng ${Number(c.hw||0)>=0?'+':''}${Number(c.hw||0).toFixed(1)} · Cao ${Number(c.hh||0)>=0?'+':''}${Number(c.hh||0).toFixed(1)}`;
-      else meta.textContent=`🟪 CĂN HIỂN THỊ · Trang ${f.page} · ${f.key} · X ${Number(c.dx||0).toFixed(1)} · Y ${Number(c.dy||0).toFixed(1)} · chữ ${Number(c.fs||baseFont(f.page,f.key)).toFixed(1)}px${baseLine(f.page,f.key)?' · dòng '+Number(c.lh||baseLine(f.page,f.key)).toFixed(1)+'px':''}`;
+      else{const which=selected?.line===null||selected?.line===undefined?'CẢ KHỐI':'DÒNG '+(selected.line+1)+'/'+lineCapacity(f),al=String(dc.align||c.align||f.align||'left').toUpperCase();meta.textContent=`🟪 ${which} · Trang ${f.page} · ${f.key} · X ${Number(dc.dx||0).toFixed(1)} · Y ${Number(dc.dy||0).toFixed(1)} · chữ ${Number(dc.fs||c.fs||baseFont(f.page,f.key)).toFixed(1)}px · ${al}`+(selected?.line===null&&isMulti(f)?` · KC dòng ${Number(c.lh||baseLine(f.page,f.key)).toFixed(1)}px`:'')}
     }
-    q('#v368ZoneDisplay')?.classList.toggle('active',zone==='display');q('#v368ZoneTouch')?.classList.toggle('active',zone==='touch');
-    qa('[data-v368-display-only]').forEach(b=>b.disabled=zone!=='display');qa('[data-v368-touch-only]').forEach(b=>b.disabled=zone!=='touch');
+    if(lineLabel){if(f&&zone==='display'&&isMulti(f))lineLabel.textContent=selected?.line===null||selected?.line===undefined?'CẢ KHỐI':`DÒNG ${selected.line+1}/${lineCapacity(f)}`;else lineLabel.textContent='1 DÒNG'}
+    q('#v368ZoneDisplay')?.classList.toggle('active',zone==='display');q('#v368ZoneTouch')?.classList.toggle('active',zone==='touch');qa('[data-v368-display-only]').forEach(b=>b.disabled=zone!=='display');qa('[data-v368-touch-only]').forEach(b=>b.disabled=zone!=='touch');qa('[data-v373-multi-only]').forEach(b=>b.disabled=!(zone==='display'&&f&&isMulti(f)));qa('[data-v373-block-only]').forEach(b=>b.disabled=!(zone==='display'&&f&&isMulti(f)&&(selected?.line===null||selected?.line===undefined)));
     if(full)status(dirty()?'● Có thay đổi chưa lưu':'');
   }
   function redraw(){try{draw()}catch(e){window.v368ApplySavedLayout()}renderPanel()}
-  function move(dx,dy){if(!canTune()||!selected)return;const c=cfg(selected.page,selected.key,true);if(zone==='touch'){c.hx=Math.round(((Number(c.hx)||0)+dx)*10)/10;c.hy=Math.round(((Number(c.hy)||0)+dy)*10)/10}else{c.dx=Math.round(((Number(c.dx)||0)+dx)*10)/10;c.dy=Math.round(((Number(c.dy)||0)+dy)*10)/10}redraw()}
+  function move(dx,dy){if(!canTune()||!selected)return;if(zone==='touch'){const c=cfg(selected.page,selected.key,true);c.hx=Math.round(((Number(c.hx)||0)+dx)*10)/10;c.hy=Math.round(((Number(c.hy)||0)+dy)*10)/10}else{const dc=selectedDisplayCfg(true);dc.dx=Math.round(((Number(dc.dx)||0)+dx)*10)/10;dc.dy=Math.round(((Number(dc.dy)||0)+dy)*10)/10}redraw()}
   function resizeTouch(dw,dh){if(!canTune()||!selected||zone!=='touch')return;const c=cfg(selected.page,selected.key,true);c.hw=Math.max(-800,Math.min(1200,Math.round(((Number(c.hw)||0)+dw)*10)/10));c.hh=Math.max(-800,Math.min(1200,Math.round(((Number(c.hh)||0)+dh)*10)/10));redraw()}
-  function font(delta){if(!canTune()||!selected||zone!=='display')return;const c=cfg(selected.page,selected.key,true),base=Number.isFinite(Number(c.fs))?Number(c.fs):baseFont(selected.page,selected.key);c.fs=Math.max(7,Math.min(36,Math.round((base+delta)*10)/10));redraw()}
-  function line(delta){if(!canTune()||!selected||zone!=='display')return;const base=baseLine(selected.page,selected.key);if(!base){status('Ô này không phải nội dung nhiều dòng.');return}const c=cfg(selected.page,selected.key,true),cur=Number.isFinite(Number(c.lh))?Number(c.lh):base;c.lh=Math.max(9,Math.min(42,Math.round((cur+delta)*10)/10));redraw()}
-  function resetZone(){if(!canTune()||!selected)return;const id=k(selected.page,selected.key),c=cfg(selected.page,selected.key,true);if(zone==='touch'){delete c.hx;delete c.hy;delete c.hw;delete c.hh}else{delete c.dx;delete c.dy;delete c.fs;delete c.lh}if(!Object.keys(c).length)delete draft[id];redraw();status('Đã khôi phục vùng '+(zone==='touch'?'CHẠM':'HIỂN THỊ')+'. Bấm LƯU để xác nhận.')}
-  function resetField(){if(!canTune()||!selected)return;delete draft[k(selected.page,selected.key)];redraw();status('Đã khôi phục cả vùng CHẠM và HIỂN THỊ của ô này.')}
+  function font(delta){if(!canTune()||!selected||zone!=='display')return;const f=selectedField(),c=cfg(selected.page,selected.key,true),dc=selectedDisplayCfg(true),base=Number(dc.fs)||Number(c.fs)||baseFont(selected.page,selected.key);dc.fs=Math.max(7,Math.min(40,Math.round((base+delta)*10)/10));redraw()}
+  function line(delta){if(!canTune()||!selected||zone!=='display')return;const f=selectedField();if(!f||!isMulti(f)){status('Ô này không phải nội dung nhiều dòng.');return}if(selected.line!==null&&selected.line!==undefined){status('Khoảng cách dòng áp dụng cho CẢ KHỐI. Bấm CẢ KHỐI trước.');return}const c=cfg(selected.page,selected.key,true),cur=Number(c.lh)||baseLine(selected.page,selected.key);c.lh=Math.max(9,Math.min(60,Math.round((cur+delta)*10)/10));redraw()}
+  function setAlign(al){if(!canTune()||!selected||zone!=='display')return;const dc=selectedDisplayCfg(true);dc.align=al;redraw();status('Đã căn '+(al==='left'?'TRÁI':al==='center'?'GIỮA':'PHẢI')+(selected.line!==null&&selected.line!==undefined?' cho dòng '+(selected.line+1):' cho cả ô')+'.')}
+  function lineAll(){if(!selected||zone!=='display')return;const f=selectedField();if(!f||!isMulti(f))return;selected.line=null;buildOverlays();renderPanel()}
+  function lineStep(step){if(!selected||zone!=='display')return;const f=selectedField();if(!f||!isMulti(f))return;const n=lineCapacity(f),cur=selected.line===null||selected.line===undefined?(step>0?-1:0):selected.line;selected.line=Math.max(0,Math.min(n-1,cur+step));buildOverlays();renderPanel()}
+  function resetZone(){if(!canTune()||!selected)return;const id=k(selected.page,selected.key),c=cfg(selected.page,selected.key,true);if(zone==='touch'){delete c.hx;delete c.hy;delete c.hw;delete c.hh}else if(selected.line!==null&&selected.line!==undefined){if(c.lines)delete c.lines[String(selected.line)];cleanFieldCfg(c)}else{delete c.dx;delete c.dy;delete c.fs;delete c.lh;delete c.align;delete c.lines}if(!Object.keys(c).length)delete draft[id];redraw();status('Đã khôi phục '+(zone==='touch'?'vùng CHẠM':(selected.line!==null&&selected.line!==undefined?'DÒNG '+(selected.line+1):'vùng HIỂN THỊ'))+'. Bấm LƯU để xác nhận.')}
+  function resetField(){if(!canTune()||!selected)return;delete draft[k(selected.page,selected.key)];selected.line=null;redraw();status('Đã khôi phục cả vùng CHẠM và HIỂN THỊ của ô này.')}
   function resetForm(){if(!canTune())return;const ps=pages();if(!ps.length||!confirm('Khôi phục toàn bộ vùng CHẠM + HIỂN THỊ của biểu mẫu này về mặc định?'))return;for(const id of Object.keys(draft)){const m=id.match(/^(\d+):/);if(m&&ps.includes(Number(m[1])))delete draft[id]}selected=null;redraw();status('Đã khôi phục toàn bộ biểu mẫu. Bấm LƯU để xác nhận.')}
   function save(){if(!canTune())return alert('Chỉ AD được phép lưu căn chỉnh biểu mẫu.');saveStore();status('✓ ĐÃ LƯU BẢN NHÁP TRÊN MÁY AD');if(typeof showAutoUpdateToast==='function')showAutoUpdateToast('✓ Đã lưu bản nháp layout trên thiết bị')}
   function exportLayoutFile(){
-    if(!canTune())return alert('Chỉ AD được phép xuất cấu hình biểu mẫu.');
-    if(dirty()){if(!confirm('Có thay đổi chưa LƯU. Lưu trước rồi xuất file?'))return;saveStore();}
-    const payload={schema:1,build:'V3.72',publishedAt:Date.now(),forms:['fsags423','fsags551'],fields:clone(saved)};
-    const body='/* SAGS shared form layout · generated by AD · do not edit by hand */\nwindow.SAGS_PUBLISHED_FORM_LAYOUT='+JSON.stringify(payload,null,2)+';\n';
-    const blob=new Blob([body],{type:'text/javascript;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');
-    a.href=url;a.download='form-layout.js';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
-    status('✓ ĐÃ XUẤT form-layout.js · upload file này lên GitHub cùng thư mục index.html');
-    if(typeof showAutoUpdateToast==='function')showAutoUpdateToast('✓ Đã xuất form-layout.js');
+    if(!canTune())return alert('Chỉ AD được phép xuất cấu hình biểu mẫu.');if(dirty()){if(!confirm('Có thay đổi chưa LƯU. Lưu trước rồi xuất file?'))return;saveStore()}
+    const registry={};for(const [g,d] of Object.entries({...FORM_REGISTRY,...CUSTOM_FORMS}))registry[d.id||sanitizeFormId(d.label||g)]={group:g,name:d.label||sanitizeFormId(g),pages:(d.pages||[]).slice()};
+    const cur=inferredFormDef();if(cur&&cur.auto)registry[cur.id]={group:group(),name:cur.label,pages:(cur.pages||[]).slice(),auto:true};
+    const payload={schema:3,build:'V3.75',publishedAt:Date.now(),forms:registry,fields:clone(saved)};const body='/* SAGS shared form layout · generated by AD · do not edit by hand */\nwindow.SAGS_PUBLISHED_FORM_LAYOUT='+JSON.stringify(payload,null,2)+';\n';const blob=new Blob([body],{type:'text/javascript;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='form-layout.js';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);status('✓ ĐÃ XUẤT form-layout.js · tất cả biểu mẫu đã căn được gom chung trong 1 file');if(typeof showAutoUpdateToast==='function')showAutoUpdateToast('✓ Đã xuất form-layout.js · tất cả biểu mẫu')
   }
   function close(discard=false){if(dirty()&&!discard&&!confirm('Có thay đổi chưa lưu. Đóng và bỏ các thay đổi này?'))return;draft=clone(saved);mode=false;selected=null;drag=null;document.body.classList.remove('v368-layout-mode','v368-zone-display','v368-zone-touch');q('#v368LayoutPanel')?.classList.remove('show');q('#v368LayoutTuneBtn')?.classList.remove('active');if(q('#v368LayoutTuneBtn'))q('#v368LayoutTuneBtn').textContent='⚙ CĂN CHỈNH';try{draw()}catch(e){}}
-  function open(){if(!canTune())return alert('Chỉ tài khoản AD được phép căn chỉnh biểu mẫu.');if(!SUPPORTED[String(activeFormGroup||'')])return;draft=clone(saved);mode=true;zone='display';document.body.classList.add('v368-layout-mode','v368-zone-display');document.body.classList.remove('v368-zone-touch');q('#v368LayoutPanel')?.classList.add('show');q('#v368LayoutTuneBtn')?.classList.add('active');if(q('#v368LayoutTuneBtn'))q('#v368LayoutTuneBtn').textContent='✕ ĐANG CĂN';redraw()}
+  function open(){if(!canTune())return alert('Chỉ tài khoản AD được phép căn chỉnh biểu mẫu.');const def=inferredFormDef();if(!def||!def.pages?.length)return alert('Biểu mẫu này chưa có vùng field/SVG để căn chỉnh.');draft=clone(saved);mode=true;zone='display';selected=null;document.body.classList.add('v368-layout-mode','v368-zone-display');document.body.classList.remove('v368-zone-touch');q('#v368LayoutPanel')?.classList.add('show');q('#v368LayoutTuneBtn')?.classList.add('active');if(q('#v368LayoutTuneBtn'))q('#v368LayoutTuneBtn').textContent='✕ ĐANG CĂN';redraw()}
   function toggle(){mode?close():open()}
   function makeUI(){
     if(q('#v368LayoutTuneBtn'))return;const btn=document.createElement('button');btn.id='v368LayoutTuneBtn';btn.type='button';btn.textContent='⚙ CĂN CHỈNH';btn.onclick=toggle;document.body.appendChild(btn);
     const p=document.createElement('div');p.id='v368LayoutPanel';p.innerHTML=`
-      <div class="v368Head"><div><div class="v368Title">CĂN CHỈNH 42.3 / 55.1 · AD</div><div class="v368Hint">Có 2 vùng độc lập: <b>🟦 CĂN CHẠM</b> = nơi người dùng bấm để nhập; <b>🟪 CĂN HIỂN THỊ</b> = vị trí chữ sau khi nhập. Chỉnh vùng nào không làm vùng kia chạy theo.</div></div><button type="button" onclick="v368LayoutClose()">×</button></div>
+      <div class="v368Head"><div><div class="v368Title" id="v368LayoutTitle">CĂN CHỈNH · AD</div><div class="v368Hint"><b>🟦 CĂN CHẠM</b> = vùng bấm nhập. <b>🟪 CĂN HIỂN THỊ</b> = chữ. Ô nhiều dòng tách từng dòng. Form mới có SVG + field sẽ tự nhận.</div></div><button type="button" onclick="v368LayoutClose()">×</button></div>
       <div class="v368ZoneTabs"><button id="v368ZoneTouch" class="v368ZoneTouch" onclick="v371LayoutZone('touch')">🟦 CĂN CHẠM</button><button id="v368ZoneDisplay" class="v368ZoneDisplay active" onclick="v371LayoutZone('display')">🟪 CĂN HIỂN THỊ</button></div>
       <div class="v368Field"><div id="v368LayoutFieldName">Chọn vùng rồi chạm vào ô cần chỉnh</div><div class="v368Meta" id="v368LayoutMeta"></div></div>
-      <div class="v368Grid"><span></span><button onclick="v368LayoutMove(0,-1)">↑</button><span></span><button data-v368-display-only onclick="v368LayoutFont(-1)">A−</button><button data-v368-display-only onclick="v368LayoutFont(1)">A+</button><button onclick="v368LayoutMove(-1,0)">←</button><button onclick="v368LayoutMove(0,1)">↓</button><button onclick="v368LayoutMove(1,0)">→</button><button data-v368-display-only onclick="v368LayoutLine(-1)">DÒNG−</button><button data-v368-display-only onclick="v368LayoutLine(1)">DÒNG+</button></div>
+      <div class="v368Rows three"><button data-v368-display-only data-v373-multi-only onclick="v373LineAll()">CẢ KHỐI</button><button data-v368-display-only data-v373-multi-only onclick="v373LineStep(-1)">◀ DÒNG</button><button data-v368-display-only data-v373-multi-only onclick="v373LineStep(1)">DÒNG ▶</button></div>
+      <div class="v368Field" style="padding:5px 8px;margin-top:5px;text-align:center"><span id="v373LineLabel">1 DÒNG</span></div>
+      <div class="v368Grid"><span></span><button onclick="v368LayoutMove(0,-1)">↑</button><span></span><button data-v368-display-only onclick="v368LayoutFont(-1)">A−</button><button data-v368-display-only onclick="v368LayoutFont(1)">A+</button><button onclick="v368LayoutMove(-1,0)">←</button><button onclick="v368LayoutMove(0,1)">↓</button><button onclick="v368LayoutMove(1,0)">→</button><button data-v368-display-only data-v373-block-only onclick="v368LayoutLine(-1)">KC−</button><button data-v368-display-only data-v373-block-only onclick="v368LayoutLine(1)">KC+</button></div>
+      <div class="v368Rows three"><button data-v368-display-only onclick="v373LayoutAlign('left')">⬅ TRÁI</button><button data-v368-display-only onclick="v373LayoutAlign('center')">↔ GIỮA</button><button data-v368-display-only onclick="v373LayoutAlign('right')">PHẢI ➡</button></div>
       <div class="v368Grid"><button data-v368-touch-only onclick="v371LayoutResize(-2,0)">RỘNG−</button><button data-v368-touch-only onclick="v371LayoutResize(2,0)">RỘNG+</button><span></span><button data-v368-touch-only onclick="v371LayoutResize(0,-2)">CAO−</button><button data-v368-touch-only onclick="v371LayoutResize(0,2)">CAO+</button></div>
-      <div class="v368Rows three"><button class="danger" onclick="v371LayoutResetZone()">RESET VÙNG</button><button class="danger" onclick="v368LayoutResetField()">RESET Ô</button><button class="danger" onclick="v368LayoutResetForm()">RESET FORM</button></div>
+      <div class="v368Rows three"><button class="danger" onclick="v371LayoutResetZone()">RESET VÙNG/DÒNG</button><button class="danger" onclick="v368LayoutResetField()">RESET Ô</button><button class="danger" onclick="v368LayoutResetForm()">RESET FORM</button></div>
       <div class="v368Rows"><button onclick="v368LayoutClose()">ĐÓNG</button><button class="save" onclick="v368LayoutSave()">💾 LƯU NHÁP</button></div>
       <div class="v368Rows"><button class="save" style="grid-column:1/-1" onclick="v372LayoutExport()">📦 XUẤT FILE form-layout.js</button></div>
       <div class="v368Status" id="v368LayoutStatus"></div>`;
     document.body.appendChild(p);window.v368RefreshTuneButton();renderPanel();
   }
-  window.v368RefreshTuneButton=function(){const b=q('#v368LayoutTuneBtn');if(!b)return;const ok=canTune()&&!!SUPPORTED[String(activeFormGroup||'')];b.style.display=ok?'block':'none';if(!ok&&mode)close(true)};
-  window.v371LayoutZone=setZone;window.v371LayoutResize=resizeTouch;window.v371LayoutResetZone=resetZone;
-  window.v368LayoutMove=move;window.v368LayoutFont=font;window.v368LayoutLine=line;window.v368LayoutResetField=resetField;window.v368LayoutResetForm=resetForm;window.v368LayoutSave=save;window.v372LayoutExport=exportLayoutFile;window.v368LayoutClose=()=>close(false);
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{makeUI();setTimeout(()=>{try{draw()}catch(e){}},50)});else{makeUI();setTimeout(()=>{try{draw()}catch(e){}},50)}
+  window.v368RefreshTuneButton=function(){const b=q('#v368LayoutTuneBtn');if(!b)return;const def=inferredFormDef(),ok=canTune()&&!!def&&Array.isArray(def.pages)&&def.pages.length>0;b.style.display=ok?'block':'none';if(!ok&&mode)close(true)};
+  window.v371LayoutZone=setZone;window.v371LayoutResize=resizeTouch;window.v371LayoutResetZone=resetZone;window.v368LayoutMove=move;window.v368LayoutFont=font;window.v368LayoutLine=line;window.v368LayoutResetField=resetField;window.v368LayoutResetForm=resetForm;window.v368LayoutSave=save;window.v372LayoutExport=exportLayoutFile;window.v368LayoutClose=()=>close(false);window.v373LayoutAlign=setAlign;window.v373LineAll=lineAll;window.v373LineStep=lineStep;
+  let lastObservedGroup='';function autoRefreshForm(){const g=group();if(g!==lastObservedGroup){lastObservedGroup=g;try{window.v368RefreshTuneButton?.();if(mode){selected=null;redraw()}}catch(e){}}}
+  setInterval(autoRefreshForm,700);
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{makeUI();setTimeout(()=>{try{draw()}catch(e){};autoRefreshForm()},50)});else{makeUI();setTimeout(()=>{try{draw()}catch(e){};autoRefreshForm()},50)}
 })();
+
 </script>
 
 </body>
