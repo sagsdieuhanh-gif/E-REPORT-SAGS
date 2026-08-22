@@ -2172,7 +2172,7 @@ body.role-viewer #ffSendBtn{
 </div>
 <div id="rsOverdueHost"></div>
 
-<script src="./app.js?v=V3.75" data-phase="qr"></script>
+<script src="./app.js?v=V3.76" data-phase="qr"></script>
 <style>
 /* ===== V6.3.5 FINAL RECEIVER SCROLL + PERFORMANCE ===== */
 #finalFormsModal{
@@ -2813,6 +2813,9 @@ user-select:none;-webkit-user-select:none;touch-action:none;-webkit-tap-highligh
 .v368-layout-hit.touch-zone{fill:rgba(2,132,199,.07);stroke:#0284c7;stroke-width:2;stroke-dasharray:4 4}
 .v368-layout-hit.display-zone.selected{fill:rgba(220,38,38,.10);stroke:#dc2626;stroke-width:2.8;stroke-dasharray:none}
 .v368-layout-hit.touch-zone.selected{fill:rgba(14,116,144,.16);stroke:#0e7490;stroke-width:3;stroke-dasharray:none}
+.v368-layout-hit.zone-off{fill:rgba(220,38,38,.10)!important;stroke:#dc2626!important;stroke-width:2.6!important;stroke-dasharray:3 3!important}
+#v368LayoutPanel button.toggle-on{background:#065f46!important;color:#fff!important;border-color:#065f46!important}
+#v368LayoutPanel button.toggle-off{background:#b42318!important;color:#fff!important;border-color:#b42318!important}
 body.v368-layout-mode.v368-zone-display .v368-layout-hit.display-zone{pointer-events:all}
 body.v368-layout-mode.v368-zone-display .v368-layout-hit.touch-zone{pointer-events:none;opacity:.48}
 body.v368-layout-mode.v368-zone-touch .v368-layout-hit.touch-zone{pointer-events:all}
@@ -3091,7 +3094,7 @@ body.v368-layout-mode .sheet{outline:2px dashed rgba(124,58,237,.35);outline-off
   </div>
 </div>
 
-<div id="buildMarker">V3.75</div>
+<div id="buildMarker">V3.76</div>
 <div aria-live="polite" id="currentFerryFlag"><span class="dot"></span><span id="currentFerryFlagText">FERRY</span></div>
 <div class="toolbar compact-main-toolbar">
 <div class="badge">PĐH SAGS-CXR</div>
@@ -3108,7 +3111,7 @@ body.v368-layout-mode .sheet{outline:2px dashed rgba(124,58,237,.35);outline-off
 <button class="fs09QuickBtn" id="readSignQuickBtn" onclick="openReadSignManager()">READ &amp; SIGN<span class="fs09NotifyBadge readSignNotifyBadge" id="readSignNotifyBadge" style="display:none">0</span></button>
 <button class="scannerQuickBtn" id="roleBtnScanner" onclick="openCamScanner()" style="display:none">📄 CAMSCANER</button>
 <button id="roleBtnSignature" onclick="openTemplateMenu()">Chữ Kí</button>
-<button id="roleBtnManualBBBT" onclick="v18OpenManualBBBT()" style="display:none">BBBT</button>
+<button id="roleBtnManualBBBT" onclick="v18OpenManualBBBT()" style="display:none;font-weight:900;border:2px solid #b42318;background:#fff1f0;color:#b42318">➕ TẠO BBBT</button>
 <button class="finalFormsQuickBtn" id="finalFormsQuickBtn" onclick="openFinalSheetManager()">FINAL</button>
 <button id="roleBtnExport" onclick="openExportChoiceMenu()">Xuất</button>
 <button id="roleBtnHandover" onclick="openHandoverMenu()">Giao Ca</button>
@@ -3140,7 +3143,9 @@ body.v368-layout-mode .sheet{outline:2px dashed rgba(124,58,237,.35);outline-off
 <button onclick="closeUpdateInfo()" aria-label="Đóng" style="border:0;background:#eee;border-radius:50%;width:34px;height:34px;font-size:21px;line-height:30px">×</button>
 </div>
 <div style="padding:11px 12px;border:1px solid #b7d7ef;border-radius:11px;background:#eef7ff">
-<p style="margin:0 0 6px;color:#075985"><b>V3.75 · 22/08/2026 — HOTFIX KIỂM TRA / THÔNG BÁO CẬP NHẬT</b></p>
+<p style="margin:0 0 6px;color:#075985"><b>V3.76 · 22/08/2026 — FULL FORM EDITOR CHO AD + TẠO BBBT THỦ CÔNG</b></p>
+<p style="margin:4px 0">• AD có thể <b>TẮT/BẬT vùng chạm</b>, <b>ẨN/HIỆN vùng hiển thị</b>, chỉnh chữ thường/đậm/nghiêng/gạch chân, font, căn trái/giữa/phải, từng dòng hoặc cả khối.</p>
+<p style="margin:4px 0">• Thanh công cụ AD có nút <b>➕ TẠO BBBT</b> để tạo BBBT thủ công không cần chọn chuyến trước.</p>
 <p style="margin:4px 0">• <b>⚙ CĂN CHỈNH</b> mở cho <b>FSAGS42.3 / FSAGS42.1 / FSAGS55.1 / FSAGS09 / FSAGS208 / BBBT</b>, chỉ tài khoản <b>AD</b> được chỉnh. Form mới có SVG + field sẽ tự được nhận diện để AD căn chỉnh.</p>
 <p style="margin:4px 0">• Ô nhiều dòng có <b>khung HIỂN THỊ riêng từng dòng</b>; có CẢ KHỐI / DÒNG trước-sau và <b>CĂN TRÁI / GIỮA / PHẢI</b>. Tên panel/export dùng đúng tên biểu mẫu (FSAGS09, FSAGS208...).</p>
 <p style="margin:4px 0">• <b>LƯU</b> = bản nháp trên máy AD. <b>XUẤT FILE</b> = tạo form-layout.js để đưa lên GitHub. Nhân viên tự nhận layout từ file này; không dùng Firebase.</p>
@@ -3152,7 +3157,7 @@ body.v368-layout-mode .sheet{outline:2px dashed rgba(124,58,237,.35);outline-off
 </div>
 <details style="margin-top:10px;padding:9px 11px;border:1px solid #dbe4eb;border-radius:10px;background:#fafcfd">
 <summary style="cursor:pointer;font-weight:800;color:#334155">Lưu ý sau khi cập nhật</summary>
-<p style="margin:8px 0 0">Dữ liệu hồ sơ nghiệp vụ trên Firebase không bị xóa. Chỉ cập nhật khi người dùng bấm CẬP NHẬT và chờ nhãn góc trái hiện V3.75.</p>
+<p style="margin:8px 0 0">Dữ liệu hồ sơ nghiệp vụ trên Firebase không bị xóa. Chỉ cập nhật khi người dùng bấm CẬP NHẬT và chờ nhãn góc trái hiện V3.76.</p>
 </details>
 <button onclick="closeUpdateInfo()" style="width:100%;margin-top:12px;border:0;border-radius:10px;padding:10px 14px;background:#0b67b2;color:#fff;font-weight:800">ĐÓNG</button>
 </div>
@@ -4124,7 +4129,7 @@ body.v368-layout-mode .sheet{outline:2px dashed rgba(124,58,237,.35);outline-off
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
-<script src="./app.js?v=V3.75" data-phase="config"></script>
+<script src="./app.js?v=V3.76" data-phase="config"></script>
 <script>
 let suppressModalClickUntil=0;
 function armModalGhostClickBlock(ms=650){
@@ -7045,7 +7050,7 @@ function draw(){
       : [{x:a.x-px,y:a.y-py,w:a.w+px*2,h:a.h+py*2}];
 
     for(const hrBase of hitRects){
-      // V3.75: touch zone is independent from displayed text. Apply device-local
+      // V3.76: touch zone is independent from displayed text. Apply device-local
       // touch calibration (hx/hy/hw/hh) to the REAL hit rectangle used in normal mode.
       let tc={};
       try{
@@ -7221,7 +7226,7 @@ function draw(){
 
 
   /* =========================================================
-     V3.75 — FSAGS 42.3 DOT-LINE DISPLAY ENGINE
+     V3.76 — FSAGS 42.3 DOT-LINE DISPLAY ENGINE
      IMPORTANT:
      - These printed rows are NOT ordinary input boxes. Their dotted guides
        sit inside the same visual row as the labels.
@@ -7484,7 +7489,7 @@ function draw(){
     continue;
   }
 
-  // V4.78 legacy DEP Remarks renderer (V3.75 handles this earlier via measured dot-line engine).
+  // V4.78 legacy DEP Remarks renderer (V3.76 handles this earlier via measured dot-line engine).
   // Safari/iOS intermittently fails to paint HTML inside SVG foreignObject after
   // the editor closes, even though state is saved and PDF export still contains it.
   // Render this one-line printed Remarks field directly as SVG <text> so live view
@@ -12271,8 +12276,8 @@ try {
   alert("Lỗi JavaScript: "+err.message);
 }
 
-const APP_BUILD_VERSION="V3.75-20260822-01";
-const APP_DISPLAY_VERSION="V3.75";
+const APP_BUILD_VERSION="V3.76-20260822-01";
+const APP_DISPLAY_VERSION="V3.76";
 
 // V4.21 — SAFE UPDATE SAVE
 // Before switching to a newly installed app version, force-save all current
@@ -21094,7 +21099,7 @@ function applyRoleUI(){
   // Nếu ứng dụng được mở từ QR Giao Ca, xử lý sau khi đã xác định tài khoản.
   setTimeout(tryOpenPendingHandoverDeepLink,120);
 
-  // V3.75: nút căn chỉnh tất cả biểu mẫu chỉ dành cho AD; form mới tự nhận diện khi có SVG + field.
+  // V3.76: nút căn chỉnh tất cả biểu mẫu chỉ dành cho AD; form mới tự nhận diện khi có SVG + field.
   try{if(typeof window.v368RefreshTuneButton==="function")window.v368RefreshTuneButton();}catch(e){}
 
   // V6.4.0: Sau đăng nhập KHÔNG tự mở bất kỳ màn chức năng nào.
@@ -24089,7 +24094,7 @@ function v18ResetManualBBBT(){if(!confirm("Tạo BBBT mới? Dữ liệu BBBT đ
 window.v18OpenManualBBBT=v18OpenManualBBBT;window.v18CloseManualBBBTMeta=v18CloseManualBBBTMeta;window.v18SaveManualBBBTMeta=v18SaveManualBBBTMeta;window.v18ResetManualBBBT=v18ResetManualBBBT;
 
 // Final UI pass: PVHK has no FINAL; manual BBBT roles get a dedicated BBBT button and export only BBBT.
-const v18ApplyRoleUIBase=applyRoleUI;applyRoleUI=function(){v18ApplyRoleUIBase();const r=String(currentRole||"").toUpperCase(),manual=v18ManualBBBTRole(),pvsd=["PVHLNG","VHTTB","VSTB","KTTB","PVHLSD"].includes(r);roleSetVisible("roleBtnManualBBBT",manual||r==="AD");if(pvsd||r==="LOSTFOUND")roleSetVisible("roleBtnSignature",true);if(manual){roleSetVisible("roleBtnFlights",false);roleSetVisible("fs09QuickBtn",false);roleSetVisible("khQuickBtn",false);roleSetVisible("finalFormsQuickBtn",false);roleSetVisible("roleBtnHandover",false);roleSetVisible("roleBtnNA",false);roleSetVisible("roleBtnNew",false);roleSetVisible("roleBtnExport",typeof v485Can==="function"?v485Can("EXPORT_RAMP"):true);roleSetVisible("roleBtnSignature",true);}if(r==="PVHK")roleSetVisible("finalFormsQuickBtn",false);const badge=document.getElementById("roleStatusBadge");if(badge&&currentUserProfile?.name){const dep=v18LegacyDept(currentUserProfile,r),group=v18InferGroup(currentUserProfile,r);badge.textContent=currentUserProfile.name+" • "+v18RoleLabel(r);badge.title=`${v18DeptLabel(dep)} · ${group} · ${v18RoleCode(r,currentUserProfile)}`;}};window.applyRoleUI=applyRoleUI;
+const v18ApplyRoleUIBase=applyRoleUI;applyRoleUI=function(){v18ApplyRoleUIBase();const r=String(currentRole||"").toUpperCase(),manual=v18ManualBBBTRole(),pvsd=["PVHLNG","VHTTB","VSTB","KTTB","PVHLSD"].includes(r);roleSetVisible("roleBtnManualBBBT",manual||r==="AD");if(r==="AD"){const mb=document.getElementById("roleBtnManualBBBT");if(mb){mb.textContent="➕ TẠO BBBT";mb.style.display="";}}if(pvsd||r==="LOSTFOUND")roleSetVisible("roleBtnSignature",true);if(manual){roleSetVisible("roleBtnFlights",false);roleSetVisible("fs09QuickBtn",false);roleSetVisible("khQuickBtn",false);roleSetVisible("finalFormsQuickBtn",false);roleSetVisible("roleBtnHandover",false);roleSetVisible("roleBtnNA",false);roleSetVisible("roleBtnNew",false);roleSetVisible("roleBtnExport",typeof v485Can==="function"?v485Can("EXPORT_RAMP"):true);roleSetVisible("roleBtnSignature",true);}if(r==="PVHK")roleSetVisible("finalFormsQuickBtn",false);const badge=document.getElementById("roleStatusBadge");if(badge&&currentUserProfile?.name){const dep=v18LegacyDept(currentUserProfile,r),group=v18InferGroup(currentUserProfile,r);badge.textContent=currentUserProfile.name+" • "+v18RoleLabel(r);badge.title=`${v18DeptLabel(dep)} · ${group} · ${v18RoleCode(r,currentUserProfile)}`;}};window.applyRoleUI=applyRoleUI;
 const v18OpenExportChoiceBase=openExportChoiceMenu;openExportChoiceMenu=function(){if(v18ManualBBBTRole()&&v485Can("BBBT"))return sendReport("bbbt");return v18OpenExportChoiceBase();};window.openExportChoiceMenu=openExportChoiceMenu;
 
 // Keep personal sessions enriched with canonical hierarchy after login/permission refresh where possible.
@@ -24272,7 +24277,7 @@ window.openCamScanner=openCamScanner;
 <script type="module" src="./ai.js?v=V3.58"></script>
 
 
-<script src="./app.js?v=V3.75" data-phase="archive"></script>
+<script src="./app.js?v=V3.76" data-phase="archive"></script>
 <script id="v120-build02-fixes">
 /* V1.20 BUILD 02 — background persistence, VHTTB, per-account usage detail, progress dedupe. */
 (function(){
@@ -24713,7 +24718,7 @@ window.openCamScanner=openCamScanner;
 
 
 
-<script src="./app.js?v=V3.75" data-phase="tools"></script>
+<script src="./app.js?v=V3.76" data-phase="tools"></script>
 <script id="v173-quick-time">
 (function(){
   "use strict";
@@ -26769,7 +26774,7 @@ window.openCamScanner=openCamScanner;
 }
 </style>
 
-<script src="./app.js?v=V3.75" data-phase="flight"></script>
+<script src="./app.js?v=V3.76" data-phase="flight"></script>
 <script id="v191IOSInteractionFix">
 (()=>{
   'use strict';
@@ -27033,7 +27038,7 @@ window.openCamScanner=openCamScanner;
 })();
 </script>
 
-<script src="./app.js?v=V3.75" data-phase="control"></script>
+<script src="./app.js?v=V3.76" data-phase="control"></script>
 
 <style id="v330-group-permission-style">
 #v330GroupPermPanel{margin:12px 0 8px;padding:11px;border:1px solid #cbd9e6;border-radius:12px;background:#f7fbff;box-sizing:border-box}
@@ -27280,17 +27285,33 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <script src="./closeout-final-autofill-v344.js?v=V3.59"></script>
 
 
+
+<script id="v376AdminManualBBBTScript">
+/* V3.76 — AD always has a visible manual BBBT creation button. */
+(function(){
+  function isAD(){try{return String(window.currentRole||currentRole||'').toUpperCase()==='AD'}catch(e){return false}}
+  function refresh(){
+    const b=document.getElementById('roleBtnManualBBBT');if(!b)return;
+    if(isAD()){b.style.display='';b.textContent='➕ TẠO BBBT';b.title='Tạo biểu mẫu BBBT thủ công, không cần chọn chuyến trước';}
+  }
+  window.v376RefreshAdminManualBBBT=refresh;
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{refresh();setTimeout(refresh,250);setTimeout(refresh,1200)});else{refresh();setTimeout(refresh,250)}
+  setInterval(refresh,1200);
+})();
+</script>
+
 <script src="./form-layout.js" data-sags-layout-config onerror="this.remove()"></script>
 
 <script id="v368LayoutTuneScript">
 /* =========================================================
-   V3.75 — UNIVERSAL / PER-LINE DUAL LAYOUT TUNER · AD ONLY
+   V3.76 — FULL FORM EDITOR · AD ONLY
    Built-in: FSAGS42.3 / FSAGS42.1 / FSAGS55.1 / FSAGS09 / FSAGS208 / BBBT.
    Future forms: automatically discovered from the active form's visible SVG pages + field definitions.
    - TOUCH zone: one independent click/tap region per field.
    - DISPLAY zone: single-line fields or per-line frames for multiline fields.
-   - Per line: X/Y, font, LEFT/CENTER/RIGHT.
-   - Whole block: X/Y, font, line spacing, alignment.
+   - Per line: X/Y, font, LEFT/CENTER/RIGHT, bold/italic/underline, hide/show.
+   - Whole block: X/Y, font, line spacing, alignment, font style, hide/show.
+   - TOUCH can be disabled/enabled independently; DISPLAY can be hidden/shown independently.
    - AD draft is local; published layout comes from form-layout.js.
    ========================================================= */
 (function(){
@@ -27412,6 +27433,16 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   function displayTransform(c,i){const lc=i===null||i===undefined?null:lineCfg(c,i,false),dx=(Number(c?.dx)||0)+(Number(lc?.dx)||0),dy=(Number(c?.dy)||0)+(Number(lc?.dy)||0);return(dx||dy)?`translate(${dx} ${dy})`:''}
   function alignOf(f,c,i){const lc=i===null||i===undefined?null:lineCfg(c,i,false);return String(lc?.align||c?.align||f.align||'left').toLowerCase()}
   function fontOf(f,c,i){const lc=i===null||i===undefined?null:lineCfg(c,i,false);return Number(lc?.fs)||Number(c?.fs)||baseFont(f.page,f.key)||Number(f.font)||16}
+  function styleCfg(c,i){return i===null||i===undefined?c:(lineCfg(c,i,false)||{})}
+  function weightOf(c,i){const sc=styleCfg(c,i);const v=sc?.weight??c?.weight;return String(v||'700')}
+  function italicOf(c,i){const sc=styleCfg(c,i);return sc?.italic!==undefined?!!sc.italic:!!c?.italic}
+  function underlineOf(c,i){const sc=styleCfg(c,i);return sc?.underline!==undefined?!!sc.underline:!!c?.underline}
+  function hiddenOf(c,i){if(c?.hidden===true)return true;const sc=styleCfg(c,i);return i!==null&&i!==undefined&&sc?.hidden===true}
+  function applyTypography(el,c,i){
+    const weight=weightOf(c,i),italic=italicOf(c,i),underline=underlineOf(c,i);
+    if(el.tagName.toLowerCase()==='foreignobject'){const d=el.querySelector('div');if(d){d.style.fontWeight=weight;d.style.fontStyle=italic?'italic':'normal';d.style.textDecoration=underline?'underline':'none'}}
+    else{el.setAttribute('font-weight',weight);el.setAttribute('font-style',italic?'italic':'normal');if(underline)el.setAttribute('text-decoration','underline');else el.removeAttribute('text-decoration')}
+  }
   function textState(key){try{return String((window.state||state||{})[key]??'')}catch(e){return ''}}
   function wrapText(text,width,fs){
     const cvs=(window.__v373Measure ||= document.createElement('canvas')),ctx=cvs.getContext('2d');ctx.font=`700 ${fs}px "Times New Roman"`;const out=[];
@@ -27431,7 +27462,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     const made=[];
     for(let i=0;i<count;i++){
       const lc=lineCfg(c,i,false)||{},fs=Number(lc.fs)||globalFs,al=alignOf(f,c,i),r=lineBaseRect(f,i),x=al==='center'?r.x+r.w/2:(al==='right'?r.x+r.w-3:r.x+3),y=r.y+Math.min(r.h-2,Math.max(fs,fs*.88+2));
-      const t=document.createElementNS('http://www.w3.org/2000/svg','text');t.setAttribute('x',String(x));t.setAttribute('y',String(y));t.setAttribute('class','value manual-value v373-line-render '+(al==='center'?'center':'left'));t.setAttribute('font-size',String(fs));t.setAttribute('font-weight','700');t.setAttribute('text-anchor',al==='center'?'middle':(al==='right'?'end':'start'));t.setAttribute('dominant-baseline','alphabetic');t.setAttribute('data-field-key',f.key);t.setAttribute('data-v373-line-index',String(i));t.style.pointerEvents='none';t.textContent=lines[i]||'';svg.appendChild(t);made.push(t);
+      const t=document.createElementNS('http://www.w3.org/2000/svg','text');t.setAttribute('x',String(x));t.setAttribute('y',String(y));t.setAttribute('class','value manual-value v373-line-render '+(al==='center'?'center':'left'));t.setAttribute('font-size',String(fs));t.setAttribute('text-anchor',al==='center'?'middle':(al==='right'?'end':'start'));t.setAttribute('dominant-baseline','alphabetic');t.setAttribute('data-field-key',f.key);t.setAttribute('data-v373-line-index',String(i));t.style.pointerEvents='none';applyTypography(t,c,i);if(hiddenOf(c,i))t.style.opacity='0';t.textContent=lines[i]||'';svg.appendChild(t);made.push(t);
     }
     return made;
   }
@@ -27452,17 +27483,33 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     }
   }
   function applyTouchOne(page,key){
-    const c=cfg(page,key,false)||{},hx=Number(c.hx)||0,hy=Number(c.hy)||0,hw=Number(c.hw)||0,hh=Number(c.hh)||0;
-    for(const hit of realHitEls(page,key)){const bx=Number(hit.dataset.v371BaseX),by=Number(hit.dataset.v371BaseY),bw=Number(hit.dataset.v371BaseW),bh=Number(hit.dataset.v371BaseH);if(![bx,by,bw,bh].every(Number.isFinite))continue;const w=Math.max(8,bw+hw),h=Math.max(8,bh+hh);hit.setAttribute('x',String(bx+hx-(w-bw)/2));hit.setAttribute('y',String(by+hy-(h-bh)/2));hit.setAttribute('width',String(w));hit.setAttribute('height',String(h))}
-    const f=fieldFor(page,key),ov=q('.v368-layout-hit.touch-zone[data-v368-id="'+CSS.escape(k(page,key))+'"]');if(f&&ov){const r=touchRect(f,c);ov.setAttribute('x',r.x);ov.setAttribute('y',r.y);ov.setAttribute('width',r.w);ov.setAttribute('height',r.h)}
+    const c=cfg(page,key,false)||{},hx=Number(c.hx)||0,hy=Number(c.hy)||0,hw=Number(c.hw)||0,hh=Number(c.hh)||0,disabled=c.touchDisabled===true;
+    for(const hit of realHitEls(page,key)){
+      const bx=Number(hit.dataset.v371BaseX),by=Number(hit.dataset.v371BaseY),bw=Number(hit.dataset.v371BaseW),bh=Number(hit.dataset.v371BaseH);if(![bx,by,bw,bh].every(Number.isFinite))continue;
+      const w=Math.max(8,bw+hw),h=Math.max(8,bh+hh);hit.setAttribute('x',String(bx+hx-(w-bw)/2));hit.setAttribute('y',String(by+hy-(h-bh)/2));hit.setAttribute('width',String(w));hit.setAttribute('height',String(h));
+      hit.style.pointerEvents=disabled?'none':'';hit.dataset.v376TouchDisabled=disabled?'1':'0';
+    }
+    const f=fieldFor(page,key),ov=q('.v368-layout-hit.touch-zone[data-v368-id="'+CSS.escape(k(page,key))+'"]');if(f&&ov){const r=touchRect(f,c);ov.setAttribute('x',r.x);ov.setAttribute('y',r.y);ov.setAttribute('width',r.w);ov.setAttribute('height',r.h);ov.classList.toggle('zone-off',disabled)}
   }
   function applyDisplayOne(page,key){
     const f=fieldFor(page,key);if(!f)return;const c=cfg(page,key,false)||{},els=lineTargets(f,c),multi=isMulti(f);
     if(multi&&hasLineOverrides(c)&&els.length){
-      els.forEach((el,idx)=>{const i=Number(el.getAttribute('data-v373-line-index'));const li=Number.isFinite(i)?i:idx,lc=lineCfg(c,li,false)||{},dx=(Number(c.dx)||0)+(Number(lc.dx)||0),dy=(Number(c.dy)||0)+(Number(lc.dy)||0);if(!el.dataset.v368BaseTransform)el.dataset.v368BaseTransform=el.getAttribute('transform')||'__NONE__';const base=el.dataset.v368BaseTransform==='__NONE__'?'':el.dataset.v368BaseTransform,tr=(base?base+' ':'')+((dx||dy)?`translate(${dx} ${dy})`:'');if(tr.trim())el.setAttribute('transform',tr.trim());else el.removeAttribute('transform');const fs=fontOf(f,c,li);if(el.tagName.toLowerCase()==='foreignobject'){const d=el.querySelector('div');if(d)d.style.fontSize=fs+'px'}else if(el.tagName.toLowerCase()==='text')el.setAttribute('font-size',String(fs));setTextAlignment(el,f,c,li)});
+      els.forEach((el,idx)=>{
+        const i=Number(el.getAttribute('data-v373-line-index'));const li=Number.isFinite(i)?i:idx,lc=lineCfg(c,li,false)||{},dx=(Number(c.dx)||0)+(Number(lc.dx)||0),dy=(Number(c.dy)||0)+(Number(lc.dy)||0);
+        if(!el.dataset.v368BaseTransform)el.dataset.v368BaseTransform=el.getAttribute('transform')||'__NONE__';const base=el.dataset.v368BaseTransform==='__NONE__'?'':el.dataset.v368BaseTransform,tr=(base?base+' ':'')+((dx||dy)?`translate(${dx} ${dy})`:'');if(tr.trim())el.setAttribute('transform',tr.trim());else el.removeAttribute('transform');
+        const fs=fontOf(f,c,li);if(el.tagName.toLowerCase()==='foreignobject'){const d=el.querySelector('div');if(d)d.style.fontSize=fs+'px'}else if(el.tagName.toLowerCase()==='text')el.setAttribute('font-size',String(fs));
+        setTextAlignment(el,f,c,li);applyTypography(el,c,li);el.style.opacity=hiddenOf(c,li)?'0':'';
+      });
     }else{
-      for(const el of els){if(!el.dataset.v368BaseTransform)el.dataset.v368BaseTransform=el.getAttribute('transform')||'__NONE__';const base=el.dataset.v368BaseTransform==='__NONE__'?'':el.dataset.v368BaseTransform,dx=Number(c.dx)||0,dy=Number(c.dy)||0,tr=(base?base+' ':'')+((dx||dy)?`translate(${dx} ${dy})`:'');if(tr.trim())el.setAttribute('transform',tr.trim());else el.removeAttribute('transform');if(Number(c.fs)>0){if(el.tagName.toLowerCase()==='foreignobject'){const d=el.querySelector('div');if(d)d.style.fontSize=Number(c.fs)+'px'}else if(el.tagName.toLowerCase()==='text')el.setAttribute('font-size',String(c.fs))}if(Number(c.lh)>0&&el.tagName.toLowerCase()==='foreignobject'){const d=el.querySelector('div');if(d)d.style.lineHeight=Number(c.lh)+'px'}setTextAlignment(el,f,c,null)}
+      for(const el of els){
+        if(!el.dataset.v368BaseTransform)el.dataset.v368BaseTransform=el.getAttribute('transform')||'__NONE__';const base=el.dataset.v368BaseTransform==='__NONE__'?'':el.dataset.v368BaseTransform,dx=Number(c.dx)||0,dy=Number(c.dy)||0,tr=(base?base+' ':'')+((dx||dy)?`translate(${dx} ${dy})`:'');if(tr.trim())el.setAttribute('transform',tr.trim());else el.removeAttribute('transform');
+        if(Number(c.fs)>0){if(el.tagName.toLowerCase()==='foreignobject'){const d=el.querySelector('div');if(d)d.style.fontSize=Number(c.fs)+'px'}else if(el.tagName.toLowerCase()==='text')el.setAttribute('font-size',String(c.fs))}
+        if(Number(c.lh)>0&&el.tagName.toLowerCase()==='foreignobject'){const d=el.querySelector('div');if(d)d.style.lineHeight=Number(c.lh)+'px'}
+        setTextAlignment(el,f,c,null);applyTypography(el,c,null);el.style.opacity=c.hidden===true?'0':'';
+      }
     }
+    // Keep tuner display overlays selectable even when the printed value is hidden.
+    const overlayBase='.v368-layout-hit.display-zone[data-v368-id="'+CSS.escape(k(page,key))+'"]';qa(overlayBase).forEach(ov=>{const li=ov.hasAttribute('data-v373-line')?Number(ov.getAttribute('data-v373-line')):null;ov.classList.toggle('zone-off',hiddenOf(c,li))});
   }
   function applyOne(page,key){applyDisplayOne(page,key);applyTouchOne(page,key)}
   window.v371GetTouchConfig=function(page,key){const c=(currentLayout()||{})[k(page,key)]||{};return{hx:Number(c.hx)||0,hy:Number(c.hy)||0,hw:Number(c.hw)||0,hh:Number(c.hh)||0}};
@@ -27474,8 +27521,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     if(!found)return fallback;const padX=5,padY=4;let x=x1-padX,y=y1-padY,w=x2-x1+padX*2,h=y2-y1+padY*2;if(w<34){x-=(34-w)/2;w=34}if(h<20){y-=(20-h)/2;h=20}return{x,y,w,h};
   }
   function addOverlay(svg,f,r,kind,lineIndex=null){
-    const rect=document.createElementNS('http://www.w3.org/2000/svg','rect'),isSel=selected&&selected.page===Number(f.page)&&selected.key===String(f.key)&&zone===kind&&(kind==='touch'||selected.line===lineIndex);
-    rect.setAttribute('x',r.x);rect.setAttribute('y',r.y);rect.setAttribute('width',Math.max(8,r.w));rect.setAttribute('height',Math.max(8,r.h));rect.setAttribute('class','v368-layout-hit '+kind+'-zone'+(isSel?' selected':''));rect.setAttribute('data-v368-id',k(f.page,f.key));if(lineIndex!==null)rect.setAttribute('data-v373-line',String(lineIndex));
+    const rect=document.createElementNS('http://www.w3.org/2000/svg','rect'),isSel=selected&&selected.page===Number(f.page)&&selected.key===String(f.key)&&zone===kind&&(kind==='touch'||selected.line===lineIndex),cc=cfg(f.page,f.key,false)||{},isOff=kind==='touch'?cc.touchDisabled===true:hiddenOf(cc,lineIndex);
+    rect.setAttribute('x',r.x);rect.setAttribute('y',r.y);rect.setAttribute('width',Math.max(8,r.w));rect.setAttribute('height',Math.max(8,r.h));rect.setAttribute('class','v368-layout-hit '+kind+'-zone'+(isSel?' selected':'')+(isOff?' zone-off':''));rect.setAttribute('data-v368-id',k(f.page,f.key));if(lineIndex!==null)rect.setAttribute('data-v373-line',String(lineIndex));
     if(kind==='display'){const c=cfg(f.page,f.key,false)||{},tr=displayTransform(c,lineIndex);if(tr)rect.setAttribute('transform',tr)}
     rect.addEventListener('pointerdown',ev=>startDrag(ev,f,rect,kind,lineIndex),{passive:false});rect.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();selectField(f,kind,lineIndex)});svg.appendChild(rect);
   }
@@ -27508,8 +27555,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     if(name)name.textContent=f?(f.label||f.key):'Chọn CĂN CHẠM hoặc CĂN HIỂN THỊ rồi chạm vùng cần chỉnh';
     if(meta){
       if(!f)meta.textContent='🟦 xanh = vùng bấm/chạm · 🟪 tím = từng vùng chữ hiển thị. Ô nhiều dòng có khung riêng cho từng dòng.';
-      else if(zone==='touch')meta.textContent=`🟦 CĂN CHẠM · Trang ${f.page} · ${f.key} · X ${Number(c.hx||0).toFixed(1)} · Y ${Number(c.hy||0).toFixed(1)} · Rộng ${Number(c.hw||0)>=0?'+':''}${Number(c.hw||0).toFixed(1)} · Cao ${Number(c.hh||0)>=0?'+':''}${Number(c.hh||0).toFixed(1)}`;
-      else{const which=selected?.line===null||selected?.line===undefined?'CẢ KHỐI':'DÒNG '+(selected.line+1)+'/'+lineCapacity(f),al=String(dc.align||c.align||f.align||'left').toUpperCase();meta.textContent=`🟪 ${which} · Trang ${f.page} · ${f.key} · X ${Number(dc.dx||0).toFixed(1)} · Y ${Number(dc.dy||0).toFixed(1)} · chữ ${Number(dc.fs||c.fs||baseFont(f.page,f.key)).toFixed(1)}px · ${al}`+(selected?.line===null&&isMulti(f)?` · KC dòng ${Number(c.lh||baseLine(f.page,f.key)).toFixed(1)}px`:'')}
+      else if(zone==='touch')meta.textContent=`🟦 CĂN CHẠM · ${c.touchDisabled?'ĐANG TẮT':'ĐANG BẬT'} · Trang ${f.page} · ${f.key} · X ${Number(c.hx||0).toFixed(1)} · Y ${Number(c.hy||0).toFixed(1)} · Rộng ${Number(c.hw||0)>=0?'+':''}${Number(c.hw||0).toFixed(1)} · Cao ${Number(c.hh||0)>=0?'+':''}${Number(c.hh||0).toFixed(1)}`;
+      else{const which=selected?.line===null||selected?.line===undefined?'CẢ KHỐI':'DÒNG '+(selected.line+1)+'/'+lineCapacity(f),al=String(dc.align||c.align||f.align||'left').toUpperCase(),w=weightOf(c,selected?.line),it=italicOf(c,selected?.line),un=underlineOf(c,selected?.line),hi=hiddenOf(c,selected?.line);meta.textContent=`🟪 ${which} · ${hi?'ĐANG ẨN':'ĐANG HIỆN'} · Trang ${f.page} · ${f.key} · X ${Number(dc.dx||0).toFixed(1)} · Y ${Number(dc.dy||0).toFixed(1)} · chữ ${Number(dc.fs||c.fs||baseFont(f.page,f.key)).toFixed(1)}px · ${al} · ${w==='700'?'ĐẬM':'THƯỜNG'}${it?' · NGHIÊNG':''}${un?' · GẠCH CHÂN':''}`+(selected?.line===null&&isMulti(f)?` · KC dòng ${Number(c.lh||baseLine(f.page,f.key)).toFixed(1)}px`:'')}
     }
     if(lineLabel){if(f&&zone==='display'&&isMulti(f))lineLabel.textContent=selected?.line===null||selected?.line===undefined?'CẢ KHỐI':`DÒNG ${selected.line+1}/${lineCapacity(f)}`;else lineLabel.textContent='1 DÒNG'}
     q('#v368ZoneDisplay')?.classList.toggle('active',zone==='display');q('#v368ZoneTouch')?.classList.toggle('active',zone==='touch');qa('[data-v368-display-only]').forEach(b=>b.disabled=zone!=='display');qa('[data-v368-touch-only]').forEach(b=>b.disabled=zone!=='touch');qa('[data-v373-multi-only]').forEach(b=>b.disabled=!(zone==='display'&&f&&isMulti(f)));qa('[data-v373-block-only]').forEach(b=>b.disabled=!(zone==='display'&&f&&isMulti(f)&&(selected?.line===null||selected?.line===undefined)));
@@ -27521,9 +27568,14 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   function font(delta){if(!canTune()||!selected||zone!=='display')return;const f=selectedField(),c=cfg(selected.page,selected.key,true),dc=selectedDisplayCfg(true),base=Number(dc.fs)||Number(c.fs)||baseFont(selected.page,selected.key);dc.fs=Math.max(7,Math.min(40,Math.round((base+delta)*10)/10));redraw()}
   function line(delta){if(!canTune()||!selected||zone!=='display')return;const f=selectedField();if(!f||!isMulti(f)){status('Ô này không phải nội dung nhiều dòng.');return}if(selected.line!==null&&selected.line!==undefined){status('Khoảng cách dòng áp dụng cho CẢ KHỐI. Bấm CẢ KHỐI trước.');return}const c=cfg(selected.page,selected.key,true),cur=Number(c.lh)||baseLine(selected.page,selected.key);c.lh=Math.max(9,Math.min(60,Math.round((cur+delta)*10)/10));redraw()}
   function setAlign(al){if(!canTune()||!selected||zone!=='display')return;const dc=selectedDisplayCfg(true);dc.align=al;redraw();status('Đã căn '+(al==='left'?'TRÁI':al==='center'?'GIỮA':'PHẢI')+(selected.line!==null&&selected.line!==undefined?' cho dòng '+(selected.line+1):' cho cả ô')+'.')}
+  function toggleTouch(){if(!canTune()||!selected)return;const c=cfg(selected.page,selected.key,true);c.touchDisabled=!c.touchDisabled;redraw();status(c.touchDisabled?'Đã TẮT vùng chạm. Nhân viên sẽ không bấm nhập được ô này.':'Đã BẬT lại vùng chạm.')}
+  function toggleDisplay(){if(!canTune()||!selected||zone!=='display')return;const dc=selectedDisplayCfg(true);dc.hidden=!dc.hidden;redraw();status(dc.hidden?'Đã ẨN vùng hiển thị'+(selected.line!==null&&selected.line!==undefined?' dòng '+(selected.line+1):'')+'. Dữ liệu vẫn được giữ.':'Đã HIỆN lại vùng hiển thị.')}
+  function setWeight(weight){if(!canTune()||!selected||zone!=='display')return;const dc=selectedDisplayCfg(true);dc.weight=String(weight);redraw();status(weight==='700'?'Đã IN ĐẬM chữ.':'Đã chuyển chữ về THƯỜNG.')}
+  function toggleItalic(){if(!canTune()||!selected||zone!=='display')return;const dc=selectedDisplayCfg(true);dc.italic=!dc.italic;redraw();status(dc.italic?'Đã BẬT chữ nghiêng.':'Đã TẮT chữ nghiêng.')}
+  function toggleUnderline(){if(!canTune()||!selected||zone!=='display')return;const dc=selectedDisplayCfg(true);dc.underline=!dc.underline;redraw();status(dc.underline?'Đã BẬT gạch chân.':'Đã TẮT gạch chân.')}
   function lineAll(){if(!selected||zone!=='display')return;const f=selectedField();if(!f||!isMulti(f))return;selected.line=null;buildOverlays();renderPanel()}
   function lineStep(step){if(!selected||zone!=='display')return;const f=selectedField();if(!f||!isMulti(f))return;const n=lineCapacity(f),cur=selected.line===null||selected.line===undefined?(step>0?-1:0):selected.line;selected.line=Math.max(0,Math.min(n-1,cur+step));buildOverlays();renderPanel()}
-  function resetZone(){if(!canTune()||!selected)return;const id=k(selected.page,selected.key),c=cfg(selected.page,selected.key,true);if(zone==='touch'){delete c.hx;delete c.hy;delete c.hw;delete c.hh}else if(selected.line!==null&&selected.line!==undefined){if(c.lines)delete c.lines[String(selected.line)];cleanFieldCfg(c)}else{delete c.dx;delete c.dy;delete c.fs;delete c.lh;delete c.align;delete c.lines}if(!Object.keys(c).length)delete draft[id];redraw();status('Đã khôi phục '+(zone==='touch'?'vùng CHẠM':(selected.line!==null&&selected.line!==undefined?'DÒNG '+(selected.line+1):'vùng HIỂN THỊ'))+'. Bấm LƯU để xác nhận.')}
+  function resetZone(){if(!canTune()||!selected)return;const id=k(selected.page,selected.key),c=cfg(selected.page,selected.key,true);if(zone==='touch'){delete c.hx;delete c.hy;delete c.hw;delete c.hh;delete c.touchDisabled}else if(selected.line!==null&&selected.line!==undefined){if(c.lines)delete c.lines[String(selected.line)];cleanFieldCfg(c)}else{delete c.dx;delete c.dy;delete c.fs;delete c.lh;delete c.align;delete c.weight;delete c.italic;delete c.underline;delete c.hidden;delete c.lines}if(!Object.keys(c).length)delete draft[id];redraw();status('Đã khôi phục '+(zone==='touch'?'vùng CHẠM':(selected.line!==null&&selected.line!==undefined?'DÒNG '+(selected.line+1):'vùng HIỂN THỊ'))+'. Bấm LƯU để xác nhận.')}
   function resetField(){if(!canTune()||!selected)return;delete draft[k(selected.page,selected.key)];selected.line=null;redraw();status('Đã khôi phục cả vùng CHẠM và HIỂN THỊ của ô này.')}
   function resetForm(){if(!canTune())return;const ps=pages();if(!ps.length||!confirm('Khôi phục toàn bộ vùng CHẠM + HIỂN THỊ của biểu mẫu này về mặc định?'))return;for(const id of Object.keys(draft)){const m=id.match(/^(\d+):/);if(m&&ps.includes(Number(m[1])))delete draft[id]}selected=null;redraw();status('Đã khôi phục toàn bộ biểu mẫu. Bấm LƯU để xác nhận.')}
   function save(){if(!canTune())return alert('Chỉ AD được phép lưu căn chỉnh biểu mẫu.');saveStore();status('✓ ĐÃ LƯU BẢN NHÁP TRÊN MÁY AD');if(typeof showAutoUpdateToast==='function')showAutoUpdateToast('✓ Đã lưu bản nháp layout trên thiết bị')}
@@ -27531,7 +27583,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     if(!canTune())return alert('Chỉ AD được phép xuất cấu hình biểu mẫu.');if(dirty()){if(!confirm('Có thay đổi chưa LƯU. Lưu trước rồi xuất file?'))return;saveStore()}
     const registry={};for(const [g,d] of Object.entries({...FORM_REGISTRY,...CUSTOM_FORMS}))registry[d.id||sanitizeFormId(d.label||g)]={group:g,name:d.label||sanitizeFormId(g),pages:(d.pages||[]).slice()};
     const cur=inferredFormDef();if(cur&&cur.auto)registry[cur.id]={group:group(),name:cur.label,pages:(cur.pages||[]).slice(),auto:true};
-    const payload={schema:3,build:'V3.75',publishedAt:Date.now(),forms:registry,fields:clone(saved)};const body='/* SAGS shared form layout · generated by AD · do not edit by hand */\nwindow.SAGS_PUBLISHED_FORM_LAYOUT='+JSON.stringify(payload,null,2)+';\n';const blob=new Blob([body],{type:'text/javascript;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='form-layout.js';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);status('✓ ĐÃ XUẤT form-layout.js · tất cả biểu mẫu đã căn được gom chung trong 1 file');if(typeof showAutoUpdateToast==='function')showAutoUpdateToast('✓ Đã xuất form-layout.js · tất cả biểu mẫu')
+    const payload={schema:4,build:'V3.76',publishedAt:Date.now(),forms:registry,fields:clone(saved)};const body='/* SAGS shared form layout · generated by AD · do not edit by hand */\nwindow.SAGS_PUBLISHED_FORM_LAYOUT='+JSON.stringify(payload,null,2)+';\n';const blob=new Blob([body],{type:'text/javascript;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='form-layout.js';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);status('✓ ĐÃ XUẤT form-layout.js · tất cả biểu mẫu đã căn được gom chung trong 1 file');if(typeof showAutoUpdateToast==='function')showAutoUpdateToast('✓ Đã xuất form-layout.js · tất cả biểu mẫu')
   }
   function close(discard=false){if(dirty()&&!discard&&!confirm('Có thay đổi chưa lưu. Đóng và bỏ các thay đổi này?'))return;draft=clone(saved);mode=false;selected=null;drag=null;document.body.classList.remove('v368-layout-mode','v368-zone-display','v368-zone-touch');q('#v368LayoutPanel')?.classList.remove('show');q('#v368LayoutTuneBtn')?.classList.remove('active');if(q('#v368LayoutTuneBtn'))q('#v368LayoutTuneBtn').textContent='⚙ CĂN CHỈNH';try{draw()}catch(e){}}
   function open(){if(!canTune())return alert('Chỉ tài khoản AD được phép căn chỉnh biểu mẫu.');const def=inferredFormDef();if(!def||!def.pages?.length)return alert('Biểu mẫu này chưa có vùng field/SVG để căn chỉnh.');draft=clone(saved);mode=true;zone='display';selected=null;document.body.classList.add('v368-layout-mode','v368-zone-display');document.body.classList.remove('v368-zone-touch');q('#v368LayoutPanel')?.classList.add('show');q('#v368LayoutTuneBtn')?.classList.add('active');if(q('#v368LayoutTuneBtn'))q('#v368LayoutTuneBtn').textContent='✕ ĐANG CĂN';redraw()}
@@ -27539,14 +27591,17 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   function makeUI(){
     if(q('#v368LayoutTuneBtn'))return;const btn=document.createElement('button');btn.id='v368LayoutTuneBtn';btn.type='button';btn.textContent='⚙ CĂN CHỈNH';btn.onclick=toggle;document.body.appendChild(btn);
     const p=document.createElement('div');p.id='v368LayoutPanel';p.innerHTML=`
-      <div class="v368Head"><div><div class="v368Title" id="v368LayoutTitle">CĂN CHỈNH · AD</div><div class="v368Hint"><b>🟦 CĂN CHẠM</b> = vùng bấm nhập. <b>🟪 CĂN HIỂN THỊ</b> = chữ. Ô nhiều dòng tách từng dòng. Form mới có SVG + field sẽ tự nhận.</div></div><button type="button" onclick="v368LayoutClose()">×</button></div>
+      <div class="v368Head"><div><div class="v368Title" id="v368LayoutTitle">CĂN CHỈNH · AD</div><div class="v368Hint"><b>🟦 CĂN CHẠM</b> = kéo/đổi kích thước/tắt vùng nhập. <b>🟪 CĂN HIỂN THỊ</b> = vị trí + font + đậm/nghiêng/gạch chân + ẩn/hiện. Ô nhiều dòng chỉnh từng dòng. Form mới tự nhận.</div></div><button type="button" onclick="v368LayoutClose()">×</button></div>
       <div class="v368ZoneTabs"><button id="v368ZoneTouch" class="v368ZoneTouch" onclick="v371LayoutZone('touch')">🟦 CĂN CHẠM</button><button id="v368ZoneDisplay" class="v368ZoneDisplay active" onclick="v371LayoutZone('display')">🟪 CĂN HIỂN THỊ</button></div>
       <div class="v368Field"><div id="v368LayoutFieldName">Chọn vùng rồi chạm vào ô cần chỉnh</div><div class="v368Meta" id="v368LayoutMeta"></div></div>
       <div class="v368Rows three"><button data-v368-display-only data-v373-multi-only onclick="v373LineAll()">CẢ KHỐI</button><button data-v368-display-only data-v373-multi-only onclick="v373LineStep(-1)">◀ DÒNG</button><button data-v368-display-only data-v373-multi-only onclick="v373LineStep(1)">DÒNG ▶</button></div>
       <div class="v368Field" style="padding:5px 8px;margin-top:5px;text-align:center"><span id="v373LineLabel">1 DÒNG</span></div>
       <div class="v368Grid"><span></span><button onclick="v368LayoutMove(0,-1)">↑</button><span></span><button data-v368-display-only onclick="v368LayoutFont(-1)">A−</button><button data-v368-display-only onclick="v368LayoutFont(1)">A+</button><button onclick="v368LayoutMove(-1,0)">←</button><button onclick="v368LayoutMove(0,1)">↓</button><button onclick="v368LayoutMove(1,0)">→</button><button data-v368-display-only data-v373-block-only onclick="v368LayoutLine(-1)">KC−</button><button data-v368-display-only data-v373-block-only onclick="v368LayoutLine(1)">KC+</button></div>
       <div class="v368Rows three"><button data-v368-display-only onclick="v373LayoutAlign('left')">⬅ TRÁI</button><button data-v368-display-only onclick="v373LayoutAlign('center')">↔ GIỮA</button><button data-v368-display-only onclick="v373LayoutAlign('right')">PHẢI ➡</button></div>
+      <div class="v368Rows three"><button data-v368-display-only onclick="v376LayoutWeight('400')">CHỮ THƯỜNG</button><button data-v368-display-only onclick="v376LayoutWeight('700')"><b>IN ĐẬM</b></button><button data-v368-display-only onclick="v376LayoutItalic()"><i>NGHIÊNG</i></button></div>
+      <div class="v368Rows"><button data-v368-display-only onclick="v376LayoutUnderline()"><u>GẠCH CHÂN</u></button><button data-v368-display-only onclick="v376LayoutToggleDisplay()">👁 ẨN / HIỆN CHỮ</button></div>
       <div class="v368Grid"><button data-v368-touch-only onclick="v371LayoutResize(-2,0)">RỘNG−</button><button data-v368-touch-only onclick="v371LayoutResize(2,0)">RỘNG+</button><span></span><button data-v368-touch-only onclick="v371LayoutResize(0,-2)">CAO−</button><button data-v368-touch-only onclick="v371LayoutResize(0,2)">CAO+</button></div>
+      <div class="v368Rows"><button data-v368-touch-only class="danger" onclick="v376LayoutToggleTouch()">🖐 TẮT / BẬT VÙNG CHẠM</button><button data-v368-display-only class="danger" onclick="v376LayoutToggleDisplay()">✕ XÓA / KHÔI PHỤC HIỂN THỊ</button></div>
       <div class="v368Rows three"><button class="danger" onclick="v371LayoutResetZone()">RESET VÙNG/DÒNG</button><button class="danger" onclick="v368LayoutResetField()">RESET Ô</button><button class="danger" onclick="v368LayoutResetForm()">RESET FORM</button></div>
       <div class="v368Rows"><button onclick="v368LayoutClose()">ĐÓNG</button><button class="save" onclick="v368LayoutSave()">💾 LƯU NHÁP</button></div>
       <div class="v368Rows"><button class="save" style="grid-column:1/-1" onclick="v372LayoutExport()">📦 XUẤT FILE form-layout.js</button></div>
@@ -27554,7 +27609,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     document.body.appendChild(p);window.v368RefreshTuneButton();renderPanel();
   }
   window.v368RefreshTuneButton=function(){const b=q('#v368LayoutTuneBtn');if(!b)return;const def=inferredFormDef(),ok=canTune()&&!!def&&Array.isArray(def.pages)&&def.pages.length>0;b.style.display=ok?'block':'none';if(!ok&&mode)close(true)};
-  window.v371LayoutZone=setZone;window.v371LayoutResize=resizeTouch;window.v371LayoutResetZone=resetZone;window.v368LayoutMove=move;window.v368LayoutFont=font;window.v368LayoutLine=line;window.v368LayoutResetField=resetField;window.v368LayoutResetForm=resetForm;window.v368LayoutSave=save;window.v372LayoutExport=exportLayoutFile;window.v368LayoutClose=()=>close(false);window.v373LayoutAlign=setAlign;window.v373LineAll=lineAll;window.v373LineStep=lineStep;
+  window.v371LayoutZone=setZone;window.v371LayoutResize=resizeTouch;window.v371LayoutResetZone=resetZone;window.v368LayoutMove=move;window.v368LayoutFont=font;window.v368LayoutLine=line;window.v368LayoutResetField=resetField;window.v368LayoutResetForm=resetForm;window.v368LayoutSave=save;window.v372LayoutExport=exportLayoutFile;window.v368LayoutClose=()=>close(false);window.v373LayoutAlign=setAlign;window.v373LineAll=lineAll;window.v373LineStep=lineStep;window.v376LayoutToggleTouch=toggleTouch;window.v376LayoutToggleDisplay=toggleDisplay;window.v376LayoutWeight=setWeight;window.v376LayoutItalic=toggleItalic;window.v376LayoutUnderline=toggleUnderline;
   let lastObservedGroup='';function autoRefreshForm(){const g=group();if(g!==lastObservedGroup){lastObservedGroup=g;try{window.v368RefreshTuneButton?.();if(mode){selected=null;redraw()}}catch(e){}}}
   setInterval(autoRefreshForm,700);
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{makeUI();setTimeout(()=>{try{draw()}catch(e){};autoRefreshForm()},50)});else{makeUI();setTimeout(()=>{try{draw()}catch(e){};autoRefreshForm()},50)}
