@@ -1,9 +1,9 @@
 {
-  "version": "V3.76",
-  "displayVersion": "V3.76",
-  "label": "V3.76",
-  "build": "V3.76-20260822-01",
-  "releasedAt": "2026-08-22T10:15:00Z",
-  "notes": "Hotfix update detection: version.json is shipped with every release; the app now shows a visible pending-update notice while GitHub Pages/CDN is still propagating index.html, then enables update automatically once the runnable build is available. Universal AD layout tuner from V3.74 is preserved.",
-  "message": "V3.76 · Full Form Editor cho AD + nút TẠO BBBT thủ công cho AD."
+  "version": "V3.77",
+  "displayVersion": "V3.77",
+  "label": "V3.77",
+  "build": "V3.77-20260822-01",
+  "releasedAt": "2026-08-22T10:58:00Z",
+  "notes": "AD tools UI: a dedicated row under the bottom toolbar contains TẠO BIỂU MẪU and CĂN CHỈNH. The create menu includes FSAGS42.3, FSAGS42.1, FSAGS55.1, FSAGS09, FSAGS208, BBBT and FINAL. Layout editor remains AD-only.",
+  "message": "V3.77 · Tạo tất cả biểu mẫu + Căn chỉnh nằm ngay dưới thanh công cụ AD."
 }

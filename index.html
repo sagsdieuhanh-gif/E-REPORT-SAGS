@@ -2172,7 +2172,7 @@ body.role-viewer #ffSendBtn{
 </div>
 <div id="rsOverdueHost"></div>
 
-<script src="./app.js?v=V3.76" data-phase="qr"></script>
+<script src="./app.js?v=V3.77" data-phase="qr"></script>
 <style>
 /* ===== V6.3.5 FINAL RECEIVER SCROLL + PERFORMANCE ===== */
 #finalFormsModal{
@@ -2825,6 +2825,28 @@ body.v368-layout-mode .sheet{outline:2px dashed rgba(124,58,237,.35);outline-off
 @media(max-width:600px){#v368LayoutPanel{bottom:116px;max-height:62vh}#v368LayoutTuneBtn{bottom:68px;padding:9px 12px}}
 </style>
 
+
+<style id="v377AdminFormToolsStyle">
+.v377AdminFormToolsRow{display:grid;grid-template-columns:minmax(150px,1fr) minmax(150px,1fr);gap:6px;padding-top:5px;border-top:1px solid rgba(255,255,255,.25);min-width:0}
+.v377AdminFormToolsRow>button,.v377LayoutTuneSlot>button{width:100%;min-height:36px!important;border:1px solid rgba(255,255,255,.45)!important;border-radius:9px!important;padding:6px 10px!important;font:900 12px/1 Arial!important;white-space:nowrap!important}
+#v377CreateFormBtn{background:#fff1f0!important;color:#9f1b12!important;border-color:#ffb4ab!important}
+.v377LayoutTuneSlot{min-width:0}
+#v368LayoutTuneBtn{position:static!important;right:auto!important;bottom:auto!important;z-index:auto!important;width:100%!important;min-height:36px!important;border-radius:9px!important;padding:6px 10px!important;box-shadow:none!important;margin:0!important;background:#7c3aed!important;color:#fff!important;font:900 12px/1 Arial!important}
+#v368LayoutTuneBtn.active{background:#dc2626!important}
+body.v377-ad-form-tools{padding-bottom:126px!important}
+body.v377-ad-form-tools #v368LayoutPanel{bottom:132px!important}
+.v377CreateFormModal{position:fixed;inset:0;z-index:70000;background:rgba(0,0,0,.55);align-items:center;justify-content:center;padding:14px;box-sizing:border-box}
+.v377CreateFormCard{width:min(94vw,560px);max-height:88vh;overflow:auto;background:#fff;border-radius:16px;padding:14px;box-shadow:0 16px 44px rgba(0,0,0,.35);font-family:Arial,sans-serif}
+.v377CreateFormHead{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;color:#003B8E;margin-bottom:10px}
+.v377CreateFormHead b{display:block;font-size:19px}.v377CreateFormHead small{display:block;margin-top:3px;color:#65758b;font-weight:700}.v377CreateFormHead>button{border:0;background:#eef2f6;border-radius:9px;width:38px;height:38px;font:900 22px Arial;color:#344054}
+.v377CreateFormGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.v377CreateFormGrid button{min-height:68px;border:1px solid #b8c8d8;border-radius:11px;background:#f8fbff;color:#173b5f;padding:9px;text-align:left;touch-action:manipulation}
+.v377CreateFormGrid strong{display:block;font:900 15px Arial;color:#0057a6}.v377CreateFormGrid span{display:block;margin-top:4px;font:700 10px/1.3 Arial;color:#667085}
+.v377CreateFormNote{margin-top:10px;padding:8px 9px;border-radius:9px;background:#fff7e6;color:#774d00;font:700 11px/1.35 Arial}
+.v377CreateFormClose{width:100%;margin-top:9px;min-height:39px;border:0;border-radius:9px;background:#173b5f;color:#fff;font-weight:900}
+@media(max-width:600px){.v377AdminFormToolsRow{grid-template-columns:1fr 1fr;gap:5px}.v377AdminFormToolsRow>button,.v377LayoutTuneSlot>button,#v368LayoutTuneBtn{font-size:10.5px!important;padding:5px 6px!important;min-height:34px!important}.v377CreateFormGrid{grid-template-columns:1fr}.v377CreateFormGrid button{min-height:58px}body.v377-ad-form-tools{padding-bottom:118px!important}body.v377-ad-form-tools #v368LayoutPanel{bottom:124px!important}}
+@media print{.v377AdminFormToolsRow,#v377CreateFormModal{display:none!important}}
+</style>
 </head>
 <!-- FINAL PAX AUTO KG ACTIVE:
      VJ = ADL 75 / CHD 35 / INF 8
@@ -3094,7 +3116,7 @@ body.v368-layout-mode .sheet{outline:2px dashed rgba(124,58,237,.35);outline-off
   </div>
 </div>
 
-<div id="buildMarker">V3.76</div>
+<div id="buildMarker">V3.77</div>
 <div aria-live="polite" id="currentFerryFlag"><span class="dot"></span><span id="currentFerryFlagText">FERRY</span></div>
 <div class="toolbar compact-main-toolbar">
 <div class="badge">PĐH SAGS-CXR</div>
@@ -3111,7 +3133,6 @@ body.v368-layout-mode .sheet{outline:2px dashed rgba(124,58,237,.35);outline-off
 <button class="fs09QuickBtn" id="readSignQuickBtn" onclick="openReadSignManager()">READ &amp; SIGN<span class="fs09NotifyBadge readSignNotifyBadge" id="readSignNotifyBadge" style="display:none">0</span></button>
 <button class="scannerQuickBtn" id="roleBtnScanner" onclick="openCamScanner()" style="display:none">📄 CAMSCANER</button>
 <button id="roleBtnSignature" onclick="openTemplateMenu()">Chữ Kí</button>
-<button id="roleBtnManualBBBT" onclick="v18OpenManualBBBT()" style="display:none;font-weight:900;border:2px solid #b42318;background:#fff1f0;color:#b42318">➕ TẠO BBBT</button>
 <button class="finalFormsQuickBtn" id="finalFormsQuickBtn" onclick="openFinalSheetManager()">FINAL</button>
 <button id="roleBtnExport" onclick="openExportChoiceMenu()">Xuất</button>
 <button id="roleBtnHandover" onclick="openHandoverMenu()">Giao Ca</button>
@@ -3124,6 +3145,26 @@ body.v368-layout-mode .sheet{outline:2px dashed rgba(124,58,237,.35);outline-off
 <button id="roleBtnNA" onclick="fillBlankNA()">N/A</button>
 <button id="roleBtnNew" onclick="newReport()">Tạo Mới</button>
 </div>
+<div id="v377AdminFormToolsRow" class="v377AdminFormToolsRow" style="display:none">
+  <button id="v377CreateFormBtn" type="button" onclick="v377OpenCreateFormMenu()">➕ TẠO BIỂU MẪU</button>
+  <div id="v377LayoutTuneSlot" class="v377LayoutTuneSlot"></div>
+</div>
+</div>
+<div id="v377CreateFormModal" class="v377CreateFormModal" style="display:none" role="dialog" aria-modal="true" aria-label="Tạo biểu mẫu">
+  <div class="v377CreateFormCard">
+    <div class="v377CreateFormHead"><div><b>➕ TẠO BIỂU MẪU</b><small>AD · chọn đúng tên biểu mẫu cần tạo/mở mới</small></div><button type="button" onclick="v377CloseCreateFormMenu()">×</button></div>
+    <div class="v377CreateFormGrid">
+      <button onclick="v377CreateBlankForm('fsags','FSAGS42.3')"><strong>FSAGS42.3</strong><span>Tạo trắng trong hồ sơ hiện tại</span></button>
+      <button onclick="v377CreateBlankForm('fsags421','FSAGS42.1')"><strong>FSAGS42.1</strong><span>Tạo trắng trong hồ sơ hiện tại</span></button>
+      <button onclick="v377CreateBlankForm('fsags551','FSAGS55.1')"><strong>FSAGS55.1</strong><span>Tạo trắng trong hồ sơ hiện tại</span></button>
+      <button onclick="v377CreateFS09()"><strong>FSAGS09</strong><span>Tạo / quản lý tờ độc lập</span></button>
+      <button onclick="v377CreateFS208()"><strong>FSAGS208</strong><span>Tạo / quản lý tờ Kho Hàng</span></button>
+      <button onclick="v377CreateBBBT()"><strong>BBBT</strong><span>Tạo thủ công</span></button>
+      <button onclick="v377CreateFINAL()"><strong>FINAL</strong><span>Tạo / quản lý FINAL</span></button>
+    </div>
+    <div class="v377CreateFormNote">Các nút FSAGS42.3 / 42.1 / 55.1 chỉ xóa dữ liệu của đúng biểu mẫu được chọn sau khi AD xác nhận; không xóa biểu mẫu khác.</div>
+    <button class="v377CreateFormClose" type="button" onclick="v377CloseCreateFormMenu()">ĐÓNG</button>
+  </div>
 </div>
 <div id="appUpdateModal" style="display:none;position:fixed;inset:0;z-index:13050;background:rgba(0,0,0,.50);align-items:center;justify-content:center;padding:14px;box-sizing:border-box">
 <div style="width:min(92vw,430px);background:#fff;border-radius:16px;padding:18px;box-sizing:border-box;font:14px Arial;line-height:1.45;box-shadow:0 14px 38px rgba(0,0,0,.30)">
@@ -3143,10 +3184,10 @@ body.v368-layout-mode .sheet{outline:2px dashed rgba(124,58,237,.35);outline-off
 <button onclick="closeUpdateInfo()" aria-label="Đóng" style="border:0;background:#eee;border-radius:50%;width:34px;height:34px;font-size:21px;line-height:30px">×</button>
 </div>
 <div style="padding:11px 12px;border:1px solid #b7d7ef;border-radius:11px;background:#eef7ff">
-<p style="margin:0 0 6px;color:#075985"><b>V3.76 · 22/08/2026 — FULL FORM EDITOR CHO AD + TẠO BBBT THỦ CÔNG</b></p>
+<p style="margin:0 0 6px;color:#075985"><b>V3.77 · 22/08/2026 — AD FORM TOOLS: TẠO TẤT CẢ BIỂU MẪU + CĂN CHỈNH DƯỚI TOOLBAR</b></p>
 <p style="margin:4px 0">• AD có thể <b>TẮT/BẬT vùng chạm</b>, <b>ẨN/HIỆN vùng hiển thị</b>, chỉnh chữ thường/đậm/nghiêng/gạch chân, font, căn trái/giữa/phải, từng dòng hoặc cả khối.</p>
-<p style="margin:4px 0">• Thanh công cụ AD có nút <b>➕ TẠO BBBT</b> để tạo BBBT thủ công không cần chọn chuyến trước.</p>
-<p style="margin:4px 0">• <b>⚙ CĂN CHỈNH</b> mở cho <b>FSAGS42.3 / FSAGS42.1 / FSAGS55.1 / FSAGS09 / FSAGS208 / BBBT</b>, chỉ tài khoản <b>AD</b> được chỉnh. Form mới có SVG + field sẽ tự được nhận diện để AD căn chỉnh.</p>
+<p style="margin:4px 0">• AD có một hàng riêng <b>ngay dưới thanh công cụ</b>: <b>➕ TẠO BIỂU MẪU</b> + <b>⚙ CĂN CHỈNH</b>.</p>
+<p style="margin:4px 0">• <b>➕ TẠO BIỂU MẪU</b> gom FSAGS42.3 / FSAGS42.1 / FSAGS55.1 / FSAGS09 / FSAGS208 / BBBT / FINAL. <b>⚙ CĂN CHỈNH</b> vẫn chỉ AD và tự nhận form có SVG + field.</p>
 <p style="margin:4px 0">• Ô nhiều dòng có <b>khung HIỂN THỊ riêng từng dòng</b>; có CẢ KHỐI / DÒNG trước-sau và <b>CĂN TRÁI / GIỮA / PHẢI</b>. Tên panel/export dùng đúng tên biểu mẫu (FSAGS09, FSAGS208...).</p>
 <p style="margin:4px 0">• <b>LƯU</b> = bản nháp trên máy AD. <b>XUẤT FILE</b> = tạo form-layout.js để đưa lên GitHub. Nhân viên tự nhận layout từ file này; không dùng Firebase.</p>
 <p style="margin:4px 0">• Có thể khôi phục riêng từng ô hoặc toàn bộ biểu mẫu về vị trí mặc định bất cứ lúc nào.</p>
@@ -3157,7 +3198,7 @@ body.v368-layout-mode .sheet{outline:2px dashed rgba(124,58,237,.35);outline-off
 </div>
 <details style="margin-top:10px;padding:9px 11px;border:1px solid #dbe4eb;border-radius:10px;background:#fafcfd">
 <summary style="cursor:pointer;font-weight:800;color:#334155">Lưu ý sau khi cập nhật</summary>
-<p style="margin:8px 0 0">Dữ liệu hồ sơ nghiệp vụ trên Firebase không bị xóa. Chỉ cập nhật khi người dùng bấm CẬP NHẬT và chờ nhãn góc trái hiện V3.76.</p>
+<p style="margin:8px 0 0">Dữ liệu hồ sơ nghiệp vụ trên Firebase không bị xóa. Chỉ cập nhật khi người dùng bấm CẬP NHẬT và chờ nhãn góc trái hiện V3.77.</p>
 </details>
 <button onclick="closeUpdateInfo()" style="width:100%;margin-top:12px;border:0;border-radius:10px;padding:10px 14px;background:#0b67b2;color:#fff;font-weight:800">ĐÓNG</button>
 </div>
@@ -4129,7 +4170,7 @@ body.v368-layout-mode .sheet{outline:2px dashed rgba(124,58,237,.35);outline-off
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
-<script src="./app.js?v=V3.76" data-phase="config"></script>
+<script src="./app.js?v=V3.77" data-phase="config"></script>
 <script>
 let suppressModalClickUntil=0;
 function armModalGhostClickBlock(ms=650){
@@ -7050,7 +7091,7 @@ function draw(){
       : [{x:a.x-px,y:a.y-py,w:a.w+px*2,h:a.h+py*2}];
 
     for(const hrBase of hitRects){
-      // V3.76: touch zone is independent from displayed text. Apply device-local
+      // V3.77: touch zone is independent from displayed text. Apply device-local
       // touch calibration (hx/hy/hw/hh) to the REAL hit rectangle used in normal mode.
       let tc={};
       try{
@@ -7226,7 +7267,7 @@ function draw(){
 
 
   /* =========================================================
-     V3.76 — FSAGS 42.3 DOT-LINE DISPLAY ENGINE
+     V3.77 — FSAGS 42.3 DOT-LINE DISPLAY ENGINE
      IMPORTANT:
      - These printed rows are NOT ordinary input boxes. Their dotted guides
        sit inside the same visual row as the labels.
@@ -7489,7 +7530,7 @@ function draw(){
     continue;
   }
 
-  // V4.78 legacy DEP Remarks renderer (V3.76 handles this earlier via measured dot-line engine).
+  // V4.78 legacy DEP Remarks renderer (V3.77 handles this earlier via measured dot-line engine).
   // Safari/iOS intermittently fails to paint HTML inside SVG foreignObject after
   // the editor closes, even though state is saved and PDF export still contains it.
   // Render this one-line printed Remarks field directly as SVG <text> so live view
@@ -12276,8 +12317,8 @@ try {
   alert("Lỗi JavaScript: "+err.message);
 }
 
-const APP_BUILD_VERSION="V3.76-20260822-01";
-const APP_DISPLAY_VERSION="V3.76";
+const APP_BUILD_VERSION="V3.77-20260822-01";
+const APP_DISPLAY_VERSION="V3.77";
 
 // V4.21 — SAFE UPDATE SAVE
 // Before switching to a newly installed app version, force-save all current
@@ -21099,7 +21140,7 @@ function applyRoleUI(){
   // Nếu ứng dụng được mở từ QR Giao Ca, xử lý sau khi đã xác định tài khoản.
   setTimeout(tryOpenPendingHandoverDeepLink,120);
 
-  // V3.76: nút căn chỉnh tất cả biểu mẫu chỉ dành cho AD; form mới tự nhận diện khi có SVG + field.
+  // V3.77: nút căn chỉnh tất cả biểu mẫu chỉ dành cho AD; form mới tự nhận diện khi có SVG + field.
   try{if(typeof window.v368RefreshTuneButton==="function")window.v368RefreshTuneButton();}catch(e){}
 
   // V6.4.0: Sau đăng nhập KHÔNG tự mở bất kỳ màn chức năng nào.
@@ -24277,7 +24318,7 @@ window.openCamScanner=openCamScanner;
 <script type="module" src="./ai.js?v=V3.58"></script>
 
 
-<script src="./app.js?v=V3.76" data-phase="archive"></script>
+<script src="./app.js?v=V3.77" data-phase="archive"></script>
 <script id="v120-build02-fixes">
 /* V1.20 BUILD 02 — background persistence, VHTTB, per-account usage detail, progress dedupe. */
 (function(){
@@ -24718,7 +24759,7 @@ window.openCamScanner=openCamScanner;
 
 
 
-<script src="./app.js?v=V3.76" data-phase="tools"></script>
+<script src="./app.js?v=V3.77" data-phase="tools"></script>
 <script id="v173-quick-time">
 (function(){
   "use strict";
@@ -26774,7 +26815,7 @@ window.openCamScanner=openCamScanner;
 }
 </style>
 
-<script src="./app.js?v=V3.76" data-phase="flight"></script>
+<script src="./app.js?v=V3.77" data-phase="flight"></script>
 <script id="v191IOSInteractionFix">
 (()=>{
   'use strict';
@@ -27038,7 +27079,7 @@ window.openCamScanner=openCamScanner;
 })();
 </script>
 
-<script src="./app.js?v=V3.76" data-phase="control"></script>
+<script src="./app.js?v=V3.77" data-phase="control"></script>
 
 <style id="v330-group-permission-style">
 #v330GroupPermPanel{margin:12px 0 8px;padding:11px;border:1px solid #cbd9e6;border-radius:12px;background:#f7fbff;box-sizing:border-box}
@@ -27286,15 +27327,49 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 
 
 
-<script id="v376AdminManualBBBTScript">
-/* V3.76 — AD always has a visible manual BBBT creation button. */
+<script id="v377AdminFormToolsScript">
+/* V3.77 — AD form tools row + one CREATE FORM menu for every current form. */
 (function(){
   function isAD(){try{return String(window.currentRole||currentRole||'').toUpperCase()==='AD'}catch(e){return false}}
   function refresh(){
-    const b=document.getElementById('roleBtnManualBBBT');if(!b)return;
-    if(isAD()){b.style.display='';b.textContent='➕ TẠO BBBT';b.title='Tạo biểu mẫu BBBT thủ công, không cần chọn chuyến trước';}
+    const ad=isAD(),row=document.getElementById('v377AdminFormToolsRow');
+    if(row)row.style.display=ad?'grid':'none';
+    document.body?.classList.toggle('v377-ad-form-tools',ad);
+    const old=document.getElementById('roleBtnManualBBBT');if(old)old.style.display='none';
+    try{window.v368RefreshTuneButton?.()}catch(e){}
   }
-  window.v376RefreshAdminManualBBBT=refresh;
+  function ensureAD(){if(isAD())return true;alert('Chỉ tài khoản AD được phép tạo biểu mẫu thủ công từ menu này.');return false}
+  function close(){const m=document.getElementById('v377CreateFormModal');if(m)m.style.display='none'}
+  function open(){if(!ensureAD())return;const m=document.getElementById('v377CreateFormModal');if(m)m.style.display='flex'}
+  function renderAfterBlank(group){
+    try{showFormGroup(group,false)}catch(e){}
+    try{draw()}catch(e){}
+    try{if(group==='bbbt')renderBBBTAttachments();else if(group==='fsags421')renderFSAGS421Attachments();else if(group==='fsags551')renderFSAGS551Attachments();else renderAttachments()}catch(e){}
+    try{hideRoleHomeIdle?.()}catch(e){}
+    requestAnimationFrame(()=>window.scrollTo({top:0,left:0,behavior:'auto'}));
+  }
+  function blank(group,label){
+    if(!ensureAD())return;
+    if(!confirm('Tạo '+label+' trắng mới?\nChỉ dữ liệu của '+label+' trong hồ sơ đang mở sẽ bị xóa. Các biểu mẫu khác giữ nguyên.'))return;
+    close();
+    try{persist?.()}catch(e){}
+    try{showFormGroup(group,false)}catch(e){}
+    try{
+      const info=typeof keysForCurrentSelectedForm==='function'?keysForCurrentSelectedForm():null;
+      const keys=info?.keys||new Set();for(const key of keys)delete state[key];
+      activeKey=null;editing=null;signing=null;
+      try{updateBagTotals?.()}catch(e){}
+      try{persist?.()}catch(e){}
+      renderAfterBlank(group);
+      if(typeof showAutoUpdateToast==='function')showAutoUpdateToast('✓ Đã tạo '+label+' trắng mới');
+    }catch(e){alert('Không tạo được '+label+': '+(e?.message||e))}
+  }
+  function fs09(){if(!ensureAD())return;close();try{openFS09SheetManager()}catch(e){alert('Không mở được FSAGS09: '+(e?.message||e))}}
+  function fs208(){if(!ensureAD())return;close();try{openKH208Manager()}catch(e){alert('Không mở được FSAGS208: '+(e?.message||e))}}
+  function bbbt(){if(!ensureAD())return;close();try{v18OpenManualBBBT()}catch(e){alert('Không mở được BBBT: '+(e?.message||e))}}
+  function finalForm(){if(!ensureAD())return;close();try{openFinalSheetManager()}catch(e){alert('Không mở được FINAL: '+(e?.message||e))}}
+  window.v377OpenCreateFormMenu=open;window.v377CloseCreateFormMenu=close;window.v377CreateBlankForm=blank;window.v377CreateFS09=fs09;window.v377CreateFS208=fs208;window.v377CreateBBBT=bbbt;window.v377CreateFINAL=finalForm;window.v377RefreshAdminFormTools=refresh;
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{refresh();setTimeout(refresh,250);setTimeout(refresh,1200)});else{refresh();setTimeout(refresh,250)}
   setInterval(refresh,1200);
 })();
@@ -27304,7 +27379,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 
 <script id="v368LayoutTuneScript">
 /* =========================================================
-   V3.76 — FULL FORM EDITOR · AD ONLY
+   V3.77 — FULL FORM EDITOR · AD ONLY
    Built-in: FSAGS42.3 / FSAGS42.1 / FSAGS55.1 / FSAGS09 / FSAGS208 / BBBT.
    Future forms: automatically discovered from the active form's visible SVG pages + field definitions.
    - TOUCH zone: one independent click/tap region per field.
@@ -27583,13 +27658,17 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     if(!canTune())return alert('Chỉ AD được phép xuất cấu hình biểu mẫu.');if(dirty()){if(!confirm('Có thay đổi chưa LƯU. Lưu trước rồi xuất file?'))return;saveStore()}
     const registry={};for(const [g,d] of Object.entries({...FORM_REGISTRY,...CUSTOM_FORMS}))registry[d.id||sanitizeFormId(d.label||g)]={group:g,name:d.label||sanitizeFormId(g),pages:(d.pages||[]).slice()};
     const cur=inferredFormDef();if(cur&&cur.auto)registry[cur.id]={group:group(),name:cur.label,pages:(cur.pages||[]).slice(),auto:true};
-    const payload={schema:4,build:'V3.76',publishedAt:Date.now(),forms:registry,fields:clone(saved)};const body='/* SAGS shared form layout · generated by AD · do not edit by hand */\nwindow.SAGS_PUBLISHED_FORM_LAYOUT='+JSON.stringify(payload,null,2)+';\n';const blob=new Blob([body],{type:'text/javascript;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='form-layout.js';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);status('✓ ĐÃ XUẤT form-layout.js · tất cả biểu mẫu đã căn được gom chung trong 1 file');if(typeof showAutoUpdateToast==='function')showAutoUpdateToast('✓ Đã xuất form-layout.js · tất cả biểu mẫu')
+    const payload={schema:4,build:'V3.77',publishedAt:Date.now(),forms:registry,fields:clone(saved)};const body='/* SAGS shared form layout · generated by AD · do not edit by hand */\nwindow.SAGS_PUBLISHED_FORM_LAYOUT='+JSON.stringify(payload,null,2)+';\n';const blob=new Blob([body],{type:'text/javascript;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='form-layout.js';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);status('✓ ĐÃ XUẤT form-layout.js · tất cả biểu mẫu đã căn được gom chung trong 1 file');if(typeof showAutoUpdateToast==='function')showAutoUpdateToast('✓ Đã xuất form-layout.js · tất cả biểu mẫu')
   }
   function close(discard=false){if(dirty()&&!discard&&!confirm('Có thay đổi chưa lưu. Đóng và bỏ các thay đổi này?'))return;draft=clone(saved);mode=false;selected=null;drag=null;document.body.classList.remove('v368-layout-mode','v368-zone-display','v368-zone-touch');q('#v368LayoutPanel')?.classList.remove('show');q('#v368LayoutTuneBtn')?.classList.remove('active');if(q('#v368LayoutTuneBtn'))q('#v368LayoutTuneBtn').textContent='⚙ CĂN CHỈNH';try{draw()}catch(e){}}
   function open(){if(!canTune())return alert('Chỉ tài khoản AD được phép căn chỉnh biểu mẫu.');const def=inferredFormDef();if(!def||!def.pages?.length)return alert('Biểu mẫu này chưa có vùng field/SVG để căn chỉnh.');draft=clone(saved);mode=true;zone='display';selected=null;document.body.classList.add('v368-layout-mode','v368-zone-display');document.body.classList.remove('v368-zone-touch');q('#v368LayoutPanel')?.classList.add('show');q('#v368LayoutTuneBtn')?.classList.add('active');if(q('#v368LayoutTuneBtn'))q('#v368LayoutTuneBtn').textContent='✕ ĐANG CĂN';redraw()}
   function toggle(){mode?close():open()}
   function makeUI(){
-    if(q('#v368LayoutTuneBtn'))return;const btn=document.createElement('button');btn.id='v368LayoutTuneBtn';btn.type='button';btn.textContent='⚙ CĂN CHỈNH';btn.onclick=toggle;document.body.appendChild(btn);
+    let btn=q('#v368LayoutTuneBtn');
+    if(!btn){btn=document.createElement('button');btn.id='v368LayoutTuneBtn';btn.type='button';btn.textContent='⚙ CĂN CHỈNH';}
+    btn.onclick=toggle;
+    const slot=q('#v377LayoutTuneSlot');if(slot&&btn.parentNode!==slot)slot.appendChild(btn);else if(!btn.parentNode)document.body.appendChild(btn);
+    if(q('#v368LayoutPanel')){window.v368RefreshTuneButton();return;}
     const p=document.createElement('div');p.id='v368LayoutPanel';p.innerHTML=`
       <div class="v368Head"><div><div class="v368Title" id="v368LayoutTitle">CĂN CHỈNH · AD</div><div class="v368Hint"><b>🟦 CĂN CHẠM</b> = kéo/đổi kích thước/tắt vùng nhập. <b>🟪 CĂN HIỂN THỊ</b> = vị trí + font + đậm/nghiêng/gạch chân + ẩn/hiện. Ô nhiều dòng chỉnh từng dòng. Form mới tự nhận.</div></div><button type="button" onclick="v368LayoutClose()">×</button></div>
       <div class="v368ZoneTabs"><button id="v368ZoneTouch" class="v368ZoneTouch" onclick="v371LayoutZone('touch')">🟦 CĂN CHẠM</button><button id="v368ZoneDisplay" class="v368ZoneDisplay active" onclick="v371LayoutZone('display')">🟪 CĂN HIỂN THỊ</button></div>
@@ -27608,7 +27687,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       <div class="v368Status" id="v368LayoutStatus"></div>`;
     document.body.appendChild(p);window.v368RefreshTuneButton();renderPanel();
   }
-  window.v368RefreshTuneButton=function(){const b=q('#v368LayoutTuneBtn');if(!b)return;const def=inferredFormDef(),ok=canTune()&&!!def&&Array.isArray(def.pages)&&def.pages.length>0;b.style.display=ok?'block':'none';if(!ok&&mode)close(true)};
+  window.v368RefreshTuneButton=function(){const b=q('#v368LayoutTuneBtn');if(!b)return;const slot=q('#v377LayoutTuneSlot');if(slot&&b.parentNode!==slot)slot.appendChild(b);const def=inferredFormDef(),ok=canTune()&&!!def&&Array.isArray(def.pages)&&def.pages.length>0;b.style.display=ok?'block':'none';if(!ok&&mode)close(true)};
   window.v371LayoutZone=setZone;window.v371LayoutResize=resizeTouch;window.v371LayoutResetZone=resetZone;window.v368LayoutMove=move;window.v368LayoutFont=font;window.v368LayoutLine=line;window.v368LayoutResetField=resetField;window.v368LayoutResetForm=resetForm;window.v368LayoutSave=save;window.v372LayoutExport=exportLayoutFile;window.v368LayoutClose=()=>close(false);window.v373LayoutAlign=setAlign;window.v373LineAll=lineAll;window.v373LineStep=lineStep;window.v376LayoutToggleTouch=toggleTouch;window.v376LayoutToggleDisplay=toggleDisplay;window.v376LayoutWeight=setWeight;window.v376LayoutItalic=toggleItalic;window.v376LayoutUnderline=toggleUnderline;
   let lastObservedGroup='';function autoRefreshForm(){const g=group();if(g!==lastObservedGroup){lastObservedGroup=g;try{window.v368RefreshTuneButton?.();if(mode){selected=null;redraw()}}catch(e){}}}
   setInterval(autoRefreshForm,700);
