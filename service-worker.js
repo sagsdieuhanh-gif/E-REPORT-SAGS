@@ -1,5 +1,5 @@
-const CACHE_NAME="sags-v3-63-roster-delta-20260822-01";
-const BUILD="V3.63-20260822-01";
+const CACHE_NAME="sags-v3-64-roster-delta-status-20260822-01";
+const BUILD="V3.64-20260822-01";
 const APP_SHELL=[
   "./9Gfinal.png",
   "./CBTT.png",
