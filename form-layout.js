@@ -2,7 +2,7 @@
 window.SAGS_PUBLISHED_FORM_LAYOUT={
   "schema": 4,
   "build": "V3.77",
-  "publishedAt": 1787397071973,
+  "publishedAt": 1787397395053,
   "forms": {
     "FSAGS423": {
       "group": "fsags",
@@ -1002,6 +1002,168 @@ window.SAGS_PUBLISHED_FORM_LAYOUT={
       "hh": -20,
       "hx": 0,
       "hy": 6.7
+    },
+    "11:f09_date": {
+      "dx": -5,
+      "dy": 7
+    },
+    "11:f09_fltAfter": {
+      "dx": 0,
+      "dy": -3
+    },
+    "11:f09_fltBefore": {
+      "dx": 0,
+      "dy": -3
+    },
+    "11:f09_counters": {
+      "dx": 6,
+      "dy": -1
+    },
+    "11:f09_webCki": {
+      "dx": 5,
+      "dy": 0
+    },
+    "11:f09_depUM": {
+      "dx": 5,
+      "dy": 0
+    },
+    "11:f09_depWCH": {
+      "dx": 5,
+      "dy": 0
+    },
+    "11:f09_spml": {
+      "dx": 5,
+      "dy": 0
+    },
+    "11:f09_transferFrom": {
+      "dx": 5,
+      "dy": 0
+    },
+    "11:f09_depNTL": {
+      "dx": 5,
+      "dy": 0
+    },
+    "11:f09_fqtv": {
+      "dx": 5,
+      "dy": 0
+    },
+    "11:f09_mon_briefRemark": {
+      "dx": 10,
+      "dy": 0
+    },
+    "11:f09_mon_counterOpenRemark": {
+      "dx": 10,
+      "dy": 0
+    },
+    "11:f09_mon_gateProcRemark": {
+      "dx": 9,
+      "dy": 0
+    },
+    "11:f09_mon_checkAtaGateRemark": {
+      "dx": 9,
+      "dy": 0
+    },
+    "11:f09_mon_preCloseRemark": {
+      "dx": 10,
+      "dy": 0
+    },
+    "11:f09_mon_flightCloseRemark": {
+      "dx": 10,
+      "dy": 0
+    },
+    "11:f09_mon_boardingRemark": {
+      "dx": 10,
+      "dy": 0
+    },
+    "11:f09_mon_postMsgRemark": {
+      "dx": 9,
+      "dy": 0
+    },
+    "11:f09_mon_checkAtaGateActual": {
+      "dx": 0,
+      "dy": 5
+    },
+    "12:f09_totalExb": {
+      "dx": 5,
+      "dy": 0
+    },
+    "12:f09_crewBagP": {
+      "dx": 5,
+      "dy": 0,
+      "fs": 20
+    },
+    "12:f09_crewBagW": {
+      "dx": 11,
+      "dy": 0,
+      "fs": 20
+    },
+    "12:f09_priorityP": {
+      "dx": 11,
+      "dy": 0,
+      "fs": 20
+    },
+    "12:f09_priorityW": {
+      "dx": 6,
+      "dy": 0,
+      "fs": 20
+    },
+    "12:f09_comatW": {
+      "dx": 6.9,
+      "dy": 0,
+      "fs": 20
+    },
+    "12:f09_comatP": {
+      "dx": 5,
+      "dy": 0,
+      "fs": 20
+    },
+    "12:f09_fimMco": {
+      "dx": 10,
+      "dy": 0,
+      "fs": 20
+    },
+    "12:f09_extraCrewSeat": {
+      "dx": 5,
+      "dy": 0,
+      "fs": 20
+    },
+    "12:f09_zone": {
+      "dx": 10,
+      "dy": -3,
+      "fs": 23
+    },
+    "12:f09_siUM": {
+      "dx": 5,
+      "dy": -2,
+      "fs": 20
+    },
+    "12:f09_siWCH": {
+      "dx": 2,
+      "dy": -2,
+      "fs": 20
+    },
+    "12:f09_siSPML": {
+      "dx": 3,
+      "dy": -2,
+      "fs": 20
+    },
+    "12:f09_siINAD": {
+      "dx": 5,
+      "dy": -2,
+      "fs": 20
+    },
+    "12:f09_siOTHS": {
+      "dx": 3.9,
+      "dy": -3.1,
+      "fs": 20
+    },
+    "12:f09_fqtv2": {
+      "fs": 20
+    },
+    "12:f09_extraCrewTotal": {
+      "fs": 20,
+      "dx": 2,
+      "dy": 0
     }
   }
 };
