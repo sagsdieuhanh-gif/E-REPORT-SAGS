@@ -2172,7 +2172,7 @@ body.role-viewer #ffSendBtn{
 </div>
 <div id="rsOverdueHost"></div>
 
-<script src="./app.js?v=V3.82" data-phase="qr"></script>
+<script src="./app.js?v=V3.83" data-phase="qr"></script>
 <style>
 /* ===== V6.3.5 FINAL RECEIVER SCROLL + PERFORMANCE ===== */
 #finalFormsModal{
@@ -3125,7 +3125,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
   </div>
 </div>
 
-<div id="buildMarker">V3.82</div>
+<div id="buildMarker">V3.83</div>
 <div aria-live="polite" id="currentFerryFlag"><span class="dot"></span><span id="currentFerryFlagText">FERRY</span></div>
 <div class="toolbar compact-main-toolbar">
 <div class="badge">PĐH SAGS-CXR</div>
@@ -3196,7 +3196,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <button onclick="closeUpdateInfo()" aria-label="Đóng" style="border:0;background:#eee;border-radius:50%;width:34px;height:34px;font-size:21px;line-height:30px">×</button>
 </div>
 <div style="padding:11px 12px;border:1px solid #b7d7ef;border-radius:11px;background:#eef7ff">
-<p style="margin:0 0 6px;color:#075985"><b>V3.82 · 22/08/2026 — FIREBASE AUTH SDK READY</b></p>
+<p style="margin:0 0 6px;color:#075985"><b>V3.83 · 22/08/2026 — FIREBASE AUTH RESTORE HOTFIX</b></p>
 <p style="margin:4px 0">• Khôi phục cố định hàng AD ngay dưới toolbar: <b>➕ TẠO BIỂU MẪU</b> + <b>⚙ CĂN CHỈNH</b>; nút CĂN CHỈNH luôn hiện với AD, nếu chưa mở form sẽ hướng dẫn mở form trước.</p>
 <p style="margin:4px 0">• Thêm <b>🗑 XÓA THÔNG BÁO KẾT SỔ CŨ</b>: chỉ dọn popup/tín hiệu RTDB + cache thông báo, <b>không xóa hồ sơ KẾT SỔ Firestore</b>; máy đang online nhận mốc dọn để bỏ các popup test cũ.</p>
 <p style="margin:4px 0">• AD có thể <b>TẮT/BẬT vùng chạm</b>, <b>ẨN/HIỆN vùng hiển thị</b>, chỉnh chữ thường/đậm/nghiêng/gạch chân, font, căn trái/giữa/phải, từng dòng hoặc cả khối.</p>
@@ -3212,7 +3212,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 </div>
 <details style="margin-top:10px;padding:9px 11px;border:1px solid #dbe4eb;border-radius:10px;background:#fafcfd">
 <summary style="cursor:pointer;font-weight:800;color:#334155">Lưu ý sau khi cập nhật</summary>
-<p style="margin:8px 0 0">Dữ liệu hồ sơ nghiệp vụ trên Firebase không bị xóa. Bản này chỉ nạp Firebase Authentication SDK để chuẩn bị xác thực an toàn; cơ chế đăng nhập hiện tại chưa bị thay đổi. Chờ nhãn góc trái hiện V3.82.</p>
+<p style="margin:8px 0 0">Dữ liệu hồ sơ nghiệp vụ trên Firebase không bị xóa. Bản này chỉ nạp Firebase Authentication SDK để chuẩn bị xác thực an toàn; cơ chế đăng nhập hiện tại chưa bị thay đổi. Chờ nhãn góc trái hiện V3.83.</p>
 </details>
 <button onclick="closeUpdateInfo()" style="width:100%;margin-top:12px;border:0;border-radius:10px;padding:10px 14px;background:#0b67b2;color:#fff;font-weight:800">ĐÓNG</button>
 </div>
@@ -4188,7 +4188,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <script>
 window.SAGS_FIREBASE_AUTH_SDK_READY = !!(window.firebase && typeof window.firebase.auth === "function");
 </script>
-<script src="./app.js?v=V3.82" data-phase="config"></script>
+<script src="./app.js?v=V3.83" data-phase="config"></script>
 <script>
 let suppressModalClickUntil=0;
 function armModalGhostClickBlock(ms=650){
@@ -12335,8 +12335,8 @@ try {
   alert("Lỗi JavaScript: "+err.message);
 }
 
-const APP_BUILD_VERSION="V3.82-20260822-01";
-const APP_DISPLAY_VERSION="V3.82";
+const APP_BUILD_VERSION="V3.83-20260822-01";
+const APP_DISPLAY_VERSION="V3.83";
 
 // V4.21 — SAFE UPDATE SAVE
 // Before switching to a newly installed app version, force-save all current
@@ -21069,12 +21069,26 @@ const AD_FIREBASE_SESSION_MARKER="AD_FIREBASE";
 function adFirebaseAuthAvailable(){
   try{return !!(window.firebase && typeof firebase.auth==="function");}catch(e){return false;}
 }
+function adFirebaseEnsureApp(){
+  if(!adFirebaseAuthAvailable())return null;
+  try{
+    if(firebase.apps && firebase.apps.length)return firebase.app();
+    const cfg=(window.SAGS_FIREBASE_CONFIG&&typeof window.SAGS_FIREBASE_CONFIG==="object")?window.SAGS_FIREBASE_CONFIG:null;
+    if(!cfg||!cfg.apiKey||!cfg.projectId)return null;
+    return firebase.initializeApp(cfg);
+  }catch(e){
+    try{return firebase.apps?.length?firebase.app():null;}catch(_){return null;}
+  }
+}
+function adFirebaseGetAuth(){
+  try{if(!adFirebaseEnsureApp())return null;return firebase.auth();}catch(e){console.warn("AD Firebase Auth init",e?.message||e);return null;}
+}
 function adFirebaseEmailMatches(user){
   return String(user?.email||"").trim().toLowerCase()===AD_FIREBASE_AUTH_EMAIL.toLowerCase();
 }
-async function adFirebaseWaitForUser(timeoutMs=4500){
-  if(!adFirebaseAuthAvailable())return null;
-  const auth=firebase.auth();
+async function adFirebaseWaitForUser(timeoutMs=6500){
+  const auth=adFirebaseGetAuth();
+  if(!auth)return null;
   if(auth.currentUser)return auth.currentUser;
   return await new Promise(resolve=>{
     let done=false,unsub=null;
@@ -21098,7 +21112,8 @@ async function roleLogin(){
   }
   try{
     if(err)err.textContent="Đang xác thực AD bằng Firebase Authentication...";
-    const auth=firebase.auth();
+    const auth=adFirebaseGetAuth();
+    if(!auth)throw new Error("auth-not-ready");
     try{await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);}catch(e){}
     const cred=await auth.signInWithEmailAndPassword(AD_FIREBASE_AUTH_EMAIL,pass);
     if(!adFirebaseEmailMatches(cred?.user)){
@@ -21131,7 +21146,7 @@ function roleLogout(){
   currentRole="";
   const finish=()=>location.reload();
   if(wasFirebaseAD && adFirebaseAuthAvailable()){
-    try{return firebase.auth().signOut().catch(()=>{}).finally(finish);}catch(e){}
+    try{const a=adFirebaseGetAuth();if(a)return a.signOut().catch(()=>{}).finally(finish);}catch(e){}
   }
   finish();
 }
@@ -21232,11 +21247,11 @@ async function initRoleLogin(){
       return;
     }
     localStorage.removeItem(ROLE_SESSION_KEY);
-    try{if(adFirebaseAuthAvailable())await firebase.auth().signOut();}catch(e){}
+    try{const a=adFirebaseGetAuth();if(a)await a.signOut();}catch(e){}
     if(err)err.textContent="Phiên AD đã hết hạn. Vui lòng đăng nhập lại.";
     return;
   }
-  // Xóa phiên AD legacy của các bản cũ: từ V3.82 AD bắt buộc Firebase Auth.
+  // Xóa phiên AD legacy của các bản cũ: từ V3.83 AD bắt buộc Firebase Auth.
   if(saved)localStorage.removeItem(ROLE_SESSION_KEY);
   const modal=document.getElementById("roleLoginModal");if(modal)modal.style.display="flex";
 }
@@ -21349,7 +21364,7 @@ deleteFinalSheetRecord=function(id){
 
 // V1 F5 FIX: phục hồi tài khoản ngay khi code role đã sẵn sàng, tránh khoảng trống
 // currentRole="" trong lúc các handler khởi tạo chạy sau F5.
-initRoleLogin();
+initRoleLogin().catch(e=>{console.warn("initRoleLogin",e?.message||e);try{localStorage.removeItem(ROLE_SESSION_KEY);}catch(_){ }const m=document.getElementById("roleLoginModal");if(m)m.style.display="flex";const er=document.getElementById("roleLoginError");if(er)er.textContent="Không khôi phục được phiên AD. Vui lòng đăng nhập lại.";});
 setTimeout(bindRoleHomeFunctionButtons,60);
 
 /* V1.12 TEST — tài khoản cá nhân + audit + tự đổi mật khẩu */
@@ -24392,7 +24407,7 @@ window.openCamScanner=openCamScanner;
 <script type="module" src="./ai.js?v=V3.58"></script>
 
 
-<script src="./app.js?v=V3.82" data-phase="archive"></script>
+<script src="./app.js?v=V3.83" data-phase="archive"></script>
 <script id="v120-build02-fixes">
 /* V1.20 BUILD 02 — background persistence, VHTTB, per-account usage detail, progress dedupe. */
 (function(){
@@ -24852,7 +24867,7 @@ window.openCamScanner=openCamScanner;
 
 
 
-<script src="./app.js?v=V3.82" data-phase="tools"></script>
+<script src="./app.js?v=V3.83" data-phase="tools"></script>
 <script id="v173-quick-time">
 (function(){
   "use strict";
@@ -26908,7 +26923,7 @@ window.openCamScanner=openCamScanner;
 }
 </style>
 
-<script src="./app.js?v=V3.82" data-phase="flight"></script>
+<script src="./app.js?v=V3.83" data-phase="flight"></script>
 <script id="v191IOSInteractionFix">
 (()=>{
   'use strict';
@@ -27172,7 +27187,7 @@ window.openCamScanner=openCamScanner;
 })();
 </script>
 
-<script src="./app.js?v=V3.82" data-phase="control"></script>
+<script src="./app.js?v=V3.83" data-phase="control"></script>
 
 <style id="v330-group-permission-style">
 #v330GroupPermPanel{margin:12px 0 8px;padding:11px;border:1px solid #cbd9e6;border-radius:12px;background:#f7fbff;box-sizing:border-box}
@@ -27769,7 +27784,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     if(!canTune())return alert('Chỉ AD được phép xuất cấu hình biểu mẫu.');if(dirty()){if(!confirm('Có thay đổi chưa LƯU. Lưu trước rồi xuất file?'))return;saveStore()}
     const registry={};for(const [g,d] of Object.entries({...FORM_REGISTRY,...CUSTOM_FORMS}))registry[d.id||sanitizeFormId(d.label||g)]={group:g,name:d.label||sanitizeFormId(g),pages:(d.pages||[]).slice()};
     const cur=inferredFormDef();if(cur&&cur.auto)registry[cur.id]={group:group(),name:cur.label,pages:(cur.pages||[]).slice(),auto:true};
-    const payload={schema:5,build:'V3.82',publishedAt:Date.now(),forms:registry,fields:clone(saved)};const body='/* SAGS shared form layout · generated by AD · do not edit by hand */\nwindow.SAGS_PUBLISHED_FORM_LAYOUT='+JSON.stringify(payload,null,2)+';\n';const blob=new Blob([body],{type:'text/javascript;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='form-layout.js';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);status('✓ ĐÃ XUẤT form-layout.js · tất cả biểu mẫu đã căn được gom chung trong 1 file');if(typeof showAutoUpdateToast==='function')showAutoUpdateToast('✓ Đã xuất form-layout.js · tất cả biểu mẫu')
+    const payload={schema:5,build:'V3.83',publishedAt:Date.now(),forms:registry,fields:clone(saved)};const body='/* SAGS shared form layout · generated by AD · do not edit by hand */\nwindow.SAGS_PUBLISHED_FORM_LAYOUT='+JSON.stringify(payload,null,2)+';\n';const blob=new Blob([body],{type:'text/javascript;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='form-layout.js';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);status('✓ ĐÃ XUẤT form-layout.js · tất cả biểu mẫu đã căn được gom chung trong 1 file');if(typeof showAutoUpdateToast==='function')showAutoUpdateToast('✓ Đã xuất form-layout.js · tất cả biểu mẫu')
   }
   function close(discard=false){if(dirty()&&!discard&&!confirm('Có thay đổi chưa lưu. Đóng và bỏ các thay đổi này?'))return;draft=clone(saved);mode=false;selected=null;drag=null;multiMode=false;selectedMany.clear();document.body.classList.remove('v368-layout-mode','v368-zone-display','v368-zone-touch');q('#v368LayoutPanel')?.classList.remove('show');q('#v368LayoutTuneBtn')?.classList.remove('active');if(q('#v368LayoutTuneBtn'))q('#v368LayoutTuneBtn').textContent='⚙ CĂN CHỈNH';try{draw()}catch(e){}}
   function open(){if(!canTune())return alert('Chỉ tài khoản AD được phép căn chỉnh biểu mẫu.');const def=inferredFormDef();if(!def||!def.pages?.length)return alert('Chưa có biểu mẫu đang mở để căn chỉnh. Hãy bấm ➕ TẠO BIỂU MẪU hoặc mở một biểu mẫu, sau đó bấm ⚙ CĂN CHỈNH.');draft=clone(saved);mode=true;zone='display';selected=null;multiMode=false;selectedMany.clear();document.body.classList.add('v368-layout-mode','v368-zone-display');document.body.classList.remove('v368-zone-touch');q('#v368LayoutPanel')?.classList.add('show');q('#v368LayoutTuneBtn')?.classList.add('active');if(q('#v368LayoutTuneBtn'))q('#v368LayoutTuneBtn').textContent='✕ ĐANG CĂN';redraw()}
