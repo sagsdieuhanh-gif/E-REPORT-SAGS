@@ -1,4 +1,4 @@
-/* E-REPORT/SAGS V3.50 · Firebase-efficient unified document center
+/* E-REPORT/SAGS V3.51 · Firebase-efficient unified document center
  * One persistent place for unfinished approvals, handoffs, crosscheck, R&S and manual-flight recovery.
  * Realtime refresh is event-driven. SLA clocks are display-only and never write heartbeats.
  */
@@ -7,7 +7,7 @@
 if(root.__SAGS_V342_ACTION_CENTER_LOADED)return;
 root.__SAGS_V342_ACTION_CENTER_LOADED=true;
 
-const BUILD="V3.50-20260822-01";
+const BUILD="V3.51-20260822-01";
 const S=v=>String(v??"").trim();
 const U=v=>S(v).toUpperCase();
 const esc=v=>S(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -51,7 +51,7 @@ function ensureUi(){
   ensureButton();document.body.classList.add("v342ActionReady");
 }
 
-function ensureButton(){const nav=document.getElementById("v38CleanNav"),bar=nav||document.querySelector(".compact-main-toolbar .toolbar-row.main-actions")||document.querySelector(".toolbar-row.main-actions");if(!bar)return;let b=document.getElementById("roleBtnActionCenter");if(!b){b=document.createElement("button");b.id="roleBtnActionCenter";b.type="button";b.innerHTML='🔔 CẦN XỬ LÝ <span id="v342Badge" style="display:none"></span>';b.onclick=()=>root.sagsV342Open()}if(nav){b.classList.add("v38NavBtn","v342ActionNav");if(b.parentNode!==nav)nav.insertBefore(b,nav.firstChild);else if(nav.firstChild!==b)nav.insertBefore(b,nav.firstChild)}else if(b.parentNode!==bar)bar.appendChild(b);b.style.display=me()||role()?"inline-flex":"none"}
+function ensureButton(){const nav=document.getElementById("v38CleanNav"),bar=nav||document.querySelector(".compact-main-toolbar .toolbar-row.main-actions")||document.querySelector(".toolbar-row.main-actions");if(!bar)return;let b=document.getElementById("roleBtnActionCenter");if(!b){b=document.createElement("button");b.id="roleBtnActionCenter";b.type="button";b.title="Cần xử lý";b.setAttribute("aria-label","Mở trung tâm Cần xử lý");b.innerHTML='🔔 XỬ LÝ <span id="v342Badge" style="display:none"></span>';b.onclick=()=>root.sagsV342Open()}if(nav){b.classList.add("v38NavBtn","v342ActionNav");if(b.parentNode!==nav)nav.insertBefore(b,nav.firstChild);else if(nav.firstChild!==b)nav.insertBefore(b,nav.firstChild)}else if(b.parentNode!==bar)bar.appendChild(b);b.style.display=me()||role()?"inline-flex":"none"}
 function watchToolbar(){const host=document.querySelector(".toolbar.compact-main-toolbar")||document.querySelector(".toolbar");if(!host||state.navObserved===host)return;try{state.navObserver?.disconnect?.()}catch(_){}state.navObserved=host;state.navObserver=new MutationObserver(()=>{const nav=document.getElementById("v38CleanNav"),b=document.getElementById("roleBtnActionCenter");if(!b||nav&&b.parentNode!==nav)setTimeout(()=>{ensureButton();updateBadge()},0)});state.navObserver.observe(host,{childList:true,subtree:true})}
 
 function activeItem(x){return ["mine","approval","returned"].includes(x.bucket)}
@@ -98,7 +98,7 @@ const baseApply=root.applyRoleUI;if(typeof baseApply==="function"&&!baseApply.__
 window.addEventListener("online",()=>{state.connected=null;renderSync();scheduleRefresh(200,WORK_SOURCES)},{passive:true});window.addEventListener("offline",()=>{state.connected=false;renderSync()},{passive:true});window.addEventListener("pageshow",()=>setTimeout(install,180),{passive:true});
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>setTimeout(install,450),{once:true});else setTimeout(install,450);
 setInterval(()=>{if(state.items.length){render();updateBadge()}},60000);
-root.__SAGS_V342_HDSD="V3.50: CẦN XỬ LÝ chỉ hiển thị việc chưa hoàn tất. Toàn bộ hồ sơ đã gửi/đã nhận nằm trong hồ sơ mẹ theo flightId; mở tại CHUYẾN → FLIGHT WORKSPACE → HỒ SƠ của đúng chuyến hoặc dùng lối tắt trên RAMP/FINAL/KẾT SỔ. Mỗi tín hiệu realtime chỉ làm mới đúng nguồn liên quan; cache 45 giây tránh đọc Firebase lặp.";
+root.__SAGS_V342_HDSD="V3.51: CẦN XỬ LÝ chỉ hiển thị việc chưa hoàn tất và dùng nhãn XỬ LÝ gọn trên thanh công cụ điện thoại. Toàn bộ hồ sơ đã gửi/đã nhận nằm trong hồ sơ mẹ theo flightId; cache 45 giây tránh đọc Firebase lặp.";
 root.__SAGS_V342_BUILD=BUILD;
 root.__SAGS_V342_TEST__={activeItem,overdue,statusLabel,ageLabel,dueLabel,loadCross,loadManual,loadRs,sourceKeys,WORK_SOURCES};
 })(typeof window!=="undefined"?window:globalThis);

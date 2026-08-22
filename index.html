@@ -2172,7 +2172,7 @@ body.role-viewer #ffSendBtn{
 </div>
 <div id="rsOverdueHost"></div>
 
-<script src="./app.js?v=V3.50" data-phase="qr"></script>
+<script src="./app.js?v=V3.51" data-phase="qr"></script>
 <style>
 /* ===== V6.3.5 FINAL RECEIVER SCROLL + PERFORMANCE ===== */
 #finalFormsModal{
@@ -3051,7 +3051,7 @@ user-select:none;-webkit-user-select:none;touch-action:none;-webkit-tap-highligh
   </div>
 </div>
 
-<div id="buildMarker">V3.50</div>
+<div id="buildMarker">V3.51</div>
 <div aria-live="polite" id="currentFerryFlag"><span class="dot"></span><span id="currentFerryFlagText">FERRY</span></div>
 <div class="toolbar compact-main-toolbar">
 <div class="badge">PĐH SAGS-CXR</div>
@@ -3062,7 +3062,7 @@ user-select:none;-webkit-user-select:none;touch-action:none;-webkit-tap-highligh
 </div>
 <div class="toolbar-row main-actions">
 <button id="roleBtnFlights" onclick="openFlightSessions()">Chuyến</button>
-<button id="roleBtnQuickTime" onclick="openQuickTimePanel()" style="display:none">⏱ NHẬP GIỜ</button>
+<button id="roleBtnQuickTime" onclick="openQuickTimePanel()" style="display:none">⏱ NHẬP NHANH</button>
 <button class="fs09QuickBtn" id="fs09QuickBtn" onclick="openFS09SheetManager()">PVHK<span class="fs09NotifyBadge" id="fs09NotifyBadge" style="display:none">0</span></button>
 <button class="fs09QuickBtn" id="khQuickBtn" onclick="openKH208Manager()">KH<span class="fs09NotifyBadge" id="khNotifyBadge" style="display:none">0</span></button>
 <button class="fs09QuickBtn" id="readSignQuickBtn" onclick="openReadSignManager()">READ &amp; SIGN<span class="fs09NotifyBadge readSignNotifyBadge" id="readSignNotifyBadge" style="display:none">0</span></button>
@@ -3100,15 +3100,15 @@ user-select:none;-webkit-user-select:none;touch-action:none;-webkit-tap-highligh
 <button onclick="closeUpdateInfo()" aria-label="Đóng" style="border:0;background:#eee;border-radius:50%;width:34px;height:34px;font-size:21px;line-height:30px">×</button>
 </div>
 <div style="padding:11px 12px;border:1px solid #b7d7ef;border-radius:11px;background:#eef7ff">
-<p style="margin:0 0 6px;color:#075985"><b>V3.50 · 22/08/2026 — HỒ SƠ GỬI / NHẬN TRONG FLIGHT WORKSPACE</b></p>
-<p style="margin:4px 0">• Trong <b>CHUYẾN → FLIGHT WORKSPACE</b>, mỗi chuyến có nút <b>📁 HỒ SƠ</b> để xem hồ sơ của các bên gửi/nhận tại một nơi.</p>
-<p style="margin:4px 0">• 🔔 CẦN XỬ LÝ chỉ còn việc chưa hoàn tất; popup vẫn gây chú ý nhưng không dùng làm kho tra cứu.</p>
-<p style="margin:4px 0">• RAMP, FINAL và KẾT SỔ/PVHK có lối tắt <b>HỒ SƠ CHUYẾN BAY NÀY</b>; tất cả mở cùng hồ sơ mẹ theo flightId, không nhân bản dữ liệu.</p>
-<p style="margin:4px 0">• Telemetry Firebase được gom 30 phút/lần, chặn ghi activity trùng và sửa listener FINAL bị gắn lại khi đổi tab.</p>
+<p style="margin:0 0 6px;color:#075985"><b>V3.51 · 22/08/2026 — THANH CÔNG CỤ ĐIỆN THOẠI GỌN</b></p>
+<p style="margin:4px 0">• Thanh công cụ dưới cùng được gom thành <b>một hàng chip nhỏ</b>; vuốt ngang để xem thêm chức năng.</p>
+<p style="margin:4px 0">• Tên tài khoản giữ ở đầu thanh; bấm <b>⋮</b> để ĐỔI MẬT KHẨU hoặc ĐĂNG XUẤT.</p>
+<p style="margin:4px 0">• RAMP của ĐH và KẾT SỔ dùng chung nút ngắn <b>⏱ NHẬP NHANH</b>.</p>
+<p style="margin:4px 0">• Sửa quyền mặc định của ĐH bị thiếu QUICK_TIME ở lớp cấu hình sau, làm nút nhập nhanh biến mất.</p>
 </div>
 <details style="margin-top:10px;padding:9px 11px;border:1px solid #dbe4eb;border-radius:10px;background:#fafcfd">
 <summary style="cursor:pointer;font-weight:800;color:#334155">Lưu ý sau khi cập nhật</summary>
-<p style="margin:8px 0 0">Dữ liệu đang làm và hồ sơ Firebase không bị xóa. Chỉ cập nhật khi người dùng bấm CẬP NHẬT và chờ nhãn góc trái hiện V3.50.</p>
+<p style="margin:8px 0 0">Dữ liệu đang làm và hồ sơ Firebase không bị xóa. Chỉ cập nhật khi người dùng bấm CẬP NHẬT và chờ nhãn góc trái hiện V3.51.</p>
 </details>
 <button onclick="closeUpdateInfo()" style="width:100%;margin-top:12px;border:0;border-radius:10px;padding:10px 14px;background:#0b67b2;color:#fff;font-weight:800">ĐÓNG</button>
 </div>
@@ -4080,7 +4080,7 @@ user-select:none;-webkit-user-select:none;touch-action:none;-webkit-tap-highligh
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
-<script src="./app.js?v=V3.50" data-phase="config"></script>
+<script src="./app.js?v=V3.51" data-phase="config"></script>
 <script>
 let suppressModalClickUntil=0;
 function armModalGhostClickBlock(ms=650){
@@ -12095,8 +12095,8 @@ try {
   alert("Lỗi JavaScript: "+err.message);
 }
 
-const APP_BUILD_VERSION="V3.50-20260822-01";
-const APP_DISPLAY_VERSION="V3.50";
+const APP_BUILD_VERSION="V3.51-20260822-01";
+const APP_DISPLAY_VERSION="V3.51";
 
 // V4.21 — SAFE UPDATE SAVE
 // Before switching to a newly installed app version, force-save all current
@@ -23827,7 +23827,7 @@ accountRowHtml=function(d,id){const safe=x=>escapeHtml(String(x??"")),active=d.a
 refreshAccountManager=async function(){if(currentRole!=="AD")return;const list=document.getElementById("accountManagerList");if(list)list.innerHTML="Đang tải...";try{const snap=await initHandoverFirebase().collection(HANDOVER_COLLECTION).where("kind","==",PERSONAL_USER_KIND).get(),arr=[];snap.forEach(doc=>arr.push({id:doc.id,...doc.data()}));const ord={ADMIN:0,"PĐH":1,PVHK:2,"PVSĐ":3};arr.sort((a,b)=>(ord[v18LegacyDept(a,a.role)]??9)-(ord[v18LegacyDept(b,b.role)]??9)||String(a.name||a.username).localeCompare(String(b.name||b.username),"vi"));void v466PublishUserCatalogFromItems(arr);const fixed='<div class="sagsUserRow" style="border-color:#9dbce0;background:#f5f9ff"><div class="sagsUserMain"><b>AD · TÀI KHOẢN KHỞI TẠO/DỰ PHÒNG</b><div class="sagsUserMeta">TK: AD · <span class="v18CodePill">ADMIN</span><span class="v18CodePill">ADMIN</span><span class="v18CodePill">AD</span> · Chức danh: <b>Quản trị hệ thống</b> <span class="v18CodePill">QUAN_TRI_HE_THONG</span> · Mật khẩu mặc định: <b>05091991</b></div></div><div class="sagsUserMeta">Toàn quyền · không xóa. AD vẫn có thể tạo thêm tài khoản cá nhân role AD đầy đủ Phòng/Nhóm/Vai trò/Chức danh.</div></div>';if(list)list.innerHTML=fixed+(arr.length?arr.map(x=>accountRowHtml(x,x.id)).join(""):"<div class='sagsUserMeta'>Chưa có tài khoản cá nhân.</div>");}catch(e){if(list)list.textContent="Không tải được danh sách: "+(e?.message||e);}};window.refreshAccountManager=refreshAccountManager;
 
 // Correct default permissions by actual function.
-v485RoleDefaults=function(role){const r=String(role||"").toUpperCase(),p=v485Blank(),on=(...ks)=>ks.forEach(k=>p[k]=true);if(r==="AD")on(...V485_FEATURE_KEYS);else if(r==="DH")on("FLIGHTS","FSAGS423","FSAGS421","FSAGS551","BBBT","FSAGS208","FINAL","EXPORT_RAMP","HANDOVER");else if(r==="CBTT")on("FSAGS208","FINAL");else if(r==="PVHK")on("FSAGS09");else if(r==="KH")on("FSAGS208");else if(r==="VIEWER")on("FLIGHTS","FSAGS423","FSAGS421","FSAGS551","BBBT","FSAGS09","FSAGS208","FINAL");else if(r==="LOSTFOUND"||r==="PVHLNG"||r==="PVHLSD")on("BBBT","EXPORT_RAMP");return p;};
+v485RoleDefaults=function(role){const r=String(role||"").toUpperCase(),p=v485Blank(),on=(...ks)=>ks.forEach(k=>p[k]=true);if(r==="AD")on(...V485_FEATURE_KEYS);else if(r==="DH")on("FLIGHTS","FSAGS423","FSAGS421","FSAGS551","BBBT","FSAGS208","FINAL","EXPORT_RAMP","HANDOVER","QUICK_TIME");else if(r==="CBTT")on("FSAGS208","FINAL");else if(r==="PVHK")on("FSAGS09");else if(r==="KH")on("FSAGS208");else if(r==="VIEWER")on("FLIGHTS","FSAGS423","FSAGS421","FSAGS551","BBBT","FSAGS09","FSAGS208","FINAL");else if(r==="LOSTFOUND"||r==="PVHLNG"||r==="PVHLSD")on("BBBT","EXPORT_RAMP");return p;};
 
 // R&S grouping follows the same canonical department/group structure.
 v484RsRoleGroupsHtml=function(){const box=(dep,items)=>`<div class="v484DeptBox"><div class="v484DeptTitle">${v18DeptLabel(dep)}</div><div class="rsRoles">${items.map(([r,label])=>`<label><input type="checkbox" name="rsRole" value="${r}" checked> ${label}</label>`).join("")}</div></div>`;return box("PĐH",[["DH","ĐH"],["CBTT","CBTT"],["KH","KH"],["VIEWER","VIEWER"]])+box("PVHK",[["PVHK","PVHK"],["LOSTFOUND","Lost & Found"]])+box("PVSĐ",[["PVHLNG","PVHLNG"],["VHTTB","VHTTB"],["VSTB","VSTB"],["KTTB","KTTB"]]);};window.v484RsRoleGroupsHtml=v484RsRoleGroupsHtml;
@@ -24022,10 +24022,10 @@ window.openCamScanner=openCamScanner;
   setTimeout(()=>{try{if(window.currentRole)window.v114ApplyRoleHomeBackground();}catch(_){}},500);
 })();
 </script>
-<script type="module" src="./ai.js?v=V3.50"></script>
+<script type="module" src="./ai.js?v=V3.51"></script>
 
 
-<script src="./app.js?v=V3.50" data-phase="archive"></script>
+<script src="./app.js?v=V3.51" data-phase="archive"></script>
 <script id="v120-build02-fixes">
 /* V1.20 BUILD 02 — background persistence, VHTTB, per-account usage detail, progress dedupe. */
 (function(){
@@ -24465,7 +24465,7 @@ window.openCamScanner=openCamScanner;
 
 
 
-<script src="./app.js?v=V3.50" data-phase="tools"></script>
+<script src="./app.js?v=V3.51" data-phase="tools"></script>
 <script id="v173-quick-time">
 (function(){
   "use strict";
@@ -26521,7 +26521,7 @@ window.openCamScanner=openCamScanner;
 }
 </style>
 
-<script src="./app.js?v=V3.50" data-phase="flight"></script>
+<script src="./app.js?v=V3.51" data-phase="flight"></script>
 <script id="v191IOSInteractionFix">
 (()=>{
   'use strict';
@@ -26785,7 +26785,7 @@ window.openCamScanner=openCamScanner;
 })();
 </script>
 
-<script src="./app.js?v=V3.50" data-phase="control"></script>
+<script src="./app.js?v=V3.51" data-phase="control"></script>
 
 <style id="v330-group-permission-style">
 #v330GroupPermPanel{margin:12px 0 8px;padding:11px;border:1px solid #cbd9e6;border-radius:12px;background:#f7fbff;box-sizing:border-box}
@@ -27008,9 +27008,10 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })(window);
 </script>
 
-<script src="./action-center-v342.js?v=V3.50"></script>
-<script src="./flight-workspace-documents-v350.js?v=V3.50"></script>
-<script src="./closeout-final-autofill-v344.js?v=V3.50"></script>
+<script src="./action-center-v342.js?v=V3.51"></script>
+<script src="./flight-workspace-documents-v350.js?v=V3.51"></script>
+<script src="./compact-toolbar-v351.js?v=V3.51"></script>
+<script src="./closeout-final-autofill-v344.js?v=V3.51"></script>
 
 </body>
 </html>
