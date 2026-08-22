@@ -2172,7 +2172,7 @@ body.role-viewer #ffSendBtn{
 </div>
 <div id="rsOverdueHost"></div>
 
-<script src="./app.js?v=V3.79" data-phase="qr"></script>
+<script src="./app.js?v=V3.80" data-phase="qr"></script>
 <style>
 /* ===== V6.3.5 FINAL RECEIVER SCROLL + PERFORMANCE ===== */
 #finalFormsModal{
@@ -2813,6 +2813,7 @@ user-select:none;-webkit-user-select:none;touch-action:none;-webkit-tap-highligh
 .v368-layout-hit.touch-zone{fill:rgba(2,132,199,.07);stroke:#0284c7;stroke-width:2;stroke-dasharray:4 4}
 .v368-layout-hit.display-zone.selected{fill:rgba(220,38,38,.10);stroke:#dc2626;stroke-width:2.8;stroke-dasharray:none}
 .v368-layout-hit.touch-zone.selected{fill:rgba(14,116,144,.16);stroke:#0e7490;stroke-width:3;stroke-dasharray:none}
+.v368-layout-hit.multi-selected{stroke:#f59e0b!important;stroke-width:3.2!important;stroke-dasharray:5 3!important;fill:rgba(245,158,11,.12)!important}
 .v368-layout-hit.zone-off{fill:rgba(220,38,38,.10)!important;stroke:#dc2626!important;stroke-width:2.6!important;stroke-dasharray:3 3!important}
 #v368LayoutPanel button.toggle-on{background:#065f46!important;color:#fff!important;border-color:#065f46!important}
 #v368LayoutPanel button.toggle-off{background:#b42318!important;color:#fff!important;border-color:#b42318!important}
@@ -3124,7 +3125,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
   </div>
 </div>
 
-<div id="buildMarker">V3.79</div>
+<div id="buildMarker">V3.80</div>
 <div aria-live="polite" id="currentFerryFlag"><span class="dot"></span><span id="currentFerryFlagText">FERRY</span></div>
 <div class="toolbar compact-main-toolbar">
 <div class="badge">PĐH SAGS-CXR</div>
@@ -3195,7 +3196,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <button onclick="closeUpdateInfo()" aria-label="Đóng" style="border:0;background:#eee;border-radius:50%;width:34px;height:34px;font-size:21px;line-height:30px">×</button>
 </div>
 <div style="padding:11px 12px;border:1px solid #b7d7ef;border-radius:11px;background:#eef7ff">
-<p style="margin:0 0 6px;color:#075985"><b>V3.79 · 22/08/2026 — KHÔI PHỤC AD TOOLBAR + DỌN THÔNG BÁO KẾT SỔ CŨ</b></p>
+<p style="margin:0 0 6px;color:#075985"><b>V3.80 · 22/08/2026 — KHÔI PHỤC AD TOOLBAR + DỌN THÔNG BÁO KẾT SỔ CŨ</b></p>
 <p style="margin:4px 0">• Khôi phục cố định hàng AD ngay dưới toolbar: <b>➕ TẠO BIỂU MẪU</b> + <b>⚙ CĂN CHỈNH</b>; nút CĂN CHỈNH luôn hiện với AD, nếu chưa mở form sẽ hướng dẫn mở form trước.</p>
 <p style="margin:4px 0">• Thêm <b>🗑 XÓA THÔNG BÁO KẾT SỔ CŨ</b>: chỉ dọn popup/tín hiệu RTDB + cache thông báo, <b>không xóa hồ sơ KẾT SỔ Firestore</b>; máy đang online nhận mốc dọn để bỏ các popup test cũ.</p>
 <p style="margin:4px 0">• AD có thể <b>TẮT/BẬT vùng chạm</b>, <b>ẨN/HIỆN vùng hiển thị</b>, chỉnh chữ thường/đậm/nghiêng/gạch chân, font, căn trái/giữa/phải, từng dòng hoặc cả khối.</p>
@@ -3211,7 +3212,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 </div>
 <details style="margin-top:10px;padding:9px 11px;border:1px solid #dbe4eb;border-radius:10px;background:#fafcfd">
 <summary style="cursor:pointer;font-weight:800;color:#334155">Lưu ý sau khi cập nhật</summary>
-<p style="margin:8px 0 0">Dữ liệu hồ sơ nghiệp vụ trên Firebase không bị xóa. Chỉ cập nhật khi người dùng bấm CẬP NHẬT và chờ nhãn góc trái hiện V3.79.</p>
+<p style="margin:8px 0 0">Dữ liệu hồ sơ nghiệp vụ trên Firebase không bị xóa. Chỉ cập nhật khi người dùng bấm CẬP NHẬT và chờ nhãn góc trái hiện V3.80.</p>
 </details>
 <button onclick="closeUpdateInfo()" style="width:100%;margin-top:12px;border:0;border-radius:10px;padding:10px 14px;background:#0b67b2;color:#fff;font-weight:800">ĐÓNG</button>
 </div>
@@ -4183,7 +4184,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
-<script src="./app.js?v=V3.79" data-phase="config"></script>
+<script src="./app.js?v=V3.80" data-phase="config"></script>
 <script>
 let suppressModalClickUntil=0;
 function armModalGhostClickBlock(ms=650){
@@ -12330,8 +12331,8 @@ try {
   alert("Lỗi JavaScript: "+err.message);
 }
 
-const APP_BUILD_VERSION="V3.79-20260822-01";
-const APP_DISPLAY_VERSION="V3.79";
+const APP_BUILD_VERSION="V3.80-20260822-01";
+const APP_DISPLAY_VERSION="V3.80";
 
 // V4.21 — SAFE UPDATE SAVE
 // Before switching to a newly installed app version, force-save all current
@@ -24331,7 +24332,7 @@ window.openCamScanner=openCamScanner;
 <script type="module" src="./ai.js?v=V3.58"></script>
 
 
-<script src="./app.js?v=V3.79" data-phase="archive"></script>
+<script src="./app.js?v=V3.80" data-phase="archive"></script>
 <script id="v120-build02-fixes">
 /* V1.20 BUILD 02 — background persistence, VHTTB, per-account usage detail, progress dedupe. */
 (function(){
@@ -24791,7 +24792,7 @@ window.openCamScanner=openCamScanner;
 
 
 
-<script src="./app.js?v=V3.79" data-phase="tools"></script>
+<script src="./app.js?v=V3.80" data-phase="tools"></script>
 <script id="v173-quick-time">
 (function(){
   "use strict";
@@ -26847,7 +26848,7 @@ window.openCamScanner=openCamScanner;
 }
 </style>
 
-<script src="./app.js?v=V3.79" data-phase="flight"></script>
+<script src="./app.js?v=V3.80" data-phase="flight"></script>
 <script id="v191IOSInteractionFix">
 (()=>{
   'use strict';
@@ -27111,7 +27112,7 @@ window.openCamScanner=openCamScanner;
 })();
 </script>
 
-<script src="./app.js?v=V3.79" data-phase="control"></script>
+<script src="./app.js?v=V3.80" data-phase="control"></script>
 
 <style id="v330-group-permission-style">
 #v330GroupPermPanel{margin:12px 0 8px;padding:11px;border:1px solid #cbd9e6;border-radius:12px;background:#f7fbff;box-sizing:border-box}
@@ -27360,7 +27361,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 
 
 <script id="v377AdminFormToolsScript">
-/* V3.79 — AD form tools row + create all forms + closeout notice cleanup. */
+/* V3.80 — AD form tools row + create all forms + closeout notice cleanup. */
 (function(){
   function isAD(){try{
     const r=String(window.currentRole||currentRole||window.currentUserProfile?.role||currentUserProfile?.role||'').toUpperCase();
@@ -27414,7 +27415,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 
 <script id="v368LayoutTuneScript">
 /* =========================================================
-   V3.79 — FULL FORM EDITOR · AD ONLY
+   V3.80 — FULL FORM EDITOR · MULTI SELECT · AD ONLY
    Built-in: FSAGS42.3 / FSAGS42.1 / FSAGS55.1 / FSAGS09 / FSAGS208 / BBBT.
    Future forms: automatically discovered from the active form's visible SVG pages + field definitions.
    - TOUCH zone: one independent click/tap region per field.
@@ -27439,7 +27440,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     bbbt:{id:"BBBT",label:"BBBT",pages:[4]}
   };
   const CUSTOM_FORMS={};
-  let saved=loadStore(),draft=clone(saved),mode=false,selected=null,drag=null,zone='display';
+  let saved=loadStore(),draft=clone(saved),mode=false,selected=null,drag=null,zone='display',multiMode=false,selectedMany=new Map();
   const q=(s,r=document)=>r.querySelector(s);
   const qa=(s,r=document)=>Array.from(r.querySelectorAll(s));
   function canTune(){try{const r=String(window.currentRole||currentRole||window.currentUserProfile?.role||currentUserProfile?.role||"").toUpperCase();return r==="AD"||document.body?.classList.contains("role-admin")}catch(e){return document.body?.classList.contains("role-admin")||false}}
@@ -27541,6 +27542,14 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     return{x:d.x,y,w:d.w,h};
   }
   function displayTransform(c,i){const lc=i===null||i===undefined?null:lineCfg(c,i,false),dx=(Number(c?.dx)||0)+(Number(lc?.dx)||0),dy=(Number(c?.dy)||0)+(Number(lc?.dy)||0);return(dx||dy)?`translate(${dx} ${dy})`:''}
+  function displaySizeCfg(c,i){const lc=i===null||i===undefined?null:lineCfg(c,i,false);return{dw:(Number(c?.dw)||0)+(Number(lc?.dw)||0),dh:(Number(c?.dh)||0)+(Number(lc?.dh)||0)}}
+  function resizeRect(r,dw=0,dh=0){const w=Math.max(8,r.w+dw),h=Math.max(8,r.h+dh);return{x:r.x-(w-r.w)/2,y:r.y-(h-r.h)/2,w,h}}
+  function displayRect(f,c,i=null){let r;if(i!==null&&i!==undefined)r=lineBaseRect(f,i);else r=renderedRect(f.page,f.key,absRect(f));const z=displaySizeCfg(c||{},i);return resizeRect(r,z.dw,z.dh)}
+  function selId(page,key,line,kind){return `${kind}|${page}|${key}|${line===null||line===undefined?'*':line}`}
+  function selObj(f,kind,line=null){return{page:Number(f.page),key:String(f.key),line:(kind==='display'&&isMulti(f))?line:null,kind}}
+  function manyHas(f,kind,line=null){return selectedMany.has(selId(f.page,f.key,(kind==='display'&&isMulti(f))?line:null,kind))}
+  function manySet(o,on=true){const id=selId(o.page,o.key,o.line,o.kind);if(on)selectedMany.set(id,o);else selectedMany.delete(id)}
+  function activeSelections(){if(multiMode&&selectedMany.size)return [...selectedMany.values()].filter(o=>o.kind===zone);return selected?[{...selected,kind:zone}]:[]}
   function alignOf(f,c,i){const lc=i===null||i===undefined?null:lineCfg(c,i,false);return String(lc?.align||c?.align||f.align||'left').toLowerCase()}
   function fontOf(f,c,i){const lc=i===null||i===undefined?null:lineCfg(c,i,false);return Number(lc?.fs)||Number(c?.fs)||baseFont(f.page,f.key)||Number(f.font)||16}
   function styleCfg(c,i){return i===null||i===undefined?c:(lineCfg(c,i,false)||{})}
@@ -27567,11 +27576,11 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   function makeSplitLines(f,c){
     removeGenerated(f);const originals=originalTargetEls(f.page,f.key);if(!f.multiline||originals.length>1)return originals;
     const svg=svgFor(f.page);if(!svg)return originals;for(const el of originals){el.dataset.v373OldOpacity=el.style.opacity||'';el.dataset.v373Hidden='1';el.style.opacity='0'}
-    const d=absRect(f),count=lineCapacity(f),globalFs=Number(c.fs)||baseFont(f.page,f.key),lh=Number(c.lh)||baseLine(f.page,f.key),lines=wrapText(textState(f.key),Math.max(20,d.w-6),globalFs);
+    const d0=absRect(f),sz=displaySizeCfg(c,null),d=resizeRect(d0,sz.dw,sz.dh),count=lineCapacity(f),globalFs=Number(c.fs)||baseFont(f.page,f.key),lh=Number(c.lh)||baseLine(f.page,f.key),lines=wrapText(textState(f.key),Math.max(20,d.w-6),globalFs);
     if(lines.length>count){lines.splice(count-1,lines.length-count+1,lines.slice(count-1).join(' '))}
     const made=[];
     for(let i=0;i<count;i++){
-      const lc=lineCfg(c,i,false)||{},fs=Number(lc.fs)||globalFs,al=alignOf(f,c,i),r=lineBaseRect(f,i),x=al==='center'?r.x+r.w/2:(al==='right'?r.x+r.w-3:r.x+3),y=r.y+Math.min(r.h-2,Math.max(fs,fs*.88+2));
+      const lc=lineCfg(c,i,false)||{},fs=Number(lc.fs)||globalFs,al=alignOf(f,c,i),r=displayRect(f,c,i),x=al==='center'?r.x+r.w/2:(al==='right'?r.x+r.w-3:r.x+3),y=r.y+Math.min(r.h-2,Math.max(fs,fs*.88+2));
       const t=document.createElementNS('http://www.w3.org/2000/svg','text');t.setAttribute('x',String(x));t.setAttribute('y',String(y));t.setAttribute('class','value manual-value v373-line-render '+(al==='center'?'center':'left'));t.setAttribute('font-size',String(fs));t.setAttribute('text-anchor',al==='center'?'middle':(al==='right'?'end':'start'));t.setAttribute('dominant-baseline','alphabetic');t.setAttribute('data-field-key',f.key);t.setAttribute('data-v373-line-index',String(i));t.style.pointerEvents='none';applyTypography(t,c,i);if(hiddenOf(c,i))t.style.opacity='0';t.textContent=lines[i]||'';svg.appendChild(t);made.push(t);
     }
     return made;
@@ -27583,7 +27592,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     removeGenerated(f);return originals;
   }
   function setTextAlignment(el,f,c,i){
-    const al=alignOf(f,c,i),r=lineBaseRect(f,Math.max(0,i||0));
+    const al=alignOf(f,c,i),r=displayRect(f,c,(i===null||i===undefined)?null:Math.max(0,i||0));
     if(el.tagName.toLowerCase()==='foreignobject'){const d=el.querySelector('div');if(d)d.style.textAlign=al==='right'?'right':(al==='center'?'center':'left');return}
     if(el.tagName.toLowerCase()==='text'){
       if(!el.dataset.v373BaseX)el.dataset.v373BaseX=el.getAttribute('x')||'0';
@@ -27607,13 +27616,13 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       els.forEach((el,idx)=>{
         const i=Number(el.getAttribute('data-v373-line-index'));const li=Number.isFinite(i)?i:idx,lc=lineCfg(c,li,false)||{},dx=(Number(c.dx)||0)+(Number(lc.dx)||0),dy=(Number(c.dy)||0)+(Number(lc.dy)||0);
         if(!el.dataset.v368BaseTransform)el.dataset.v368BaseTransform=el.getAttribute('transform')||'__NONE__';const base=el.dataset.v368BaseTransform==='__NONE__'?'':el.dataset.v368BaseTransform,tr=(base?base+' ':'')+((dx||dy)?`translate(${dx} ${dy})`:'');if(tr.trim())el.setAttribute('transform',tr.trim());else el.removeAttribute('transform');
-        const fs=fontOf(f,c,li);if(el.tagName.toLowerCase()==='foreignobject'){const d=el.querySelector('div');if(d)d.style.fontSize=fs+'px'}else if(el.tagName.toLowerCase()==='text')el.setAttribute('font-size',String(fs));
+        const fs=fontOf(f,c,li);if(el.tagName.toLowerCase()==='foreignobject'){const d=el.querySelector('div');if(d)d.style.fontSize=fs+'px';if(!el.dataset.v380BaseW)el.dataset.v380BaseW=el.getAttribute('width')||'';if(!el.dataset.v380BaseH)el.dataset.v380BaseH=el.getAttribute('height')||'';const z=displaySizeCfg(c,li),bw=parseFloat(el.dataset.v380BaseW),bh=parseFloat(el.dataset.v380BaseH);if(Number.isFinite(bw))el.setAttribute('width',String(Math.max(8,bw+z.dw)));if(Number.isFinite(bh))el.setAttribute('height',String(Math.max(8,bh+z.dh)))}else if(el.tagName.toLowerCase()==='text')el.setAttribute('font-size',String(fs));
         setTextAlignment(el,f,c,li);applyTypography(el,c,li);el.style.opacity=hiddenOf(c,li)?'0':'';
       });
     }else{
       for(const el of els){
         if(!el.dataset.v368BaseTransform)el.dataset.v368BaseTransform=el.getAttribute('transform')||'__NONE__';const base=el.dataset.v368BaseTransform==='__NONE__'?'':el.dataset.v368BaseTransform,dx=Number(c.dx)||0,dy=Number(c.dy)||0,tr=(base?base+' ':'')+((dx||dy)?`translate(${dx} ${dy})`:'');if(tr.trim())el.setAttribute('transform',tr.trim());else el.removeAttribute('transform');
-        if(Number(c.fs)>0){if(el.tagName.toLowerCase()==='foreignobject'){const d=el.querySelector('div');if(d)d.style.fontSize=Number(c.fs)+'px'}else if(el.tagName.toLowerCase()==='text')el.setAttribute('font-size',String(c.fs))}
+        if(Number(c.fs)>0){if(el.tagName.toLowerCase()==='foreignobject'){const d=el.querySelector('div');if(d)d.style.fontSize=Number(c.fs)+'px'}else if(el.tagName.toLowerCase()==='text')el.setAttribute('font-size',String(c.fs))}if(el.tagName.toLowerCase()==='foreignobject'){if(!el.dataset.v380BaseW)el.dataset.v380BaseW=el.getAttribute('width')||'';if(!el.dataset.v380BaseH)el.dataset.v380BaseH=el.getAttribute('height')||'';const z=displaySizeCfg(c,null),bw=parseFloat(el.dataset.v380BaseW),bh=parseFloat(el.dataset.v380BaseH);if(Number.isFinite(bw))el.setAttribute('width',String(Math.max(8,bw+z.dw)));if(Number.isFinite(bh))el.setAttribute('height',String(Math.max(8,bh+z.dh)))}
         if(Number(c.lh)>0&&el.tagName.toLowerCase()==='foreignobject'){const d=el.querySelector('div');if(d)d.style.lineHeight=Number(c.lh)+'px'}
         setTextAlignment(el,f,c,null);applyTypography(el,c,null);el.style.opacity=c.hidden===true?'0':'';
       }
@@ -27631,8 +27640,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     if(!found)return fallback;const padX=5,padY=4;let x=x1-padX,y=y1-padY,w=x2-x1+padX*2,h=y2-y1+padY*2;if(w<34){x-=(34-w)/2;w=34}if(h<20){y-=(20-h)/2;h=20}return{x,y,w,h};
   }
   function addOverlay(svg,f,r,kind,lineIndex=null){
-    const rect=document.createElementNS('http://www.w3.org/2000/svg','rect'),isSel=selected&&selected.page===Number(f.page)&&selected.key===String(f.key)&&zone===kind&&(kind==='touch'||selected.line===lineIndex),cc=cfg(f.page,f.key,false)||{},isOff=kind==='touch'?cc.touchDisabled===true:hiddenOf(cc,lineIndex);
-    rect.setAttribute('x',r.x);rect.setAttribute('y',r.y);rect.setAttribute('width',Math.max(8,r.w));rect.setAttribute('height',Math.max(8,r.h));rect.setAttribute('class','v368-layout-hit '+kind+'-zone'+(isSel?' selected':'')+(isOff?' zone-off':''));rect.setAttribute('data-v368-id',k(f.page,f.key));if(lineIndex!==null)rect.setAttribute('data-v373-line',String(lineIndex));
+    const rect=document.createElementNS('http://www.w3.org/2000/svg','rect'),isPrimary=selected&&selected.page===Number(f.page)&&selected.key===String(f.key)&&zone===kind&&(kind==='touch'||selected.line===lineIndex),isGroup=multiMode&&manyHas(f,kind,lineIndex),isSel=isPrimary||isGroup,cc=cfg(f.page,f.key,false)||{},isOff=kind==='touch'?cc.touchDisabled===true:hiddenOf(cc,lineIndex);
+    rect.setAttribute('x',r.x);rect.setAttribute('y',r.y);rect.setAttribute('width',Math.max(8,r.w));rect.setAttribute('height',Math.max(8,r.h));rect.setAttribute('class','v368-layout-hit '+kind+'-zone'+(isSel?' selected':'')+(isGroup?' multi-selected':'')+(isOff?' zone-off':''));rect.setAttribute('data-v368-id',k(f.page,f.key));if(lineIndex!==null)rect.setAttribute('data-v373-line',String(lineIndex));
     if(kind==='display'){const c=cfg(f.page,f.key,false)||{},tr=displayTransform(c,lineIndex);if(tr)rect.setAttribute('transform',tr)}
     rect.addEventListener('pointerdown',ev=>startDrag(ev,f,rect,kind,lineIndex),{passive:false});rect.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();selectField(f,kind,lineIndex)});svg.appendChild(rect);
   }
@@ -27641,12 +27650,12 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       const svg=svgFor(page);if(!svg)continue;qa('.v368-layout-hit',svg).forEach(x=>x.remove());
       for(const f of allFields().filter(x=>Number(x.page)===page)){
         if(!eligibleField(f))continue;const c=cfg(page,f.key,false)||{},tr=touchRect(f,c);addOverlay(svg,f,tr,'touch',null);
-        if(isMulti(f)){const n=lineCapacity(f);for(let i=0;i<n;i++)addOverlay(svg,f,lineBaseRect(f,i),'display',i)}else{addOverlay(svg,f,renderedRect(page,f.key,absRect(f)),'display',null)}
+        if(isMulti(f)){const n=lineCapacity(f);for(let i=0;i<n;i++)addOverlay(svg,f,displayRect(f,c,i),'display',i)}else{addOverlay(svg,f,displayRect(f,c,null),'display',null)}
       }
     }
   }
   function setZone(z){if(!['display','touch'].includes(z))return;zone=z;if(z==='touch'&&selected)selected.line=null;document.body.classList.toggle('v368-zone-display',z==='display');document.body.classList.toggle('v368-zone-touch',z==='touch');buildOverlays();renderPanel()}
-  function selectField(f,z,lineIndex=null){selected={page:Number(f.page),key:String(f.key),line:(z==='display'&&isMulti(f))?lineIndex:null};if(z)setZone(z);else{buildOverlays();renderPanel()}}
+  function selectField(f,z,lineIndex=null){const o=selObj(f,z,lineIndex);selected={page:o.page,key:o.key,line:o.line};if(z)zone=z;if(multiMode){const id=selId(o.page,o.key,o.line,o.kind);manySet(o,!selectedMany.has(id));if(!selectedMany.size)manySet(o,true);document.body.classList.toggle('v368-zone-display',zone==='display');document.body.classList.toggle('v368-zone-touch',zone==='touch');buildOverlays();renderPanel();return}if(z)setZone(z);else{buildOverlays();renderPanel()}}
   function startDrag(ev,f,rect,kind,lineIndex=null){
     ev.preventDefault();ev.stopPropagation();selected={page:Number(f.page),key:String(f.key),line:(kind==='display'&&isMulti(f))?lineIndex:null};zone=kind;document.body.classList.toggle('v368-zone-display',kind==='display');document.body.classList.toggle('v368-zone-touch',kind==='touch');try{rect.setPointerCapture(ev.pointerId)}catch(e){}
     const svg=svgFor(f.page),box=svg.getBoundingClientRect(),c=cfg(f.page,f.key,true),cc=(kind==='display'&&lineIndex!==null)?lineCfg(c,lineIndex,true):c;
@@ -27662,22 +27671,25 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   function renderPanel(full=true){
     const f=selectedField(),c=f?(cfg(f.page,f.key,false)||{}):{},dc=f&&zone==='display'?(selectedDisplayCfg(false)||{}):c,name=q('#v368LayoutFieldName'),meta=q('#v368LayoutMeta'),lineLabel=q('#v373LineLabel');
     const formName=formLabel();const title=q('#v368LayoutTitle');if(title)title.textContent='CĂN CHỈNH · '+formName+' · AD';
-    if(name)name.textContent=f?(f.label||f.key):'Chọn CĂN CHẠM hoặc CĂN HIỂN THỊ rồi chạm vùng cần chỉnh';
+    if(name)name.textContent=f?((f.label||f.key)+(multiMode&&selectedMany.size>1?' · ĐANG CHỌN '+selectedMany.size+' VÙNG':'')):'Chọn CĂN CHẠM hoặc CĂN HIỂN THỊ rồi chạm vùng cần chỉnh';
     if(meta){
       if(!f)meta.textContent='🟦 xanh = vùng bấm/chạm · 🟪 tím = từng vùng chữ hiển thị. Ô nhiều dòng có khung riêng cho từng dòng.';
       else if(zone==='touch')meta.textContent=`🟦 CĂN CHẠM · ${c.touchDisabled?'ĐANG TẮT':'ĐANG BẬT'} · Trang ${f.page} · ${f.key} · X ${Number(c.hx||0).toFixed(1)} · Y ${Number(c.hy||0).toFixed(1)} · Rộng ${Number(c.hw||0)>=0?'+':''}${Number(c.hw||0).toFixed(1)} · Cao ${Number(c.hh||0)>=0?'+':''}${Number(c.hh||0).toFixed(1)}`;
-      else{const which=selected?.line===null||selected?.line===undefined?'CẢ KHỐI':'DÒNG '+(selected.line+1)+'/'+lineCapacity(f),al=String(dc.align||c.align||f.align||'left').toUpperCase(),w=weightOf(c,selected?.line),it=italicOf(c,selected?.line),un=underlineOf(c,selected?.line),hi=hiddenOf(c,selected?.line);meta.textContent=`🟪 ${which} · ${hi?'ĐANG ẨN':'ĐANG HIỆN'} · Trang ${f.page} · ${f.key} · X ${Number(dc.dx||0).toFixed(1)} · Y ${Number(dc.dy||0).toFixed(1)} · chữ ${Number(dc.fs||c.fs||baseFont(f.page,f.key)).toFixed(1)}px · ${al} · ${w==='700'?'ĐẬM':'THƯỜNG'}${it?' · NGHIÊNG':''}${un?' · GẠCH CHÂN':''}`+(selected?.line===null&&isMulti(f)?` · KC dòng ${Number(c.lh||baseLine(f.page,f.key)).toFixed(1)}px`:'')}
+      else{const which=selected?.line===null||selected?.line===undefined?'CẢ KHỐI':'DÒNG '+(selected.line+1)+'/'+lineCapacity(f),al=String(dc.align||c.align||f.align||'left').toUpperCase(),w=weightOf(c,selected?.line),it=italicOf(c,selected?.line),un=underlineOf(c,selected?.line),hi=hiddenOf(c,selected?.line);meta.textContent=`🟪 ${which} · ${hi?'ĐANG ẨN':'ĐANG HIỆN'} · Trang ${f.page} · ${f.key} · X ${Number(dc.dx||0).toFixed(1)} · Y ${Number(dc.dy||0).toFixed(1)} · W ${Number(dc.dw||0)>=0?'+':''}${Number(dc.dw||0).toFixed(1)} · H ${Number(dc.dh||0)>=0?'+':''}${Number(dc.dh||0).toFixed(1)} · chữ ${Number(dc.fs||c.fs||baseFont(f.page,f.key)).toFixed(1)}px · ${al} · ${w==='700'?'ĐẬM':'THƯỜNG'}${it?' · NGHIÊNG':''}${un?' · GẠCH CHÂN':''}`+(selected?.line===null&&isMulti(f)?` · KC dòng ${Number(c.lh||baseLine(f.page,f.key)).toFixed(1)}px`:'')}
     }
     if(lineLabel){if(f&&zone==='display'&&isMulti(f))lineLabel.textContent=selected?.line===null||selected?.line===undefined?'CẢ KHỐI':`DÒNG ${selected.line+1}/${lineCapacity(f)}`;else lineLabel.textContent='1 DÒNG'}
     q('#v368ZoneDisplay')?.classList.toggle('active',zone==='display');q('#v368ZoneTouch')?.classList.toggle('active',zone==='touch');qa('[data-v368-display-only]').forEach(b=>b.disabled=zone!=='display');qa('[data-v368-touch-only]').forEach(b=>b.disabled=zone!=='touch');qa('[data-v373-multi-only]').forEach(b=>b.disabled=!(zone==='display'&&f&&isMulti(f)));qa('[data-v373-block-only]').forEach(b=>b.disabled=!(zone==='display'&&f&&isMulti(f)&&(selected?.line===null||selected?.line===undefined)));
+    const mb=q('#v380MultiBtn');if(mb){mb.classList.toggle('active',multiMode);mb.textContent=multiMode?'☑ CHỌN NHIỀU ('+selectedMany.size+')':'☑ CHỌN NHIỀU'}
     if(full)status(dirty()?'● Có thay đổi chưa lưu':'');
   }
   function redraw(){try{draw()}catch(e){window.v368ApplySavedLayout()}renderPanel()}
-  function move(dx,dy){if(!canTune()||!selected)return;if(zone==='touch'){const c=cfg(selected.page,selected.key,true);c.hx=Math.round(((Number(c.hx)||0)+dx)*10)/10;c.hy=Math.round(((Number(c.hy)||0)+dy)*10)/10}else{const dc=selectedDisplayCfg(true);dc.dx=Math.round(((Number(dc.dx)||0)+dx)*10)/10;dc.dy=Math.round(((Number(dc.dy)||0)+dy)*10)/10}redraw()}
-  function resizeTouch(dw,dh){if(!canTune()||!selected||zone!=='touch')return;const c=cfg(selected.page,selected.key,true);c.hw=Math.max(-800,Math.min(1200,Math.round(((Number(c.hw)||0)+dw)*10)/10));c.hh=Math.max(-800,Math.min(1200,Math.round(((Number(c.hh)||0)+dh)*10)/10));redraw()}
-  function font(delta){if(!canTune()||!selected||zone!=='display')return;const f=selectedField(),c=cfg(selected.page,selected.key,true),dc=selectedDisplayCfg(true),base=Number(dc.fs)||Number(c.fs)||baseFont(selected.page,selected.key);dc.fs=Math.max(7,Math.min(40,Math.round((base+delta)*10)/10));redraw()}
+  function eachSelection(fn){const arr=activeSelections();if(!arr.length)return false;for(const o of arr)fn(o);return true}
+  function move(dx,dy){if(!canTune())return;if(!eachSelection(o=>{if(zone==='touch'){const c=cfg(o.page,o.key,true);c.hx=Math.round(((Number(c.hx)||0)+dx)*10)/10;c.hy=Math.round(((Number(c.hy)||0)+dy)*10)/10}else{const c=cfg(o.page,o.key,true),dc=o.line!==null&&o.line!==undefined?lineCfg(c,o.line,true):c;dc.dx=Math.round(((Number(dc.dx)||0)+dx)*10)/10;dc.dy=Math.round(((Number(dc.dy)||0)+dy)*10)/10}}))return;redraw()}
+  function resizeDisplay(dw,dh){if(!canTune()||zone!=='display')return;if(!eachSelection(o=>{const c=cfg(o.page,o.key,true),dc=o.line!==null&&o.line!==undefined?lineCfg(c,o.line,true):c;dc.dw=Math.max(-1000,Math.min(1800,Math.round(((Number(dc.dw)||0)+dw)*10)/10));dc.dh=Math.max(-1000,Math.min(1800,Math.round(((Number(dc.dh)||0)+dh)*10)/10))}))return;redraw()}
+  function resizeTouch(dw,dh){if(!canTune()||zone!=='touch')return;if(!eachSelection(o=>{const c=cfg(o.page,o.key,true);c.hw=Math.max(-800,Math.min(1200,Math.round(((Number(c.hw)||0)+dw)*10)/10));c.hh=Math.max(-800,Math.min(1200,Math.round(((Number(c.hh)||0)+dh)*10)/10))}))return;redraw()}
+  function font(delta){if(!canTune()||zone!=='display')return;if(!eachSelection(o=>{const c=cfg(o.page,o.key,true),dc=o.line!==null&&o.line!==undefined?lineCfg(c,o.line,true):c,base=Number(dc.fs)||Number(c.fs)||baseFont(o.page,o.key);dc.fs=Math.max(7,Math.min(40,Math.round((base+delta)*10)/10))}))return;redraw()}
   function line(delta){if(!canTune()||!selected||zone!=='display')return;const f=selectedField();if(!f||!isMulti(f)){status('Ô này không phải nội dung nhiều dòng.');return}if(selected.line!==null&&selected.line!==undefined){status('Khoảng cách dòng áp dụng cho CẢ KHỐI. Bấm CẢ KHỐI trước.');return}const c=cfg(selected.page,selected.key,true),cur=Number(c.lh)||baseLine(selected.page,selected.key);c.lh=Math.max(9,Math.min(60,Math.round((cur+delta)*10)/10));redraw()}
-  function setAlign(al){if(!canTune()||!selected||zone!=='display')return;const dc=selectedDisplayCfg(true);dc.align=al;redraw();status('Đã căn '+(al==='left'?'TRÁI':al==='center'?'GIỮA':'PHẢI')+(selected.line!==null&&selected.line!==undefined?' cho dòng '+(selected.line+1):' cho cả ô')+'.')}
+  function setAlign(al){if(!canTune()||zone!=='display')return;if(!eachSelection(o=>{const c=cfg(o.page,o.key,true),dc=o.line!==null&&o.line!==undefined?lineCfg(c,o.line,true):c;dc.align=al}))return;redraw();status('Đã căn chữ '+(al==='left'?'TRÁI':al==='center'?'GIỮA':'PHẢI')+' cho '+activeSelections().length+' vùng.')}
   function toggleTouch(){if(!canTune()||!selected)return;const c=cfg(selected.page,selected.key,true);c.touchDisabled=!c.touchDisabled;redraw();status(c.touchDisabled?'Đã TẮT vùng chạm. Nhân viên sẽ không bấm nhập được ô này.':'Đã BẬT lại vùng chạm.')}
   function toggleDisplay(){if(!canTune()||!selected||zone!=='display')return;const dc=selectedDisplayCfg(true);dc.hidden=!dc.hidden;redraw();status(dc.hidden?'Đã ẨN vùng hiển thị'+(selected.line!==null&&selected.line!==undefined?' dòng '+(selected.line+1):'')+'. Dữ liệu vẫn được giữ.':'Đã HIỆN lại vùng hiển thị.')}
   function setWeight(weight){if(!canTune()||!selected||zone!=='display')return;const dc=selectedDisplayCfg(true);dc.weight=String(weight);redraw();status(weight==='700'?'Đã IN ĐẬM chữ.':'Đã chuyển chữ về THƯỜNG.')}
@@ -27685,7 +27697,11 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   function toggleUnderline(){if(!canTune()||!selected||zone!=='display')return;const dc=selectedDisplayCfg(true);dc.underline=!dc.underline;redraw();status(dc.underline?'Đã BẬT gạch chân.':'Đã TẮT gạch chân.')}
   function lineAll(){if(!selected||zone!=='display')return;const f=selectedField();if(!f||!isMulti(f))return;selected.line=null;buildOverlays();renderPanel()}
   function lineStep(step){if(!selected||zone!=='display')return;const f=selectedField();if(!f||!isMulti(f))return;const n=lineCapacity(f),cur=selected.line===null||selected.line===undefined?(step>0?-1:0):selected.line;selected.line=Math.max(0,Math.min(n-1,cur+step));buildOverlays();renderPanel()}
-  function resetZone(){if(!canTune()||!selected)return;const id=k(selected.page,selected.key),c=cfg(selected.page,selected.key,true);if(zone==='touch'){delete c.hx;delete c.hy;delete c.hw;delete c.hh;delete c.touchDisabled}else if(selected.line!==null&&selected.line!==undefined){if(c.lines)delete c.lines[String(selected.line)];cleanFieldCfg(c)}else{delete c.dx;delete c.dy;delete c.fs;delete c.lh;delete c.align;delete c.weight;delete c.italic;delete c.underline;delete c.hidden;delete c.lines}if(!Object.keys(c).length)delete draft[id];redraw();status('Đã khôi phục '+(zone==='touch'?'vùng CHẠM':(selected.line!==null&&selected.line!==undefined?'DÒNG '+(selected.line+1):'vùng HIỂN THỊ'))+'. Bấm LƯU để xác nhận.')}
+  function toggleMulti(){multiMode=!multiMode;if(!multiMode)selectedMany.clear();else if(selected){selectedMany.clear();manySet({...selected,kind:zone},true)}buildOverlays();renderPanel();status(multiMode?'✓ CHỌN NHIỀU đang BẬT · chạm các vùng để thêm/bỏ chọn.':'Đã tắt CHỌN NHIỀU.')}
+  function overlayInfo(o){const svg=svgFor(o.page);if(!svg)return null;const id=k(o.page,o.key);let ss='.v368-layout-hit.'+o.kind+'-zone[data-v368-id="'+CSS.escape(id)+'"]';if(o.kind==='display'&&o.line!==null&&o.line!==undefined)ss+='[data-v373-line="'+o.line+'"]';const el=q(ss,svg);if(!el)return null;const x=Number(el.getAttribute('x'))||0,y=Number(el.getAttribute('y'))||0,w=Number(el.getAttribute('width'))||0,h=Number(el.getAttribute('height'))||0;return{o,el,x,y,w,h,cx:x+w/2,cy:y+h/2}}
+  function selectSimilar(axis){if(!selected)return;multiMode=true;const seed={...selected,kind:zone},si=overlayInfo(seed);if(!si)return;selectedMany.clear();for(const page of pages()){const svg=svgFor(page);if(!svg)continue;for(const el of qa('.v368-layout-hit.'+zone+'-zone',svg)){const id=el.getAttribute('data-v368-id'),m=id&&id.match(/^(\d+):(.*)$/);if(!m)continue;const li=el.hasAttribute('data-v373-line')?Number(el.getAttribute('data-v373-line')):null,o={page:Number(m[1]),key:m[2],line:li,kind:zone},ii=overlayInfo(o);if(!ii)continue;const tol=axis==='row'?Math.max(12,(si.h+ii.h)*.38):Math.max(12,(si.w+ii.w)*.18);if((axis==='row'?Math.abs(ii.cy-si.cy):Math.abs(ii.cx-si.cx))<=tol)manySet(o,true)}}buildOverlays();renderPanel();status('Đã chọn '+selectedMany.size+' vùng '+(axis==='row'?'CÙNG HÀNG':'CÙNG CỘT')+'.')}
+  function groupGeom(modeName){const infos=activeSelections().map(overlayInfo).filter(Boolean);if(infos.length<2)return status('Cần chọn ít nhất 2 vùng.');let target;if(modeName==='top')target=Math.min(...infos.map(x=>x.y));if(modeName==='midY')target=infos.reduce((a,x)=>a+x.cy,0)/infos.length;if(modeName==='bottom')target=Math.max(...infos.map(x=>x.y+x.h));if(modeName==='left')target=Math.min(...infos.map(x=>x.x));if(modeName==='midX')target=infos.reduce((a,x)=>a+x.cx,0)/infos.length;if(modeName==='right')target=Math.max(...infos.map(x=>x.x+x.w));for(const ii of infos){let dx=0,dy=0;if(modeName==='top')dy=target-ii.y;if(modeName==='midY')dy=target-ii.cy;if(modeName==='bottom')dy=target-(ii.y+ii.h);if(modeName==='left')dx=target-ii.x;if(modeName==='midX')dx=target-ii.cx;if(modeName==='right')dx=target-(ii.x+ii.w);const o=ii.o;if(zone==='touch'){const c=cfg(o.page,o.key,true);c.hx=(Number(c.hx)||0)+dx;c.hy=(Number(c.hy)||0)+dy}else{const c=cfg(o.page,o.key,true),dc=o.line!==null&&o.line!==undefined?lineCfg(c,o.line,true):c;dc.dx=(Number(dc.dx)||0)+dx;dc.dy=(Number(dc.dy)||0)+dy}}redraw();status('Đã căn '+infos.length+' vùng theo nhóm.')}
+  function resetZone(){if(!canTune()||!selected)return;const id=k(selected.page,selected.key),c=cfg(selected.page,selected.key,true);if(zone==='touch'){delete c.hx;delete c.hy;delete c.hw;delete c.hh;delete c.touchDisabled}else if(selected.line!==null&&selected.line!==undefined){if(c.lines)delete c.lines[String(selected.line)];cleanFieldCfg(c)}else{delete c.dx;delete c.dy;delete c.dw;delete c.dh;delete c.fs;delete c.lh;delete c.align;delete c.weight;delete c.italic;delete c.underline;delete c.hidden;delete c.lines}if(!Object.keys(c).length)delete draft[id];redraw();status('Đã khôi phục '+(zone==='touch'?'vùng CHẠM':(selected.line!==null&&selected.line!==undefined?'DÒNG '+(selected.line+1):'vùng HIỂN THỊ'))+'. Bấm LƯU để xác nhận.')}
   function resetField(){if(!canTune()||!selected)return;delete draft[k(selected.page,selected.key)];selected.line=null;redraw();status('Đã khôi phục cả vùng CHẠM và HIỂN THỊ của ô này.')}
   function resetForm(){if(!canTune())return;const ps=pages();if(!ps.length||!confirm('Khôi phục toàn bộ vùng CHẠM + HIỂN THỊ của biểu mẫu này về mặc định?'))return;for(const id of Object.keys(draft)){const m=id.match(/^(\d+):/);if(m&&ps.includes(Number(m[1])))delete draft[id]}selected=null;redraw();status('Đã khôi phục toàn bộ biểu mẫu. Bấm LƯU để xác nhận.')}
   function save(){if(!canTune())return alert('Chỉ AD được phép lưu căn chỉnh biểu mẫu.');saveStore();status('✓ ĐÃ LƯU BẢN NHÁP TRÊN MÁY AD');if(typeof showAutoUpdateToast==='function')showAutoUpdateToast('✓ Đã lưu bản nháp layout trên thiết bị')}
@@ -27693,10 +27709,10 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     if(!canTune())return alert('Chỉ AD được phép xuất cấu hình biểu mẫu.');if(dirty()){if(!confirm('Có thay đổi chưa LƯU. Lưu trước rồi xuất file?'))return;saveStore()}
     const registry={};for(const [g,d] of Object.entries({...FORM_REGISTRY,...CUSTOM_FORMS}))registry[d.id||sanitizeFormId(d.label||g)]={group:g,name:d.label||sanitizeFormId(g),pages:(d.pages||[]).slice()};
     const cur=inferredFormDef();if(cur&&cur.auto)registry[cur.id]={group:group(),name:cur.label,pages:(cur.pages||[]).slice(),auto:true};
-    const payload={schema:4,build:'V3.79',publishedAt:Date.now(),forms:registry,fields:clone(saved)};const body='/* SAGS shared form layout · generated by AD · do not edit by hand */\nwindow.SAGS_PUBLISHED_FORM_LAYOUT='+JSON.stringify(payload,null,2)+';\n';const blob=new Blob([body],{type:'text/javascript;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='form-layout.js';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);status('✓ ĐÃ XUẤT form-layout.js · tất cả biểu mẫu đã căn được gom chung trong 1 file');if(typeof showAutoUpdateToast==='function')showAutoUpdateToast('✓ Đã xuất form-layout.js · tất cả biểu mẫu')
+    const payload={schema:5,build:'V3.80',publishedAt:Date.now(),forms:registry,fields:clone(saved)};const body='/* SAGS shared form layout · generated by AD · do not edit by hand */\nwindow.SAGS_PUBLISHED_FORM_LAYOUT='+JSON.stringify(payload,null,2)+';\n';const blob=new Blob([body],{type:'text/javascript;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='form-layout.js';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);status('✓ ĐÃ XUẤT form-layout.js · tất cả biểu mẫu đã căn được gom chung trong 1 file');if(typeof showAutoUpdateToast==='function')showAutoUpdateToast('✓ Đã xuất form-layout.js · tất cả biểu mẫu')
   }
-  function close(discard=false){if(dirty()&&!discard&&!confirm('Có thay đổi chưa lưu. Đóng và bỏ các thay đổi này?'))return;draft=clone(saved);mode=false;selected=null;drag=null;document.body.classList.remove('v368-layout-mode','v368-zone-display','v368-zone-touch');q('#v368LayoutPanel')?.classList.remove('show');q('#v368LayoutTuneBtn')?.classList.remove('active');if(q('#v368LayoutTuneBtn'))q('#v368LayoutTuneBtn').textContent='⚙ CĂN CHỈNH';try{draw()}catch(e){}}
-  function open(){if(!canTune())return alert('Chỉ tài khoản AD được phép căn chỉnh biểu mẫu.');const def=inferredFormDef();if(!def||!def.pages?.length)return alert('Chưa có biểu mẫu đang mở để căn chỉnh. Hãy bấm ➕ TẠO BIỂU MẪU hoặc mở một biểu mẫu, sau đó bấm ⚙ CĂN CHỈNH.');draft=clone(saved);mode=true;zone='display';selected=null;document.body.classList.add('v368-layout-mode','v368-zone-display');document.body.classList.remove('v368-zone-touch');q('#v368LayoutPanel')?.classList.add('show');q('#v368LayoutTuneBtn')?.classList.add('active');if(q('#v368LayoutTuneBtn'))q('#v368LayoutTuneBtn').textContent='✕ ĐANG CĂN';redraw()}
+  function close(discard=false){if(dirty()&&!discard&&!confirm('Có thay đổi chưa lưu. Đóng và bỏ các thay đổi này?'))return;draft=clone(saved);mode=false;selected=null;drag=null;multiMode=false;selectedMany.clear();document.body.classList.remove('v368-layout-mode','v368-zone-display','v368-zone-touch');q('#v368LayoutPanel')?.classList.remove('show');q('#v368LayoutTuneBtn')?.classList.remove('active');if(q('#v368LayoutTuneBtn'))q('#v368LayoutTuneBtn').textContent='⚙ CĂN CHỈNH';try{draw()}catch(e){}}
+  function open(){if(!canTune())return alert('Chỉ tài khoản AD được phép căn chỉnh biểu mẫu.');const def=inferredFormDef();if(!def||!def.pages?.length)return alert('Chưa có biểu mẫu đang mở để căn chỉnh. Hãy bấm ➕ TẠO BIỂU MẪU hoặc mở một biểu mẫu, sau đó bấm ⚙ CĂN CHỈNH.');draft=clone(saved);mode=true;zone='display';selected=null;multiMode=false;selectedMany.clear();document.body.classList.add('v368-layout-mode','v368-zone-display');document.body.classList.remove('v368-zone-touch');q('#v368LayoutPanel')?.classList.add('show');q('#v368LayoutTuneBtn')?.classList.add('active');if(q('#v368LayoutTuneBtn'))q('#v368LayoutTuneBtn').textContent='✕ ĐANG CĂN';redraw()}
   function toggle(){mode?close():open()}
   function makeUI(){
     let btn=q('#v368LayoutTuneBtn');
@@ -27705,15 +27721,19 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     const slot=q('#v377LayoutTuneSlot');if(slot&&btn.parentNode!==slot)slot.appendChild(btn);else if(!btn.parentNode)document.body.appendChild(btn);
     if(q('#v368LayoutPanel')){window.v368RefreshTuneButton();return;}
     const p=document.createElement('div');p.id='v368LayoutPanel';p.innerHTML=`
-      <div class="v368Head"><div><div class="v368Title" id="v368LayoutTitle">CĂN CHỈNH · AD</div><div class="v368Hint"><b>🟦 CĂN CHẠM</b> = kéo/đổi kích thước/tắt vùng nhập. <b>🟪 CĂN HIỂN THỊ</b> = vị trí + font + đậm/nghiêng/gạch chân + ẩn/hiện. Ô nhiều dòng chỉnh từng dòng. Form mới tự nhận.</div></div><button type="button" onclick="v368LayoutClose()">×</button></div>
+      <div class="v368Head"><div><div class="v368Title" id="v368LayoutTitle">CĂN CHỈNH · AD</div><div class="v368Hint"><b>🟦 CĂN CHẠM</b> = kéo/đổi kích thước/tắt vùng nhập. <b>🟪 CĂN HIỂN THỊ</b> = vị trí + font + đậm/nghiêng/gạch chân + ẩn/hiện. Ô nhiều dòng chỉnh từng dòng. Có CHỌN NHIỀU để căn cả nhóm cùng lúc. Form mới tự nhận.</div></div><button type="button" onclick="v368LayoutClose()">×</button></div>
       <div class="v368ZoneTabs"><button id="v368ZoneTouch" class="v368ZoneTouch" onclick="v371LayoutZone('touch')">🟦 CĂN CHẠM</button><button id="v368ZoneDisplay" class="v368ZoneDisplay active" onclick="v371LayoutZone('display')">🟪 CĂN HIỂN THỊ</button></div>
       <div class="v368Field"><div id="v368LayoutFieldName">Chọn vùng rồi chạm vào ô cần chỉnh</div><div class="v368Meta" id="v368LayoutMeta"></div></div>
+      <div class="v368Rows three"><button id="v380MultiBtn" onclick="v380ToggleMulti()">☑ CHỌN NHIỀU</button><button onclick="v380SelectSimilar('row')">↔ CÙNG HÀNG</button><button onclick="v380SelectSimilar('col')">↕ CÙNG CỘT</button></div>
+      <div class="v368Rows three"><button onclick="v380GroupGeom('top')">CĂN TRÊN</button><button onclick="v380GroupGeom('midY')">GIỮA Y</button><button onclick="v380GroupGeom('bottom')">CĂN DƯỚI</button></div>
+      <div class="v368Rows three"><button onclick="v380GroupGeom('left')">CĂN TRÁI X</button><button onclick="v380GroupGeom('midX')">GIỮA X</button><button onclick="v380GroupGeom('right')">CĂN PHẢI X</button></div>
       <div class="v368Rows three"><button data-v368-display-only data-v373-multi-only onclick="v373LineAll()">CẢ KHỐI</button><button data-v368-display-only data-v373-multi-only onclick="v373LineStep(-1)">◀ DÒNG</button><button data-v368-display-only data-v373-multi-only onclick="v373LineStep(1)">DÒNG ▶</button></div>
       <div class="v368Field" style="padding:5px 8px;margin-top:5px;text-align:center"><span id="v373LineLabel">1 DÒNG</span></div>
       <div class="v368Grid"><span></span><button onclick="v368LayoutMove(0,-1)">↑</button><span></span><button data-v368-display-only onclick="v368LayoutFont(-1)">A−</button><button data-v368-display-only onclick="v368LayoutFont(1)">A+</button><button onclick="v368LayoutMove(-1,0)">←</button><button onclick="v368LayoutMove(0,1)">↓</button><button onclick="v368LayoutMove(1,0)">→</button><button data-v368-display-only data-v373-block-only onclick="v368LayoutLine(-1)">KC−</button><button data-v368-display-only data-v373-block-only onclick="v368LayoutLine(1)">KC+</button></div>
       <div class="v368Rows three"><button data-v368-display-only onclick="v373LayoutAlign('left')">⬅ TRÁI</button><button data-v368-display-only onclick="v373LayoutAlign('center')">↔ GIỮA</button><button data-v368-display-only onclick="v373LayoutAlign('right')">PHẢI ➡</button></div>
       <div class="v368Rows three"><button data-v368-display-only onclick="v376LayoutWeight('400')">CHỮ THƯỜNG</button><button data-v368-display-only onclick="v376LayoutWeight('700')"><b>IN ĐẬM</b></button><button data-v368-display-only onclick="v376LayoutItalic()"><i>NGHIÊNG</i></button></div>
       <div class="v368Rows"><button data-v368-display-only onclick="v376LayoutUnderline()"><u>GẠCH CHÂN</u></button><button data-v368-display-only onclick="v376LayoutToggleDisplay()">👁 ẨN / HIỆN CHỮ</button></div>
+      <div class="v368Grid"><button data-v368-display-only onclick="v380DisplayResize(-2,0)">HIỂN THỊ RỘNG−</button><button data-v368-display-only onclick="v380DisplayResize(2,0)">HIỂN THỊ RỘNG+</button><span></span><button data-v368-display-only onclick="v380DisplayResize(0,-2)">HIỂN THỊ CAO−</button><button data-v368-display-only onclick="v380DisplayResize(0,2)">HIỂN THỊ CAO+</button></div>
       <div class="v368Grid"><button data-v368-touch-only onclick="v371LayoutResize(-2,0)">RỘNG−</button><button data-v368-touch-only onclick="v371LayoutResize(2,0)">RỘNG+</button><span></span><button data-v368-touch-only onclick="v371LayoutResize(0,-2)">CAO−</button><button data-v368-touch-only onclick="v371LayoutResize(0,2)">CAO+</button></div>
       <div class="v368Rows"><button data-v368-touch-only class="danger" onclick="v376LayoutToggleTouch()">🖐 TẮT / BẬT VÙNG CHẠM</button><button data-v368-display-only class="danger" onclick="v376LayoutToggleDisplay()">✕ XÓA / KHÔI PHỤC HIỂN THỊ</button></div>
       <div class="v368Rows three"><button class="danger" onclick="v371LayoutResetZone()">RESET VÙNG/DÒNG</button><button class="danger" onclick="v368LayoutResetField()">RESET Ô</button><button class="danger" onclick="v368LayoutResetForm()">RESET FORM</button></div>
@@ -27723,7 +27743,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     document.body.appendChild(p);window.v368RefreshTuneButton();renderPanel();
   }
   window.v368RefreshTuneButton=function(){const b=q('#v368LayoutTuneBtn');if(!b)return;const slot=q('#v377LayoutTuneSlot');if(slot&&b.parentNode!==slot)slot.appendChild(b);const ad=canTune(),def=inferredFormDef(),hasForm=!!def&&Array.isArray(def.pages)&&def.pages.length>0;b.style.display=ad?'block':'none';b.title=hasForm?'Căn chỉnh biểu mẫu đang mở':'Mở một biểu mẫu rồi bấm CĂN CHỈNH';if(!ad&&mode)close(true)};
-  window.v371LayoutZone=setZone;window.v371LayoutResize=resizeTouch;window.v371LayoutResetZone=resetZone;window.v368LayoutMove=move;window.v368LayoutFont=font;window.v368LayoutLine=line;window.v368LayoutResetField=resetField;window.v368LayoutResetForm=resetForm;window.v368LayoutSave=save;window.v372LayoutExport=exportLayoutFile;window.v368LayoutClose=()=>close(false);window.v373LayoutAlign=setAlign;window.v373LineAll=lineAll;window.v373LineStep=lineStep;window.v376LayoutToggleTouch=toggleTouch;window.v376LayoutToggleDisplay=toggleDisplay;window.v376LayoutWeight=setWeight;window.v376LayoutItalic=toggleItalic;window.v376LayoutUnderline=toggleUnderline;
+  window.v371LayoutZone=setZone;window.v371LayoutResize=resizeTouch;window.v380DisplayResize=resizeDisplay;window.v380ToggleMulti=toggleMulti;window.v380SelectSimilar=selectSimilar;window.v380GroupGeom=groupGeom;window.v371LayoutResetZone=resetZone;window.v368LayoutMove=move;window.v368LayoutFont=font;window.v368LayoutLine=line;window.v368LayoutResetField=resetField;window.v368LayoutResetForm=resetForm;window.v368LayoutSave=save;window.v372LayoutExport=exportLayoutFile;window.v368LayoutClose=()=>close(false);window.v373LayoutAlign=setAlign;window.v373LineAll=lineAll;window.v373LineStep=lineStep;window.v376LayoutToggleTouch=toggleTouch;window.v376LayoutToggleDisplay=toggleDisplay;window.v376LayoutWeight=setWeight;window.v376LayoutItalic=toggleItalic;window.v376LayoutUnderline=toggleUnderline;
   let lastObservedGroup='';function autoRefreshForm(){const g=group();if(g!==lastObservedGroup){lastObservedGroup=g;try{window.v368RefreshTuneButton?.();if(mode){selected=null;redraw()}}catch(e){}}}
   setInterval(autoRefreshForm,700);
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{makeUI();setTimeout(()=>{try{draw()}catch(e){};autoRefreshForm()},50)});else{makeUI();setTimeout(()=>{try{draw()}catch(e){};autoRefreshForm()},50)}
@@ -27745,9 +27765,9 @@ root.v379ClearOldCloseoutNotices=async function(){
   try{
     if(typeof root.sagsV470Ref!=='function')throw new Error('RTDB chưa sẵn sàng.');
     const now=Date.now();setStatus('Đang dọn tín hiệu KẾT SỔ cũ…');
-    try{await root.sagsV470Ref('closeout').remove();}catch(e){console.warn('V3.79 clear closeout/latest',e)}
+    try{await root.sagsV470Ref('closeout').remove();}catch(e){console.warn('V3.80 clear closeout/latest',e)}
     const events=root.sagsV470Ref('closeout_events_v348');
-    try{await events.remove();}catch(e){console.warn('V3.79 clear closeout events',e)}
+    try{await events.remove();}catch(e){console.warn('V3.80 clear closeout events',e)}
     const marker={kind:'sags_closeout_clear_v379',eventAtMs:now,cutoffMs:now,sourceUser:String(root.currentUserProfile?.username||'AD'),sourceRole:'AD'};
     await events.child('_SYSTEM_CLEAR_').set(marker);
     root.__SAGS_CLOSEOUT_NOTICE_CUTOFF_MS=now;
@@ -27755,7 +27775,7 @@ root.v379ClearOldCloseoutNotices=async function(){
     setStatus('✓ ĐÃ DỌN THÔNG BÁO KẾT SỔ CŨ · hồ sơ KẾT SỔ vẫn được giữ nguyên.');
     try{root.showAutoUpdateToast?.('✓ Đã xóa thông báo KẾT SỔ cũ');}catch(e){}
     alert('✓ ĐÃ XÓA THÔNG BÁO KẾT SỔ CŨ\n\nHồ sơ KẾT SỔ trong Firestore KHÔNG bị xóa. Popup/tín hiệu test cũ đã được dọn và các máy online sẽ nhận mốc dọn mới.');
-  }catch(e){console.error('V3.79 closeout cleanup',e);setStatus('Không dọn được thông báo KẾT SỔ: '+String(e?.message||e),true);alert('Không dọn được thông báo KẾT SỔ: '+String(e?.message||e));}
+  }catch(e){console.error('V3.80 closeout cleanup',e);setStatus('Không dọn được thông báo KẾT SỔ: '+String(e?.message||e),true);alert('Không dọn được thông báo KẾT SỔ: '+String(e?.message||e));}
   finally{if(btn){btn.disabled=false;btn.textContent='🗑 XÓA THÔNG BÁO KẾT SỔ CŨ';}}
 };
 })(window);

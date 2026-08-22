@@ -1,8 +1,8 @@
 {
-  "version": "V3.79",
+  "version": "V3.80",
   "displayVersion": "V3.79",
   "label": "V3.79",
-  "build": "V3.79-20260822-01",
+  "build": "V3.80-20260822-01",
   "releasedAt": "2026-08-22T12:01:14Z",
   "notes": "Restores the AD toolbar controls below the main toolbar, keeps Create Form and Full Form Editor visible for AD, and adds an AD-only cleanup action for old KET SO realtime notifications. The cleanup removes RTDB notification signals and local popup caches but preserves Firestore closeout records.",
   "message": "V3.79 · Khôi phục nút AD và thêm dọn thông báo KẾT SỔ cũ."
