@@ -1,5 +1,5 @@
-const CACHE_NAME="sags-v3-83-auth-restore-hotfix-20260822-01";
-const BUILD="V3.84.1-20260822-01";
+const CACHE_NAME="sags-v3-84-2-update-sync-20260822-01";
+const BUILD="V3.84.2-20260822-01";
 const APP_SHELL=[
   "./9Gfinal.png",
   "./CBTT.png",

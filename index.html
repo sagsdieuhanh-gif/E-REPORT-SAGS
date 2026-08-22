@@ -2172,7 +2172,7 @@ body.role-viewer #ffSendBtn{
 </div>
 <div id="rsOverdueHost"></div>
 
-<script src="./app.js?v=V3.83" data-phase="qr"></script>
+<script src="./app.js?v=V3.84.2" data-phase="qr"></script>
 <style>
 /* ===== V6.3.5 FINAL RECEIVER SCROLL + PERFORMANCE ===== */
 #finalFormsModal{
@@ -3125,7 +3125,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
   </div>
 </div>
 
-<div id="buildMarker">V3.83</div>
+<div id="buildMarker">V3.84.2</div>
 <div aria-live="polite" id="currentFerryFlag"><span class="dot"></span><span id="currentFerryFlagText">FERRY</span></div>
 <div class="toolbar compact-main-toolbar">
 <div class="badge">PĐH SAGS-CXR</div>
@@ -3196,6 +3196,8 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <button onclick="closeUpdateInfo()" aria-label="Đóng" style="border:0;background:#eee;border-radius:50%;width:34px;height:34px;font-size:21px;line-height:30px">×</button>
 </div>
 <div style="padding:11px 12px;border:1px solid #b7d7ef;border-radius:11px;background:#eef7ff">
+<p style="margin:0 0 6px;color:#075985"><b>V3.84.2 · 22/08/2026 — FIREBASE ROLE + UPDATE SYNC HOTFIX</b></p>
+<p style="margin:4px 0">• Đồng bộ version.json / index.html / Service Worker cùng một build để updater không còn kẹt ở bước GitHub đồng bộ.</p>
 <p style="margin:0 0 6px;color:#075985"><b>V3.83 · 22/08/2026 — FIREBASE AUTH RESTORE HOTFIX</b></p>
 <p style="margin:4px 0">• Khôi phục cố định hàng AD ngay dưới toolbar: <b>➕ TẠO BIỂU MẪU</b> + <b>⚙ CĂN CHỈNH</b>; nút CĂN CHỈNH luôn hiện với AD, nếu chưa mở form sẽ hướng dẫn mở form trước.</p>
 <p style="margin:4px 0">• Thêm <b>🗑 XÓA THÔNG BÁO KẾT SỔ CŨ</b>: chỉ dọn popup/tín hiệu RTDB + cache thông báo, <b>không xóa hồ sơ KẾT SỔ Firestore</b>; máy đang online nhận mốc dọn để bỏ các popup test cũ.</p>
@@ -3212,7 +3214,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 </div>
 <details style="margin-top:10px;padding:9px 11px;border:1px solid #dbe4eb;border-radius:10px;background:#fafcfd">
 <summary style="cursor:pointer;font-weight:800;color:#334155">Lưu ý sau khi cập nhật</summary>
-<p style="margin:8px 0 0">Dữ liệu hồ sơ nghiệp vụ trên Firebase không bị xóa. Bản này chỉ nạp Firebase Authentication SDK để chuẩn bị xác thực an toàn; cơ chế đăng nhập hiện tại chưa bị thay đổi. Chờ nhãn góc trái hiện V3.83.</p>
+<p style="margin:8px 0 0">Dữ liệu hồ sơ nghiệp vụ trên Firebase không bị xóa. Bản này chỉ nạp Firebase Authentication SDK để chuẩn bị xác thực an toàn; cơ chế đăng nhập hiện tại chưa bị thay đổi. Chờ nhãn góc trái hiện V3.84.2.</p>
 </details>
 <button onclick="closeUpdateInfo()" style="width:100%;margin-top:12px;border:0;border-radius:10px;padding:10px 14px;background:#0b67b2;color:#fff;font-weight:800">ĐÓNG</button>
 </div>
@@ -4188,7 +4190,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <script>
 window.SAGS_FIREBASE_AUTH_SDK_READY = !!(window.firebase && typeof window.firebase.auth === "function");
 </script>
-<script src="./app.js?v=V3.83" data-phase="config"></script>
+<script src="./app.js?v=V3.84.2" data-phase="config"></script>
 <script>
 let suppressModalClickUntil=0;
 function armModalGhostClickBlock(ms=650){
@@ -12335,8 +12337,8 @@ try {
   alert("Lỗi JavaScript: "+err.message);
 }
 
-const APP_BUILD_VERSION="V3.83-20260822-01";
-const APP_DISPLAY_VERSION="V3.83";
+const APP_BUILD_VERSION="V3.84.2-20260822-01";
+const APP_DISPLAY_VERSION="V3.84.2";
 
 // V4.21 — SAFE UPDATE SAVE
 // Before switching to a newly installed app version, force-save all current
@@ -24432,7 +24434,7 @@ window.openCamScanner=openCamScanner;
 <script type="module" src="./ai.js?v=V3.58"></script>
 
 
-<script src="./app.js?v=V3.83" data-phase="archive"></script>
+<script src="./app.js?v=V3.84.2" data-phase="archive"></script>
 <script id="v120-build02-fixes">
 /* V1.20 BUILD 02 — background persistence, VHTTB, per-account usage detail, progress dedupe. */
 (function(){
@@ -24892,7 +24894,7 @@ window.openCamScanner=openCamScanner;
 
 
 
-<script src="./app.js?v=V3.83" data-phase="tools"></script>
+<script src="./app.js?v=V3.84.2" data-phase="tools"></script>
 <script id="v173-quick-time">
 (function(){
   "use strict";
@@ -26948,7 +26950,7 @@ window.openCamScanner=openCamScanner;
 }
 </style>
 
-<script src="./app.js?v=V3.83" data-phase="flight"></script>
+<script src="./app.js?v=V3.84.2" data-phase="flight"></script>
 <script id="v191IOSInteractionFix">
 (()=>{
   'use strict';
@@ -27212,7 +27214,7 @@ window.openCamScanner=openCamScanner;
 })();
 </script>
 
-<script src="./app.js?v=V3.83" data-phase="control"></script>
+<script src="./app.js?v=V3.84.2" data-phase="control"></script>
 
 <style id="v330-group-permission-style">
 #v330GroupPermPanel{margin:12px 0 8px;padding:11px;border:1px solid #cbd9e6;border-radius:12px;background:#f7fbff;box-sizing:border-box}
@@ -27809,7 +27811,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     if(!canTune())return alert('Chỉ AD được phép xuất cấu hình biểu mẫu.');if(dirty()){if(!confirm('Có thay đổi chưa LƯU. Lưu trước rồi xuất file?'))return;saveStore()}
     const registry={};for(const [g,d] of Object.entries({...FORM_REGISTRY,...CUSTOM_FORMS}))registry[d.id||sanitizeFormId(d.label||g)]={group:g,name:d.label||sanitizeFormId(g),pages:(d.pages||[]).slice()};
     const cur=inferredFormDef();if(cur&&cur.auto)registry[cur.id]={group:group(),name:cur.label,pages:(cur.pages||[]).slice(),auto:true};
-    const payload={schema:5,build:'V3.83',publishedAt:Date.now(),forms:registry,fields:clone(saved)};const body='/* SAGS shared form layout · generated by AD · do not edit by hand */\nwindow.SAGS_PUBLISHED_FORM_LAYOUT='+JSON.stringify(payload,null,2)+';\n';const blob=new Blob([body],{type:'text/javascript;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='form-layout.js';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);status('✓ ĐÃ XUẤT form-layout.js · tất cả biểu mẫu đã căn được gom chung trong 1 file');if(typeof showAutoUpdateToast==='function')showAutoUpdateToast('✓ Đã xuất form-layout.js · tất cả biểu mẫu')
+    const payload={schema:5,build:'V3.84.2',publishedAt:Date.now(),forms:registry,fields:clone(saved)};const body='/* SAGS shared form layout · generated by AD · do not edit by hand */\nwindow.SAGS_PUBLISHED_FORM_LAYOUT='+JSON.stringify(payload,null,2)+';\n';const blob=new Blob([body],{type:'text/javascript;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='form-layout.js';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);status('✓ ĐÃ XUẤT form-layout.js · tất cả biểu mẫu đã căn được gom chung trong 1 file');if(typeof showAutoUpdateToast==='function')showAutoUpdateToast('✓ Đã xuất form-layout.js · tất cả biểu mẫu')
   }
   function close(discard=false){if(dirty()&&!discard&&!confirm('Có thay đổi chưa lưu. Đóng và bỏ các thay đổi này?'))return;draft=clone(saved);mode=false;selected=null;drag=null;multiMode=false;selectedMany.clear();document.body.classList.remove('v368-layout-mode','v368-zone-display','v368-zone-touch');q('#v368LayoutPanel')?.classList.remove('show');q('#v368LayoutTuneBtn')?.classList.remove('active');if(q('#v368LayoutTuneBtn'))q('#v368LayoutTuneBtn').textContent='⚙ CĂN CHỈNH';try{draw()}catch(e){}}
   function open(){if(!canTune())return alert('Chỉ tài khoản AD được phép căn chỉnh biểu mẫu.');const def=inferredFormDef();if(!def||!def.pages?.length)return alert('Chưa có biểu mẫu đang mở để căn chỉnh. Hãy bấm ➕ TẠO BIỂU MẪU hoặc mở một biểu mẫu, sau đó bấm ⚙ CĂN CHỈNH.');draft=clone(saved);mode=true;zone='display';selected=null;multiMode=false;selectedMany.clear();document.body.classList.add('v368-layout-mode','v368-zone-display');document.body.classList.remove('v368-zone-touch');q('#v368LayoutPanel')?.classList.add('show');q('#v368LayoutTuneBtn')?.classList.add('active');if(q('#v368LayoutTuneBtn'))q('#v368LayoutTuneBtn').textContent='✕ ĐANG CĂN';redraw()}

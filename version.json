@@ -1,9 +1,9 @@
 {
-  "version": "V3.84.1",
-  "displayVersion": "V3.84.1",
-  "label": "V3.84.1",
-  "build": "V3.84.1-20260822-01",
-  "releasedAt": "2026-08-22T14:25:00Z",
-  "notes": "AD Firebase Authentication now checks Firestore users UID role ADMIN and active before enabling admin session.",
-  "message": "V3.84 · Firebase Role Permission · AD quyền từ Firestore"
+  "version": "V3.84.2",
+  "displayVersion": "V3.84.2",
+  "label": "V3.84.2",
+  "build": "V3.84.2-20260822-01",
+  "releasedAt": "2026-08-22T14:37:00Z",
+  "notes": "Firebase role permission plus updater build synchronization hotfix.",
+  "message": "V3.84.2 · Firebase Role Permission · Update Sync Fix"
 }
