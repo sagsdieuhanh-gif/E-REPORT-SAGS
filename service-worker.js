@@ -1,5 +1,5 @@
-const CACHE_NAME="sags-v3-51-compact-mobile-toolbar-20260822-01";
-const BUILD="V3.51-20260822-01";
+const CACHE_NAME="sags-v3-52-action-center-reset-20260822-01";
+const BUILD="V3.52-20260822-01";
 const APP_SHELL=[
   "./9Gfinal.png",
   "./CBTT.png",

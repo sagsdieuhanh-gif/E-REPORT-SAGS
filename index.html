@@ -2172,7 +2172,7 @@ body.role-viewer #ffSendBtn{
 </div>
 <div id="rsOverdueHost"></div>
 
-<script src="./app.js?v=V3.51" data-phase="qr"></script>
+<script src="./app.js?v=V3.52" data-phase="qr"></script>
 <style>
 /* ===== V6.3.5 FINAL RECEIVER SCROLL + PERFORMANCE ===== */
 #finalFormsModal{
@@ -3051,7 +3051,7 @@ user-select:none;-webkit-user-select:none;touch-action:none;-webkit-tap-highligh
   </div>
 </div>
 
-<div id="buildMarker">V3.51</div>
+<div id="buildMarker">V3.52</div>
 <div aria-live="polite" id="currentFerryFlag"><span class="dot"></span><span id="currentFerryFlagText">FERRY</span></div>
 <div class="toolbar compact-main-toolbar">
 <div class="badge">PĐH SAGS-CXR</div>
@@ -3100,15 +3100,15 @@ user-select:none;-webkit-user-select:none;touch-action:none;-webkit-tap-highligh
 <button onclick="closeUpdateInfo()" aria-label="Đóng" style="border:0;background:#eee;border-radius:50%;width:34px;height:34px;font-size:21px;line-height:30px">×</button>
 </div>
 <div style="padding:11px 12px;border:1px solid #b7d7ef;border-radius:11px;background:#eef7ff">
-<p style="margin:0 0 6px;color:#075985"><b>V3.51 · 22/08/2026 — THANH CÔNG CỤ ĐIỆN THOẠI GỌN</b></p>
-<p style="margin:4px 0">• Thanh công cụ dưới cùng được gom thành <b>một hàng chip nhỏ</b>; vuốt ngang để xem thêm chức năng.</p>
-<p style="margin:4px 0">• Tên tài khoản giữ ở đầu thanh; bấm <b>⋮</b> để ĐỔI MẬT KHẨU hoặc ĐĂNG XUẤT.</p>
-<p style="margin:4px 0">• RAMP của ĐH và KẾT SỔ dùng chung nút ngắn <b>⏱ NHẬP NHANH</b>.</p>
-<p style="margin:4px 0">• Sửa quyền mặc định của ĐH bị thiếu QUICK_TIME ở lớp cấu hình sau, làm nút nhập nhanh biến mất.</p>
+<p style="margin:0 0 6px;color:#075985"><b>V3.52 · 22/08/2026 — BẮT ĐẦU LẠI CẦN XỬ LÝ</b></p>
+<p style="margin:4px 0">• Xóa toàn bộ hàng công việc cũ khỏi <b>CẦN XỬ LÝ</b>, badge và bộ đếm quá mốc.</p>
+<p style="margin:4px 0">• Chỉ công việc phát sinh từ mốc khởi tạo mới ngày 22/08/2026 mới được hiển thị và nhắc.</p>
+<p style="margin:4px 0">• Cache CẦN XỬ LÝ cũ trên từng thiết bị được xóa khi tài khoản đăng nhập.</p>
+<p style="margin:4px 0">• Hồ sơ FINAL/CROSSCHECK cũ không bị xóa; vẫn tra cứu trong <b>CHUYẾN → FLIGHT WORKSPACE → HỒ SƠ</b>.</p>
 </div>
 <details style="margin-top:10px;padding:9px 11px;border:1px solid #dbe4eb;border-radius:10px;background:#fafcfd">
 <summary style="cursor:pointer;font-weight:800;color:#334155">Lưu ý sau khi cập nhật</summary>
-<p style="margin:8px 0 0">Dữ liệu đang làm và hồ sơ Firebase không bị xóa. Chỉ cập nhật khi người dùng bấm CẬP NHẬT và chờ nhãn góc trái hiện V3.51.</p>
+<p style="margin:8px 0 0">Dữ liệu hồ sơ nghiệp vụ trên Firebase không bị xóa. Chỉ cập nhật khi người dùng bấm CẬP NHẬT và chờ nhãn góc trái hiện V3.52.</p>
 </details>
 <button onclick="closeUpdateInfo()" style="width:100%;margin-top:12px;border:0;border-radius:10px;padding:10px 14px;background:#0b67b2;color:#fff;font-weight:800">ĐÓNG</button>
 </div>
@@ -4080,7 +4080,7 @@ user-select:none;-webkit-user-select:none;touch-action:none;-webkit-tap-highligh
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
-<script src="./app.js?v=V3.51" data-phase="config"></script>
+<script src="./app.js?v=V3.52" data-phase="config"></script>
 <script>
 let suppressModalClickUntil=0;
 function armModalGhostClickBlock(ms=650){
@@ -12095,8 +12095,8 @@ try {
   alert("Lỗi JavaScript: "+err.message);
 }
 
-const APP_BUILD_VERSION="V3.51-20260822-01";
-const APP_DISPLAY_VERSION="V3.51";
+const APP_BUILD_VERSION="V3.52-20260822-01";
+const APP_DISPLAY_VERSION="V3.52";
 
 // V4.21 — SAFE UPDATE SAVE
 // Before switching to a newly installed app version, force-save all current
@@ -23144,7 +23144,7 @@ hybridV469PublishFinal=function(finalPayload,docId){
   ];
   try{
     const rev=Math.max(1,Number(finalPayload.revisionNo||1)),cs=finalPayload.cleanCrosscheck?.[String(rev)]||{},packageId=String(cs.packageId||"");
-    if(packageId)tasks.push({name:"sags_live_v470/cross_state",required:true,promise:db.ref(SAGS_V470_ROOT+"/cross_state/"+sagsV470Safe(packageId)).set({packageId,parentDocId:String(docId),revisionNo:rev,attemptNo:Math.max(1,Number(cs.attempt||1)),status:String(cs.status||FF_X_WAIT_DH),targetUser:normalizePersonalUsername(cs.targetUser||""),identity:cloneSafe(finalPayload.identity||{}),eventType:"FINAL_SENT",eventAtMs,updatedAtMs:eventAtMs})});
+    if(packageId)tasks.push({name:"sags_live_v470/cross_state",required:true,promise:db.ref(SAGS_V470_ROOT+"/cross_state/"+sagsV470Safe(packageId)).set({packageId,parentDocId:String(docId),revisionNo:rev,attemptNo:Math.max(1,Number(cs.attempt||1)),status:String(cs.status||FF_X_WAIT_DH),targetUser:normalizePersonalUsername(cs.targetUser||""),identity:cloneSafe(finalPayload.identity||{}),eventType:"FINAL_SENT",createdAtMs:Number(finalPayload.submittedAtMs||eventAtMs),eventAtMs,updatedAtMs:eventAtMs})});
   }catch(e){console.warn("FINAL cross_state prepare",e);}
   return Promise.allSettled(tasks.map(x=>x.promise)).then(results=>{
     const failed=results.map((r,i)=>({r,t:tasks[i]})).filter(x=>x.r.status==="rejected");
@@ -23172,7 +23172,7 @@ hybridV469TestConnection=async function(){
 };
 
 /* CROSSCHECK: RTDB mailbox/state; Firestore remains canonical package/FINAL storage. */
-function sagsV470CrossSummary(pkg={}){return {packageId:String(pkg.packageId||""),parentDocId:String(pkg.parentDocId||""),revisionNo:Math.max(1,Number(pkg.revisionNo||1)),attemptNo:Math.max(1,Number(pkg.attemptNo||1)),status:String(pkg.status||""),targetUser:normalizePersonalUsername(pkg.targetUser||""),identity:cloneSafe(pkg.identity||{}),updatedAtMs:Number(pkg.updatedAtMs||Date.now())};}
+function sagsV470CrossSummary(pkg={}){return {packageId:String(pkg.packageId||""),parentDocId:String(pkg.parentDocId||""),revisionNo:Math.max(1,Number(pkg.revisionNo||1)),attemptNo:Math.max(1,Number(pkg.attemptNo||1)),status:String(pkg.status||""),targetUser:normalizePersonalUsername(pkg.targetUser||""),identity:cloneSafe(pkg.identity||{}),createdAtMs:Number(pkg.createdAtMs||pkg.cbttSentAtMs||pkg.finalSnapshot?.sentAtMs||pkg.updatedAtMs||Date.now()),updatedAtMs:Number(pkg.updatedAtMs||Date.now())};}
 async function sagsV470PublishCrossMail(targetUser,eventType,pkg={},message=""){
   const u=normalizePersonalUsername(targetUser||"");if(!u)return false;const now=Date.now(),summary=sagsV470CrossSummary(pkg);summary.updatedAtMs=now;const eventKey=`${summary.parentDocId||"X"}:R${summary.revisionNo}:C${summary.attemptNo}:${eventType}:${now}`;
   const mail={kind:CX_CLEAN_MAIL_KIND,eventType:String(eventType||""),targetUser:u,eventAtMs:now,eventKey,message:String(message||""),package:summary};
@@ -24022,10 +24022,10 @@ window.openCamScanner=openCamScanner;
   setTimeout(()=>{try{if(window.currentRole)window.v114ApplyRoleHomeBackground();}catch(_){}},500);
 })();
 </script>
-<script type="module" src="./ai.js?v=V3.51"></script>
+<script type="module" src="./ai.js?v=V3.52"></script>
 
 
-<script src="./app.js?v=V3.51" data-phase="archive"></script>
+<script src="./app.js?v=V3.52" data-phase="archive"></script>
 <script id="v120-build02-fixes">
 /* V1.20 BUILD 02 — background persistence, VHTTB, per-account usage detail, progress dedupe. */
 (function(){
@@ -24465,7 +24465,7 @@ window.openCamScanner=openCamScanner;
 
 
 
-<script src="./app.js?v=V3.51" data-phase="tools"></script>
+<script src="./app.js?v=V3.52" data-phase="tools"></script>
 <script id="v173-quick-time">
 (function(){
   "use strict";
@@ -26521,7 +26521,7 @@ window.openCamScanner=openCamScanner;
 }
 </style>
 
-<script src="./app.js?v=V3.51" data-phase="flight"></script>
+<script src="./app.js?v=V3.52" data-phase="flight"></script>
 <script id="v191IOSInteractionFix">
 (()=>{
   'use strict';
@@ -26785,7 +26785,7 @@ window.openCamScanner=openCamScanner;
 })();
 </script>
 
-<script src="./app.js?v=V3.51" data-phase="control"></script>
+<script src="./app.js?v=V3.52" data-phase="control"></script>
 
 <style id="v330-group-permission-style">
 #v330GroupPermPanel{margin:12px 0 8px;padding:11px;border:1px solid #cbd9e6;border-radius:12px;background:#f7fbff;box-sizing:border-box}
@@ -27008,10 +27008,10 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })(window);
 </script>
 
-<script src="./action-center-v342.js?v=V3.51"></script>
-<script src="./flight-workspace-documents-v350.js?v=V3.51"></script>
-<script src="./compact-toolbar-v351.js?v=V3.51"></script>
-<script src="./closeout-final-autofill-v344.js?v=V3.51"></script>
+<script src="./action-center-v342.js?v=V3.52"></script>
+<script src="./flight-workspace-documents-v350.js?v=V3.52"></script>
+<script src="./compact-toolbar-v351.js?v=V3.52"></script>
+<script src="./closeout-final-autofill-v344.js?v=V3.52"></script>
 
 </body>
 </html>
