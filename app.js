@@ -4643,12 +4643,12 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 /* ===== END roster-completed.js ===== */
 
 /* ===== BEGIN flight-hub.js ===== */
-/* E-REPORT SAGS V3.0 · MASTER FLIGHT HUB
+/* E-REPORT SAGS V3.53 · MASTER FLIGHT HUB
  * One Daily Roster flight = one master flight record. Operational modules keep their canonical data
  * but register a compact pointer/status under the same flightId so every department works in one flight workspace.
  */
 (function(root){'use strict';
-  const BUILD='V3.3-20260821-01';
+  const BUILD='V3.53-20260822-01';
   const ROOT='flight_records', MANIFEST='roster_manifests', MAIL='roster_mail';
   const S=v=>String(v??'').trim(), U=v=>S(v).toUpperCase();
   const safe=v=>S(v).replace(/[.#$\[\]\/]/g,'_');
@@ -4678,7 +4678,16 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
         const rec=records[fid]||(records[fid]={flightId:fid,opDate:date,flightRaw:S(item.flightRaw||mail.flightRaw),flightName:S(item.flightName||mail.flightName),arrFlight:S(get('arrFlight')),depFlight:S(get('depFlight')),sta:S(get('sta')),std:S(get('std')),eta:S(get('eta')),etd:S(get('etd')),arrFlightDate:S(get('arrFlightDate')||date),depFlightDate:S(get('depFlightDate')||date),etaFlightDate:S(get('etaFlightDate')||get('arrFlightDate')||date),etdFlightDate:S(get('etdFlightDate')||get('depFlightDate')||date),staClock:S(get('staClock')),stdClock:S(get('stdClock')),etaClock:S(get('etaClock')),etdClock:S(get('etdClock')),staDayOffset:finiteNumber(get('staDayOffset'),0),stdDayOffset:finiteNumber(get('stdDayOffset'),0),etaDayOffset:finiteNumber(get('etaDayOffset'),0),etdDayOffset:finiteNumber(get('etdDayOffset'),0),staSortMinute:finiteSortMinute(get('staSortMinute'),get('staDayOffset'),get('staClock')),stdSortMinute:finiteSortMinute(get('stdSortMinute'),get('stdDayOffset'),get('stdClock')),etaSortMinute:finiteSortMinute(get('etaSortMinute'),get('etaDayOffset'),get('etaClock')),etdSortMinute:finiteSortMinute(get('etdSortMinute'),get('etdDayOffset'),get('etdClock')),acReg:S(get('acReg')),acType:S(get('acType')),route:S(get('route')),bay:S(get('bay')),createdFrom:'DAILY_ROSTER',createdAtMs:Date.now(),updatedAtMs:Date.now(),assignments:{}});
         rec.assignments[aid]={assignmentId:aid,user:S(item.user||mail.targetUser),originalUser:S(item.originalUser||mail.originalTargetUser),formGroup:S(item.formGroup||mail.formGroup),sourceColumn:S(item.sourceColumn||mail.sourceColumn),roleKey:S(item.roleKey||mail.roleKey),workspaceKey:S(item.workspaceKey||item.rosterWorkspaceKey||mail.workspaceKey||mail.rosterWorkspaceKey),assignmentScope:S(item.assignmentScope||mail.assignmentScope||'BOTH'),workPartOrder:finiteNumber(item.workPartOrder||mail.workPartOrder,1),workPartTotal:finiteNumber(item.workPartTotal||mail.workPartTotal,1),workPartSequenceSource:S(item.workPartSequenceSource||mail.workPartSequenceSource||item.sourceColumn||mail.sourceColumn),active:item.active!==false};
       }
-      for(const [fid,rec] of Object.entries(records)){const base=`${ROOT}/${safe(date)}/${safe(fid)}`;for(const k of ['flightId','opDate','flightRaw','flightName','arrFlight','depFlight','sta','std','eta','etd','arrFlightDate','depFlightDate','etaFlightDate','etdFlightDate','staClock','stdClock','etaClock','etdClock','staDayOffset','stdDayOffset','etaDayOffset','etdDayOffset','staSortMinute','stdSortMinute','etaSortMinute','etdSortMinute','acReg','acType','route','bay','createdFrom'])patch[`${base}/${k}`]=rec[k]??'';patch[`${base}/updatedAtMs`]=Date.now();patch[`${base}/createdAtMs`]=rec.createdAtMs||Date.now();patch[`${base}/rosterActive`]=true;patch[`${base}/rosterStatus`]="ACTIVE";patch[`${base}/rosterRemovedAtMs`]=null;patch[`${base}/rosterRemovedBy`]=null;patch[`${base}/rosterRemovedSourceFile`]=null;patch[`${base}/assignments`]=rec.assignments||{};}
+      for(const [fid,rec] of Object.entries(records)){
+        const base=`${ROOT}/${safe(date)}/${safe(fid)}`;
+        for(const k of ['flightId','opDate','flightRaw','flightName','arrFlight','depFlight','sta','std','eta','etd','arrFlightDate','depFlightDate','etaFlightDate','etdFlightDate','staClock','stdClock','etaClock','etdClock','staDayOffset','stdDayOffset','etaDayOffset','etdDayOffset','staSortMinute','stdSortMinute','etaSortMinute','etdSortMinute','acReg','acType','route','bay','createdFrom'])patch[`${base}/${k}`]=rec[k]??'';
+        patch[`${base}/updatedAtMs`]=Date.now();patch[`${base}/createdAtMs`]=rec.createdAtMs||Date.now();patch[`${base}/rosterActive`]=true;patch[`${base}/rosterStatus`]="ACTIVE";patch[`${base}/rosterRemovedAtMs`]=null;patch[`${base}/rosterRemovedBy`]=null;patch[`${base}/rosterRemovedSourceFile`]=null;
+        // Firebase multi-location update forbids an ancestor path together with
+        // any descendant path. DAILY ROSTER may already contain a removal such
+        // as assignments/<oldId>/active, so never add the parent assignments
+        // object here. Write each current assignment at its own sibling path.
+        for(const [aid,assignment] of Object.entries(rec.assignments||{}))patch[`${base}/assignments/${safe(aid)}`]=assignment;
+      }
       v.flightHubSchema=1;
     }
   }
@@ -4693,7 +4702,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   function installRefHook(){if(root.__FLIGHT_HUB_REF_HOOK)return;const prev=root.sagsV470Ref;if(typeof prev!=='function'){setTimeout(installRefHook,500);return}root.__FLIGHT_HUB_REF_HOOK=1;root.sagsV470Ref=function(path=''){const ref=prev(path);if(S(path)===''&&ref&&typeof ref.update==='function'){const base=ref.update.bind(ref);ref.update=function(patch){if(patch&&typeof patch==='object'&&!Array.isArray(patch))try{enrichRosterPatch(patch)}catch(e){console.warn('FlightHub roster enrich',e)}return base(patch)}}return ref};}
   root.sagsFlightHubRead=async function(date){return await readDate(isoDate(date))};
   root.sagsFlightHubFlightId=flightId;
-  root.__FLIGHT_HUB_HDSD='V3.3: DAILY ROSTER tạo 1 flightId/hồ sơ mẹ cho mỗi chuyến. FINAL, KẾT SỔ, RAMP/hàng hóa và module liên quan không nhân bản dữ liệu chính thức; mỗi module đăng ký trạng thái + đường dẫn dữ liệu chuẩn vào đúng flightId. Mở chuyến thấy toàn bộ trạng thái trong cùng hồ sơ.';
+  root.__FLIGHT_HUB_HDSD='V3.53: DAILY ROSTER tạo 1 flightId/hồ sơ mẹ cho mỗi chuyến. Sửa bản update Firebase bị chồng đường dẫn assignments cha/con khi roster mới vừa thu hồi phân công cũ vừa ghi phân công mới trên cùng flightId.';
 
   function installDailyRosterUi(){
     try{const b=document.getElementById('drPublishBtn');if(b)b.textContent='✈ TẠO CHUYẾN';}catch(_){}
@@ -4702,6 +4711,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   }
   root.sagsFlightHubModuleBadges=function(rec){const mods=rec?.modules||{},order=['KẾT SỔ','FINAL','RAMP','HÀNG HÓA','ULD','MVT','MVA'];return order.filter(k=>mods[k]).map(k=>({kind:k,status:S(mods[k]?.status||'ĐÃ CÓ'),revisionNo:Number(mods[k]?.revisionNo||0)}));};
 
+  root.__SAGS_FLIGHT_HUB_TEST__={enrichRosterPatch};
   installRefHook();installPersistHook();installDailyRosterUi();root.__FLIGHT_HUB_BUILD=BUILD;
 })(typeof window!=='undefined'?window:globalThis);
 
@@ -6490,3 +6500,6 @@ body.v38-clean-workflow #v38CleanNav .v326GrantedPermission::after{content:'+';d
 
 /* V3.51 · COMPACT MOBILE TOOLBAR */
 (function(root){const phase=document.currentScript?.dataset?.phase||'';if(phase!=='control')return;root.__SAGS_V351_BUILD='V3.51-20260822-01';root.__SAGS_V351_HDSD='V3.51: thanh công cụ điện thoại gom thành một hàng chip nhỏ cuộn ngang. ĐH được khôi phục quyền QUICK_TIME mặc định; RAMP và KẾT SỔ dùng chung nhãn nút NHẬP NHANH. Hồ sơ gửi/nhận vẫn tập trung theo flightId.';})(typeof window!=='undefined'?window:globalThis);
+
+/* V3.53 · DAILY ROSTER UPDATE PATH FIX */
+(function(root){const phase=document.currentScript?.dataset?.phase||'';if(phase!=='control')return;root.__SAGS_V353_BUILD='V3.53-20260822-01';root.__SAGS_V353_HDSD='V3.53: sửa lỗi Firebase update chứa đồng thời assignments và assignments/<id>/active. Flight Hub nay ghi từng assignment ở các đường dẫn ngang hàng, giữ nguyên thu hồi assignment cũ và phân công mới.';})(typeof window!=='undefined'?window:globalThis);
