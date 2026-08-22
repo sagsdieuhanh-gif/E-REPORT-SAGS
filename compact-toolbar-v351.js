@@ -1,13 +1,13 @@
-/* E-REPORT/SAGS V3.56 · Mobile-first compact interface.
+/* E-REPORT/SAGS V3.57 · Mobile-first compact interface with two-row toolbar.
  * Presentation-only module: it does not read or write Firebase and it keeps
  * every existing button handler, permission check and business flow unchanged.
  */
 (function(root){
 "use strict";
-if(root.__SAGS_V356_MOBILE_UI_LOADED)return;
-root.__SAGS_V356_MOBILE_UI_LOADED=true;
+if(root.__SAGS_V357_MOBILE_UI_LOADED)return;
+root.__SAGS_V357_MOBILE_UI_LOADED=true;
 
-const BUILD="V3.56-20260822-01";
+const BUILD="V3.57-20260822-01";
 
 function ensureStyle(){
   if(document.getElementById("v351CompactToolbarStyle"))return;
@@ -17,23 +17,33 @@ function ensureStyle(){
 #v351AccountMenuBtn,#v351AccountMenu{display:none}
 @media(max-width:760px){
   html{width:100%!important;max-width:100%!important;overflow-x:hidden!important}
+  .v356ToolbarLane{display:none}
   body.v356-mobile-ui{
     --v356-gap:6px;--v356-pad:8px;--v356-control:38px;
     width:100%!important;max-width:100%!important;overflow-x:hidden!important;
     -webkit-text-size-adjust:100%;text-size-adjust:100%;
   }
   body.v38-clean-workflow .toolbar.compact-main-toolbar{
-    display:flex!important;flex-flow:row nowrap!important;align-items:center!important;
-    justify-content:flex-start!important;gap:4px!important;min-height:38px!important;
-    max-height:calc(38px + env(safe-area-inset-bottom))!important;
+    display:grid!important;grid-template-columns:minmax(0,1fr)!important;
+    grid-template-rows:29px 29px!important;align-items:center!important;
+    justify-content:stretch!important;gap:3px!important;min-height:69px!important;
+    max-height:calc(69px + env(safe-area-inset-bottom))!important;
     padding:4px max(5px,env(safe-area-inset-right)) calc(4px + env(safe-area-inset-bottom)) max(5px,env(safe-area-inset-left))!important;
-    border-radius:10px 10px 0 0!important;overflow-x:auto!important;overflow-y:hidden!important;
-    scroll-snap-type:x proximity;scrollbar-width:none!important;-webkit-overflow-scrolling:touch!important;
+    border-radius:10px 10px 0 0!important;overflow:hidden!important;
   }
   body.v38-clean-workflow .toolbar.compact-main-toolbar::-webkit-scrollbar{display:none!important}
   body.v38-clean-workflow .toolbar.compact-main-toolbar>.badge,
   body.v38-clean-workflow .toolbar.compact-main-toolbar>.toolbar-row.main-actions{display:none!important}
-
+  body.v38-clean-workflow .v356ToolbarLane{
+    display:flex!important;align-items:center!important;flex-wrap:nowrap!important;gap:4px!important;
+    width:100%!important;min-width:0!important;height:29px!important;min-height:29px!important;
+    padding:0!important;margin:0!important;overflow-x:auto!important;overflow-y:hidden!important;
+    scroll-snap-type:x proximity;scrollbar-width:none!important;-webkit-overflow-scrolling:touch!important;
+    overscroll-behavior-x:contain!important;
+  }
+  body.v38-clean-workflow .v356ToolbarLane::-webkit-scrollbar{display:none!important}
+  body.v38-clean-workflow #v356ToolbarTop{grid-row:1!important;border-bottom:1px solid rgba(255,255,255,.14)!important}
+  body.v38-clean-workflow #v356ToolbarBottom{grid-row:2!important}
   body.v38-clean-workflow #roleAccountCluster{
     position:sticky!important;left:0!important;right:auto!important;top:auto!important;bottom:auto!important;
     order:0!important;display:flex!important;flex:0 0 auto!important;align-items:center!important;
@@ -86,10 +96,11 @@ function ensureStyle(){
     min-width:16px!important;height:16px!important;padding:0 4px!important;margin-left:3px!important;
     border-radius:999px!important;font:900 9px/16px Arial,sans-serif!important;
   }
-  body.v38-clean-workflow{padding-bottom:calc(48px + env(safe-area-inset-bottom))!important}
+  body.v38-clean-workflow{padding-bottom:calc(79px + env(safe-area-inset-bottom))!important}
 
   #v351AccountMenu{
-    position:fixed;left:max(6px,env(safe-area-inset-left));bottom:calc(44px + env(safe-area-inset-bottom));
+    position:fixed;left:max(6px,env(safe-area-inset-left));bottom:calc(75px + env(safe-area-inset-bottom));
+    right:auto;top:auto;
     z-index:80000;width:min(210px,72vw);padding:6px;border:1px solid #cbd9e4;border-radius:11px;
     background:#fff;box-shadow:0 8px 26px rgba(0,31,55,.30);box-sizing:border-box;
   }
@@ -434,12 +445,37 @@ function ensureAccountMenu(){
   }
 }
 
-function install(){ensureStyle();ensureAccountMenu();document.body.classList.add("v351-compact-toolbar","v356-mobile-ui");setTimeout(()=>root.v313QuickTimeRefresh?.(),0)}
+let arrangeQueued=false;
+function arrangeToolbar(){
+  arrangeQueued=false;
+  const bar=document.querySelector(".toolbar.compact-main-toolbar");if(!bar)return;
+  if(root.matchMedia&&!root.matchMedia("(max-width:760px)").matches){
+    const top=document.getElementById("v356ToolbarTop"),bottom=document.getElementById("v356ToolbarBottom");
+    if(top||bottom){
+      const main=[...bar.children].find(el=>el.classList?.contains("main-actions"))||null;
+      const account=document.getElementById("roleAccountCluster");if(account&&(account.parentElement===top||account.parentElement===bottom))bar.insertBefore(account,main);
+      for(const id of ["v324FormActions","v313QuickContext","v320NaContext","v38CleanNav"]){const el=document.getElementById(id);if(el&&(el.parentElement===top||el.parentElement===bottom))bar.appendChild(el)}
+      top?.remove();bottom?.remove();
+    }
+    return;
+  }
+  let top=document.getElementById("v356ToolbarTop"),bottom=document.getElementById("v356ToolbarBottom");
+  if(!top){top=document.createElement("div");top.id="v356ToolbarTop";top.className="v356ToolbarLane";bar.appendChild(top)}
+  if(!bottom){bottom=document.createElement("div");bottom.id="v356ToolbarBottom";bottom.className="v356ToolbarLane";bar.appendChild(bottom)}
+  for(const id of ["roleAccountCluster","v324FormActions","v313QuickContext","v320NaContext"]){const el=document.getElementById(id);if(el&&el.parentElement!==top)top.appendChild(el)}
+  const nav=document.getElementById("v38CleanNav");if(nav&&nav.parentElement!==bottom)bottom.appendChild(nav);
+}
+function queueArrange(){if(arrangeQueued)return;arrangeQueued=true;setTimeout(arrangeToolbar,0)}
+function install(){ensureStyle();ensureAccountMenu();document.body.classList.add("v351-compact-toolbar","v356-mobile-ui","v357-two-row-toolbar");arrangeToolbar();setTimeout(()=>root.v313QuickTimeRefresh?.(),0)}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>setTimeout(install,250),{once:true});else setTimeout(install,250);
 root.addEventListener("pageshow",()=>setTimeout(install,120),{passive:true});
+root.matchMedia?.("(max-width:760px)")?.addEventListener?.("change",queueArrange);
 document.addEventListener("click",e=>{if(!e.target.closest?.("#v351AccountMenu,#v351AccountMenuBtn"))closeMenu()},{passive:true});
+new MutationObserver(queueArrange).observe(document.documentElement,{childList:true,subtree:true});
 root.__SAGS_V351_COMPACT_TOOLBAR_BUILD=BUILD;
 root.__SAGS_V356_MOBILE_UI_BUILD=BUILD;
-root.__SAGS_V351_COMPACT_TOOLBAR_HDSD="V3.56: Giao diện mobile-first cho màn hình 360–430px. Thanh công cụ vẫn là một hàng chip cuộn ngang; MY FLIGHT, danh sách chuyến, FINAL/PVHK, CẦN XỬ LÝ, tạo chuyến và popup quản trị được giảm khoảng trắng/kích thước chữ nhưng giữ vùng bấm tối thiểu khoảng 36–40px. Chỉ thay đổi trình bày, không đổi quyền hay dữ liệu Firebase.";
+root.__SAGS_V357_MOBILE_UI_BUILD=BUILD;
+root.__SAGS_V351_COMPACT_TOOLBAR_HDSD="V3.57: Thanh công cụ điện thoại chia thành 2 hàng. Hàng trên chứa tài khoản và thao tác của biểu mẫu đang làm; hàng dưới chứa các chức năng điều hướng. Mỗi hàng chỉ cuộn ngang khi thật sự thiếu chỗ, giảm quãng vuốt so với một hàng dài. Các tối ưu mobile-first V3.56 được giữ nguyên; không đổi quyền, handler hay dữ liệu Firebase.";
 root.__SAGS_V356_MOBILE_UI_HDSD=root.__SAGS_V351_COMPACT_TOOLBAR_HDSD;
+root.__SAGS_V357_MOBILE_UI_HDSD=root.__SAGS_V351_COMPACT_TOOLBAR_HDSD;
 })(typeof window!=="undefined"?window:globalThis);
