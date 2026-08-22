@@ -1,5 +1,5 @@
 const CACHE_NAME="sags-v3-58-read-optimized-20260822-02";
-const BUILD="V3.58-20260822-02";
+const BUILD="V3.58-20260822-03";
 const APP_SHELL=[
   "./9Gfinal.png",
   "./CBTT.png",
