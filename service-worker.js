@@ -1,5 +1,5 @@
-const CACHE_NAME="sags-v3-60-reopen-edit-20260822-02";
-const BUILD="V3.60-20260822-02";
+const CACHE_NAME="sags-v3-61-final-type-fix-20260822-01";
+const BUILD="V3.61-20260822-01";
 const APP_SHELL=[
   "./9Gfinal.png",
   "./CBTT.png",
