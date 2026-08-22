@@ -21121,6 +21121,21 @@ async function roleLogin(){
       if(err)err.textContent="Tài khoản Firebase không khớp AD được cấu hình.";
       return;
     }
+    // V3.84: Kiểm tra quyền ADMIN từ Firestore users/{UID}
+    let roleDoc=null;
+    try{
+      if(firebase.firestore && cred?.user?.uid){
+        roleDoc=await firebase.firestore().collection("users").doc(cred.user.uid).get();
+      }
+    }catch(roleErr){
+      console.warn("ADMIN role lookup failed", roleErr);
+    }
+    const roleData=roleDoc?.exists ? (roleDoc.data()||{}) : {};
+    if(roleDoc && roleDoc.exists && (roleData.role!=="ADMIN" || roleData.active!==true)){
+      try{await auth.signOut();}catch(e){}
+      if(err)err.textContent="Tài khoản AD chưa được cấp quyền quản trị.";
+      return;
+    }
     localStorage.setItem(ROLE_SESSION_KEY,AD_FIREBASE_SESSION_MARKER);
     localStorage.removeItem(PERSONAL_SESSION_KEY);
     currentUserProfile=null;
