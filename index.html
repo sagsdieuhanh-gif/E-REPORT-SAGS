@@ -2172,7 +2172,7 @@ body.role-viewer #ffSendBtn{
 </div>
 <div id="rsOverdueHost"></div>
 
-<script src="./app.js?v=V3.66" data-phase="qr"></script>
+<script src="./app.js?v=V3.67" data-phase="qr"></script>
 <style>
 /* ===== V6.3.5 FINAL RECEIVER SCROLL + PERFORMANCE ===== */
 #finalFormsModal{
@@ -3051,7 +3051,7 @@ user-select:none;-webkit-user-select:none;touch-action:none;-webkit-tap-highligh
   </div>
 </div>
 
-<div id="buildMarker">V3.66</div>
+<div id="buildMarker">V3.67</div>
 <div aria-live="polite" id="currentFerryFlag"><span class="dot"></span><span id="currentFerryFlagText">FERRY</span></div>
 <div class="toolbar compact-main-toolbar">
 <div class="badge">PĐH SAGS-CXR</div>
@@ -3100,7 +3100,7 @@ user-select:none;-webkit-user-select:none;touch-action:none;-webkit-tap-highligh
 <button onclick="closeUpdateInfo()" aria-label="Đóng" style="border:0;background:#eee;border-radius:50%;width:34px;height:34px;font-size:21px;line-height:30px">×</button>
 </div>
 <div style="padding:11px 12px;border:1px solid #b7d7ef;border-radius:11px;background:#eef7ff">
-<p style="margin:0 0 6px;color:#075985"><b>V3.66 · 22/08/2026 — CĂN CHUẨN TOÀN BỘ VÙNG CHẤM FSAGS 42.3</b></p>
+<p style="margin:0 0 6px;color:#075985"><b>V3.67 · 22/08/2026 — SỬA LẠI CĂN CHỈNH FSAGS 42.3 (BOTTOM BLOCK)</b></p>
 <p style="margin:4px 0">• FSAGS 42.3: render PURE SVG cho Special information / Others / ARR Delay / Remarks / LMC / DEP Delay; chữ luôn nằm phía trên dòng chấm và không bị mất trên iOS/PWA.</p>
 <p style="margin:4px 0">• Khi import lại cùng ngày, hệ thống so sánh từng assignment với roster đã có.</p>
 <p style="margin:4px 0">• Assignment <b>không thay đổi sẽ bỏ qua hoàn toàn</b>: không ghi lại Manifest, Mailbox hoặc Flight Hub.</p>
@@ -3109,7 +3109,7 @@ user-select:none;-webkit-user-select:none;touch-action:none;-webkit-tap-highligh
 </div>
 <details style="margin-top:10px;padding:9px 11px;border:1px solid #dbe4eb;border-radius:10px;background:#fafcfd">
 <summary style="cursor:pointer;font-weight:800;color:#334155">Lưu ý sau khi cập nhật</summary>
-<p style="margin:8px 0 0">Dữ liệu hồ sơ nghiệp vụ trên Firebase không bị xóa. Chỉ cập nhật khi người dùng bấm CẬP NHẬT và chờ nhãn góc trái hiện V3.66.</p>
+<p style="margin:8px 0 0">Dữ liệu hồ sơ nghiệp vụ trên Firebase không bị xóa. Chỉ cập nhật khi người dùng bấm CẬP NHẬT và chờ nhãn góc trái hiện V3.67.</p>
 </details>
 <button onclick="closeUpdateInfo()" style="width:100%;margin-top:12px;border:0;border-radius:10px;padding:10px 14px;background:#0b67b2;color:#fff;font-weight:800">ĐÓNG</button>
 </div>
@@ -4081,7 +4081,7 @@ user-select:none;-webkit-user-select:none;touch-action:none;-webkit-tap-highligh
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
-<script src="./app.js?v=V3.66" data-phase="config"></script>
+<script src="./app.js?v=V3.67" data-phase="config"></script>
 <script>
 let suppressModalClickUntil=0;
 function armModalGhostClickBlock(ms=650){
@@ -7163,7 +7163,7 @@ function draw(){
 
 
   /* =========================================================
-     V3.66 — FSAGS 42.3 DOT-LINE DISPLAY ENGINE
+     V3.67 — FSAGS 42.3 DOT-LINE DISPLAY ENGINE
      IMPORTANT:
      - These printed rows are NOT ordinary input boxes. Their dotted guides
        sit inside the same visual row as the labels.
@@ -7174,29 +7174,29 @@ function draw(){
      ========================================================= */
   const v366DotLayout={
     // Top Special information: printed dot/text baseline is around y=514..515.
-    topWCHR:{x:365,w:82,y:506,align:"center",fs:13},
-    topUM:{x:501,w:92,y:506,align:"center",fs:13},
-    topINAD:{x:669,w:67,y:506,align:"center",fs:13},
-    topSTCH:{x:812,w:88,y:506,align:"center",fs:13},
-    topVIP:{x:954,w:121,y:506,align:"center",fs:13},
+    topWCHR:{x:365,w:82,y:504,align:"center",fs:12.5},
+    topUM:{x:501,w:92,y:504,align:"center",fs:12.5},
+    topINAD:{x:669,w:67,y:504,align:"center",fs:12.5},
+    topSTCH:{x:812,w:88,y:504,align:"center",fs:12.5},
+    topVIP:{x:954,w:121,y:504,align:"center",fs:12.5},
     // Others dotted row is y=540..541. Start immediately after printed label.
-    othersTop:{x:125,w:1045,y:533,align:"left",fs:13},
+    othersTop:{x:125,w:1045,y:531,align:"left",fs:12.5},
 
     // ARR Delay dots are y=1034..1035; Remarks dots are y=1060..1061.
-    arrDelayMins:{x:408,w:82,y:1027,align:"center",fs:13},
-    arrRemarks:{x:150,w:475,y:1053,align:"left",fs:13},
+    arrDelayMins:{x:408,w:82,y:1024,align:"center",fs:12},
+    arrRemarks:{x:150,w:475,y:1048,align:"left",fs:12},
 
     // Bottom Special information printed baseline is y=1596..1597.
-    bottomWCHR:{x:365,w:76,y:1588,align:"center",fs:13},
-    bottomUM:{x:495,w:75,y:1588,align:"center",fs:13},
-    bottomINAD:{x:646,w:43,y:1588,align:"center",fs:13},
-    bottomSTCH:{x:773,w:64,y:1588,align:"center",fs:13},
-    bottomVIP:{x:891,w:121,y:1588,align:"center",fs:13},
+    bottomWCHR:{x:365,w:76,y:1585,align:"center",fs:12},
+    bottomUM:{x:495,w:75,y:1585,align:"center",fs:12},
+    bottomINAD:{x:646,w:43,y:1585,align:"center",fs:12},
+    bottomSTCH:{x:773,w:64,y:1585,align:"center",fs:12},
+    bottomVIP:{x:891,w:121,y:1585,align:"center",fs:12},
 
     // DEP Delay dot/text baseline is y=1622..1623; Remarks y=1649..1650.
-    depDelayMins:{x:408,w:82,y:1615,align:"center",fs:13},
-    depDelayReason:{x:535,w:615,y:1615,align:"left",fs:13},
-    depRemarks:{x:150,w:1000,y:1642,align:"left",fs:13}
+    depDelayMins:{x:408,w:82,y:1611,align:"center",fs:12},
+    depDelayReason:{x:560,w:590,y:1611,align:"left",fs:11.5},
+    depRemarks:{x:150,w:1000,y:1637,align:"left",fs:12}
   };
 
   if(f.page===1 && v366DotLayout[f.key]){
@@ -7206,8 +7206,8 @@ function draw(){
       const measureCanvas=(window.__v366DotMeasure ||= document.createElement("canvas"));
       const mctx=measureCanvas.getContext("2d");
       let fs=Number(g.fs||13);
-      const minFs=8.5;
-      const width=Math.max(10,Number(g.w||20)-4);
+      const minFs=8;
+      const width=Math.max(10,Number(g.w||20)-(f.key==="depDelayReason"?10:4));
       const setFont=()=>{mctx.font=`700 ${fs}px "Times New Roman"`;};
       setFont();
       while(fs>minFs && mctx.measureText(text).width>width){
@@ -7215,9 +7215,10 @@ function draw(){
         setFont();
       }
       const center=g.align==="center";
+      const yAdjust=(f.key==="arrRemarks"||f.key==="depRemarks"||f.key==="othersTop")?-1:0;
       const t=E("text",{
         x:center ? Number(g.x)+Number(g.w)/2 : Number(g.x),
-        y:Number(g.y),
+        y:Number(g.y)+yAdjust,
         class:`value manual-value ${center?"center":"left"}`,
         "font-size":String(fs),
         "font-weight":"700",
@@ -7425,7 +7426,7 @@ function draw(){
     continue;
   }
 
-  // V4.78 legacy DEP Remarks renderer (V3.66 handles this earlier via measured dot-line engine).
+  // V4.78 legacy DEP Remarks renderer (V3.67 handles this earlier via measured dot-line engine).
   // Safari/iOS intermittently fails to paint HTML inside SVG foreignObject after
   // the editor closes, even though state is saved and PDF export still contains it.
   // Render this one-line printed Remarks field directly as SVG <text> so live view
@@ -12210,8 +12211,8 @@ try {
   alert("Lỗi JavaScript: "+err.message);
 }
 
-const APP_BUILD_VERSION="V3.66-20260822-01";
-const APP_DISPLAY_VERSION="V3.66";
+const APP_BUILD_VERSION="V3.67-20260822-01";
+const APP_DISPLAY_VERSION="V3.67";
 
 // V4.21 — SAFE UPDATE SAVE
 // Before switching to a newly installed app version, force-save all current
@@ -24178,7 +24179,7 @@ window.openCamScanner=openCamScanner;
 <script type="module" src="./ai.js?v=V3.58"></script>
 
 
-<script src="./app.js?v=V3.66" data-phase="archive"></script>
+<script src="./app.js?v=V3.67" data-phase="archive"></script>
 <script id="v120-build02-fixes">
 /* V1.20 BUILD 02 — background persistence, VHTTB, per-account usage detail, progress dedupe. */
 (function(){
@@ -24619,7 +24620,7 @@ window.openCamScanner=openCamScanner;
 
 
 
-<script src="./app.js?v=V3.66" data-phase="tools"></script>
+<script src="./app.js?v=V3.67" data-phase="tools"></script>
 <script id="v173-quick-time">
 (function(){
   "use strict";
@@ -26675,7 +26676,7 @@ window.openCamScanner=openCamScanner;
 }
 </style>
 
-<script src="./app.js?v=V3.66" data-phase="flight"></script>
+<script src="./app.js?v=V3.67" data-phase="flight"></script>
 <script id="v191IOSInteractionFix">
 (()=>{
   'use strict';
@@ -26939,7 +26940,7 @@ window.openCamScanner=openCamScanner;
 })();
 </script>
 
-<script src="./app.js?v=V3.66" data-phase="control"></script>
+<script src="./app.js?v=V3.67" data-phase="control"></script>
 
 <style id="v330-group-permission-style">
 #v330GroupPermPanel{margin:12px 0 8px;padding:11px;border:1px solid #cbd9e6;border-radius:12px;background:#f7fbff;box-sizing:border-box}
