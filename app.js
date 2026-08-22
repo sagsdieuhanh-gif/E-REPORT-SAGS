@@ -3544,7 +3544,7 @@ if(phase==='flight'){
 (function(root){
   "use strict";
 
-  const BUILD="V1.82-20260821-01";
+  const BUILD="V1.83-20260822-01";
   const ENGINE="DAILY_ROSTER_V1";
   const MAIL_PATH="roster_mail";
   const MANIFEST_PATH="roster_manifests";
@@ -4046,29 +4046,61 @@ if(phase==='flight'){
     }catch(e){preview=null;const createBtn=document.getElementById("drPublishBtn");if(createBtn){createBtn.disabled=true;createBtn.classList.remove("ready");createBtn.style.display="none";}setStatus("Không đọc được roster: "+S(e?.message||e),true);}
   };
 
+  // V3.63: DELTA IMPORT. Roster đã tồn tại được so sánh theo dữ liệu nghiệp vụ;
+  // assignment không đổi sẽ không ghi lại mailbox/manifest/Flight Hub.
+  const ROSTER_DELTA_FIELDS=[
+    "assignmentId","user","originalUser","flightRaw","flightName","arrFlight","depFlight","sta","std","eta","etd",
+    "arrFlightDate","depFlightDate","etaFlightDate","etdFlightDate","staClock","stdClock","etaClock","etdClock",
+    "staDayOffset","stdDayOffset","etaDayOffset","etdDayOffset","staSortMinute","stdSortMinute","etaSortMinute","etdSortMinute",
+    "acReg","acType","route","route1","route3","bay","formGroup","sourceColumn","roleKey","assignmentLeg","assignmentFlight",
+    "assignmentTime","assignmentScope","rosterLegSplit","workPartOrder","workPartTotal","workPartSequenceSource","manualOverride","active","flightId",
+    "manualCreatedV340","manualUnit"
+  ];
+  function rosterDeltaComparable(x){
+    x=x&&typeof x==="object"?x:{};const out={};
+    for(const k of ROSTER_DELTA_FIELDS){
+      let v=x[k];
+      if(["staDayOffset","stdDayOffset","etaDayOffset","etdDayOffset","staSortMinute","stdSortMinute","etaSortMinute","etdSortMinute","workPartOrder","workPartTotal"].includes(k))v=Number(v||0);
+      else if(["rosterLegSplit","manualOverride","active","manualCreatedV340"].includes(k))v=(k==="active"?v!==false:v===true);
+      else v=S(v);
+      out[k]=v;
+    }
+    return out;
+  }
+  function sameRosterDelta(a,b){return JSON.stringify(rosterDeltaComparable(a))===JSON.stringify(rosterDeltaComparable(b));}
+
   async function publishRecords(data){
     const byDate=new Map();for(const r of data.records||[]){if(!byDate.has(r.opDate))byDate.set(r.opDate,[]);byDate.get(r.opDate).push(r);}
-    let writes=0,removes=0,overrides=0,removedFlights=0;
+    let writes=0,removes=0,overrides=0,removedFlights=0,unchanged=0,changedDates=0;
+    const oldManByDate={},newManByDate={},datesWithRemovals=[];
     for(const [opDate,recs0] of byDate){
       const manRef=sagsV470Ref(MANIFEST_PATH+"/"+safeKey(opDate));let old={};try{old=(await manRef.once("value")).val()||{};}catch(e){}
+      oldManByDate[opDate]=old;
       const oldItems=old.items||{},nextItems={},patch={},now=Date.now(),by=normUser(currentUserProfile?.username||"");
       const nextFlightKeys=new Set(recs0.map(r=>rosterFlightKey(r.flightRaw||r.flightName)).filter(Boolean));
+      let dateWrites=0,dateRemoves=0;
       for(const baseRec of recs0){
-        const oldItem=oldItems[baseRec.assignmentId]||{};
+        const oldItem=oldItems[baseRec.assignmentId]||{},hadOld=!!oldItems[baseRec.assignmentId];
         const manual=oldItem.manualOverride===true&&S(oldItem.user);
         const effectiveUser=manual?normUser(oldItem.user):baseRec.targetUser;
         if(manual)overrides++;
         const r={...baseRec,targetUser:effectiveUser};
         const rk=upper(r.roleKey),src=upper(r.sourceColumn),fg=upper(r.formGroup),unit=(rk==="CBTT"||src.includes("GRND_LS")||fg==="FINAL")?"CBTT":((rk==="PAX09"||src.includes("PAX_SUPR")||fg==="FSAGS09")?"PVHK":"DH");
         const manualBase=Object.values(oldItems).find(x=>x?.manualCreatedV340===true&&upper(x.manualUnit)===unit&&sameRosterFlightIdentity(x,r)),resolvedFlightId=S(oldItem.flightId||manualBase?.flightId)||flightIdForRoster(r);
+        const nextItem={assignmentId:r.assignmentId,user:r.targetUser,originalUser:baseRec.originalTargetUser||baseRec.targetUser,flightRaw:r.flightRaw,flightName:r.flightName||"",arrFlight:r.arrFlight||"",depFlight:r.depFlight||"",sta:r.sta||"",std:r.std||"",eta:r.eta||"",etd:r.etd||"",arrFlightDate:r.arrFlightDate||r.opDate,depFlightDate:r.depFlightDate||r.opDate,etaFlightDate:r.etaFlightDate||r.arrFlightDate||r.opDate,etdFlightDate:r.etdFlightDate||r.depFlightDate||r.opDate,staClock:r.staClock||"",stdClock:r.stdClock||"",etaClock:r.etaClock||"",etdClock:r.etdClock||"",staDayOffset:safeFiniteNumber(r.staDayOffset,0),stdDayOffset:safeFiniteNumber(r.stdDayOffset,0),etaDayOffset:safeFiniteNumber(r.etaDayOffset,0),etdDayOffset:safeFiniteNumber(r.etdDayOffset,0),staSortMinute:safeSortMinute(r.staSortMinute,r.opDate,r.arrFlightDate||r.opDate,r.staClock),stdSortMinute:safeSortMinute(r.stdSortMinute,r.opDate,r.depFlightDate||r.opDate,r.stdClock),etaSortMinute:safeSortMinute(r.etaSortMinute,r.opDate,r.etaFlightDate||r.arrFlightDate||r.opDate,r.etaClock),etdSortMinute:safeSortMinute(r.etdSortMinute,r.opDate,r.etdFlightDate||r.depFlightDate||r.opDate,r.etdClock),acReg:r.acReg||"",acType:r.acType||"",route:r.route||"",route1:r.route1||"",route3:r.route3||"",bay:r.bay||"",formGroup:r.formGroup,sourceColumn:r.sourceColumn,roleKey:r.roleKey,assignmentLeg:S(r.assignmentLeg),assignmentFlight:S(r.assignmentFlight),assignmentTime:S(r.assignmentTime),assignmentScope:S(r.assignmentScope||"TURNAROUND"),rosterLegSplit:r.rosterLegSplit===true,workPartOrder:safeFiniteNumber(r.workPartOrder,1),workPartTotal:safeFiniteNumber(r.workPartTotal,1),workPartSequenceSource:S(r.workPartSequenceSource||r.sourceColumn),manualOverride:manual,active:true,flightId:resolvedFlightId};
+        nextItems[r.assignmentId]=nextItem;
+        if(sameRosterDelta(oldItem,nextItem)){unchanged++;continue;}
+
         const payload={engine:ENGINE,schema:2,assignmentId:r.assignmentId,targetUser:r.targetUser,originalTargetUser:baseRec.originalTargetUser||baseRec.targetUser,opDate:r.opDate,date:r.date,flightId:resolvedFlightId,flightRaw:r.flightRaw,flightName:r.flightName||"",arrFlight:r.arrFlight,depFlight:r.depFlight,sta:r.sta,std:r.std,eta:r.eta||"",etd:r.etd||"",arrFlightDate:r.arrFlightDate||r.opDate,depFlightDate:r.depFlightDate||r.opDate,etaFlightDate:r.etaFlightDate||r.arrFlightDate||r.opDate,etdFlightDate:r.etdFlightDate||r.depFlightDate||r.opDate,staClock:r.staClock||"",stdClock:r.stdClock||"",etaClock:r.etaClock||"",etdClock:r.etdClock||"",staDayOffset:safeFiniteNumber(r.staDayOffset,0),stdDayOffset:safeFiniteNumber(r.stdDayOffset,0),etaDayOffset:safeFiniteNumber(r.etaDayOffset,0),etdDayOffset:safeFiniteNumber(r.etdDayOffset,0),staSortMinute:safeSortMinute(r.staSortMinute,r.opDate,r.arrFlightDate||r.opDate,r.staClock),stdSortMinute:safeSortMinute(r.stdSortMinute,r.opDate,r.depFlightDate||r.opDate,r.stdClock),etaSortMinute:safeSortMinute(r.etaSortMinute,r.opDate,r.etaFlightDate||r.arrFlightDate||r.opDate,r.etaClock),etdSortMinute:safeSortMinute(r.etdSortMinute,r.opDate,r.etdFlightDate||r.depFlightDate||r.opDate,r.etdClock),acReg:r.acReg,acType:r.acType,route:r.route,route1:r.route1,route3:r.route3,bay:r.bay,formGroup:r.formGroup,sourceColumn:r.sourceColumn,roleKey:r.roleKey,assignmentLeg:S(r.assignmentLeg),assignmentFlight:S(r.assignmentFlight),assignmentTime:S(r.assignmentTime),assignmentScope:S(r.assignmentScope||"TURNAROUND"),rosterLegSplit:r.rosterLegSplit===true,workPartOrder:safeFiniteNumber(r.workPartOrder,1),workPartTotal:safeFiniteNumber(r.workPartTotal,1),workPartSequenceSource:S(r.workPartSequenceSource||r.sourceColumn),sourceFile:data.fileName||"",active:true,manualOverride:manual,publishedAtMs:now,publishedBy:by};
+        patch[`${MANIFEST_PATH}/${safeKey(opDate)}/items/${safeKey(r.assignmentId)}`]=nextItem;
         patch[`${MAIL_PATH}/${safeKey(r.targetUser)}/items/${safeKey(r.assignmentId)}`]=payload;
-        patch[`${REVOKE_PATH}/${safeKey(r.targetUser)}/items/${safeKey(r.assignmentId)}`]=null;
-        if(oldItem.user&&normUser(oldItem.user)!==normUser(r.targetUser)){
-          patch[`${MAIL_PATH}/${safeKey(oldItem.user)}/items/${safeKey(r.assignmentId)}`]=null;
-          patch[`${REVOKE_PATH}/${safeKey(oldItem.user)}/items/${safeKey(r.assignmentId)}`]={assignmentId:r.assignmentId,reason:"REASSIGNED",atMs:now,by};
+        const oldUser=normUser(oldItem.user||oldItem.targetUser),newUser=normUser(r.targetUser);
+        if(!hadOld||oldUser!==newUser||oldItem.active===false)patch[`${REVOKE_PATH}/${safeKey(r.targetUser)}/items/${safeKey(r.assignmentId)}`]=null;
+        if(oldUser&&oldUser!==newUser){
+          patch[`${MAIL_PATH}/${safeKey(oldUser)}/items/${safeKey(r.assignmentId)}`]=null;
+          patch[`${REVOKE_PATH}/${safeKey(oldUser)}/items/${safeKey(r.assignmentId)}`]={assignmentId:r.assignmentId,reason:"REASSIGNED",atMs:now,by};
         }
-        nextItems[r.assignmentId]={assignmentId:r.assignmentId,user:r.targetUser,originalUser:baseRec.originalTargetUser||baseRec.targetUser,flightRaw:r.flightRaw,flightName:r.flightName||"",arrFlight:r.arrFlight||"",depFlight:r.depFlight||"",sta:r.sta||"",std:r.std||"",eta:r.eta||"",etd:r.etd||"",arrFlightDate:r.arrFlightDate||r.opDate,depFlightDate:r.depFlightDate||r.opDate,etaFlightDate:r.etaFlightDate||r.arrFlightDate||r.opDate,etdFlightDate:r.etdFlightDate||r.depFlightDate||r.opDate,staClock:r.staClock||"",stdClock:r.stdClock||"",etaClock:r.etaClock||"",etdClock:r.etdClock||"",staDayOffset:safeFiniteNumber(r.staDayOffset,0),stdDayOffset:safeFiniteNumber(r.stdDayOffset,0),etaDayOffset:safeFiniteNumber(r.etaDayOffset,0),etdDayOffset:safeFiniteNumber(r.etdDayOffset,0),staSortMinute:safeSortMinute(r.staSortMinute,r.opDate,r.arrFlightDate||r.opDate,r.staClock),stdSortMinute:safeSortMinute(r.stdSortMinute,r.opDate,r.depFlightDate||r.opDate,r.stdClock),etaSortMinute:safeSortMinute(r.etaSortMinute,r.opDate,r.etaFlightDate||r.arrFlightDate||r.opDate,r.etaClock),etdSortMinute:safeSortMinute(r.etdSortMinute,r.opDate,r.etdFlightDate||r.depFlightDate||r.opDate,r.etdClock),acReg:r.acReg||"",acType:r.acType||"",route:r.route||"",route1:r.route1||"",route3:r.route3||"",bay:r.bay||"",formGroup:r.formGroup,sourceColumn:r.sourceColumn,roleKey:r.roleKey,assignmentLeg:S(r.assignmentLeg),assignmentFlight:S(r.assignmentFlight),assignmentTime:S(r.assignmentTime),assignmentScope:S(r.assignmentScope||"TURNAROUND"),rosterLegSplit:r.rosterLegSplit===true,workPartOrder:safeFiniteNumber(r.workPartOrder,1),workPartTotal:safeFiniteNumber(r.workPartTotal,1),workPartSequenceSource:S(r.workPartSequenceSource||r.sourceColumn),manualOverride:manual,active:true,flightId:resolvedFlightId};writes++;
+        writes++;dateWrites++;
       }
       const removedFlightIds=new Set();
       for(const [id,x] of Object.entries(oldItems)){
@@ -4079,15 +4111,19 @@ if(phase==='flight'){
             const unit=(rk==="CBTT"||src.includes("GRND_LS")||fg==="FINAL")?"CBTT":((rk==="PAX09"||src.includes("PAX_SUPR")||fg==="FSAGS09")?"PVHK":"DH");
             return manualUnit===unit&&sameRosterFlightIdentity(x,r);
           });
-          if(!replaced){const kept={...x,eta:S(x.eta),etd:S(x.etd),arrFlightDate:S(x.arrFlightDate||opDate),depFlightDate:S(x.depFlightDate||opDate),etaFlightDate:S(x.etaFlightDate||x.arrFlightDate||opDate),etdFlightDate:S(x.etdFlightDate||x.depFlightDate||opDate),staClock:S(x.staClock),stdClock:S(x.stdClock),etaClock:S(x.etaClock),etdClock:S(x.etdClock),staDayOffset:safeFiniteNumber(x.staDayOffset,0),stdDayOffset:safeFiniteNumber(x.stdDayOffset,0),etaDayOffset:safeFiniteNumber(x.etaDayOffset,0),etdDayOffset:safeFiniteNumber(x.etdDayOffset,0),staSortMinute:safeSortMinute(x.staSortMinute,opDate,x.arrFlightDate||opDate,x.staClock),stdSortMinute:safeSortMinute(x.stdSortMinute,opDate,x.depFlightDate||opDate,x.stdClock),etaSortMinute:safeSortMinute(x.etaSortMinute,opDate,x.etaFlightDate||x.arrFlightDate||opDate,x.etaClock),etdSortMinute:safeSortMinute(x.etdSortMinute,opDate,x.etdFlightDate||x.depFlightDate||opDate,x.etdClock),workPartOrder:safeFiniteNumber(x.workPartOrder,1),workPartTotal:safeFiniteNumber(x.workPartTotal,1),active:true};nextItems[id]=kept;patch[`${MAIL_PATH}/${safeKey(x.user||x.targetUser)}/items/${safeKey(id)}`]={...kept,engine:ENGINE,schema:2,assignmentId:id,targetUser:normUser(x.user||x.targetUser),originalTargetUser:normUser(x.originalUser||x.user||x.targetUser),opDate:opDate,date:opDate,sourceFile:"MANUAL_V340",active:true,manualCreatedV340:true};continue;}
+          if(!replaced){nextItems[id]=x;continue;}
         }
-        if(!nextItems[id]&&x?.user){
-          patch[`${MAIL_PATH}/${safeKey(x.user)}/items/${safeKey(id)}`]=null;
-          patch[`${REVOKE_PATH}/${safeKey(x.user)}/items/${safeKey(id)}`]={assignmentId:id,reason:"ROSTER_REMOVED",atMs:now,by};
-          removes++;
+        if(!nextItems[id]){
+          patch[`${MANIFEST_PATH}/${safeKey(opDate)}/items/${safeKey(id)}`]=null;
+          const oldUser=normUser(x?.user||x?.targetUser);
+          if(oldUser){
+            patch[`${MAIL_PATH}/${safeKey(oldUser)}/items/${safeKey(id)}`]=null;
+            patch[`${REVOKE_PATH}/${safeKey(oldUser)}/items/${safeKey(id)}`]={assignmentId:id,reason:"ROSTER_REMOVED",atMs:now,by};
+          }
+          removes++;dateRemoves++;
         }
         const oldFlightKey=rosterFlightKey(x?.flightRaw||x?.flightName);
-        if(oldFlightKey&&!nextFlightKeys.has(oldFlightKey)){
+        if(!nextItems[id]&&oldFlightKey&&!nextFlightKeys.has(oldFlightKey)){
           let fid=S(x?.flightId);
           if(!fid&&typeof root.sagsFlightHubFlightId==="function")try{fid=S(root.sagsFlightHubFlightId(opDate,"","",x?.flightRaw||x?.flightName));}catch(_){ }
           if(fid){
@@ -4107,18 +4143,42 @@ if(phase==='flight'){
         patch[`${FLIGHT_PATH}/${safeKey(opDate)}/${safeKey(fid)}/updatedAtMs`]=now;
       }
       removedFlights+=removedFlightIds.size;
-      patch[`${MANIFEST_PATH}/${safeKey(opDate)}`]={engine:ENGINE,schema:2,opDate,fileName:data.fileName||"",columns:FIXED_ROLE_COLUMNS,publishedAtMs:now,publishedBy:by,items:nextItems};
-      await sagsV470Ref("").update(patch);
+      const dateChanged=dateWrites>0||dateRemoves>0||removedFlightIds.size>0;
+      if(dateChanged){
+        changedDates++;
+        patch[`${MANIFEST_PATH}/${safeKey(opDate)}/engine`]=ENGINE;
+        patch[`${MANIFEST_PATH}/${safeKey(opDate)}/schema`]=2;
+        patch[`${MANIFEST_PATH}/${safeKey(opDate)}/opDate`]=opDate;
+        patch[`${MANIFEST_PATH}/${safeKey(opDate)}/fileName`]=data.fileName||"";
+        patch[`${MANIFEST_PATH}/${safeKey(opDate)}/columns`]=FIXED_ROLE_COLUMNS;
+        patch[`${MANIFEST_PATH}/${safeKey(opDate)}/publishedAtMs`]=now;
+        patch[`${MANIFEST_PATH}/${safeKey(opDate)}/publishedBy`]=by;
+        patch[`${MANIFEST_PATH}/${safeKey(opDate)}/cumulative`]=false;
+        patch[`${MANIFEST_PATH}/${safeKey(opDate)}/cumulativeMode`]=null;
+        patch[`${MANIFEST_PATH}/${safeKey(opDate)}/syncMode`]="DELTA_REPLACE_SAME_DAY";
+        patch[`${MANIFEST_PATH}/${safeKey(opDate)}/previousBatchFileName`]=S(old.fileName||old.lastBatchFileName||"");
+        patch[`${MANIFEST_PATH}/${safeKey(opDate)}/lastBatchFileName`]=data.fileName||"";
+        patch[`${MANIFEST_PATH}/${safeKey(opDate)}/lastBatchAtMs`]=now;
+        await sagsV470Ref("").update(patch);
+      }
+      if(dateRemoves)datesWithRemovals.push(opDate);
+      newManByDate[opDate]={...old,engine:ENGINE,schema:2,opDate,fileName:dateChanged?(data.fileName||""):old.fileName,columns:FIXED_ROLE_COLUMNS,publishedAtMs:dateChanged?now:old.publishedAtMs,publishedBy:dateChanged?by:old.publishedBy,cumulative:false,cumulativeMode:null,syncMode:dateChanged?"DELTA_REPLACE_SAME_DAY":old.syncMode,items:nextItems};
     }
-    return {writes,removes,overrides,removedFlights,dates:byDate.size};
+    const result={writes,removes,overrides,removedFlights,unchanged,changedDates,dates:byDate.size,noChange:writes===0&&removes===0&&removedFlights===0,datesWithRemovals,oldManByDate,newManByDate};
+    root.__SAGS_ROSTER_LAST_DELTA=result;
+    return result;
   }
   root.dailyRosterPublish=async function(){
     if(!canManageDailyRoster()||!preview?.records?.length)return false;const btn=document.getElementById("drPublishBtn");if(btn)btn.disabled=true;let ok=false;
     try{
       setStatus("Đang đồng bộ chuyến và phân công công việc…");
       const r=await publishRecords(preview);ok=true;
-      setStatus(`✓ ĐÃ ĐỒNG BỘ DAILY ROSTER. Đã phân công ${r.writes} công việc cho ${r.dates} ngày. Thu hồi ${r.removes} phân công cũ. ${r.removedFlights?`Đánh dấu ${r.removedFlights} chuyến ROSTER_REMOVED/INACTIVE. `:""}Giữ ${r.overrides} chuyển người thủ công.\nKhông xóa Flight Record hoặc dữ liệu nghiệp vụ cũ. Bấm CHUYẾN khi muốn mở danh sách.`);
-      void root.dailyRosterLoadAssignments();
+      if(r.noChange){
+        setStatus(`✓ DAILY ROSTER KHÔNG CÓ THAY ĐỔI · bỏ qua ${r.unchanged} phân công đã giống dữ liệu hiện có.\nKhông phát sinh ghi lại manifest/mailbox/Flight Hub. Dữ liệu nghiệp vụ giữ nguyên.`);
+      }else{
+        setStatus(`✓ ĐÃ ĐỒNG BỘ DAILY ROSTER THEO DELTA. Cập nhật/thêm ${r.writes} phân công; bỏ qua ${r.unchanged} phân công không đổi; thu hồi ${r.removes} phân công cũ. ${r.removedFlights?`Đánh dấu ${r.removedFlights} chuyến ROSTER_REMOVED/INACTIVE. `:""}Giữ ${r.overrides} chuyển người thủ công.\nChỉ phần thay đổi được ghi lên Firebase; dữ liệu nghiệp vụ cũ không bị xóa.`);
+        void root.dailyRosterLoadAssignments();
+      }
     }catch(e){setStatus("Không đồng bộ DAILY ROSTER được: "+S(e?.message||e),true);}
     finally{if(btn)btn.disabled=false;}
     return ok;
@@ -4672,12 +4732,12 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 /* ===== END roster-completed.js ===== */
 
 /* ===== BEGIN flight-hub.js ===== */
-/* E-REPORT SAGS V3.62 · MASTER FLIGHT HUB
+/* E-REPORT SAGS V3.63 · MASTER FLIGHT HUB
  * One Daily Roster flight = one master flight record. Operational modules keep their canonical data
  * but register a compact pointer/status under the same flightId so every department works in one flight workspace.
  */
 (function(root){'use strict';
-  const BUILD='V3.62-20260822-01';
+  const BUILD='V3.63-20260822-01';
   const ROOT='flight_records', MANIFEST='roster_manifests', MAIL='roster_mail';
   const S=v=>String(v??'').trim(), U=v=>S(v).toUpperCase();
   const safe=v=>S(v).replace(/[.#$\[\]\/]/g,'_');
@@ -4692,17 +4752,24 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   function flightId(date,arr,dep,raw){const flights=[normFlight(arr),normFlight(dep)].filter(Boolean);if(!flights.length)flights.push(...splitFlights(raw).map(normFlight));const sig=`${isoDate(date)}|${flights.join('|')||normFlight(raw)||'UNKNOWN'}`;return `FLT_${hash(sig)}`}
   function extractMailByAssignment(patch){const out={};for(const [k,v] of Object.entries(patch||{})){const m=/^roster_mail\/[^/]+\/items\/([^/]+)$/.exec(k);if(m&&v&&typeof v==='object')out[S(v.assignmentId||m[1])]=v;}return out}
   function enrichRosterPatch(patch){
-    const mails=extractMailByAssignment(patch);
+    const mails=extractMailByAssignment(patch),groups={};
+    const add=(date,aid,item,container=null)=>{date=S(date);aid=S(aid);if(!date||!aid||!item||typeof item!=="object")return;groups[date]=groups[date]||{};groups[date][aid]={item,container};};
     for(const [k,v] of Object.entries(patch||{})){
-      const m=/^roster_manifests\/([^/]+)$/.exec(k);if(!m||!v?.items)continue;
-      const date=m[1],records={};
-      for(const [aid,item0] of Object.entries(v.items||{})){
-        const item={...item0},mail=mails[aid]||{};
-        // V3.40: a roster assignment that replaces a matching manual task keeps the
-        // existing master flightId. This prevents a second Flight Record when the
-        // manual task initially knew only one leg and the later roster knows both.
+      let m=/^roster_manifests\/([^/]+)$/.exec(k);
+      if(m&&v?.items){for(const [aid,item] of Object.entries(v.items||{}))add(m[1],aid,item,v);continue;}
+      m=/^roster_manifests\/([^/]+)\/items\/([^/]+)$/.exec(k);
+      if(m&&v&&typeof v==='object')add(m[1],m[2],v,null);
+    }
+    for(const [date,items] of Object.entries(groups)){
+      const records={};
+      for(const [aid,entry] of Object.entries(items||{})){
+        const item={...(entry.item||{})},mail=mails[aid]||{};
+        // V3.63: hỗ trợ manifest delta item-level; chỉ assignment thay đổi mới đụng Flight Hub.
         const fid=S(item.flightId||mail.flightId)||flightId(date,mail.arrFlight||item.arrFlight,mail.depFlight||item.depFlight,item.flightRaw||mail.flightRaw);
-        item.flightId=fid;v.items[aid]=item;if(mails[aid])mails[aid].flightId=fid;
+        item.flightId=fid;
+        if(entry.container?.items)entry.container.items[aid]=item;
+        else patch[`${MANIFEST}/${date}/items/${aid}`]=item;
+        if(mails[aid])mails[aid].flightId=fid;
         const get=name=>mail[name]??item[name];
         const rec=records[fid]||(records[fid]={flightId:fid,opDate:date,flightRaw:S(item.flightRaw||mail.flightRaw),flightName:S(item.flightName||mail.flightName),arrFlight:S(get('arrFlight')),depFlight:S(get('depFlight')),sta:S(get('sta')),std:S(get('std')),eta:S(get('eta')),etd:S(get('etd')),arrFlightDate:S(get('arrFlightDate')||date),depFlightDate:S(get('depFlightDate')||date),etaFlightDate:S(get('etaFlightDate')||get('arrFlightDate')||date),etdFlightDate:S(get('etdFlightDate')||get('depFlightDate')||date),staClock:S(get('staClock')),stdClock:S(get('stdClock')),etaClock:S(get('etaClock')),etdClock:S(get('etdClock')),staDayOffset:finiteNumber(get('staDayOffset'),0),stdDayOffset:finiteNumber(get('stdDayOffset'),0),etaDayOffset:finiteNumber(get('etaDayOffset'),0),etdDayOffset:finiteNumber(get('etdDayOffset'),0),staSortMinute:finiteSortMinute(get('staSortMinute'),get('staDayOffset'),get('staClock')),stdSortMinute:finiteSortMinute(get('stdSortMinute'),get('stdDayOffset'),get('stdClock')),etaSortMinute:finiteSortMinute(get('etaSortMinute'),get('etaDayOffset'),get('etaClock')),etdSortMinute:finiteSortMinute(get('etdSortMinute'),get('etdDayOffset'),get('etdClock')),acReg:S(get('acReg')),acType:S(get('acType')),route:S(get('route')),bay:S(get('bay')),createdFrom:'DAILY_ROSTER',createdAtMs:Date.now(),updatedAtMs:Date.now(),assignments:{}});
         rec.assignments[aid]={assignmentId:aid,user:S(item.user||mail.targetUser),originalUser:S(item.originalUser||mail.originalTargetUser),formGroup:S(item.formGroup||mail.formGroup),sourceColumn:S(item.sourceColumn||mail.sourceColumn),roleKey:S(item.roleKey||mail.roleKey),workspaceKey:S(item.workspaceKey||item.rosterWorkspaceKey||mail.workspaceKey||mail.rosterWorkspaceKey),assignmentScope:S(item.assignmentScope||mail.assignmentScope||'BOTH'),workPartOrder:finiteNumber(item.workPartOrder||mail.workPartOrder,1),workPartTotal:finiteNumber(item.workPartTotal||mail.workPartTotal,1),workPartSequenceSource:S(item.workPartSequenceSource||mail.workPartSequenceSource||item.sourceColumn||mail.sourceColumn),active:item.active!==false};
@@ -4711,13 +4778,9 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
         const base=`${ROOT}/${safe(date)}/${safe(fid)}`;
         for(const k of ['flightId','opDate','flightRaw','flightName','arrFlight','depFlight','sta','std','eta','etd','arrFlightDate','depFlightDate','etaFlightDate','etdFlightDate','staClock','stdClock','etaClock','etdClock','staDayOffset','stdDayOffset','etaDayOffset','etdDayOffset','staSortMinute','stdSortMinute','etaSortMinute','etdSortMinute','acReg','acType','route','bay','createdFrom'])patch[`${base}/${k}`]=rec[k]??'';
         patch[`${base}/updatedAtMs`]=Date.now();patch[`${base}/createdAtMs`]=rec.createdAtMs||Date.now();patch[`${base}/rosterActive`]=true;patch[`${base}/rosterStatus`]="ACTIVE";patch[`${base}/rosterRemovedAtMs`]=null;patch[`${base}/rosterRemovedBy`]=null;patch[`${base}/rosterRemovedSourceFile`]=null;
-        // Firebase multi-location update forbids an ancestor path together with
-        // any descendant path. DAILY ROSTER may already contain a removal such
-        // as assignments/<oldId>/active, so never add the parent assignments
-        // object here. Write each current assignment at its own sibling path.
         for(const [aid,assignment] of Object.entries(rec.assignments||{}))patch[`${base}/assignments/${safe(aid)}`]=assignment;
       }
-      v.flightHubSchema=1;
+      patch[`${MANIFEST}/${date}/flightHubSchema`]=1;
     }
   }
   async function readDate(date){try{return (await root.sagsV470Ref(`${ROOT}/${safe(date)}`).once('value')).val()||{}}catch(_){return {}}}
@@ -5925,7 +5988,7 @@ body.v38-clean-workflow #v38NavRS,body.v38-clean-workflow #readSignQuickBtn,body
   const baseRosterPublish=root.dailyRosterPublish;
   if(typeof baseRosterPublish==='function')root.dailyRosterPublish=async function(){
     prepareRosterUi();const ok=await baseRosterPublish.apply(this,arguments);
-    if(ok)void audit('DAILY_ROSTER_CONFIRMED',{opDate:S(document.getElementById('drManageDate')?.value),sourceFile:S(document.getElementById('drFile')?.files?.[0]?.name)});
+    if(ok&&!root.__SAGS_ROSTER_LAST_DELTA?.noChange)void audit('DAILY_ROSTER_CONFIRMED',{opDate:S(document.getElementById('drManageDate')?.value),sourceFile:S(document.getElementById('drFile')?.files?.[0]?.name),deltaWrites:Number(root.__SAGS_ROSTER_LAST_DELTA?.writes||0),deltaRemoves:Number(root.__SAGS_ROSTER_LAST_DELTA?.removes||0)});
     return ok;
   };
   root.flightWorkspacePickRoster=function(){if(role()!=='AD')return;root.openDailyRosterManager?.();setTimeout(()=>{prepareRosterUi();document.getElementById('drFile')?.click()},30)};
@@ -6349,7 +6412,7 @@ body.v38-clean-workflow #v38CleanNav .v326GrantedPermission::after{content:'+';d
   async function setExplicit(assignmentId,status,reason='',date=opDate()){const aid=S(assignmentId),st=normalize(status);if(!aid||![STATUS.BLOCK,STATUS.NOT_APPLICABLE].includes(st))throw new Error('Chỉ BLOCK hoặc NOT_APPLICABLE được đặt trực tiếp ở lớp chuẩn hóa này.');const t=Date.now(),a=actor();await db(`roster_sessions/${safe(aid)}`).update({taskStatusV333:st,taskStatusReason:S(reason),taskStatusUpdatedAtMs:t,taskStatusUpdatedBy:a.username});try{sessionStorage.removeItem(`sagsTaskStatusV333:${date}`)}catch(_){}await syncDate(date,true);return true}
   root.SAGS_TASK_STATUS_V333=STATUS;root.sagsTaskStatusNormalize=normalize;root.sagsTaskStatusLabel=label;root.sagsTaskStatusDerive=derive;root.sagsTaskStatusAvailability=availability;root.sagsTaskStatusSyncDate=syncDate;root.sagsTaskSetBlocked=(aid,reason,date)=>setExplicit(aid,STATUS.BLOCK,reason,date);root.sagsTaskSetNotApplicable=(aid,reason,date)=>setExplicit(aid,STATUS.NOT_APPLICABLE,reason,date);
   function wrap(name,after,tag){const fn=root[name];if(typeof fn!=='function'||fn[tag])return;const w=async function(){const r=await fn.apply(this,arguments);try{await after(r,arguments)}catch(e){console.info('V3.33 status sync',name,e?.message||e)}return r};w[tag]=true;w[`${tag}Base`]=fn;root[name]=w;try{if(name==='dailyRosterPublish')dailyRosterPublish=w;else if(name==='flightWorkspaceOpenList')flightWorkspaceOpenList=w}catch(_){}}
-  function install(){if(root.__SAGS_V333_INSTALLED===BUILD)return true;root.__SAGS_V333_INSTALLED=BUILD;wrap('dailyRosterPublish',async r=>{if(r===true)await syncDate(S(document.getElementById('drManageDate')?.value)||opDate(),true)},'__v333');wrap('flightWorkspaceOpenList',async(_,args)=>{await syncDate(S(args?.[0])||opDate(),false)},'__v333');wrap('v324ReceiveOrOpen',async()=>{await syncDate(opDate(),true)},'__v333');wrap('v324ConfirmRosterHandover',async()=>{await syncDate(opDate(),true)},'__v333');wrap('v327Reassign',async()=>{await syncDate(opDate(),true)},'__v333');setTimeout(()=>syncDate(opDate(),false).catch(()=>{}),800);root.__SAGS_V333_HDSD='V3.33: chuẩn hóa trạng thái mọi assignment Daily Roster về đúng 5 trạng thái: CHƯA NHẬN / ĐANG LÀM / BLOCK / HOÀN TẤT / KHÔNG ÁP DỤNG. READY và CHỜ PHẦN TRƯỚC chỉ là điều kiện sẵn sàng, không tạo thêm trạng thái. Giữ claimStatus/workPartStatus cũ để tương thích, đồng thời ghi taskStatusV333 vào roster_sessions và chỉ mục taskStatus theo flightId để các màn hình sau dùng chung một nguồn trạng thái.';return true}
+  function install(){if(root.__SAGS_V333_INSTALLED===BUILD)return true;root.__SAGS_V333_INSTALLED=BUILD;wrap('dailyRosterPublish',async r=>{if(r===true&&!root.__SAGS_ROSTER_LAST_DELTA?.noChange)await syncDate(S(document.getElementById('drManageDate')?.value)||opDate(),true)},'__v333');wrap('flightWorkspaceOpenList',async(_,args)=>{await syncDate(S(args?.[0])||opDate(),false)},'__v333');wrap('v324ReceiveOrOpen',async()=>{await syncDate(opDate(),true)},'__v333');wrap('v324ConfirmRosterHandover',async()=>{await syncDate(opDate(),true)},'__v333');wrap('v327Reassign',async()=>{await syncDate(opDate(),true)},'__v333');setTimeout(()=>syncDate(opDate(),false).catch(()=>{}),800);root.__SAGS_V333_HDSD='V3.33: chuẩn hóa trạng thái mọi assignment Daily Roster về đúng 5 trạng thái: CHƯA NHẬN / ĐANG LÀM / BLOCK / HOÀN TẤT / KHÔNG ÁP DỤNG. READY và CHỜ PHẦN TRƯỚC chỉ là điều kiện sẵn sàng, không tạo thêm trạng thái. Giữ claimStatus/workPartStatus cũ để tương thích, đồng thời ghi taskStatusV333 vào roster_sessions và chỉ mục taskStatus theo flightId để các màn hình sau dùng chung một nguồn trạng thái.';return true}
   install();setTimeout(install,350);setTimeout(install,1200);
 })(typeof window!=='undefined'?window:globalThis);
 /* ===== END task-status-engine-v333.js ===== */
@@ -6419,10 +6482,11 @@ body.v38-clean-workflow #v38CleanNav .v326GrantedPermission::after{content:'+';d
   }
 
   async function repairCurrent(date=opDate()){const man=await readManifest(date);if(!man?.publishedAtMs||!man?.items)return {removed:0,claims:0};return cleanup(date,{},man,true)}
-  function install(){const fn=root.dailyRosterPublish;if(typeof fn!=='function'||fn.__v335)return false;const wrapped=async function(){const date=opDate(),oldMan=await readManifest(date),r=await fn.apply(this,arguments);if(r===true){const newMan=await readManifest(date),c=await cleanup(date,oldMan,newMan,false);try{root.dailyRosterRestartMailbox?.()}catch(_){}try{await root.sagsTaskStatusSync?.(date,true)}catch(_){}const el=document.getElementById('drStatus');if(el&&c.removed)el.textContent+=`\nRoster mới đã thu hồi ${c.removed} assignment cũ; dữ liệu nghiệp vụ cũ vẫn được giữ.`}return r};wrapped.__v335=1;root.dailyRosterPublish=wrapped;return true}
+  function install(){const fn=root.dailyRosterPublish;if(typeof fn!=='function'||fn.__v335)return false;const wrapped=async function(){const r=await fn.apply(this,arguments);if(r===true){const delta=root.__SAGS_ROSTER_LAST_DELTA||{};if(delta.noChange)return r;const dates=[...new Set((delta.datesWithRemovals||[]).map(S).filter(Boolean))];let removed=0,claims=0;for(const date of dates){const oldMan=delta.oldManByDate?.[date]||{},newMan=delta.newManByDate?.[date]||await readManifest(date),c=await cleanup(date,oldMan,newMan,false);removed+=Number(c?.removed||0);claims+=Number(c?.claims||0)}if(dates.length)try{root.dailyRosterRestartMailbox?.()}catch(_){}const el=document.getElementById('drStatus');if(el&&removed)el.textContent+=`\nRoster mới đã thu hồi ${removed} assignment cũ; dữ liệu nghiệp vụ cũ vẫn được giữ.`;root.__SAGS_V335_LAST_DELTA_CLEANUP={dates,removed,claims,atMs:Date.now()}}return r};wrapped.__v335=1;root.dailyRosterPublish=wrapped;return true}
   install();setTimeout(install,350);setTimeout(install,1200);
-  // One safe repair pass makes V3.35 also clean ghosts left by earlier builds without requiring another roster upload.
-  setTimeout(()=>repairCurrent(opDate()).then(c=>{if(c.removed||c.claims){try{root.dailyRosterRestartMailbox?.()}catch(_){}try{root.flightWorkspaceRefresh?.()}catch(_){}}}).catch(e=>console.info('V3.35 repair',e?.message||e)),1800);
+  // V3.63: ghost repair không còn chạy trên mọi tài khoản/mọi lần mở app.
+  // Chỉ AD chạy tối đa 1 lần/ngày trên thiết bị để tránh quét roster_mail + roster_sessions + flight_records lặp lại.
+  setTimeout(()=>{try{const r=U(root.currentRole||root.currentUserProfile?.role),date=opDate(),mark=`sagsV335RepairDone:V3.63:${date}`;if(r!=='AD'||localStorage.getItem(mark)==='1')return;repairCurrent(date).then(c=>{try{localStorage.setItem(mark,'1')}catch(_){}if(c.removed||c.claims){try{root.dailyRosterRestartMailbox?.()}catch(_){}try{root.flightWorkspaceRefresh?.()}catch(_){}}}).catch(e=>console.info('V3.35 repair',e?.message||e))}catch(_){}},1800);
   root.sagsRosterAuthoritativeRepair=repairCurrent;
   root.__SAGS_V335_BUILD=BUILD;
   root.__SAGS_V335_HDSD='V3.35: Daily Roster mới nhất đã XÁC NHẬN là tập assignment ACTIVE duy nhất. Assignment cũ bị loại khỏi roster_mail, MY FLIGHT, thứ tự nhận chuyến, taskStatus/claim và unitAssignment; roster_sessions chỉ bị thu hồi quyền ACTIVE, giữ nguyên envelope/draft và dữ liệu nghiệp vụ để làm lịch sử. Bản này có một lượt repair an toàn để dọn ghost assignment do các bản cũ để lại.';
