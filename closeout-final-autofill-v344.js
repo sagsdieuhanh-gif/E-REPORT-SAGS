@@ -9,8 +9,9 @@
 if(root.__SAGS_V344_CLOSEOUT_FINAL_LOADED)return;
 root.__SAGS_V344_CLOSEOUT_FINAL_LOADED=true;
 
-const BUILD="V3.44-20260821-01";
+const BUILD="V3.49-20260822-01";
 const INDEX_ROOT="closeout_by_flight_v344";
+const EVENTS_ROOT="closeout_events_v348";
 const INBOX_KEY="sagsCloseoutInboxV121";
 const S=v=>String(v??"").trim();
 const U=v=>S(v).toUpperCase();
@@ -78,6 +79,40 @@ async function syncAssignedCloseouts({notify=false}={}){if(role()!=="CBTT"||!me(
 async function bootstrapSync({notify=false}={}){await syncAssignedCloseouts({notify});return await syncAll({notify})}
 
 root.sagsV344PersistApprovedCloseout=async function(p,docId=""){if(!p||typeof root.sagsV470Ref!=="function")return false;const dt=payloadDate(p),fs=targetFlights(p);if(!dt||!fs.length)return false;const patch={},at=Date.now();for(const f of fs)patch[`${INDEX_ROOT}/${safe(dt)}/${safe(f)}`]={schema:1,docId:S(docId),dateToken:dt,flightToken:f,revisionNo:payloadRevision(p),approvedAtMs:Number(p?.internalApprovedAtMs||at),updatedAtMs:at,payload:clone(p)};await root.sagsV470Ref("").update(patch);return true};
+root.sagsV348PublishApprovedCloseout=async function(p,docId="",meta={}){
+  if(!p||typeof root.sagsV470Ref!=="function")return false;
+  const dt=payloadDate(p),fs=targetFlights(p),revision=payloadRevision(p);
+  if(!dt||!fs.length||!S(docId))return false;
+  const at=Number(meta?.eventAtMs||Date.now()),eventId=S(meta?.eventId||`${docId}|R${revision}|${at}`);
+  const signal={
+    kind:"sags_closeout_signal_v348",schema:1,eventId,eventAtMs:at,docId:S(docId),
+    closeoutNo:revision,revisionNo:revision,dateToken:dt,flights:fs,
+    matchKeys:Array.isArray(p?.matchKeys)?p.matchKeys.slice():(Array.isArray(p?.identity?.matchKeys)?p.identity.matchKeys.slice():[]),
+    acRegToken:reg(p?.identity?.acRegToken||p?.f09?.f09_regn),
+    sourceDeviceId:S(meta?.sourceDeviceId||p?.sourceDeviceId),
+    sourceSessionId:S(p?.sourceSessionId),
+    sourceUser:S(meta?.sourceUser||p?.submittedBy?.username),
+    sourceRole:U(meta?.sourceRole||p?.submittedBy?.role||"PVHK"),
+    approvedBy:clone(p?.internalApprovedBy||null),approvedAtMs:Number(p?.internalApprovedAtMs||at),
+    targetRoles:["DH","CBTT","AD"],payload:clone(p),build:BUILD
+  };
+  const patch={},eventNode=safe(`${docId}_R${String(revision).padStart(3,"0")}`);
+  patch[`${EVENTS_ROOT}/${eventNode}`]=signal;
+  patch[`closeouts/${safe(docId)}`]={
+    kind:"sags_closeout_pointer_v348",docId:S(docId),eventId,eventAtMs:at,
+    submittedAtMs:Number(p?.submittedAtMs||at),closeoutNo:revision,
+    matchKeys:signal.matchKeys,dateToken:dt,flights:fs,acRegToken:signal.acRegToken,
+    sourceDeviceId:signal.sourceDeviceId,sourceSessionId:signal.sourceSessionId,build:BUILD
+  };
+  if(meta?.includeLatest!==false)patch["closeout/latest"]=signal;
+  for(const f of fs)patch[`${INDEX_ROOT}/${safe(dt)}/${safe(f)}`]={
+    schema:2,docId:S(docId),dateToken:dt,flightToken:f,revisionNo:revision,
+    approvedAtMs:signal.approvedAtMs,updatedAtMs:at,payload:clone(p)
+  };
+  await root.sagsV470Ref("").update(patch);
+  try{applyAll(p,{notify:true,createMissing:true})}catch(_){}
+  return true;
+};
 root.sagsV344ApplyCloseoutToFinals=(p,o)=>Promise.resolve(applyAll(p,o));
 root.sagsV343ApplyCloseoutToFinals=root.sagsV344ApplyCloseoutToFinals;
 root.sagsV344SyncFinalRecord=(id,o)=>syncRecord(id,o);
@@ -90,10 +125,33 @@ function installHooks(){const open=root.openFinalSheetRecord;if(typeof open==="f
   const manager=root.openFinalSheetManager;if(typeof manager==="function"&&!manager.__v344){const w=function(){const out=manager.apply(this,arguments);setTimeout(()=>bootstrapSync({notify:false}).then(()=>root.renderFinalSheetManager?.()),120);return out};w.__v344=true;root.openFinalSheetManager=w;try{openFinalSheetManager=w}catch(_){}}
   const save=root.ffSaveField;if(typeof save==="function"&&!save.__v344){const w=function(form,key,val){const out=save.apply(this,arguments);if(["date","flight","acreg"].includes(S(key)))scheduleActiveSync();return out};w.__v344=true;root.ffSaveField=w;try{ffSaveField=w}catch(_){}}
   const ensure=root.sagsV340EnsureFinalForRoster;if(typeof ensure==="function"&&!ensure.__v344){const w=async function(){const out=await ensure.apply(this,arguments);if(out?.record?.id)setTimeout(()=>syncRecord(out.record.id,{notify:true}),80);return out};w.__v344=true;root.sagsV340EnsureFinalForRoster=w}}
-function installSignalMirrorHook(){const base=root.sagsV470Ref;if(typeof base!=="function"||base.__v344CloseoutMirror)return false;const w=function(path=""){const ref=base.apply(this,arguments);if(S(path)===`${INDEX_ROOT}`||S(path).startsWith(`${INDEX_ROOT}/`))return ref;if(S(path)==="closeout/latest"&&ref&&typeof ref.set==="function"&&!ref.set.__v344CloseoutMirror){const set=ref.set.bind(ref),setWrap=async function(value){const out=await set(value);const p=value?.payload||null;if(p){try{await root.sagsV344PersistApprovedCloseout(p,S(value?.docId))}catch(e){console.info("V3.44 mirror approved closeout",e?.message||e)}try{applyAll(p,{notify:true,createMissing:true})}catch(_){}}return out};setWrap.__v344CloseoutMirror=true;ref.set=setWrap}return ref};w.__v344CloseoutMirror=true;w.__v344CloseoutMirrorBase=base;root.sagsV470Ref=w;try{sagsV470Ref=w}catch(_){}return true}
+function installSignalMirrorHook(){
+  const base=root.sagsV470Ref;if(typeof base!=="function"||base.__v344CloseoutMirror)return false;
+  const w=function(path=""){
+    const ref=base.apply(this,arguments);
+    if(S(path)===`${INDEX_ROOT}`||S(path).startsWith(`${INDEX_ROOT}/`)||S(path)===EVENTS_ROOT||S(path).startsWith(`${EVENTS_ROOT}/`))return ref;
+    if(S(path)==="closeout/latest"&&ref&&typeof ref.set==="function"&&!ref.set.__v344CloseoutMirror){
+      const set=ref.set.bind(ref),setWrap=async function(value){
+        const out=await set(value),p=value?.payload||null;
+        if(p)try{
+          await root.sagsV348PublishApprovedCloseout(p,S(value?.docId),{
+            eventAtMs:Number(value?.eventAtMs||Date.now()),eventId:S(value?.eventId),
+            sourceDeviceId:S(value?.sourceDeviceId),sourceUser:S(value?.sourceUser),
+            sourceRole:S(value?.sourceRole),includeLatest:false
+          });
+        }catch(e){console.info("V3.49 publish approved closeout",e?.message||e)}
+        return out;
+      };
+      setWrap.__v344CloseoutMirror=true;ref.set=setWrap;
+    }
+    return ref;
+  };
+  w.__v344CloseoutMirror=true;w.__v344CloseoutMirrorBase=base;root.sagsV470Ref=w;try{sagsV470Ref=w}catch(_){}return true;
+}
 function install(){installSignalMirrorHook();installHooks();setTimeout(()=>bootstrapSync({notify:false}),700)}
-if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>setTimeout(install,350),{once:true});else setTimeout(install,350);root.addEventListener("pageshow",()=>setTimeout(install,180),{passive:true});root.addEventListener("online",()=>setTimeout(()=>bootstrapSync({notify:false}),300),{passive:true});
+install();
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>setTimeout(install,80),{once:true});else setTimeout(install,80);root.addEventListener("pageshow",()=>setTimeout(install,180),{passive:true});root.addEventListener("online",()=>setTimeout(()=>bootstrapSync({notify:false}),300),{passive:true});
 root.__SAGS_V344_BUILD=BUILD;
-root.__SAGS_V344_HDSD="V3.44: KẾT SỔ PVHK chỉ phát sang CBTT sau duyệt nội bộ. Bản chính thức được index theo DATE + FLIGHT đi để CBTT online, vào sau hoặc vừa khôi phục mạng đều lấy được. Nếu chưa có FINAL, hệ thống tạo đúng một tờ; VJ chưa đủ A/C Type giữ CHỜ MẪU, không đoán. ADL/CHD/INF/BAG PCS/BAG KG chỉ điền ô trống hoặc giá trị tự điền cũ, không đè số CBTT sửa và không đổi FINAL đã gửi.";
+root.__SAGS_V344_HDSD="V3.49: Sau duyệt, KẾT SỔ phát qua hàng sự kiện bền cho ĐH/CBTT và được lưu vào trung tâm GỬI / NHẬN để mở lại đúng revision. CBTT vẫn tự tạo/điền FINAL nhưng không đè số đã sửa và không đổi FINAL đã gửi.";
 root.__SAGS_V344_TEST__={payloadDate,allPayloadFlights,targetFlights,payloadValues,fieldMap,formForPayload,matches,recordIdentity,applyRecord,ensureFinalRecord,payloadKey};
 })(typeof window!=="undefined"?window:globalThis);

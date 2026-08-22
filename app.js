@@ -6487,5 +6487,5 @@ body.v38-clean-workflow #v38CleanNav .v326GrantedPermission::after{content:'+';d
 })(typeof window!=='undefined'?window:globalThis);
 /* ===== END manual-flight-v340.js ===== */
 
-/* V3.47 · CLEAN CODE */
-(function(root){const phase=document.currentScript?.dataset?.phase||'';if(phase!=='control')return;root.__SAGS_V347_BUILD='V3.47-20260822-01';root.__SAGS_V347_HDSD='V3.47: dọn runtime về một nguồn app.js, bỏ các module rời không được nạp, rút gọn popup lịch sử cập nhật và loại hoàn toàn A/C LIMITS AI/ảnh. Daily Roster, tạo chuyến thủ công, MY FLIGHT, duyệt, KẾT SỔ → FINAL, CROSSCHECK, CẦN XỬ LÝ, MULTITASK và PWA giữ nguyên.';})(typeof window!=='undefined'?window:globalThis);
+/* V3.49 · SENT / RECEIVED DOCUMENT HISTORY */
+(function(root){const phase=document.currentScript?.dataset?.phase||'';if(phase!=='control')return;root.__SAGS_V349_BUILD='V3.49-20260822-01';root.__SAGS_V349_HDSD='V3.49: 🔔 CẦN XỬ LÝ có tab GỬI / NHẬN gom hồ sơ vào một chỗ. KẾT SỔ đã nhận vẫn mở lại đúng revision sau khi đóng popup; lịch sử được phục hồi từ hàng sự kiện cloud. Giữ nguyên sửa lỗi phát sau duyệt của V3.48.';})(typeof window!=='undefined'?window:globalThis);

@@ -28,6 +28,11 @@
       },
       "activity": {},
       "cross_state": {},
+      "closeout_events_v348": {
+        ".indexOn": [
+          "eventAtMs"
+        ]
+      },
       "kh208": {},
       "rs_mail": {},
       "usage": {},

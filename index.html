@@ -2172,7 +2172,7 @@ body.role-viewer #ffSendBtn{
 </div>
 <div id="rsOverdueHost"></div>
 
-<script src="./app.js?v=V3.47" data-phase="qr"></script>
+<script src="./app.js?v=V3.49" data-phase="qr"></script>
 <style>
 /* ===== V6.3.5 FINAL RECEIVER SCROLL + PERFORMANCE ===== */
 #finalFormsModal{
@@ -3051,7 +3051,7 @@ user-select:none;-webkit-user-select:none;touch-action:none;-webkit-tap-highligh
   </div>
 </div>
 
-<div id="buildMarker">V3.47</div>
+<div id="buildMarker">V3.49</div>
 <div aria-live="polite" id="currentFerryFlag"><span class="dot"></span><span id="currentFerryFlagText">FERRY</span></div>
 <div class="toolbar compact-main-toolbar">
 <div class="badge">PĐH SAGS-CXR</div>
@@ -3100,14 +3100,15 @@ user-select:none;-webkit-user-select:none;touch-action:none;-webkit-tap-highligh
 <button onclick="closeUpdateInfo()" aria-label="Đóng" style="border:0;background:#eee;border-radius:50%;width:34px;height:34px;font-size:21px;line-height:30px">×</button>
 </div>
 <div style="padding:11px 12px;border:1px solid #b7d7ef;border-radius:11px;background:#eef7ff">
-<p style="margin:0 0 6px;color:#075985"><b>V3.47 · 22/08/2026 — CLEAN CODE, GIỮ NGUYÊN NGHIỆP VỤ</b></p>
-<p style="margin:4px 0">• Gỡ lịch sử cập nhật quá cũ khỏi giao diện và loại các file JavaScript bản sao không còn được nạp.</p>
-<p style="margin:4px 0">• A/C LIMITS chỉ còn nhập tay và dán nhanh; không còn mã đọc ảnh/AI đã ngừng sử dụng.</p>
-<p style="margin:4px 0">• Giữ nguyên các luồng đang dùng: Daily Roster, tạo chuyến thủ công, MY FLIGHT, KẾT SỔ → FINAL, duyệt, CROSSCHECK, CẦN XỬ LÝ, MULTITASK, cảnh báo và cập nhật PWA.</p>
+<p style="margin:0 0 6px;color:#075985"><b>V3.49 · 22/08/2026 — GOM HỒ SƠ GỬI / NHẬN ĐỂ XEM LẠI</b></p>
+<p style="margin:4px 0">• Trong 🔔 CẦN XỬ LÝ có tab <b>GỬI / NHẬN</b>, gom hồ sơ đã gửi, đã nhận và trạng thái đang xử lý vào một chỗ.</p>
+<p style="margin:4px 0">• KẾT SỔ ĐH/CBTT đã mở rồi đóng vẫn nằm trong GỬI / NHẬN; bấm XEM LẠI KẾT SỔ để mở đúng revision.</p>
+<p style="margin:4px 0">• Danh sách ghi loại hồ sơ, chuyến, lần gửi, người gửi, thời gian và trạng thái; dữ liệu được khôi phục từ hàng sự kiện cloud khi đổi thiết bị.</p>
+<p style="margin:4px 0">• Giữ nguyên sửa lỗi phát KẾT SỔ sau duyệt của V3.48 và toàn bộ luồng nghiệp vụ hiện hành.</p>
 </div>
 <details style="margin-top:10px;padding:9px 11px;border:1px solid #dbe4eb;border-radius:10px;background:#fafcfd">
 <summary style="cursor:pointer;font-weight:800;color:#334155">Lưu ý sau khi cập nhật</summary>
-<p style="margin:8px 0 0">Dữ liệu đang làm và hồ sơ Firebase không bị xóa. Sau khi nhãn góc trái hiện V3.47, người dùng tự chọn CHUYẾN hoặc chức năng cần mở; ứng dụng không tự bật popup chuyến khi đăng nhập.</p>
+<p style="margin:8px 0 0">Dữ liệu đang làm và hồ sơ Firebase không bị xóa. Chỉ cập nhật khi người dùng bấm CẬP NHẬT và chờ nhãn góc trái hiện V3.49.</p>
 </details>
 <button onclick="closeUpdateInfo()" style="width:100%;margin-top:12px;border:0;border-radius:10px;padding:10px 14px;background:#0b67b2;color:#fff;font-weight:800">ĐÓNG</button>
 </div>
@@ -4079,7 +4080,7 @@ user-select:none;-webkit-user-select:none;touch-action:none;-webkit-tap-highligh
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
-<script src="./app.js?v=V3.47" data-phase="config"></script>
+<script src="./app.js?v=V3.49" data-phase="config"></script>
 <script>
 let suppressModalClickUntil=0;
 function armModalGhostClickBlock(ms=650){
@@ -12094,8 +12095,8 @@ try {
   alert("Lỗi JavaScript: "+err.message);
 }
 
-const APP_BUILD_VERSION="V3.47-20260822-01";
-const APP_DISPLAY_VERSION="V3.47";
+const APP_BUILD_VERSION="V3.49-20260822-01";
+const APP_DISPLAY_VERSION="V3.49";
 
 // V4.21 — SAFE UPDATE SAVE
 // Before switching to a newly installed app version, force-save all current
@@ -24018,10 +24019,10 @@ window.openCamScanner=openCamScanner;
   setTimeout(()=>{try{if(window.currentRole)window.v114ApplyRoleHomeBackground();}catch(_){}},500);
 })();
 </script>
-<script type="module" src="./ai.js?v=V3.47"></script>
+<script type="module" src="./ai.js?v=V3.49"></script>
 
 
-<script src="./app.js?v=V3.47" data-phase="archive"></script>
+<script src="./app.js?v=V3.49" data-phase="archive"></script>
 <script id="v120-build02-fixes">
 /* V1.20 BUILD 02 — background persistence, VHTTB, per-account usage detail, progress dedupe. */
 (function(){
@@ -24077,13 +24078,17 @@ window.openCamScanner=openCamScanner;
 <script id="v121-closeout-validation">
 /* V1.27 AI · keeps V1.23+ KẾT SỔ validation; AI CROSSCHECK is scoped to root fields only. */
 (function(){
-  const V121_BUILD="V1.84-20260819-01";
+  const V121_BUILD="V3.49-20260822-01";
   const V121_INBOX_KEY="sagsCloseoutInboxV121";
   const V121_RTDB_PATH="closeout/latest";
+  const V348_RTDB_EVENTS_PATH="closeout_events_v348";
+  const V348_SEEN_KEY="sagsCloseoutEventsSeenV348";
+  const V349_RECEIVED_HISTORY_KEY="sagsReceivedCloseoutHistoryV349";
   const V121_HISTORY_KIND="fsags09_closeout_revision_v121";
   const V121_INF_EARLY=8;
   const V121_BAG_PCS_PER_PAX_WARN=3;
   let v121CloseoutRef=null,v121CloseoutCb=null,v121CloseoutListenAtMs=0,v121LastCloseoutEvent="";
+  let v348CloseoutEventsRef=null,v348CloseoutEventsAddedCb=null,v348CloseoutEventsChangedCb=null;
   let v121PopupQueue=[],v121PopupCurrent=null;
 
   const V181_CLOSEOUT_AUDIO={
@@ -24354,10 +24359,94 @@ window.openCamScanner=openCamScanner;
     }catch(err){console.error(err);showFS09Status(/permission|PERMISSION_DENIED/i.test(String(err))?"Firebase đang chặn ghi Kết sổ. Cần mở quyền Firestore cho dữ liệu FSAGS 09.":"Không gửi được Kết sổ: "+(err?.message||"lỗi Firebase"),true);}
   };
 
-  function stopCloseoutListener(){if(v121CloseoutRef&&v121CloseoutCb)try{v121CloseoutRef.off("value",v121CloseoutCb);}catch(e){}v121CloseoutRef=null;v121CloseoutCb=null;v121LastCloseoutEvent="";}
+  function v348SeenMap(){try{return JSON.parse(localStorage.getItem(sagsOwnedKey(V348_SEEN_KEY))||"{}")||{};}catch(e){return {};}}
+  function v349HistoryRead(){try{const x=JSON.parse(localStorage.getItem(sagsOwnedKey(V349_RECEIVED_HISTORY_KEY))||"[]");return Array.isArray(x)?x:[];}catch(e){return [];}}
+  function v349HistoryWrite(items){try{localStorage.setItem(sagsOwnedKey(V349_RECEIVED_HISTORY_KEY),JSON.stringify((items||[]).slice(0,80)));}catch(e){}}
+  function v349PayloadHistoryId(p,docId=""){
+    const no=Math.max(1,Number(p?.closeoutNo||p?.revisionNo||1)||1),dt=String(p?.identity?.dateToken||dateTok(p?.f09?.f09_date)||""),flight=normFlight(p?.f09?.f09_fltAfter||(p?.identity?.flights||[]).slice(-1)[0]||"");
+    return String(docId||"KS")+"|"+dt+"|"+flight+"|R"+no+"|"+Number(p?.submittedAtMs||0);
+  }
+  function v349StoreReceivedCloseout(signal,p){
+    if(!p)return null;
+    const id=String(signal?.eventId||v349PayloadHistoryId(p,signal?.docId)),items=v349HistoryRead().filter(x=>String(x?.id)!==id),i=p?.identity||{},f=p?.f09||{};
+    const rec={id,eventId:String(signal?.eventId||""),docId:String(signal?.docId||""),revisionNo:Math.max(1,Number(p.closeoutNo||p.revisionNo||1)||1),dateToken:String(i.dateToken||dateTok(f.f09_date)||""),flights:Array.isArray(i.flights)?i.flights.map(normFlight).filter(Boolean):[normFlight(f.f09_fltBefore),normFlight(f.f09_fltAfter)].filter(Boolean),acRegToken:String(i.acRegToken||f.f09_regn||""),receivedAtMs:Number(signal?.eventAtMs||Date.now()),submittedAtMs:Number(p.submittedAtMs||0),sourceUser:String(signal?.sourceUser||p?.submittedBy?.username||""),sourceName:String(p?.submittedBy?.name||signal?.sourceUser||"PVHK"),payload:JSON.parse(JSON.stringify(p))};
+    items.unshift(rec);v349HistoryWrite(items.sort((a,b)=>Number(b.receivedAtMs||b.submittedAtMs||0)-Number(a.receivedAtMs||a.submittedAtMs||0)));return rec;
+  }
+  function v349HistoryWithInboxFallback(){
+    const out=v349HistoryRead(),seen=new Set(out.map(x=>v349PayloadHistoryId(x.payload,"")));
+    const box=inboxLoad();for(const entry of Object.values(box||{})){const versions=Array.isArray(entry?.versions)?entry.versions:(entry?.latest?[entry.latest]:[]);for(const p of versions){const sig=v349PayloadHistoryId(p,"");if(!p||seen.has(sig))continue;seen.add(sig);const i=p.identity||{},f=p.f09||{};out.push({id:"LEGACY|"+sig,eventId:"",docId:"",revisionNo:Math.max(1,Number(p.closeoutNo||p.revisionNo||1)||1),dateToken:String(i.dateToken||dateTok(f.f09_date)||""),flights:Array.isArray(i.flights)?i.flights.map(normFlight).filter(Boolean):[normFlight(f.f09_fltBefore),normFlight(f.f09_fltAfter)].filter(Boolean),acRegToken:String(i.acRegToken||f.f09_regn||""),receivedAtMs:Number(p.submittedAtMs||entry.updatedAtMs||0),submittedAtMs:Number(p.submittedAtMs||0),sourceUser:String(p?.submittedBy?.username||""),sourceName:String(p?.submittedBy?.name||p?.submittedBy?.username||"PVHK"),payload:p});}}
+    return out.sort((a,b)=>Number(b.receivedAtMs||b.submittedAtMs||0)-Number(a.receivedAtMs||a.submittedAtMs||0)).slice(0,80);
+  }
+  window.sagsV349GetReceivedCloseouts=()=>v349HistoryWithInboxFallback().map(x=>({id:x.id,docId:x.docId,revisionNo:x.revisionNo,dateToken:x.dateToken,flights:x.flights,acRegToken:x.acRegToken,receivedAtMs:x.receivedAtMs,submittedAtMs:x.submittedAtMs,sourceUser:x.sourceUser,sourceName:x.sourceName}));
+  window.sagsV349StoreReceivedSignal=d=>v349StoreReceivedCloseout(d,d?.payload||null);
+  window.sagsV349OpenReceivedCloseout=async function(id){
+    const rec=v349HistoryWithInboxFallback().find(x=>String(x.id)===String(id));if(!rec?.payload)return alert("Không còn dữ liệu KẾT SỔ trên thiết bị này.");
+    fs09Incoming={payload:rec.payload,sessionId:""};return viewIncomingFSAGS09();
+  };
+  function v348RememberEvent(eventId){
+    if(!eventId)return;
+    const seen=v348SeenMap();seen[eventId]=Date.now();
+    const keep=Object.entries(seen).sort((a,b)=>Number(b[1])-Number(a[1])).slice(0,160);
+    try{localStorage.setItem(sagsOwnedKey(V348_SEEN_KEY),JSON.stringify(Object.fromEntries(keep)));}catch(e){}
+  }
+  function v348EventWasSeen(eventId){return !!(eventId&&v348SeenMap()[eventId]);}
+  function v348CurrentUsername(){
+    try{return normalizePersonalUsername(currentUserProfile?.username||(currentRole==="AD"?"AD":""));}
+    catch(e){return String(currentUserProfile?.username||(currentRole==="AD"?"AD":"")).trim().toLowerCase();}
+  }
+  function v348ReceiveCloseoutSignal(d,{allowReplay=false}={}){
+    const role=String(currentRole||"").toUpperCase();
+    if(!["CBTT","DH","AD"].includes(role)||(!currentUserProfile?.username&&role!=="AD"))return false;
+    const at=Number(d?.eventAtMs||d?.submittedAtMs||0),eventId=String(d?.eventId||"");
+    if(!eventId||v348EventWasSeen(eventId))return false;
+    if(allowReplay){if(!at||Date.now()-at>72*60*60*1000)return false;}
+    else if(at<v121CloseoutListenAtMs-1500)return false;
+    const sourceUser=String(d?.sourceUser||"").trim().toLowerCase();
+    if(sourceUser&&sourceUser===v348CurrentUsername())return false;
+    const p=d?.payload||null;if(!p)return false;
+    v121LastCloseoutEvent=eventId;
+    storeCloseout(p);
+    v349StoreReceivedCloseout(d,p);
+    try{attachIncomingFS09(p);}catch(e){console.info("V3.49 attach closeout",e?.message||e);}
+    if(role==="CBTT"||role==="AD")void window.sagsV344ApplyCloseoutToFinals?.(p,{notify:true,createMissing:true});
+    const no=Math.max(1,Number(p.closeoutNo||p.revisionNo||1)||1),changes=Array.isArray(p.changeSummary)?p.changeSummary:[];
+    const hasFinal=(role==="CBTT"||role==="AD")?markFinalPending(p):false;
+    const unchanged=no>=2&&!changes.length;
+    enqueuePopup({
+      id:eventId,
+      severity:no>=2&&!unchanged?"critical":"info",
+      title:unchanged?"🔔 KẾT SỔ LẦN "+no+" · KHÔNG THAY ĐỔI":(no>=2?"⚠ KẾT SỔ ĐÃ THAY ĐỔI · LẦN "+no:"🔔 CÓ KẾT SỔ MỚI"),
+      html:popupHtml(p,changes,hasFinal),payload:p,soundType:no>=2&&!unchanged?"changed":"new"
+    });
+    v348RememberEvent(eventId);
+    setTimeout(()=>window.sagsV342Refresh?.(),120);
+    setTimeout(refreshValidation,80);
+    return true;
+  }
+  window.sagsV348ReceiveCloseoutSignal=v348ReceiveCloseoutSignal;
+
+  function stopCloseoutListener(){
+    if(v121CloseoutRef&&v121CloseoutCb)try{v121CloseoutRef.off("value",v121CloseoutCb);}catch(e){}
+    if(v348CloseoutEventsRef&&v348CloseoutEventsAddedCb)try{v348CloseoutEventsRef.off("child_added",v348CloseoutEventsAddedCb);}catch(e){}
+    if(v348CloseoutEventsRef&&v348CloseoutEventsChangedCb)try{v348CloseoutEventsRef.off("child_changed",v348CloseoutEventsChangedCb);}catch(e){}
+    v121CloseoutRef=null;v121CloseoutCb=null;v348CloseoutEventsRef=null;v348CloseoutEventsAddedCb=null;v348CloseoutEventsChangedCb=null;v121LastCloseoutEvent="";
+  }
   function startCloseoutListener(){
-    const role=String(currentRole||"");if(!["CBTT","DH","AD"].includes(role)||(!currentUserProfile?.username&&role!=="AD")){stopCloseoutListener();return;}
-    if(v121CloseoutRef)return;try{v121CloseoutListenAtMs=Date.now();const ref=sagsV470Ref(V121_RTDB_PATH),cb=s=>{const d=s.val()||{},at=Number(d.eventAtMs||0),eventId=String(d.eventId||"");if(!eventId||eventId===v121LastCloseoutEvent||at<v121CloseoutListenAtMs-1500)return;if(String(d.sourceDeviceId||"")===String((typeof fs09DeviceId==="function"?fs09DeviceId():"")||""))return;v121LastCloseoutEvent=eventId;const p=d.payload||null;if(!p)return;storeCloseout(p);void window.sagsV343ApplyCloseoutToFinals?.(p,{notify:true});const no=Math.max(1,Number(p.closeoutNo||p.revisionNo||1)||1),changes=Array.isArray(p.changeSummary)?p.changeSummary:[];if(no>=2&&!changes.length){setTimeout(refreshValidation,80);return;}const hasFinal=(role==="CBTT"||role==="AD")?markFinalPending(p):false;enqueuePopup({id:eventId,severity:no>=2?"critical":"info",title:no>=2?"⚠ KẾT SỔ ĐÃ THAY ĐỔI · LẦN "+no:"🔔 CÓ KẾT SỔ MỚI",html:popupHtml(p,changes,hasFinal),payload:p,soundType:no>=2?"changed":"new"});setTimeout(refreshValidation,80);};ref.on("value",cb,e=>console.warn("V1.81 closeout listener",e));v121CloseoutRef=ref;v121CloseoutCb=cb;}catch(e){console.warn("V1.81 closeout listener start",e);}
+    const role=String(currentRole||"").toUpperCase();if(!["CBTT","DH","AD"].includes(role)||(!currentUserProfile?.username&&role!=="AD")){stopCloseoutListener();return;}
+    if(v121CloseoutRef&&v348CloseoutEventsRef)return;
+    v121CloseoutListenAtMs=Date.now();
+    if(!v121CloseoutRef)try{
+      const ref=sagsV470Ref(V121_RTDB_PATH),cb=s=>v348ReceiveCloseoutSignal(s.val()||{},{allowReplay:false});
+      ref.on("value",cb,e=>console.warn("V3.49 closeout latest listener",e));v121CloseoutRef=ref;v121CloseoutCb=cb;
+    }catch(e){console.warn("V3.49 closeout latest listener start",e);}
+    if(!v348CloseoutEventsRef)try{
+      const ref=sagsV470Ref(V348_RTDB_EVENTS_PATH).orderByChild("eventAtMs").limitToLast(80);
+      const cb=s=>v348ReceiveCloseoutSignal(s.val()||{},{allowReplay:true});
+      v348CloseoutEventsAddedCb=cb;v348CloseoutEventsChangedCb=cb;
+      ref.on("child_added",v348CloseoutEventsAddedCb,e=>console.warn("V3.49 closeout events listener",e));
+      ref.on("child_changed",v348CloseoutEventsChangedCb,e=>console.warn("V3.49 closeout events listener",e));
+      v348CloseoutEventsRef=ref;
+    }catch(e){console.warn("V3.49 closeout events listener start",e);}
   }
 
   // Late hooks: keep validation live but cheap; no camera/main-thread processing involved.
@@ -24373,7 +24462,7 @@ window.openCamScanner=openCamScanner;
 
 
 
-<script src="./app.js?v=V3.47" data-phase="tools"></script>
+<script src="./app.js?v=V3.49" data-phase="tools"></script>
 <script id="v173-quick-time">
 (function(){
   "use strict";
@@ -26429,7 +26518,7 @@ window.openCamScanner=openCamScanner;
 }
 </style>
 
-<script src="./app.js?v=V3.47" data-phase="flight"></script>
+<script src="./app.js?v=V3.49" data-phase="flight"></script>
 <script id="v191IOSInteractionFix">
 (()=>{
   'use strict';
@@ -26693,7 +26782,7 @@ window.openCamScanner=openCamScanner;
 })();
 </script>
 
-<script src="./app.js?v=V3.47" data-phase="control"></script>
+<script src="./app.js?v=V3.49" data-phase="control"></script>
 
 <style id="v330-group-permission-style">
 #v330GroupPermPanel{margin:12px 0 8px;padding:11px;border:1px solid #cbd9e6;border-radius:12px;background:#f7fbff;box-sizing:border-box}
@@ -26895,8 +26984,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })(window);
 </script>
 
-<script src="./action-center-v342.js?v=V3.47"></script>
-<script src="./closeout-final-autofill-v344.js?v=V3.47"></script>
+<script src="./action-center-v342.js?v=V3.49"></script>
+<script src="./closeout-final-autofill-v344.js?v=V3.49"></script>
 
 </body>
 </html>

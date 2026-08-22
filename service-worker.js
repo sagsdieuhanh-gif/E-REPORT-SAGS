@@ -1,5 +1,5 @@
-const CACHE_NAME="sags-v3-47-clean-runtime-20260822-01";
-const BUILD="V3.47-20260822-01";
+const CACHE_NAME="sags-v3-49-sent-received-history-20260822-01";
+const BUILD="V3.49-20260822-01";
 const APP_SHELL=[
   "./9Gfinal.png",
   "./CBTT.png",
