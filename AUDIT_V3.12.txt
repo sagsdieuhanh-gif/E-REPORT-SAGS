@@ -1,6 +1,0 @@
-V3.12 AUDIT
-1. Duplicate export card root cause: concurrent async injectTaskExports() invocations could all append after awaiting Firebase.
-2. Fix: one singleton element #v310TaskDocsSingleton and a monotonically increasing render token. Stale renders exit without append; old duplicate nodes are removed.
-3. fillBlankNA now accepts silent mode and returns the number of fields filled.
-4. Export menu is patched to run silent auto N/A before generating form PDFs.
-5. FINAL share path is unchanged.
