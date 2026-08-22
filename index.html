@@ -2172,7 +2172,7 @@ body.role-viewer #ffSendBtn{
 </div>
 <div id="rsOverdueHost"></div>
 
-<script src="./app.js?v=V3.61" data-phase="qr"></script>
+<script src="./app.js?v=V3.62" data-phase="qr"></script>
 <style>
 /* ===== V6.3.5 FINAL RECEIVER SCROLL + PERFORMANCE ===== */
 #finalFormsModal{
@@ -3051,7 +3051,7 @@ user-select:none;-webkit-user-select:none;touch-action:none;-webkit-tap-highligh
   </div>
 </div>
 
-<div id="buildMarker">V3.61</div>
+<div id="buildMarker">V3.62</div>
 <div aria-live="polite" id="currentFerryFlag"><span class="dot"></span><span id="currentFerryFlagText">FERRY</span></div>
 <div class="toolbar compact-main-toolbar">
 <div class="badge">PĐH SAGS-CXR</div>
@@ -3100,15 +3100,15 @@ user-select:none;-webkit-user-select:none;touch-action:none;-webkit-tap-highligh
 <button onclick="closeUpdateInfo()" aria-label="Đóng" style="border:0;background:#eee;border-radius:50%;width:34px;height:34px;font-size:21px;line-height:30px">×</button>
 </div>
 <div style="padding:11px 12px;border:1px solid #b7d7ef;border-radius:11px;background:#eef7ff">
-<p style="margin:0 0 6px;color:#075985"><b>V3.61 · 22/08/2026 — SỬA NHẬN DIỆN A/C TYPE CHO FINAL</b></p>
-<p style="margin:4px 0">• Thanh công cụ điện thoại được chia thành 2 hàng để giảm quãng vuốt ngang.</p>
-<p style="margin:4px 0">• Hàng trên giữ cụm tài khoản và các thao tác của biểu mẫu đang làm; hàng dưới chứa các chức năng điều hướng.</p>
-<p style="margin:4px 0">• Cụm tài khoản vẫn nằm trong thanh công cụ như trước, không đưa lên góc màn hình.</p>
-<p style="margin:4px 0">• Toàn bộ tối ưu mobile-first V3.56 được giữ nguyên; không thay đổi quyền, nghiệp vụ hoặc Firebase.</p>
+<p style="margin:0 0 6px;color:#075985"><b>V3.62 · 22/08/2026 — TÁCH GRND_COR THEO CHUYẾN ĐẾN / ĐI</b></p>
+<p style="margin:4px 0">• Daily Roster hiểu <b>Grnd_Cor A / B</b> là A phụ trách chuyến đến, B phụ trách chuyến đi.</p>
+<p style="margin:4px 0">• <b>A /</b> = chỉ chuyến đến; <b>/ B</b> = chỉ chuyến đi; <b>A / A</b> = cùng người làm cả hai.</p>
+<p style="margin:4px 0">• MY FLIGHT hiển thị đúng số hiệu được phân: chuyến đến chỉ hiện ARR + STA, chuyến đi chỉ hiện DEP + STD.</p>
+<p style="margin:4px 0">• Roster cũ không có dấu / vẫn giữ cách xử lý cũ để tránh mất phân công/draft hiện hữu.</p>
 </div>
 <details style="margin-top:10px;padding:9px 11px;border:1px solid #dbe4eb;border-radius:10px;background:#fafcfd">
 <summary style="cursor:pointer;font-weight:800;color:#334155">Lưu ý sau khi cập nhật</summary>
-<p style="margin:8px 0 0">Dữ liệu hồ sơ nghiệp vụ trên Firebase không bị xóa. Chỉ cập nhật khi người dùng bấm CẬP NHẬT và chờ nhãn góc trái hiện V3.61.</p>
+<p style="margin:8px 0 0">Dữ liệu hồ sơ nghiệp vụ trên Firebase không bị xóa. Chỉ cập nhật khi người dùng bấm CẬP NHẬT và chờ nhãn góc trái hiện V3.62.</p>
 </details>
 <button onclick="closeUpdateInfo()" style="width:100%;margin-top:12px;border:0;border-radius:10px;padding:10px 14px;background:#0b67b2;color:#fff;font-weight:800">ĐÓNG</button>
 </div>
@@ -4080,7 +4080,7 @@ user-select:none;-webkit-user-select:none;touch-action:none;-webkit-tap-highligh
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
-<script src="./app.js?v=V3.61" data-phase="config"></script>
+<script src="./app.js?v=V3.62" data-phase="config"></script>
 <script>
 let suppressModalClickUntil=0;
 function armModalGhostClickBlock(ms=650){
@@ -12095,8 +12095,8 @@ try {
   alert("Lỗi JavaScript: "+err.message);
 }
 
-const APP_BUILD_VERSION="V3.61-20260822-01";
-const APP_DISPLAY_VERSION="V3.61";
+const APP_BUILD_VERSION="V3.62-20260822-01";
+const APP_DISPLAY_VERSION="V3.62";
 
 // V4.21 — SAFE UPDATE SAVE
 // Before switching to a newly installed app version, force-save all current
@@ -24063,7 +24063,7 @@ window.openCamScanner=openCamScanner;
 <script type="module" src="./ai.js?v=V3.58"></script>
 
 
-<script src="./app.js?v=V3.61" data-phase="archive"></script>
+<script src="./app.js?v=V3.62" data-phase="archive"></script>
 <script id="v120-build02-fixes">
 /* V1.20 BUILD 02 — background persistence, VHTTB, per-account usage detail, progress dedupe. */
 (function(){
@@ -24504,7 +24504,7 @@ window.openCamScanner=openCamScanner;
 
 
 
-<script src="./app.js?v=V3.61" data-phase="tools"></script>
+<script src="./app.js?v=V3.62" data-phase="tools"></script>
 <script id="v173-quick-time">
 (function(){
   "use strict";
@@ -26560,7 +26560,7 @@ window.openCamScanner=openCamScanner;
 }
 </style>
 
-<script src="./app.js?v=V3.61" data-phase="flight"></script>
+<script src="./app.js?v=V3.62" data-phase="flight"></script>
 <script id="v191IOSInteractionFix">
 (()=>{
   'use strict';
@@ -26824,7 +26824,7 @@ window.openCamScanner=openCamScanner;
 })();
 </script>
 
-<script src="./app.js?v=V3.61" data-phase="control"></script>
+<script src="./app.js?v=V3.62" data-phase="control"></script>
 
 <style id="v330-group-permission-style">
 #v330GroupPermPanel{margin:12px 0 8px;padding:11px;border:1px solid #cbd9e6;border-radius:12px;background:#f7fbff;box-sizing:border-box}
@@ -26900,7 +26900,7 @@ window.openCamScanner=openCamScanner;
   function carrierOf(item){const f=departureFlightOf(item);if(f.startsWith('VU'))return 'VU';if(f.startsWith('9G'))return '9G';if(f.startsWith('VJ')||f.startsWith('VZ'))return 'VJ';const reg=S(item?.acReg||item?.acRegToken);return carrierFromFleetAirline(fleetInfo(reg)?.airline)}
   function fleetType(reg){const d=fleetInfo(reg);return U(d?.acType||d?.type||d?.config||'')}
   function v361IsWideVjType(v){const t=U(v).replace(/[\s_\-\/]+/g,'');return /(^|[^0-9])A?33[0-9]/.test(t)||/A330|A332|A333|A338|A339|WIDE|THÂNRỘNG|THANRONG/.test(t)}
-  function finalFormFor(item){const reg=S(item?.acReg||item?.acRegToken),c=carrierOf(item),typ=U(item?.acType||item?.acTypeToken||fleetType(reg));if(c==='VU')return 'VUfinal.png';if(c==='9G')return '9Gfinal.png';if(c!=='VJ')return '';if(!typ)return '';if(v361IsWideVjType(typ))return 'VJfinal2.png';/* V3.61: VJ chỉ có 2 mẫu: wide-body A330 và mẫu VJ thường. Khi A/C TYPE đã có, mọi loại không phải wide-body dùng mẫu VJ thường; không ép phải chứa chuỗi A320/A321. */return 'VJfinal.png'}
+  function finalFormFor(item){const reg=S(item?.acReg||item?.acRegToken),c=carrierOf(item),typ=U(item?.acType||item?.acTypeToken||fleetType(reg));if(c==='VU')return 'VUfinal.png';if(c==='9G')return '9Gfinal.png';if(c!=='VJ')return '';if(!typ)return '';if(v361IsWideVjType(typ))return 'VJfinal2.png';/* V3.62: VJ chỉ có 2 mẫu: wide-body A330 và mẫu VJ thường. Khi A/C TYPE đã có, mọi loại không phải wide-body dùng mẫu VJ thường; không ép phải chứa chuỗi A320/A321. */return 'VJfinal.png'}
   function finalSeed(item,form){const dep=departureFlightOf(item),date=isoDate(item?.depFlightDate||item?.opDate||item?.date),reg=U(item?.acReg||item?.acRegToken),type=U(item?.acType||item?.acTypeToken||fleetType(reg)),to=U(item?.route3||item?.route3Token),from='CXR';if(form==='VUfinal.png')return {flight:dep,sector1:from,sector2:to,date,acreg:reg};if(form==='9Gfinal.png')return {departure:from,arrival:to,flight:dep,acreg:reg,date};if(form==='VJfinal2.png')return {flight:dep,from,to,actype:type,acreg:reg,date};return {flight:dep,sector:to?(from+'-'+to):'',acreg:reg,date}}
 
   root.sagsV340EnsureFinalForRoster=async function(item,options={}){
@@ -26912,12 +26912,12 @@ window.openCamScanner=openCamScanner;
     if(form){rec.form=form;rec.airline=airline;rec.name=(S(item.depFlight||item.flightName||item.flightRaw)||'FINAL')+' · '+airline;rec.templatePendingV340=false;rec.templateResolvedAtMs=now}else{rec.airline='CHỜ MẪU';rec.name=(S(item.depFlight||item.flightName||item.flightRaw)||'FINAL')+' · CHỜ MẪU';rec.templatePendingV340=true;rec.templatePendingReason='WAITING_AC_TYPE_OR_SUPPORTED_CARRIER'}
     rec.rosterAssignmentId=S(item.assignmentId);rec.flightId=S(item.flightId);rec.opDate=S(item.opDate);rec.flightToken=departureFlightOf(item);rec.dateToken=tokenDate(item.depFlightDate||item.opDate);rec.acRegToken=U(item.acReg).replace(/[^A-Z0-9]/g,'');rec.acTypeToken=U(item.acType||fleetType(item.acReg));rec.route3Token=U(item.route3||'');rec.fleetAirlineToken=U(fleetInfo(item.acReg)?.airline||'');rec.updatedAt=now;writeFinalSheetList(list);
     if(form){let all={};try{all=JSON.parse(localStorage.getItem(finalSheetDataKey(rec.id))||'{}')||{}}catch(_){all={}};const data=all[form]&&typeof all[form]==='object'?all[form]:{};for(const [k,v] of Object.entries(seed))if(S(v)&&!S(data[k]))data[k]=v;all[form]=data;localStorage.setItem(finalSheetDataKey(rec.id),JSON.stringify(all))}
-    if(shouldOpen){try{activeFinalSheetId=rec.id;localStorage.setItem(sagsOwnedKey(FINAL_SHEET_ACTIVE_KEY),rec.id)}catch(_){}if(!form){try{root.openFinalSheetManager?.()}catch(_){}alert('Đã tạo tờ FINAL ở trạng thái CHỜ MẪU.\n\nHệ thống chưa xác định được hãng/mẫu FINAL từ Flight, A/C REG và Fleet. Nếu A/C Type đã có, hãy mở lại FINAL; V3.61 sẽ nhận mọi A/C Type VJ không phải A330 là mẫu VJ thường.');return {ok:true,created,pendingTemplate:true,record:rec}}openFinalSheetRecord(rec.id);setTimeout(installButtons,80)}
+    if(shouldOpen){try{activeFinalSheetId=rec.id;localStorage.setItem(sagsOwnedKey(FINAL_SHEET_ACTIVE_KEY),rec.id)}catch(_){}if(!form){try{root.openFinalSheetManager?.()}catch(_){}alert('Đã tạo tờ FINAL ở trạng thái CHỜ MẪU.\n\nHệ thống chưa xác định được hãng/mẫu FINAL từ Flight, A/C REG và Fleet. Nếu A/C Type đã có, hãy mở lại FINAL; V3.62 sẽ nhận mọi A/C Type VJ không phải A330 là mẫu VJ thường.');return {ok:true,created,pendingTemplate:true,record:rec}}openFinalSheetRecord(rec.id);setTimeout(installButtons,80)}
     return {ok:true,created,pendingTemplate:!form,record:rec};
   };
   root.sagsV338OpenFinalForRoster=async function(item){const out=await root.sagsV340EnsureFinalForRoster(item,{open:true});return !!out?.ok&&!out?.pendingTemplate};
 
-  /* V3.61: FINAL đã tạo ở trạng thái CHỜ MẪU được thử nhận diện lại ngay khi người dùng bấm MỞ.
+  /* V3.62: FINAL đã tạo ở trạng thái CHỜ MẪU được thử nhận diện lại ngay khi người dùng bấm MỞ.
      Không cần tạo lại chuyến/FINAL và không cần query Firestore. */
   root.sagsV361TryOpenPendingFinal=function(id){
     const list=readFinalSheetList(),rec=list.find(x=>S(x.id)===S(id));if(!rec)return false;

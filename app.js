@@ -3756,6 +3756,20 @@ if(phase==='flight'){
   function usersFromCell(v){
     return [...new Set(upper(v).split(/[\/,;|\n]+/).map(normUser).filter(x=>x&&/^[A-Z][A-Z0-9._-]{1,39}$/.test(x)&&!/^N\/?A$/.test(x)&&!/^\d+$/.test(x)))];
   }
+  // V3.62: Grnd_Cor có đúng 1 dấu "/" trên dòng có cặp ARR/DEP được hiểu theo 2 chặng:
+  //   A / B  => A chỉ ARR, B chỉ DEP
+  //   A / A  => A phụ trách cả turnaround (1 assignment, không tạo trùng)
+  //   A /    => A chỉ ARR
+  //     / B  => B chỉ DEP
+  // Không có dấu "/" (hoặc có nhiều hơn 1 dấu "/") giữ cách hiểu legacy để không phá roster cũ.
+  function grndCorPlan(v,hasPair){
+    const raw=S(v),legacy=usersFromCell(raw),slashes=(raw.match(/\//g)||[]).length;
+    if(!hasPair||slashes!==1)return {split:false,turn:legacy,arr:[],dep:[],display:legacy.slice()};
+    const at=raw.indexOf('/'),arr=usersFromCell(raw.slice(0,at)),dep=usersFromCell(raw.slice(at+1));
+    if(arr.length===1&&dep.length===1&&arr[0]===dep[0])return {split:true,turn:[arr[0]],arr:[],dep:[],display:[`${arr[0]} · ĐẾN+ĐI`]};
+    const display=[...arr.map(u=>`${u} · ĐẾN`),...dep.map(u=>`${u} · ĐI`)];
+    return {split:true,turn:[],arr,dep,display};
+  }
   function formLabel(g){g=upper(g);return g==="FINAL"?"FINAL":g==="FSAGS421"?"42.1":(g==="FSAGS551"?"55.1":(g==="FSAGS09"?"FSAGS 09":"42.3"));}
   function hashId(s){
     let h=2166136261>>>0;for(let i=0;i<String(s).length;i++){h^=String(s).charCodeAt(i);h=Math.imul(h,16777619)>>>0;}return h.toString(36).toUpperCase();
@@ -3843,15 +3857,19 @@ if(phase==='flight'){
       if(flights.length>=2){arrFlight=flights[0];depFlight=flights[1];}
       else if(flights.length===1){if(arrDate||sta)arrFlight=flights[0];else if(depDate||std)depFlight=flights[0];}
       const rp=routeParts(getCell(row,map,"Route"));
-      const corUsers=usersFromCell(getCell(row,map,"Grnd_Cor"));
+      const corCell=getCell(row,map,"Grnd_Cor"),corPlan=grndCorPlan(corCell,!!arrFlight&&!!depFlight);
+      const corEntries=[
+        ...corPlan.turn.map(u=>({user:u,leg:""})),
+        ...corPlan.arr.map(u=>({user:u,leg:"ARR"})),
+        ...corPlan.dep.map(u=>({user:u,leg:"DEP"}))
+      ];
+      const corUsers=[...new Set(corEntries.map(x=>x.user))];
       const ldUsers=usersFromCell(getCell(row,map,"Grnd_Ld"));
       const lsUsers=usersFromCell(getCell(row,map,"Grnd_Ls"));
       const paxUsers=usersFromCell(getCell(row,map,"Pax_Supr"));
       const corSet=new Set(corUsers),ldSet=new Set(ldUsers);
-      const common=corUsers.filter(u=>ldSet.has(u));
-      const corOnly=corUsers.filter(u=>!ldSet.has(u));
       const ldOnly=ldUsers.filter(u=>!corSet.has(u));
-      if(!common.length&&!corOnly.length&&!ldOnly.length&&!lsUsers.length&&!paxUsers.length)continue;
+      if(!corEntries.length&&!ldOnly.length&&!lsUsers.length&&!paxUsers.length)continue;
 
       const base={
         rowNo:i+1,opDate:opDate.iso,date:opDate.display,flightRaw:upper(flightRaw),arrFlight,depFlight,sta,std,eta:etaInfo.display,etd:etdInfo.display,
@@ -3861,24 +3879,35 @@ if(phase==='flight'){
         staSortMinute:sortMinuteFor(opDate.iso,arrFlightDate,staInfo.clock),stdSortMinute:sortMinuteFor(opDate.iso,depFlightDate,stdInfo.clock),etaSortMinute:sortMinuteFor(opDate.iso,etaFlightDate,etaInfo.clock),etdSortMinute:sortMinuteFor(opDate.iso,etdFlightDate,etdInfo.clock),
         acReg:upper(getCell(row,map,"ACRegNo")),acType:upper(getCell(row,map,"ACType")),route:upper(getCell(row,map,"Route")),
         route1:rp.route1,route3:rp.route3,bay:S(getCell(row,map,"ParkingBay")),
-        grndCor:corUsers,grndLd:ldUsers,grndLs:lsUsers,paxSupr:paxUsers,
+        grndCor:corPlan.display.length?corPlan.display:corUsers,grndLd:ldUsers,grndLs:lsUsers,paxSupr:paxUsers,
         flightName:[arrFlight,depFlight].filter(Boolean).join(" / ")||upper(flightRaw)
       };
-      const add=(u,formGroup,sourceColumn,roleKey,workPartOrder=1,workPartTotal=1)=>{
-        // ID dựa trên roster gốc + vai trò. Khi AD chuyển người, ID giữ nguyên để giữ dữ liệu và override.
-        const id="RA_"+hashId([base.opDate,base.flightRaw,roleKey,u].join("|"));
-        out.push({...base,assignmentId:id,targetUser:u,originalTargetUser:u,formGroup,sourceColumn,roleKey,workPartOrder:Number(workPartOrder)||1,workPartTotal:Number(workPartTotal)||1,workPartSequenceSource:sourceColumn});
+      const add=(u,formGroup,sourceColumn,roleKey,workPartOrder=1,workPartTotal=1,assignmentLeg="")=>{
+        // ID dựa trên roster gốc + vai trò. Với V3.62 chỉ assignment tách chặng mới thêm ARR/DEP vào ID;
+        // roster legacy giữ ID cũ để không mất override/draft hiện hữu.
+        const idParts=[base.opDate,base.flightRaw,roleKey,u];if(assignmentLeg)idParts.push(assignmentLeg);
+        const id="RA_"+hashId(idParts.join("|"));
+        const assignmentFlight=assignmentLeg==="ARR"?base.arrFlight:(assignmentLeg==="DEP"?base.depFlight:"");
+        const assignmentTime=assignmentLeg==="ARR"?base.sta:(assignmentLeg==="DEP"?base.std:"");
+        out.push({...base,assignmentId:id,targetUser:u,originalTargetUser:u,formGroup,sourceColumn,roleKey,assignmentLeg,assignmentFlight,assignmentTime,assignmentScope:assignmentLeg?"FLIGHT_LEG":"TURNAROUND",rosterLegSplit:!!corPlan.split,workPartOrder:Number(workPartOrder)||1,workPartTotal:Number(workPartTotal)||1,workPartSequenceSource:sourceColumn});
       };
       // V1.69:
       // - Không có Grnd_Ld: mọi Grnd_Cor nhận 42.3.
       // - Có Grnd_Ld:
       //   + cùng username ở cả Cor + Ld => 42.3
       //   + Cor khác người Ld => Cor 42.1, Ld 55.1
+      const addCorEntries=(entries,formGroup,sourceColumn,roleKey)=>{
+        const groups=new Map();
+        for(const e of entries){const k=e.leg||"TURNAROUND";if(!groups.has(k))groups.set(k,[]);groups.get(k).push(e);}
+        for(const arr of groups.values())arr.forEach((e,i)=>add(e.user,formGroup,sourceColumn,roleKey,i+1,arr.length,e.leg));
+      };
       if(!ldUsers.length){
-        corUsers.forEach((u,i)=>add(u,"fsags","Grnd_Cor","COR",i+1,corUsers.length));
+        addCorEntries(corEntries,"fsags","Grnd_Cor","COR");
       }else{
-        common.forEach((u,i)=>add(u,"fsags","Grnd_Cor + Grnd_Ld","BOTH",i+1,common.length));
-        corOnly.forEach((u,i)=>add(u,"fsags421","Grnd_Cor","COR",i+1,corOnly.length));
+        const commonEntries=corEntries.filter(e=>ldSet.has(e.user));
+        const corOnlyEntries=corEntries.filter(e=>!ldSet.has(e.user));
+        addCorEntries(commonEntries,"fsags","Grnd_Cor + Grnd_Ld","BOTH");
+        addCorEntries(corOnlyEntries,"fsags421","Grnd_Cor","COR");
         ldOnly.forEach((u,i)=>add(u,"fsags551","Grnd_Ld","LD",i+1,ldOnly.length));
       }
       // V1.82: Grnd_Ls là nguồn phân công CBTT. Mỗi username trong Grnd_Ls sinh nhiệm vụ FINAL/CROSSCHECK cho đúng chuyến.
@@ -3914,7 +3943,7 @@ if(phase==='flight'){
 
 
   // Pure helpers exposed for validation/tests.
-  root.__SAGS_DAILY_ROSTER_TEST__={parseXlsxBytes,parseCsvText,headerRowInfo,parseDate,parseRosterTime,fmtTime,addIsoDays,isoDayDiff,resolveEventDate,sortMinuteFor,splitFlights,usersFromCell,allFlightRows,pvhk09SeedFor,rosterRecords,seedFor,flightIdForRoster};
+  root.__SAGS_DAILY_ROSTER_TEST__={parseXlsxBytes,parseCsvText,headerRowInfo,parseDate,parseRosterTime,fmtTime,addIsoDays,isoDayDiff,resolveEventDate,sortMinuteFor,splitFlights,usersFromCell,grndCorPlan,allFlightRows,pvhk09SeedFor,rosterRecords,seedFor,flightIdForRoster};
   if(typeof document==="undefined")return;
 
   let preview=null,mailRef=null,mailCb=null,revRef=null,revCb=null,lastToastSig="";
@@ -3937,7 +3966,7 @@ if(phase==='flight'){
     const m=document.createElement("div");m.id="dailyRosterModal";
     m.innerHTML=`<div class="drPanel"><div class="drHead"><div><h3>📋 DAILY ROSTER · TỰ TẠO CHUYẾN</h3><div class="drSub"><b>AD chỉ cần chọn file.</b> Hệ thống tự đọc roster, tự tạo Flight Workspace và phân công dữ liệu roster hiện có. Không cần bấm TẠO CHUYẾN.</div></div><button class="drBtn secondary" onclick="closeDailyRosterManager()">ĐÓNG</button></div>
       <div class="drField"><label>File DAILY ROSTER</label><input id="drFile" type="file" accept=".xlsx,.xlsm,.csv"></div>
-      <div class="drStatus"><b>QUY TẮC TẠO FORM</b><br>• Không có Grnd_Ld: Grnd_Cor → 42.3<br>• Có Grnd_Ld khác người: Grnd_Cor → 42.1, Grnd_Ld → 55.1<br>• Cùng người ở Grnd_Cor + Grnd_Ld → 42.3<br>• <b>Grnd_Ls → CBTT · FINAL/CROSSCHECK</b><br>• <b>Pax_Supr → FSAGS 09</b>.</div>
+      <div class="drStatus"><b>QUY TẮC TẠO FORM</b><br>• <b>Grnd_Cor A / B: A = chuyến ĐẾN, B = chuyến ĐI</b> (A / = chỉ ĐẾN; / B = chỉ ĐI; A / A = cả hai)<br>• Không có Grnd_Ld: Grnd_Cor → 42.3<br>• Có Grnd_Ld khác người: Grnd_Cor → 42.1, Grnd_Ld → 55.1<br>• Cùng người ở Grnd_Cor + Grnd_Ld → 42.3<br>• <b>Grnd_Ls → CBTT · FINAL/CROSSCHECK</b><br>• <b>Pax_Supr → FSAGS 09</b>.</div>
       <div class="drActions" style="display:none"><button class="drBtn" id="drReadBtn" onclick="dailyRosterReadPreview()">📄 ĐỌC DAILY ROSTER</button></div>
       <div class="drActions"><button class="drBtn publish createFlight" id="drPublishBtn" onclick="dailyRosterPublish()" disabled style="display:none">✓ XÁC NHẬN TẠO CHUYẾN</button></div>
       <div class="drStatus" id="drStatus">Chọn file roster để bắt đầu.</div><div id="drPreview"></div>
@@ -3981,10 +4010,10 @@ if(phase==='flight'){
     for(const r of recs){
       const k=r.opDate+"|"+r.flightRaw;
       if(!grouped.has(k))grouped.set(k,{...r,assignments:[]});
-      grouped.get(k).assignments.push({user:r.targetUser,formGroup:r.formGroup,sourceColumn:r.sourceColumn});
+      grouped.get(k).assignments.push({user:r.targetUser,formGroup:r.formGroup,sourceColumn:r.sourceColumn,assignmentLeg:r.assignmentLeg||""});
     }
     const rows=[...grouped.values()].slice(0,100);
-    host.innerHTML=`<div class="drStatus">Đọc được <b>${grouped.size}</b> dòng chuyến · <b>${recs.length}</b> biểu mẫu · <b>${users.length}</b> username.<br>Ngày roster: ${esc(data.rosterDate||"không xác định")} · Sheet: ${esc(data.sheetName||"")}</div>${rows.length?`<div class="drTableWrap"><table class="drTable"><thead><tr><th>Ngày KT</th><th>Flight</th><th>STA</th><th>STD</th><th>Ngày đi</th><th>Grnd_Cor</th><th>Grnd_Ld</th><th>Grnd_Ls</th><th>Pax_Supr</th><th>Biểu mẫu sinh ra</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.date)}</td><td><b>${esc(r.flightRaw)}</b></td><td>${esc(r.sta)}</td><td>${esc(r.std)}</td><td>${esc(r.depFlightDate||r.opDate)}${Number(r.stdDayOffset||0)>0?' <span class="drBadge">NEXT DAY</span>':''}</td><td>${(r.grndCor||[]).map(u=>`<span class="drBadge">${esc(u)}</span>`).join(" ")}</td><td>${(r.grndLd||[]).map(u=>`<span class="drBadge">${esc(u)}</span>`).join(" ")}</td><td>${(r.grndLs||[]).map(u=>`<span class="drBadge">${esc(u)}</span>`).join(" ")}</td><td>${(r.paxSupr||[]).map(u=>`<span class="drBadge">${esc(u)}</span>`).join(" ")}</td><td>${r.assignments.map(a=>`<span class="drBadge">${esc(a.user)} · ${formLabel(a.formGroup)}</span>`).join(" ")}</td></tr>`).join("")}</tbody></table></div>`:'<div class="drEmpty">Không có tên hợp lệ ở Grnd_Cor / Grnd_Ld / Grnd_Ls / Pax_Supr.</div>'}`;
+    host.innerHTML=`<div class="drStatus">Đọc được <b>${grouped.size}</b> dòng chuyến · <b>${recs.length}</b> biểu mẫu · <b>${users.length}</b> username.<br>Ngày roster: ${esc(data.rosterDate||"không xác định")} · Sheet: ${esc(data.sheetName||"")}</div>${rows.length?`<div class="drTableWrap"><table class="drTable"><thead><tr><th>Ngày KT</th><th>Flight</th><th>STA</th><th>STD</th><th>Ngày đi</th><th>Grnd_Cor</th><th>Grnd_Ld</th><th>Grnd_Ls</th><th>Pax_Supr</th><th>Biểu mẫu sinh ra</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.date)}</td><td><b>${esc(r.flightRaw)}</b></td><td>${esc(r.sta)}</td><td>${esc(r.std)}</td><td>${esc(r.depFlightDate||r.opDate)}${Number(r.stdDayOffset||0)>0?' <span class="drBadge">NEXT DAY</span>':''}</td><td>${(r.grndCor||[]).map(u=>`<span class="drBadge">${esc(u)}</span>`).join(" ")}</td><td>${(r.grndLd||[]).map(u=>`<span class="drBadge">${esc(u)}</span>`).join(" ")}</td><td>${(r.grndLs||[]).map(u=>`<span class="drBadge">${esc(u)}</span>`).join(" ")}</td><td>${(r.paxSupr||[]).map(u=>`<span class="drBadge">${esc(u)}</span>`).join(" ")}</td><td>${r.assignments.map(a=>`<span class="drBadge">${esc(a.user)} · ${formLabel(a.formGroup)}${a.assignmentLeg?` · ${a.assignmentLeg==="ARR"?"ĐẾN":"ĐI"}`:""}</span>`).join(" ")}</td></tr>`).join("")}</tbody></table></div>`:'<div class="drEmpty">Không có tên hợp lệ ở Grnd_Cor / Grnd_Ld / Grnd_Ls / Pax_Supr.</div>'}`;
   }
 
   root.dailyRosterLoadFile=async function(file){
@@ -4032,14 +4061,14 @@ if(phase==='flight'){
         const r={...baseRec,targetUser:effectiveUser};
         const rk=upper(r.roleKey),src=upper(r.sourceColumn),fg=upper(r.formGroup),unit=(rk==="CBTT"||src.includes("GRND_LS")||fg==="FINAL")?"CBTT":((rk==="PAX09"||src.includes("PAX_SUPR")||fg==="FSAGS09")?"PVHK":"DH");
         const manualBase=Object.values(oldItems).find(x=>x?.manualCreatedV340===true&&upper(x.manualUnit)===unit&&sameRosterFlightIdentity(x,r)),resolvedFlightId=S(oldItem.flightId||manualBase?.flightId)||flightIdForRoster(r);
-        const payload={engine:ENGINE,schema:2,assignmentId:r.assignmentId,targetUser:r.targetUser,originalTargetUser:baseRec.originalTargetUser||baseRec.targetUser,opDate:r.opDate,date:r.date,flightId:resolvedFlightId,flightRaw:r.flightRaw,flightName:r.flightName||"",arrFlight:r.arrFlight,depFlight:r.depFlight,sta:r.sta,std:r.std,eta:r.eta||"",etd:r.etd||"",arrFlightDate:r.arrFlightDate||r.opDate,depFlightDate:r.depFlightDate||r.opDate,etaFlightDate:r.etaFlightDate||r.arrFlightDate||r.opDate,etdFlightDate:r.etdFlightDate||r.depFlightDate||r.opDate,staClock:r.staClock||"",stdClock:r.stdClock||"",etaClock:r.etaClock||"",etdClock:r.etdClock||"",staDayOffset:safeFiniteNumber(r.staDayOffset,0),stdDayOffset:safeFiniteNumber(r.stdDayOffset,0),etaDayOffset:safeFiniteNumber(r.etaDayOffset,0),etdDayOffset:safeFiniteNumber(r.etdDayOffset,0),staSortMinute:safeSortMinute(r.staSortMinute,r.opDate,r.arrFlightDate||r.opDate,r.staClock),stdSortMinute:safeSortMinute(r.stdSortMinute,r.opDate,r.depFlightDate||r.opDate,r.stdClock),etaSortMinute:safeSortMinute(r.etaSortMinute,r.opDate,r.etaFlightDate||r.arrFlightDate||r.opDate,r.etaClock),etdSortMinute:safeSortMinute(r.etdSortMinute,r.opDate,r.etdFlightDate||r.depFlightDate||r.opDate,r.etdClock),acReg:r.acReg,acType:r.acType,route:r.route,route1:r.route1,route3:r.route3,bay:r.bay,formGroup:r.formGroup,sourceColumn:r.sourceColumn,roleKey:r.roleKey,workPartOrder:safeFiniteNumber(r.workPartOrder,1),workPartTotal:safeFiniteNumber(r.workPartTotal,1),workPartSequenceSource:S(r.workPartSequenceSource||r.sourceColumn),sourceFile:data.fileName||"",active:true,manualOverride:manual,publishedAtMs:now,publishedBy:by};
+        const payload={engine:ENGINE,schema:2,assignmentId:r.assignmentId,targetUser:r.targetUser,originalTargetUser:baseRec.originalTargetUser||baseRec.targetUser,opDate:r.opDate,date:r.date,flightId:resolvedFlightId,flightRaw:r.flightRaw,flightName:r.flightName||"",arrFlight:r.arrFlight,depFlight:r.depFlight,sta:r.sta,std:r.std,eta:r.eta||"",etd:r.etd||"",arrFlightDate:r.arrFlightDate||r.opDate,depFlightDate:r.depFlightDate||r.opDate,etaFlightDate:r.etaFlightDate||r.arrFlightDate||r.opDate,etdFlightDate:r.etdFlightDate||r.depFlightDate||r.opDate,staClock:r.staClock||"",stdClock:r.stdClock||"",etaClock:r.etaClock||"",etdClock:r.etdClock||"",staDayOffset:safeFiniteNumber(r.staDayOffset,0),stdDayOffset:safeFiniteNumber(r.stdDayOffset,0),etaDayOffset:safeFiniteNumber(r.etaDayOffset,0),etdDayOffset:safeFiniteNumber(r.etdDayOffset,0),staSortMinute:safeSortMinute(r.staSortMinute,r.opDate,r.arrFlightDate||r.opDate,r.staClock),stdSortMinute:safeSortMinute(r.stdSortMinute,r.opDate,r.depFlightDate||r.opDate,r.stdClock),etaSortMinute:safeSortMinute(r.etaSortMinute,r.opDate,r.etaFlightDate||r.arrFlightDate||r.opDate,r.etaClock),etdSortMinute:safeSortMinute(r.etdSortMinute,r.opDate,r.etdFlightDate||r.depFlightDate||r.opDate,r.etdClock),acReg:r.acReg,acType:r.acType,route:r.route,route1:r.route1,route3:r.route3,bay:r.bay,formGroup:r.formGroup,sourceColumn:r.sourceColumn,roleKey:r.roleKey,assignmentLeg:S(r.assignmentLeg),assignmentFlight:S(r.assignmentFlight),assignmentTime:S(r.assignmentTime),assignmentScope:S(r.assignmentScope||"TURNAROUND"),rosterLegSplit:r.rosterLegSplit===true,workPartOrder:safeFiniteNumber(r.workPartOrder,1),workPartTotal:safeFiniteNumber(r.workPartTotal,1),workPartSequenceSource:S(r.workPartSequenceSource||r.sourceColumn),sourceFile:data.fileName||"",active:true,manualOverride:manual,publishedAtMs:now,publishedBy:by};
         patch[`${MAIL_PATH}/${safeKey(r.targetUser)}/items/${safeKey(r.assignmentId)}`]=payload;
         patch[`${REVOKE_PATH}/${safeKey(r.targetUser)}/items/${safeKey(r.assignmentId)}`]=null;
         if(oldItem.user&&normUser(oldItem.user)!==normUser(r.targetUser)){
           patch[`${MAIL_PATH}/${safeKey(oldItem.user)}/items/${safeKey(r.assignmentId)}`]=null;
           patch[`${REVOKE_PATH}/${safeKey(oldItem.user)}/items/${safeKey(r.assignmentId)}`]={assignmentId:r.assignmentId,reason:"REASSIGNED",atMs:now,by};
         }
-        nextItems[r.assignmentId]={assignmentId:r.assignmentId,user:r.targetUser,originalUser:baseRec.originalTargetUser||baseRec.targetUser,flightRaw:r.flightRaw,flightName:r.flightName||"",arrFlight:r.arrFlight||"",depFlight:r.depFlight||"",sta:r.sta||"",std:r.std||"",eta:r.eta||"",etd:r.etd||"",arrFlightDate:r.arrFlightDate||r.opDate,depFlightDate:r.depFlightDate||r.opDate,etaFlightDate:r.etaFlightDate||r.arrFlightDate||r.opDate,etdFlightDate:r.etdFlightDate||r.depFlightDate||r.opDate,staClock:r.staClock||"",stdClock:r.stdClock||"",etaClock:r.etaClock||"",etdClock:r.etdClock||"",staDayOffset:safeFiniteNumber(r.staDayOffset,0),stdDayOffset:safeFiniteNumber(r.stdDayOffset,0),etaDayOffset:safeFiniteNumber(r.etaDayOffset,0),etdDayOffset:safeFiniteNumber(r.etdDayOffset,0),staSortMinute:safeSortMinute(r.staSortMinute,r.opDate,r.arrFlightDate||r.opDate,r.staClock),stdSortMinute:safeSortMinute(r.stdSortMinute,r.opDate,r.depFlightDate||r.opDate,r.stdClock),etaSortMinute:safeSortMinute(r.etaSortMinute,r.opDate,r.etaFlightDate||r.arrFlightDate||r.opDate,r.etaClock),etdSortMinute:safeSortMinute(r.etdSortMinute,r.opDate,r.etdFlightDate||r.depFlightDate||r.opDate,r.etdClock),acReg:r.acReg||"",acType:r.acType||"",route:r.route||"",route1:r.route1||"",route3:r.route3||"",bay:r.bay||"",formGroup:r.formGroup,sourceColumn:r.sourceColumn,roleKey:r.roleKey,workPartOrder:safeFiniteNumber(r.workPartOrder,1),workPartTotal:safeFiniteNumber(r.workPartTotal,1),workPartSequenceSource:S(r.workPartSequenceSource||r.sourceColumn),manualOverride:manual,active:true,flightId:resolvedFlightId};writes++;
+        nextItems[r.assignmentId]={assignmentId:r.assignmentId,user:r.targetUser,originalUser:baseRec.originalTargetUser||baseRec.targetUser,flightRaw:r.flightRaw,flightName:r.flightName||"",arrFlight:r.arrFlight||"",depFlight:r.depFlight||"",sta:r.sta||"",std:r.std||"",eta:r.eta||"",etd:r.etd||"",arrFlightDate:r.arrFlightDate||r.opDate,depFlightDate:r.depFlightDate||r.opDate,etaFlightDate:r.etaFlightDate||r.arrFlightDate||r.opDate,etdFlightDate:r.etdFlightDate||r.depFlightDate||r.opDate,staClock:r.staClock||"",stdClock:r.stdClock||"",etaClock:r.etaClock||"",etdClock:r.etdClock||"",staDayOffset:safeFiniteNumber(r.staDayOffset,0),stdDayOffset:safeFiniteNumber(r.stdDayOffset,0),etaDayOffset:safeFiniteNumber(r.etaDayOffset,0),etdDayOffset:safeFiniteNumber(r.etdDayOffset,0),staSortMinute:safeSortMinute(r.staSortMinute,r.opDate,r.arrFlightDate||r.opDate,r.staClock),stdSortMinute:safeSortMinute(r.stdSortMinute,r.opDate,r.depFlightDate||r.opDate,r.stdClock),etaSortMinute:safeSortMinute(r.etaSortMinute,r.opDate,r.etaFlightDate||r.arrFlightDate||r.opDate,r.etaClock),etdSortMinute:safeSortMinute(r.etdSortMinute,r.opDate,r.etdFlightDate||r.depFlightDate||r.opDate,r.etdClock),acReg:r.acReg||"",acType:r.acType||"",route:r.route||"",route1:r.route1||"",route3:r.route3||"",bay:r.bay||"",formGroup:r.formGroup,sourceColumn:r.sourceColumn,roleKey:r.roleKey,assignmentLeg:S(r.assignmentLeg),assignmentFlight:S(r.assignmentFlight),assignmentTime:S(r.assignmentTime),assignmentScope:S(r.assignmentScope||"TURNAROUND"),rosterLegSplit:r.rosterLegSplit===true,workPartOrder:safeFiniteNumber(r.workPartOrder,1),workPartTotal:safeFiniteNumber(r.workPartTotal,1),workPartSequenceSource:S(r.workPartSequenceSource||r.sourceColumn),manualOverride:manual,active:true,flightId:resolvedFlightId};writes++;
       }
       const removedFlightIds=new Set();
       for(const [id,x] of Object.entries(oldItems)){
@@ -4145,7 +4174,7 @@ if(phase==='flight'){
     const seed=seedFor(rec),now=Date.now(),shared=await readSharedAssignment(rec.assignmentId);
     if(!id){
       id=makeRosterLocalId(rec);if(list.some(x=>x.id===id))id=id+"-"+Math.random().toString(36).slice(2,6);
-      meta={id,name:rec.flightName||[rec.arrFlight,rec.depFlight].filter(Boolean).join(" / ")||rec.flightRaw,customName:true,initialGroup:rec.formGroup||"fsags",arrivalOp:"passenger",departureOp:"passenger",createdAt:opDateMs(rec.opDate),updatedAt:now,rosterAssignmentId:rec.assignmentId,rosterFlightId:S(rec.flightId),rosterAutoReceived:true,rosterSourceColumn:rec.sourceColumn,rosterOpDate:rec.opDate,rosterOwner:me};
+      meta={id,name:rec.assignmentFlight||rec.flightName||[rec.arrFlight,rec.depFlight].filter(Boolean).join(" / ")||rec.flightRaw,customName:true,initialGroup:rec.formGroup||"fsags",arrivalOp:"passenger",departureOp:"passenger",createdAt:opDateMs(rec.opDate),updatedAt:now,rosterAssignmentId:rec.assignmentId,rosterFlightId:S(rec.flightId),rosterAutoReceived:true,rosterSourceColumn:rec.sourceColumn,rosterOpDate:rec.opDate,rosterOwner:me};
       list.push(meta);writeFlightSessionList(list);
       let env=shared?.envelope&&typeof shared.envelope==="object"?JSON.parse(JSON.stringify(shared.envelope)):{state:{},mainForm:meta.initialGroup,activeFormGroup:meta.initialGroup,currentPage:startPageForGroup(meta.initialGroup),scrollY:0,arrivalOp:"passenger",departureOp:"passenger"};
       env.mainForm=meta.initialGroup;env.activeFormGroup=meta.initialGroup;env.currentPage=startPageForGroup(meta.initialGroup);
@@ -4154,7 +4183,7 @@ if(phase==='flight'){
       if(!shared)void writeSharedAssignment(rec.assignmentId,env,me,meta.initialGroup,true);
       return {ok:true,created:true,id};
     }
-    meta.rosterAssignmentId=rec.assignmentId;meta.rosterFlightId=S(rec.flightId||meta.rosterFlightId);meta.rosterAutoReceived=true;meta.rosterSourceColumn=rec.sourceColumn;meta.rosterOpDate=rec.opDate;meta.rosterOwner=me;meta.initialGroup=rec.formGroup||meta.initialGroup;meta.updatedAt=now;writeFlightSessionList(list);
+    meta.rosterAssignmentId=rec.assignmentId;meta.rosterFlightId=S(rec.flightId||meta.rosterFlightId);if(S(rec.assignmentFlight))meta.name=S(rec.assignmentFlight);meta.rosterAutoReceived=true;meta.rosterSourceColumn=rec.sourceColumn;meta.rosterOpDate=rec.opDate;meta.rosterOwner=me;meta.initialGroup=rec.formGroup||meta.initialGroup;meta.updatedAt=now;writeFlightSessionList(list);
     let env=readFlightSessionEnvelope(id);
     if(shared?.envelope&&Number(shared.updatedAtMs||0)>Number(env?.rosterSharedAtMs||0)){
       const incoming=JSON.parse(JSON.stringify(shared.envelope));incoming.rosterSharedAtMs=Number(shared.updatedAtMs||0);env=incoming;
@@ -4643,12 +4672,12 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 /* ===== END roster-completed.js ===== */
 
 /* ===== BEGIN flight-hub.js ===== */
-/* E-REPORT SAGS V3.61 · MASTER FLIGHT HUB
+/* E-REPORT SAGS V3.62 · MASTER FLIGHT HUB
  * One Daily Roster flight = one master flight record. Operational modules keep their canonical data
  * but register a compact pointer/status under the same flightId so every department works in one flight workspace.
  */
 (function(root){'use strict';
-  const BUILD='V3.61-20260822-01';
+  const BUILD='V3.62-20260822-01';
   const ROOT='flight_records', MANIFEST='roster_manifests', MAIL='roster_mail';
   const S=v=>String(v??'').trim(), U=v=>S(v).toUpperCase();
   const safe=v=>S(v).replace(/[.#$\[\]\/]/g,'_');
@@ -5545,11 +5574,12 @@ body.v38-clean-workflow #v38NavRS,body.v38-clean-workflow #readSignQuickBtn,body
       const n=document.createElement('div');n.className='v38ViewOnly';n.innerHTML=`👁 <b>CHỈ VIEW</b> · Chuyến này không được phân cho tài khoản ${esc(me()||'hiện tại')}. Không được NHẬN/INPUT/VERIFY/APPROVE chỉ vì đang xem.${pending?' <b>Đang có HANDOVER chờ bạn tiếp nhận.</b>':''}`;head.insertAdjacentElement('afterend',n);return;
     }
     const items=assignedItems(fid),buttons=[];
-    for(const item of items){const aid=S(item.assignmentId);if(!aid)continue;buttons.push(`<button class="v38OpBtn green" onclick="v38OpenRosterAssignment('${esc(aid)}')">${esc(formLabel(item.formGroup))}</button>`)}
+    for(const item of items){const aid=S(item.assignmentId);if(!aid)continue;buttons.push(`<button class="v38OpBtn green" onclick="v38OpenRosterAssignment('${esc(aid)}')">${esc(formLabel(item.formGroup))}${item.assignmentLeg?` · ${U(item.assignmentLeg)==='ARR'?'ĐẾN':'ĐI'}`:''}</button>`)}
     const r=role();
     if((r==='CBTT'||isAD())&&canFeature('FINAL'))buttons.push('<button class="v38OpBtn" onclick="v38OpenLegacyModule(\'FINAL\')">⚖ FINAL / CROSSCHECK</button>');
     if((r==='KH'||r==='CARGO'||isAD())&&canFeature('FSAGS208'))buttons.push('<button class="v38OpBtn orange" onclick="v38OpenLegacyModule(\'CARGO\')">📦 KHO HÀNG / FSAGS 208</button>');
-    const box=document.createElement('div');box.className='v38MyOps';box.innerHTML=`<div class="v38MyOpsTitle">NGHIỆP VỤ CỦA TÔI · ${esc(flightName(dataCache.flights?.[fid]||{}))}</div><div class="v38MyOpsSub">Chỉ các chức năng gắn với chuyến/assignment hiện tại được đưa ra đây. Các nút chức năng cũ ngoài Flight Workspace đã bị loại khỏi luồng.</div><div class="v38MyOpsBtns">${buttons.join('')||'<span class="v38ListHint">Chuyến thuộc MY FLIGHT nhưng chưa có module thao tác trực tiếp được cấu hình cho tài khoản này.</span>'}</div>`;head.insertAdjacentElement('afterend',box);
+    const opLeg=(items.length&&items.every(x=>U(x.assignmentLeg)==='ARR'))?'ARR':((items.length&&items.every(x=>U(x.assignmentLeg)==='DEP'))?'DEP':'');const opFlight=opLeg?S(items[0]?.assignmentFlight||(opLeg==='ARR'?items[0]?.arrFlight:items[0]?.depFlight)):'';
+    const box=document.createElement('div');box.className='v38MyOps';box.innerHTML=`<div class="v38MyOpsTitle">NGHIỆP VỤ CỦA TÔI · ${esc(opFlight?`${opFlight} · ${opLeg==='ARR'?'CHUYẾN ĐẾN':'CHUYẾN ĐI'}`:flightName(dataCache.flights?.[fid]||{}))}</div><div class="v38MyOpsSub">Chỉ các chức năng gắn với chuyến/assignment hiện tại được đưa ra đây. Các nút chức năng cũ ngoài Flight Workspace đã bị loại khỏi luồng.</div><div class="v38MyOpsBtns">${buttons.join('')||'<span class="v38ListHint">Chuyến thuộc MY FLIGHT nhưng chưa có module thao tác trực tiếp được cấu hình cho tài khoản này.</span>'}</div>`;head.insertAdjacentElement('afterend',box);
   }
 
   root.v38OpenRosterAssignment=async function(aid){
@@ -6006,13 +6036,13 @@ body.v38-clean-workflow #v38NavRS,body.v38-clean-workflow #readSignQuickBtn,body
   function itemFlightId(man,item){const fid=S(item?.flightId)||S(root.sagsV346ResolveRosterFlightId?.(S(man?.opDate)||opDate(),item,{}));if(fid&&item&&!item.flightId)item.flightId=fid;return fid}
   function itemsOf(man){return Object.values(man?.items||{}).filter(x=>x&&x.active!==false).map(x=>{itemFlightId(man,x);return x})}
   function myItems(man,fid){const u=me();return itemsOf(man).filter(x=>itemFlightId(man,x)===S(fid)&&norm(x.user||x.targetUser)===u)}
-  function laneKey(x){return [S(x?.flightId),U(x?.sourceColumn),U(x?.roleKey),U(x?.formGroup)].join('|')}
+  function laneKey(x){return [S(x?.flightId),U(x?.sourceColumn),U(x?.roleKey),U(x?.formGroup),U(x?.assignmentLeg)].join('|')}
   function lane(man,item){const k=laneKey(item),a=itemsOf(man).filter(x=>laneKey(x)===k);return a.map((x,i)=>({x,i,n:Number(x?.workPartOrder)})).sort((p,q)=>{const ph=Number.isFinite(p.n)&&p.n>0,qh=Number.isFinite(q.n)&&q.n>0;if(ph&&qh)return p.n-q.n||p.i-q.i;if(ph!==qh)return ph?-1:1;return p.i-q.i}).map(v=>v.x)}
   function nextItem(man,item){const a=lane(man,item),i=a.findIndex(x=>S(x.assignmentId)===S(item?.assignmentId));return i>=0&&i+1<a.length?a[i+1]:null}
   function previousItem(man,item){const a=lane(man,item),i=a.findIndex(x=>S(x.assignmentId)===S(item?.assignmentId));return i>0?a[i-1]:null}
   function firstItem(man,item){return !previousItem(man,item)}
   async function previousCompleted(man,item){const prev=previousItem(man,item);if(!prev)return true;const pst=await sessionState(prev.assignmentId),pcs=U(pst.claimStatus),pws=U(pst.workPartStatus);let pts='';try{pts=U(root.sagsTaskStatusDerive?.(pst,prev,man)||pst.taskStatusV333||pst.taskStatus)}catch(_){pts=U(pst.taskStatusV333||pst.taskStatus)}if(pts==='COMPLETED'||pcs==='PART_COMPLETED'||pcs==='COMPLETED'||pcs==='HANDED_OVER'||pws==='COMPLETED')return true;if(U(prev.formGroup)==='FINAL'&&S(prev.flightId)){try{const fr=(await db(`flight_records/${safe(S(man?.opDate)||opDate())}/${safe(prev.flightId)}/modules/FINAL`).once('value')).val()||{},fs=U(`${fr.status||''} ${fr.crosscheckStatus||''}`);if(/CROSSCHECK.*OK|COMPLETE|COMPLETED|HOÀN TẤT|HOAN TAT/.test(fs))return true}catch(_){}}return false}
-  function rosterLabel(item){return S(item?.flightName||item?.flightRaw||item?.depFlight||item?.arrFlight||item?.flightId)}
+  function rosterLabel(item){return S(item?.assignmentFlight||item?.flightName||item?.flightRaw||item?.depFlight||item?.arrFlight||item?.flightId)}
   function formLabel(g){g=U(g);return g==='FINAL'?'CBTT · FINAL':g==='FSAGS421'?'FSAGS 42.1':g==='FSAGS551'?'FSAGS 55.1':g==='FSAGS09'?'F/SAGS-CXR/09':g==='LOADING208'?'F/SAG-CXR/208':'FSAGS 42.3'}
   function localMeta(aid){try{return (root.readFlightSessionList?.()||[]).find(x=>S(x.rosterAssignmentId)===S(aid))||null}catch(_){return null}}
   function activeMeta(){try{return root.currentFlightSessionMeta?.()||null}catch(_){return null}}
@@ -6039,11 +6069,21 @@ body.v38-clean-workflow #v38NavRS,body.v38-clean-workflow #readSignQuickBtn,body
     if((ts==='IN_PROGRESS'||cs==='CLAIMED')&&norm(st.claimedBy||st.ownerUser)===me())return {state:'CLAIMED',st,taskStatus:'IN_PROGRESS'};
     return {state:'READY',st,taskStatus:'UNCLAIMED'}
   }
+  function applyLegLabel(card,mine){
+    if(!card||!mine?.length)return;
+    const legs=mine.map(x=>U(x.assignmentLeg)).filter(Boolean),leg=legs.length===mine.length&&new Set(legs).size===1?legs[0]:"";
+    if(leg!=="ARR"&&leg!=="DEP")return;
+    const item=mine.find(x=>U(x.assignmentLeg)===leg)||mine[0],flight=S(item.assignmentFlight||(leg==="ARR"?item.arrFlight:item.depFlight));
+    const title=card.querySelector('.fwcFlightTitle'),meta=card.querySelector('.fwcMeta');
+    if(title)title.textContent=`${flight||rosterLabel(item)} · ${leg==="ARR"?"CHUYẾN ĐẾN":"CHUYẾN ĐI"}`;
+    if(meta){const route=S(item.route),ac=S(item.acReg)||'—',time=leg==="ARR"?S(item.sta):S(item.std),timeLabel=leg==="ARR"?'STA':'STD';meta.textContent=`${route}${route?' · ':''}A/C ${ac} · ${timeLabel} ${time||'—'}`;}
+  }
   async function decorateList(d=opDate()){
     const host=document.getElementById('fwcList');if(!host||role()==='AD')return;let man;try{man=await manifest(d)}catch(_){return}
     const u=me();for(const card of host.querySelectorAll('.fwcFlight')){
       const old=card.querySelector('button[onclick*="flightWorkspaceOpenFlight"],button.v324ReceiveBtn');let fid=S(card.dataset.v38Fid);if(!fid){const oc=S(old?.getAttribute('onclick')),m=oc.match(/flightWorkspaceOpenFlight\(['"]([^'"]+)['"]\)/);fid=m?.[1]||''}if(!fid||!old)continue;
       const mine=myItems(man,fid);if(!mine.length){if(!old.classList.contains('v324ReceiveBtn')){old.textContent='XEM';old.classList.add('gray')}continue}
+      applyLegLabel(card,mine);
       const primary=mine[0],cs=await claimStateFor(primary,man);old.classList.add('v324ReceiveBtn');old.onclick=null;old.removeAttribute('onclick');old.disabled=false;old.classList.remove('wait','done','blocked','na');
       if(cs.state==='CLAIMED'){old.textContent='TIẾP TỤC';old.onclick=()=>root.v324ReceiveOrOpen(fid);}
       else if(cs.state==='DONE'){old.textContent='MỞ LẠI CHỈNH SỬA';old.disabled=false;old.classList.add('done');old.onclick=()=>root.v324ReceiveOrOpen(fid)}
