@@ -1,5 +1,5 @@
-const CACHE_NAME="sags-v3-67-fsags423-bottom-fix-20260822-01";
-const BUILD="V3.67-20260822-01";
+const CACHE_NAME="sags-v3-69-layout-ad-only-20260822-01";
+const BUILD="V3.69-20260822-01";
 const APP_SHELL=[
   "./9Gfinal.png",
   "./CBTT.png",
