@@ -2,7 +2,7 @@
 window.SAGS_PUBLISHED_FORM_LAYOUT={
   "schema": 3,
   "build": "V3.75",
-  "publishedAt": 1787395371348,
+  "publishedAt": 1787395851261,
   "forms": {
     "FSAGS423": {
       "group": "fsags",
@@ -851,36 +851,39 @@ window.SAGS_PUBLISHED_FORM_LAYOUT={
     "10:f551_handlingNotes": {
       "lines": {
         "0": {
-          "fs": 18
+          "fs": 20,
+          "dx": -2.7,
+          "dy": -2.1
         },
         "1": {
-          "dx": 0,
-          "dy": 12,
-          "fs": 18
+          "dx": -5.6,
+          "dy": 11.5,
+          "fs": 20
         },
         "2": {
           "dx": -1.1,
-          "dy": 25.8,
-          "fs": 19
+          "dy": 22.8,
+          "fs": 21
         },
         "3": {
-          "dx": 36.7,
-          "dy": -114.5
-        },
-        "4": {
-          "dx": 0,
-          "dy": 9.9,
+          "dx": -5.1,
+          "dy": 37.2,
           "fs": 20
         },
+        "4": {
+          "dx": -6.7,
+          "dy": 48.8,
+          "fs": 21
+        },
         "5": {
-          "dx": 0.4,
-          "dy": 55.5,
+          "dx": 60.4,
+          "dy": 304.4,
           "fs": 18
         },
         "6": {
           "fs": 18,
-          "dx": 0,
-          "dy": 3
+          "dx": -8.9,
+          "dy": 30.9
         }
       }
     },
