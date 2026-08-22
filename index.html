@@ -2172,7 +2172,7 @@ body.role-viewer #ffSendBtn{
 </div>
 <div id="rsOverdueHost"></div>
 
-<script src="./app.js?v=V3.78" data-phase="qr"></script>
+<script src="./app.js?v=V3.79" data-phase="qr"></script>
 <style>
 /* ===== V6.3.5 FINAL RECEIVER SCROLL + PERFORMANCE ===== */
 #finalFormsModal{
@@ -2846,6 +2846,10 @@ body.v377-ad-form-tools #v368LayoutPanel{bottom:132px!important}
 .v377CreateFormClose{width:100%;margin-top:9px;min-height:39px;border:0;border-radius:9px;background:#173b5f;color:#fff;font-weight:900}
 @media(max-width:600px){.v377AdminFormToolsRow{grid-template-columns:1fr 1fr;gap:5px}.v377AdminFormToolsRow>button,.v377LayoutTuneSlot>button,#v368LayoutTuneBtn{font-size:10.5px!important;padding:5px 6px!important;min-height:34px!important}.v377CreateFormGrid{grid-template-columns:1fr}.v377CreateFormGrid button{min-height:58px}body.v377-ad-form-tools{padding-bottom:118px!important}body.v377-ad-form-tools #v368LayoutPanel{bottom:124px!important}}
 @media print{.v377AdminFormToolsRow,#v377CreateFormModal{display:none!important}}
+body.role-admin #v377AdminFormToolsRow{display:grid!important}
+body:not(.role-admin) #v377AdminFormToolsRow{display:none!important}
+body.role-admin #v368LayoutTuneBtn{display:block!important}
+#v379ClearCloseoutBtn{grid-column:1/-1;background:#fffaeb!important;color:#93370d!important;border-color:#fec84b!important;font-size:11px!important}
 #v378ResetRecordsBtn{grid-column:1/-1;background:#b42318!important;color:#fff!important;border-color:#ffb4ab!important;font-size:11px!important}
 #v378ResetStatus{grid-column:1/-1;display:none;padding:7px 9px;border-radius:8px;background:#fff1f0;color:#912018;font:900 11px/1.35 Arial;text-align:center}
 #v378ResetStatus.show{display:block}
@@ -3120,7 +3124,7 @@ body.v377-ad-form-tools #v368LayoutPanel{bottom:132px!important}
   </div>
 </div>
 
-<div id="buildMarker">V3.78</div>
+<div id="buildMarker">V3.79</div>
 <div aria-live="polite" id="currentFerryFlag"><span class="dot"></span><span id="currentFerryFlagText">FERRY</span></div>
 <div class="toolbar compact-main-toolbar">
 <div class="badge">PĐH SAGS-CXR</div>
@@ -3152,6 +3156,7 @@ body.v377-ad-form-tools #v368LayoutPanel{bottom:132px!important}
 <div id="v377AdminFormToolsRow" class="v377AdminFormToolsRow" style="display:none">
   <button id="v377CreateFormBtn" type="button" onclick="v377OpenCreateFormMenu()">➕ TẠO BIỂU MẪU</button>
   <div id="v377LayoutTuneSlot" class="v377LayoutTuneSlot"></div>
+  <button id="v379ClearCloseoutBtn" type="button" onclick="v379ClearOldCloseoutNotices()">🗑 XÓA THÔNG BÁO KẾT SỔ CŨ</button>
   <button id="v378ResetRecordsBtn" type="button" onclick="v378ResetAllOldRecords()">🧹 XÓA TOÀN BỘ HỒ SƠ CŨ · BẮT ĐẦU MỚI</button>
   <div id="v378ResetStatus"></div>
 </div>
@@ -3190,7 +3195,9 @@ body.v377-ad-form-tools #v368LayoutPanel{bottom:132px!important}
 <button onclick="closeUpdateInfo()" aria-label="Đóng" style="border:0;background:#eee;border-radius:50%;width:34px;height:34px;font-size:21px;line-height:30px">×</button>
 </div>
 <div style="padding:11px 12px;border:1px solid #b7d7ef;border-radius:11px;background:#eef7ff">
-<p style="margin:0 0 6px;color:#075985"><b>V3.78 · 22/08/2026 — CLEAN START · XÓA HỒ SƠ CŨ + KHỞI TẠO LẠI DỮ LIỆU NGHIỆP VỤ</b></p>
+<p style="margin:0 0 6px;color:#075985"><b>V3.79 · 22/08/2026 — KHÔI PHỤC AD TOOLBAR + DỌN THÔNG BÁO KẾT SỔ CŨ</b></p>
+<p style="margin:4px 0">• Khôi phục cố định hàng AD ngay dưới toolbar: <b>➕ TẠO BIỂU MẪU</b> + <b>⚙ CĂN CHỈNH</b>; nút CĂN CHỈNH luôn hiện với AD, nếu chưa mở form sẽ hướng dẫn mở form trước.</p>
+<p style="margin:4px 0">• Thêm <b>🗑 XÓA THÔNG BÁO KẾT SỔ CŨ</b>: chỉ dọn popup/tín hiệu RTDB + cache thông báo, <b>không xóa hồ sơ KẾT SỔ Firestore</b>; máy đang online nhận mốc dọn để bỏ các popup test cũ.</p>
 <p style="margin:4px 0">• AD có thể <b>TẮT/BẬT vùng chạm</b>, <b>ẨN/HIỆN vùng hiển thị</b>, chỉnh chữ thường/đậm/nghiêng/gạch chân, font, căn trái/giữa/phải, từng dòng hoặc cả khối.</p>
 <p style="margin:4px 0">• AD có một hàng riêng <b>ngay dưới thanh công cụ</b>: <b>➕ TẠO BIỂU MẪU</b> + <b>⚙ CĂN CHỈNH</b>.</p>
 <p style="margin:4px 0">• <b>➕ TẠO BIỂU MẪU</b> gom FSAGS42.3 / FSAGS42.1 / FSAGS55.1 / FSAGS09 / FSAGS208 / BBBT / FINAL. <b>⚙ CĂN CHỈNH</b> vẫn chỉ AD và tự nhận form có SVG + field.</p>
@@ -3204,7 +3211,7 @@ body.v377-ad-form-tools #v368LayoutPanel{bottom:132px!important}
 </div>
 <details style="margin-top:10px;padding:9px 11px;border:1px solid #dbe4eb;border-radius:10px;background:#fafcfd">
 <summary style="cursor:pointer;font-weight:800;color:#334155">Lưu ý sau khi cập nhật</summary>
-<p style="margin:8px 0 0">Dữ liệu hồ sơ nghiệp vụ trên Firebase không bị xóa. Chỉ cập nhật khi người dùng bấm CẬP NHẬT và chờ nhãn góc trái hiện V3.78.</p>
+<p style="margin:8px 0 0">Dữ liệu hồ sơ nghiệp vụ trên Firebase không bị xóa. Chỉ cập nhật khi người dùng bấm CẬP NHẬT và chờ nhãn góc trái hiện V3.79.</p>
 </details>
 <button onclick="closeUpdateInfo()" style="width:100%;margin-top:12px;border:0;border-radius:10px;padding:10px 14px;background:#0b67b2;color:#fff;font-weight:800">ĐÓNG</button>
 </div>
@@ -4176,7 +4183,7 @@ body.v377-ad-form-tools #v368LayoutPanel{bottom:132px!important}
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
-<script src="./app.js?v=V3.78" data-phase="config"></script>
+<script src="./app.js?v=V3.79" data-phase="config"></script>
 <script>
 let suppressModalClickUntil=0;
 function armModalGhostClickBlock(ms=650){
@@ -12323,8 +12330,8 @@ try {
   alert("Lỗi JavaScript: "+err.message);
 }
 
-const APP_BUILD_VERSION="V3.78-20260822-01";
-const APP_DISPLAY_VERSION="V3.78";
+const APP_BUILD_VERSION="V3.79-20260822-01";
+const APP_DISPLAY_VERSION="V3.79";
 
 // V4.21 — SAFE UPDATE SAVE
 // Before switching to a newly installed app version, force-save all current
@@ -24324,7 +24331,7 @@ window.openCamScanner=openCamScanner;
 <script type="module" src="./ai.js?v=V3.58"></script>
 
 
-<script src="./app.js?v=V3.78" data-phase="archive"></script>
+<script src="./app.js?v=V3.79" data-phase="archive"></script>
 <script id="v120-build02-fixes">
 /* V1.20 BUILD 02 — background persistence, VHTTB, per-account usage detail, progress dedupe. */
 (function(){
@@ -24621,6 +24628,16 @@ window.openCamScanner=openCamScanner;
   function enqueuePopup(item){ensureUi();if(!item?.id)return;if(v121PopupCurrent?.id===item.id||v121PopupQueue.some(x=>x.id===item.id))return;v121PopupQueue.push(item);showNextPopup();}
   function showNextPopup(){if(v121PopupCurrent||!v121PopupQueue.length)return;ensureUi();v121PopupCurrent=v121PopupQueue.shift();const p=document.getElementById("v121Popup"),card=document.getElementById("v121PopupCard"),head=document.getElementById("v121PopupHead"),body=document.getElementById("v121PopupBody"),open=document.getElementById("v121PopupOpen");card.className=v121PopupCurrent.severity==="info"?"info":"";head.textContent=v121PopupCurrent.title||"THÔNG BÁO";body.innerHTML=v121PopupCurrent.html||"";open.style.display=v121PopupCurrent.payload?"inline-flex":"none";p.classList.add("show");if(v121PopupCurrent.soundType&&!v121PopupCurrent.soundPlayed){v121PopupCurrent.soundPlayed=true;v181PlayCloseoutAudio(v121PopupCurrent.soundType);}}
   function v121ClosePopup(openIt){const item=v121PopupCurrent,p=document.getElementById("v121Popup");if(p)p.classList.remove("show");v121PopupCurrent=null;if(openIt&&item?.payload){try{fs09Incoming={payload:item.payload,sessionId:""};viewIncomingFSAGS09();}catch(e){console.warn("V1.21 open closeout",e);}}setTimeout(showNextPopup,60);}
+  function v379ClearLocalCloseoutNotices(){
+    v121PopupQueue=[];v121PopupCurrent=null;
+    try{const p=document.getElementById("v121Popup");if(p)p.classList.remove("show");}catch(e){}
+    let n=0;
+    try{const keys=[];for(let i=0;i<localStorage.length;i++)keys.push(localStorage.key(i));for(const k0 of keys){const k=String(k0||"");if(/sagsCloseout|closeout.*(Inbox|Seen|History)|CloseoutEventsSeen|ReceivedCloseoutHistory/i.test(k)){localStorage.removeItem(k);n++;}}}catch(e){}
+    try{const keys=[];for(let i=0;i<sessionStorage.length;i++)keys.push(sessionStorage.key(i));for(const k0 of keys){const k=String(k0||"");if(/closeout|ket.?so/i.test(k)){sessionStorage.removeItem(k);n++;}}}catch(e){}
+    try{const b=document.getElementById("v121ValidationBanner");if(b)b.style.display="none";}catch(e){}
+    return n;
+  }
+  window.sagsV379ClearLocalCloseoutNotices=v379ClearLocalCloseoutNotices;
 
   function matchingFinals(payload){const dt=String(payload?.identity?.dateToken||""),dep=closeoutDeparture(payload),rg=normReg(payload?.identity?.acRegToken||payload?.f09?.f09_regn);if(!dt||!dep||!rg)return[];const out=[];try{for(const rec of readFinalSheetList()){const f=finalIdentityForCompare(rec);if(f?.dateToken===dt&&f.flight===dep&&normReg(f.reg)===rg)out.push(rec);}}catch(e){}return out;}
   function markFinalPending(payload){const no=Math.max(1,Number(payload?.closeoutNo||payload?.revisionNo||1)||1);if(no<2)return false;let list=[];try{list=readFinalSheetList();}catch(e){return false;}let changed=false,needsUpdate=false;const dt=String(payload?.identity?.dateToken||""),dep=closeoutDeparture(payload),rg=normReg(payload?.identity?.acRegToken||payload?.f09?.f09_regn);if(!dt||!dep||!rg)return false;for(const r of list){const f=finalIdentityForCompare(r);if(f?.dateToken!==dt||f.flight!==dep||normReg(f.reg)!==rg)continue;const mismatches=compareFinalCloseout(finalCtx(r.form,f.data||{}),payload);if(mismatches.length){needsUpdate=true;r.ksPendingRevisionV121=no;r.ksPendingAtMsV121=Number(payload.submittedAtMs||Date.now());r.ksPendingChangesV121=(payload.changeSummary||[]).slice(0,20);changed=true;}else if(r.ksPendingRevisionV121){delete r.ksPendingRevisionV121;delete r.ksPendingAtMsV121;delete r.ksPendingChangesV121;changed=true;}}if(changed)try{writeFinalSheetList(list);}catch(e){}return needsUpdate;}
@@ -24698,9 +24715,18 @@ window.openCamScanner=openCamScanner;
     catch(e){return String(currentUserProfile?.username||(currentRole==="AD"?"AD":"")).trim().toLowerCase();}
   }
   function v348ReceiveCloseoutSignal(d,{allowReplay=false}={}){
+    if(String(d?.kind||"")==="sags_closeout_clear_v379"){
+      const cutoff=Math.max(Number(d?.cutoffMs||0),Number(d?.eventAtMs||0));
+      window.__SAGS_CLOSEOUT_NOTICE_CUTOFF_MS=Math.max(Number(window.__SAGS_CLOSEOUT_NOTICE_CUTOFF_MS||0),cutoff);
+      v379ClearLocalCloseoutNotices();
+      try{if(typeof showAutoUpdateToast==="function")showAutoUpdateToast("✓ Thông báo KẾT SỔ cũ đã được AD dọn");}catch(e){}
+      return false;
+    }
     const role=String(currentRole||"").toUpperCase();
     if(!["CBTT","DH","AD"].includes(role)||(!currentUserProfile?.username&&role!=="AD"))return false;
     const at=Number(d?.eventAtMs||d?.submittedAtMs||0),eventId=String(d?.eventId||"");
+    const clearCutoff=Number(window.__SAGS_CLOSEOUT_NOTICE_CUTOFF_MS||0);
+    if(clearCutoff&&at&&at<=clearCutoff){if(eventId)v348RememberEvent(eventId);return false;}
     if(!eventId||v348EventWasSeen(eventId))return false;
     if(allowReplay){if(!at||Date.now()-at>72*60*60*1000)return false;}
     else if(at<v121CloseoutListenAtMs-1500)return false;
@@ -24765,7 +24791,7 @@ window.openCamScanner=openCamScanner;
 
 
 
-<script src="./app.js?v=V3.78" data-phase="tools"></script>
+<script src="./app.js?v=V3.79" data-phase="tools"></script>
 <script id="v173-quick-time">
 (function(){
   "use strict";
@@ -26821,7 +26847,7 @@ window.openCamScanner=openCamScanner;
 }
 </style>
 
-<script src="./app.js?v=V3.78" data-phase="flight"></script>
+<script src="./app.js?v=V3.79" data-phase="flight"></script>
 <script id="v191IOSInteractionFix">
 (()=>{
   'use strict';
@@ -27085,7 +27111,7 @@ window.openCamScanner=openCamScanner;
 })();
 </script>
 
-<script src="./app.js?v=V3.78" data-phase="control"></script>
+<script src="./app.js?v=V3.79" data-phase="control"></script>
 
 <style id="v330-group-permission-style">
 #v330GroupPermPanel{margin:12px 0 8px;padding:11px;border:1px solid #cbd9e6;border-radius:12px;background:#f7fbff;box-sizing:border-box}
@@ -27334,9 +27360,12 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 
 
 <script id="v377AdminFormToolsScript">
-/* V3.78 — AD form tools row + one CREATE FORM menu for every current form. */
+/* V3.79 — AD form tools row + create all forms + closeout notice cleanup. */
 (function(){
-  function isAD(){try{return String(window.currentRole||currentRole||'').toUpperCase()==='AD'}catch(e){return false}}
+  function isAD(){try{
+    const r=String(window.currentRole||currentRole||window.currentUserProfile?.role||currentUserProfile?.role||'').toUpperCase();
+    return r==='AD'||document.body?.classList.contains('role-admin');
+  }catch(e){return document.body?.classList.contains('role-admin')||false}}
   function refresh(){
     const ad=isAD(),row=document.getElementById('v377AdminFormToolsRow');
     if(row)row.style.display=ad?'grid':'none';
@@ -27385,7 +27414,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 
 <script id="v368LayoutTuneScript">
 /* =========================================================
-   V3.78 — FULL FORM EDITOR · AD ONLY
+   V3.79 — FULL FORM EDITOR · AD ONLY
    Built-in: FSAGS42.3 / FSAGS42.1 / FSAGS55.1 / FSAGS09 / FSAGS208 / BBBT.
    Future forms: automatically discovered from the active form's visible SVG pages + field definitions.
    - TOUCH zone: one independent click/tap region per field.
@@ -27413,7 +27442,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   let saved=loadStore(),draft=clone(saved),mode=false,selected=null,drag=null,zone='display';
   const q=(s,r=document)=>r.querySelector(s);
   const qa=(s,r=document)=>Array.from(r.querySelectorAll(s));
-  function canTune(){try{return String(window.currentRole||currentRole||"").toUpperCase()==="AD"}catch(e){return false}}
+  function canTune(){try{const r=String(window.currentRole||currentRole||window.currentUserProfile?.role||currentUserProfile?.role||"").toUpperCase();return r==="AD"||document.body?.classList.contains("role-admin")}catch(e){return document.body?.classList.contains("role-admin")||false}}
   function clone(v){try{return JSON.parse(JSON.stringify(v||{}))}catch(e){return {}}}
   function publishedPayload(){try{const p=window.SAGS_PUBLISHED_FORM_LAYOUT;return p&&typeof p==="object"?p:null}catch(e){return null}}
   function publishedFields(){const p=publishedPayload();return p&&p.fields&&typeof p.fields==="object"?clone(p.fields):{}}
@@ -27664,10 +27693,10 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     if(!canTune())return alert('Chỉ AD được phép xuất cấu hình biểu mẫu.');if(dirty()){if(!confirm('Có thay đổi chưa LƯU. Lưu trước rồi xuất file?'))return;saveStore()}
     const registry={};for(const [g,d] of Object.entries({...FORM_REGISTRY,...CUSTOM_FORMS}))registry[d.id||sanitizeFormId(d.label||g)]={group:g,name:d.label||sanitizeFormId(g),pages:(d.pages||[]).slice()};
     const cur=inferredFormDef();if(cur&&cur.auto)registry[cur.id]={group:group(),name:cur.label,pages:(cur.pages||[]).slice(),auto:true};
-    const payload={schema:4,build:'V3.78',publishedAt:Date.now(),forms:registry,fields:clone(saved)};const body='/* SAGS shared form layout · generated by AD · do not edit by hand */\nwindow.SAGS_PUBLISHED_FORM_LAYOUT='+JSON.stringify(payload,null,2)+';\n';const blob=new Blob([body],{type:'text/javascript;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='form-layout.js';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);status('✓ ĐÃ XUẤT form-layout.js · tất cả biểu mẫu đã căn được gom chung trong 1 file');if(typeof showAutoUpdateToast==='function')showAutoUpdateToast('✓ Đã xuất form-layout.js · tất cả biểu mẫu')
+    const payload={schema:4,build:'V3.79',publishedAt:Date.now(),forms:registry,fields:clone(saved)};const body='/* SAGS shared form layout · generated by AD · do not edit by hand */\nwindow.SAGS_PUBLISHED_FORM_LAYOUT='+JSON.stringify(payload,null,2)+';\n';const blob=new Blob([body],{type:'text/javascript;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='form-layout.js';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);status('✓ ĐÃ XUẤT form-layout.js · tất cả biểu mẫu đã căn được gom chung trong 1 file');if(typeof showAutoUpdateToast==='function')showAutoUpdateToast('✓ Đã xuất form-layout.js · tất cả biểu mẫu')
   }
   function close(discard=false){if(dirty()&&!discard&&!confirm('Có thay đổi chưa lưu. Đóng và bỏ các thay đổi này?'))return;draft=clone(saved);mode=false;selected=null;drag=null;document.body.classList.remove('v368-layout-mode','v368-zone-display','v368-zone-touch');q('#v368LayoutPanel')?.classList.remove('show');q('#v368LayoutTuneBtn')?.classList.remove('active');if(q('#v368LayoutTuneBtn'))q('#v368LayoutTuneBtn').textContent='⚙ CĂN CHỈNH';try{draw()}catch(e){}}
-  function open(){if(!canTune())return alert('Chỉ tài khoản AD được phép căn chỉnh biểu mẫu.');const def=inferredFormDef();if(!def||!def.pages?.length)return alert('Biểu mẫu này chưa có vùng field/SVG để căn chỉnh.');draft=clone(saved);mode=true;zone='display';selected=null;document.body.classList.add('v368-layout-mode','v368-zone-display');document.body.classList.remove('v368-zone-touch');q('#v368LayoutPanel')?.classList.add('show');q('#v368LayoutTuneBtn')?.classList.add('active');if(q('#v368LayoutTuneBtn'))q('#v368LayoutTuneBtn').textContent='✕ ĐANG CĂN';redraw()}
+  function open(){if(!canTune())return alert('Chỉ tài khoản AD được phép căn chỉnh biểu mẫu.');const def=inferredFormDef();if(!def||!def.pages?.length)return alert('Chưa có biểu mẫu đang mở để căn chỉnh. Hãy bấm ➕ TẠO BIỂU MẪU hoặc mở một biểu mẫu, sau đó bấm ⚙ CĂN CHỈNH.');draft=clone(saved);mode=true;zone='display';selected=null;document.body.classList.add('v368-layout-mode','v368-zone-display');document.body.classList.remove('v368-zone-touch');q('#v368LayoutPanel')?.classList.add('show');q('#v368LayoutTuneBtn')?.classList.add('active');if(q('#v368LayoutTuneBtn'))q('#v368LayoutTuneBtn').textContent='✕ ĐANG CĂN';redraw()}
   function toggle(){mode?close():open()}
   function makeUI(){
     let btn=q('#v368LayoutTuneBtn');
@@ -27693,7 +27722,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       <div class="v368Status" id="v368LayoutStatus"></div>`;
     document.body.appendChild(p);window.v368RefreshTuneButton();renderPanel();
   }
-  window.v368RefreshTuneButton=function(){const b=q('#v368LayoutTuneBtn');if(!b)return;const slot=q('#v377LayoutTuneSlot');if(slot&&b.parentNode!==slot)slot.appendChild(b);const def=inferredFormDef(),ok=canTune()&&!!def&&Array.isArray(def.pages)&&def.pages.length>0;b.style.display=ok?'block':'none';if(!ok&&mode)close(true)};
+  window.v368RefreshTuneButton=function(){const b=q('#v368LayoutTuneBtn');if(!b)return;const slot=q('#v377LayoutTuneSlot');if(slot&&b.parentNode!==slot)slot.appendChild(b);const ad=canTune(),def=inferredFormDef(),hasForm=!!def&&Array.isArray(def.pages)&&def.pages.length>0;b.style.display=ad?'block':'none';b.title=hasForm?'Căn chỉnh biểu mẫu đang mở':'Mở một biểu mẫu rồi bấm CĂN CHỈNH';if(!ad&&mode)close(true)};
   window.v371LayoutZone=setZone;window.v371LayoutResize=resizeTouch;window.v371LayoutResetZone=resetZone;window.v368LayoutMove=move;window.v368LayoutFont=font;window.v368LayoutLine=line;window.v368LayoutResetField=resetField;window.v368LayoutResetForm=resetForm;window.v368LayoutSave=save;window.v372LayoutExport=exportLayoutFile;window.v368LayoutClose=()=>close(false);window.v373LayoutAlign=setAlign;window.v373LineAll=lineAll;window.v373LineStep=lineStep;window.v376LayoutToggleTouch=toggleTouch;window.v376LayoutToggleDisplay=toggleDisplay;window.v376LayoutWeight=setWeight;window.v376LayoutItalic=toggleItalic;window.v376LayoutUnderline=toggleUnderline;
   let lastObservedGroup='';function autoRefreshForm(){const g=group();if(g!==lastObservedGroup){lastObservedGroup=g;try{window.v368RefreshTuneButton?.();if(mode){selected=null;redraw()}}catch(e){}}}
   setInterval(autoRefreshForm,700);
@@ -27702,6 +27731,35 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 
 </script>
 
+
+<script id="v379-closeout-notice-cleanup">
+(function(root){
+'use strict';
+function isAD(){try{const r=String(root.currentRole||root.currentUserProfile?.role||'').toUpperCase();return r==='AD'||document.body?.classList.contains('role-admin')}catch(e){return false}}
+function setStatus(t,err=false){const el=document.getElementById('v378ResetStatus');if(!el)return;el.textContent=String(t||'');el.classList.add('show');el.style.background=err?'#fff1f0':'#fffaeb';el.style.color=err?'#912018':'#93370d'}
+function clearLocal(){try{return Number(root.sagsV379ClearLocalCloseoutNotices?.()||0)}catch(e){return 0}}
+root.v379ClearOldCloseoutNotices=async function(){
+  if(!isAD())return alert('Chỉ AD được phép dọn thông báo KẾT SỔ cũ.');
+  if(!confirm('XÓA TOÀN BỘ THÔNG BÁO KẾT SỔ CŨ?\n\nThao tác này chỉ dọn tín hiệu/popup KẾT SỔ cũ trên RTDB và cache thông báo trên thiết bị. KHÔNG xóa hồ sơ KẾT SỔ đã lưu trong Firestore.\n\nCác tài khoản đang online cũng sẽ nhận tín hiệu dọn popup cũ. Tiếp tục?'))return;
+  const btn=document.getElementById('v379ClearCloseoutBtn');if(btn){btn.disabled=true;btn.textContent='ĐANG DỌN THÔNG BÁO KẾT SỔ…';}
+  try{
+    if(typeof root.sagsV470Ref!=='function')throw new Error('RTDB chưa sẵn sàng.');
+    const now=Date.now();setStatus('Đang dọn tín hiệu KẾT SỔ cũ…');
+    try{await root.sagsV470Ref('closeout').remove();}catch(e){console.warn('V3.79 clear closeout/latest',e)}
+    const events=root.sagsV470Ref('closeout_events_v348');
+    try{await events.remove();}catch(e){console.warn('V3.79 clear closeout events',e)}
+    const marker={kind:'sags_closeout_clear_v379',eventAtMs:now,cutoffMs:now,sourceUser:String(root.currentUserProfile?.username||'AD'),sourceRole:'AD'};
+    await events.child('_SYSTEM_CLEAR_').set(marker);
+    root.__SAGS_CLOSEOUT_NOTICE_CUTOFF_MS=now;
+    const local=clearLocal();
+    setStatus('✓ ĐÃ DỌN THÔNG BÁO KẾT SỔ CŨ · hồ sơ KẾT SỔ vẫn được giữ nguyên.');
+    try{root.showAutoUpdateToast?.('✓ Đã xóa thông báo KẾT SỔ cũ');}catch(e){}
+    alert('✓ ĐÃ XÓA THÔNG BÁO KẾT SỔ CŨ\n\nHồ sơ KẾT SỔ trong Firestore KHÔNG bị xóa. Popup/tín hiệu test cũ đã được dọn và các máy online sẽ nhận mốc dọn mới.');
+  }catch(e){console.error('V3.79 closeout cleanup',e);setStatus('Không dọn được thông báo KẾT SỔ: '+String(e?.message||e),true);alert('Không dọn được thông báo KẾT SỔ: '+String(e?.message||e));}
+  finally{if(btn){btn.disabled=false;btn.textContent='🗑 XÓA THÔNG BÁO KẾT SỔ CŨ';}}
+};
+})(window);
+</script>
 
 <script id="v378-clean-start-reset">
 (function(root){

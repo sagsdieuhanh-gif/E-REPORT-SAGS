@@ -1,5 +1,5 @@
-const CACHE_NAME="sags-v3-78-admin-form-tools-20260822-01";
-const BUILD="V3.78-20260822-01";
+const CACHE_NAME="sags-v3-79-admin-tools-closeout-clean-20260822-01";
+const BUILD="V3.79-20260822-01";
 const APP_SHELL=[
   "./9Gfinal.png",
   "./CBTT.png",
