@@ -2172,7 +2172,7 @@ body.role-viewer #ffSendBtn{
 </div>
 <div id="rsOverdueHost"></div>
 
-<script src="./app.js?v=V3.77" data-phase="qr"></script>
+<script src="./app.js?v=V3.78" data-phase="qr"></script>
 <style>
 /* ===== V6.3.5 FINAL RECEIVER SCROLL + PERFORMANCE ===== */
 #finalFormsModal{
@@ -2846,6 +2846,10 @@ body.v377-ad-form-tools #v368LayoutPanel{bottom:132px!important}
 .v377CreateFormClose{width:100%;margin-top:9px;min-height:39px;border:0;border-radius:9px;background:#173b5f;color:#fff;font-weight:900}
 @media(max-width:600px){.v377AdminFormToolsRow{grid-template-columns:1fr 1fr;gap:5px}.v377AdminFormToolsRow>button,.v377LayoutTuneSlot>button,#v368LayoutTuneBtn{font-size:10.5px!important;padding:5px 6px!important;min-height:34px!important}.v377CreateFormGrid{grid-template-columns:1fr}.v377CreateFormGrid button{min-height:58px}body.v377-ad-form-tools{padding-bottom:118px!important}body.v377-ad-form-tools #v368LayoutPanel{bottom:124px!important}}
 @media print{.v377AdminFormToolsRow,#v377CreateFormModal{display:none!important}}
+#v378ResetRecordsBtn{grid-column:1/-1;background:#b42318!important;color:#fff!important;border-color:#ffb4ab!important;font-size:11px!important}
+#v378ResetStatus{grid-column:1/-1;display:none;padding:7px 9px;border-radius:8px;background:#fff1f0;color:#912018;font:900 11px/1.35 Arial;text-align:center}
+#v378ResetStatus.show{display:block}
+
 </style>
 </head>
 <!-- FINAL PAX AUTO KG ACTIVE:
@@ -3116,7 +3120,7 @@ body.v377-ad-form-tools #v368LayoutPanel{bottom:132px!important}
   </div>
 </div>
 
-<div id="buildMarker">V3.77</div>
+<div id="buildMarker">V3.78</div>
 <div aria-live="polite" id="currentFerryFlag"><span class="dot"></span><span id="currentFerryFlagText">FERRY</span></div>
 <div class="toolbar compact-main-toolbar">
 <div class="badge">PĐH SAGS-CXR</div>
@@ -3148,6 +3152,8 @@ body.v377-ad-form-tools #v368LayoutPanel{bottom:132px!important}
 <div id="v377AdminFormToolsRow" class="v377AdminFormToolsRow" style="display:none">
   <button id="v377CreateFormBtn" type="button" onclick="v377OpenCreateFormMenu()">➕ TẠO BIỂU MẪU</button>
   <div id="v377LayoutTuneSlot" class="v377LayoutTuneSlot"></div>
+  <button id="v378ResetRecordsBtn" type="button" onclick="v378ResetAllOldRecords()">🧹 XÓA TOÀN BỘ HỒ SƠ CŨ · BẮT ĐẦU MỚI</button>
+  <div id="v378ResetStatus"></div>
 </div>
 </div>
 <div id="v377CreateFormModal" class="v377CreateFormModal" style="display:none" role="dialog" aria-modal="true" aria-label="Tạo biểu mẫu">
@@ -3184,7 +3190,7 @@ body.v377-ad-form-tools #v368LayoutPanel{bottom:132px!important}
 <button onclick="closeUpdateInfo()" aria-label="Đóng" style="border:0;background:#eee;border-radius:50%;width:34px;height:34px;font-size:21px;line-height:30px">×</button>
 </div>
 <div style="padding:11px 12px;border:1px solid #b7d7ef;border-radius:11px;background:#eef7ff">
-<p style="margin:0 0 6px;color:#075985"><b>V3.77 · 22/08/2026 — AD FORM TOOLS: TẠO TẤT CẢ BIỂU MẪU + CĂN CHỈNH DƯỚI TOOLBAR</b></p>
+<p style="margin:0 0 6px;color:#075985"><b>V3.78 · 22/08/2026 — CLEAN START · XÓA HỒ SƠ CŨ + KHỞI TẠO LẠI DỮ LIỆU NGHIỆP VỤ</b></p>
 <p style="margin:4px 0">• AD có thể <b>TẮT/BẬT vùng chạm</b>, <b>ẨN/HIỆN vùng hiển thị</b>, chỉnh chữ thường/đậm/nghiêng/gạch chân, font, căn trái/giữa/phải, từng dòng hoặc cả khối.</p>
 <p style="margin:4px 0">• AD có một hàng riêng <b>ngay dưới thanh công cụ</b>: <b>➕ TẠO BIỂU MẪU</b> + <b>⚙ CĂN CHỈNH</b>.</p>
 <p style="margin:4px 0">• <b>➕ TẠO BIỂU MẪU</b> gom FSAGS42.3 / FSAGS42.1 / FSAGS55.1 / FSAGS09 / FSAGS208 / BBBT / FINAL. <b>⚙ CĂN CHỈNH</b> vẫn chỉ AD và tự nhận form có SVG + field.</p>
@@ -3198,7 +3204,7 @@ body.v377-ad-form-tools #v368LayoutPanel{bottom:132px!important}
 </div>
 <details style="margin-top:10px;padding:9px 11px;border:1px solid #dbe4eb;border-radius:10px;background:#fafcfd">
 <summary style="cursor:pointer;font-weight:800;color:#334155">Lưu ý sau khi cập nhật</summary>
-<p style="margin:8px 0 0">Dữ liệu hồ sơ nghiệp vụ trên Firebase không bị xóa. Chỉ cập nhật khi người dùng bấm CẬP NHẬT và chờ nhãn góc trái hiện V3.77.</p>
+<p style="margin:8px 0 0">Dữ liệu hồ sơ nghiệp vụ trên Firebase không bị xóa. Chỉ cập nhật khi người dùng bấm CẬP NHẬT và chờ nhãn góc trái hiện V3.78.</p>
 </details>
 <button onclick="closeUpdateInfo()" style="width:100%;margin-top:12px;border:0;border-radius:10px;padding:10px 14px;background:#0b67b2;color:#fff;font-weight:800">ĐÓNG</button>
 </div>
@@ -4170,7 +4176,7 @@ body.v377-ad-form-tools #v368LayoutPanel{bottom:132px!important}
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
-<script src="./app.js?v=V3.77" data-phase="config"></script>
+<script src="./app.js?v=V3.78" data-phase="config"></script>
 <script>
 let suppressModalClickUntil=0;
 function armModalGhostClickBlock(ms=650){
@@ -7091,7 +7097,7 @@ function draw(){
       : [{x:a.x-px,y:a.y-py,w:a.w+px*2,h:a.h+py*2}];
 
     for(const hrBase of hitRects){
-      // V3.77: touch zone is independent from displayed text. Apply device-local
+      // V3.78: touch zone is independent from displayed text. Apply device-local
       // touch calibration (hx/hy/hw/hh) to the REAL hit rectangle used in normal mode.
       let tc={};
       try{
@@ -7267,7 +7273,7 @@ function draw(){
 
 
   /* =========================================================
-     V3.77 — FSAGS 42.3 DOT-LINE DISPLAY ENGINE
+     V3.78 — FSAGS 42.3 DOT-LINE DISPLAY ENGINE
      IMPORTANT:
      - These printed rows are NOT ordinary input boxes. Their dotted guides
        sit inside the same visual row as the labels.
@@ -7530,7 +7536,7 @@ function draw(){
     continue;
   }
 
-  // V4.78 legacy DEP Remarks renderer (V3.77 handles this earlier via measured dot-line engine).
+  // V4.78 legacy DEP Remarks renderer (V3.78 handles this earlier via measured dot-line engine).
   // Safari/iOS intermittently fails to paint HTML inside SVG foreignObject after
   // the editor closes, even though state is saved and PDF export still contains it.
   // Render this one-line printed Remarks field directly as SVG <text> so live view
@@ -12317,8 +12323,8 @@ try {
   alert("Lỗi JavaScript: "+err.message);
 }
 
-const APP_BUILD_VERSION="V3.77-20260822-01";
-const APP_DISPLAY_VERSION="V3.77";
+const APP_BUILD_VERSION="V3.78-20260822-01";
+const APP_DISPLAY_VERSION="V3.78";
 
 // V4.21 — SAFE UPDATE SAVE
 // Before switching to a newly installed app version, force-save all current
@@ -21140,7 +21146,7 @@ function applyRoleUI(){
   // Nếu ứng dụng được mở từ QR Giao Ca, xử lý sau khi đã xác định tài khoản.
   setTimeout(tryOpenPendingHandoverDeepLink,120);
 
-  // V3.77: nút căn chỉnh tất cả biểu mẫu chỉ dành cho AD; form mới tự nhận diện khi có SVG + field.
+  // V3.78: nút căn chỉnh tất cả biểu mẫu chỉ dành cho AD; form mới tự nhận diện khi có SVG + field.
   try{if(typeof window.v368RefreshTuneButton==="function")window.v368RefreshTuneButton();}catch(e){}
 
   // V6.4.0: Sau đăng nhập KHÔNG tự mở bất kỳ màn chức năng nào.
@@ -24318,7 +24324,7 @@ window.openCamScanner=openCamScanner;
 <script type="module" src="./ai.js?v=V3.58"></script>
 
 
-<script src="./app.js?v=V3.77" data-phase="archive"></script>
+<script src="./app.js?v=V3.78" data-phase="archive"></script>
 <script id="v120-build02-fixes">
 /* V1.20 BUILD 02 — background persistence, VHTTB, per-account usage detail, progress dedupe. */
 (function(){
@@ -24759,7 +24765,7 @@ window.openCamScanner=openCamScanner;
 
 
 
-<script src="./app.js?v=V3.77" data-phase="tools"></script>
+<script src="./app.js?v=V3.78" data-phase="tools"></script>
 <script id="v173-quick-time">
 (function(){
   "use strict";
@@ -26815,7 +26821,7 @@ window.openCamScanner=openCamScanner;
 }
 </style>
 
-<script src="./app.js?v=V3.77" data-phase="flight"></script>
+<script src="./app.js?v=V3.78" data-phase="flight"></script>
 <script id="v191IOSInteractionFix">
 (()=>{
   'use strict';
@@ -27079,7 +27085,7 @@ window.openCamScanner=openCamScanner;
 })();
 </script>
 
-<script src="./app.js?v=V3.77" data-phase="control"></script>
+<script src="./app.js?v=V3.78" data-phase="control"></script>
 
 <style id="v330-group-permission-style">
 #v330GroupPermPanel{margin:12px 0 8px;padding:11px;border:1px solid #cbd9e6;border-radius:12px;background:#f7fbff;box-sizing:border-box}
@@ -27328,7 +27334,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 
 
 <script id="v377AdminFormToolsScript">
-/* V3.77 — AD form tools row + one CREATE FORM menu for every current form. */
+/* V3.78 — AD form tools row + one CREATE FORM menu for every current form. */
 (function(){
   function isAD(){try{return String(window.currentRole||currentRole||'').toUpperCase()==='AD'}catch(e){return false}}
   function refresh(){
@@ -27379,7 +27385,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 
 <script id="v368LayoutTuneScript">
 /* =========================================================
-   V3.77 — FULL FORM EDITOR · AD ONLY
+   V3.78 — FULL FORM EDITOR · AD ONLY
    Built-in: FSAGS42.3 / FSAGS42.1 / FSAGS55.1 / FSAGS09 / FSAGS208 / BBBT.
    Future forms: automatically discovered from the active form's visible SVG pages + field definitions.
    - TOUCH zone: one independent click/tap region per field.
@@ -27658,7 +27664,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     if(!canTune())return alert('Chỉ AD được phép xuất cấu hình biểu mẫu.');if(dirty()){if(!confirm('Có thay đổi chưa LƯU. Lưu trước rồi xuất file?'))return;saveStore()}
     const registry={};for(const [g,d] of Object.entries({...FORM_REGISTRY,...CUSTOM_FORMS}))registry[d.id||sanitizeFormId(d.label||g)]={group:g,name:d.label||sanitizeFormId(g),pages:(d.pages||[]).slice()};
     const cur=inferredFormDef();if(cur&&cur.auto)registry[cur.id]={group:group(),name:cur.label,pages:(cur.pages||[]).slice(),auto:true};
-    const payload={schema:4,build:'V3.77',publishedAt:Date.now(),forms:registry,fields:clone(saved)};const body='/* SAGS shared form layout · generated by AD · do not edit by hand */\nwindow.SAGS_PUBLISHED_FORM_LAYOUT='+JSON.stringify(payload,null,2)+';\n';const blob=new Blob([body],{type:'text/javascript;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='form-layout.js';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);status('✓ ĐÃ XUẤT form-layout.js · tất cả biểu mẫu đã căn được gom chung trong 1 file');if(typeof showAutoUpdateToast==='function')showAutoUpdateToast('✓ Đã xuất form-layout.js · tất cả biểu mẫu')
+    const payload={schema:4,build:'V3.78',publishedAt:Date.now(),forms:registry,fields:clone(saved)};const body='/* SAGS shared form layout · generated by AD · do not edit by hand */\nwindow.SAGS_PUBLISHED_FORM_LAYOUT='+JSON.stringify(payload,null,2)+';\n';const blob=new Blob([body],{type:'text/javascript;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='form-layout.js';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);status('✓ ĐÃ XUẤT form-layout.js · tất cả biểu mẫu đã căn được gom chung trong 1 file');if(typeof showAutoUpdateToast==='function')showAutoUpdateToast('✓ Đã xuất form-layout.js · tất cả biểu mẫu')
   }
   function close(discard=false){if(dirty()&&!discard&&!confirm('Có thay đổi chưa lưu. Đóng và bỏ các thay đổi này?'))return;draft=clone(saved);mode=false;selected=null;drag=null;document.body.classList.remove('v368-layout-mode','v368-zone-display','v368-zone-touch');q('#v368LayoutPanel')?.classList.remove('show');q('#v368LayoutTuneBtn')?.classList.remove('active');if(q('#v368LayoutTuneBtn'))q('#v368LayoutTuneBtn').textContent='⚙ CĂN CHỈNH';try{draw()}catch(e){}}
   function open(){if(!canTune())return alert('Chỉ tài khoản AD được phép căn chỉnh biểu mẫu.');const def=inferredFormDef();if(!def||!def.pages?.length)return alert('Biểu mẫu này chưa có vùng field/SVG để căn chỉnh.');draft=clone(saved);mode=true;zone='display';selected=null;document.body.classList.add('v368-layout-mode','v368-zone-display');document.body.classList.remove('v368-zone-touch');q('#v368LayoutPanel')?.classList.add('show');q('#v368LayoutTuneBtn')?.classList.add('active');if(q('#v368LayoutTuneBtn'))q('#v368LayoutTuneBtn').textContent='✕ ĐANG CĂN';redraw()}
@@ -27696,5 +27702,115 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 
 </script>
 
+
+<script id="v378-clean-start-reset">
+(function(root){
+'use strict';
+if(root.__SAGS_V378_RESET_LOADED)return;root.__SAGS_V378_RESET_LOADED=true;
+const BUILD='V3.78-20260822-01';
+const RESET_MARK='SAGS_V378_CLEAN_START_LOCAL_DONE';
+const CUTOFF_MS=1787396733000; // 22/08/2026 18:05:33 GMT+7 — mốc yêu cầu bắt đầu mới
+const KEEP_LOCAL=[
+  /^SAGS_FORM_LAYOUT_V368$/i,/^sagsPersonalAccountSessionV1$/i,/^sagsFixedRoleV3$/i,
+  /^sagsDynamicFleetCacheV1$/i,/form-layout/i,/signature/i,/signTemplate/i,/fleet/i,
+  /^pdh-update/i,/update/i,/theme/i,/appearance/i
+];
+const DROP_LOCAL=[
+  /flight/i,/roster/i,/ramp/i,/final/i,/fs09/i,/bbbt/i,/closeout/i,/cross/i,
+  /handoff/i,/archive/i,/kh208/i,/read.?sign/i,/sagsV3[0-9]/i,/taskStatus/i,
+  /ldm/i,/working/i,/dossier/i,/approval_notice/i
+];
+function isAD(){return String(root.currentRole||'').toUpperCase()==='AD'}
+function status(t,err=false){const el=document.getElementById('v378ResetStatus');if(!el)return;el.textContent=String(t||'');el.classList.add('show');el.style.background=err?'#fff1f0':'#ecfdf3';el.style.color=err?'#912018':'#067647'}
+function clearLocalOperational(){
+  let n=0;
+  try{
+    const keys=[];for(let i=0;i<localStorage.length;i++)keys.push(localStorage.key(i));
+    for(const k0 of keys){const k=String(k0||'');if(!k||KEEP_LOCAL.some(r=>r.test(k)))continue;if(DROP_LOCAL.some(r=>r.test(k))){localStorage.removeItem(k);n++;}}
+    const sk=[];for(let i=0;i<sessionStorage.length;i++)sk.push(sessionStorage.key(i));
+    for(const k of sk){if(/flight|roster|ramp|final|fs09|bbbt|closeout|cross|handoff|task|approval/i.test(String(k||''))){sessionStorage.removeItem(k);n++;}}
+  }catch(e){console.warn('V3.78 local purge',e)}
+  return n;
+}
+// Every device that receives V3.78 clears only OLD OPERATIONAL LOCAL CACHE once.
+// Accounts, Fleet, signatures and form-layout are intentionally preserved.
+try{if(localStorage.getItem(RESET_MARK)!==BUILD){clearLocalOperational();localStorage.setItem(RESET_MARK,BUILD);}}catch(e){}
+
+async function removeRtdbOperational(){
+  if(typeof root.sagsV470Db!=='function' && typeof root.sagsV470Ref!=='function')throw new Error('RTDB chưa sẵn sàng.');
+  const db=typeof root.sagsV470Db==='function'?root.sagsV470Db():null;
+  const rootRef=db?db.ref():root.sagsV470Ref('').root;
+  const patch={
+    'flight_records':null,'roster_manifests':null,'roster_mail':null,'roster_sessions':null,
+    'roster_flight_status':null,'roster_flight_workspaces':null,'roster_revocations':null,
+    'roster_handoffs':null,'roster_handoff_mail':null,'shift_handoffs':null,'shift_handoff_mail':null,
+    'ops_audit_v331':null,'sags_live_v469/finals':null,
+    'sags_live_v470/finals':null,'sags_live_v470/cross_state':null,'sags_live_v470/cross_mail':null,
+    'sags_live_v470/ops/events':null,'sags_live_v470/activity':null,'sags_live_v470/kh208/latest':null,
+    'sags_live_v470/rs_mail':null,'sags_live_v470/closeout':null,'sags_live_v470/closeout_events_v348':null,
+    'sags_live_v470/ramp_progress':null,'sags_live_v470/ops/progress':null,
+    'sags_live_v470/approval_pool_v339':null,'sags_live_v470/approval_events_v339':null,
+    'sags_live_v470/flight_records':null,'sags_live_v470/roster_manifests':null
+  };
+  await rootRef.update(patch);
+  return Object.keys(patch).length;
+}
+async function deleteKind(col,kind){
+  let total=0;
+  while(true){
+    const snap=await col.where('kind','==',kind).limit(350).get();
+    if(snap.empty)break;
+    const batch=col.firestore.batch();let n=0;
+    snap.forEach(d=>{batch.delete(d.ref);n++;});
+    if(!n)break;await batch.commit();total+=n;
+    if(n<350)break;
+  }
+  return total;
+}
+async function removeFirestoreOperational(){
+  if(typeof root.initHandoverFirebase!=='function')throw new Error('Firestore chưa sẵn sàng.');
+  const db=root.initHandoverFirebase(),name=String(root.HANDOVER_COLLECTION||'sags_handovers'),col=db.collection(name);
+  const kinds=[
+    'airline_final_form','airline_final_paper_photo','airline_final_compare_package','final_crosscheck_v3',
+    'final_crosscheck_mailbox_v3','FINAL_CROSSCHECK_ALERT','sags_crosscheck_clean_v2',
+    'fsags09_closeout','fsags09_closeout_revision_v121','sags_kh_fsags208_v1',
+    'sags_flight_archive_v488','sags_flight_archive_chunk_v488','sags_ramp_presence_v488','sags_cloud_ramp_v416',
+    'sags_internal_approval_v339','sags_read_sign_task_v1','sags_read_sign_signature_v1','sags_read_sign_mailbox_v2',
+    'sags_dynamic_form_record_v1'
+  ];
+  let total=0;
+  for(let i=0;i<kinds.length;i++){
+    status(`Đang xóa Firestore ${i+1}/${kinds.length} · ${kinds[i]}…`);
+    total+=await deleteKind(col,kinds[i]);
+  }
+  // Fixed operational signal docs. Preserve accounts/config/Fleet/layout/counters.
+  const fixed=['SYS_FINAL_BROADCAST_V466'];
+  for(const id of fixed){try{await col.doc(id).delete();total++;}catch(e){}}
+  return total;
+}
+root.v378ResetAllOldRecords=async function(){
+  if(!isAD())return alert('Chỉ AD được phép xóa toàn bộ hồ sơ cũ.');
+  const msg='THAO TÁC NÀY SẼ XÓA HỒ SƠ NGHIỆP VỤ CŨ TRÊN MÁY CHỦ\n\nBao gồm Roster/Flight, FINAL/CROSSCHECK, KẾT SỔ, FSAGS208, BBBT liên kết, R&S, bàn giao/giao ca, archive và dữ liệu công việc.\n\nKHÔNG xóa: tài khoản, phân quyền, Fleet, A/C Limits, cấu hình hệ thống, chữ ký, form-layout.js và bộ đếm BBBT.\n\nSau khi xóa không thể khôi phục từ hệ thống. Tiếp tục?';
+  if(!confirm(msg))return;
+  const typed=prompt('Để xác nhận lần cuối, nhập chính xác: XOA HO SO CU','');
+  if(String(typed||'').trim().toUpperCase()!=='XOA HO SO CU')return alert('Đã hủy. Không có dữ liệu nào bị xóa.');
+  const btn=document.getElementById('v378ResetRecordsBtn');if(btn){btn.disabled=true;btn.textContent='ĐANG XÓA HỒ SƠ CŨ…';}
+  try{
+    status('Bắt đầu reset dữ liệu nghiệp vụ…');
+    const rtdb=await removeRtdbOperational();
+    status(`RTDB đã dọn ${rtdb} vùng · đang dọn Firestore…`);
+    const fs=await removeFirestoreOperational();
+    const local=clearLocalOperational();
+    try{localStorage.setItem(RESET_MARK,BUILD);}catch(e){}
+    // Write only a tiny reset marker to RTDB so new clients know the clean-start epoch.
+    try{const ref=(typeof root.sagsV470Ref==='function'?root.sagsV470Ref('system/clean_start_v378'):null);if(ref)await ref.set({build:BUILD,cutoffMs:CUTOFF_MS,resetAtMs:Date.now(),resetBy:String(root.currentUserProfile?.username||'AD')});}catch(e){}
+    status(`✓ ĐÃ XÓA HỒ SƠ CŨ · Firestore ${fs} docs · local ${local} mục. Từ thời điểm này hệ thống bắt đầu dữ liệu mới.`);
+    alert('✓ RESET HOÀN TẤT\n\nToàn bộ hồ sơ nghiệp vụ cũ đã được dọn theo phạm vi V3.78. Tài khoản/cấu hình/Fleet/layout được giữ nguyên.\n\nTrang sẽ tải lại để bắt đầu mới.');
+    setTimeout(()=>location.reload(),900);
+  }catch(e){console.error('V3.78 reset',e);status('RESET CHƯA HOÀN TẤT: '+String(e?.message||e),true);alert('Không xóa hết được dữ liệu: '+String(e?.message||e)+'\n\nKhông tiếp tục tạo hồ sơ mới cho đến khi xử lý xong lỗi này.');}
+  finally{if(btn){btn.disabled=false;btn.textContent='🧹 XÓA TOÀN BỘ HỒ SƠ CŨ · BẮT ĐẦU MỚI';}}
+};
+})(window);
+</script>
 </body>
 </html>

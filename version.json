@@ -1,9 +1,9 @@
 {
-  "version": "V3.77",
-  "displayVersion": "V3.77",
-  "label": "V3.77",
-  "build": "V3.77-20260822-01",
-  "releasedAt": "2026-08-22T10:58:00Z",
-  "notes": "AD tools UI: a dedicated row under the bottom toolbar contains TẠO BIỂU MẪU and CĂN CHỈNH. The create menu includes FSAGS42.3, FSAGS42.1, FSAGS55.1, FSAGS09, FSAGS208, BBBT and FINAL. Layout editor remains AD-only.",
-  "message": "V3.77 · Tạo tất cả biểu mẫu + Căn chỉnh nằm ngay dưới thanh công cụ AD."
+  "version": "V3.78",
+  "displayVersion": "V3.78",
+  "label": "V3.78",
+  "build": "V3.78-20260822-01",
+  "releasedAt": "2026-08-22T11:12:00Z",
+  "notes": "AD clean-start utility: one-time local operational cache reset on every V3.78 device and an AD-only destructive purge button for old operational RTDB/Firestore records. Accounts, permissions, Fleet, A/C Limits, signatures, layout configuration and BBBT global counter are preserved.",
+  "message": "V3.78 · Xóa hồ sơ cũ và bắt đầu dữ liệu nghiệp vụ mới."
 }
