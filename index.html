@@ -2172,7 +2172,7 @@ body.role-viewer #ffSendBtn{
 </div>
 <div id="rsOverdueHost"></div>
 
-<script src="./app.js?v=V3.57" data-phase="qr"></script>
+<script src="./app.js?v=V3.58" data-phase="qr"></script>
 <style>
 /* ===== V6.3.5 FINAL RECEIVER SCROLL + PERFORMANCE ===== */
 #finalFormsModal{
@@ -3051,7 +3051,7 @@ user-select:none;-webkit-user-select:none;touch-action:none;-webkit-tap-highligh
   </div>
 </div>
 
-<div id="buildMarker">V3.57</div>
+<div id="buildMarker">V3.58</div>
 <div aria-live="polite" id="currentFerryFlag"><span class="dot"></span><span id="currentFerryFlagText">FERRY</span></div>
 <div class="toolbar compact-main-toolbar">
 <div class="badge">PĐH SAGS-CXR</div>
@@ -3100,7 +3100,7 @@ user-select:none;-webkit-user-select:none;touch-action:none;-webkit-tap-highligh
 <button onclick="closeUpdateInfo()" aria-label="Đóng" style="border:0;background:#eee;border-radius:50%;width:34px;height:34px;font-size:21px;line-height:30px">×</button>
 </div>
 <div style="padding:11px 12px;border:1px solid #b7d7ef;border-radius:11px;background:#eef7ff">
-<p style="margin:0 0 6px;color:#075985"><b>V3.57 · 22/08/2026 — THANH CÔNG CỤ 2 HÀNG</b></p>
+<p style="margin:0 0 6px;color:#075985"><b>V3.58 · 22/08/2026 — THANH CÔNG CỤ 2 HÀNG</b></p>
 <p style="margin:4px 0">• Thanh công cụ điện thoại được chia thành 2 hàng để giảm quãng vuốt ngang.</p>
 <p style="margin:4px 0">• Hàng trên giữ cụm tài khoản và các thao tác của biểu mẫu đang làm; hàng dưới chứa các chức năng điều hướng.</p>
 <p style="margin:4px 0">• Cụm tài khoản vẫn nằm trong thanh công cụ như trước, không đưa lên góc màn hình.</p>
@@ -3108,7 +3108,7 @@ user-select:none;-webkit-user-select:none;touch-action:none;-webkit-tap-highligh
 </div>
 <details style="margin-top:10px;padding:9px 11px;border:1px solid #dbe4eb;border-radius:10px;background:#fafcfd">
 <summary style="cursor:pointer;font-weight:800;color:#334155">Lưu ý sau khi cập nhật</summary>
-<p style="margin:8px 0 0">Dữ liệu hồ sơ nghiệp vụ trên Firebase không bị xóa. Chỉ cập nhật khi người dùng bấm CẬP NHẬT và chờ nhãn góc trái hiện V3.57.</p>
+<p style="margin:8px 0 0">Dữ liệu hồ sơ nghiệp vụ trên Firebase không bị xóa. Chỉ cập nhật khi người dùng bấm CẬP NHẬT và chờ nhãn góc trái hiện V3.58.</p>
 </details>
 <button onclick="closeUpdateInfo()" style="width:100%;margin-top:12px;border:0;border-radius:10px;padding:10px 14px;background:#0b67b2;color:#fff;font-weight:800">ĐÓNG</button>
 </div>
@@ -4080,7 +4080,7 @@ user-select:none;-webkit-user-select:none;touch-action:none;-webkit-tap-highligh
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
-<script src="./app.js?v=V3.57" data-phase="config"></script>
+<script src="./app.js?v=V3.58" data-phase="config"></script>
 <script>
 let suppressModalClickUntil=0;
 function armModalGhostClickBlock(ms=650){
@@ -12095,8 +12095,8 @@ try {
   alert("Lỗi JavaScript: "+err.message);
 }
 
-const APP_BUILD_VERSION="V3.57-20260822-01";
-const APP_DISPLAY_VERSION="V3.57";
+const APP_BUILD_VERSION="V3.58-20260822-02";
+const APP_DISPLAY_VERSION="V3.58";
 
 // V4.21 — SAFE UPDATE SAVE
 // Before switching to a newly installed app version, force-save all current
@@ -18721,6 +18721,8 @@ const HYBRID_V469_ENABLED_KEY="sagsHybridRtdbEnabledV469";
 const HYBRID_V469_STATS_KEY="sagsHybridRtdbStatsV469";
 const HYBRID_V469_PATH="sags_live_v469/finals";
 const HYBRID_V469_CONFIG_DOC="SYS_HYBRID_RTDB_CONFIG_V469";
+const HYBRID_V469_CONFIG_CACHE_KEY="sagsHybridRtdbSharedConfigV358";
+const HYBRID_V469_CONFIG_CACHE_TTL=12*60*60*1000;
 let hybridV469Db=null,hybridV469Query=null,hybridV469ConnRef=null;
 let hybridV469AddedCb=null,hybridV469ChangedCb=null,hybridV469ConnCb=null;
 let hybridV469FallbackTimer=null,hybridV469Connected=false,hybridV469PermissionFailed=false;
@@ -18734,15 +18736,29 @@ function hybridV469NormalizeUrl(v){
 }
 function hybridV469GetUrl(){return hybridV469NormalizeUrl(localStorage.getItem(HYBRID_V469_URL_KEY)||"");}
 function hybridV469IsEnabled(){return localStorage.getItem(HYBRID_V469_ENABLED_KEY)==="1" && !!hybridV469GetUrl();}
-async function hybridV469ResolveSharedConfig(){
-  // Chỉ 1 Firestore document read mỗi lần mở app để mọi máy V4.69 nhận cùng cấu hình RTDB do AD đặt.
+async function hybridV469ResolveSharedConfig(force=false){
+  // V3.58 READ OPT: cấu hình ít thay đổi, cache 12 giờ thay vì đọc Firestore mỗi lần mở/reload app.
+  // AD vẫn có thể force refresh; khi AD lưu cấu hình, cache local được cập nhật ngay.
+  const now=Date.now();
+  if(!force){
+    try{
+      const cached=JSON.parse(localStorage.getItem(HYBRID_V469_CONFIG_CACHE_KEY)||"{}");
+      const age=now-Number(cached.atMs||0),url=hybridV469NormalizeUrl(cached.url||"");
+      if(age>=0&&age<HYBRID_V469_CONFIG_CACHE_TTL&&typeof cached.enabled==="boolean"){
+        if(url)localStorage.setItem(HYBRID_V469_URL_KEY,url);else localStorage.removeItem(HYBRID_V469_URL_KEY);
+        localStorage.setItem(HYBRID_V469_ENABLED_KEY,cached.enabled&&!!url?"1":"0");
+        return {enabled:cached.enabled&&!!url,url,cache:true};
+      }
+    }catch(e){}
+  }
   try{
     const snap=await initHandoverFirebase().collection(HANDOVER_COLLECTION).doc(HYBRID_V469_CONFIG_DOC).get();
     if(snap.exists){
-      const c=snap.data()||{},url=hybridV469NormalizeUrl(c.databaseURL||"");
+      const c=snap.data()||{},url=hybridV469NormalizeUrl(c.databaseURL||""),enabled=c.enabled===true&&!!url;
       if(url)localStorage.setItem(HYBRID_V469_URL_KEY,url);else localStorage.removeItem(HYBRID_V469_URL_KEY);
-      localStorage.setItem(HYBRID_V469_ENABLED_KEY,c.enabled===true?"1":"0");
-      return {enabled:c.enabled===true&&!!url,url};
+      localStorage.setItem(HYBRID_V469_ENABLED_KEY,enabled?"1":"0");
+      try{localStorage.setItem(HYBRID_V469_CONFIG_CACHE_KEY,JSON.stringify({atMs:now,enabled,url,updatedAtMs:Number(c.updatedAtMs||0)}));}catch(e){}
+      return {enabled,url};
     }
   }catch(e){console.warn("HYBRID shared config read",e);}
   return {enabled:hybridV469IsEnabled(),url:hybridV469GetUrl()};
@@ -18770,12 +18786,24 @@ function hybridV469StartFirestoreFinalFallback(reason=""){
   if(optimizedFinalRealtimeUnsub)return;
   try{
     const db=initHandoverFirebase();
-    optimizedFinalRealtimeUnsub=db.collection(HANDOVER_COLLECTION).where("kind","==",FF_CLOUD_KIND).onSnapshot(
-      snap=>snap.docChanges().forEach(optimizedHandleFinalDocChange),
-      err=>console.warn("FINAL Firestore fallback",err)
-    );
-    hybridV469SaveStats({mode:"FIRESTORE FALLBACK",fallbackReason:String(reason||"RTDB chưa sẵn sàng"),fallbackAtMs:Date.now()});
-  }catch(e){console.warn("Không bật được FINAL Firestore fallback",e);}
+    // V3.58 READ OPT: tuyệt đối không query toàn bộ FINAL khi RTDB mất kết nối.
+    // Mỗi lần gửi FINAL đã cập nhật SYS_FINAL_BROADCAST_V466 trong cùng transaction,
+    // vì vậy fallback chỉ cần nghe đúng 01 document broadcast (≈ 1 read/client lúc subscribe).
+    optimizedFinalListenAtMsV466=Date.now();
+    const ref=db.collection(HANDOVER_COLLECTION).doc(FF_BROADCAST_DOC_ID_V466);
+    optimizedFinalRealtimeUnsub=ref.onSnapshot({includeMetadataChanges:false},snap=>{
+      if(!snap.exists)return;
+      const d=snap.data()||{};
+      if(d.kind!==FF_BROADCAST_KIND_V466)return;
+      const eventAtMs=Number(d.eventAtMs||0);
+      // Snapshot đầu tiên có thể là broadcast cũ: chỉ xử lý sự kiện phát sinh sau lúc listener bắt đầu.
+      if(eventAtMs && eventAtMs<optimizedFinalListenAtMsV466-5000)return;
+      const payload=d.payload||null,docId=String(d.docId||"");
+      if(!docId||!payload||payload.kind!==FF_CLOUD_KIND)return;
+      optimizedHandleFinalDocChange({type:"modified",doc:{id:docId,data:()=>payload}});
+    },err=>console.warn("FINAL broadcast fallback",err));
+    hybridV469SaveStats({mode:"FIRESTORE BROADCAST FALLBACK",fallbackReason:String(reason||"RTDB chưa sẵn sàng"),fallbackAtMs:Date.now()});
+  }catch(e){console.warn("Không bật được FINAL broadcast fallback",e);}
 }
 function hybridV469ScheduleFallback(reason){
   if(hybridV469FallbackTimer)return;
@@ -18846,6 +18874,7 @@ async function hybridV469SaveAndEnable(){
   const v=hybridV469NormalizeUrl(document.getElementById("hybridV469UrlInput")?.value||"");
   if(!v)return alert("Hãy dán Realtime Database URL từ Firebase Console.");
   localStorage.setItem(HYBRID_V469_URL_KEY,v);localStorage.setItem(HYBRID_V469_ENABLED_KEY,"1");
+  try{localStorage.setItem(HYBRID_V469_CONFIG_CACHE_KEY,JSON.stringify({atMs:Date.now(),enabled:true,url:v}));}catch(e){}
   try{
     await initHandoverFirebase().collection(HANDOVER_COLLECTION).doc(HYBRID_V469_CONFIG_DOC).set({kind:"sags_hybrid_rtdb_config_v469",enabled:true,databaseURL:v,updatedAtMs:Date.now(),updatedBy:currentActor?.()||null},{merge:false});
   }catch(e){alert("Đã lưu URL trên máy này nhưng chưa đồng bộ được cấu hình cho các máy khác: "+String(e?.message||e));}
@@ -18854,6 +18883,7 @@ async function hybridV469SaveAndEnable(){
 }
 async function hybridV469Disable(){
   localStorage.setItem(HYBRID_V469_ENABLED_KEY,"0");
+  try{localStorage.setItem(HYBRID_V469_CONFIG_CACHE_KEY,JSON.stringify({atMs:Date.now(),enabled:false,url:hybridV469GetUrl()}));}catch(e){}
   try{await initHandoverFirebase().collection(HANDOVER_COLLECTION).doc(HYBRID_V469_CONFIG_DOC).set({kind:"sags_hybrid_rtdb_config_v469",enabled:false,databaseURL:hybridV469GetUrl(),updatedAtMs:Date.now(),updatedBy:currentActor?.()||null},{merge:false});}catch(e){console.warn("HYBRID disable sync",e);}
   try{persist?.();}catch(e){}alert("Đã chuyển toàn bộ máy V4.69 về FIRESTORE GỐC sau lần mở/reload tiếp theo. Ứng dụng này sẽ reload ngay.");location.reload();
 }
@@ -20396,6 +20426,9 @@ async function refreshDynamicFleetCache(force=false){
       }catch(e){console.info("fleet catalog read",e?.message||e);}
     }
 
+    // V3.58 READ OPT: client nghiệp vụ không fallback sang query toàn bộ Fleet nếu catalog chưa có.
+    // Chỉ AD/người quản lý Fleet hoặc force=true mới được rebuild catalog từ collection.
+    if(!force && !v138CanManageFleet())return cached?.byReg||{};
     const snap=await initHandoverFirebase().collection(HANDOVER_COLLECTION).where("kind","==",FLEET_STORAGE_KIND).get();
     const byReg={},updatedAtMs=Date.now();
     snap.forEach(doc=>{
@@ -24026,10 +24059,10 @@ window.openCamScanner=openCamScanner;
   setTimeout(()=>{try{if(window.currentRole)window.v114ApplyRoleHomeBackground();}catch(_){}},500);
 })();
 </script>
-<script type="module" src="./ai.js?v=V3.57"></script>
+<script type="module" src="./ai.js?v=V3.58"></script>
 
 
-<script src="./app.js?v=V3.57" data-phase="archive"></script>
+<script src="./app.js?v=V3.58" data-phase="archive"></script>
 <script id="v120-build02-fixes">
 /* V1.20 BUILD 02 — background persistence, VHTTB, per-account usage detail, progress dedupe. */
 (function(){
@@ -24085,7 +24118,7 @@ window.openCamScanner=openCamScanner;
 <script id="v121-closeout-validation">
 /* V1.27 AI · keeps V1.23+ KẾT SỔ validation; AI CROSSCHECK is scoped to root fields only. */
 (function(){
-  const V121_BUILD="V3.57-20260822-01";
+  const V121_BUILD="V3.58-20260822-02";
   const V121_INBOX_KEY="sagsCloseoutInboxV121";
   const V121_RTDB_PATH="closeout/latest";
   const V348_RTDB_EVENTS_PATH="closeout_events_v348";
@@ -24416,7 +24449,7 @@ window.openCamScanner=openCamScanner;
     storeCloseout(p);
     v349StoreReceivedCloseout(d,p);
     try{attachIncomingFS09(p);}catch(e){console.info("V3.50 attach closeout",e?.message||e);}
-    if(role==="CBTT"||role==="AD")void Promise.resolve(window.sagsV344ApplyCloseoutToFinals?.(p,{notify:true,createMissing:true})).catch(e=>{console.error("V3.57 closeout -> FINAL",e);try{showToast("⚠ ĐÃ NHẬN KẾT SỔ NHƯNG CHƯA GHI ĐƯỢC VÀO FINAL.")}catch(_){}});
+    if(role==="CBTT"||role==="AD")void Promise.resolve(window.sagsV344ApplyCloseoutToFinals?.(p,{notify:true,createMissing:true})).catch(e=>{console.error("V3.58 closeout -> FINAL",e);try{showToast("⚠ ĐÃ NHẬN KẾT SỔ NHƯNG CHƯA GHI ĐƯỢC VÀO FINAL.")}catch(_){}});
     const no=Math.max(1,Number(p.closeoutNo||p.revisionNo||1)||1),changes=Array.isArray(p.changeSummary)?p.changeSummary:[];
     const hasFinal=(role==="CBTT"||role==="AD")?markFinalPending(p):false;
     const unchanged=no>=2&&!changes.length;
@@ -24470,7 +24503,7 @@ window.openCamScanner=openCamScanner;
 
 
 
-<script src="./app.js?v=V3.57" data-phase="tools"></script>
+<script src="./app.js?v=V3.58" data-phase="tools"></script>
 <script id="v173-quick-time">
 (function(){
   "use strict";
@@ -26526,7 +26559,7 @@ window.openCamScanner=openCamScanner;
 }
 </style>
 
-<script src="./app.js?v=V3.57" data-phase="flight"></script>
+<script src="./app.js?v=V3.58" data-phase="flight"></script>
 <script id="v191IOSInteractionFix">
 (()=>{
   'use strict';
@@ -26790,7 +26823,7 @@ window.openCamScanner=openCamScanner;
 })();
 </script>
 
-<script src="./app.js?v=V3.57" data-phase="control"></script>
+<script src="./app.js?v=V3.58" data-phase="control"></script>
 
 <style id="v330-group-permission-style">
 #v330GroupPermPanel{margin:12px 0 8px;padding:11px;border:1px solid #cbd9e6;border-radius:12px;background:#f7fbff;box-sizing:border-box}
@@ -26843,7 +26876,7 @@ window.openCamScanner=openCamScanner;
 (function(root){
   'use strict';
   if(root.__SAGS_V338_DOSSIER_LOADED)return;root.__SAGS_V338_DOSSIER_LOADED=true;
-  const BUILD='V3.57-20260822-01', ROOT='flight_records';
+  const BUILD='V3.58-20260822-02', ROOT='flight_records';
   const S=v=>String(v??'').trim(), U=v=>S(v).toUpperCase(), safe=v=>S(v).replace(/[.#$\[\]\/]/g,'_');
   const normFlight=v=>U(v).replace(/[^A-Z0-9]/g,'');
   const clone=v=>{try{return JSON.parse(JSON.stringify(v))}catch(_){return v}};
@@ -26947,7 +26980,7 @@ window.openCamScanner=openCamScanner;
 (function(root){
 'use strict';
 if(root.__SAGS_V339_APPROVAL_LOADED)return;root.__SAGS_V339_APPROVAL_LOADED=true;
-const BUILD='V3.57-20260822-01',KIND='sags_internal_approval_v339',CLAIM_MS=5*60*1000,POOL='approval_pool_v339',EVENTS='approval_events_v339';
+const BUILD='V3.58-20260822-02',KIND='sags_internal_approval_v339',CLAIM_MS=5*60*1000,POOL='approval_pool_v339',EVENTS='approval_events_v339';
 const S=v=>String(v??'').trim(),U=v=>S(v).toUpperCase(),now=()=>Date.now(),clone=v=>{try{return JSON.parse(JSON.stringify(v))}catch(_){return v}},safe=v=>typeof sagsV470Safe==='function'?sagsV470Safe(S(v)):S(v).replace(/[^A-Za-z0-9_.-]+/g,'_'),esc=v=>S(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const actor=()=>typeof currentActor==='function'?currentActor():{username:S(currentUserProfile?.username),name:S(currentUserProfile?.name),role:S(currentRole)};
 const user=()=>typeof normalizePersonalUsername==='function'?normalizePersonalUsername(currentUserProfile?.username||''):S(currentUserProfile?.username).toLowerCase();
@@ -27014,10 +27047,10 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })(window);
 </script>
 
-<script src="./action-center-v342.js?v=V3.57"></script>
-<script src="./flight-workspace-documents-v350.js?v=V3.57"></script>
-<script src="./compact-toolbar-v351.js?v=V3.57"></script>
-<script src="./closeout-final-autofill-v344.js?v=V3.57"></script>
+<script src="./action-center-v342.js?v=V3.58"></script>
+<script src="./flight-workspace-documents-v350.js?v=V3.58"></script>
+<script src="./compact-toolbar-v351.js?v=V3.58"></script>
+<script src="./closeout-final-autofill-v344.js?v=V3.58"></script>
 
 </body>
 </html>

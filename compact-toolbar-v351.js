@@ -1,4 +1,4 @@
-/* E-REPORT/SAGS V3.57 · Mobile-first compact interface with two-row toolbar.
+/* E-REPORT/SAGS V3.58 · Mobile-first compact interface with two-row toolbar.
  * Presentation-only module: it does not read or write Firebase and it keeps
  * every existing button handler, permission check and business flow unchanged.
  */
@@ -7,7 +7,7 @@
 if(root.__SAGS_V357_MOBILE_UI_LOADED)return;
 root.__SAGS_V357_MOBILE_UI_LOADED=true;
 
-const BUILD="V3.57-20260822-01";
+const BUILD="V3.58-20260822-02";
 
 function ensureStyle(){
   if(document.getElementById("v351CompactToolbarStyle"))return;
@@ -475,7 +475,7 @@ new MutationObserver(queueArrange).observe(document.documentElement,{childList:t
 root.__SAGS_V351_COMPACT_TOOLBAR_BUILD=BUILD;
 root.__SAGS_V356_MOBILE_UI_BUILD=BUILD;
 root.__SAGS_V357_MOBILE_UI_BUILD=BUILD;
-root.__SAGS_V351_COMPACT_TOOLBAR_HDSD="V3.57: Thanh công cụ điện thoại chia thành 2 hàng. Hàng trên chứa tài khoản và thao tác của biểu mẫu đang làm; hàng dưới chứa các chức năng điều hướng. Mỗi hàng chỉ cuộn ngang khi thật sự thiếu chỗ, giảm quãng vuốt so với một hàng dài. Các tối ưu mobile-first V3.56 được giữ nguyên; không đổi quyền, handler hay dữ liệu Firebase.";
+root.__SAGS_V351_COMPACT_TOOLBAR_HDSD="V3.58: Thanh công cụ điện thoại chia thành 2 hàng. Hàng trên chứa tài khoản và thao tác của biểu mẫu đang làm; hàng dưới chứa các chức năng điều hướng. Mỗi hàng chỉ cuộn ngang khi thật sự thiếu chỗ, giảm quãng vuốt so với một hàng dài. Các tối ưu mobile-first V3.56 được giữ nguyên; không đổi quyền, handler hay dữ liệu Firebase.";
 root.__SAGS_V356_MOBILE_UI_HDSD=root.__SAGS_V351_COMPACT_TOOLBAR_HDSD;
 root.__SAGS_V357_MOBILE_UI_HDSD=root.__SAGS_V351_COMPACT_TOOLBAR_HDSD;
 })(typeof window!=="undefined"?window:globalThis);
