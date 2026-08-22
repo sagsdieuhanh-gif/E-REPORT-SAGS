@@ -27,7 +27,11 @@
         }
       },
       "activity": {},
-      "cross_state": {},
+      "cross_state": {
+        ".indexOn": [
+          "updatedAtMs"
+        ]
+      },
       "closeout_events_v348": {
         ".indexOn": [
           "eventAtMs"

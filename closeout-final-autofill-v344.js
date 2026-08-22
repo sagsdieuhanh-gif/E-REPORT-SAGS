@@ -9,7 +9,7 @@
 if(root.__SAGS_V344_CLOSEOUT_FINAL_LOADED)return;
 root.__SAGS_V344_CLOSEOUT_FINAL_LOADED=true;
 
-const BUILD="V3.49-20260822-01";
+const BUILD="V3.50-20260822-01";
 const INDEX_ROOT="closeout_by_flight_v344";
 const EVENTS_ROOT="closeout_events_v348";
 const INBOX_KEY="sagsCloseoutInboxV121";
@@ -139,7 +139,7 @@ function installSignalMirrorHook(){
             sourceDeviceId:S(value?.sourceDeviceId),sourceUser:S(value?.sourceUser),
             sourceRole:S(value?.sourceRole),includeLatest:false
           });
-        }catch(e){console.info("V3.49 publish approved closeout",e?.message||e)}
+        }catch(e){console.info("V3.50 publish approved closeout",e?.message||e)}
         return out;
       };
       setWrap.__v344CloseoutMirror=true;ref.set=setWrap;
@@ -152,6 +152,6 @@ function install(){installSignalMirrorHook();installHooks();setTimeout(()=>boots
 install();
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>setTimeout(install,80),{once:true});else setTimeout(install,80);root.addEventListener("pageshow",()=>setTimeout(install,180),{passive:true});root.addEventListener("online",()=>setTimeout(()=>bootstrapSync({notify:false}),300),{passive:true});
 root.__SAGS_V344_BUILD=BUILD;
-root.__SAGS_V344_HDSD="V3.49: Sau duyệt, KẾT SỔ phát qua hàng sự kiện bền cho ĐH/CBTT và được lưu vào trung tâm GỬI / NHẬN để mở lại đúng revision. CBTT vẫn tự tạo/điền FINAL nhưng không đè số đã sửa và không đổi FINAL đã gửi.";
+root.__SAGS_V344_HDSD="V3.50: Sau duyệt, KẾT SỔ phát qua hàng sự kiện bền cho ĐH/CBTT và được liên kết vào hồ sơ mẹ của chuyến để mở lại đúng revision. CBTT vẫn tự tạo/điền FINAL nhưng không đè số đã sửa và không đổi FINAL đã gửi.";
 root.__SAGS_V344_TEST__={payloadDate,allPayloadFlights,targetFlights,payloadValues,fieldMap,formForPayload,matches,recordIdentity,applyRecord,ensureFinalRecord,payloadKey};
 })(typeof window!=="undefined"?window:globalThis);
