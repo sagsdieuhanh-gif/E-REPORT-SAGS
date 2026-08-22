@@ -2172,7 +2172,7 @@ body.role-viewer #ffSendBtn{
 </div>
 <div id="rsOverdueHost"></div>
 
-<script src="./app.js?v=V3.53" data-phase="qr"></script>
+<script src="./app.js?v=V3.55" data-phase="qr"></script>
 <style>
 /* ===== V6.3.5 FINAL RECEIVER SCROLL + PERFORMANCE ===== */
 #finalFormsModal{
@@ -3051,7 +3051,7 @@ user-select:none;-webkit-user-select:none;touch-action:none;-webkit-tap-highligh
   </div>
 </div>
 
-<div id="buildMarker">V3.53</div>
+<div id="buildMarker">V3.55</div>
 <div aria-live="polite" id="currentFerryFlag"><span class="dot"></span><span id="currentFerryFlagText">FERRY</span></div>
 <div class="toolbar compact-main-toolbar">
 <div class="badge">PĐH SAGS-CXR</div>
@@ -3100,15 +3100,15 @@ user-select:none;-webkit-user-select:none;touch-action:none;-webkit-tap-highligh
 <button onclick="closeUpdateInfo()" aria-label="Đóng" style="border:0;background:#eee;border-radius:50%;width:34px;height:34px;font-size:21px;line-height:30px">×</button>
 </div>
 <div style="padding:11px 12px;border:1px solid #b7d7ef;border-radius:11px;background:#eef7ff">
-<p style="margin:0 0 6px;color:#075985"><b>V3.53 · 22/08/2026 — SỬA LỖI ĐỒNG BỘ DAILY ROSTER</b></p>
-<p style="margin:4px 0">• Sửa lỗi Firebase báo đường dẫn <b>assignments</b> là cha của <b>assignments/&lt;id&gt;/active</b>.</p>
-<p style="margin:4px 0">• Phân công mới được ghi theo từng assignment ngang hàng, không còn ghi đè cả khối assignments.</p>
-<p style="margin:4px 0">• Assignment cũ vẫn được đánh dấu ROSTER_REMOVED; assignment mới và Flight Workspace được tạo bình thường.</p>
-<p style="margin:4px 0">• Giữ nguyên mốc bắt đầu mới của CẦN XỬ LÝ từ bản V3.52.</p>
+<p style="margin:0 0 6px;color:#075985"><b>V3.55 · 22/08/2026 — BẮT BUỘC KHỚP A/C REG</b></p>
+<p style="margin:4px 0">• KẾT SỔ chỉ tự điền FINAL khi trùng đủ <b>ngày khai thác + chuyến đi + A/C Reg</b>.</p>
+<p style="margin:4px 0">• Cùng ngày và chuyến nhưng Reg khác hoặc thiếu Reg sẽ cảnh báo và không tự điền, không tự tạo tờ trùng.</p>
+<p style="margin:4px 0">• A/C Type không phải khóa ghép và không bắt buộc nhập. Hệ thống chỉ tra Fleet theo A/C Reg để chọn mẫu VJ khi cần tạo FINAL mới.</p>
+<p style="margin:4px 0">• Thêm index bền theo ngày/chuyến/Reg; vẫn đọc được index cũ nhưng luôn xác minh lại Reg trước khi dùng.</p>
 </div>
 <details style="margin-top:10px;padding:9px 11px;border:1px solid #dbe4eb;border-radius:10px;background:#fafcfd">
 <summary style="cursor:pointer;font-weight:800;color:#334155">Lưu ý sau khi cập nhật</summary>
-<p style="margin:8px 0 0">Dữ liệu hồ sơ nghiệp vụ trên Firebase không bị xóa. Chỉ cập nhật khi người dùng bấm CẬP NHẬT và chờ nhãn góc trái hiện V3.53.</p>
+<p style="margin:8px 0 0">Dữ liệu hồ sơ nghiệp vụ trên Firebase không bị xóa. Chỉ cập nhật khi người dùng bấm CẬP NHẬT và chờ nhãn góc trái hiện V3.55.</p>
 </details>
 <button onclick="closeUpdateInfo()" style="width:100%;margin-top:12px;border:0;border-radius:10px;padding:10px 14px;background:#0b67b2;color:#fff;font-weight:800">ĐÓNG</button>
 </div>
@@ -4080,7 +4080,7 @@ user-select:none;-webkit-user-select:none;touch-action:none;-webkit-tap-highligh
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
-<script src="./app.js?v=V3.53" data-phase="config"></script>
+<script src="./app.js?v=V3.55" data-phase="config"></script>
 <script>
 let suppressModalClickUntil=0;
 function armModalGhostClickBlock(ms=650){
@@ -12095,8 +12095,8 @@ try {
   alert("Lỗi JavaScript: "+err.message);
 }
 
-const APP_BUILD_VERSION="V3.53-20260822-01";
-const APP_DISPLAY_VERSION="V3.53";
+const APP_BUILD_VERSION="V3.55-20260822-01";
+const APP_DISPLAY_VERSION="V3.55";
 
 // V4.21 — SAFE UPDATE SAVE
 // Before switching to a newly installed app version, force-save all current
@@ -17891,8 +17891,8 @@ setTimeout(()=>{try{syncVJHeaderPatch(ffCurrent||"");}catch(e){}},700);
 
 
 /* ===== PAX CROSS-CHECK TEST =====
-   Ghép tờ bằng DATE + FLIGHT.
-   A/C REG chỉ là thông tin xác nhận phụ, KHÔNG dùng để tự thay số.
+   Ghép tờ bằng DATE + FLIGHT + A/C REG.
+   A/C TYPE không phải khóa ghép và không bắt buộc.
    So sánh: FSAGS09 finalADL/finalCHD/finalINF <-> FINAL ADL/CHD/INF.
    Không có bất kỳ lệnh nào ghi đè dữ liệu sau khi so sánh.
 */
@@ -17935,6 +17935,7 @@ function finalIdentityForCompare(rec){
     rec,
     dateToken:paxNormDate(d.date),
     flight:paxNormFlight(d.flight),
+    reg:String(d.acreg||rec.acRegToken||"").toUpperCase().replace(/[^A-Z0-9]/g,""),
     pax:finalPaxFromData(rec.form,d),
     data:d
   };
@@ -17949,6 +17950,7 @@ function fs09IdentityForCompare(rec){
     rec,
     dateToken:paxNormDate(st.f09_date),
     flights,
+    reg:String(st.f09_regn||rec.acRegToken||"").toUpperCase().replace(/[^A-Z0-9]/g,""),
     pax:{
       adl:paxVal(st.f09_finalADL),
       chd:paxVal(st.f09_finalCHD),
@@ -17958,20 +17960,20 @@ function fs09IdentityForCompare(rec){
   };
 }
 function findFS09ForFinal(finalInfo){
-  if(!finalInfo?.dateToken||!finalInfo?.flight)return null;
+  if(!finalInfo?.dateToken||!finalInfo?.flight||!finalInfo?.reg)return null;
   for(const rec of readFS09SheetList()){
     const x=fs09IdentityForCompare(rec);
     if(!x?.dateToken||x.dateToken!==finalInfo.dateToken)continue;
-    if(x.flights.includes(finalInfo.flight))return x;
+    if(x.flights.includes(finalInfo.flight)&&x.reg===finalInfo.reg)return x;
   }
   return null;
 }
 function findFinalForFS09(fsInfo){
-  if(!fsInfo?.dateToken||!fsInfo?.flights?.length)return null;
+  if(!fsInfo?.dateToken||!fsInfo?.flights?.length||!fsInfo?.reg)return null;
   for(const rec of readFinalSheetList()){
     const x=finalIdentityForCompare(rec);
     if(!x?.dateToken||x.dateToken!==fsInfo.dateToken)continue;
-    if(x.flight && fsInfo.flights.includes(x.flight))return x;
+    if(x.flight&&fsInfo.flights.includes(x.flight)&&x.reg===fsInfo.reg)return x;
   }
   return null;
 }
@@ -18401,11 +18403,12 @@ function optimizedFinalMatchesThisDevice(payload){
     const pFlight=paxNormFlight
       ? paxNormFlight(payload.identity?.flightToken||"")
       : String(payload.identity?.flightToken||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
+    const pReg=String(payload.identity?.acRegToken||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
 
-    if(!pDate || !pFlight)return false;
+    if(!pDate||!pFlight||!pReg)return false;
 
-    /* PRIMARY MATCH = DATE + FLIGHT.
-       A/C REG chỉ để hiển thị/xác nhận thêm, không chặn popup.
+    /* PRIMARY MATCH = DATE + FLIGHT + A/C REG.
+       A/C TYPE không phải khóa ghép.
        Duyệt tất cả Chuyến/Ramp đã lưu trên máy nhận. */
     for(const meta of readFlightSessionList()){
       const env=readFlightSessionEnvelope(meta.id);
@@ -18417,8 +18420,9 @@ function optimizedFinalMatchesThisDevice(payload){
       const flights=Array.isArray(identity?.flights)
         ? identity.flights.map(x=>String(x||"").toUpperCase().replace(/[^A-Z0-9]/g,""))
         : [];
+      const acReg=String(identity?.acRegToken||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
 
-      if(dateToken===pDate && flights.includes(pFlight))return true;
+      if(dateToken===pDate&&flights.includes(pFlight)&&acReg===pReg)return true;
     }
 
   }catch(e){
@@ -24022,10 +24026,10 @@ window.openCamScanner=openCamScanner;
   setTimeout(()=>{try{if(window.currentRole)window.v114ApplyRoleHomeBackground();}catch(_){}},500);
 })();
 </script>
-<script type="module" src="./ai.js?v=V3.53"></script>
+<script type="module" src="./ai.js?v=V3.55"></script>
 
 
-<script src="./app.js?v=V3.53" data-phase="archive"></script>
+<script src="./app.js?v=V3.55" data-phase="archive"></script>
 <script id="v120-build02-fixes">
 /* V1.20 BUILD 02 — background persistence, VHTTB, per-account usage detail, progress dedupe. */
 (function(){
@@ -24081,7 +24085,7 @@ window.openCamScanner=openCamScanner;
 <script id="v121-closeout-validation">
 /* V1.27 AI · keeps V1.23+ KẾT SỔ validation; AI CROSSCHECK is scoped to root fields only. */
 (function(){
-  const V121_BUILD="V3.50-20260822-01";
+  const V121_BUILD="V3.55-20260822-01";
   const V121_INBOX_KEY="sagsCloseoutInboxV121";
   const V121_RTDB_PATH="closeout/latest";
   const V348_RTDB_EVENTS_PATH="closeout_events_v348";
@@ -24217,7 +24221,7 @@ window.openCamScanner=openCamScanner;
   function closeoutCtx(payloadOrState){
     const isPayload=!!payloadOrState?.f09, f=isPayload?(payloadOrState.f09||{}):(payloadOrState||{}),id=isPayload?(payloadOrState.identity||{}):{};
     const flights=isPayload?(Array.isArray(id.flights)?id.flights:[]): [f.f09_fltAfter,f.f09_fltBefore].map(normFlight).filter(Boolean);
-    const flight=normFlight(flights[0]||f.f09_fltAfter||f.f09_fltBefore||"");
+    const flight=normFlight(f.f09_fltAfter||flights[flights.length-1]||f.f09_fltBefore||"");
     return {kind:"KẾT SỔ",carrier:carrierFromFlight(flight),flight,dateToken:isPayload?String(id.dateToken||dateTok(f.f09_date)):dateTok(f.f09_date),reg:String((isPayload?id.acRegToken:"")||f.f09_regn||"").toUpperCase(),adl:num(f.f09_finalADL),chd:num(f.f09_finalCHD),inf:num(f.f09_finalINF),bagPcs:num(f.f09_finalBagP),bagKg:num(f.f09_finalBagW),f09:f};
   }
   const V123_CLOSEOUT_ROWS=[
@@ -24261,16 +24265,17 @@ window.openCamScanner=openCamScanner;
 
   function inboxLoad(){try{return JSON.parse(localStorage.getItem(sagsOwnedKey(V121_INBOX_KEY))||"{}")||{};}catch(e){return {};}}
   function inboxSave(x){try{localStorage.setItem(sagsOwnedKey(V121_INBOX_KEY),JSON.stringify(x||{}));}catch(e){}}
-  function closeoutKeys(payload){const id=payload?.identity||{},dt=String(id.dateToken||dateTok(payload?.f09?.f09_date)),fs=(Array.isArray(id.flights)?id.flights:[payload?.f09?.f09_fltBefore,payload?.f09?.f09_fltAfter]).map(normFlight).filter(Boolean);return [...new Set(fs)].map(f=>dt+"|"+f).filter(k=>!k.startsWith("|"));}
+  function closeoutDeparture(payload){const id=payload?.identity||{},fs=(Array.isArray(id.flights)?id.flights:[]).map(normFlight).filter(Boolean);return normFlight(payload?.f09?.f09_fltAfter||fs[fs.length-1]||"");}
+  function closeoutKeys(payload){const id=payload?.identity||{},dt=String(id.dateToken||dateTok(payload?.f09?.f09_date)),rg=normReg(id.acRegToken||payload?.f09?.f09_regn),fs=(Array.isArray(id.flights)?id.flights:[payload?.f09?.f09_fltBefore,payload?.f09?.f09_fltAfter]).map(normFlight).filter(Boolean),keys=[];for(const f of [...new Set(fs)]){if(dt&&f)keys.push(dt+"|"+f);if(dt&&f&&rg)keys.push(dt+"|"+f+"|"+rg)}return [...new Set(keys)];}
   function storeCloseout(payload){if(!payload)return;const box=inboxLoad(),no=Math.max(1,Number(payload.closeoutNo||payload.revisionNo||1)||1);for(const k of closeoutKeys(payload)){const old=box[k]||{versions:[]};let versions=Array.isArray(old.versions)?old.versions:[];versions=versions.filter(x=>Number(x?.closeoutNo||x?.revisionNo||0)!==no);versions.push(payload);versions.sort((a,b)=>Number(a.closeoutNo||a.revisionNo||0)-Number(b.closeoutNo||b.revisionNo||0));box[k]={latest:payload,versions:versions.slice(-5),updatedAtMs:Number(payload.submittedAtMs||Date.now())};}inboxSave(box);}
-  function latestCloseoutForFinal(c){if(!c?.dateToken||!c?.flight)return null;return inboxLoad()?.[c.dateToken+"|"+c.flight]?.latest||null;}
+  function latestCloseoutForFinal(c){const rg=normReg(c?.reg);if(!c?.dateToken||!c?.flight||!rg)return null;const box=inboxLoad(),p=box?.[c.dateToken+"|"+c.flight+"|"+rg]?.latest||box?.[c.dateToken+"|"+c.flight]?.latest||null;return p&&closeoutDeparture(p)===normFlight(c.flight)&&normReg(p?.identity?.acRegToken||p?.f09?.f09_regn)===rg?p:null;}
 
   function compareFinalCloseout(c,p){
     if(!c||!p)return[];const k=closeoutCtx(p),rows=[
       ["ADL",k.adl,c.adl],["CHD",k.chd,c.chd],["INF",k.inf,c.inf],["BAG PCS",k.bagPcs,c.bagPcs],["BAG KG",k.bagKg,c.bagKg]
     ],out=[];
     for(const [label,a,b] of rows){if(a===null)continue;if(b===null||Math.abs(Number(a)-Number(b))>0.001)out.push({level:"critical",text:`KẾT SỔ ↔ FINAL · ${label}: ${fmt(a)} ↔ ${fmt(b)} · KHÔNG KHỚP.`});}
-    const kr=normReg(k.reg),fr=normReg(c.reg);if(kr&&fr&&kr!==fr)out.push({level:"critical",text:`KẾT SỔ ↔ FINAL · A/C REG: ${k.reg} ↔ ${c.reg} · KHÔNG KHỚP.`});
+    const kr=normReg(k.reg),fr=normReg(c.reg);if(!kr||!fr)out.push({level:"critical",text:`KẾT SỔ ↔ FINAL · THIẾU A/C REG · KHÔNG ĐỦ KHÓA ĐỐI CHIẾU.`});else if(kr!==fr)out.push({level:"critical",text:`KẾT SỔ ↔ FINAL · A/C REG: ${k.reg} ↔ ${c.reg} · KHÔNG KHỚP.`});
     return out;
   }
 
@@ -24314,7 +24319,7 @@ window.openCamScanner=openCamScanner;
     const no=Math.max(1,Number(payload?.closeoutNo||payload?.revisionNo||1)||1),id=payload?.identity||{},flight=(id.flights||[]).join(" / ")||"CHUYẾN",reg=id.acRegToken||payload?.f09?.f09_regn||"";
     let h=`<div><b>${esc(flight)}</b>${reg?' · A/C '+esc(reg):''} · KẾT SỔ LẦN ${no}</div>`;
     if(no>=2){if(changes.length)h+=`<div style="margin-top:9px"><b>CÁC TRƯỜNG THAY ĐỔI:</b></div>`+changes.slice(0,14).map(x=>`<div class="chg">${esc(x.label)}: <span>${esc(x.oldValue)}</span> → <span class="strong">${esc(x.newValue)}</span></div>`).join("")+(changes.length>14?`<div class="chg">+ ${changes.length-14} trường khác</div>`:"");else h+='<div class="chg">KẾT SỔ lần mới đã được gửi nhưng không phát hiện thay đổi giá trị trong dữ liệu so với lần trước.</div>';if(hasFinal)h+='<div class="chg"><span class="strong">⚠ FINAL CÙNG CHUYẾN ĐÃ CÓ TRÊN MÁY CBTT.</span><br>Kiểm tra/cập nhật FINAL theo KẾT SỔ mới; hệ thống không tự ghi đè FINAL.</div>';}
-    else h+='<div style="margin-top:9px">KẾT SỔ mới đã được PVHK gửi. FINAL CBTT cùng DATE + FLIGHT sẽ tự điền ADL/CHD/INF/BAG; ĐH nhận để biết trạng thái KẾT SỔ.</div>';
+    else h+='<div style="margin-top:9px">KẾT SỔ mới đã được PVHK gửi. FINAL CBTT chỉ tự điền khi trùng đủ DATE + FLIGHT ĐI + A/C REG; ĐH nhận để biết trạng thái KẾT SỔ.</div>';
     return h;
   }
 
@@ -24322,8 +24327,8 @@ window.openCamScanner=openCamScanner;
   function showNextPopup(){if(v121PopupCurrent||!v121PopupQueue.length)return;ensureUi();v121PopupCurrent=v121PopupQueue.shift();const p=document.getElementById("v121Popup"),card=document.getElementById("v121PopupCard"),head=document.getElementById("v121PopupHead"),body=document.getElementById("v121PopupBody"),open=document.getElementById("v121PopupOpen");card.className=v121PopupCurrent.severity==="info"?"info":"";head.textContent=v121PopupCurrent.title||"THÔNG BÁO";body.innerHTML=v121PopupCurrent.html||"";open.style.display=v121PopupCurrent.payload?"inline-flex":"none";p.classList.add("show");if(v121PopupCurrent.soundType&&!v121PopupCurrent.soundPlayed){v121PopupCurrent.soundPlayed=true;v181PlayCloseoutAudio(v121PopupCurrent.soundType);}}
   function v121ClosePopup(openIt){const item=v121PopupCurrent,p=document.getElementById("v121Popup");if(p)p.classList.remove("show");v121PopupCurrent=null;if(openIt&&item?.payload){try{fs09Incoming={payload:item.payload,sessionId:""};viewIncomingFSAGS09();}catch(e){console.warn("V1.21 open closeout",e);}}setTimeout(showNextPopup,60);}
 
-  function matchingFinals(payload){const dt=String(payload?.identity?.dateToken||""),flights=(payload?.identity?.flights||[]).map(normFlight);if(!dt||!flights.length)return[];const out=[];try{for(const rec of readFinalSheetList()){const f=finalIdentityForCompare(rec);if(f?.dateToken===dt&&flights.includes(f.flight))out.push(rec);}}catch(e){}return out;}
-  function markFinalPending(payload){const no=Math.max(1,Number(payload?.closeoutNo||payload?.revisionNo||1)||1);if(no<2)return false;let list=[];try{list=readFinalSheetList();}catch(e){return false;}let changed=false,needsUpdate=false;const dt=String(payload?.identity?.dateToken||""),flights=(payload?.identity?.flights||[]).map(normFlight);for(const r of list){const f=finalIdentityForCompare(r);if(f?.dateToken!==dt||!flights.includes(f.flight))continue;const mismatches=compareFinalCloseout(finalCtx(r.form,f.data||{}),payload);if(mismatches.length){needsUpdate=true;r.ksPendingRevisionV121=no;r.ksPendingAtMsV121=Number(payload.submittedAtMs||Date.now());r.ksPendingChangesV121=(payload.changeSummary||[]).slice(0,20);changed=true;}else if(r.ksPendingRevisionV121){delete r.ksPendingRevisionV121;delete r.ksPendingAtMsV121;delete r.ksPendingChangesV121;changed=true;}}if(changed)try{writeFinalSheetList(list);}catch(e){}return needsUpdate;}
+  function matchingFinals(payload){const dt=String(payload?.identity?.dateToken||""),dep=closeoutDeparture(payload),rg=normReg(payload?.identity?.acRegToken||payload?.f09?.f09_regn);if(!dt||!dep||!rg)return[];const out=[];try{for(const rec of readFinalSheetList()){const f=finalIdentityForCompare(rec);if(f?.dateToken===dt&&f.flight===dep&&normReg(f.reg)===rg)out.push(rec);}}catch(e){}return out;}
+  function markFinalPending(payload){const no=Math.max(1,Number(payload?.closeoutNo||payload?.revisionNo||1)||1);if(no<2)return false;let list=[];try{list=readFinalSheetList();}catch(e){return false;}let changed=false,needsUpdate=false;const dt=String(payload?.identity?.dateToken||""),dep=closeoutDeparture(payload),rg=normReg(payload?.identity?.acRegToken||payload?.f09?.f09_regn);if(!dt||!dep||!rg)return false;for(const r of list){const f=finalIdentityForCompare(r);if(f?.dateToken!==dt||f.flight!==dep||normReg(f.reg)!==rg)continue;const mismatches=compareFinalCloseout(finalCtx(r.form,f.data||{}),payload);if(mismatches.length){needsUpdate=true;r.ksPendingRevisionV121=no;r.ksPendingAtMsV121=Number(payload.submittedAtMs||Date.now());r.ksPendingChangesV121=(payload.changeSummary||[]).slice(0,20);changed=true;}else if(r.ksPendingRevisionV121){delete r.ksPendingRevisionV121;delete r.ksPendingAtMsV121;delete r.ksPendingChangesV121;changed=true;}}if(changed)try{writeFinalSheetList(list);}catch(e){}return needsUpdate;}
 
   async function publishCloseout(payload,docId){
     if(typeof sagsV470Ref!=="function")return false;try{const eventAtMs=Date.now(),eventId=[docId,"R"+(payload.closeoutNo||1),eventAtMs].join("|");await sagsV470Ref(V121_RTDB_PATH).set({kind:"sags_closeout_signal_v121",eventId,eventAtMs,docId:String(docId||""),closeoutNo:Number(payload.closeoutNo||1),sourceDeviceId:String(payload.sourceDeviceId||""),sourceUser:normalizePersonalUsername(currentUserProfile?.username||""),sourceRole:String(currentRole||""),payload:(typeof cloneSafe==="function"?cloneSafe(payload):JSON.parse(JSON.stringify(payload)))});return true;}catch(e){console.warn("V1.21 closeout RTDB",e);return false;}
@@ -24411,7 +24416,7 @@ window.openCamScanner=openCamScanner;
     storeCloseout(p);
     v349StoreReceivedCloseout(d,p);
     try{attachIncomingFS09(p);}catch(e){console.info("V3.50 attach closeout",e?.message||e);}
-    if(role==="CBTT"||role==="AD")void window.sagsV344ApplyCloseoutToFinals?.(p,{notify:true,createMissing:true});
+    if(role==="CBTT"||role==="AD")void Promise.resolve(window.sagsV344ApplyCloseoutToFinals?.(p,{notify:true,createMissing:true})).catch(e=>{console.error("V3.55 closeout -> FINAL",e);try{showToast("⚠ ĐÃ NHẬN KẾT SỔ NHƯNG CHƯA GHI ĐƯỢC VÀO FINAL.")}catch(_){}});
     const no=Math.max(1,Number(p.closeoutNo||p.revisionNo||1)||1),changes=Array.isArray(p.changeSummary)?p.changeSummary:[];
     const hasFinal=(role==="CBTT"||role==="AD")?markFinalPending(p):false;
     const unchanged=no>=2&&!changes.length;
@@ -24465,7 +24470,7 @@ window.openCamScanner=openCamScanner;
 
 
 
-<script src="./app.js?v=V3.53" data-phase="tools"></script>
+<script src="./app.js?v=V3.55" data-phase="tools"></script>
 <script id="v173-quick-time">
 (function(){
   "use strict";
@@ -26521,7 +26526,7 @@ window.openCamScanner=openCamScanner;
 }
 </style>
 
-<script src="./app.js?v=V3.53" data-phase="flight"></script>
+<script src="./app.js?v=V3.55" data-phase="flight"></script>
 <script id="v191IOSInteractionFix">
 (()=>{
   'use strict';
@@ -26785,7 +26790,7 @@ window.openCamScanner=openCamScanner;
 })();
 </script>
 
-<script src="./app.js?v=V3.53" data-phase="control"></script>
+<script src="./app.js?v=V3.55" data-phase="control"></script>
 
 <style id="v330-group-permission-style">
 #v330GroupPermPanel{margin:12px 0 8px;padding:11px;border:1px solid #cbd9e6;border-radius:12px;background:#f7fbff;box-sizing:border-box}
@@ -26838,7 +26843,7 @@ window.openCamScanner=openCamScanner;
 (function(root){
   'use strict';
   if(root.__SAGS_V338_DOSSIER_LOADED)return;root.__SAGS_V338_DOSSIER_LOADED=true;
-  const BUILD='V3.50-20260822-01', ROOT='flight_records';
+  const BUILD='V3.55-20260822-01', ROOT='flight_records';
   const S=v=>String(v??'').trim(), U=v=>S(v).toUpperCase(), safe=v=>S(v).replace(/[.#$\[\]\/]/g,'_');
   const normFlight=v=>U(v).replace(/[^A-Z0-9]/g,'');
   const clone=v=>{try{return JSON.parse(JSON.stringify(v))}catch(_){return v}};
@@ -26854,11 +26859,12 @@ window.openCamScanner=openCamScanner;
   function isoDate(v){const t=tokenDate(v);return t?t.slice(0,4)+'-'+t.slice(4,6)+'-'+t.slice(6,8):S(v)}
   function userDate(v){const t=tokenDate(v);return t?t.slice(6,8)+'/'+t.slice(4,6)+'/'+t.slice(0,4):S(v)}
   function hhmm(v){const d=S(v).replace(/\D/g,'');if(d.length!==4)return '';const h=+d.slice(0,2),m=+d.slice(2);return h<24&&m<60?pad2(h)+':'+pad2(m):''}
-  function flightTokens(v){const out=[],raw=U(v).replace(/[\/]+/g,' ');let prefix='';for(const p0 of raw.split(/\s+/).filter(Boolean)){const p=p0.replace(/[^A-Z0-9]/g,'');let m=/^([A-Z0-9]{2,3}?)(\d{1,5})$/.exec(p);if(m&&/[A-Z]/.test(m[1])){prefix=m[1];out.push(prefix+m[2]);continue}m=/^(\d{1,5})$/.exec(p);if(m&&prefix)out.push(prefix+m[1])}return [...new Set(out.map(normFlight).filter(Boolean))]}
-  function carrierOf(item){const f=normFlight(item?.depFlight||item?.arrFlight||item?.flightRaw||item?.flightName);return f.startsWith('VU')?'VU':f.startsWith('9G')?'9G':(f.startsWith('VJ')||f.startsWith('VZ'))?'VJ':''}
+  function flightTokens(v){const out=[],raw=U(v).replace(/[\/]+/g,' ');let prefix='';for(const p0 of raw.split(/\s+/).filter(Boolean)){const p=p0.replace(/[^A-Z0-9]/g,'');let m=/^([A-Z0-9]{2,3}?)(\d{1,5})$/.exec(p);if(m&&/[A-Z]/.test(m[1])){prefix=m[1];out.push(prefix+m[2]);continue}if(/^[A-Z0-9]{2,3}$/.test(p)&&/[A-Z]/.test(p)){prefix=p;continue}m=/^(\d{1,5})$/.exec(p);if(m&&prefix)out.push(prefix+m[1])}return [...new Set(out.map(normFlight).filter(Boolean))]}
+  function departureFlightOf(item){const direct=flightTokens(item?.depFlight||item?.flightToken);if(direct.length)return direct[direct.length-1];const raw=flightTokens(item?.flightRaw||item?.flightName);if(raw.length)return raw[raw.length-1];const arr=flightTokens(item?.arrFlight);return arr[arr.length-1]||''}
+  function carrierOf(item){const f=departureFlightOf(item);return f.startsWith('VU')?'VU':f.startsWith('9G')?'9G':(f.startsWith('VJ')||f.startsWith('VZ'))?'VJ':''}
   function fleetType(reg){try{const k=typeof sagsNormalizeRegKey==='function'?sagsNormalizeRegKey(reg):U(reg).replace(/[^A-Z0-9]/g,'');const d=typeof sagsDynamicFleetCache==='function'?sagsDynamicFleetCache():{};return U(d?.byReg?.[k]?.acType||d?.byReg?.[k]?.type||'')}catch(_){return ''}}
   function finalFormFor(item){const c=carrierOf(item);if(c==='VU')return 'VUfinal.png';if(c==='9G')return '9Gfinal.png';if(c!=='VJ')return '';const typ=U(item?.acType||fleetType(item?.acReg));if(/330|A330|WIDE|THÂN\s*RỘNG/.test(typ))return 'VJfinal2.png';if(/320|321|A320|A321|32N/.test(typ))return 'VJfinal.png';return ''}
-  function finalSeed(item,form){const dep=S(item?.depFlight||item?.arrFlight||item?.flightRaw),date=isoDate(item?.depFlightDate||item?.opDate||item?.date),reg=U(item?.acReg),type=U(item?.acType||fleetType(reg)),to=U(item?.route3),from='CXR';if(form==='VUfinal.png')return {flight:dep,sector1:from,sector2:to,date,acreg:reg};if(form==='9Gfinal.png')return {departure:from,arrival:to,flight:dep,acreg:reg,date};if(form==='VJfinal2.png')return {flight:dep,from,to,actype:type,acreg:reg,date};return {flight:dep,sector:to?(from+'-'+to):'',acreg:reg,date}}
+  function finalSeed(item,form){const dep=departureFlightOf(item),date=isoDate(item?.depFlightDate||item?.opDate||item?.date),reg=U(item?.acReg),type=U(item?.acType||fleetType(reg)),to=U(item?.route3),from='CXR';if(form==='VUfinal.png')return {flight:dep,sector1:from,sector2:to,date,acreg:reg};if(form==='9Gfinal.png')return {departure:from,arrival:to,flight:dep,acreg:reg,date};if(form==='VJfinal2.png')return {flight:dep,from,to,actype:type,acreg:reg,date};return {flight:dep,sector:to?(from+'-'+to):'',acreg:reg,date}}
 
   root.sagsV340EnsureFinalForRoster=async function(item,options={}){
     const form=finalFormFor(item),shouldOpen=options.open!==false;
@@ -26867,7 +26873,7 @@ window.openCamScanner=openCamScanner;
     const created=!rec;
     if(!rec){const id=makeFinalSheetId();rec={id,name:(S(item.depFlight||item.flightName||item.flightRaw)||'FINAL')+(airline?' · '+airline:' · CHỜ MẪU'),form:form||'',airline:airline||'CHỜ MẪU',flightSessionId:'',rosterAssignmentId:S(item.assignmentId),flightId:S(item.flightId),opDate:S(item.opDate),createdAt:now,updatedAt:now,autoCreatedV338:true,autoCreatedV340:true};list.push(rec)}
     if(form){rec.form=form;rec.airline=airline;rec.name=(S(item.depFlight||item.flightName||item.flightRaw)||'FINAL')+' · '+airline;rec.templatePendingV340=false;rec.templateResolvedAtMs=now}else{rec.airline='CHỜ MẪU';rec.name=(S(item.depFlight||item.flightName||item.flightRaw)||'FINAL')+' · CHỜ MẪU';rec.templatePendingV340=true;rec.templatePendingReason='WAITING_AC_TYPE_OR_SUPPORTED_CARRIER'}
-    rec.rosterAssignmentId=S(item.assignmentId);rec.flightId=S(item.flightId);rec.opDate=S(item.opDate);rec.flightToken=normFlight(item.depFlight||item.arrFlight||item.flightRaw);rec.dateToken=tokenDate(item.depFlightDate||item.opDate);rec.acRegToken=U(item.acReg).replace(/[^A-Z0-9]/g,'');rec.acTypeToken=U(item.acType||fleetType(item.acReg));rec.updatedAt=now;writeFinalSheetList(list);
+    rec.rosterAssignmentId=S(item.assignmentId);rec.flightId=S(item.flightId);rec.opDate=S(item.opDate);rec.flightToken=departureFlightOf(item);rec.dateToken=tokenDate(item.depFlightDate||item.opDate);rec.acRegToken=U(item.acReg).replace(/[^A-Z0-9]/g,'');rec.acTypeToken=U(item.acType||fleetType(item.acReg));rec.updatedAt=now;writeFinalSheetList(list);
     if(form){let all={};try{all=JSON.parse(localStorage.getItem(finalSheetDataKey(rec.id))||'{}')||{}}catch(_){all={}};const data=all[form]&&typeof all[form]==='object'?all[form]:{};for(const [k,v] of Object.entries(seed))if(S(v)&&!S(data[k]))data[k]=v;all[form]=data;localStorage.setItem(finalSheetDataKey(rec.id),JSON.stringify(all))}
     if(shouldOpen){try{activeFinalSheetId=rec.id;localStorage.setItem(sagsOwnedKey(FINAL_SHEET_ACTIVE_KEY),rec.id)}catch(_){}if(!form){try{root.openFinalSheetManager?.()}catch(_){}alert('Đã tạo tờ FINAL ở trạng thái CHỜ MẪU.\n\nVJ cần A/C Type/Fleet nhận diện A320/A321 hoặc A330. Hệ thống giữ tờ này và tự hoàn thiện khi có đủ dữ liệu, không tự đoán mẫu.');return {ok:true,created,pendingTemplate:true,record:rec}}openFinalSheetRecord(rec.id);setTimeout(installButtons,80)}
     return {ok:true,created,pendingTemplate:!form,record:rec};
@@ -26941,7 +26947,7 @@ window.openCamScanner=openCamScanner;
 (function(root){
 'use strict';
 if(root.__SAGS_V339_APPROVAL_LOADED)return;root.__SAGS_V339_APPROVAL_LOADED=true;
-const BUILD='V3.50-20260822-01',KIND='sags_internal_approval_v339',CLAIM_MS=5*60*1000,POOL='approval_pool_v339',EVENTS='approval_events_v339';
+const BUILD='V3.55-20260822-01',KIND='sags_internal_approval_v339',CLAIM_MS=5*60*1000,POOL='approval_pool_v339',EVENTS='approval_events_v339';
 const S=v=>String(v??'').trim(),U=v=>S(v).toUpperCase(),now=()=>Date.now(),clone=v=>{try{return JSON.parse(JSON.stringify(v))}catch(_){return v}},safe=v=>typeof sagsV470Safe==='function'?sagsV470Safe(S(v)):S(v).replace(/[^A-Za-z0-9_.-]+/g,'_'),esc=v=>S(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const actor=()=>typeof currentActor==='function'?currentActor():{username:S(currentUserProfile?.username),name:S(currentUserProfile?.name),role:S(currentRole)};
 const user=()=>typeof normalizePersonalUsername==='function'?normalizePersonalUsername(currentUserProfile?.username||''):S(currentUserProfile?.username).toLowerCase();
@@ -27008,10 +27014,10 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })(window);
 </script>
 
-<script src="./action-center-v342.js?v=V3.53"></script>
-<script src="./flight-workspace-documents-v350.js?v=V3.53"></script>
-<script src="./compact-toolbar-v351.js?v=V3.53"></script>
-<script src="./closeout-final-autofill-v344.js?v=V3.53"></script>
+<script src="./action-center-v342.js?v=V3.55"></script>
+<script src="./flight-workspace-documents-v350.js?v=V3.55"></script>
+<script src="./compact-toolbar-v351.js?v=V3.55"></script>
+<script src="./closeout-final-autofill-v344.js?v=V3.55"></script>
 
 </body>
 </html>
