@@ -2172,7 +2172,7 @@ body.role-viewer #ffSendBtn{
 </div>
 <div id="rsOverdueHost"></div>
 
-<script src="./app.js?v=V3.69" data-phase="qr"></script>
+<script src="./app.js?v=V3.70" data-phase="qr"></script>
 <style>
 /* ===== V6.3.5 FINAL RECEIVER SCROLL + PERFORMANCE ===== */
 #finalFormsModal{
@@ -3077,7 +3077,7 @@ body.v368-layout-mode .sheet{outline:2px dashed rgba(124,58,237,.35);outline-off
   </div>
 </div>
 
-<div id="buildMarker">V3.69</div>
+<div id="buildMarker">V3.70</div>
 <div aria-live="polite" id="currentFerryFlag"><span class="dot"></span><span id="currentFerryFlagText">FERRY</span></div>
 <div class="toolbar compact-main-toolbar">
 <div class="badge">PĐH SAGS-CXR</div>
@@ -3126,8 +3126,9 @@ body.v368-layout-mode .sheet{outline:2px dashed rgba(124,58,237,.35);outline-off
 <button onclick="closeUpdateInfo()" aria-label="Đóng" style="border:0;background:#eee;border-radius:50%;width:34px;height:34px;font-size:21px;line-height:30px">×</button>
 </div>
 <div style="padding:11px 12px;border:1px solid #b7d7ef;border-radius:11px;background:#eef7ff">
-<p style="margin:0 0 6px;color:#075985"><b>V3.69 · 22/08/2026 — CĂN CHỈNH 42.3 / 55.1 · CHỈ AD</b></p>
+<p style="margin:0 0 6px;color:#075985"><b>V3.70 · 22/08/2026 — KHUNG CĂN CHỈNH BÁM ĐÚNG VỊ TRÍ CHỮ</b></p>
 <p style="margin:4px 0">• <b>⚙ CĂN CHỈNH</b> FSAGS 42.3 và 55.1 chỉ hiển thị cho tài khoản <b>AD</b>. Nhân viên vẫn dùng layout đã lưu nhưng không thể mở/chỉnh/reset cấu hình.</p>
+<p style="margin:4px 0">• V3.70: khung căn chỉnh lấy trực tiếp bounding-box của chữ đang render, nên không còn tình trạng chữ một bên nhưng khung một bên.</p>
 <p style="margin:4px 0">• Bấm <b>LƯU</b> để giữ bố cục trên thiết bị. Cấu hình chỉ nằm trong localStorage, <b>không phát sinh Firestore Read/Write</b>.</p>
 <p style="margin:4px 0">• Có thể khôi phục riêng từng ô hoặc toàn bộ biểu mẫu về vị trí mặc định bất cứ lúc nào.</p>
 <p style="margin:4px 0">• Khi import lại cùng ngày, hệ thống so sánh từng assignment với roster đã có.</p>
@@ -3137,7 +3138,7 @@ body.v368-layout-mode .sheet{outline:2px dashed rgba(124,58,237,.35);outline-off
 </div>
 <details style="margin-top:10px;padding:9px 11px;border:1px solid #dbe4eb;border-radius:10px;background:#fafcfd">
 <summary style="cursor:pointer;font-weight:800;color:#334155">Lưu ý sau khi cập nhật</summary>
-<p style="margin:8px 0 0">Dữ liệu hồ sơ nghiệp vụ trên Firebase không bị xóa. Chỉ cập nhật khi người dùng bấm CẬP NHẬT và chờ nhãn góc trái hiện V3.69.</p>
+<p style="margin:8px 0 0">Dữ liệu hồ sơ nghiệp vụ trên Firebase không bị xóa. Chỉ cập nhật khi người dùng bấm CẬP NHẬT và chờ nhãn góc trái hiện V3.70.</p>
 </details>
 <button onclick="closeUpdateInfo()" style="width:100%;margin-top:12px;border:0;border-radius:10px;padding:10px 14px;background:#0b67b2;color:#fff;font-weight:800">ĐÓNG</button>
 </div>
@@ -4109,7 +4110,7 @@ body.v368-layout-mode .sheet{outline:2px dashed rgba(124,58,237,.35);outline-off
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
-<script src="./app.js?v=V3.69" data-phase="config"></script>
+<script src="./app.js?v=V3.70" data-phase="config"></script>
 <script>
 let suppressModalClickUntil=0;
 function armModalGhostClickBlock(ms=650){
@@ -7192,7 +7193,7 @@ function draw(){
 
 
   /* =========================================================
-     V3.69 — FSAGS 42.3 DOT-LINE DISPLAY ENGINE
+     V3.70 — FSAGS 42.3 DOT-LINE DISPLAY ENGINE
      IMPORTANT:
      - These printed rows are NOT ordinary input boxes. Their dotted guides
        sit inside the same visual row as the labels.
@@ -7455,7 +7456,7 @@ function draw(){
     continue;
   }
 
-  // V4.78 legacy DEP Remarks renderer (V3.69 handles this earlier via measured dot-line engine).
+  // V4.78 legacy DEP Remarks renderer (V3.70 handles this earlier via measured dot-line engine).
   // Safari/iOS intermittently fails to paint HTML inside SVG foreignObject after
   // the editor closes, even though state is saved and PDF export still contains it.
   // Render this one-line printed Remarks field directly as SVG <text> so live view
@@ -12242,8 +12243,8 @@ try {
   alert("Lỗi JavaScript: "+err.message);
 }
 
-const APP_BUILD_VERSION="V3.69-20260822-01";
-const APP_DISPLAY_VERSION="V3.69";
+const APP_BUILD_VERSION="V3.70-20260822-01";
+const APP_DISPLAY_VERSION="V3.70";
 
 // V4.21 — SAFE UPDATE SAVE
 // Before switching to a newly installed app version, force-save all current
@@ -21035,7 +21036,7 @@ function applyRoleUI(){
   // Nếu ứng dụng được mở từ QR Giao Ca, xử lý sau khi đã xác định tài khoản.
   setTimeout(tryOpenPendingHandoverDeepLink,120);
 
-  // V3.69: nút căn chỉnh 42.3 / 55.1 chỉ dành cho AD.
+  // V3.70: nút căn chỉnh 42.3 / 55.1 chỉ dành cho AD.
   try{if(typeof window.v368RefreshTuneButton==="function")window.v368RefreshTuneButton();}catch(e){}
 
   // V6.4.0: Sau đăng nhập KHÔNG tự mở bất kỳ màn chức năng nào.
@@ -24213,7 +24214,7 @@ window.openCamScanner=openCamScanner;
 <script type="module" src="./ai.js?v=V3.58"></script>
 
 
-<script src="./app.js?v=V3.69" data-phase="archive"></script>
+<script src="./app.js?v=V3.70" data-phase="archive"></script>
 <script id="v120-build02-fixes">
 /* V1.20 BUILD 02 — background persistence, VHTTB, per-account usage detail, progress dedupe. */
 (function(){
@@ -24654,7 +24655,7 @@ window.openCamScanner=openCamScanner;
 
 
 
-<script src="./app.js?v=V3.69" data-phase="tools"></script>
+<script src="./app.js?v=V3.70" data-phase="tools"></script>
 <script id="v173-quick-time">
 (function(){
   "use strict";
@@ -26710,7 +26711,7 @@ window.openCamScanner=openCamScanner;
 }
 </style>
 
-<script src="./app.js?v=V3.69" data-phase="flight"></script>
+<script src="./app.js?v=V3.70" data-phase="flight"></script>
 <script id="v191IOSInteractionFix">
 (()=>{
   'use strict';
@@ -26974,7 +26975,7 @@ window.openCamScanner=openCamScanner;
 })();
 </script>
 
-<script src="./app.js?v=V3.69" data-phase="control"></script>
+<script src="./app.js?v=V3.70" data-phase="control"></script>
 
 <style id="v330-group-permission-style">
 #v330GroupPermPanel{margin:12px 0 8px;padding:11px;border:1px solid #cbd9e6;border-radius:12px;background:#f7fbff;box-sizing:border-box}
@@ -27223,7 +27224,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 
 <script id="v368LayoutTuneScript">
 /* =========================================================
-   V3.69 — USER LAYOUT TUNER · FSAGS 42.3 / 55.1
+   V3.70 — USER LAYOUT TUNER · FSAGS 42.3 / 55.1
    Device-local only. No Firebase read/write.
    ========================================================= */
 (function(){
@@ -27241,6 +27242,28 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   function cfg(page,key,create=false){const id=k(page,key);if(!draft[id]&&create)draft[id]={};return draft[id]||null}
   function fieldFor(page,key){return (window.fields||fields||[]).find(f=>Number(f.page)===Number(page)&&String(f.key)===String(key))||null}
   function displayRect(f){const a=abs(f);return {x:a.vx,y:a.vy,w:a.vw,h:a.vh}}
+  // V3.70: khung chỉnh phải bám theo CHỮ đang render, không bám theo hit/input box gốc.
+  // Điều này đặc biệt quan trọng với các field PURE SVG như Remarks / Delay / LMC.
+  function renderedRect(page,key,fallback){
+    const els=targetEls(page,key);
+    let x1=Infinity,y1=Infinity,x2=-Infinity,y2=-Infinity,found=false;
+    for(const el of els){
+      try{
+        const b=el.getBBox();
+        if(!b||!Number.isFinite(b.x)||!Number.isFinite(b.y)||!Number.isFinite(b.width)||!Number.isFinite(b.height))continue;
+        if(b.width<=0&&b.height<=0)continue;
+        x1=Math.min(x1,b.x);y1=Math.min(y1,b.y);x2=Math.max(x2,b.x+b.width);y2=Math.max(y2,b.y+b.height);found=true;
+      }catch(e){}
+    }
+    if(!found)return fallback;
+    // Padding nhỏ quanh chữ để dễ chạm/kéo nhưng vẫn nhìn rõ khung đang ôm đúng nội dung.
+    const padX=5,padY=4;
+    let x=x1-padX,y=y1-padY,w=(x2-x1)+padX*2,h=(y2-y1)+padY*2;
+    // Với nội dung rất ngắn (N/A, 0, 15...) vẫn cho vùng chạm tối thiểu, giữ tâm đúng chữ.
+    if(w<34){x-= (34-w)/2;w=34;}
+    if(h<20){y-= (20-h)/2;h=20;}
+    return {x,y,w,h};
+  }
   function targetEls(page,key){const svg=document.getElementById("svg"+page);if(!svg)return[];return qa('[data-field-key="'+String(key).replace(/"/g,'\\"')+'"]',svg).filter(el=>!el.classList.contains('v368-layout-hit'))}
   function baseFont(page,key){
     const el=targetEls(page,key)[0]; if(!el)return 16;
@@ -27296,7 +27319,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       qa('.v368-layout-hit',svg).forEach(x=>x.remove());
       for(const f of (window.fields||fields||[]).filter(x=>Number(x.page)===page)){
         if(!eligibleField(f))continue;
-        const r=displayRect(f),c=cfg(page,f.key,false)||{},dx=Number(c.dx)||0,dy=Number(c.dy)||0;
+        const fallback=displayRect(f),r=renderedRect(page,f.key,fallback),c=cfg(page,f.key,false)||{},dx=Number(c.dx)||0,dy=Number(c.dy)||0;
         const rect=document.createElementNS('http://www.w3.org/2000/svg','rect');
         rect.setAttribute('x',r.x);rect.setAttribute('y',r.y);rect.setAttribute('width',Math.max(10,r.w));rect.setAttribute('height',Math.max(12,r.h));
         rect.setAttribute('class','v368-layout-hit'+(selected&&selected.page===page&&selected.key===f.key?' selected':''));
@@ -27327,7 +27350,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     const f=selected?fieldFor(selected.page,selected.key):null,c=f?(cfg(f.page,f.key,false)||{}):{};
     const name=q('#v368LayoutFieldName'),meta=q('#v368LayoutMeta');
     if(name)name.textContent=f?(f.label||f.key):'Chạm vào vùng chữ trên biểu mẫu để chọn';
-    if(meta)meta.textContent=f?`Trang ${f.page} · ${f.key} · X ${Number(c.dx||0).toFixed(1)} · Y ${Number(c.dy||0).toFixed(1)} · chữ ${Number(c.fs||baseFont(f.page,f.key)).toFixed(1)}px${baseLine(f.page,f.key)?' · dòng '+Number(c.lh||baseLine(f.page,f.key)).toFixed(1)+'px':''}`:'Có thể kéo trực tiếp vùng viền tím. Chỉ lưu trên máy này.';
+    if(meta)meta.textContent=f?`Trang ${f.page} · ${f.key} · X ${Number(c.dx||0).toFixed(1)} · Y ${Number(c.dy||0).toFixed(1)} · chữ ${Number(c.fs||baseFont(f.page,f.key)).toFixed(1)}px${baseLine(f.page,f.key)?' · dòng '+Number(c.lh||baseLine(f.page,f.key)).toFixed(1)+'px':''}`:'Khung bám theo đúng chữ đang hiển thị. Kéo khung là kéo chữ. Chỉ lưu trên máy này.';
     if(full)status(dirty()?'● Có thay đổi chưa lưu':'');
   }
   function redraw(){try{draw()}catch(e){window.v368ApplySavedLayout();}renderPanel();}
@@ -27344,7 +27367,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     if(q('#v368LayoutTuneBtn'))return;
     const btn=document.createElement('button');btn.id='v368LayoutTuneBtn';btn.type='button';btn.textContent='⚙ CĂN CHỈNH';btn.onclick=toggle;document.body.appendChild(btn);
     const p=document.createElement('div');p.id='v368LayoutPanel';p.innerHTML=`
-      <div class="v368Head"><div><div class="v368Title">CĂN CHỈNH 42.3 / 55.1 · AD</div><div class="v368Hint">Chạm viền tím để chọn. Có thể kéo chữ trực tiếp. Mỗi bước mũi tên = 1 px trên mẫu.</div></div><button type="button" onclick="v368LayoutClose()">×</button></div>
+      <div class="v368Head"><div><div class="v368Title">CĂN CHỈNH 42.3 / 55.1 · AD</div><div class="v368Hint">Khung tím/đỏ bám đúng quanh chữ. Chạm hoặc kéo KHUNG = di chuyển chính chữ. Mỗi bước mũi tên = 1 px.</div></div><button type="button" onclick="v368LayoutClose()">×</button></div>
       <div class="v368Field"><div id="v368LayoutFieldName">Chạm vào vùng chữ trên biểu mẫu để chọn</div><div class="v368Meta" id="v368LayoutMeta"></div></div>
       <div class="v368Grid"><span></span><button onclick="v368LayoutMove(0,-1)">↑</button><span></span><button onclick="v368LayoutFont(-1)">A−</button><button onclick="v368LayoutFont(1)">A+</button><button onclick="v368LayoutMove(-1,0)">←</button><button onclick="v368LayoutMove(0,1)">↓</button><button onclick="v368LayoutMove(1,0)">→</button><button onclick="v368LayoutLine(-1)">DÒNG−</button><button onclick="v368LayoutLine(1)">DÒNG+</button></div>
       <div class="v368Rows"><button class="danger" onclick="v368LayoutResetField()">KHÔI PHỤC Ô</button><button class="danger" onclick="v368LayoutResetForm()">RESET BIỂU MẪU</button></div>
