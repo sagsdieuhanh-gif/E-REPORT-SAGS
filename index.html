@@ -2172,7 +2172,7 @@ body.role-viewer #ffSendBtn{
 </div>
 <div id="rsOverdueHost"></div>
 
-<script src="./app.js?v=V3.70" data-phase="qr"></script>
+<script src="./app.js?v=V3.71" data-phase="qr"></script>
 <style>
 /* ===== V6.3.5 FINAL RECEIVER SCROLL + PERFORMANCE ===== */
 #finalFormsModal{
@@ -2786,26 +2786,40 @@ user-select:none;-webkit-user-select:none;touch-action:none;-webkit-tap-highligh
 <style id="v368LayoutTuneStyle">
 #v368LayoutTuneBtn{position:fixed;right:10px;bottom:74px;z-index:12940;border:0;border-radius:999px;padding:10px 14px;background:#7c3aed;color:#fff;font:900 13px Arial;box-shadow:0 5px 18px rgba(0,0,0,.28);display:none;touch-action:manipulation}
 #v368LayoutTuneBtn.active{background:#dc2626}
-#v368LayoutPanel{position:fixed;right:8px;bottom:122px;z-index:12950;width:min(370px,calc(100vw - 16px));max-height:64vh;overflow:auto;display:none;background:#fff;border:2px solid #7c3aed;border-radius:15px;box-shadow:0 12px 34px rgba(0,0,0,.35);font:13px Arial;color:#172033;padding:11px;box-sizing:border-box}
+#v368LayoutPanel{position:fixed;right:8px;bottom:122px;z-index:12950;width:min(390px,calc(100vw - 16px));max-height:68vh;overflow:auto;display:none;background:#fff;border:2px solid #7c3aed;border-radius:15px;box-shadow:0 12px 34px rgba(0,0,0,.35);font:13px Arial;color:#172033;padding:11px;box-sizing:border-box}
 #v368LayoutPanel.show{display:block}
 #v368LayoutPanel .v368Head{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;margin-bottom:8px}
 #v368LayoutPanel .v368Title{font-weight:900;color:#5b21b6;font-size:15px;line-height:1.25}
 #v368LayoutPanel .v368Hint{font-size:11px;color:#667085;margin-top:3px;line-height:1.35}
 #v368LayoutPanel .v368Field{background:#f5f3ff;border:1px solid #c4b5fd;border-radius:10px;padding:8px 9px;margin:8px 0;font-weight:800;min-height:18px}
-#v368LayoutPanel .v368Meta{font-size:11px;font-weight:700;color:#667085;margin-top:4px}
+#v368LayoutPanel .v368Meta{font-size:11px;font-weight:700;color:#667085;margin-top:4px;line-height:1.35}
+#v368LayoutPanel .v368ZoneTabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:7px 0}
+#v368LayoutPanel .v368ZoneTabs button{min-height:42px}
+#v368LayoutPanel .v368ZoneDisplay.active{background:#6d28d9;color:#fff;border-color:#6d28d9}
+#v368LayoutPanel .v368ZoneTouch.active{background:#0369a1;color:#fff;border-color:#0369a1}
 #v368LayoutPanel .v368Grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:7px 0}
 #v368LayoutPanel button{border:1px solid #cbd5e1;border-radius:9px;background:#fff;color:#172033;min-height:38px;font-weight:900;padding:6px;touch-action:manipulation}
 #v368LayoutPanel button:active{transform:scale(.98)}
+#v368LayoutPanel button:disabled{opacity:.38;filter:grayscale(.45)}
 #v368LayoutPanel .primary{background:#6d28d9;color:#fff;border-color:#6d28d9}
 #v368LayoutPanel .danger{background:#fff1f2;color:#b42318;border-color:#fda4af}
 #v368LayoutPanel .save{background:#047857;color:#fff;border-color:#047857}
 #v368LayoutPanel .v368Rows{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
+#v368LayoutPanel .v368Rows.three{grid-template-columns:1fr 1fr 1fr}
 #v368LayoutPanel .v368Status{font-size:11px;font-weight:800;color:#047857;margin-top:7px;min-height:14px}
-.v368-layout-hit{fill:rgba(124,58,237,.06);stroke:#7c3aed;stroke-width:1.8;stroke-dasharray:7 5;pointer-events:all;cursor:move;vector-effect:non-scaling-stroke}
-.v368-layout-hit.selected{fill:rgba(220,38,38,.11);stroke:#dc2626;stroke-width:2.7;stroke-dasharray:none}
+/* Purple = DISPLAY text zone. Blue = TOUCH/click zone. They are independent. */
+.v368-layout-hit{vector-effect:non-scaling-stroke;cursor:move}
+.v368-layout-hit.display-zone{fill:rgba(124,58,237,.05);stroke:#7c3aed;stroke-width:1.8;stroke-dasharray:7 5}
+.v368-layout-hit.touch-zone{fill:rgba(2,132,199,.07);stroke:#0284c7;stroke-width:2;stroke-dasharray:4 4}
+.v368-layout-hit.display-zone.selected{fill:rgba(220,38,38,.10);stroke:#dc2626;stroke-width:2.8;stroke-dasharray:none}
+.v368-layout-hit.touch-zone.selected{fill:rgba(14,116,144,.16);stroke:#0e7490;stroke-width:3;stroke-dasharray:none}
+body.v368-layout-mode.v368-zone-display .v368-layout-hit.display-zone{pointer-events:all}
+body.v368-layout-mode.v368-zone-display .v368-layout-hit.touch-zone{pointer-events:none;opacity:.48}
+body.v368-layout-mode.v368-zone-touch .v368-layout-hit.touch-zone{pointer-events:all}
+body.v368-layout-mode.v368-zone-touch .v368-layout-hit.display-zone{pointer-events:none;opacity:.48}
 body.v368-layout-mode .hit{pointer-events:none!important}
 body.v368-layout-mode .sheet{outline:2px dashed rgba(124,58,237,.35);outline-offset:2px}
-@media(max-width:600px){#v368LayoutPanel{bottom:116px;max-height:58vh}#v368LayoutTuneBtn{bottom:68px;padding:9px 12px}}
+@media(max-width:600px){#v368LayoutPanel{bottom:116px;max-height:62vh}#v368LayoutTuneBtn{bottom:68px;padding:9px 12px}}
 </style>
 
 </head>
@@ -3077,7 +3091,7 @@ body.v368-layout-mode .sheet{outline:2px dashed rgba(124,58,237,.35);outline-off
   </div>
 </div>
 
-<div id="buildMarker">V3.70</div>
+<div id="buildMarker">V3.71</div>
 <div aria-live="polite" id="currentFerryFlag"><span class="dot"></span><span id="currentFerryFlagText">FERRY</span></div>
 <div class="toolbar compact-main-toolbar">
 <div class="badge">PĐH SAGS-CXR</div>
@@ -3126,9 +3140,9 @@ body.v368-layout-mode .sheet{outline:2px dashed rgba(124,58,237,.35);outline-off
 <button onclick="closeUpdateInfo()" aria-label="Đóng" style="border:0;background:#eee;border-radius:50%;width:34px;height:34px;font-size:21px;line-height:30px">×</button>
 </div>
 <div style="padding:11px 12px;border:1px solid #b7d7ef;border-radius:11px;background:#eef7ff">
-<p style="margin:0 0 6px;color:#075985"><b>V3.70 · 22/08/2026 — KHUNG CĂN CHỈNH BÁM ĐÚNG VỊ TRÍ CHỮ</b></p>
+<p style="margin:0 0 6px;color:#075985"><b>V3.71 · 22/08/2026 — TÁCH RIÊNG VÙNG CĂN CHẠM / CĂN HIỂN THỊ</b></p>
 <p style="margin:4px 0">• <b>⚙ CĂN CHỈNH</b> FSAGS 42.3 và 55.1 chỉ hiển thị cho tài khoản <b>AD</b>. Nhân viên vẫn dùng layout đã lưu nhưng không thể mở/chỉnh/reset cấu hình.</p>
-<p style="margin:4px 0">• V3.70: khung căn chỉnh lấy trực tiếp bounding-box của chữ đang render, nên không còn tình trạng chữ một bên nhưng khung một bên.</p>
+<p style="margin:4px 0">• V3.71: tách thành 2 vùng độc lập: <b>🟦 CĂN CHẠM</b> để chỉnh vùng bấm/mở ô và <b>🟪 CĂN HIỂN THỊ</b> để chỉnh vị trí chữ. Hai vùng lưu riêng, không kéo theo nhau.</p>
 <p style="margin:4px 0">• Bấm <b>LƯU</b> để giữ bố cục trên thiết bị. Cấu hình chỉ nằm trong localStorage, <b>không phát sinh Firestore Read/Write</b>.</p>
 <p style="margin:4px 0">• Có thể khôi phục riêng từng ô hoặc toàn bộ biểu mẫu về vị trí mặc định bất cứ lúc nào.</p>
 <p style="margin:4px 0">• Khi import lại cùng ngày, hệ thống so sánh từng assignment với roster đã có.</p>
@@ -3138,7 +3152,7 @@ body.v368-layout-mode .sheet{outline:2px dashed rgba(124,58,237,.35);outline-off
 </div>
 <details style="margin-top:10px;padding:9px 11px;border:1px solid #dbe4eb;border-radius:10px;background:#fafcfd">
 <summary style="cursor:pointer;font-weight:800;color:#334155">Lưu ý sau khi cập nhật</summary>
-<p style="margin:8px 0 0">Dữ liệu hồ sơ nghiệp vụ trên Firebase không bị xóa. Chỉ cập nhật khi người dùng bấm CẬP NHẬT và chờ nhãn góc trái hiện V3.70.</p>
+<p style="margin:8px 0 0">Dữ liệu hồ sơ nghiệp vụ trên Firebase không bị xóa. Chỉ cập nhật khi người dùng bấm CẬP NHẬT và chờ nhãn góc trái hiện V3.71.</p>
 </details>
 <button onclick="closeUpdateInfo()" style="width:100%;margin-top:12px;border:0;border-radius:10px;padding:10px 14px;background:#0b67b2;color:#fff;font-weight:800">ĐÓNG</button>
 </div>
@@ -4110,7 +4124,7 @@ body.v368-layout-mode .sheet{outline:2px dashed rgba(124,58,237,.35);outline-off
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
-<script src="./app.js?v=V3.70" data-phase="config"></script>
+<script src="./app.js?v=V3.71" data-phase="config"></script>
 <script>
 let suppressModalClickUntil=0;
 function armModalGhostClickBlock(ms=650){
@@ -7030,8 +7044,22 @@ function draw(){
       ? f.dotRects.map(r=>({x:r[0]*BASE_W,y:r[1]*BASE_H,w:r[2]*BASE_W,h:r[3]*BASE_H}))
       : [{x:a.x-px,y:a.y-py,w:a.w+px*2,h:a.h+py*2}];
 
-    for(const hr of hitRects){
-      const hit=E("rect",{x:hr.x,y:hr.y,width:hr.w,height:hr.h,class:"hit"});
+    for(const hrBase of hitRects){
+      // V3.71: touch zone is independent from displayed text. Apply device-local
+      // touch calibration (hx/hy/hw/hh) to the REAL hit rectangle used in normal mode.
+      let tc={};
+      try{
+        if(typeof window.v371GetTouchConfig==="function")tc=window.v371GetTouchConfig(f.page,f.key)||{};
+        else{
+          const store=JSON.parse(localStorage.getItem("SAGS_FORM_LAYOUT_V368")||"{}")||{};
+          tc=store[String(f.page)+":"+String(f.key)]||{};
+        }
+      }catch(_){tc={}}
+      const hx=Number(tc.hx)||0,hy=Number(tc.hy)||0,hw=Number(tc.hw)||0,hh=Number(tc.hh)||0;
+      const newW=Math.max(8,hrBase.w+hw),newH=Math.max(8,hrBase.h+hh);
+      const hr={x:hrBase.x+hx-(newW-hrBase.w)/2,y:hrBase.y+hy-(newH-hrBase.h)/2,w:newW,h:newH};
+      const hit=E("rect",{x:hr.x,y:hr.y,width:hr.w,height:hr.h,class:"hit","data-field-key":f.key,"data-field-page":String(f.page)});
+      hit.dataset.v371BaseX=String(hrBase.x);hit.dataset.v371BaseY=String(hrBase.y);hit.dataset.v371BaseW=String(hrBase.w);hit.dataset.v371BaseH=String(hrBase.h);
       const immediateBottom=(f.page===4 || f.key==="depDelayReason" || f.key==="depRemarks" || f.key==="lmcDetails" || f.type==="timeLocked" || f.type==="signature");
 
       hit.style.touchAction="manipulation";
@@ -7193,7 +7221,7 @@ function draw(){
 
 
   /* =========================================================
-     V3.70 — FSAGS 42.3 DOT-LINE DISPLAY ENGINE
+     V3.71 — FSAGS 42.3 DOT-LINE DISPLAY ENGINE
      IMPORTANT:
      - These printed rows are NOT ordinary input boxes. Their dotted guides
        sit inside the same visual row as the labels.
@@ -7456,7 +7484,7 @@ function draw(){
     continue;
   }
 
-  // V4.78 legacy DEP Remarks renderer (V3.70 handles this earlier via measured dot-line engine).
+  // V4.78 legacy DEP Remarks renderer (V3.71 handles this earlier via measured dot-line engine).
   // Safari/iOS intermittently fails to paint HTML inside SVG foreignObject after
   // the editor closes, even though state is saved and PDF export still contains it.
   // Render this one-line printed Remarks field directly as SVG <text> so live view
@@ -12243,8 +12271,8 @@ try {
   alert("Lỗi JavaScript: "+err.message);
 }
 
-const APP_BUILD_VERSION="V3.70-20260822-01";
-const APP_DISPLAY_VERSION="V3.70";
+const APP_BUILD_VERSION="V3.71-20260822-01";
+const APP_DISPLAY_VERSION="V3.71";
 
 // V4.21 — SAFE UPDATE SAVE
 // Before switching to a newly installed app version, force-save all current
@@ -21036,7 +21064,7 @@ function applyRoleUI(){
   // Nếu ứng dụng được mở từ QR Giao Ca, xử lý sau khi đã xác định tài khoản.
   setTimeout(tryOpenPendingHandoverDeepLink,120);
 
-  // V3.70: nút căn chỉnh 42.3 / 55.1 chỉ dành cho AD.
+  // V3.71: nút căn chỉnh 42.3 / 55.1 chỉ dành cho AD.
   try{if(typeof window.v368RefreshTuneButton==="function")window.v368RefreshTuneButton();}catch(e){}
 
   // V6.4.0: Sau đăng nhập KHÔNG tự mở bất kỳ màn chức năng nào.
@@ -24214,7 +24242,7 @@ window.openCamScanner=openCamScanner;
 <script type="module" src="./ai.js?v=V3.58"></script>
 
 
-<script src="./app.js?v=V3.70" data-phase="archive"></script>
+<script src="./app.js?v=V3.71" data-phase="archive"></script>
 <script id="v120-build02-fixes">
 /* V1.20 BUILD 02 — background persistence, VHTTB, per-account usage detail, progress dedupe. */
 (function(){
@@ -24655,7 +24683,7 @@ window.openCamScanner=openCamScanner;
 
 
 
-<script src="./app.js?v=V3.70" data-phase="tools"></script>
+<script src="./app.js?v=V3.71" data-phase="tools"></script>
 <script id="v173-quick-time">
 (function(){
   "use strict";
@@ -26711,7 +26739,7 @@ window.openCamScanner=openCamScanner;
 }
 </style>
 
-<script src="./app.js?v=V3.70" data-phase="flight"></script>
+<script src="./app.js?v=V3.71" data-phase="flight"></script>
 <script id="v191IOSInteractionFix">
 (()=>{
   'use strict';
@@ -26975,7 +27003,7 @@ window.openCamScanner=openCamScanner;
 })();
 </script>
 
-<script src="./app.js?v=V3.70" data-phase="control"></script>
+<script src="./app.js?v=V3.71" data-phase="control"></script>
 
 <style id="v330-group-permission-style">
 #v330GroupPermPanel{margin:12px 0 8px;padding:11px;border:1px solid #cbd9e6;border-radius:12px;background:#f7fbff;box-sizing:border-box}
@@ -27224,158 +27252,172 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 
 <script id="v368LayoutTuneScript">
 /* =========================================================
-   V3.70 — USER LAYOUT TUNER · FSAGS 42.3 / 55.1
+   V3.71 — DUAL LAYOUT TUNER · FSAGS 42.3 / 55.1 · AD ONLY
+   - DISPLAY zone: dx/dy/font/line-height
+   - TOUCH zone: hx/hy/width/height
    Device-local only. No Firebase read/write.
    ========================================================= */
 (function(){
   const STORE_KEY="SAGS_FORM_LAYOUT_V368";
   const SUPPORTED={fsags:[1,2],fsags551:[9,10]};
-  let saved=loadStore(), draft=clone(saved), mode=false, selected=null, drag=null;
+  let saved=loadStore(),draft=clone(saved),mode=false,selected=null,drag=null,zone='display';
   const q=(s,r=document)=>r.querySelector(s);
   const qa=(s,r=document)=>Array.from(r.querySelectorAll(s));
   function canTune(){try{return String(window.currentRole||currentRole||"").toUpperCase()==="AD"}catch(e){return false}}
   function clone(v){try{return JSON.parse(JSON.stringify(v||{}))}catch(e){return {}}}
   function loadStore(){try{const v=JSON.parse(localStorage.getItem(STORE_KEY)||"{}");return v&&typeof v==="object"?v:{}}catch(e){return {}}}
-  function saveStore(){saved=clone(draft);try{localStorage.setItem(STORE_KEY,JSON.stringify(saved))}catch(e){} }
+  function saveStore(){saved=clone(draft);try{localStorage.setItem(STORE_KEY,JSON.stringify(saved))}catch(e){}}
   function pages(){return SUPPORTED[String(window.activeFormGroup||activeFormGroup||"")]||[]}
   function k(page,key){return String(page)+":"+String(key)}
   function cfg(page,key,create=false){const id=k(page,key);if(!draft[id]&&create)draft[id]={};return draft[id]||null}
+  function currentLayout(){return mode?draft:saved}
   function fieldFor(page,key){return (window.fields||fields||[]).find(f=>Number(f.page)===Number(page)&&String(f.key)===String(key))||null}
   function displayRect(f){const a=abs(f);return {x:a.vx,y:a.vy,w:a.vw,h:a.vh}}
-  // V3.70: khung chỉnh phải bám theo CHỮ đang render, không bám theo hit/input box gốc.
-  // Điều này đặc biệt quan trọng với các field PURE SVG như Remarks / Delay / LMC.
+  function targetEls(page,key){
+    const svg=document.getElementById("svg"+page);if(!svg)return[];
+    return qa('[data-field-key="'+String(key).replace(/"/g,'\\"')+'"]',svg)
+      .filter(el=>!el.classList.contains('v368-layout-hit')&&!el.classList.contains('hit'));
+  }
+  function realHitEls(page,key){
+    const svg=document.getElementById("svg"+page);if(!svg)return[];
+    return qa('.hit[data-field-key="'+String(key).replace(/"/g,'\\"')+'"]',svg);
+  }
   function renderedRect(page,key,fallback){
-    const els=targetEls(page,key);
-    let x1=Infinity,y1=Infinity,x2=-Infinity,y2=-Infinity,found=false;
+    const els=targetEls(page,key);let x1=Infinity,y1=Infinity,x2=-Infinity,y2=-Infinity,found=false;
     for(const el of els){
-      try{
-        const b=el.getBBox();
-        if(!b||!Number.isFinite(b.x)||!Number.isFinite(b.y)||!Number.isFinite(b.width)||!Number.isFinite(b.height))continue;
-        if(b.width<=0&&b.height<=0)continue;
-        x1=Math.min(x1,b.x);y1=Math.min(y1,b.y);x2=Math.max(x2,b.x+b.width);y2=Math.max(y2,b.y+b.height);found=true;
-      }catch(e){}
+      try{const b=el.getBBox();if(!b||!Number.isFinite(b.x)||!Number.isFinite(b.y)||!Number.isFinite(b.width)||!Number.isFinite(b.height))continue;if(b.width<=0&&b.height<=0)continue;x1=Math.min(x1,b.x);y1=Math.min(y1,b.y);x2=Math.max(x2,b.x+b.width);y2=Math.max(y2,b.y+b.height);found=true}catch(e){}
     }
     if(!found)return fallback;
-    // Padding nhỏ quanh chữ để dễ chạm/kéo nhưng vẫn nhìn rõ khung đang ôm đúng nội dung.
-    const padX=5,padY=4;
-    let x=x1-padX,y=y1-padY,w=(x2-x1)+padX*2,h=(y2-y1)+padY*2;
-    // Với nội dung rất ngắn (N/A, 0, 15...) vẫn cho vùng chạm tối thiểu, giữ tâm đúng chữ.
-    if(w<34){x-= (34-w)/2;w=34;}
-    if(h<20){y-= (20-h)/2;h=20;}
+    const padX=5,padY=4;let x=x1-padX,y=y1-padY,w=(x2-x1)+padX*2,h=(y2-y1)+padY*2;
+    if(w<34){x-=(34-w)/2;w=34}if(h<20){y-=(20-h)/2;h=20}
     return {x,y,w,h};
   }
-  function targetEls(page,key){const svg=document.getElementById("svg"+page);if(!svg)return[];return qa('[data-field-key="'+String(key).replace(/"/g,'\\"')+'"]',svg).filter(el=>!el.classList.contains('v368-layout-hit'))}
+  function rawTouchRects(f){
+    const a=abs(f),px=(f.hitPadX||0)*BASE_W,py=(f.hitPadY||0)*BASE_H;
+    return Array.isArray(f.dotRects)&&f.dotRects.length
+      ? f.dotRects.map(r=>({x:r[0]*BASE_W,y:r[1]*BASE_H,w:r[2]*BASE_W,h:r[3]*BASE_H}))
+      : [{x:a.x-px,y:a.y-py,w:a.w+px*2,h:a.h+py*2}];
+  }
+  function adjustedTouchRects(f,c){
+    c=c||{};const hx=Number(c.hx)||0,hy=Number(c.hy)||0,hw=Number(c.hw)||0,hh=Number(c.hh)||0;
+    return rawTouchRects(f).map(r=>{const w=Math.max(8,r.w+hw),h=Math.max(8,r.h+hh);return{x:r.x+hx-(w-r.w)/2,y:r.y+hy-(h-r.h)/2,w,h}});
+  }
+  function unionRect(rects,fallback){
+    if(!rects||!rects.length)return fallback;let x1=Infinity,y1=Infinity,x2=-Infinity,y2=-Infinity;
+    for(const r of rects){x1=Math.min(x1,r.x);y1=Math.min(y1,r.y);x2=Math.max(x2,r.x+r.w);y2=Math.max(y2,r.y+r.h)}
+    return {x:x1,y:y1,w:Math.max(8,x2-x1),h:Math.max(8,y2-y1)};
+  }
+  function touchRect(f,c){return unionRect(adjustedTouchRects(f,c),displayRect(f))}
   function baseFont(page,key){
-    const el=targetEls(page,key)[0]; if(!el)return 16;
-    if(el.tagName.toLowerCase()==="foreignobject"){
-      const d=el.querySelector('div'); const n=parseFloat(d?.style?.fontSize||getComputedStyle(d||el).fontSize); return Number.isFinite(n)?n:16;
-    }
-    const n=parseFloat(el.getAttribute('font-size')||getComputedStyle(el).fontSize); return Number.isFinite(n)?n:16;
+    const el=targetEls(page,key)[0];if(!el){const f=fieldFor(page,key);return Number(f?.font)||16}
+    if(el.tagName.toLowerCase()==="foreignobject"){const d=el.querySelector('div');const n=parseFloat(d?.style?.fontSize||getComputedStyle(d||el).fontSize);return Number.isFinite(n)?n:16}
+    const n=parseFloat(el.getAttribute('font-size')||getComputedStyle(el).fontSize);return Number.isFinite(n)?n:16;
   }
   function baseLine(page,key){
-    const el=targetEls(page,key).find(x=>x.tagName.toLowerCase()==="foreignobject");
-    const d=el?.querySelector('div'); if(!d)return 0;
-    const raw=d.style.lineHeight||getComputedStyle(d).lineHeight; const n=parseFloat(raw); return Number.isFinite(n)?n:0;
+    const el=targetEls(page,key).find(x=>x.tagName.toLowerCase()==="foreignobject"),d=el?.querySelector('div');if(!d)return 0;
+    const n=parseFloat(d.style.lineHeight||getComputedStyle(d).lineHeight);return Number.isFinite(n)?n:0;
   }
-  function applyOne(page,key){
-    const c=cfg(page,key,false)||{}; const dx=Number(c.dx)||0,dy=Number(c.dy)||0;
+  function applyTouchOne(page,key){
+    const c=cfg(page,key,false)||{},hx=Number(c.hx)||0,hy=Number(c.hy)||0,hw=Number(c.hw)||0,hh=Number(c.hh)||0;
+    for(const hit of realHitEls(page,key)){
+      const bx=Number(hit.dataset.v371BaseX),by=Number(hit.dataset.v371BaseY),bw=Number(hit.dataset.v371BaseW),bh=Number(hit.dataset.v371BaseH);
+      if(![bx,by,bw,bh].every(Number.isFinite))continue;
+      const w=Math.max(8,bw+hw),h=Math.max(8,bh+hh);
+      hit.setAttribute('x',String(bx+hx-(w-bw)/2));hit.setAttribute('y',String(by+hy-(h-bh)/2));hit.setAttribute('width',String(w));hit.setAttribute('height',String(h));
+    }
+    const f=fieldFor(page,key),ov=q('.v368-layout-hit.touch-zone[data-v368-id="'+CSS.escape(k(page,key))+'"]');
+    if(f&&ov){const r=touchRect(f,c);ov.setAttribute('x',r.x);ov.setAttribute('y',r.y);ov.setAttribute('width',r.w);ov.setAttribute('height',r.h)}
+  }
+  function applyDisplayOne(page,key){
+    const c=cfg(page,key,false)||{},dx=Number(c.dx)||0,dy=Number(c.dy)||0;
     for(const el of targetEls(page,key)){
       if(!el.dataset.v368BaseTransform)el.dataset.v368BaseTransform=el.getAttribute('transform')||'__NONE__';
-      const base=el.dataset.v368BaseTransform==='__NONE__'?'':el.dataset.v368BaseTransform;
-      const tr=(base?base+' ':'')+((dx||dy)?`translate(${dx} ${dy})`:'');
+      const base=el.dataset.v368BaseTransform==='__NONE__'?'':el.dataset.v368BaseTransform,tr=(base?base+' ':'')+((dx||dy)?`translate(${dx} ${dy})`:'');
       if(tr.trim())el.setAttribute('transform',tr.trim());else el.removeAttribute('transform');
-      if(Number.isFinite(Number(c.fs))&&Number(c.fs)>0){
-        const fs=Number(c.fs);
-        if(el.tagName.toLowerCase()==='foreignobject'){
-          const d=el.querySelector('div'); if(d)d.style.fontSize=fs+'px';
-        }else if(el.tagName.toLowerCase()==='text')el.setAttribute('font-size',String(fs));
-      }
-      if(Number.isFinite(Number(c.lh))&&Number(c.lh)>0 && el.tagName.toLowerCase()==='foreignobject'){
-        const d=el.querySelector('div'); if(d)d.style.lineHeight=Number(c.lh)+'px';
-      }
+      if(Number.isFinite(Number(c.fs))&&Number(c.fs)>0){const fs=Number(c.fs);if(el.tagName.toLowerCase()==='foreignobject'){const d=el.querySelector('div');if(d)d.style.fontSize=fs+'px'}else if(el.tagName.toLowerCase()==='text')el.setAttribute('font-size',String(fs))}
+      if(Number.isFinite(Number(c.lh))&&Number(c.lh)>0&&el.tagName.toLowerCase()==='foreignobject'){const d=el.querySelector('div');if(d)d.style.lineHeight=Number(c.lh)+'px'}
     }
-    const ov=document.querySelector('.v368-layout-hit[data-v368-id="'+CSS.escape(k(page,key))+'"]');
-    if(ov)ov.setAttribute('transform',(dx||dy)?`translate(${dx} ${dy})`:'');
+    const ov=q('.v368-layout-hit.display-zone[data-v368-id="'+CSS.escape(k(page,key))+'"]');if(ov)ov.setAttribute('transform',(dx||dy)?`translate(${dx} ${dy})`:'');
   }
-  function currentLayout(){return mode?draft:saved}
+  function applyOne(page,key){applyDisplayOne(page,key);applyTouchOne(page,key)}
+  window.v371GetTouchConfig=function(page,key){const c=(currentLayout()||{})[k(page,key)]||{};return{hx:Number(c.hx)||0,hy:Number(c.hy)||0,hw:Number(c.hw)||0,hh:Number(c.hh)||0}};
   window.v368ApplySavedLayout=function(){
     const active=currentLayout();
-    for(const id of Object.keys(active||{})){
-      const m=id.match(/^(\d+):(.*)$/);if(!m)continue;
-      const page=Number(m[1]),key=m[2];
-      if(![1,2,9,10].includes(page))continue;
-      applyOne(page,key);
-    }
+    for(const id of Object.keys(active||{})){const m=id.match(/^(\d+):(.*)$/);if(!m)continue;const page=Number(m[1]),key=m[2];if(![1,2,9,10].includes(page))continue;applyOne(page,key)}
     if(mode)buildOverlays();
   };
-  function eligibleField(f){
-    if(!f||!pages().includes(Number(f.page)))return false;
-    if(f.type==='check'||f.type==='displayCheck'||f.type==='signature')return false;
-    return targetEls(f.page,f.key).length>0;
+  function eligibleField(f){if(!f||!pages().includes(Number(f.page)))return false;if(f.type==='check'||f.type==='displayCheck'||f.type==='signature')return false;return true}
+  function addOverlay(svg,f,r,kind){
+    const rect=document.createElementNS('http://www.w3.org/2000/svg','rect'),isSel=selected&&selected.page===Number(f.page)&&selected.key===String(f.key)&&zone===kind;
+    rect.setAttribute('x',r.x);rect.setAttribute('y',r.y);rect.setAttribute('width',Math.max(8,r.w));rect.setAttribute('height',Math.max(8,r.h));
+    rect.setAttribute('class','v368-layout-hit '+kind+'-zone'+(isSel?' selected':''));rect.setAttribute('data-v368-id',k(f.page,f.key));
+    if(kind==='display'){const c=cfg(f.page,f.key,false)||{},dx=Number(c.dx)||0,dy=Number(c.dy)||0;rect.setAttribute('transform',(dx||dy)?`translate(${dx} ${dy})`:'')}
+    rect.addEventListener('pointerdown',ev=>startDrag(ev,f,rect,kind),{passive:false});rect.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();selectField(f,kind)});svg.appendChild(rect);
   }
   function buildOverlays(){
     for(const page of pages()){
-      const svg=document.getElementById('svg'+page);if(!svg)continue;
-      qa('.v368-layout-hit',svg).forEach(x=>x.remove());
+      const svg=document.getElementById('svg'+page);if(!svg)continue;qa('.v368-layout-hit',svg).forEach(x=>x.remove());
       for(const f of (window.fields||fields||[]).filter(x=>Number(x.page)===page)){
-        if(!eligibleField(f))continue;
-        const fallback=displayRect(f),r=renderedRect(page,f.key,fallback),c=cfg(page,f.key,false)||{},dx=Number(c.dx)||0,dy=Number(c.dy)||0;
-        const rect=document.createElementNS('http://www.w3.org/2000/svg','rect');
-        rect.setAttribute('x',r.x);rect.setAttribute('y',r.y);rect.setAttribute('width',Math.max(10,r.w));rect.setAttribute('height',Math.max(12,r.h));
-        rect.setAttribute('class','v368-layout-hit'+(selected&&selected.page===page&&selected.key===f.key?' selected':''));
-        rect.setAttribute('data-v368-id',k(page,f.key));rect.setAttribute('transform',(dx||dy)?`translate(${dx} ${dy})`:'');
-        rect.addEventListener('pointerdown',ev=>startDrag(ev,f,rect),{passive:false});
-        rect.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();selectField(f);});
-        svg.appendChild(rect);
+        if(!eligibleField(f))continue;const c=cfg(page,f.key,false)||{},fallback=displayRect(f),dr=renderedRect(page,f.key,fallback),tr=touchRect(f,c);
+        addOverlay(svg,f,tr,'touch');addOverlay(svg,f,dr,'display');
       }
     }
   }
-  function selectField(f){selected={page:Number(f.page),key:String(f.key)};buildOverlays();renderPanel();}
-  function startDrag(ev,f,rect){
-    ev.preventDefault();ev.stopPropagation();selectField(f);
+  function setZone(z){if(!['display','touch'].includes(z))return;zone=z;document.body.classList.toggle('v368-zone-display',z==='display');document.body.classList.toggle('v368-zone-touch',z==='touch');buildOverlays();renderPanel()}
+  function selectField(f,z){selected={page:Number(f.page),key:String(f.key)};if(z)setZone(z);else{buildOverlays();renderPanel()}}
+  function startDrag(ev,f,rect,kind){
+    ev.preventDefault();ev.stopPropagation();selected={page:Number(f.page),key:String(f.key)};zone=kind;document.body.classList.toggle('v368-zone-display',kind==='display');document.body.classList.toggle('v368-zone-touch',kind==='touch');
     try{rect.setPointerCapture(ev.pointerId)}catch(e){}
     const svg=document.getElementById('svg'+f.page),box=svg.getBoundingClientRect(),c=cfg(f.page,f.key,true);
-    drag={pid:ev.pointerId,page:f.page,key:f.key,x:ev.clientX,y:ev.clientY,dx:Number(c.dx)||0,dy:Number(c.dy)||0,sx:BASE_W/Math.max(1,box.width),sy:BASE_H/Math.max(1,box.height),rect};
+    drag={pid:ev.pointerId,page:f.page,key:f.key,kind,x:ev.clientX,y:ev.clientY,dx:Number(kind==='display'?c.dx:c.hx)||0,dy:Number(kind==='display'?c.dy:c.hy)||0,sx:BASE_W/Math.max(1,box.width),sy:BASE_H/Math.max(1,box.height),rect,f};
     const move=e=>{
-      if(!drag||e.pointerId!==drag.pid)return;e.preventDefault();
-      const cc=cfg(drag.page,drag.key,true);cc.dx=Math.round((drag.dx+(e.clientX-drag.x)*drag.sx)*10)/10;cc.dy=Math.round((drag.dy+(e.clientY-drag.y)*drag.sy)*10)/10;
-      applyOne(drag.page,drag.key);renderPanel(false);
+      if(!drag||e.pointerId!==drag.pid)return;e.preventDefault();const cc=cfg(drag.page,drag.key,true),nx=Math.round((drag.dx+(e.clientX-drag.x)*drag.sx)*10)/10,ny=Math.round((drag.dy+(e.clientY-drag.y)*drag.sy)*10)/10;
+      if(drag.kind==='display'){cc.dx=nx;cc.dy=ny;applyDisplayOne(drag.page,drag.key)}else{cc.hx=nx;cc.hy=ny;applyTouchOne(drag.page,drag.key)}renderPanel(false);
     };
-    const end=e=>{if(!drag||e.pointerId!==drag.pid)return;try{rect.releasePointerCapture(e.pointerId)}catch(x){}drag=null;rect.removeEventListener('pointermove',move);rect.removeEventListener('pointerup',end);rect.removeEventListener('pointercancel',end);renderPanel();};
-    rect.addEventListener('pointermove',move,{passive:false});rect.addEventListener('pointerup',end,{passive:false});rect.addEventListener('pointercancel',end,{passive:false});
+    const end=e=>{if(!drag||e.pointerId!==drag.pid)return;try{rect.releasePointerCapture(e.pointerId)}catch(x){}drag=null;rect.removeEventListener('pointermove',move);rect.removeEventListener('pointerup',end);rect.removeEventListener('pointercancel',end);buildOverlays();renderPanel()};
+    rect.addEventListener('pointermove',move,{passive:false});rect.addEventListener('pointerup',end,{passive:false});rect.addEventListener('pointercancel',end,{passive:false});renderPanel();
   }
   function dirty(){return JSON.stringify(saved)!==JSON.stringify(draft)}
-  function status(msg=''){const el=q('#v368LayoutStatus');if(el)el.textContent=msg;}
+  function status(msg=''){const el=q('#v368LayoutStatus');if(el)el.textContent=msg}
   function renderPanel(full=true){
-    const f=selected?fieldFor(selected.page,selected.key):null,c=f?(cfg(f.page,f.key,false)||{}):{};
-    const name=q('#v368LayoutFieldName'),meta=q('#v368LayoutMeta');
-    if(name)name.textContent=f?(f.label||f.key):'Chạm vào vùng chữ trên biểu mẫu để chọn';
-    if(meta)meta.textContent=f?`Trang ${f.page} · ${f.key} · X ${Number(c.dx||0).toFixed(1)} · Y ${Number(c.dy||0).toFixed(1)} · chữ ${Number(c.fs||baseFont(f.page,f.key)).toFixed(1)}px${baseLine(f.page,f.key)?' · dòng '+Number(c.lh||baseLine(f.page,f.key)).toFixed(1)+'px':''}`:'Khung bám theo đúng chữ đang hiển thị. Kéo khung là kéo chữ. Chỉ lưu trên máy này.';
+    const f=selected?fieldFor(selected.page,selected.key):null,c=f?(cfg(f.page,f.key,false)||{}):{},name=q('#v368LayoutFieldName'),meta=q('#v368LayoutMeta');
+    if(name)name.textContent=f?(f.label||f.key):'Chọn CĂN CHẠM hoặc CĂN HIỂN THỊ rồi chạm vùng cần chỉnh';
+    if(meta){
+      if(!f)meta.textContent='🟦 xanh = vùng bấm/chạm · 🟪 tím = vùng chữ hiển thị. Hai vùng độc lập và lưu riêng.';
+      else if(zone==='touch')meta.textContent=`🟦 CĂN CHẠM · Trang ${f.page} · ${f.key} · X ${Number(c.hx||0).toFixed(1)} · Y ${Number(c.hy||0).toFixed(1)} · Rộng ${Number(c.hw||0)>=0?'+':''}${Number(c.hw||0).toFixed(1)} · Cao ${Number(c.hh||0)>=0?'+':''}${Number(c.hh||0).toFixed(1)}`;
+      else meta.textContent=`🟪 CĂN HIỂN THỊ · Trang ${f.page} · ${f.key} · X ${Number(c.dx||0).toFixed(1)} · Y ${Number(c.dy||0).toFixed(1)} · chữ ${Number(c.fs||baseFont(f.page,f.key)).toFixed(1)}px${baseLine(f.page,f.key)?' · dòng '+Number(c.lh||baseLine(f.page,f.key)).toFixed(1)+'px':''}`;
+    }
+    q('#v368ZoneDisplay')?.classList.toggle('active',zone==='display');q('#v368ZoneTouch')?.classList.toggle('active',zone==='touch');
+    qa('[data-v368-display-only]').forEach(b=>b.disabled=zone!=='display');qa('[data-v368-touch-only]').forEach(b=>b.disabled=zone!=='touch');
     if(full)status(dirty()?'● Có thay đổi chưa lưu':'');
   }
-  function redraw(){try{draw()}catch(e){window.v368ApplySavedLayout();}renderPanel();}
-  function move(dx,dy){if(!canTune()||!selected)return;const c=cfg(selected.page,selected.key,true);c.dx=Math.round(((Number(c.dx)||0)+dx)*10)/10;c.dy=Math.round(((Number(c.dy)||0)+dy)*10)/10;redraw();}
-  function font(delta){if(!canTune()||!selected)return;const c=cfg(selected.page,selected.key,true);const base=Number.isFinite(Number(c.fs))?Number(c.fs):baseFont(selected.page,selected.key);c.fs=Math.max(7,Math.min(36,Math.round((base+delta)*10)/10));redraw();}
-  function line(delta){if(!canTune()||!selected)return;const base=baseLine(selected.page,selected.key);if(!base){status('Ô này không phải nội dung nhiều dòng.');return;}const c=cfg(selected.page,selected.key,true);const cur=Number.isFinite(Number(c.lh))?Number(c.lh):base;c.lh=Math.max(9,Math.min(42,Math.round((cur+delta)*10)/10));redraw();}
-  function resetField(){if(!canTune()||!selected)return;delete draft[k(selected.page,selected.key)];redraw();status('Đã đưa ô này về mặc định. Bấm LƯU để xác nhận.');}
-  function resetForm(){if(!canTune())return;const ps=pages();if(!ps.length)return;if(!confirm('Khôi phục toàn bộ vị trí chữ của biểu mẫu này về mặc định?'))return;for(const id of Object.keys(draft)){const m=id.match(/^(\d+):/);if(m&&ps.includes(Number(m[1])))delete draft[id];}selected=null;redraw();status('Đã khôi phục toàn bộ. Bấm LƯU để xác nhận.');}
-  function save(){if(!canTune())return alert('Chỉ AD được phép lưu căn chỉnh biểu mẫu.');saveStore();status('✓ ĐÃ LƯU TRÊN THIẾT BỊ · KHÔNG GHI FIREBASE');if(typeof showAutoUpdateToast==='function')showAutoUpdateToast('✓ Đã lưu căn chỉnh biểu mẫu trên thiết bị');}
-  function close(discard=false){if(dirty()&&!discard&&!confirm('Có thay đổi chưa lưu. Đóng và bỏ các thay đổi này?'))return;draft=clone(saved);mode=false;selected=null;document.body.classList.remove('v368-layout-mode');q('#v368LayoutPanel')?.classList.remove('show');q('#v368LayoutTuneBtn')?.classList.remove('active');if(q('#v368LayoutTuneBtn'))q('#v368LayoutTuneBtn').textContent='⚙ CĂN CHỈNH';try{draw()}catch(e){} }
-  function open(){if(!canTune())return alert('Chỉ tài khoản AD được phép căn chỉnh biểu mẫu.');if(!SUPPORTED[String(activeFormGroup||'')])return;draft=clone(saved);mode=true;document.body.classList.add('v368-layout-mode');q('#v368LayoutPanel')?.classList.add('show');q('#v368LayoutTuneBtn')?.classList.add('active');if(q('#v368LayoutTuneBtn'))q('#v368LayoutTuneBtn').textContent='✕ ĐANG CĂN';redraw();}
+  function redraw(){try{draw()}catch(e){window.v368ApplySavedLayout()}renderPanel()}
+  function move(dx,dy){if(!canTune()||!selected)return;const c=cfg(selected.page,selected.key,true);if(zone==='touch'){c.hx=Math.round(((Number(c.hx)||0)+dx)*10)/10;c.hy=Math.round(((Number(c.hy)||0)+dy)*10)/10}else{c.dx=Math.round(((Number(c.dx)||0)+dx)*10)/10;c.dy=Math.round(((Number(c.dy)||0)+dy)*10)/10}redraw()}
+  function resizeTouch(dw,dh){if(!canTune()||!selected||zone!=='touch')return;const c=cfg(selected.page,selected.key,true);c.hw=Math.max(-800,Math.min(1200,Math.round(((Number(c.hw)||0)+dw)*10)/10));c.hh=Math.max(-800,Math.min(1200,Math.round(((Number(c.hh)||0)+dh)*10)/10));redraw()}
+  function font(delta){if(!canTune()||!selected||zone!=='display')return;const c=cfg(selected.page,selected.key,true),base=Number.isFinite(Number(c.fs))?Number(c.fs):baseFont(selected.page,selected.key);c.fs=Math.max(7,Math.min(36,Math.round((base+delta)*10)/10));redraw()}
+  function line(delta){if(!canTune()||!selected||zone!=='display')return;const base=baseLine(selected.page,selected.key);if(!base){status('Ô này không phải nội dung nhiều dòng.');return}const c=cfg(selected.page,selected.key,true),cur=Number.isFinite(Number(c.lh))?Number(c.lh):base;c.lh=Math.max(9,Math.min(42,Math.round((cur+delta)*10)/10));redraw()}
+  function resetZone(){if(!canTune()||!selected)return;const id=k(selected.page,selected.key),c=cfg(selected.page,selected.key,true);if(zone==='touch'){delete c.hx;delete c.hy;delete c.hw;delete c.hh}else{delete c.dx;delete c.dy;delete c.fs;delete c.lh}if(!Object.keys(c).length)delete draft[id];redraw();status('Đã khôi phục vùng '+(zone==='touch'?'CHẠM':'HIỂN THỊ')+'. Bấm LƯU để xác nhận.')}
+  function resetField(){if(!canTune()||!selected)return;delete draft[k(selected.page,selected.key)];redraw();status('Đã khôi phục cả vùng CHẠM và HIỂN THỊ của ô này.')}
+  function resetForm(){if(!canTune())return;const ps=pages();if(!ps.length||!confirm('Khôi phục toàn bộ vùng CHẠM + HIỂN THỊ của biểu mẫu này về mặc định?'))return;for(const id of Object.keys(draft)){const m=id.match(/^(\d+):/);if(m&&ps.includes(Number(m[1])))delete draft[id]}selected=null;redraw();status('Đã khôi phục toàn bộ biểu mẫu. Bấm LƯU để xác nhận.')}
+  function save(){if(!canTune())return alert('Chỉ AD được phép lưu căn chỉnh biểu mẫu.');saveStore();status('✓ ĐÃ LƯU 2 VÙNG TRÊN THIẾT BỊ · KHÔNG GHI FIREBASE');if(typeof showAutoUpdateToast==='function')showAutoUpdateToast('✓ Đã lưu vùng chạm + hiển thị trên thiết bị')}
+  function close(discard=false){if(dirty()&&!discard&&!confirm('Có thay đổi chưa lưu. Đóng và bỏ các thay đổi này?'))return;draft=clone(saved);mode=false;selected=null;drag=null;document.body.classList.remove('v368-layout-mode','v368-zone-display','v368-zone-touch');q('#v368LayoutPanel')?.classList.remove('show');q('#v368LayoutTuneBtn')?.classList.remove('active');if(q('#v368LayoutTuneBtn'))q('#v368LayoutTuneBtn').textContent='⚙ CĂN CHỈNH';try{draw()}catch(e){}}
+  function open(){if(!canTune())return alert('Chỉ tài khoản AD được phép căn chỉnh biểu mẫu.');if(!SUPPORTED[String(activeFormGroup||'')])return;draft=clone(saved);mode=true;zone='display';document.body.classList.add('v368-layout-mode','v368-zone-display');document.body.classList.remove('v368-zone-touch');q('#v368LayoutPanel')?.classList.add('show');q('#v368LayoutTuneBtn')?.classList.add('active');if(q('#v368LayoutTuneBtn'))q('#v368LayoutTuneBtn').textContent='✕ ĐANG CĂN';redraw()}
   function toggle(){mode?close():open()}
   function makeUI(){
-    if(q('#v368LayoutTuneBtn'))return;
-    const btn=document.createElement('button');btn.id='v368LayoutTuneBtn';btn.type='button';btn.textContent='⚙ CĂN CHỈNH';btn.onclick=toggle;document.body.appendChild(btn);
+    if(q('#v368LayoutTuneBtn'))return;const btn=document.createElement('button');btn.id='v368LayoutTuneBtn';btn.type='button';btn.textContent='⚙ CĂN CHỈNH';btn.onclick=toggle;document.body.appendChild(btn);
     const p=document.createElement('div');p.id='v368LayoutPanel';p.innerHTML=`
-      <div class="v368Head"><div><div class="v368Title">CĂN CHỈNH 42.3 / 55.1 · AD</div><div class="v368Hint">Khung tím/đỏ bám đúng quanh chữ. Chạm hoặc kéo KHUNG = di chuyển chính chữ. Mỗi bước mũi tên = 1 px.</div></div><button type="button" onclick="v368LayoutClose()">×</button></div>
-      <div class="v368Field"><div id="v368LayoutFieldName">Chạm vào vùng chữ trên biểu mẫu để chọn</div><div class="v368Meta" id="v368LayoutMeta"></div></div>
-      <div class="v368Grid"><span></span><button onclick="v368LayoutMove(0,-1)">↑</button><span></span><button onclick="v368LayoutFont(-1)">A−</button><button onclick="v368LayoutFont(1)">A+</button><button onclick="v368LayoutMove(-1,0)">←</button><button onclick="v368LayoutMove(0,1)">↓</button><button onclick="v368LayoutMove(1,0)">→</button><button onclick="v368LayoutLine(-1)">DÒNG−</button><button onclick="v368LayoutLine(1)">DÒNG+</button></div>
-      <div class="v368Rows"><button class="danger" onclick="v368LayoutResetField()">KHÔI PHỤC Ô</button><button class="danger" onclick="v368LayoutResetForm()">RESET BIỂU MẪU</button></div>
+      <div class="v368Head"><div><div class="v368Title">CĂN CHỈNH 42.3 / 55.1 · AD</div><div class="v368Hint">Có 2 vùng độc lập: <b>🟦 CĂN CHẠM</b> = nơi người dùng bấm để nhập; <b>🟪 CĂN HIỂN THỊ</b> = vị trí chữ sau khi nhập. Chỉnh vùng nào không làm vùng kia chạy theo.</div></div><button type="button" onclick="v368LayoutClose()">×</button></div>
+      <div class="v368ZoneTabs"><button id="v368ZoneTouch" class="v368ZoneTouch" onclick="v371LayoutZone('touch')">🟦 CĂN CHẠM</button><button id="v368ZoneDisplay" class="v368ZoneDisplay active" onclick="v371LayoutZone('display')">🟪 CĂN HIỂN THỊ</button></div>
+      <div class="v368Field"><div id="v368LayoutFieldName">Chọn vùng rồi chạm vào ô cần chỉnh</div><div class="v368Meta" id="v368LayoutMeta"></div></div>
+      <div class="v368Grid"><span></span><button onclick="v368LayoutMove(0,-1)">↑</button><span></span><button data-v368-display-only onclick="v368LayoutFont(-1)">A−</button><button data-v368-display-only onclick="v368LayoutFont(1)">A+</button><button onclick="v368LayoutMove(-1,0)">←</button><button onclick="v368LayoutMove(0,1)">↓</button><button onclick="v368LayoutMove(1,0)">→</button><button data-v368-display-only onclick="v368LayoutLine(-1)">DÒNG−</button><button data-v368-display-only onclick="v368LayoutLine(1)">DÒNG+</button></div>
+      <div class="v368Grid"><button data-v368-touch-only onclick="v371LayoutResize(-2,0)">RỘNG−</button><button data-v368-touch-only onclick="v371LayoutResize(2,0)">RỘNG+</button><span></span><button data-v368-touch-only onclick="v371LayoutResize(0,-2)">CAO−</button><button data-v368-touch-only onclick="v371LayoutResize(0,2)">CAO+</button></div>
+      <div class="v368Rows three"><button class="danger" onclick="v371LayoutResetZone()">RESET VÙNG</button><button class="danger" onclick="v368LayoutResetField()">RESET Ô</button><button class="danger" onclick="v368LayoutResetForm()">RESET FORM</button></div>
       <div class="v368Rows"><button onclick="v368LayoutClose()">ĐÓNG</button><button class="save" onclick="v368LayoutSave()">💾 LƯU</button></div>
       <div class="v368Status" id="v368LayoutStatus"></div>`;
-    document.body.appendChild(p);window.v368RefreshTuneButton();
+    document.body.appendChild(p);window.v368RefreshTuneButton();renderPanel();
   }
   window.v368RefreshTuneButton=function(){const b=q('#v368LayoutTuneBtn');if(!b)return;const ok=canTune()&&!!SUPPORTED[String(activeFormGroup||'')];b.style.display=ok?'block':'none';if(!ok&&mode)close(true)};
+  window.v371LayoutZone=setZone;window.v371LayoutResize=resizeTouch;window.v371LayoutResetZone=resetZone;
   window.v368LayoutMove=move;window.v368LayoutFont=font;window.v368LayoutLine=line;window.v368LayoutResetField=resetField;window.v368LayoutResetForm=resetForm;window.v368LayoutSave=save;window.v368LayoutClose=()=>close(false);
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{makeUI();setTimeout(()=>{try{draw()}catch(e){}},50)});else{makeUI();setTimeout(()=>{try{draw()}catch(e){}},50)}
 })();
