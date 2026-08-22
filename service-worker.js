@@ -1,5 +1,5 @@
-const CACHE_NAME="sags-v3-81-firebase-auth-ready-20260822-01";
-const BUILD="V3.81-20260822-01";
+const CACHE_NAME="sags-v3-82-ad-firebase-auth-20260822-01";
+const BUILD="V3.82-20260822-01";
 const APP_SHELL=[
   "./9Gfinal.png",
   "./CBTT.png",

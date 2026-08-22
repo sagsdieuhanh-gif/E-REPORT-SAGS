@@ -1,9 +1,9 @@
 {
-  "version": "V3.81",
-  "displayVersion": "V3.81",
-  "label": "V3.81",
-  "build": "V3.81-20260822-01",
-  "releasedAt": "2026-08-22T12:34:00Z",
-  "notes": "Adds Firebase Authentication compat SDK 10.14.1 and a non-invasive readiness marker. Existing E-REPORT username/password login, roles, Firestore/RTDB rules, and business data behavior remain unchanged.",
-  "message": "V3.81 · Firebase Auth SDK Ready · chưa thay đổi đăng nhập hiện tại."
+  "version": "V3.82",
+  "displayVersion": "V3.82",
+  "label": "V3.82",
+  "build": "V3.82-20260822-01",
+  "releasedAt": "2026-08-22T12:56:00Z",
+  "notes": "AD now authenticates with Firebase Authentication using the linked Firebase user. Existing non-AD personal accounts remain on the current login flow during migration. Firestore/RTDB Security Rules are not changed yet.",
+  "message": "V3.82 · AD Firebase Auth Login · AD bắt buộc xác thực Firebase, tài khoản khác chưa đổi."
 }
