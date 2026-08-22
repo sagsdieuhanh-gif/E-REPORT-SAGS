@@ -4643,12 +4643,12 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 /* ===== END roster-completed.js ===== */
 
 /* ===== BEGIN flight-hub.js ===== */
-/* E-REPORT SAGS V3.58 · MASTER FLIGHT HUB
+/* E-REPORT SAGS V3.60 · MASTER FLIGHT HUB
  * One Daily Roster flight = one master flight record. Operational modules keep their canonical data
  * but register a compact pointer/status under the same flightId so every department works in one flight workspace.
  */
 (function(root){'use strict';
-  const BUILD='V3.58-20260822-02';
+  const BUILD='V3.60-20260822-02';
   const ROOT='flight_records', MANIFEST='roster_manifests', MAIL='roster_mail';
   const S=v=>String(v??'').trim(), U=v=>S(v).toUpperCase();
   const safe=v=>S(v).replace(/[.#$\[\]\/]/g,'_');
