@@ -1,5 +1,5 @@
-const CACHE_NAME="sags-v3-71-dual-layout-touch-display-20260822-01";
-const BUILD="V3.71-20260822-01";
+const CACHE_NAME="sags-v3-72-layout-export-file-20260822-01";
+const BUILD="V3.72-20260822-01";
 const APP_SHELL=[
   "./9Gfinal.png",
   "./CBTT.png",
@@ -60,7 +60,7 @@ self.addEventListener("activate",event=>{event.waitUntil(caches.keys().then(keys
 self.addEventListener("message",event=>{if(event.data&&event.data.type==="SKIP_WAITING")self.skipWaiting();});
 self.addEventListener("fetch",event=>{
  if(event.request.method!=="GET")return;const url=new URL(event.request.url);if(url.origin!==self.location.origin)return;
- const fresh=event.request.mode==="navigate"||["/version.json","/manifest.webmanifest","/index.html","/app.js","/action-center-v342.js","/closeout-final-autofill-v344.js","/flight-workspace-documents-v350.js","/compact-toolbar-v351.js","/ai.js"].some(x=>url.pathname.endsWith(x));
+ const fresh=event.request.mode==="navigate"||["/version.json","/manifest.webmanifest","/index.html","/app.js","/form-layout.js","/action-center-v342.js","/closeout-final-autofill-v344.js","/flight-workspace-documents-v350.js","/compact-toolbar-v351.js","/ai.js"].some(x=>url.pathname.endsWith(x));
  if(fresh){event.respondWith((async()=>{try{const r=await fetch(event.request,{cache:"no-store"});if(r&&r.ok){const copy=r.clone();caches.open(CACHE_NAME).then(c=>c.put(event.request,copy)).catch(()=>{});}return r;}catch(_){return await caches.match(event.request)||(event.request.mode==="navigate"?await caches.match("./index.html"):undefined);}})());return;}
  event.respondWith(caches.match(event.request).then(c=>c||fetch(event.request).then(r=>{if(r&&r.ok){const copy=r.clone();caches.open(CACHE_NAME).then(cc=>cc.put(event.request,copy)).catch(()=>{});}return r;})));
 });

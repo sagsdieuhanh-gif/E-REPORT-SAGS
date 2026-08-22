@@ -2172,7 +2172,7 @@ body.role-viewer #ffSendBtn{
 </div>
 <div id="rsOverdueHost"></div>
 
-<script src="./app.js?v=V3.71" data-phase="qr"></script>
+<script src="./app.js?v=V3.72" data-phase="qr"></script>
 <style>
 /* ===== V6.3.5 FINAL RECEIVER SCROLL + PERFORMANCE ===== */
 #finalFormsModal{
@@ -3091,7 +3091,7 @@ body.v368-layout-mode .sheet{outline:2px dashed rgba(124,58,237,.35);outline-off
   </div>
 </div>
 
-<div id="buildMarker">V3.71</div>
+<div id="buildMarker">V3.72</div>
 <div aria-live="polite" id="currentFerryFlag"><span class="dot"></span><span id="currentFerryFlagText">FERRY</span></div>
 <div class="toolbar compact-main-toolbar">
 <div class="badge">PĐH SAGS-CXR</div>
@@ -3140,10 +3140,10 @@ body.v368-layout-mode .sheet{outline:2px dashed rgba(124,58,237,.35);outline-off
 <button onclick="closeUpdateInfo()" aria-label="Đóng" style="border:0;background:#eee;border-radius:50%;width:34px;height:34px;font-size:21px;line-height:30px">×</button>
 </div>
 <div style="padding:11px 12px;border:1px solid #b7d7ef;border-radius:11px;background:#eef7ff">
-<p style="margin:0 0 6px;color:#075985"><b>V3.71 · 22/08/2026 — TÁCH RIÊNG VÙNG CĂN CHẠM / CĂN HIỂN THỊ</b></p>
+<p style="margin:0 0 6px;color:#075985"><b>V3.72 · 22/08/2026 — XUẤT LAYOUT THÀNH FILE DÙNG CHUNG</b></p>
 <p style="margin:4px 0">• <b>⚙ CĂN CHỈNH</b> FSAGS 42.3 và 55.1 chỉ hiển thị cho tài khoản <b>AD</b>. Nhân viên vẫn dùng layout đã lưu nhưng không thể mở/chỉnh/reset cấu hình.</p>
-<p style="margin:4px 0">• V3.71: tách thành 2 vùng độc lập: <b>🟦 CĂN CHẠM</b> để chỉnh vùng bấm/mở ô và <b>🟪 CĂN HIỂN THỊ</b> để chỉnh vị trí chữ. Hai vùng lưu riêng, không kéo theo nhau.</p>
-<p style="margin:4px 0">• Bấm <b>LƯU</b> để giữ bố cục trên thiết bị. Cấu hình chỉ nằm trong localStorage, <b>không phát sinh Firestore Read/Write</b>.</p>
+<p style="margin:4px 0">• V3.72: AD có thể căn CHẠM + HIỂN THỊ rồi <b>XUẤT FILE form-layout.js</b>. Upload file này cùng index.html/app.js để mọi máy dùng chung layout mới.</p>
+<p style="margin:4px 0">• <b>LƯU</b> = bản nháp trên máy AD. <b>XUẤT FILE</b> = tạo form-layout.js để đưa lên GitHub. Nhân viên tự nhận layout từ file này; không dùng Firebase.</p>
 <p style="margin:4px 0">• Có thể khôi phục riêng từng ô hoặc toàn bộ biểu mẫu về vị trí mặc định bất cứ lúc nào.</p>
 <p style="margin:4px 0">• Khi import lại cùng ngày, hệ thống so sánh từng assignment với roster đã có.</p>
 <p style="margin:4px 0">• Assignment <b>không thay đổi sẽ bỏ qua hoàn toàn</b>: không ghi lại Manifest, Mailbox hoặc Flight Hub.</p>
@@ -3152,7 +3152,7 @@ body.v368-layout-mode .sheet{outline:2px dashed rgba(124,58,237,.35);outline-off
 </div>
 <details style="margin-top:10px;padding:9px 11px;border:1px solid #dbe4eb;border-radius:10px;background:#fafcfd">
 <summary style="cursor:pointer;font-weight:800;color:#334155">Lưu ý sau khi cập nhật</summary>
-<p style="margin:8px 0 0">Dữ liệu hồ sơ nghiệp vụ trên Firebase không bị xóa. Chỉ cập nhật khi người dùng bấm CẬP NHẬT và chờ nhãn góc trái hiện V3.71.</p>
+<p style="margin:8px 0 0">Dữ liệu hồ sơ nghiệp vụ trên Firebase không bị xóa. Chỉ cập nhật khi người dùng bấm CẬP NHẬT và chờ nhãn góc trái hiện V3.72.</p>
 </details>
 <button onclick="closeUpdateInfo()" style="width:100%;margin-top:12px;border:0;border-radius:10px;padding:10px 14px;background:#0b67b2;color:#fff;font-weight:800">ĐÓNG</button>
 </div>
@@ -4124,7 +4124,7 @@ body.v368-layout-mode .sheet{outline:2px dashed rgba(124,58,237,.35);outline-off
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
-<script src="./app.js?v=V3.71" data-phase="config"></script>
+<script src="./app.js?v=V3.72" data-phase="config"></script>
 <script>
 let suppressModalClickUntil=0;
 function armModalGhostClickBlock(ms=650){
@@ -7045,7 +7045,7 @@ function draw(){
       : [{x:a.x-px,y:a.y-py,w:a.w+px*2,h:a.h+py*2}];
 
     for(const hrBase of hitRects){
-      // V3.71: touch zone is independent from displayed text. Apply device-local
+      // V3.72: touch zone is independent from displayed text. Apply device-local
       // touch calibration (hx/hy/hw/hh) to the REAL hit rectangle used in normal mode.
       let tc={};
       try{
@@ -7221,7 +7221,7 @@ function draw(){
 
 
   /* =========================================================
-     V3.71 — FSAGS 42.3 DOT-LINE DISPLAY ENGINE
+     V3.72 — FSAGS 42.3 DOT-LINE DISPLAY ENGINE
      IMPORTANT:
      - These printed rows are NOT ordinary input boxes. Their dotted guides
        sit inside the same visual row as the labels.
@@ -7484,7 +7484,7 @@ function draw(){
     continue;
   }
 
-  // V4.78 legacy DEP Remarks renderer (V3.71 handles this earlier via measured dot-line engine).
+  // V4.78 legacy DEP Remarks renderer (V3.72 handles this earlier via measured dot-line engine).
   // Safari/iOS intermittently fails to paint HTML inside SVG foreignObject after
   // the editor closes, even though state is saved and PDF export still contains it.
   // Render this one-line printed Remarks field directly as SVG <text> so live view
@@ -12271,8 +12271,8 @@ try {
   alert("Lỗi JavaScript: "+err.message);
 }
 
-const APP_BUILD_VERSION="V3.71-20260822-01";
-const APP_DISPLAY_VERSION="V3.71";
+const APP_BUILD_VERSION="V3.72-20260822-01";
+const APP_DISPLAY_VERSION="V3.72";
 
 // V4.21 — SAFE UPDATE SAVE
 // Before switching to a newly installed app version, force-save all current
@@ -21064,7 +21064,7 @@ function applyRoleUI(){
   // Nếu ứng dụng được mở từ QR Giao Ca, xử lý sau khi đã xác định tài khoản.
   setTimeout(tryOpenPendingHandoverDeepLink,120);
 
-  // V3.71: nút căn chỉnh 42.3 / 55.1 chỉ dành cho AD.
+  // V3.72: nút căn chỉnh 42.3 / 55.1 chỉ dành cho AD.
   try{if(typeof window.v368RefreshTuneButton==="function")window.v368RefreshTuneButton();}catch(e){}
 
   // V6.4.0: Sau đăng nhập KHÔNG tự mở bất kỳ màn chức năng nào.
@@ -24242,7 +24242,7 @@ window.openCamScanner=openCamScanner;
 <script type="module" src="./ai.js?v=V3.58"></script>
 
 
-<script src="./app.js?v=V3.71" data-phase="archive"></script>
+<script src="./app.js?v=V3.72" data-phase="archive"></script>
 <script id="v120-build02-fixes">
 /* V1.20 BUILD 02 — background persistence, VHTTB, per-account usage detail, progress dedupe. */
 (function(){
@@ -24683,7 +24683,7 @@ window.openCamScanner=openCamScanner;
 
 
 
-<script src="./app.js?v=V3.71" data-phase="tools"></script>
+<script src="./app.js?v=V3.72" data-phase="tools"></script>
 <script id="v173-quick-time">
 (function(){
   "use strict";
@@ -26739,7 +26739,7 @@ window.openCamScanner=openCamScanner;
 }
 </style>
 
-<script src="./app.js?v=V3.71" data-phase="flight"></script>
+<script src="./app.js?v=V3.72" data-phase="flight"></script>
 <script id="v191IOSInteractionFix">
 (()=>{
   'use strict';
@@ -27003,7 +27003,7 @@ window.openCamScanner=openCamScanner;
 })();
 </script>
 
-<script src="./app.js?v=V3.71" data-phase="control"></script>
+<script src="./app.js?v=V3.72" data-phase="control"></script>
 
 <style id="v330-group-permission-style">
 #v330GroupPermPanel{margin:12px 0 8px;padding:11px;border:1px solid #cbd9e6;border-radius:12px;background:#f7fbff;box-sizing:border-box}
@@ -27250,23 +27250,35 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <script src="./closeout-final-autofill-v344.js?v=V3.59"></script>
 
 
+<script src="./form-layout.js" data-sags-layout-config onerror="this.remove()"></script>
+
 <script id="v368LayoutTuneScript">
 /* =========================================================
-   V3.71 — DUAL LAYOUT TUNER · FSAGS 42.3 / 55.1 · AD ONLY
+   V3.72 — DUAL LAYOUT TUNER + EXPORT FILE · FSAGS 42.3 / 55.1 · AD ONLY
    - DISPLAY zone: dx/dy/font/line-height
    - TOUCH zone: hx/hy/width/height
-   Device-local only. No Firebase read/write.
+   AD draft is local. Published layout comes from form-layout.js. No Firebase read/write.
    ========================================================= */
 (function(){
   const STORE_KEY="SAGS_FORM_LAYOUT_V368";
+  const LOCAL_META_KEY="SAGS_FORM_LAYOUT_LOCAL_META_V372";
   const SUPPORTED={fsags:[1,2],fsags551:[9,10]};
   let saved=loadStore(),draft=clone(saved),mode=false,selected=null,drag=null,zone='display';
   const q=(s,r=document)=>r.querySelector(s);
   const qa=(s,r=document)=>Array.from(r.querySelectorAll(s));
   function canTune(){try{return String(window.currentRole||currentRole||"").toUpperCase()==="AD"}catch(e){return false}}
   function clone(v){try{return JSON.parse(JSON.stringify(v||{}))}catch(e){return {}}}
-  function loadStore(){try{const v=JSON.parse(localStorage.getItem(STORE_KEY)||"{}");return v&&typeof v==="object"?v:{}}catch(e){return {}}}
-  function saveStore(){saved=clone(draft);try{localStorage.setItem(STORE_KEY,JSON.stringify(saved))}catch(e){}}
+  function publishedPayload(){try{const p=window.SAGS_PUBLISHED_FORM_LAYOUT;return p&&typeof p==="object"?p:null}catch(e){return null}}
+  function publishedFields(){const p=publishedPayload();return p&&p.fields&&typeof p.fields==="object"?clone(p.fields):{}}
+  function localMeta(){try{return JSON.parse(localStorage.getItem(LOCAL_META_KEY)||"{}")||{}}catch(e){return {}}}
+  function loadStore(){
+    let local={};try{const v=JSON.parse(localStorage.getItem(STORE_KEY)||"{}");local=v&&typeof v==="object"?v:{}}catch(e){}
+    const pub=publishedPayload(),pf=publishedFields(),pm=Number(pub?.publishedAt||0),lm=Number(localMeta().savedAt||0);
+    // Published file wins on every device when it is newer. AD can still make a newer local draft until the next export.
+    if(pm>lm)return pf;
+    return Object.assign({},pf,local);
+  }
+  function saveStore(){saved=clone(draft);try{localStorage.setItem(STORE_KEY,JSON.stringify(saved));localStorage.setItem(LOCAL_META_KEY,JSON.stringify({savedAt:Date.now()}))}catch(e){}}
   function pages(){return SUPPORTED[String(window.activeFormGroup||activeFormGroup||"")]||[]}
   function k(page,key){return String(page)+":"+String(key)}
   function cfg(page,key,create=false){const id=k(page,key);if(!draft[id]&&create)draft[id]={};return draft[id]||null}
@@ -27399,7 +27411,17 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   function resetZone(){if(!canTune()||!selected)return;const id=k(selected.page,selected.key),c=cfg(selected.page,selected.key,true);if(zone==='touch'){delete c.hx;delete c.hy;delete c.hw;delete c.hh}else{delete c.dx;delete c.dy;delete c.fs;delete c.lh}if(!Object.keys(c).length)delete draft[id];redraw();status('Đã khôi phục vùng '+(zone==='touch'?'CHẠM':'HIỂN THỊ')+'. Bấm LƯU để xác nhận.')}
   function resetField(){if(!canTune()||!selected)return;delete draft[k(selected.page,selected.key)];redraw();status('Đã khôi phục cả vùng CHẠM và HIỂN THỊ của ô này.')}
   function resetForm(){if(!canTune())return;const ps=pages();if(!ps.length||!confirm('Khôi phục toàn bộ vùng CHẠM + HIỂN THỊ của biểu mẫu này về mặc định?'))return;for(const id of Object.keys(draft)){const m=id.match(/^(\d+):/);if(m&&ps.includes(Number(m[1])))delete draft[id]}selected=null;redraw();status('Đã khôi phục toàn bộ biểu mẫu. Bấm LƯU để xác nhận.')}
-  function save(){if(!canTune())return alert('Chỉ AD được phép lưu căn chỉnh biểu mẫu.');saveStore();status('✓ ĐÃ LƯU 2 VÙNG TRÊN THIẾT BỊ · KHÔNG GHI FIREBASE');if(typeof showAutoUpdateToast==='function')showAutoUpdateToast('✓ Đã lưu vùng chạm + hiển thị trên thiết bị')}
+  function save(){if(!canTune())return alert('Chỉ AD được phép lưu căn chỉnh biểu mẫu.');saveStore();status('✓ ĐÃ LƯU BẢN NHÁP TRÊN MÁY AD');if(typeof showAutoUpdateToast==='function')showAutoUpdateToast('✓ Đã lưu bản nháp layout trên thiết bị')}
+  function exportLayoutFile(){
+    if(!canTune())return alert('Chỉ AD được phép xuất cấu hình biểu mẫu.');
+    if(dirty()){if(!confirm('Có thay đổi chưa LƯU. Lưu trước rồi xuất file?'))return;saveStore();}
+    const payload={schema:1,build:'V3.72',publishedAt:Date.now(),forms:['fsags423','fsags551'],fields:clone(saved)};
+    const body='/* SAGS shared form layout · generated by AD · do not edit by hand */\nwindow.SAGS_PUBLISHED_FORM_LAYOUT='+JSON.stringify(payload,null,2)+';\n';
+    const blob=new Blob([body],{type:'text/javascript;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+    a.href=url;a.download='form-layout.js';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
+    status('✓ ĐÃ XUẤT form-layout.js · upload file này lên GitHub cùng thư mục index.html');
+    if(typeof showAutoUpdateToast==='function')showAutoUpdateToast('✓ Đã xuất form-layout.js');
+  }
   function close(discard=false){if(dirty()&&!discard&&!confirm('Có thay đổi chưa lưu. Đóng và bỏ các thay đổi này?'))return;draft=clone(saved);mode=false;selected=null;drag=null;document.body.classList.remove('v368-layout-mode','v368-zone-display','v368-zone-touch');q('#v368LayoutPanel')?.classList.remove('show');q('#v368LayoutTuneBtn')?.classList.remove('active');if(q('#v368LayoutTuneBtn'))q('#v368LayoutTuneBtn').textContent='⚙ CĂN CHỈNH';try{draw()}catch(e){}}
   function open(){if(!canTune())return alert('Chỉ tài khoản AD được phép căn chỉnh biểu mẫu.');if(!SUPPORTED[String(activeFormGroup||'')])return;draft=clone(saved);mode=true;zone='display';document.body.classList.add('v368-layout-mode','v368-zone-display');document.body.classList.remove('v368-zone-touch');q('#v368LayoutPanel')?.classList.add('show');q('#v368LayoutTuneBtn')?.classList.add('active');if(q('#v368LayoutTuneBtn'))q('#v368LayoutTuneBtn').textContent='✕ ĐANG CĂN';redraw()}
   function toggle(){mode?close():open()}
@@ -27412,13 +27434,14 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       <div class="v368Grid"><span></span><button onclick="v368LayoutMove(0,-1)">↑</button><span></span><button data-v368-display-only onclick="v368LayoutFont(-1)">A−</button><button data-v368-display-only onclick="v368LayoutFont(1)">A+</button><button onclick="v368LayoutMove(-1,0)">←</button><button onclick="v368LayoutMove(0,1)">↓</button><button onclick="v368LayoutMove(1,0)">→</button><button data-v368-display-only onclick="v368LayoutLine(-1)">DÒNG−</button><button data-v368-display-only onclick="v368LayoutLine(1)">DÒNG+</button></div>
       <div class="v368Grid"><button data-v368-touch-only onclick="v371LayoutResize(-2,0)">RỘNG−</button><button data-v368-touch-only onclick="v371LayoutResize(2,0)">RỘNG+</button><span></span><button data-v368-touch-only onclick="v371LayoutResize(0,-2)">CAO−</button><button data-v368-touch-only onclick="v371LayoutResize(0,2)">CAO+</button></div>
       <div class="v368Rows three"><button class="danger" onclick="v371LayoutResetZone()">RESET VÙNG</button><button class="danger" onclick="v368LayoutResetField()">RESET Ô</button><button class="danger" onclick="v368LayoutResetForm()">RESET FORM</button></div>
-      <div class="v368Rows"><button onclick="v368LayoutClose()">ĐÓNG</button><button class="save" onclick="v368LayoutSave()">💾 LƯU</button></div>
+      <div class="v368Rows"><button onclick="v368LayoutClose()">ĐÓNG</button><button class="save" onclick="v368LayoutSave()">💾 LƯU NHÁP</button></div>
+      <div class="v368Rows"><button class="save" style="grid-column:1/-1" onclick="v372LayoutExport()">📦 XUẤT FILE form-layout.js</button></div>
       <div class="v368Status" id="v368LayoutStatus"></div>`;
     document.body.appendChild(p);window.v368RefreshTuneButton();renderPanel();
   }
   window.v368RefreshTuneButton=function(){const b=q('#v368LayoutTuneBtn');if(!b)return;const ok=canTune()&&!!SUPPORTED[String(activeFormGroup||'')];b.style.display=ok?'block':'none';if(!ok&&mode)close(true)};
   window.v371LayoutZone=setZone;window.v371LayoutResize=resizeTouch;window.v371LayoutResetZone=resetZone;
-  window.v368LayoutMove=move;window.v368LayoutFont=font;window.v368LayoutLine=line;window.v368LayoutResetField=resetField;window.v368LayoutResetForm=resetForm;window.v368LayoutSave=save;window.v368LayoutClose=()=>close(false);
+  window.v368LayoutMove=move;window.v368LayoutFont=font;window.v368LayoutLine=line;window.v368LayoutResetField=resetField;window.v368LayoutResetForm=resetForm;window.v368LayoutSave=save;window.v372LayoutExport=exportLayoutFile;window.v368LayoutClose=()=>close(false);
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{makeUI();setTimeout(()=>{try{draw()}catch(e){}},50)});else{makeUI();setTimeout(()=>{try{draw()}catch(e){}},50)}
 })();
 </script>
