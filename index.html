@@ -12511,9 +12511,9 @@ function openAppUpdatePrompt(serverVersion){
   const propagating=!!(appUpdatePendingServerBuild && appUpdatePendingServerBuild===serverVersion);
   if(propagating){
     if(title) title.textContent="Đã phát hiện "+nextLabel;
-    if(txt) txt.textContent="GitHub đã có phiên bản "+nextLabel+" nhưng index.html đang đồng bộ. Hệ thống sẽ tự kiểm tra lại vài giây nữa.";
-    if(btn){ btn.disabled=true; btn.textContent="ĐANG CHỜ GITHUB ĐỒNG BỘ…"; }
-    setTimeout(()=>checkForNewestBuild(appUpdateRegistration),3000);
+    if(txt) txt.textContent="GitHub đã có "+nextLabel+". Nếu index.html chưa đồng bộ, bạn có thể bấm KIỂM TRA & CẬP NHẬT NGAY; hệ thống sẽ xóa cache cũ và tải lại bản mới.";
+    if(btn){ btn.disabled=false; btn.textContent="KIỂM TRA & CẬP NHẬT NGAY"; }
+    setTimeout(()=>checkForNewestBuild(appUpdateRegistration),5000);
   }else if(btn){
     btn.disabled=false;
     btn.textContent="LƯU & CẬP NHẬT"+(nextLabel==="bản mới"?"":" "+nextLabel);
@@ -12582,11 +12582,21 @@ async function applyAppUpdate(){
     if(verified.displayVersion) appUpdateDisplayTarget=verified.displayVersion;
     if(!actualTarget) throw new Error("Không xác định được build của index.html mới.");
     if(actualTarget===APP_BUILD_VERSION){
-      // GitHub Pages may publish version.json before index.html. Keep the notification
-      // visible and retry instead of silently closing it.
+      // version.json may arrive before index.html through GitHub Pages/CDN.
+      // On explicit user action, clear old browser caches/SW and force a cache-busted reload.
       if(appUpdatePendingServerBuild && appUpdatePendingServerBuild!==APP_BUILD_VERSION){
-        openAppUpdatePrompt(appUpdatePendingServerBuild);
-        setTimeout(()=>checkForNewestBuild(appUpdateRegistration),3000);
+        try{
+          const regs=await navigator.serviceWorker.getRegistrations();
+          await Promise.all(regs.map(r=>r.unregister().catch(()=>false)));
+        }catch(_e){}
+        try{
+          if(window.caches){
+            const keys=await caches.keys();
+            await Promise.all(keys.map(k=>caches.delete(k).catch(()=>false)));
+          }
+        }catch(_e){}
+        localStorage.setItem("pdh-update-applying",appUpdatePendingServerBuild);
+        reloadIntoBuild(appUpdatePendingServerBuild);
         return;
       }
       appUpdateTarget="";
