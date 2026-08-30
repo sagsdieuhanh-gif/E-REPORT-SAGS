@@ -247,7 +247,7 @@ function install(){wrapPublish();wrapWorkspace();installStyle();if(role()==='AD'
 install();setTimeout(install,350);setTimeout(install,1100);window.addEventListener('pageshow',()=>setTimeout(install,100),{passive:true});document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(install,100)},{passive:true});
 root.__SAGS_DAILY_ROSTER_FINAL_V1199={build:BUILD,dedupeItems,slotKey,flightKey,itemCompleted,itemWorking,clearStaleClaimIfNeeded,groupTasks,cleanupDuplicates,renderPersonal,queueDate,syncQueueDate,resolveOwnedItem};
 })(typeof window!=='undefined'?window:globalThis);
-/* === V1.1.104 IT PUBLIC 6-TIME SYNC · IT GET 60s === */
+/* === IT PUBLIC 6-TIME SYNC · FREE RTDB REST · IT GET 120s === */
 (function(root){
 'use strict';
 
@@ -257,6 +257,10 @@ const W='roster_flight_workspaces';
 
 const S=v=>String(v??'').trim();
 const U=v=>S(v).toUpperCase();
+const TV=v=>{
+  const x=S(v);
+  return /^(?:N\/?A|NIL|-)$/i.test(x) ? '' : x;
+};
 
 const safe=v=>
   S(v)
@@ -285,7 +289,7 @@ function date(v){
 
 function p(st,ks){
   for(const k of ks){
-    const v=S(st?.[k]);
+    const v=TV(st?.[k]);
     if(v) return v;
   }
   return '';
@@ -303,7 +307,7 @@ function t(st={},r={}){
         'f421_h5Start',
         'h5',
         'f421_h5'
-      ]) || S(r.chockOn),
+      ]) || TV(r.chockOn),
 
     BOARDING_CALL:
       p(st,[
@@ -323,7 +327,7 @@ function t(st={},r={}){
         'f421_h21Start',
         'h21',
         'f421_h21'
-      ]) || S(r.doorClose),
+      ]) || TV(r.doorClose),
 
     CHOCK_OFF:
       p(st,[
@@ -331,7 +335,7 @@ function t(st={},r={}){
         'f421_h22Start',
         'h22',
         'f421_h22'
-      ]) || S(r.chockOff),
+      ]) || TV(r.chockOff),
 
     PUSHBACK:
       p(st,[
@@ -339,7 +343,7 @@ function t(st={},r={}){
         'f421_h24Start',
         'h24',
         'f421_h24'
-      ]) || S(r.pushback)
+      ]) || TV(r.pushback)
   };
 }
 
@@ -394,31 +398,6 @@ function pub(path){
 
 function score(x){
   return Object.values(x||{}).filter(Boolean).length;
-}
-
-/*
-  Nếu trong cùng ngày có 2 flight record tạo ra cùng tên chuyến,
-  không cho record sau ghi đè record trước.
-*/
-function uniqueKey(out,base){
-  base=safe(base);
-
-  if(!Object.prototype.hasOwnProperty.call(out,base)){
-    return base;
-  }
-
-  let i=2;
-
-  while(
-    Object.prototype.hasOwnProperty.call(
-      out,
-      `${base}_${i}`
-    )
-  ){
-    i++;
-  }
-
-  return `${base}_${i}`;
 }
 
 function wsState(x){
@@ -676,16 +655,18 @@ async function all(d=day()){
       const st=
         await best(rec);
 
-      const key=
-        uniqueKey(
-          out,
-          pair(st,rec,id)
-        );
-
-      out[key]=t(
+      const key=pair(st,rec,id);
+      const times=t(
         st,
         rec?.modules?.RAMP || {}
       );
+
+      if(
+        !Object.prototype.hasOwnProperty.call(out,key) ||
+        score(times)>score(out[key])
+      ){
+        out[key]=times;
+      }
     }
 
     const r=pub(d);
@@ -809,7 +790,7 @@ function install(){
   wrap();
 
   root.__SAGS_IT_PUBLIC_V11104={
-    pollSeconds:60,
+    pollSeconds:120,
 
     syncCurrent:current,
 
@@ -874,4 +855,4 @@ root.addEventListener(
     ? window
     : globalThis
 );
-/* === END V1.1.104 IT PUBLIC 6-TIME SYNC === */
+/* === END IT PUBLIC 6-TIME SYNC · FREE RTDB REST === */
