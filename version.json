@@ -1,0 +1,10 @@
+{
+  "version": "V1.1.107",
+  "displayVersion": "V1.1.107",
+  "label": "V1.1.107",
+  "build": "V1.1.107-OFFICIAL-20260830-IT-FLIGHTS-API",
+  "releasedAt": "2026-08-30T21:30:00+07:00",
+  "type": "it-public-cloud-function",
+  "notes": "Bổ sung Cloud Function GET /flights công khai, không API key, nhận date=YYYY-MM-DD và chỉ trả 6 mốc thời gian cho IT. Sửa BOARDING_FINISH chỉ lấy h17Finish/f421_h17Finish. Giữ chuẩn hóa N/A/NA/NIL/- và gộp record trùng.",
+  "message": "V1.1.107"
+}

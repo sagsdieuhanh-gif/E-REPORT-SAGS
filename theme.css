@@ -1,0 +1,242 @@
+/* E-REPORT/SAGS V1.1.89 · ONE DESIGN SYSTEM
+   UI chrome only. Printed/report form canvases are intentionally untouched. */
+:root{
+  --sags-navy-950:#102e5d;
+  --sags-navy-900:#183a76;
+  --sags-navy-800:#1d4385;
+  --sags-navy-700:#21488e;
+  --sags-blue:#0c63cf;
+  --sags-lime-1:#d5c13d;
+  --sags-lime-2:#a2bf36;
+  --sags-bg:#eef3f9;
+  --sags-surface:#ffffff;
+  --sags-surface-soft:#f5f8fc;
+  --sags-border:#d6e1ee;
+  --sags-text:#173462;
+  --sags-text-soft:#6f86a0;
+  --sags-success:#087443;
+  --sags-warning:#9a5d00;
+  --sags-danger:#b42318;
+  --sags-radius:16px;
+  --sags-radius-lg:20px;
+  --sags-shadow:0 12px 30px rgba(12,42,83,.14);
+  --sags-shadow-strong:0 22px 60px rgba(6,25,55,.25);
+}
+
+/* App shell surfaces only; do not touch the document sheets. */
+body.v157-authenticated{background:var(--sags-bg)!important;color:var(--sags-text)}
+
+/* ---------- ALL FIXED BOTTOM / ACTION BARS ---------- */
+#v157BottomBar,
+.compact-main-toolbar,
+body.v38-clean-workflow .toolbar.compact-main-toolbar,
+#v38CleanNav,
+#ffCrosscheckFloatingWrap,
+.bq-foot,
+.quickTimeFooterActions,
+.fs09PreviewFoot,
+.opsComposerBottomActions,
+.v479ThreeUActions{
+  background:linear-gradient(180deg,var(--sags-navy-700) 0%,var(--sags-navy-800) 48%,var(--sags-navy-900) 100%)!important;
+  border-color:rgba(255,255,255,.10)!important;
+  box-shadow:0 -12px 30px rgba(7,27,62,.25)!important;
+  color:#eef5ff!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+#v157BottomBar,
+.compact-main-toolbar,
+body.v38-clean-workflow .toolbar.compact-main-toolbar{border-radius:18px 18px 0 0!important}
+
+/* Main toolbar/action buttons: one shape and typography. */
+.compact-main-toolbar button,
+.compact-main-toolbar .toolbar-row button,
+#v38CleanNav button,
+.v38NavBtn,.v38OpBtn,
+.fwcBtn,.drBtn,.aclBtn,.fleetMiniBtn,
+.sagsAdminBtn,.v339Btn,.v342Btn,.v488Btn,.rsBtn,
+.v310ShiftBtn,.v327Btn,.v329QuickBtn,.v340Btn,.v1019Btn,
+.finalHeaderBtn,.flightOpsBtn,.flightTypeEditBtn,
+.v479ThreeUActionBtn,.aclai-btn{
+  border:1px solid var(--sags-border)!important;
+  border-radius:13px!important;
+  min-height:40px;
+  background:var(--sags-surface)!important;
+  color:var(--sags-text)!important;
+  font-weight:900!important;
+  box-shadow:0 6px 16px rgba(10,45,91,.10)!important;
+  text-shadow:none!important;
+}
+.compact-main-toolbar button:active,
+#v38CleanNav button:active,
+.fwcBtn:active,.drBtn:active,.aclBtn:active,.sagsAdminBtn:active,
+.v339Btn:active,.v342Btn:active,.v488Btn:active,.rsBtn:active{
+  transform:translateY(1px)!important;
+  box-shadow:0 2px 8px rgba(10,45,91,.10)!important;
+}
+
+/* Active/selected uses the sidebar lime accent. */
+.v157BottomBtn.active,
+.v157MenuItem.active,
+.v157MenuItem[aria-current="page"],
+.aclTab.active,.v310ShiftTab.active,
+.quickTimeTab.active,.fs09qTab.active,
+button.active,[aria-selected="true"].aclTab,[aria-selected="true"].v310ShiftTab{
+  background:linear-gradient(90deg,var(--sags-lime-1),var(--sags-lime-2))!important;
+  color:var(--sags-text)!important;
+  border-color:rgba(255,235,150,.45)!important;
+  box-shadow:0 8px 20px rgba(79,104,23,.20)!important;
+}
+
+/* Semantic action colors remain consistent project-wide. */
+button.green,.green,
+.save,.exportPrimary,
+.rsBtn.green,.sagsAdminBtn.primary,
+.v339Btn.primary,.v342Btn.primary{
+  background:linear-gradient(180deg,#16875a,var(--sags-success))!important;
+  color:#fff!important;border-color:#08683d!important;
+}
+button.danger,.danger,.del,.dangerAccountBtn,
+.sagsAdminBtn.danger,.v488Btn.danger{
+  background:linear-gradient(180deg,#d4473c,var(--sags-danger))!important;
+  color:#fff!important;border-color:#9f1f17!important;
+}
+button.orange,.orange,
+.warn,.warning{
+  border-color:#e0b765!important;
+}
+button.gray,.gray,.cancel,.secondary{
+  background:#edf2f7!important;color:#405c79!important;border-color:#d5dfeb!important;
+}
+button:disabled{opacity:.52!important;filter:grayscale(.12)!important;box-shadow:none!important}
+
+/* ---------- MODALS / WORKSPACES ---------- */
+.sagsAdminModal,
+#dailyRosterModal,#aclAdminModal,#aclSimpleModal,#aclAiModal,#fleetManagerModal,
+#fwcModal,#fwcMultitaskModal,#quickTimeModal,#finalFormsModal,
+.flightTypeEditModal,.finalPaperModal,.vjLdmModal,.v377CreateFormModal,.v485PermModal{
+  background:rgba(8,29,63,.62)!important;
+}
+.sagsAdminPanel,.drPanel,.aclPanel,.acls-panel,.fleetManagerPanel,
+.fwcPanel,.fwcMultiPanel,.quickTimePanel,.finalFormsPanel,
+.rsPanel,.ahPanel,.v1019Panel,.v310ShiftPanel,.v327Panel,.v338Panel,.v340Panel,.v342Panel,
+.v320ModalPanel,.v377CreateFormCard,.v1122SignCard,.vjLdmCard,.drConflictPanel{
+  background:var(--sags-surface-soft)!important;
+  border:1px solid var(--sags-border)!important;
+  border-radius:var(--sags-radius-lg)!important;
+  box-shadow:var(--sags-shadow-strong)!important;
+  color:var(--sags-text)!important;
+}
+
+/* Header language across modules. */
+.sagsAdminPanel h3,.drHead h3,.aclTitle,.fwcHead h3,.fwcMultiHead h3,
+.quickTimeHead h3,.fs09qHead h3,.v339Head h3,.v342Head h3,.v327Head h3,
+.v340Head h3,.rsHead h3,.v377CreateFormHead h3,.vjLdmHead h3,
+.adccHead h3,.ahHead h3{
+  color:var(--sags-navy-900)!important;
+  font-weight:900!important;
+}
+.drHead,.fwcHead,.fwcMultiHead,.quickTimeHead,.fs09qHead,.v339Head,.v342Head,
+.v327Head,.v340Head,.rsHead,.v377CreateFormHead,.vjLdmHead,.adccHead,.ahHead{
+  border-color:var(--sags-border)!important;
+}
+
+/* ---------- CARDS ---------- */
+.sagsUserRow,.sagsAuditItem,
+.aclCard,.v488Card,.rsCard,.v310ShiftCard,.v320Card,.v327Card,.v339Card,.v342Card,
+.flightOpsCard,.flightTypeEditCard,.finalPaperCard,.ffDateCard,.ffUpdateCard,
+.adccCard,.activitySummaryCard,.p2Card,.v1019Field,.v1009GeomCard,.v1122SignCard,
+.fs09qCloseoutCard,.v479ThreeUActionPanel{
+  background:var(--sags-surface)!important;
+  border:1px solid var(--sags-border)!important;
+  border-radius:var(--sags-radius)!important;
+  color:var(--sags-text)!important;
+  box-shadow:0 6px 18px rgba(20,55,96,.07)!important;
+}
+
+/* ---------- FORMS ---------- */
+.sagsAdminField input,.sagsAdminField select,.sagsAdminField textarea,
+.aclInput,.fleetInput,.rsInput,.rsSelect,.v340Field input,.v340Field select,.v340Field textarea,
+.quickTimePanel input,.quickTimePanel select,.quickTimePanel textarea,
+.drPanel input,.drPanel select,.drPanel textarea{
+  background:#fff!important;color:var(--sags-text)!important;
+  border:1px solid #c8d6e5!important;border-radius:11px!important;
+  box-shadow:inset 0 1px 2px rgba(15,50,90,.04)!important;
+}
+.sagsAdminField input:focus,.sagsAdminField select:focus,.sagsAdminField textarea:focus,
+.aclInput:focus,.fleetInput:focus,.rsInput:focus,.rsSelect:focus,
+.quickTimePanel input:focus,.drPanel input:focus{
+  outline:none!important;border-color:#5d8fd1!important;
+  box-shadow:0 0 0 3px rgba(41,103,184,.12)!important;
+}
+
+/* ---------- STATUS / CHIPS ---------- */
+.drStatus,.fwcStatus,.aclai-status,.acls-status,.v327Status,.v329QuickStatus,
+.v342Status,.v488Status,.vjLdmStatus,.quickTimeSaveStatus,.exportStatus,.templateStatus{
+  border-radius:11px!important;
+  border:1px solid var(--sags-border)!important;
+  background:#eef4fb!important;
+  color:#496784!important;
+}
+.drBadge,.fwcBadge,.v488Pill,.adccPill,.v18CodePill,.acls-chip{
+  border-radius:999px!important;
+  border:1px solid #d3deea!important;
+  background:#edf4fb!important;
+  color:#365878!important;
+}
+
+/* ---------- POPUPS / TOASTS ---------- */
+#sagsActionPopupCard,#aclAISavePopupCard,.sagsCxDoneCard,
+.ffIncomingToastBox,.fs09CloudToastBox,.finalPaperNotifyCard{
+  background:#fff!important;border:1px solid var(--sags-border)!important;
+  border-radius:22px!important;box-shadow:var(--sags-shadow-strong)!important;
+  color:var(--sags-text)!important;
+}
+#sagsActionPopupOk,#aclAISavePopupClose{
+  border-radius:13px!important;min-height:46px!important;font-weight:900!important;
+}
+
+/* ---------- SPECIAL FLOATING CONTROLS ---------- */
+#ffCrosscheckFloatingWrap{
+  border:1px solid rgba(255,255,255,.10)!important;
+  border-radius:16px!important;
+}
+#ffCrosscheckFloatingWrap button{
+  border-radius:12px!important;font-weight:900!important;
+}
+#v368LayoutTuneBtn,#v476ThreeUQuick{
+  border-radius:999px!important;box-shadow:var(--sags-shadow)!important;
+}
+
+/* ---------- AD CONTROL / DATA HUB inherit same language ---------- */
+#v181AdminCenter .v181AdminPanel,.v174DataHubPanel{
+  background:var(--sags-surface-soft)!important;border-color:var(--sags-border)!important;
+  box-shadow:var(--sags-shadow-strong)!important;
+}
+.v181AdminCard,.v174DataCard{
+  background:#fff!important;border-color:var(--sags-border)!important;
+  box-shadow:0 6px 18px rgba(20,55,96,.07)!important;
+}
+
+/* Mobile: avoid costly blur and keep touch targets predictable. */
+@media(max-width:600px){
+  #v157BottomBar,.compact-main-toolbar,#v38CleanNav,
+  #ffCrosscheckFloatingWrap,.bq-foot,.quickTimeFooterActions,.fs09PreviewFoot{
+    backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  }
+  .compact-main-toolbar button,.compact-main-toolbar .toolbar-row button,
+  #v38CleanNav button,.fwcBtn,.drBtn,.aclBtn,.sagsAdminBtn,.v339Btn,.v342Btn,.v488Btn,.rsBtn{
+    border-radius:12px!important;
+  }
+}
+
+/* Print/exported forms remain exactly as their own template. */
+@media print{
+  #v157BottomBar,.compact-main-toolbar,#v38CleanNav,#ffCrosscheckFloatingWrap{display:none!important}
+}
+
+
+/* V2 FULL SAGS · CROSSCHECK OWNER POPUP */
+#cxV2OwnerPopup{position:fixed;z-index:20550;inset:0;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(7,25,55,.72);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+.cxV2OwnerCard{width:min(94vw,560px);background:#fff;border-radius:24px;padding:24px 20px 20px;text-align:center;border:2px solid #d6e2f0;box-shadow:0 30px 90px rgba(0,0,0,.42)}
+.cxV2OwnerTop{font:900 15px Arial;color:#1f4a86;letter-spacing:.6px}.cxV2OwnerName{margin:18px 0 6px;font:900 clamp(28px,7vw,38px)/1.08 Arial;color:#173e78;overflow-wrap:anywhere}.cxV2OwnerRev{font:900 20px Arial;color:#849a28}.cxV2OwnerMeta{margin-top:12px;padding:11px;border-radius:13px;background:#eef4fb;color:#516e91;font:800 13px/1.45 Arial}#cxV2OwnerOk{margin-top:20px;min-width:180px;min-height:50px;border:0;border-radius:14px;background:linear-gradient(90deg,#d5c13d,#a2bf36);color:#153462;font:900 15px Arial;box-shadow:0 9px 22px rgba(79,104,23,.22)}

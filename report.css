@@ -1,0 +1,51 @@
+
+/* E-REPORT/SAGS V1.1.78 · CORRECT DAY / NIGHT REPORT FORMS */
+#v1171ReportModal{
+  position:fixed;inset:0;z-index:16050;display:none;align-items:flex-start;justify-content:center;
+  padding:max(8px,env(safe-area-inset-top)) 7px max(8px,env(safe-area-inset-bottom));
+  background:rgba(4,19,39,.72);overflow:auto;box-sizing:border-box;
+}
+.v1171Panel{
+  width:min(98vw,980px);max-height:97dvh;overflow:auto;background:#f7f9fc;color:#17334f;
+  border-radius:18px;padding:12px;box-sizing:border-box;box-shadow:0 22px 60px rgba(0,0,0,.38);
+}
+.v1171Top{
+  position:sticky;top:-12px;z-index:5;background:#f7f9fc;display:flex;align-items:center;
+  justify-content:space-between;gap:8px;padding:7px 2px 10px;border-bottom:1px solid #dce5ee;
+}
+.v1171Top h3{margin:0;font:900 18px/1.2 Arial;color:#0c4c94}
+.v1171Close{border:0;border-radius:9px;background:#e8eef5;color:#28445e;padding:9px 12px;font:900 12px Arial}
+.v1171Tabs{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:10px 0}
+.v1171Tab{border:1px solid #cbd8e5;background:#fff;color:#365779;border-radius:11px;min-height:42px;font:900 12px Arial}
+.v1171Tab.active{background:#0b63c6;color:#fff;border-color:#0b63c6}
+.v1171Rules{
+  margin:9px 0;padding:10px;border:1px solid #cfe0f2;border-radius:11px;background:#eef6ff;
+  font:700 11px/1.45 Arial;color:#365a7e;
+}
+.v1171Rules summary{font-weight:900;cursor:pointer;color:#154f8e}
+.v1171Rules ul{margin:8px 0 0;padding-left:18px}
+.v1171Grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.v1171Field{background:#fff;border:1px solid #d8e2ec;border-radius:11px;padding:8px}
+.v1171Field.full{grid-column:1/-1}
+.v1171Field label{display:block;margin-bottom:5px;font:900 10px Arial;color:#52708d}
+.v1171Field input,.v1171Field textarea{
+  width:100%;box-sizing:border-box;border:1px solid #c9d6e3;border-radius:8px;background:#fff;
+  color:#17334f;padding:8px;font:700 12px/1.4 Arial;
+}
+.v1171Field input{height:38px}.v1171Field textarea{min-height:86px;resize:vertical}
+.v1171SectionTitle{
+  grid-column:1/-1;margin:6px 0 0;padding:8px 10px;border-radius:10px;
+  background:#173f75;color:#fff;font:900 12px Arial;
+}
+.v1171Actions{position:sticky;bottom:-12px;z-index:4;display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;padding:9px 0;background:#f7f9fc}
+.v1171Btn{border:0;border-radius:9px;padding:9px 11px;background:#075fbe;color:#fff;font:900 11px Arial}
+.v1171Btn.green{background:#147b49}.v1171Btn.orange{background:#a65a00}.v1171Btn.gray{background:#e4eaf0;color:#29445d}
+#v1171Output{width:100%;min-height:48dvh;box-sizing:border-box;margin-top:10px;border:1px solid #c9d6e3;border-radius:11px;padding:11px;background:#fff;font:700 12px/1.48 "Courier New",monospace;color:#152d44}
+#v1171Status{min-height:18px;margin:5px 2px;font:800 11px Arial;color:#55728e}
+@media(max-width:650px){
+  .v1171Grid{grid-template-columns:1fr}.v1171Field.full,.v1171SectionTitle{grid-column:1}
+  .v1171Btn{flex:1 1 120px}.v1171Top h3{font-size:15px}
+}
+
+/* V1.1.73 · original report template button */
+.v1178DocxBtn{background:#5f2b91!important;color:#fff!important}

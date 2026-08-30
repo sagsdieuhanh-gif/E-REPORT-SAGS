@@ -1,0 +1,858 @@
+
+/* E-REPORT/SAGS V1.1.84 · VER PC MOBILE UI
+   Visual layer only. Existing business buttons/functions remain the source of truth. */
+:root{
+  --v157-navy:#183f78;
+  --v157-navy2:#0f3266;
+  --v157-blue:#0d6efd;
+  --v157-blue-soft:#eaf3ff;
+  --v157-bg:#f3f6fb;
+  --v157-text:#13315b;
+  --v157-muted:#7890b0;
+  --v157-line:#e1e8f1;
+  --v157-danger:#e83b4b;
+  --v157-card:#ffffff;
+}
+#v157UiRoot{display:none}
+body.v157-ui-ready #v157UiRoot{display:block}
+
+#v157DrawerBackdrop{
+  position:fixed;z-index:14960;inset:0;background:rgba(19,41,71,.42);
+  opacity:0;pointer-events:none;transition:opacity .2s ease;
+  backdrop-filter:blur(1px);-webkit-backdrop-filter:blur(1px);
+}
+#v157Drawer{
+  position:fixed;z-index:14970;left:0;top:0;bottom:0;width:min(82vw,430px);
+  background:#fff;transform:translateX(-103%);transition:transform .22s ease;
+  box-shadow:14px 0 40px rgba(7,35,77,.22);overflow:auto;
+  -webkit-overflow-scrolling:touch;
+}
+body.v157-drawer-open #v157DrawerBackdrop{opacity:1;pointer-events:auto}
+body.v157-drawer-open #v157Drawer{transform:translateX(0)}
+body.v157-drawer-open{overflow:hidden}
+
+.v157DrawerHead{
+  min-height:285px;padding:calc(22px + env(safe-area-inset-top)) 24px 24px;
+  box-sizing:border-box;color:#fff;
+  background:
+    radial-gradient(circle at 110% 58%,rgba(95,150,232,.22) 0 120px,transparent 121px),
+    linear-gradient(145deg,#214d8e 0%,#173e79 52%,#103366 100%);
+}
+.v157Brand{
+  display:grid;grid-template-columns:150px 1fr;gap:18px;align-items:center;
+}
+.v157LogoBox{
+  background:#fff;border-radius:18px;padding:10px;
+  box-shadow:0 10px 28px rgba(0,22,60,.14);
+}
+.v157LogoBox img{display:block;width:100%;height:auto;max-height:150px;object-fit:contain}
+.v157BrandText{
+  font:800 19px/1.38 Arial;letter-spacing:.5px;color:#fff;text-transform:uppercase;
+}
+.v157UserCard{
+  display:flex;align-items:center;gap:12px;margin-top:26px;
+}
+.v157Avatar{
+  position:relative;width:58px;height:58px;flex:0 0 58px;border-radius:50%;
+  display:grid;place-items:center;background:#6f98d6;color:#fff;font:900 24px Arial;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.18);
+}
+.v157Avatar:after{
+  content:"";position:absolute;right:1px;bottom:3px;width:14px;height:14px;
+  border-radius:50%;background:#2fd76c;border:3px solid #21477e;
+}
+.v157UserName{font:900 17px Arial;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v157Online{margin-top:5px;font:700 13px Arial;color:#5be28b}
+.v157UserRole{margin-left:auto;font:900 11px Arial;padding:8px 10px;border-radius:10px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.12)}
+
+.v157MenuBody{
+  background:#fff;border-radius:20px 20px 0 0;margin-top:-12px;padding:24px 16px 30px;
+}
+.v157Section{padding:0 10px;margin:10px 0 20px}
+.v157SectionTitle{
+  margin:0 0 10px;padding:0 8px;color:#7f9abb;
+  font:900 12px Arial;letter-spacing:2px;text-transform:uppercase;
+}
+.v157MenuItem{
+  position:relative;width:100%;min-height:54px;border:0;border-radius:14px;
+  background:transparent;color:#16345f;display:grid;
+  grid-template-columns:48px minmax(0,1fr) auto;align-items:center;gap:10px;
+  padding:7px 10px;text-align:left;font:900 16px Arial;
+}
+.v157MenuItem + .v157MenuItem{margin-top:3px}
+.v157MenuItem .ico{
+  width:42px;height:42px;border-radius:12px;background:#eaf2ff;color:#075abb;
+  display:grid;place-items:center;font:900 19px Arial;
+}
+.v157MenuItem .meta{font:800 11px Arial;color:#91a4bf;white-space:nowrap}
+.v157MenuItem.active{
+  background:linear-gradient(90deg,#e8f2ff,#f1f6ff);
+  color:#0957b8;
+}
+.v157MenuItem.active .ico{
+  background:#0c6df2;color:#fff;box-shadow:0 5px 14px rgba(13,109,242,.25);
+}
+.v157MenuItem:active{transform:scale(.992)}
+.v157MenuItem[disabled]{opacity:.38;filter:grayscale(.3)}
+.v157MenuDivider{height:1px;background:#e3eaf3;margin:16px 8px}
+
+#v157HomeDashboard{
+  position:fixed;z-index:8;inset:0;display:none;overflow:auto;
+  background:linear-gradient(180deg,#f6f9fd,#eef3f9);
+  padding:calc(86px + env(safe-area-inset-top)) 16px calc(92px + env(safe-area-inset-bottom));
+  box-sizing:border-box;color:var(--v157-text);
+}
+body.v157-authenticated.v157-home #v157HomeDashboard{display:block}
+.v157Welcome{padding:5px 3px 20px}
+.v157Welcome strong{display:block;font:900 22px/1.25 Arial;color:#24466e}
+.v157Welcome span{display:block;margin-top:6px;font:700 15px Arial;color:#7890ac}
+.v157MetricGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.v157Metric{
+  position:relative;overflow:hidden;min-height:142px;padding:17px;border-radius:22px;
+  background:rgba(255,255,255,.82);border:1px solid rgba(134,158,190,.20);
+  box-shadow:0 9px 28px rgba(45,78,120,.07);
+}
+.v157Metric:after{
+  content:"";position:absolute;right:-36px;bottom:-42px;width:130px;height:130px;border-radius:50%;
+  background:rgba(60,123,214,.08);
+}
+.v157Metric.warn:after{background:rgba(218,72,82,.09)}
+.v157MetricHead{display:flex;align-items:flex-start;gap:10px;font:900 13px/1.28 Arial;color:#385778}
+.v157MetricIco{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;background:#e0eeff;color:#075abb;font-size:21px}
+.v157Metric.warn .v157MetricIco{background:#fbe2e5;color:#c43b49}
+.v157MetricNum{margin:8px 0 1px 55px;font:900 38px Arial;color:#173f75}
+.v157MetricSub{margin-left:55px;font:700 13px Arial;color:#8aa0bd}
+.v157Panel{
+  margin-top:14px;padding:17px;border-radius:22px;background:rgba(255,255,255,.86);
+  border:1px solid rgba(134,158,190,.20);box-shadow:0 9px 28px rgba(45,78,120,.06);
+}
+.v157PanelHead{display:flex;align-items:center;justify-content:space-between;gap:10px;font:900 16px Arial;color:#365576}
+.v157PanelLink{border:0;background:transparent;color:#0966d6;font:900 13px Arial}
+.v157Empty{
+  margin-top:14px;min-height:80px;border:1px solid #e2e9f2;border-radius:14px;
+  background:#f7f9fc;display:flex;align-items:center;padding:15px;color:#8197b4;font:700 13px/1.4 Arial;
+}
+
+#v157BottomBar{
+  position:fixed;z-index:14930;left:0;right:0;bottom:0;min-height:72px;
+  padding:8px max(8px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));
+  display:none;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;
+  background:linear-gradient(180deg,#21488e 0%,#1d4385 45%,#183a76 100%);
+  border-top:1px solid rgba(255,255,255,.10);box-shadow:0 -14px 34px rgba(10,26,58,.30);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-radius:18px 18px 0 0;
+}
+body.v157-authenticated.v157-home #v157BottomBar{display:grid}
+.v157BottomBtn{
+  border:1px solid rgba(255,255,255,.06);border-radius:16px;background:rgba(255,255,255,.04);
+  color:#dce8fb;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  font:800 10px Arial;min-height:56px;padding:6px 4px;box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+}
+.v157BottomBtn b{font-size:22px;line-height:1;color:inherit}
+.v157BottomBtn span{color:inherit;line-height:1.12}
+.v157BottomBtn:hover{background:rgba(255,255,255,.06)}
+.v157BottomBtn.active{
+  color:#153462;background:linear-gradient(90deg,#d5c13d 0%,#a2bf36 100%);
+  border-color:rgba(255,235,150,.35);box-shadow:0 10px 24px rgba(79,104,23,.24);
+}
+.v157BottomBtn.active b,.v157BottomBtn.active span{color:#153462}
+
+
+body.v157-authenticated.v157-home .toolbar.compact-main-toolbar{display:none!important}
+
+/* The new shell does not replace operational form controls outside HOME. */
+@media(min-width:900px){
+  #v157Drawer{width:410px}
+  #v157HomeDashboard{padding-left:max(28px,calc((100vw - 1120px)/2));padding-right:max(28px,calc((100vw - 1120px)/2))}
+  .v157MetricGrid{grid-template-columns:repeat(2,minmax(280px,1fr))}
+}
+@media(max-width:520px){
+  #v157Drawer{width:86vw}
+  .v157DrawerHead{min-height:266px;padding-left:20px;padding-right:20px}
+  .v157Brand{grid-template-columns:126px 1fr;gap:14px}
+  .v157BrandText{font-size:15px}
+  .v157MenuBody{padding-left:10px;padding-right:10px}
+  .v157MenuItem{font-size:15px}
+}
+
+
+/* V1.1.58: hide legacy account/floating menu controls when new Ver PC shell is active */
+body.v157-authenticated #v351AccountMenuBtn,
+body.v157-authenticated #v351AccountMenu,
+body.v157-authenticated #v1004UserIdentityDock,
+body.v157-authenticated #roleStatusBadge,
+body.v157-authenticated #roleAccountCluster,
+body.v157-authenticated #roleBtnActionCenter{
+  display:none!important;
+}
+body.v157-authenticated #v38CleanNav{
+  padding-right:0!important;
+}
+
+/* V1.1.59: never force legacy HOME visibility.
+   showRoleHomeIdle()/hideRoleHomeIdle() from core remains the sole owner. */
+body.v157-authenticated.v157-home #v157HomeDashboard{
+  display:block;
+}
+body.v157-authenticated:not(.v157-home) #v157HomeDashboard,
+body.v157-authenticated:not(.v157-home) #v157BottomBar{
+  display:none!important;
+}
+
+
+/* V1.1.61: remove the new white topbar entirely */
+#v157TopBar{display:none!important}
+
+/* V1.1.61: only keep the new UI shell, clear legacy chrome fully */
+body.v157-authenticated #v38CleanNav,
+body.v157-authenticated .toolbar.compact-main-toolbar,
+body.v157-authenticated #v351AccountMenuBtn,
+body.v157-authenticated #v351AccountMenu,
+body.v157-authenticated #v1004UserIdentityDock,
+body.v157-authenticated #roleStatusBadge,
+body.v157-authenticated #roleAccountCluster,
+body.v157-authenticated #roleBtnActionCenter{
+  display:none!important;
+}
+
+/* Home dashboard no longer reserves height for the removed topbar */
+#v157HomeDashboard{
+  padding:calc(14px + env(safe-area-inset-top)) 16px calc(92px + env(safe-area-inset-bottom));
+}
+
+/* Slidebar footer + logout */
+.v157DrawerFooter{
+  position:sticky;bottom:0;padding:14px 18px calc(16px + env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,rgba(255,255,255,.92),#ffffff 18%);
+  border-top:1px solid #e3eaf3;
+}
+.v157LogoutBtn{
+  width:100%;min-height:52px;border:0;border-radius:14px;
+  background:linear-gradient(135deg,#e84c58,#cc2f46);color:#fff;
+  font:900 16px Arial;display:flex;align-items:center;justify-content:center;gap:10px;
+  box-shadow:0 10px 22px rgba(204,47,70,.20);
+}
+.v157LogoutBtn:active{transform:scale(.992)}
+
+
+/* V1.1.62 · account tools only in slidebar */
+#v351AccountMenuBtn,#v351AccountMenu{
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+.v157DrawerFooter{
+  position:sticky;bottom:0;padding:14px 18px calc(16px + env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,rgba(255,255,255,.94),#fff 22%);
+  border-top:1px solid #e3eaf3;
+}
+.v157AccountActions{display:grid;grid-template-columns:1fr;gap:9px}
+.v157PasswordBtn,.v157LogoutBtn{
+  width:100%;min-height:52px;border:0;border-radius:14px;
+  font:900 15px Arial;display:flex;align-items:center;justify-content:center;gap:10px;
+}
+.v157PasswordBtn{
+  background:#edf4ff;color:#1557a6;border:1px solid #d7e6fa;
+}
+.v157LogoutBtn{
+  background:linear-gradient(135deg,#e84c58,#cc2f46);color:#fff;
+  box-shadow:0 10px 22px rgba(204,47,70,.18);
+}
+.v157PasswordBtn:active,.v157LogoutBtn:active{transform:scale(.992)}
+
+
+/* V1.1.63 CLEAN CORE UI — all legacy chrome is retired. */
+#v38CleanNav,.toolbar.compact-main-toolbar,#v351AccountMenuBtn,#v351AccountMenu,
+#v1004UserIdentityDock,#roleStatusBadge,#roleAccountCluster,#roleBtnActionCenter{
+  display:none!important;visibility:hidden!important;pointer-events:none!important;
+}
+
+/* Business actions are direct and independent from the removed legacy toolbar. */
+#v324FormActions{
+  position:fixed!important;left:5px!important;right:5px!important;
+  bottom:calc(39px + env(safe-area-inset-bottom))!important;
+  z-index:14880!important;width:auto!important;max-width:none!important;
+  padding:4px!important;margin:0!important;
+  border-radius:11px!important;background:rgba(20,71,129,.95)!important;
+  box-shadow:0 5px 14px rgba(0,34,78,.20)!important;
+  gap:4px!important;
+}
+body.v157-home #v324FormActions{display:none!important}
+#v324FormActions.show{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:4px!important;
+}
+#v324FormActions .v324FormAction{
+  min-width:0!important;min-height:31px!important;border-radius:8px!important;
+  padding:4px 6px!important;font-size:9px!important;line-height:1.02!important;
+}
+#v324HandoverBtn{background:#fff0cf!important;color:#8a4900!important;border-color:#f1c56b!important}
+
+#v163OperationNav{
+  position:fixed;z-index:14870;left:5px;right:5px;
+  bottom:calc(4px + env(safe-area-inset-bottom));
+  display:none;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;
+  padding:4px;border-radius:11px;background:rgba(22,75,135,.95);
+  box-shadow:0 5px 14px rgba(0,34,78,.18);
+}
+body.v163-operational #v163OperationNav{display:grid}
+#v163OperationNav button{
+  min-width:0;min-height:31px;border:0;border-radius:8px;background:#fff;color:#174b83;
+  font:900 9px Arial;line-height:1.02;padding:4px 3px;
+}
+#v163HomeBtn{
+  background:#eaf2ff!important;color:#114b96!important;border:1px solid #cdddff!important;
+}
+body.v163-operational{padding-bottom:calc(84px + env(safe-area-inset-bottom))!important}
+body.v157-home{padding-bottom:calc(74px + env(safe-area-inset-bottom))!important}
+
+/* Hard-delete visual traces if stale DOM arrives from a previous cached script. */
+.v1123-account-menu-stable,.v1122-account-toolbar,.v351-compact-toolbar,.v356-mobile-ui,.v357-two-row-toolbar{}
+
+
+/* V1.1.66: never let the fixed operation bars cover modal footer buttons. */
+body.v166-overlay-open #v324FormActions,
+body.v166-overlay-open #v163OperationNav{
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+body.v166-overlay-open{
+  padding-bottom:0!important;
+}
+
+
+/* V1.1.81 · AD CONTROL CENTER + SHARED DATA HUB */
+.v157MenuItem[data-v157-key="datahub"] .ico{
+  background:#e7f3ff;color:#0b63c6;
+}
+#v174DataHub{
+  position:fixed;z-index:15920;inset:0;display:none;align-items:center;justify-content:center;
+  padding:14px;background:rgba(5,25,50,.68);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+}
+#v174DataHub.show{display:flex}
+.v174DataHubPanel{
+  width:min(94vw,620px);background:#f7f9fc;border-radius:20px;padding:15px;
+  box-shadow:0 24px 70px rgba(0,0,0,.35);border:1px solid #d9e4ef;
+}
+.v174DataHubHead{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.v174DataHubHead h3{margin:0;color:#164775;font:900 19px Arial}
+.v174DataHubHead p{margin:5px 0 0;color:#7b91a9;font:800 11px Arial;letter-spacing:.7px}
+#v174DataHubClose{
+  width:40px;height:40px;border:0;border-radius:11px;background:#e8eef5;color:#294866;
+  font:900 18px Arial;
+}
+.v174DataHubGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:15px}
+.v174DataCard{
+  min-height:180px;border:1px solid #d8e4ef;border-radius:17px;background:#fff;padding:16px;
+  text-align:left;color:#173d67;display:flex;flex-direction:column;gap:7px;
+  box-shadow:0 8px 24px rgba(31,72,117,.08);
+}
+.v174DataCard .v174DataIcon{
+  width:50px;height:50px;border-radius:14px;background:#e8f3ff;display:grid;place-items:center;
+  font-size:25px;
+}
+.v174DataCard b{font:900 17px Arial}
+.v174DataCard small{font:700 12px/1.45 Arial;color:#6f86a0;flex:1}
+.v174DataCard em{
+  align-self:flex-start;font:900 10px Arial;font-style:normal;color:#137744;background:#e8f7ef;
+  padding:6px 9px;border-radius:999px;
+}
+.v174DataCard.disabled{opacity:.42;filter:grayscale(.35)}
+.v174DataCard.disabled em{color:#8b3c3c;background:#f7e7e7}
+.v174DataHubNote{margin-top:11px;padding:9px 11px;border-radius:11px;background:#edf4fb;color:#5d7590;font:700 11px/1.4 Arial}
+@media(max-width:560px){
+  .v174DataHubGrid{grid-template-columns:1fr}
+  .v174DataCard{min-height:135px}
+}
+
+
+/* V1.1.81 · one shared DATA HUB, one AD-only CONTROL CENTER */
+.v157MenuItem[data-v157-key="adcontrol"] .ico{
+  background:linear-gradient(135deg,#fff2d8,#ffe3a8);color:#8a5300;
+  box-shadow:inset 0 0 0 1px #f3d08b;
+}
+.v157MenuItem[data-v157-key="adcontrol"]{
+  background:#fffaf0;
+  border:1px solid #f3e2bc;
+}
+
+.v181AdminHomeQuick{
+  display:none;align-items:center;justify-content:space-between;gap:12px;
+  margin:0 0 14px;padding:14px 15px;border-radius:18px;
+  background:linear-gradient(135deg,#163f78,#0d63b9);color:#fff;
+  box-shadow:0 10px 26px rgba(18,72,134,.20);
+}
+.v181AdminHomeQuick>div{display:grid;grid-template-columns:auto 1fr;column-gap:9px;align-items:center;min-width:0}
+.v181AdminHomeBadge{
+  grid-row:1/3;width:42px;height:42px;border-radius:12px;display:grid;place-items:center;
+  background:#ffc84f;color:#603d00;font:900 14px Arial;
+}
+.v181AdminHomeQuick b{font:900 14px Arial}
+.v181AdminHomeQuick small{margin-top:3px;font:700 10px/1.3 Arial;color:#d9e9ff}
+#v181AdminHomeBtn{
+  flex:0 0 auto;min-height:38px;border:0;border-radius:10px;padding:0 13px;
+  background:#fff;color:#0d56a4;font:900 11px Arial;
+}
+
+#v181AdminCenter{
+  position:fixed;z-index:15930;inset:0;display:none;align-items:flex-start;justify-content:center;
+  padding:max(10px,env(safe-area-inset-top)) 10px max(10px,env(safe-area-inset-bottom));
+  background:rgba(5,22,44,.72);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+  overflow:auto;
+}
+#v181AdminCenter.show{display:flex}
+.v181AdminPanel{
+  width:min(96vw,860px);margin:auto;background:#f5f8fc;border:1px solid #d5e0ec;
+  border-radius:22px;padding:15px;box-shadow:0 28px 90px rgba(0,0,0,.38);
+}
+.v181AdminHead{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:3px 2px 13px;border-bottom:1px solid #dde6ef;
+}
+.v181AdminHeadText{display:flex;align-items:center;gap:11px;min-width:0}
+.v181AdminBadge{
+  width:48px;height:48px;border-radius:14px;display:grid;place-items:center;
+  background:linear-gradient(135deg,#ffc94f,#f2a91c);color:#5f3c00;font:900 16px Arial;
+  box-shadow:0 7px 18px rgba(211,142,15,.23);
+}
+.v181AdminHead h3{margin:0;color:#153f71;font:900 20px Arial}
+.v181AdminHead p{margin:4px 0 0;color:#7990aa;font:700 11px Arial}
+#v181AdminClose{
+  width:42px;height:42px;border:0;border-radius:12px;background:#e7edf4;color:#294766;
+  font:900 18px Arial;
+}
+.v181AdminIntro{
+  display:flex;flex-direction:column;gap:4px;margin:12px 0;padding:11px 13px;
+  border-radius:12px;background:#edf4fc;border:1px solid #d6e5f5;
+}
+.v181AdminIntro b{font:900 11px Arial;color:#174f89;letter-spacing:.7px}
+.v181AdminIntro span{font:700 11px/1.4 Arial;color:#69829e}
+.v181AdminSectionTitle{
+  margin:16px 3px 7px;color:#6d87a5;font:900 10px Arial;letter-spacing:1.5px;
+}
+.v181AdminGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.v181AdminGrid.one{grid-template-columns:1fr}
+.v181AdminCard{
+  min-width:0;min-height:118px;border:1px solid #d7e2ed;border-radius:16px;background:#fff;
+  display:grid;grid-template-columns:50px minmax(0,1fr) auto;align-items:center;gap:11px;
+  padding:13px;text-align:left;color:#173d67;box-shadow:0 7px 20px rgba(33,69,108,.06);
+}
+.v181AdminCard.primary{
+  background:linear-gradient(135deg,#ffffff,#f4f8ff);
+  border-color:#cbdff4;
+}
+.v181AdminIcon{
+  width:50px;height:50px;border-radius:14px;background:#e7f1ff;color:#0b5eb8;
+  display:grid;place-items:center;font:900 21px Arial;
+}
+.v181AdminCard.primary .v181AdminIcon{background:#fff0ce;color:#946000}
+.v181AdminCardText{min-width:0;display:flex;flex-direction:column;gap:5px}
+.v181AdminCardText b{font:900 14px/1.2 Arial;color:#173d67}
+.v181AdminCardText small{font:700 10.5px/1.4 Arial;color:#7990a8}
+.v181AdminCard em{
+  align-self:flex-start;white-space:nowrap;font:900 9px Arial;font-style:normal;
+  color:#0c6a43;background:#e8f7ef;padding:6px 8px;border-radius:999px;
+}
+#v181ApprovalMeta.hasCount{background:#fff0d7;color:#955500}
+.v181AdminCard:active{transform:scale(.994)}
+.v181AdminFootNote{
+  margin-top:14px;padding:10px 12px;border-radius:12px;background:#fff8e8;
+  border:1px solid #f0dfb5;color:#7a6535;font:700 10.5px/1.45 Arial;
+}
+
+@media(max-width:760px){
+  .v174DataHubGrid{grid-template-columns:1fr}
+  .v174DataCard{min-height:126px}
+  .v181AdminGrid{grid-template-columns:1fr}
+  .v181AdminCard{min-height:104px}
+}
+@media(max-width:430px){
+  .v181AdminPanel{padding:11px;border-radius:18px}
+  .v181AdminHead h3{font-size:17px}
+  .v181AdminHead p{font-size:10px}
+  .v181AdminCard{grid-template-columns:44px minmax(0,1fr) auto;padding:11px;gap:9px}
+  .v181AdminIcon{width:44px;height:44px;border-radius:12px;font-size:19px}
+  .v181AdminCardText b{font-size:12.5px}
+  .v181AdminCardText small{font-size:9.5px}
+}
+
+
+/* V1.1.82 · MOBILE COMPACT SIDEBAR
+   Compact only on phones. Business UI / desktop layout unchanged. */
+@media(max-width:520px){
+  #v157Drawer{
+    width:min(78vw,330px)!important;
+  }
+
+  .v157DrawerHead{
+    min-height:208px!important;
+    padding:
+      calc(14px + env(safe-area-inset-top))
+      14px
+      14px!important;
+  }
+
+  .v157Brand{
+    grid-template-columns:92px minmax(0,1fr)!important;
+    gap:10px!important;
+  }
+  .v157LogoBox{
+    border-radius:12px!important;
+    padding:6px!important;
+  }
+  .v157LogoBox img{
+    max-height:92px!important;
+  }
+  .v157BrandText{
+    font-size:12px!important;
+    line-height:1.28!important;
+    letter-spacing:.25px!important;
+  }
+
+  .v157UserCard{
+    gap:8px!important;
+    margin-top:14px!important;
+  }
+  .v157Avatar{
+    width:44px!important;
+    height:44px!important;
+    flex-basis:44px!important;
+    font-size:18px!important;
+  }
+  .v157Avatar:after{
+    width:10px!important;
+    height:10px!important;
+    border-width:2px!important;
+  }
+  .v157UserName{
+    font-size:13px!important;
+  }
+  .v157Online{
+    margin-top:3px!important;
+    font-size:10px!important;
+  }
+  .v157UserRole{
+    padding:5px 7px!important;
+    border-radius:8px!important;
+    font-size:9px!important;
+  }
+
+  .v157MenuBody{
+    margin-top:-8px!important;
+    border-radius:14px 14px 0 0!important;
+    padding:13px 7px 18px!important;
+  }
+  .v157Section{
+    padding:0 5px!important;
+    margin:6px 0 11px!important;
+  }
+  .v157SectionTitle{
+    margin:0 0 5px!important;
+    padding:0 5px!important;
+    font-size:9px!important;
+    letter-spacing:1.35px!important;
+  }
+  .v157MenuItem{
+    min-height:46px!important;
+    border-radius:10px!important;
+    grid-template-columns:36px minmax(0,1fr) auto!important;
+    gap:7px!important;
+    padding:4px 7px!important;
+    font-size:12.5px!important;
+  }
+  .v157MenuItem + .v157MenuItem{
+    margin-top:1px!important;
+  }
+  .v157MenuItem .ico{
+    width:34px!important;
+    height:34px!important;
+    border-radius:9px!important;
+    font-size:15px!important;
+  }
+  .v157MenuItem .meta{
+    font-size:8.5px!important;
+    max-width:74px!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+  .v157MenuDivider{
+    margin:9px 5px!important;
+  }
+
+  .v157DrawerFooter{
+    padding:
+      8px
+      10px
+      calc(9px + env(safe-area-inset-bottom))!important;
+  }
+  .v157AccountActions{
+    gap:6px!important;
+  }
+  .v157PasswordBtn,
+  .v157LogoutBtn{
+    min-height:46px!important;
+    border-radius:10px!important;
+    font-size:12px!important;
+    gap:7px!important;
+  }
+}
+
+/* Very narrow phones: keep readable without occupying too much screen width. */
+@media(max-width:380px){
+  #v157Drawer{
+    width:min(80vw,300px)!important;
+  }
+  .v157Brand{
+    grid-template-columns:82px minmax(0,1fr)!important;
+  }
+  .v157BrandText{
+    font-size:11px!important;
+  }
+  .v157MenuItem{
+    font-size:12px!important;
+  }
+}
+
+
+/* V1.1.84 · SIDEBAR TONE + BIGGER LOGO
+   Keep original dark-blue / lime tone like user sample image. */
+
+/* Overall drawer shell */
+#v157Drawer{
+  background:linear-gradient(180deg,#21488e 0%,#1d4385 35%,#183a76 100%)!important;
+  color:#eef5ff!important;
+}
+
+/* Header block */
+.v157DrawerHead{
+  background:linear-gradient(180deg,#264c93 0%,#214689 52%,#1f4380 100%)!important;
+  border-bottom:1px solid rgba(255,255,255,.10)!important;
+  min-height:252px!important;
+  padding:
+    calc(18px + env(safe-area-inset-top))
+    18px
+    18px!important;
+}
+.v157Brand{
+  grid-template-columns:1fr!important;
+  gap:14px!important;
+}
+.v157LogoBox{
+  width:min(100%, 365px)!important;
+  margin:0 auto!important;
+  background:#fff!important;
+  border:1px solid rgba(255,255,255,.44)!important;
+  border-radius:20px!important;
+  padding:16px!important;
+  box-shadow:
+    0 14px 30px rgba(0,0,0,.14),
+    inset 0 0 0 1px rgba(11,49,107,.06)!important;
+}
+.v157LogoBox img{
+  width:100%!important;
+  height:auto!important;
+  max-height:152px!important;
+  object-fit:contain!important;
+  display:block!important;
+}
+.v157BrandText{
+  display:none!important;
+}
+
+/* User summary */
+.v157UserCard{
+  background:rgba(255,255,255,.08)!important;
+  border:1px solid rgba(255,255,255,.12)!important;
+  border-radius:16px!important;
+  padding:10px 12px!important;
+}
+.v157Avatar{
+  background:rgba(255,255,255,.16)!important;
+  color:#ffffff!important;
+}
+.v157UserName{
+  color:#fff!important;
+  font-weight:900!important;
+}
+.v157Online{
+  color:#cfe1ff!important;
+}
+.v157UserRole{
+  background:rgba(255,255,255,.16)!important;
+  color:#f8fbff!important;
+  border:1px solid rgba(255,255,255,.12)!important;
+}
+
+/* Body */
+.v157MenuBody{
+  background:linear-gradient(180deg,#24498e 0%,#1f447f 100%)!important;
+  color:#eef5ff!important;
+  margin-top:-10px!important;
+  border-radius:18px 18px 0 0!important;
+}
+.v157SectionTitle{
+  color:#a9c0e5!important;
+  opacity:1!important;
+}
+
+/* Menu rows */
+.v157MenuItem{
+  color:#f3f7ff!important;
+  background:transparent!important;
+  border:1px solid transparent!important;
+}
+.v157MenuItem .label{
+  color:#f3f7ff!important;
+}
+.v157MenuItem .meta{
+  color:#c7d8f4!important;
+}
+.v157MenuItem .ico{
+  background:rgba(255,255,255,.10)!important;
+  color:#dfeaff!important;
+  box-shadow:none!important;
+  border:1px solid rgba(255,255,255,.08)!important;
+}
+.v157MenuItem:hover{
+  background:rgba(255,255,255,.04)!important;
+}
+.v157MenuItem.active,
+.v157MenuItem[aria-current="page"]{
+  background:linear-gradient(90deg,#d5c13d 0%,#a2bf36 100%)!important;
+  border-color:rgba(255,235,150,.35)!important;
+  color:#153462!important;
+  box-shadow:0 10px 24px rgba(79,104,23,.24)!important;
+}
+.v157MenuItem.active .label,
+.v157MenuItem[aria-current="page"] .label{
+  color:#153462!important;
+}
+.v157MenuItem.active .meta,
+.v157MenuItem[aria-current="page"] .meta{
+  color:#35537f!important;
+}
+.v157MenuItem.active .ico,
+.v157MenuItem[aria-current="page"] .ico{
+  background:rgba(255,255,255,.38)!important;
+  color:#173864!important;
+  border-color:rgba(255,255,255,.32)!important;
+}
+.v157MenuDivider{
+  background:rgba(255,255,255,.10)!important;
+}
+
+/* Footer action buttons */
+.v157DrawerFooter{
+  background:linear-gradient(180deg,#1f447f 0%,#1b3c71 100%)!important;
+  border-top:1px solid rgba(255,255,255,.08)!important;
+}
+.v157PasswordBtn{
+  background:#dfe8f5!important;
+  color:#1a4e9b!important;
+  border:1px solid rgba(255,255,255,.28)!important;
+}
+.v157LogoutBtn{
+  background:linear-gradient(180deg,#ef4662 0%,#d62746 100%)!important;
+  color:#fff!important;
+  border:1px solid rgba(255,255,255,.08)!important;
+}
+
+/* Mobile keep compact while preserving big logo impression */
+@media(max-width:520px){
+  .v157DrawerHead{
+    min-height:232px!important;
+    padding:
+      calc(14px + env(safe-area-inset-top))
+      14px
+      14px!important;
+  }
+  .v157LogoBox{
+    width:min(100%, 300px)!important;
+    border-radius:18px!important;
+    padding:12px!important;
+  }
+  .v157LogoBox img{
+    max-height:128px!important;
+  }
+  .v157UserCard{
+    margin-top:10px!important;
+  }
+}
+@media(max-width:380px){
+  .v157LogoBox{
+    width:min(100%, 270px)!important;
+    padding:10px!important;
+  }
+  .v157LogoBox img{
+    max-height:114px!important;
+  }
+}
+
+
+/* V1.1.85 bottom bar style match */
+@media(max-width:520px){
+  #v157BottomBar{gap:6px;padding:6px max(6px,env(safe-area-inset-right)) calc(6px + env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-left));min-height:68px}
+  .v157BottomBtn{min-height:52px;border-radius:14px;font-size:9.5px}
+  .v157BottomBtn b{font-size:20px}
+}
+
+
+/* V1.1.86 GLOBAL UNIFIED TOOLBAR STYLE */
+body .compact-main-toolbar{
+  background:linear-gradient(180deg,#21488e 0%,#1d4385 48%,#183a76 100%)!important;
+  border-top:1px solid rgba(255,255,255,.10)!important;
+  border-radius:18px 18px 0 0!important;
+  box-shadow:0 -14px 34px rgba(10,26,58,.30)!important;
+  backdrop-filter:blur(12px)!important;
+  -webkit-backdrop-filter:blur(12px)!important;
+}
+body .compact-main-toolbar .toolbar-row.main-actions,
+body .compact-main-toolbar .toolbar-row.main4,
+body .compact-main-toolbar .toolbar-row.main6,
+body .compact-main-toolbar .toolbar-row.row1,
+body .compact-main-toolbar .toolbar-row.row2,
+body .compact-main-toolbar .toolbar-row.row3{
+  gap:8px!important;
+}
+body .compact-main-toolbar button,
+body .compact-main-toolbar .toolbar-row button,
+body .compact-main-toolbar .toolbar-row.main-actions>button,
+body .compact-main-toolbar .toolbar-row.main4>button,
+body .compact-main-toolbar .toolbar-row.main6>button{
+  background:rgba(255,255,255,.95)!important;
+  color:#173462!important;
+  border:1px solid rgba(255,255,255,.18)!important;
+  border-radius:16px!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.65),0 8px 18px rgba(9,31,74,.16)!important;
+  font-weight:900!important;
+  letter-spacing:.2px!important;
+}
+body .compact-main-toolbar button:hover,
+body .compact-main-toolbar .toolbar-row button:hover{
+  background:#ffffff!important;
+}
+body .compact-main-toolbar button:active,
+body .compact-main-toolbar .toolbar-row button:active{
+  transform:translateY(1px)!important;
+}
+body .compact-main-toolbar button[disabled]{opacity:.55!important;filter:grayscale(.18)!important}
+body .compact-main-toolbar .badge{
+  color:#eef5ff!important;
+}
+@media(max-width:600px){
+  body .compact-main-toolbar{border-radius:16px 16px 0 0!important}
+  body .compact-main-toolbar button,
+  body .compact-main-toolbar .toolbar-row button{border-radius:14px!important}
+}
+
+
+/* V1.1.87 PERFORMANCE: avoid continuous GPU blur over large SVG/form while scrolling/zooming */
+#v157BottomBar,body .compact-main-toolbar{
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+@media(max-width:600px){
+  #v157BottomBar,body .compact-main-toolbar{box-shadow:0 -7px 20px rgba(10,26,58,.22)!important}
+}
