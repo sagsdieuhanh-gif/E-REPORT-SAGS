@@ -9,9 +9,8 @@
   const $=id=>document.getElementById(id);
   let v187SyncTimer=0,v187Syncing=false;
   const setText=(el,value)=>{if(el&&el.textContent!==String(value??""))el.textContent=String(value??"")};
-  const V201_GREETING_KEY="sagsV201LoginGreeting";
+  const V200_GREETING_KEY="sagsV200LoginGreeting";
   const V200_WEATHER_KEY="sagsV200CxrWeather";
-  let v201GreetingSessionKey="";
   const v200Greetings=[
     "Chúc bạn một ca làm việc năng động, an toàn và hiệu quả!",
     "Khởi đầu thật hứng khởi — cùng vận hành mỗi chuyến bay thật trơn tru nhé!",
@@ -20,16 +19,12 @@
     "Chúc ca trực hôm nay phối hợp nhịp nhàng, an toàn và thành công!",
     "Sẵn sàng cho một ngày làm việc chuyên nghiệp và đầy cảm hứng nhé!"
   ];
-  // The greeting is intentionally scoped to the signed-in account, never to AD.
-  // This keeps a fresh message for every role after each login on a shared device.
-  function v200Greeting(accountKey){
+  function v200Greeting(){
     try{
-      const key=`${V201_GREETING_KEY}:${String(accountKey||"user")}`;
-      v201GreetingSessionKey=key;
-      let message=sessionStorage.getItem(key)||"";
+      let message=sessionStorage.getItem(V200_GREETING_KEY)||"";
       if(!message){
         message=v200Greetings[Math.floor(Math.random()*v200Greetings.length)];
-        sessionStorage.setItem(key,message);
+        sessionStorage.setItem(V200_GREETING_KEY,message);
       }
       return message;
     }catch(_){return v200Greetings[Math.floor(Math.random()*v200Greetings.length)]}
@@ -664,17 +659,13 @@
     setText($("v157UserRole"),role||"—");
     setText($("v157DrawerAvatar"),initial);
     setText($("v157WelcomeName"),`Xin chào, ${name} 👋`);
-    // This dashboard is shared by every authenticated role; do not gate the
-    // welcome or weather card behind Administrator permissions.
-    const greetingAccount=String(profile.username||profile.email||profile.uid||profile.id||name||role||"user").trim().toLowerCase();
-    setText($("v200GreetingText"),v200Greeting(greetingAccount));
+    setText($("v200GreetingText"),v200Greeting());
     if(auth&&home&&!$("v200WeatherMain")?.dataset.loaded){
       $("v200WeatherMain").dataset.loaded="1";
       v200RefreshWeather();
     }
     if(!auth){
-      try{if(v201GreetingSessionKey)sessionStorage.removeItem(v201GreetingSessionKey)}catch(_){}
-      v201GreetingSessionKey="";
+      try{sessionStorage.removeItem(V200_GREETING_KEY)}catch(_){}
       const weather=$("v200WeatherMain");if(weather)delete weather.dataset.loaded;
     }
 

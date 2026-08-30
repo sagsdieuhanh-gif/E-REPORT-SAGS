@@ -1,10 +1,10 @@
 {
-  "version": "V2.1",
-  "displayVersion": "V2.1",
-  "label": "V2.1",
-  "build": "V2.1-ALL-ACCOUNTS-WELCOME-WEATHER-IOS-LMC",
-  "releasedAt": "2026-08-30T22:30:00+07:00",
-  "type": "all-accounts-welcome-weather-ios-lmc",
-  "notes": "Tất cả tài khoản sau khi đăng nhập đều hiển thị lời chào/lời chúc ngẫu nhiên và thẻ thời tiết CXR. Lời chúc được tách theo từng tài khoản trong mỗi phiên đăng nhập. Bao gồm vá lỗi iOS hiển thị LMC FSAGS 42.1.",
-  "message": "V2.1"
+  "version": "V2.0",
+  "displayVersion": "V2.0",
+  "label": "V2.0",
+  "build": "V2.0-CXR-WELCOME-WEATHER-IOS-LMC",
+  "releasedAt": "2026-08-30T22:00:00+07:00",
+  "type": "cxr-welcome-weather-ios-lmc",
+  "notes": "Trang chủ hiển thị lời chúc ngẫu nhiên theo từng phiên đăng nhập và thời tiết CXR trực tuyến. Đồng thời khắc phục lỗi iOS không hiển thị nội dung vừa nhập tại ô LMC FSAGS 42.1.",
+  "message": "V2.0"
 }
