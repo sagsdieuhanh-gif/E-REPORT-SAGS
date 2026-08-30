@@ -1,12 +1,11 @@
-
-/* E-REPORT/SAGS V1.1.78 · CORRECT REPORT TEMPLATES
+/* E-REPORT/SAGS V1.1.79 · NIGHT REPORT FORMAT HOTFIX
    DAY: BÁO CÁO GIAO BAN NGÀY.
    NIGHT: BÁO CÁO TÌNH HÌNH PHỤC VỤ BAY CHIỀU ĐÊM.
    Drafting rule: do not infer unavailable source data. */
 (function(root){
   "use strict";
-  if(root.__SAGS_REPORT_V1178)return;
-  root.__SAGS_REPORT_V1178=true;
+  if(root.__SAGS_REPORT_V1179)return;
+  root.__SAGS_REPORT_V1179=true;
   const $=id=>document.getElementById(id);
   const S=v=>String(v??"").trim();
   const U=v=>S(v).toUpperCase();
@@ -54,7 +53,7 @@
       <li>Nội dung không phát sinh chỉ ghi <b>NIL</b> khi người lập đã xác nhận thật sự không phát sinh; nếu chưa có dữ liệu thì để trống/CHƯA NHẬP để tiếp tục bổ sung.</li>
       <li>Khi dùng lịch bay để briefing: ưu tiên giờ cập nhật ở cột sau cùng; nếu cột sau cùng trống mới dùng giờ đang hiển thị trong dòng lịch. Dấu “+” là qua ngày.</li>
       <li>Chuyến đến–đi cùng tàu phải xem là một cặp khai thác khi phân tích cao điểm; không cộng tách thành 2 cặp.</li>
-      <li>Nội dung phải ngắn, rõ, có số hiệu chuyến/giờ/người phụ trách khi cần; không lặp lại một thông tin ở nhiều mục.</li><li><b>Form DOCX gốc phải giữ nguyên bố cục, bảng, tiêu đề, thứ tự mục và phần ký.</b> Chỉ thay dữ liệu vào đúng vị trí tương ứng.</li>
+      <li>Nội dung phải ngắn, rõ, có số hiệu chuyến/giờ/người phụ trách khi cần; không lặp lại một thông tin ở nhiều mục.</li><li><b>Chuyến bay đi trễ phải ghi đúng cấu trúc:</b> VJ123 CXR-HAN STD 1200/ETD 1300: tàu đóng cửa 1315, trễ 75' so với STD. Lý do: ... Nếu không có ETD thì bỏ phần /ETD. Không tự suy đoán lý do delay.</li><li><b>Form DOCX gốc phải giữ nguyên bố cục, bảng, tiêu đề, thứ tự mục và phần ký.</b> Chỉ thay dữ liệu vào đúng vị trí tương ứng.</li>
     </ul></details>`;
   }
 
@@ -113,8 +112,8 @@
         ${input("v1171NightWindow","KHUNG THỜI GIAN","VD: từ 1400 - hết chuyến")}
         ${input("v1171NightSource","NGUỒN DỮ LIỆU","VD: theo ảnh khai thác được cung cấp")}
         ${field("v1171NightSummaryTable","BẢNG TỔNG HỢP QN / QT / TỔNG","Nhập đúng theo nguồn, ví dụ:\nQuốc nội | đến 08 | đi 09 | đến delay 08 | đi delay 07\nQuốc tế | đến 13 | đi 15 | đến delay 09 | đi delay 07\nTổng chuyến | đến 21 | đi 24 | đến delay 17 | đi delay 14",true,5)}
-        ${field("v1171NightDomesticDelay","LÝ DO DELAY - QUỐC NỘI","Liệt kê từng chuyến đi trễ: Flight, route, STD/ETD, Door Close, số phút chậm. Nếu nguồn không có nguyên nhân delay thì ghi rõ nguồn không thể hiện nguyên nhân.",true,6)}
-        ${field("v1171NightInternationalDelay","LÝ DO DELAY - QUỐC TẾ","Liệt kê từng chuyến đi trễ: Flight, route, STD/ETD, Door Close, số phút chậm. Nếu nguồn không có nguyên nhân delay thì ghi rõ nguồn không thể hiện nguyên nhân.",true,6)}
+        ${field("v1171NightDomesticDelay","LÝ DO DELAY - QUỐC NỘI","Mỗi chuyến ghi đúng mẫu:\nVJ123 CXR-HAN STD 1200/ETD 1300: tàu đóng cửa 1315, trễ 75' so với STD. Lý do: ...\nNếu không có ETD thì bỏ /ETD. Nếu nguồn không có lý do, không tự suy đoán.",true,6)}
+        ${field("v1171NightInternationalDelay","LÝ DO DELAY - QUỐC TẾ","Mỗi chuyến ghi đúng mẫu:\nVJ123 CXR-HAN STD 1200/ETD 1300: tàu đóng cửa 1315, trễ 75' so với STD. Lý do: ...\nNếu không có ETD thì bỏ /ETD. Nếu nguồn không có lý do, không tự suy đoán.",true,6)}
         ${field("v1171NightVipA","4.1 CHUYÊN CƠ VIP A","NIL nếu đã xác nhận")}
         ${field("v1171NightChtSvc","4.2 CHT SVC","NIL nếu đã xác nhận")}
         ${field("v1171NightChtVipSvc","4.3 CHT VIP SVC","NIL nếu đã xác nhận")}
@@ -263,9 +262,11 @@
     out.push("");
     out.push("Lý do delay");
     out.push("Quốc nội");
+    out.push("Chuyến bay đi trễ:");
     out.push(plain(get("v1171NightDomesticDelay")));
     out.push("");
     out.push("Quốc tế");
+    out.push("Chuyến bay đi trễ:");
     out.push(plain(get("v1171NightInternationalDelay")));
     out.push("");
     out.push(`4.1 CHUYÊN CƠ VIP A: ${plain(get("v1171NightVipA"))}`);
