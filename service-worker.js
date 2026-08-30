@@ -1,6 +1,6 @@
-const CACHE_NAME="sags-v1.1.108-it-free-rtdb-api-20260830";
-const BUILD="V1.1.108-OFFICIAL-20260830-IT-FREE-RTDB-API";
-const DISPLAY_VERSION="V1.1.108";
+const CACHE_NAME="sags-v2.0-cxr-welcome-weather-ios-lmc";
+const BUILD="V2.0-CXR-WELCOME-WEATHER-IOS-LMC";
+const DISPLAY_VERSION="V2.0";
 const APP_SHELL=["./9Gfinal.png","./CBTT.png","./KTTB.png","./LNF.png","./PVHK.png","./PVHLNG.png","./VHTTB.png","./VJfinal.png","./VJfinal2.png","./VUfinal.png","./ai.js","./alert-crosscheck-complete.mp3","./alert-ket-so-moi.mp3","./alert-ket-so-thay-doi.mp3","./alert-mva.mp3","./alert-mvt.mp3","./alert-pushback-missing.mp3","./alert-read-sign.mp3","./app.js","./apple-touch-icon.png","./favicon-16.png","./favicon-32.png","./fsags13-official-continuation.png","./fsags13-official-page1.png","./icon-192.png","./icon-512.png","./index.html","./ios-export.js","./ket-so.wav","./login-bg.jpg","./login-logo-10years.png","./manifest.webmanifest","./page1.png","./page10.png","./page11.png","./page12.png","./page13.png","./page2.png","./page4.png","./page6.png","./page7.png","./page9.png","./report.css","./report.js","./rns-ke-continuation.png","./rns-ke-page1.png","./rns-lj-continuation.png","./rns-lj-page1.png","./rns-tw-page1.png","./rns-tw-participants.png","./sags-logo.png","./theme.css","./ui.css","./ui.js","./daily-roster.js","./version.json","./ĐH.png"];
 const FRESH_SUFFIXES=["/version.json","/manifest.webmanifest","/index.html","/app.js","/ai.js","/ui.css","/ui.js","/ios-export.js","/report.css","/report.js","/theme.css","/daily-roster.js"];
 function isFreshPath(pathname){return FRESH_SUFFIXES.some(x=>pathname.endsWith(x));}

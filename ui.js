@@ -9,6 +9,50 @@
   const $=id=>document.getElementById(id);
   let v187SyncTimer=0,v187Syncing=false;
   const setText=(el,value)=>{if(el&&el.textContent!==String(value??""))el.textContent=String(value??"")};
+  const V200_GREETING_KEY="sagsV200LoginGreeting";
+  const V200_WEATHER_KEY="sagsV200CxrWeather";
+  const v200Greetings=[
+    "Chúc bạn một ca làm việc năng động, an toàn và hiệu quả!",
+    "Khởi đầu thật hứng khởi — cùng vận hành mỗi chuyến bay thật trơn tru nhé!",
+    "Chúc bạn nhiều năng lượng tích cực và một ngày khai thác thuận lợi!",
+    "Một ngày mới, một tinh thần mới — làm việc tập trung và hiệu quả nhé!",
+    "Chúc ca trực hôm nay phối hợp nhịp nhàng, an toàn và thành công!",
+    "Sẵn sàng cho một ngày làm việc chuyên nghiệp và đầy cảm hứng nhé!"
+  ];
+  function v200Greeting(){
+    try{
+      let message=sessionStorage.getItem(V200_GREETING_KEY)||"";
+      if(!message){
+        message=v200Greetings[Math.floor(Math.random()*v200Greetings.length)];
+        sessionStorage.setItem(V200_GREETING_KEY,message);
+      }
+      return message;
+    }catch(_){return v200Greetings[Math.floor(Math.random()*v200Greetings.length)]}
+  }
+  function v200WeatherText(code){
+    const labels={0:"Trời quang",1:"Ít mây",2:"Có mây",3:"Nhiều mây",45:"Sương mù",48:"Sương mù",51:"Mưa phùn nhẹ",53:"Mưa phùn",55:"Mưa phùn dày",61:"Mưa nhẹ",63:"Mưa vừa",65:"Mưa to",71:"Tuyết nhẹ",80:"Mưa rào nhẹ",81:"Mưa rào",82:"Mưa rào to",95:"Dông",96:"Dông có mưa đá",99:"Dông có mưa đá"};
+    return labels[Number(code)]||"Đang cập nhật";
+  }
+  async function v200RefreshWeather(){
+    const title=$("v200WeatherMain"),sub=$("v200WeatherSub");
+    if(!title||!sub)return;
+    title.textContent="Đang cập nhật…";sub.textContent="Dự báo thời tiết CXR";
+    try{
+      const url="https://api.open-meteo.com/v1/forecast?latitude=11.9982&longitude=109.2194&current_weather=true&timezone=Asia%2FHo_Chi_Minh";
+      const data=await fetch(url,{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error("weather");return r.json()});
+      const w=data?.current_weather||{};
+      if(!Number.isFinite(Number(w.temperature)))throw new Error("weather data");
+      title.textContent=`${Math.round(Number(w.temperature))}°C · ${v200WeatherText(w.weathercode)}`;
+      sub.textContent=`CXR · gió ${Math.round(Number(w.windspeed)||0)} km/h`;
+      try{sessionStorage.setItem(V200_WEATHER_KEY,JSON.stringify({title:title.textContent,sub:sub.textContent,at:Date.now()}))}catch(_){}
+    }catch(_){
+      try{
+        const saved=JSON.parse(sessionStorage.getItem(V200_WEATHER_KEY)||"{}");
+        if(saved.title){title.textContent=saved.title;sub.textContent=saved.sub||"CXR";return}
+      }catch(_){}
+      title.textContent="Chưa có dữ liệu thời tiết";sub.textContent="Kiểm tra kết nối mạng để cập nhật CXR";
+    }
+  }
   function scheduleSync(delay=50){
     if(v187SyncTimer)return;
     v187SyncTimer=setTimeout(()=>{v187SyncTimer=0;sync()},Math.max(0,Number(delay)||0));
@@ -264,9 +308,16 @@
       </div>
 
       <main id="v157HomeDashboard" aria-label="Trang chủ">
-        <div class="v157Welcome">
-          <strong id="v157WelcomeName">Xin chào 👋</strong>
-          <span>Chào mừng trở lại hệ thống</span>
+        <div class="v157Welcome v200Welcome">
+          <div class="v200WelcomeCopy">
+            <strong id="v157WelcomeName">Xin chào 👋</strong>
+            <span id="v200GreetingText">Chào mừng trở lại hệ thống</span>
+          </div>
+          <div class="v200WeatherCard" aria-label="Thời tiết tại CXR">
+            <b>☀️ CXR</b>
+            <strong id="v200WeatherMain">Đang cập nhật…</strong>
+            <span id="v200WeatherSub">Dự báo thời tiết CXR</span>
+          </div>
         </div>
         <section id="v181AdminHomeQuick" class="v181AdminHomeQuick">
           <div>
@@ -608,6 +659,15 @@
     setText($("v157UserRole"),role||"—");
     setText($("v157DrawerAvatar"),initial);
     setText($("v157WelcomeName"),`Xin chào, ${name} 👋`);
+    setText($("v200GreetingText"),v200Greeting());
+    if(auth&&home&&!$("v200WeatherMain")?.dataset.loaded){
+      $("v200WeatherMain").dataset.loaded="1";
+      v200RefreshWeather();
+    }
+    if(!auth){
+      try{sessionStorage.removeItem(V200_GREETING_KEY)}catch(_){}
+      const weather=$("v200WeatherMain");if(weather)delete weather.dataset.loaded;
+    }
 
     setText($("v157CrossCount"),crossCount());
 

@@ -2706,9 +2706,9 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <style id="sags-v115-clean-ui">
 #roleLoginHint,#v1014UsernameLoginNote,.templateNote,.fs09qUsageNote,.v377CreateFormNote,.v1019Hint{display:none!important}
 </style>
-<link rel="stylesheet" href="./ui.css?v=V1.1.108">
-<link rel="stylesheet" href="./report.css?v=V1.1.108">
-<link rel="stylesheet" href="./theme.css?v=V1.1.108">
+<link rel="stylesheet" href="./ui.css?v=V2.0">
+<link rel="stylesheet" href="./report.css?v=V2.0">
+<link rel="stylesheet" href="./theme.css?v=V2.0">
 </head>
 <body>
 <div aria-hidden="true" id="roleHomeIdle"></div>
@@ -6894,6 +6894,23 @@ function draw(){
       t.textContent=line;
       svg.appendChild(t);
     });
+    continue;
+  }
+  // FSAGS 42.1 — Safari/iOS can save LMC text but fail to repaint an SVG
+  // foreignObject after the editor closes. Render this live field as SVG text.
+  if(f.key==="f421_lmcDetails"){
+    const raw=String(val??"").replace(/\r\n/g,"\n");
+    if(raw){
+      const maxWidth=Math.max(20,drect.w-2),maxHeight=Math.max(20,drect.h);
+      let fontSize=Math.min(12,Math.max(9,Number(f.font)||12)),lines=[];
+      const build=fs=>{const out=[];for(const part of raw.split("\n")){const wrapped=wrapSvgTextToWidth(part,maxWidth,fs);if(wrapped.length)out.push(...wrapped);else out.push("");}return out};
+      for(let fs=fontSize;fs>=8;fs-=0.5){const test=build(fs);fontSize=fs;lines=test;if(test.length<=4&&test.length*fs*1.15<=maxHeight)break;}
+      if(lines.length>4)lines=[lines[0]||"",lines[1]||"",lines[2]||"",lines.slice(3).join(" ")];
+      const lineHeight=Math.min(24,Math.max(fontSize*1.15,16)),firstBaseline=drect.y+fontSize;
+      const measureCanvas=(window.__v200Lmc421Measure ||= document.createElement("canvas")),mctx=measureCanvas.getContext("2d");
+      mctx.font=`700 ${fontSize}px "Times New Roman"`;
+      lines.slice(0,4).forEach((line,i)=>{if(line==="")return;const t=E("text",{x:drect.x,y:firstBaseline+i*lineHeight,class:"value manual-value left","font-size":String(fontSize),"font-weight":"700","text-anchor":"start","dominant-baseline":"alphabetic","data-field-key":f.key});if(mctx.measureText(line).width>maxWidth){t.setAttribute("textLength",String(maxWidth));t.setAttribute("lengthAdjust","spacingAndGlyphs");}t.style.pointerEvents="none";t.textContent=line;svg.appendChild(t);});
+    }
     continue;
   }
   // FSAGS 09 - Briefing content: render each line exactly above the three printed rules.
@@ -11104,8 +11121,8 @@ try {
   if(h) h.textContent="Lỗi khởi tạo: "+err.message;
   alert("Lỗi JavaScript: "+err.message);
 }
-const APP_BUILD_VERSION="V1.1.108-OFFICIAL-20260830-IT-FREE-RTDB-API";
-const APP_DISPLAY_VERSION="V1.1.108";
+const APP_BUILD_VERSION="V2.0-CXR-WELCOME-WEATHER-IOS-LMC";
+const APP_DISPLAY_VERSION="V2.0";
 // V1.1.103: hotfix duy nhất lỗi Firebase RTDB ancestor/descendant khi đồng bộ DAILY ROSTER; không thay đổi nghiệp vụ khác.
 // V4.21 — SAFE UPDATE SAVE
 // Before switching to a newly installed app version, force-save all current
@@ -26564,7 +26581,7 @@ root.v378ResetAllOldRecords=async function(){
 })();
 </script>
 <script src="./app.js?v=V1.1.103-RTDB-ANCESTOR-HOTFIX" data-phase="performance"></script>
-<script src="./daily-roster.js?v=V1.1.108" id="dailyRosterCleanV11102"></script>
+<script src="./daily-roster.js?v=V2.0" id="dailyRosterCleanV11102"></script>
 <script id="v1016-delete-profile-fix">
 /* V1.0.16 · XÓA tài khoản phải xóa đúng profile E-Report, không chỉ Auth/users. */
 (function(){
@@ -28151,9 +28168,9 @@ body.v38-clean-workflow #v1134QuickTimeBtn{background:#eef6ff!important;color:#0
 })();
 </script>
 
-<script src="./ui.js?v=V1.1.108"></script>
-<script src="./ios-export.js?v=V1.1.108"></script>
+<script src="./ui.js?v=V2.0"></script>
+<script src="./ios-export.js?v=V2.0"></script>
 
-<script src="./report.js?v=V1.1.108"></script>
+<script src="./report.js?v=V2.0"></script>
 </body>
 </html>

@@ -1,10 +1,10 @@
 {
-  "version": "V1.1.108",
-  "displayVersion": "V1.1.108",
-  "label": "V1.1.108",
-  "build": "V1.1.108-OFFICIAL-20260830-IT-FREE-RTDB-API",
+  "version": "V2.0",
+  "displayVersion": "V2.0",
+  "label": "V2.0",
+  "build": "V2.0-CXR-WELCOME-WEATHER-IOS-LMC",
   "releasedAt": "2026-08-30T22:00:00+07:00",
-  "type": "it-public-free-rtdb-rest",
-  "notes": "Chốt API miễn phí cho IT qua Firebase Realtime Database REST, không Cloud Functions, không API key và không GCP secret. IT GET mỗi 2 phút. Chỉ công khai nhánh it_public gồm 6 mốc thời gian; BOARDING_FINISH chỉ lấy h17Finish/f421_h17Finish.",
-  "message": "V1.1.108"
+  "type": "cxr-welcome-weather-ios-lmc",
+  "notes": "Trang chủ hiển thị lời chúc ngẫu nhiên theo từng phiên đăng nhập và thời tiết CXR trực tuyến. Đồng thời khắc phục lỗi iOS không hiển thị nội dung vừa nhập tại ô LMC FSAGS 42.1.",
+  "message": "V2.0"
 }

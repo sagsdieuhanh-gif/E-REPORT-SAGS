@@ -104,6 +104,12 @@ body.v157-drawer-open{overflow:hidden}
 }
 body.v157-authenticated.v157-home #v157HomeDashboard{display:block}
 .v157Welcome{padding:5px 3px 20px}
+.v200Welcome{display:flex;align-items:stretch;justify-content:space-between;gap:12px}
+.v200WelcomeCopy{min-width:0;flex:1;padding:4px 0}
+.v200WeatherCard{min-width:142px;max-width:44%;padding:10px 11px;border-radius:17px;background:linear-gradient(145deg,#e8f3ff,#f9fcff);border:1px solid #cfe1f7;box-shadow:0 8px 20px rgba(51,107,176,.10);color:#24466e}
+.v200WeatherCard b{display:block;font:900 11px Arial;letter-spacing:.6px;color:#376393}
+.v200WeatherCard strong{display:block;margin-top:5px;font:900 13px/1.24 Arial;color:#183f78}
+.v200WeatherCard span{display:block;margin-top:4px;font:700 10px/1.25 Arial;color:#718cab}
 .v157Welcome strong{display:block;font:900 22px/1.25 Arial;color:#24466e}
 .v157Welcome span{display:block;margin-top:6px;font:700 15px Arial;color:#7890ac}
 .v157MetricGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -173,6 +179,9 @@ body.v157-authenticated.v157-home .toolbar.compact-main-toolbar{display:none!imp
   .v157BrandText{font-size:15px}
   .v157MenuBody{padding-left:10px;padding-right:10px}
   .v157MenuItem{font-size:15px}
+  .v200WeatherCard{min-width:126px;padding:9px 10px}
+  .v200WeatherCard strong{font-size:12px}
+  .v157Welcome strong{font-size:21px}
 }
 
 
