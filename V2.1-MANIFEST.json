@@ -1,0 +1,21 @@
+{
+  "release": "V2.1",
+  "build": "V2.1-MYFLIGHT-REALTIME-ADAPTIVE-SHARE",
+  "baseCommit": "3d271d2349404283720304db0eb34076eec515d2",
+  "changedFiles": [
+    "v2.1-runtime-patch.js",
+    "service-worker.js",
+    "version.json",
+    "HDSD-V2.1.md"
+  ],
+  "unchangedCriticalFiles": [
+    "app.js",
+    "index.html",
+    "ios-export.js",
+    "daily-roster.js"
+  ],
+  "rollbackFiles": [
+    "rollback/version.V2.0.json",
+    "rollback/service-worker.V2.0.js"
+  ]
+}

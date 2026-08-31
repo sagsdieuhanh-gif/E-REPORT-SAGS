@@ -1,10 +1,10 @@
 {
-  "version": "V2.0",
-  "displayVersion": "V2.0",
-  "label": "V2.0",
-  "build": "V2.0-CXR-WELCOME-WEATHER-IOS-LMC",
-  "releasedAt": "2026-08-30T22:00:00+07:00",
-  "type": "cxr-welcome-weather-ios-lmc",
-  "notes": "Trang chủ hiển thị lời chúc ngẫu nhiên theo từng phiên đăng nhập và thời tiết CXR trực tuyến. Đồng thời khắc phục lỗi iOS không hiển thị nội dung vừa nhập tại ô LMC FSAGS 42.1.",
-  "message": "V2.0"
+  "version": "V2.1",
+  "displayVersion": "V2.1",
+  "label": "V2.1",
+  "build": "V2.1-MYFLIGHT-REALTIME-ADAPTIVE-SHARE",
+  "releasedAt": "2026-08-31T23:05:00+07:00",
+  "type": "myflight-realtime-adaptive-share",
+  "notes": "MY FLIGHT tự làm mới theo sự kiện roster_mail của đúng tài khoản khi danh sách đang mở, không ép thoát khỏi biểu mẫu đang thao tác. Chuẩn hóa Xuất/Chia sẻ: ưu tiên native file Share khi trình duyệt thực sự hỗ trợ; nếu không hỗ trợ hoặc Share lỗi thì tự chuyển sang lưu/tải hoặc mở PDF. Hủy Share không báo lỗi.",
+  "message": "V2.1"
 }
