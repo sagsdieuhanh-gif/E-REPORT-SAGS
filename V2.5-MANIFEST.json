@@ -1,0 +1,13 @@
+{
+  "version": "V2.5",
+  "build": "V2.5-STATS-UNIT-FILTER-ADMIN-COMPACT",
+  "base": "V2.4",
+  "changedFiles": [
+    "v2.5-runtime-patch.js",
+    "version.json",
+    "service-worker.js",
+    "HDSD-V2.5.md",
+    "V2.5-MANIFEST.json"
+  ],
+  "uploadServiceWorkerLast": true
+}

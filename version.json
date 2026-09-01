@@ -1,10 +1,10 @@
 {
-  "version": "V2.4",
-  "displayVersion": "V2.4",
-  "label": "V2.4",
-  "build": "V2.4-STATS-AD-CONTROL-UI-FIX",
-  "releasedAt": "2026-09-01T14:35:00+07:00",
-  "type": "stats-ad-control-ui-fix",
-  "notes": "Sửa lỗi V2.3 không hiển thị nút thống kê trong AD CONTROL CENTER hiện hành. Thêm thẻ THỐNG KÊ SỐ CHUYẾN ngay sau TÀI KHOẢN & PHÂN QUYỀN; có nút dự phòng nổi nếu giao diện AD thay đổi. Giữ nguyên engine thống kê/xuất Excel V2.3, ARR→DEP và autosave V2.2.",
-  "message": "V2.4"
+  "version": "V2.5",
+  "displayVersion": "V2.5",
+  "label": "V2.5",
+  "build": "V2.5-STATS-UNIT-FILTER-ADMIN-COMPACT",
+  "releasedAt": "2026-09-01T15:10:00+07:00",
+  "type": "stats-unit-filter-admin-compact",
+  "notes": "Gom THỐNG KÊ CHUYẾN vào AD CONTROL CENTER, bỏ nút thống kê nổi ở trang chủ/thanh dưới. ADMIN chọn ngày và đơn vị (ĐH, CBTT, PVHK, HLNG, CARGO, VSTB, VHTTB, KTTB, LNF hoặc tất cả) trước khi xem/xuất Excel. Giữ nguyên quy tắc mỗi tài khoản trên cùng Flight Workspace trong ngày chỉ tính 1 chuyến và giữ ARR→DEP/autosave các bản trước.",
+  "message": "V2.5"
 }
