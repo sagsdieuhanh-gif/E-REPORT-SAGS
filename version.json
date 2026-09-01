@@ -1,10 +1,10 @@
 {
-  "version": "V2.6",
-  "displayVersion": "V2.6",
-  "label": "V2.6",
-  "build": "V2.6-STATS-FLICKER-FIX",
-  "releasedAt": "2026-09-01T15:45:00+07:00",
-  "type": "stats-flicker-fix",
-  "notes": "Sửa hiện tượng THỐNG KÊ CHUYẾN nhấp nháy trong AD CONTROL CENTER do V2.4 và V2.5 cùng chèn/xóa thẻ thống kê. V2.6 ngừng nạp runtime UI V2.4, giữ engine V2.3 và giao diện lọc đơn vị V2.5; đồng thời chỉnh bố cục chữ thẻ thống kê trên mobile. Giữ nguyên ARR→DEP và autosave.",
-  "message": "V2.6"
+  "version": "V2.7",
+  "displayVersion": "V2.7",
+  "label": "V2.7",
+  "build": "V2.7-COMPLETED-PDF-CONTROL",
+  "releasedAt": "2026-09-01T15:50:00+07:00",
+  "type": "completed-pdf-control",
+  "notes": "Thống kê ADMIN chỉ tính chuyến nhân viên đã thực sự HOÀN TẤT; chuyến mới phân/chưa hoàn tất không được tính. E-FORM F/SAGS phải bấm HOÀN TẤT trước khi được xuất/chia sẻ PDF; mở lại chỉnh sửa sẽ khóa PDF cho tới khi hoàn tất lại. Chuẩn hóa tên PDF F/SAGS thành Fsags <Số hiệu chuyến> DD-MM-YYYY.pdf trên native Share và fallback tải xuống. Giữ ARR→DEP, autosave, lọc đơn vị và sửa nhấp nháy các bản trước.",
+  "message": "V2.7"
 }

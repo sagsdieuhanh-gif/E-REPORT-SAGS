@@ -1,0 +1,27 @@
+{
+  "version": "V2.7",
+  "build": "V2.7-COMPLETED-PDF-CONTROL",
+  "uploadOrder": [
+    "v2.7-runtime-patch.js",
+    "version.json",
+    "HDSD-V2.7.md",
+    "service-worker.js"
+  ],
+  "serviceWorkerLast": true,
+  "keeps": [
+    "v2.1-runtime-patch.js",
+    "v2.2-runtime-patch.js",
+    "v2.3-runtime-patch.js",
+    "v2.5-runtime-patch.js",
+    "v2.6-runtime-patch.js"
+  ],
+  "retired": [
+    "v2.4-runtime-patch.js"
+  ],
+  "features": [
+    "completed-only daily flight stats",
+    "PDF export requires completed F/SAGS assignment",
+    "Fsags <flight> DD-MM-YYYY.pdf naming",
+    "reopen locks PDF until re-complete"
+  ]
+}
