@@ -1,10 +1,10 @@
 {
-  "version": "V2.2",
-  "displayVersion": "V2.2",
-  "label": "V2.2",
-  "build": "V2.2-ARRDEP-CHOICE-LOCALFIRST",
-  "releasedAt": "2026-09-01T12:25:00+07:00",
-  "type": "arrdep-choice-localfirst",
-  "notes": "DEP sau ARR cho phép chọn TIẾP TỤC TỜ HIỆN TẠI hoặc TẠO TỜ DEP MỚI; tờ DEP mới chỉ giữ thông tin chuyến cơ bản và không sao chép dữ liệu khai thác ARR. Bổ sung autosave local-first, lưu checkpoint ngay khi chuyển app/background và tự đồng bộ lại khi quay về. Không thay đổi chức năng tài khoản/Reset Auth.",
-  "message": "V2.2"
+  "version": "V2.3",
+  "displayVersion": "V2.3",
+  "label": "V2.3",
+  "build": "V2.3-DAILY-FLIGHT-STATS-EXPORT",
+  "releasedAt": "2026-09-01T14:10:00+07:00",
+  "type": "daily-flight-stats-export",
+  "notes": "Bổ sung cho ADMIN chức năng thống kê số chuyến theo tài khoản trong từng ngày và xuất file Excel .xlsx. Mỗi tài khoản trên cùng một Flight Workspace chỉ tính 1 chuyến dù có nhiều biểu mẫu, ARR/DEP hoặc UPDATE; bàn giao hoàn tất giữ cả người trước và người sau trong thống kê. Không tạo heartbeat/bộ đếm Firebase mới. Giữ nguyên ARR→DEP và autosave V2.2.",
+  "message": "V2.3"
 }

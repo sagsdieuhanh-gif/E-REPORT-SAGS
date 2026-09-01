@@ -1,0 +1,21 @@
+{
+  "version": "V2.3",
+  "build": "V2.3-DAILY-FLIGHT-STATS-EXPORT",
+  "base": "V2.2-ARRDEP-CHOICE-LOCALFIRST",
+  "changedFiles": [
+    "v2.3-runtime-patch.js",
+    "version.json",
+    "service-worker.js",
+    "HDSD-V2.3.md"
+  ],
+  "uploadOrder": [
+    "v2.3-runtime-patch.js",
+    "version.json",
+    "HDSD-V2.3.md",
+    "service-worker.js"
+  ],
+  "serviceWorkerLast": true,
+  "appJsChanged": false,
+  "firebaseWriteAdded": false,
+  "adminOnly": true
+}
