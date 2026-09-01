@@ -1,0 +1,8 @@
+{
+  "version":"V2.6",
+  "build":"V2.6-STATS-FLICKER-FIX",
+  "changedFiles":["v2.6-runtime-patch.js","version.json","service-worker.js","HDSD-V2.6.md"],
+  "retiredRuntime":"v2.4-runtime-patch.js",
+  "retiredRuntimeAction":"keep file in repository but do not inject/load it",
+  "preserves":["V2.2 ARR→DEP","V2.2 local-first autosave","V2.3 stats/XLSX engine","V2.5 unit filter UI"]
+}

@@ -1,10 +1,10 @@
 {
-  "version": "V2.5",
-  "displayVersion": "V2.5",
-  "label": "V2.5",
-  "build": "V2.5-STATS-UNIT-FILTER-ADMIN-COMPACT",
-  "releasedAt": "2026-09-01T15:10:00+07:00",
-  "type": "stats-unit-filter-admin-compact",
-  "notes": "Gom THỐNG KÊ CHUYẾN vào AD CONTROL CENTER, bỏ nút thống kê nổi ở trang chủ/thanh dưới. ADMIN chọn ngày và đơn vị (ĐH, CBTT, PVHK, HLNG, CARGO, VSTB, VHTTB, KTTB, LNF hoặc tất cả) trước khi xem/xuất Excel. Giữ nguyên quy tắc mỗi tài khoản trên cùng Flight Workspace trong ngày chỉ tính 1 chuyến và giữ ARR→DEP/autosave các bản trước.",
-  "message": "V2.5"
+  "version": "V2.6",
+  "displayVersion": "V2.6",
+  "label": "V2.6",
+  "build": "V2.6-STATS-FLICKER-FIX",
+  "releasedAt": "2026-09-01T15:45:00+07:00",
+  "type": "stats-flicker-fix",
+  "notes": "Sửa hiện tượng THỐNG KÊ CHUYẾN nhấp nháy trong AD CONTROL CENTER do V2.4 và V2.5 cùng chèn/xóa thẻ thống kê. V2.6 ngừng nạp runtime UI V2.4, giữ engine V2.3 và giao diện lọc đơn vị V2.5; đồng thời chỉnh bố cục chữ thẻ thống kê trên mobile. Giữ nguyên ARR→DEP và autosave.",
+  "message": "V2.6"
 }
