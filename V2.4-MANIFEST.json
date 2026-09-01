@@ -1,0 +1,7 @@
+{
+  "version":"V2.4",
+  "build":"V2.4-STATS-AD-CONTROL-UI-FIX",
+  "changedFiles":["v2.4-runtime-patch.js","version.json","service-worker.js","HDSD-V2.4.md"],
+  "dependsOn":["v2.1-runtime-patch.js","v2.2-runtime-patch.js","v2.3-runtime-patch.js"],
+  "rollback":"rollback/"
+}

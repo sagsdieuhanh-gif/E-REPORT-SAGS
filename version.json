@@ -1,10 +1,10 @@
 {
-  "version": "V2.3",
-  "displayVersion": "V2.3",
-  "label": "V2.3",
-  "build": "V2.3-DAILY-FLIGHT-STATS-EXPORT",
-  "releasedAt": "2026-09-01T14:10:00+07:00",
-  "type": "daily-flight-stats-export",
-  "notes": "Bổ sung cho ADMIN chức năng thống kê số chuyến theo tài khoản trong từng ngày và xuất file Excel .xlsx. Mỗi tài khoản trên cùng một Flight Workspace chỉ tính 1 chuyến dù có nhiều biểu mẫu, ARR/DEP hoặc UPDATE; bàn giao hoàn tất giữ cả người trước và người sau trong thống kê. Không tạo heartbeat/bộ đếm Firebase mới. Giữ nguyên ARR→DEP và autosave V2.2.",
-  "message": "V2.3"
+  "version": "V2.4",
+  "displayVersion": "V2.4",
+  "label": "V2.4",
+  "build": "V2.4-STATS-AD-CONTROL-UI-FIX",
+  "releasedAt": "2026-09-01T14:35:00+07:00",
+  "type": "stats-ad-control-ui-fix",
+  "notes": "Sửa lỗi V2.3 không hiển thị nút thống kê trong AD CONTROL CENTER hiện hành. Thêm thẻ THỐNG KÊ SỐ CHUYẾN ngay sau TÀI KHOẢN & PHÂN QUYỀN; có nút dự phòng nổi nếu giao diện AD thay đổi. Giữ nguyên engine thống kê/xuất Excel V2.3, ARR→DEP và autosave V2.2.",
+  "message": "V2.4"
 }
