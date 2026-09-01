@@ -1,10 +1,10 @@
 {
-  "version": "V2.8",
-  "displayVersion": "V2.8",
-  "label": "V2.8",
-  "build": "V2.8-PDF-QUOTA-GUARD",
-  "releasedAt": "2026-09-01T17:10:00+07:00",
-  "type": "pdf-quota-guard",
-  "notes": "Sửa lỗi QuotaExceededError khi xuất PDF F/SAGS sau HOÀN TẤT. Chỉ trong lúc xuất PDF đã hoàn tất, hệ thống bỏ qua lỗi ghi cache legacy rampFullTestV17Data nếu localStorage đã đầy; không bỏ qua lỗi lưu trong lúc đang nhập liệu. Trước khi xuất, dọn checkpoint V2.2 dư thừa của assignment đã có completionEnvelope trên RTDB và các checkpoint cũ đã synced. Giữ quy tắc V2.7: chỉ thống kê chuyến đã hoàn tất, chưa HOÀN TẤT không xuất PDF, tên Fsags <flight> DD-MM-YYYY.pdf.",
-  "message": "V2.8"
+  "version": "V2.9",
+  "displayVersion": "V2.9",
+  "label": "V2.9",
+  "build": "V2.9-EXPORT-SPEED-FIX",
+  "releasedAt": "2026-09-01T17:09:00+07:00",
+  "type": "export-speed-fix",
+  "notes": "Tối ưu độ trễ sau HOÀN TẤT -> XUẤT PDF. Ngừng nạp runtime V2.8 vì V2.8 thực hiện thêm RTDB read và quét toàn bộ localStorage ở đường xuất. V2.9 giữ quota guard nhưng không chặn UI: V2.7 tiếp tục xác nhận COMPLETED; V2.9 chỉ bỏ qua QuotaExceededError của legacy cache rampFullTestV17Data trong đúng lúc sendReport và dọn bất đồng bộ checkpoint của session hiện tại. Giữ nguyên thống kê completed-only và tên Fsags <flight> DD-MM-YYYY.pdf.",
+  "message": "V2.9"
 }
