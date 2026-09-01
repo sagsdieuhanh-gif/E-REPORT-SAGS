@@ -1,10 +1,10 @@
 {
-  "version": "V2.2",
-  "displayVersion": "V2.2",
-  "label": "V2.2",
-  "build": "V2.2-ARRDEP-CHOICE-LOCALFIRST",
-  "releasedAt": "2026-09-01T12:25:00+07:00",
-  "type": "arrdep-choice-localfirst",
-  "notes": "DEP sau ARR cho phép chọn TIẾP TỤC TỜ HIỆN TẠI hoặc TẠO TỜ DEP MỚI; tờ DEP mới chỉ giữ thông tin chuyến cơ bản và không sao chép dữ liệu khai thác ARR. Bổ sung autosave local-first, lưu checkpoint ngay khi chuyển app/background và tự đồng bộ lại khi quay về. Không thay đổi chức năng tài khoản/Reset Auth.",
-  "message": "V2.2"
+  "version": "V2.2.1",
+  "displayVersion": "V2.2.1",
+  "label": "V2.2.1",
+  "build": "V2.2.1-ARRDEP-NEXT-DEP-FIX",
+  "releasedAt": "2026-09-01T20:10:00+07:00",
+  "type": "arrdep-next-dep-fix",
+  "notes": "Hotfix dựa trực tiếp trên V2.2. Sửa luồng người sau nhận DEP sau khi người trước HOÀN TẤT ARR: bổ sung liên kết ARR->DEP dựa trên flight/form/work family, không phụ thuộc duy nhất sourceColumn/roleKey cũ; khi người sau mở DEP lần đầu sẽ có lựa chọn TIẾP TỤC hoặc TẠO TỜ DEP MỚI. NEW DEP được ghi đồng thời vào roster session và shared roster workspace để không bị kéo ngược về dữ liệu ARR. Có cơ chế tự sửa trường hợp V2.2 đã chọn NEW_DEP nhưng envelope vẫn là ARR. Giữ nguyên autosave local-first của V2.2.",
+  "message": "V2.2.1"
 }
