@@ -1,4 +1,4 @@
-/* E-REPORT/SAGS V2.2.5 R2 · LIGHTWEIGHT SAFE UPDATE
+/* E-REPORT/SAGS V2.2.6 · LIGHTWEIGHT SAFE UPDATE
  * BUILD: V2.2.5-SIGNATURE-EXPORT-STORAGE-FIX-R2
  *
  * Important:
@@ -8,20 +8,21 @@
  * - On activate, remove old release caches to free storage.
  * - Rebuild cache lazily from network after activation.
  */
-const CACHE_NAME="sags-v2.2.5-r2-light-update";
-const BUILD="V2.2.5-SIGNATURE-EXPORT-STORAGE-FIX-R2";
-const DISPLAY_VERSION="V2.2.5";
+const CACHE_NAME="sags-v2.2.6-signature-legacy-quota-fix";
+const BUILD="V2.2.6-SIGNATURE-LEGACY-QUOTA-FIX";
+const DISPLAY_VERSION="V2.2.6";
 
 const PATCH_V21="./v2.1-runtime-patch.js";
 const PATCH_V22="./v2.2-runtime-patch.js";
 const PATCH_V222="./v2.2.2-runtime-patch.js";
 const PATCH_V225="./v2.2.5-runtime-patch.js";
+const PATCH_V226="./v2.2.6-runtime-patch.js";
 
 const FRESH_SUFFIXES=[
   "/version.json","/manifest.webmanifest","/index.html","/app.js","/ai.js",
   "/ui.css","/ui.js","/ios-export.js","/report.css","/report.js","/theme.css",
   "/daily-roster.js","/v2.1-runtime-patch.js","/v2.2-runtime-patch.js",
-  "/v2.2.2-runtime-patch.js","/v2.2.5-runtime-patch.js"
+  "/v2.2.2-runtime-patch.js","/v2.2.5-runtime-patch.js","/v2.2.6-runtime-patch.js"
 ];
 
 function isFreshPath(pathname){
@@ -40,7 +41,7 @@ async function safePut(cache,key,response){
     if(response&&response.ok)await cache.put(key,response.clone());
   }catch(e){
     // Cache failure must not break online operation/update on storage-limited iOS.
-    console.info("V2.2.5 R2 cache put skipped",key,e?.name||e?.message||e);
+    console.info("V2.2.6 cache put skipped",key,e?.name||e?.message||e);
   }
 }
 
@@ -72,6 +73,7 @@ function patchIndexHtml(html){
   out=injectScript(out,"v2.2-runtime-patch.js");
   out=injectScript(out,"v2.2.2-runtime-patch.js");
   out=injectScript(out,"v2.2.5-runtime-patch.js");
+  out=injectScript(out,"v2.2.6-runtime-patch.js");
   return out;
 }
 
@@ -87,7 +89,8 @@ async function validateRelease(){
   const checks=[
     [PATCH_V22,"V2.2-ARRDEP-CHOICE-LOCALFIRST"],
     [PATCH_V222,"V2.2.2-DEP-RECEIVE-AFTER-ARR"],
-    [PATCH_V225,BUILD]
+    [PATCH_V225,"V2.2.5-SIGNATURE-EXPORT-STORAGE-FIX-R2"],
+    [PATCH_V226,BUILD]
   ];
   for(const [path,marker] of checks){
     const r=await fetchNoStore(path+"?swcheck="+Date.now());
