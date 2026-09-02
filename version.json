@@ -1,10 +1,10 @@
 {
-  "version": "V2.2.2",
-  "displayVersion": "V2.2.2",
-  "label": "V2.2.2",
-  "build": "V2.2.2-DEP-RECEIVE-AFTER-ARR",
-  "releasedAt": "2026-09-01T20:35:00+07:00",
-  "type": "dep-receive-after-arr",
-  "notes": "Hotfix dựa trực tiếp trên V2.2. Sau ARR HOÀN TẤT, hệ thống cập nhật trạng thái READY và chạm roster_mail của đúng tài khoản DEP để thiết bị người sau tự refresh MY FLIGHT. Khi người sau bấm NHẬN CHUYẾN, nếu có bằng chứng ARR đã COMPLETED thì DEP được claim trực tiếp, không còn kẹt WAITING_PREVIOUS; sau đó chọn TIẾP TỤC hoặc TẠO TỜ DEP MỚI. NEW DEP giữ dữ liệu nhận dạng/lịch chuyến và cập nhật shared workspace để không bị kéo ngược về ARR. V2.2.1 không còn được nạp.",
-  "message": "V2.2.2"
+  "version": "V2.2.5",
+  "displayVersion": "V2.2.5",
+  "label": "V2.2.5",
+  "build": "V2.2.5-SIGNATURE-EXPORT-STORAGE-FIX-R2",
+  "releasedAt": "2026-09-02T18:40:00+07:00",
+  "type": "signature-export-storage-fix-update-repair",
+  "notes": "R2 sửa cơ chế cập nhật từ V2.2.2 lên V2.2.5 trên thiết bị đang thiếu dung lượng: Service Worker mới cài nhẹ, không pre-cache lại toàn bộ app trong giai đoạn install nên tránh nhân đôi cache cũ. Sau khi người dùng bấm UPDATE mới activate, xóa cache release cũ rồi tải/cache lại theo nhu cầu. Giữ fix chữ ký/PDF V2.2.5, V2.2 local-first và V2.2.2 ARR-DEP. Gói deploy PowerShell kèm theo cập nhật index.html server-side để detector cũ và R2 đều nhận đúng build.",
+  "message": "V2.2.5"
 }
