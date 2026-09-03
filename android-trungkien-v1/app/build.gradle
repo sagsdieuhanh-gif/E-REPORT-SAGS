@@ -6,6 +6,10 @@ android {
     namespace 'vn.sags.trungkien'
     compileSdk 35
 
+    buildFeatures {
+        buildConfig true
+    }
+
     defaultConfig {
         applicationId "vn.sags.trungkien"
         minSdk 26
@@ -23,7 +27,7 @@ android {
                 storeFile file(ksPath)
                 storePassword System.getenv("TRUNGKIEN_KEYSTORE_PASSWORD")
                 keyAlias System.getenv("TRUNGKIEN_KEY_ALIAS")
-                keyPassword System.getenv("TRUNGKIEN_KEY_PASSWORD")
+                keyPassword System.getenv("TRUNGKIEN_KEYSTORE_PASSWORD")
             }
         }
     }
