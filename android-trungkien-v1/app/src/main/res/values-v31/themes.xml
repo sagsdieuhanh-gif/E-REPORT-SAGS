@@ -1,0 +1,15 @@
+<resources>
+    <style name="Theme.TrungKien" parent="@android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:fontFamily">sans</item>
+        <item name="android:windowActionModeOverlay">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:colorAccent">@color/tk_blue</item>
+        <item name="android:statusBarColor">@color/tk_navy</item>
+        <item name="android:navigationBarColor">@color/tk_navy</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:windowSplashScreenBackground">@color/tk_navy</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="android:windowSplashScreenIconBackgroundColor">@color/tk_navy</item>
+    </style>
+</resources>
