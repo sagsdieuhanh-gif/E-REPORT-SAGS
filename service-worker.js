@@ -1,48 +1,30 @@
-/* E-REPORT/SAGS V2.2.6 · LIGHTWEIGHT SAFE UPDATE
- * BUILD: V2.2.5-SIGNATURE-EXPORT-STORAGE-FIX-R2
- *
- * Important:
- * - Do NOT duplicate the previous full cache during install.
- * - Validate only small/critical release metadata and runtime scripts.
- * - Wait for explicit UPDATE / SKIP_WAITING.
- * - On activate, remove old release caches to free storage.
- * - Rebuild cache lazily from network after activation.
- */
-const CACHE_NAME="sags-v2.2.6-signature-legacy-quota-fix";
-const BUILD="V2.2.6-SIGNATURE-LEGACY-QUOTA-FIX";
-const DISPLAY_VERSION="V2.2.6";
+/* E-REPORT/SAGS V2.2.7 · LIGHTWEIGHT SAFE UPDATE */
+const CACHE_NAME="sags-v2.2.7-signature-storage-recovery";
+const BUILD="V2.2.7-SIGNATURE-STORAGE-RECOVERY";
+const DISPLAY_VERSION="V2.2.7";
 
 const PATCH_V21="./v2.1-runtime-patch.js";
 const PATCH_V22="./v2.2-runtime-patch.js";
 const PATCH_V222="./v2.2.2-runtime-patch.js";
 const PATCH_V225="./v2.2.5-runtime-patch.js";
 const PATCH_V226="./v2.2.6-runtime-patch.js";
+const PATCH_V227="./v2.2.7-runtime-patch.js";
 
 const FRESH_SUFFIXES=[
   "/version.json","/manifest.webmanifest","/index.html","/app.js","/ai.js",
   "/ui.css","/ui.js","/ios-export.js","/report.css","/report.js","/theme.css",
   "/daily-roster.js","/v2.1-runtime-patch.js","/v2.2-runtime-patch.js",
-  "/v2.2.2-runtime-patch.js","/v2.2.5-runtime-patch.js","/v2.2.6-runtime-patch.js"
+  "/v2.2.2-runtime-patch.js","/v2.2.5-runtime-patch.js",
+  "/v2.2.6-runtime-patch.js","/v2.2.7-runtime-patch.js"
 ];
 
-function isFreshPath(pathname){
-  return FRESH_SUFFIXES.some(x=>pathname.endsWith(x));
-}
-
+function isFreshPath(pathname){return FRESH_SUFFIXES.some(x=>pathname.endsWith(x));}
 async function fetchNoStore(path){
-  return fetch(path,{
-    cache:"no-store",
-    headers:{"Cache-Control":"no-cache","Pragma":"no-cache"}
-  });
+  return fetch(path,{cache:"no-store",headers:{"Cache-Control":"no-cache","Pragma":"no-cache"}});
 }
-
 async function safePut(cache,key,response){
-  try{
-    if(response&&response.ok)await cache.put(key,response.clone());
-  }catch(e){
-    // Cache failure must not break online operation/update on storage-limited iOS.
-    console.info("V2.2.6 cache put skipped",key,e?.name||e?.message||e);
-  }
+  try{if(response&&response.ok)await cache.put(key,response.clone())}
+  catch(e){console.info("V2.2.7 cache put skipped",key,e?.name||e?.message||e)}
 }
 
 function stripRetiredScripts(out){
@@ -51,35 +33,26 @@ function stripRetiredScripts(out){
     .replace(/<script\b[^>]*\bv2\.2\.3-runtime-patch\.js(?:\?[^"'>\s]*)?[^>]*>\s*<\/script>\s*/gi,"")
     .replace(/<script\b[^>]*\bv2\.2\.4-runtime-patch\.js(?:\?[^"'>\s]*)?[^>]*>\s*<\/script>\s*/gi,"");
 }
-
 function injectScript(out,file){
   if(out.includes(file))return out;
   const tag=`<script src="./${file}?v=${encodeURIComponent(DISPLAY_VERSION)}"></script>`;
   if(/<\/body>/i.test(out))return out.replace(/<\/body>/i,`${tag}\n</body>`);
   return out+`\n${tag}\n`;
 }
-
 function patchIndexHtml(html){
   let out=stripRetiredScripts(String(html||""));
-  out=out.replace(
-    /(const\s+APP_BUILD_VERSION\s*=\s*)["'][^"']+["'](\s*;?)/,
-    `$1"${BUILD}"$2`
-  );
-  out=out.replace(
-    /(const\s+APP_DISPLAY_VERSION\s*=\s*)["'][^"']+["'](\s*;?)/,
-    `$1"${DISPLAY_VERSION}"$2`
-  );
+  out=out.replace(/(const\s+APP_BUILD_VERSION\s*=\s*)["'][^"']+["'](\s*;?)/,`$1"${BUILD}"$2`);
+  out=out.replace(/(const\s+APP_DISPLAY_VERSION\s*=\s*)["'][^"']+["'](\s*;?)/,`$1"${DISPLAY_VERSION}"$2`);
   out=injectScript(out,"v2.1-runtime-patch.js");
   out=injectScript(out,"v2.2-runtime-patch.js");
   out=injectScript(out,"v2.2.2-runtime-patch.js");
   out=injectScript(out,"v2.2.5-runtime-patch.js");
   out=injectScript(out,"v2.2.6-runtime-patch.js");
+  out=injectScript(out,"v2.2.7-runtime-patch.js");
   return out;
 }
 
 async function validateRelease(){
-  // No full APP_SHELL cache here. This is deliberate to avoid doubling the
-  // V2.2.2 cache while the new worker is still waiting.
   const vr=await fetchNoStore("./version.json?swcheck="+Date.now());
   if(!vr.ok)throw new Error("version.json HTTP "+vr.status);
   const vd=await vr.clone().json();
@@ -90,7 +63,8 @@ async function validateRelease(){
     [PATCH_V22,"V2.2-ARRDEP-CHOICE-LOCALFIRST"],
     [PATCH_V222,"V2.2.2-DEP-RECEIVE-AFTER-ARR"],
     [PATCH_V225,"V2.2.5-SIGNATURE-EXPORT-STORAGE-FIX-R2"],
-    [PATCH_V226,BUILD]
+    [PATCH_V226,"V2.2.6-SIGNATURE-LEGACY-QUOTA-FIX"],
+    [PATCH_V227,BUILD]
   ];
   for(const [path,marker] of checks){
     const r=await fetchNoStore(path+"?swcheck="+Date.now());
@@ -99,20 +73,17 @@ async function validateRelease(){
     if(!text.includes(marker))throw new Error(path+" marker mismatch");
   }
 
-  // Check index is reachable, but DO NOT cache the huge index during install.
   const ir=await fetchNoStore("./index.html?swcheck="+Date.now());
   if(!ir.ok)throw new Error("index.html HTTP "+ir.status);
-  return true;
 }
 
 self.addEventListener("install",event=>{
-  // SAFE UPDATE: do not call skipWaiting here.
+  // Do not call skipWaiting: wait for operator to press UPDATE.
   event.waitUntil(validateRelease());
 });
 
 self.addEventListener("activate",event=>{
   event.waitUntil((async()=>{
-    // Free old release caches before rebuilding the new one.
     const keys=await caches.keys();
     await Promise.all(keys.filter(k=>k!==CACHE_NAME).map(k=>caches.delete(k).catch(()=>false)));
     await caches.open(CACHE_NAME);
@@ -154,12 +125,8 @@ self.addEventListener("fetch",event=>{
         if(n&&n.ok){
           const html=patchIndexHtml(await n.clone().text());
           const p=new Response(html,{
-            status:n.status,
-            statusText:n.statusText,
-            headers:{
-              "Content-Type":"text/html; charset=utf-8",
-              "Cache-Control":"no-cache"
-            }
+            status:n.status,statusText:n.statusText,
+            headers:{"Content-Type":"text/html; charset=utf-8","Cache-Control":"no-cache"}
           });
           await safePut(c,"./index.html",p);
           return p;
