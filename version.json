@@ -1,10 +1,10 @@
 {
-  "version": "V2.2.7",
-  "displayVersion": "V2.2.7",
-  "label": "V2.2.7",
-  "build": "V2.2.7-SIGNATURE-STORAGE-RECOVERY",
-  "releasedAt": "2026-09-03T14:25:00+07:00",
-  "type": "signature-storage-recovery",
-  "notes": "Sửa lớp quota còn lại trên một số máy: lỗi đã chuyển sang canonical sagsFlightSessionV1, nghĩa là tổng dữ liệu phiên cục bộ/chữ ký PNG vẫn quá lớn dù legacy duplicate đã được loại ở V2.2.6. V2.2.7 giảm chữ ký 1600x420 xuống 640x168 cùng tỷ lệ, giữ PNG trong suốt; tự migrate chữ ký cũ trong các flight session/checkpoint trước khi mở MY FLIGHT và trước XUẤT; không xóa chữ ký, không xóa dữ liệu website, không xóa unrelated localStorage. Giữ V2.2.5 R2, V2.2.6 và V2.2.2 ARR-DEP.",
-  "message": "V2.2.7"
+  "version": "V2.2.9",
+  "displayVersion": "V2.2.9",
+  "label": "V2.2.9",
+  "build": "V2.2.9-PDF-EXPORT-COMPLETE-SHARE-FIX",
+  "releasedAt": "2026-09-04T01:15:00+07:00",
+  "type": "pdf-export-complete-share-fix",
+  "notes": "Sửa lỗi thực tế PDF đã tạo/xuất xong nhưng cửa sổ XUẤT còn đứng ở 'Đang hoàn tất PDF...' và phải bấm XUẤT lần hai mới mở Share Sheet. V2.2.9 kiểm tra user activation trước Web Share, không chờ vô hạn Promise share bị treo; giữ File PDF đã tạo và hiện nút CHIA SẺ / LƯU PDF để người dùng bấm bằng một user gesture mới. Khi PDF đã hoàn tất, trạng thái được chuyển sang PDF đã tạo xong và nút ĐÓNG được mở lại. Không thay đổi dữ liệu biểu mẫu/chữ ký/FINAL/CROSSCHECK/KẾT SỔ. Kế thừa V2.2.7.",
+  "message": "V2.2.9"
 }
