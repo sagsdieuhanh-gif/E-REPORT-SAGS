@@ -3266,7 +3266,7 @@ body.v38-clean-workflow #v38CleanNav #roleBtnActionCenter{
         if(tag==='text'){
           const center=/bbbtPerson|bbbtDuty/i.test(String(f.key));
           el.setAttribute('x',String(center?a.vx+a.vw/2:a.vx+3));el.setAttribute('text-anchor',center?'middle':'start');const fs=fit(val,a.vw,f.font);el.setAttribute('font-size',String(fs));
-          if(!center){el.setAttribute('y',String(a.vy+a.vh*.66-2));el.setAttribute('dominant-baseline','alphabetic')}
+          if(!center){el.setAttribute('y',String(a.vy+a.vh*.66-5));el.setAttribute('dominant-baseline','alphabetic');el.style.setProperty('dominant-baseline','alphabetic','important')}
           const m=(root.__v2240NameMeasure||=document.createElement('canvas')).getContext('2d');m.font=`700 ${fs}px "Times New Roman"`;if(m.measureText(val).width>a.vw-6){el.setAttribute('textLength',String(Math.max(20,a.vw-6)));el.setAttribute('lengthAdjust','spacingAndGlyphs')}else{el.removeAttribute('textLength');el.removeAttribute('lengthAdjust')}
         }else if(tag==='foreignobject'){
           el.setAttribute('x',String(a.vx));el.setAttribute('width',String(a.vw));const d=el.querySelector('div');if(d){d.style.textAlign=String(f.align||'').toLowerCase()==='center'?'center':'left';d.style.fontSize=fit(val,a.vw,f.font)+'px'}
@@ -5695,10 +5695,45 @@ Phần của ${who} được ghi “BỎ QUA · KHÔNG E-FORM”, không ghi HO�
  body.v38-clean-workflow #v38NavFlights{order:2!important}
  body.v38-clean-workflow #v38NavMulti{order:3!important}
  body.v38-clean-workflow #v38NavSignature{order:4!important}
+ body.v38-clean-workflow #v38CleanNav>.v38NavBtn:not(#v38NavHome):not(#v38NavFlights):not(#v38NavMulti):not(#v38NavSignature){display:none!important}
+ body.v38-clean-workflow #v38CleanNav>.v38NavSpacer{display:none!important}
 }
 `;document.head.appendChild(s);
 })();
 /* ===== END v324-direct-myflight-handover.js ===== */
+
+/* ===== V2.2.43 · HARD LOCK FULL-NAME BASELINE + TWO TOOLBAR ROWS ===== */
+(function(root){
+  'use strict';
+  if(root.__SAGS_V2243_LOCK)return;root.__SAGS_V2243_LOCK=true;
+  const $=id=>document.getElementById(id);
+  function formOpen(){const idle=$('roleHomeIdle');if(!idle)return false;try{return getComputedStyle(idle).display==='none'}catch(_){return false}}
+  function caption(btn,text){if(!btn)return;const c=btn.querySelector('.v2236NavLabel');if(c){if(c.textContent!==text)c.textContent=text}else if(btn.textContent!==text)btn.textContent=text}
+  function label(btn,html){if(btn&&btn.textContent.trim()!==html.replace(/<[^>]*>/g,'').trim())btn.innerHTML=html}
+  function fix(){
+    const bar=document.querySelector('.toolbar.compact-main-toolbar'),row=$('v324FormActions'),nav=$('v38CleanNav');if(!bar||!nav)return;
+    if(row&&row.parentElement!==bar)bar.insertBefore(row,nav);else if(row&&row.nextElementSibling!==nav)bar.insertBefore(row,nav);
+    const opened=formOpen();
+    if(row){
+      row.classList.toggle('show',opened);
+      row.classList.remove('one','two','three');
+      if(opened){
+        row.style.setProperty('display','grid','important');
+        const ex=$('v324ExportBtn'),qr=$('v1113QrFormBtn'),done=$('v324HandoverBtn'),quick=$('v1134QuickTimeBtn');
+        for(const b of [ex,qr,done,quick])if(b&&b.style.getPropertyValue('display')!=='inline-flex')b.style.setProperty('display','inline-flex','important');
+        label(ex,'📤 XUẤT');label(qr,'▣ XUẤT QR');label(done,'✓ HOÀN TẤT');label(quick,'⏱ NHẬP GIỜ NHANH');
+        if(qr&&!qr.onclick)qr.onclick=()=>root.v1113ExportCurrentQr?.();
+        if(done&&!done.onclick)done.onclick=()=>root.v324ConfirmRosterHandover?.();
+        if(quick&&!quick.onclick)quick.onclick=()=>root.openQuickTimePanel?.();
+      }else row.style.removeProperty('display');
+    }
+    const home=$('v38NavHome'),flights=$('v38NavFlights'),multi=$('v38NavMulti'),sign=$('v38NavSignature');
+    [home,flights,multi,sign].forEach((b,i)=>{if(b&&nav.children[i]!==b)nav.insertBefore(b,nav.children[i]||null)});
+    caption(home,'Trang chủ');caption(flights,'Chuyến');caption(multi,'Multi');caption(sign,'Ký');
+  }
+  function install(){fix();const mo=new MutationObserver(()=>requestAnimationFrame(fix));mo.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class','style']});setInterval(fix,700)}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();root.addEventListener('pageshow',()=>setTimeout(fix,80),{passive:true});
+})(typeof window!=='undefined'?window:globalThis);
 
 
 /* ===== BEGIN dynamic-permission-actions-v326.js ===== */

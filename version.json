@@ -1,10 +1,10 @@
 {
-  "version": "V2.2.42",
-  "displayVersion": "V2.2.42",
-  "label": "V2.2.42",
-  "build": "V2.2.42-FULLNAME-ABOVE-DOTS",
-  "releasedAt": "2026-09-06T09:30:00Z",
-  "type": "fullname-above-dots",
-  "notes": "Đặt Full name sát sau dấu hai chấm và nằm phía trên đường chấm theo đúng đường chân chữ; không để đường chấm cắt ngang thân chữ. Thanh công cụ điện thoại được gộp còn đúng 2 hàng: một hàng thao tác biểu mẫu và một hàng điều hướng.",
-  "message": "Có bản cập nhật V2.2.42"
+  "version": "V2.2.43",
+  "displayVersion": "V2.2.43",
+  "label": "V2.2.43",
+  "build": "V2.2.43-BASELINE-TOOLBAR-LOCK",
+  "releasedAt": "2026-09-06T20:00:00Z",
+  "type": "baseline-toolbar-lock",
+  "notes": "Khóa Full name theo alphabetic baseline ưu tiên cao và nâng khỏi đường chấm; khóa thanh công cụ biểu mẫu thành đúng hai hàng, không để hàng thao tác biến mất hoặc nút Chuyến bị đổi nhãn.",
+  "message": "Có bản cập nhật V2.2.43"
 }
