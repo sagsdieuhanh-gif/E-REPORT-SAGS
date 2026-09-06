@@ -1,3 +1,4 @@
+/* E-REPORT/SAGS V2.2.46 · V2.2.41 BASE · TWO-ROW TOOLBAR · FAST MY FLIGHT */
 /* E-REPORT/SAGS V1.1.101 DAILY ROSTER · RTDB PATH CONFLICT FIX */
 /* E-REPORT/SAGS V1.1.96 PUSHBACK REOPEN VISIBLE PATCH */
 /* E-REPORT/SAGS V1.1.95 PUSHBACK REOPEN PATCH */
@@ -3211,7 +3212,7 @@ body.v38-clean-workflow #v38CleanNav #roleBtnActionCenter{
 `;
   function installStyle(){if(document.getElementById(STYLE_ID))return;const s=document.createElement('style');s.id=STYLE_ID;s.textContent=css;document.head.appendChild(s)}
   const labels={
-    v38NavFlights:['✈','My Flight'],v38NavMulti:['⇄','Multi'],v310ShiftNav:['↔','Giao ca'],
+    v38NavHome:['⌂','Trang chủ'],v38NavFlights:['✈','Chuyến'],v38NavMulti:['⇄','Multi'],v310ShiftNav:['↔','Giao ca'],
     v38NavSignature:['✍','Ký'],v38NavAdmin:['☰','Menu'],v327ReassignNav:['↻','Đổi người']
   };
   function decorateButton(b){
@@ -4286,7 +4287,9 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   function listHtml(date,flights){const arr=Object.values(flights||{}).filter(rec=>rec&&rec.rosterActive!==false&&U(rec.rosterStatus)!=='ROSTER_REMOVED').sort((a,b)=>recordTimeScore(a,'std')-recordTimeScore(b,'std')||S(a.depFlight||a.arrFlight||a.flightRaw).localeCompare(S(b.depFlight||b.arrFlight||b.flightRaw),'vi'));if(!arr.length)return '<div class="fwcEmpty">Ngày này chưa có chuyến.</div>';
     return arr.map(rec=>{const arrNo=S(rec.arrFlight),depNo=S(rec.depFlight),name=arrNo&&depNo&&U(arrNo)!==U(depNo)?`${arrNo} / ${depNo}`:S(rec.flightName||rec.flightRaw||depNo||arrNo||rec.flightId),mods=moduleBadges(rec),assign=rec.unitAssignments||{},owners=Object.keys(assign).filter(k=>assign[k]?.username).length;return `<div class="fwcFlight"><div><div class="fwcFlightTitle">${esc(name)}</div><div class="fwcMeta">${esc(rec.route||'')} · A/C ${esc(rec.acReg||'—')} · STA ${esc(rec.sta||'—')} · <b>STD ${esc(rec.std||'—')}</b></div><div class="fwcMeta">${esc(rec.flightId||'')}</div></div><div><div class="fwcBadges">${mods.length?mods.map(x=>`<span class="fwcBadge">${esc(x.kind)}: ${esc(x.status)}</span>`).join(''):'<span class="fwcBadge warn">CHƯA CÓ DỮ LIỆU NGHIỆP VỤ</span>'}</div><div class="fwcMeta">Đơn vị đã nhận: ${owners}/${UNITS.filter(x=>!x.requestOnly).length}</div></div><button class="fwcBtn" onclick="flightWorkspaceOpenFlight('${esc(rec.flightId)}')">MỞ CHUYẾN</button></div>`}).join('');}
   async function renderList(date){ensureUI();const body=document.getElementById('fwcBody');body.innerHTML=`<div class="fwcTools"><input id="fwcDate" type="date" value="${esc(date)}"><button class="fwcBtn" onclick="flightWorkspaceRefresh()">TẢI DANH SÁCH</button>${role()==='AD'?'<button class="fwcBtn green" onclick="flightWorkspacePickRoster()">📋 CHỌN DAILY ROSTER</button>':''}<button id="v1113QrScanDirect" class="fwcBtn green" type="button" onclick="sagsOpenQrScanner?.()">▣ QUÉT QR</button></div><div id="fwcStatus" class="fwcStatus">Đang tải danh sách chuyến…</div><div id="fwcList"></div>`;
-    try{let [flights,manifest]=await Promise.all([readFlights(date),readManifest(date)]);flights=flightsWithManifestFallback(date,flights,manifest);const fixed=await reconcileRosterClaims(date,flights,manifest);cache={date,flights,manifest,selected:null};for(const [fid,rec] of Object.entries(flights||{}))root.sagsV338PrimeDossier?.(date,S(rec?.flightId||fid),rec);document.getElementById('fwcList').innerHTML=listHtml(date,flights);status('');}catch(e){status('Không tải được danh sách chuyến: '+S(e?.message||e),true)}}
+    const cached=cache.date===date&&cache.flights&&Object.keys(cache.flights).length?cache.flights:null;
+    if(cached){document.getElementById('fwcList').innerHTML=listHtml(date,cached);status('Đang cập nhật dữ liệu mới…')}
+    try{let [flights,manifest]=await Promise.all([readFlights(date),readManifest(date)]);flights=flightsWithManifestFallback(date,flights,manifest);cache={date,flights,manifest,selected:null};document.getElementById('fwcList').innerHTML=listHtml(date,flights);status('');setTimeout(()=>{for(const [fid,rec] of Object.entries(flights||{}))root.sagsV338PrimeDossier?.(date,S(rec?.flightId||fid),rec)},0);reconcileRosterClaims(date,flights,manifest).catch(e=>console.info('My Flight reconcile',e?.message||e));}catch(e){if(!cached)status('Không tải được danh sách chuyến: '+S(e?.message||e),true);else status('Đang hiển thị dữ liệu gần nhất; chưa cập nhật được dữ liệu mới.',true)}}
   root.flightWorkspaceOpenList=function(date){ensureUI();document.getElementById('fwcModal').classList.add('show');return renderList(S(date)||today());};
   root.flightWorkspaceClose=function(){document.getElementById('fwcModal')?.classList.remove('show');};
   root.flightWorkspaceRefresh=function(){return renderList(S(document.getElementById('fwcDate')?.value)||cache.date||today());};
@@ -4696,17 +4699,16 @@ body.v38-clean-workflow #v38NavRS,body.v38-clean-workflow #readSignQuickBtn,body
     const rsAvailable=false; // V3.21: READ & SIGN is not enabled for operation yet.
     const shiftAvailable=typeof root.v310ShiftOpen==='function';
     const signAvailable=typeof root.openTemplateMenu==='function' && ['AD','DH','PVHK','CBTT','KH'].includes(role());
-    const sig=[logged()?'1':'0',rsAvailable?'1':'0',shiftAvailable?'1':'0',signAvailable?'1':'0',isAD()?'1':'0'].join('|');
+    const sig=[logged()?'1':'0',rsAvailable?'1':'0',shiftAvailable?'1':'0',signAvailable?'1':'0',isAD()?'1':'0','V2246'].join('|');
     // V3.11: do not rebuild the navigation bar on polling/sync. Replacing innerHTML
     // every few seconds caused READ & SIGN and GIAO CA to visibly blink on mobile.
-    if(nav.dataset.v311Sig===sig && document.getElementById('v38NavFlights') && document.getElementById('v38NavMulti'))return;
+    if(nav.dataset.v311Sig===sig && document.getElementById('v38NavHome') && document.getElementById('v38NavFlights') && document.getElementById('v38NavMulti') && document.getElementById('v38NavSignature'))return;
     nav.dataset.v311Sig=sig;
-    nav.innerHTML=`<button class="v38NavBtn flights" id="v38NavFlights">✈ CHUYẾN</button><button class="v38NavBtn multi" id="v38NavMulti">⇄ MULTI</button>${shiftAvailable?'<button class="v38NavBtn shift" id="v310ShiftNav">↔ GIAO CA</button>':''}${signAvailable?'<button class="v38NavBtn sign" id="v38NavSignature">✍ KÝ</button>':''}<span class="v38NavSpacer"></span>${isAD()?'<button class="v38NavBtn admin" id="v38NavAdmin">⚙ QUẢN LÝ</button>':''}`;
+    nav.innerHTML=`<button class="v38NavBtn home" id="v38NavHome">⌂ TRANG CHỦ</button><button class="v38NavBtn flights" id="v38NavFlights">✈ CHUYẾN</button><button class="v38NavBtn multi" id="v38NavMulti">⇄ MULTI</button><button class="v38NavBtn sign" id="v38NavSignature"${signAvailable?'':' disabled title="Tài khoản chưa có quyền ký"'}>✍ KÝ</button>`;
+    document.getElementById('v38NavHome').onclick=()=>root.showRoleHomeIdle?.();
     document.getElementById('v38NavFlights').onclick=()=>root.flightWorkspaceOpenList?.(today());
     document.getElementById('v38NavMulti').onclick=()=>root.sagsV36OpenMultitask?.();
-    const sh=document.getElementById('v310ShiftNav');if(sh)sh.onclick=()=>root.v310ShiftOpen?.('create');
     const sign=document.getElementById('v38NavSignature');if(sign)sign.onclick=()=>root.openTemplateMenu?.();
-    const ad=document.getElementById('v38NavAdmin');if(ad)ad.onclick=()=>root.adminHubOpen?.();
   }
 
   async function decorateList(date){
@@ -5250,9 +5252,15 @@ body.v38-clean-workflow #v38NavRS,body.v38-clean-workflow #readSignQuickBtn,body
 
   function ensureCss(){if(document.getElementById('sagsV324Style'))return;const st=document.createElement('style');st.id='sagsV324Style';st.textContent=`
   .v324ClaimBadge{display:inline-flex;align-items:center;border-radius:999px;padding:3px 7px;margin-left:5px;font:900 10px Arial;background:#e7f2ff;color:#07599d}.v324ClaimBadge.wait{background:#fff3cd;color:#855a00}.v324ClaimBadge.standby{background:#eaf2ff;color:#264f7d}.v324ClaimBadge.done{background:#e8f5ed;color:#17663b}.v324ClaimBadge.blocked{background:#fee2e2;color:#991b1b}.v324ClaimBadge.na{background:#eef2f7;color:#596b7a}.v324ClaimBadge.skipped{background:#f3f0ff;color:#5b3f91}
-  #v324FormActions{grid-column:1/-1;display:none;gap:5px;min-width:0;width:100%;margin:0;padding:0}#v324FormActions.show{display:grid}#v324FormActions.one{grid-template-columns:1fr}#v324FormActions.two{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}#v324FormActions.three{grid-template-columns:minmax(0,.9fr) minmax(0,1.05fr) minmax(0,.95fr)}.v324FormAction{min-height:34px;border:1px solid rgba(255,255,255,.18);border-radius:8px;padding:5px 8px;font:900 10.5px/1.1 Arial;box-shadow:none;touch-action:manipulation;white-space:normal}.v324Export{background:#e8f7f4;color:#086b62;border-color:#a9d9d2}.v324Handover{background:#fff2dd;color:#9a4d00;border-color:#ebc18e}.v324Qr{background:#e7f1ff;color:#064f9e;border-color:#9fc2ea}
+  #v324FormActions{grid-column:1/-1;display:none;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;min-width:0;width:100%;margin:0;padding:0}#v324FormActions.show{display:grid}.v324FormAction{box-sizing:border-box;width:100%;min-width:0;height:64px;min-height:64px;border:2px solid rgba(255,255,255,.09);border-radius:20px;padding:7px 5px;font:900 10.5px/1.08 Arial;box-shadow:inset 0 1px 0 rgba(255,255,255,.13),0 4px 12px rgba(3,31,68,.18);touch-action:manipulation;white-space:normal;display:flex;align-items:center;justify-content:center;text-align:center}.v324Export{background:linear-gradient(135deg,#d9d52b,var(--v2236-lime,#a8d52a));color:var(--v2236-ink,#153957);border-color:#edf3a4}.v324Handover{background:linear-gradient(180deg,#fff5dc,#ffe6a9);color:#895000;border-color:#e5ba69}.v324Qr{background:linear-gradient(180deg,#315fa2,#244c89);color:#fff;border-color:rgba(255,255,255,.10)}
+  body.v38-clean-workflow .toolbar.compact-main-toolbar{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:8px!important;padding:8px max(8px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))!important}
+  body.v38-clean-workflow #v324FormActions.show{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:8px!important;order:10!important}
+  body.v38-clean-workflow #v38CleanNav{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:8px!important;width:100%!important;overflow:visible!important;padding:0!important;order:20!important}
+  body.v38-clean-workflow #v38CleanNav>button:not(#v38NavHome):not(#v38NavFlights):not(#v38NavMulti):not(#v38NavSignature),body.v38-clean-workflow #v38CleanNav>.v38NavSpacer,body.v38-clean-workflow #v38CleanNav>#v38FlowHint{display:none!important}
+  body.v38-clean-workflow #v324FormActions .v324FormAction,body.v38-clean-workflow #v38CleanNav .v38NavBtn{box-sizing:border-box!important;width:100%!important;min-width:0!important;max-width:none!important;flex:none!important;height:64px!important;min-height:64px!important;margin:0!important;padding:7px 5px!important;border-radius:20px!important;font:900 10.5px/1.08 Arial!important;display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important}
+  body.v38-clean-workflow #v38CleanNav .v38NavBtn{flex-direction:column!important;gap:4px!important}
   .fwcFlight .v324ReceiveBtn[disabled]{background:#e5eaee!important;color:#667785!important;cursor:not-allowed!important}.fwcFlight .v324ReceiveBtn.wait{background:#fff4d6!important;color:#7c5600!important}.fwcFlight .v324ReceiveBtn.standby{background:#edf4ff!important;color:#2b567f!important}.fwcFlight .v324ReceiveBtn.done{background:#eef2f5!important;color:#5b6c79!important}.fwcFlight .v324ReceiveBtn.blocked{background:#fee2e2!important;color:#991b1b!important}.fwcFlight .v324ReceiveBtn.na{background:#eef2f7!important;color:#596b7a!important}.fwcFlight .v324ReceiveBtn.takeover{background:#fff0dc!important;color:#8a4300!important;border-color:#e5b77e!important}.fwcFlight .v324ReceiveBtn.skipped{background:#f3f0ff!important;color:#5b3f91!important}
-  @media(max-width:520px){#v324FormActions.three{grid-template-columns:minmax(0,.85fr) minmax(0,1fr) minmax(0,.9fr)}#v324FormActions.two{grid-template-columns:1fr 1fr}.v324FormAction{font-size:9.5px;padding:5px 4px}}
+  @media(max-width:380px){body.v38-clean-workflow #v324FormActions .v324FormAction,body.v38-clean-workflow #v38CleanNav .v38NavBtn{height:60px!important;min-height:60px!important;font-size:9.5px!important;padding:5px 3px!important}}
   `;document.head.appendChild(st)}
 
   async function activeCoOwner(man,item){
@@ -5638,30 +5646,30 @@ Phần của ${who} được ghi “BỎ QUA · KHÔNG E-FORM”, không ghi HO�
     let row=document.getElementById('v324FormActions');
     if(!row){
       row=document.createElement('div');row.id='v324FormActions';
-      row.innerHTML='<button id="v324ExportBtn" class="v324FormAction v324Export" type="button" title="Xuất / Chia sẻ">📤 XUẤT</button><button id="v324HandoverBtn" class="v324FormAction v324Handover" type="button" style="display:none" title="Hoàn tất phần của tôi">✓ HOÀN TẤT</button><button id="v1113QrFormBtn" class="v324FormAction v324Qr" type="button" style="display:none">▣ XUẤT QR</button><button id="v1134QuickTimeBtn" class="v324FormAction" type="button" style="display:none" title="Nhập nhanh các mốc giờ">⏱ NHẬP NHANH</button>';
-      document.body.appendChild(row);
+      row.innerHTML='<button id="v324ExportBtn" class="v324FormAction v324Export" type="button" title="Xuất / Chia sẻ">📤 XUẤT</button><button id="v1113QrFormBtn" class="v324FormAction v324Qr" type="button">▣ XUẤT QR</button><button id="v324HandoverBtn" class="v324FormAction v324Handover" type="button" title="Hoàn tất phần của tôi">✓ HOÀN TẤT</button><button id="v1134QuickTimeBtn" class="v324FormAction" type="button" title="Nhập nhanh các mốc giờ">⏱ NHẬP NHANH</button>';
       document.getElementById('v324ExportBtn').onclick=()=>{if(typeof root.openExportChoiceMenu==='function')root.openExportChoiceMenu();else alert('Chức năng Xuất/Chia sẻ chưa sẵn sàng.')}
     }
+    const nav=document.getElementById('v38CleanNav');if(row.parentElement!==bar||row.nextElementSibling!==nav)bar.insertBefore(row,nav||null);
     const hb=document.getElementById('v324HandoverBtn'),qb=document.getElementById('v1113QrFormBtn'),qt=document.getElementById('v1134QuickTimeBtn');
-    if(hb)hb.style.display='none';if(qb)qb.style.display='none';
-    if(qt){qt.style.display=v1134QuickAllowed()?'inline-flex':'none';qt.onclick=v1134OpenQuickTime;}
+    if(hb){hb.style.display='flex';hb.disabled=true;hb.title='Chưa có phần công việc để hoàn tất'}if(qb){qb.style.display='flex';qb.disabled=true;qb.title='Chưa có dữ liệu QR để xuất'}
+    if(qt){qt.style.display='flex';qt.disabled=!v1134QuickAllowed();qt.onclick=v1134OpenQuickTime;}
     /* old contextual QUICK_TIME container is no longer canonical; avoid duplicate/missing races */
     const legacyQuick=document.getElementById('v313QuickContext');if(legacyQuick)legacyQuick.style.setProperty('display','none','important');
     row.classList.remove('show','one','two','three');
     let ctx=null;try{ctx=await currentHandoverContext()}catch(_){}
     if(ctx){
-      row.classList.add('show','two');
-      if(hb){hb.style.display='block';hb.textContent='✓ HOÀN TẤT';hb.title=ctx.next?`Hoàn tất phần hiện tại; người tiếp theo là ${norm(ctx.next.user||ctx.next.targetUser)}`:'Hoàn tất phần công việc hiện tại';hb.setAttribute('aria-label','Hoàn tất phần của tôi');hb.onclick=()=>root.v324ConfirmRosterHandover?.()}
-      if(qb){qb.style.display='block';qb.title='Xuất QR bàn giao sau khi HOÀN TẤT';qb.onclick=()=>root.v1113ExportCurrentQr?.()}
+      row.classList.add('show');
+      if(hb){hb.disabled=false;hb.textContent='✓ HOÀN TẤT';hb.title=ctx.next?`Hoàn tất phần hiện tại; người tiếp theo là ${norm(ctx.next.user||ctx.next.targetUser)}`:'Hoàn tất phần công việc hiện tại';hb.setAttribute('aria-label','Hoàn tất phần của tôi');hb.onclick=()=>root.v324ConfirmRosterHandover?.()}
+      if(qb){qb.disabled=false;qb.title='Xuất QR bàn giao sau khi HOÀN TẤT';qb.onclick=()=>root.v1113ExportCurrentQr?.()}
       return
     }
     let done=null;try{done=await currentCompletedContext()}catch(_){}
     if(done){
-      row.classList.add('show','two');
-      if(qb){qb.style.display='block';qb.title=done.next?`Xuất QR cho ${norm(done.next.user||done.next.targetUser)}`:'Xuất QR bàn giao';qb.onclick=()=>root.v1113ExportCurrentQr?.()}
+      row.classList.add('show');
+      if(qb){qb.disabled=false;qb.title=done.next?`Xuất QR cho ${norm(done.next.user||done.next.targetUser)}`:'Xuất QR bàn giao';qb.onclick=()=>root.v1113ExportCurrentQr?.()}
       return
     }
-    if(activeMeta()||v1134QuickAllowed())row.classList.add('show','one')
+    if(activeMeta()||v1134QuickAllowed())row.classList.add('show')
   }
 
 
