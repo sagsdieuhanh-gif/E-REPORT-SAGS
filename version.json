@@ -1,10 +1,10 @@
 {
-  "version": "V2.2.10",
-  "displayVersion": "V2.2.10",
-  "label": "V2.2.10",
-  "build": "V2.2.10-INDEPENDENT-DEP-SAME-WORKSPACE",
-  "releasedAt": "2026-09-06T10:55:00+07:00",
-  "type": "independent-dep-same-workspace",
-  "notes": "Giữ nguyên nguyên tắc 1 chuyến bay = 1 flight workspace. Nếu ARR trước đã hoàn tất, giữ luồng V2.2.2 hiện tại. Nếu ARR chưa nhận/chưa hoàn tất/không có predecessor hợp lệ, người được phân DEP có thể nhận ngay; hệ thống tự tạo DEP độc lập trong cùng flight_records/{date}/{flightId}, chỉ điền thông tin chuyến đi (flight DEP, STD/ETD, A/C, điểm đến, bay/gate phù hợp), không copy dữ liệu khai thác ARR. Một active DEP instance/form vẫn được khóa bằng transaction. Nếu ARR hoàn tất muộn, không được reset/ghi đè DEP độc lập đang làm. Không heartbeat, không tạo flight record thứ hai.",
-  "message": "V2.2.10"
+  "version": "V2.2.11",
+  "displayVersion": "V2.2.11",
+  "label": "V2.2.11",
+  "build": "V2.2.11-AI-LIMIT-CLEANING-MULTI-IMAGE",
+  "releasedAt": "2026-09-06T12:30:00+07:00",
+  "type": "ai-limit-cleaning-multi-image",
+  "notes": "Kế thừa V2.2.10. AD có một nút chung chọn đồng thời nhiều ảnh A/C LIMITS và LỊCH VỆ SINH TÀU BAY; AI tự phân loại từng ảnh, tự lưu/gán các dòng đủ độ tin cậy và đưa dòng không chắc chắn vào hàng chờ AD xác nhận. Lịch vệ sinh phân biệt SAGS PVTT hoặc VIETSKY, ghép theo ngày + Flight No/A/C Reg trong cùng flight workspace. ĐH nhận popup vệ sinh lần 1 tại STA-10 phút và lần 2 ngay khi có CHOCK ON; mỗi mốc chỉ hiện một lần, dữ liệu cập nhật mới thay cảnh báo cũ. Không heartbeat; giữ popup tuần tự và cơ chế cập nhật an toàn.",
+  "message": "Có bản cập nhật V2.2.11"
 }
