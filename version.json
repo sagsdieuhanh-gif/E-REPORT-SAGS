@@ -1,10 +1,10 @@
 {
-  "version": "V2.2.37",
-  "displayVersion": "V2.2.37",
-  "label": "V2.2.37",
-  "build": "V2.2.37-AUTO-SIGN-CLEANING-SAFE-DELETE",
+  "version": "V2.2.38",
+  "displayVersion": "V2.2.38",
+  "label": "V2.2.38",
+  "build": "V2.2.38-CORRECT-LIR-LABEL",
   "releasedAt": "2026-09-06T09:00:00Z",
-  "type": "auto-sign-cleaning-safe-delete-compact-limit",
-  "notes": "Sửa tự ký và tự tích ARR/DEP theo Daily Roster; lưu đủ assignment leg vào phiên; thêm xóa lịch vệ sinh theo ngày có bảo vệ chuyến qua 00:00 đến 06:00; thu gọn phần nhập LIMIT thủ công.",
-  "message": "Có bản cập nhật V2.2.37"
+  "type": "correct-lir-label",
+  "notes": "Đổi nhãn CHECK-IN / LIR thành CHECK LATEST LIR BEFORE LOADING; giữ toàn bộ chức năng V2.2.37.",
+  "message": "Có bản cập nhật V2.2.38"
 }
