@@ -1,10 +1,10 @@
 {
-  "version": "V2.2.43",
-  "displayVersion": "V2.2.43",
-  "label": "V2.2.43",
-  "build": "V2.2.43-BASELINE-TOOLBAR-LOCK",
-  "releasedAt": "2026-09-06T20:00:00Z",
-  "type": "baseline-toolbar-lock",
-  "notes": "Khóa Full name theo alphabetic baseline ưu tiên cao và nâng khỏi đường chấm; khóa thanh công cụ biểu mẫu thành đúng hai hàng, không để hàng thao tác biến mất hoặc nút Chuyến bị đổi nhãn.",
-  "message": "Có bản cập nhật V2.2.43"
+  "version": "V2.2.44",
+  "displayVersion": "V2.2.44",
+  "label": "V2.2.44",
+  "build": "V2.2.44-FORM-ACTION-ROW-DETECT",
+  "releasedAt": "2026-09-06T20:20:00Z",
+  "type": "form-action-row-detect",
+  "notes": "Nhận diện trực tiếp chuyến và biểu mẫu đang mở để luôn hiện hàng Xuất, Xuất QR, Hoàn tất, Nhập giờ nhanh; không còn phụ thuộc trạng thái hiển thị của lớp Trang chủ. Ẩn hoàn toàn nhãn Đã lưu khỏi thanh công cụ.",
+  "message": "Có bản cập nhật V2.2.44"
 }

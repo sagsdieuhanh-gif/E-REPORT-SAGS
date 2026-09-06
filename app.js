@@ -5697,6 +5697,7 @@ Phần của ${who} được ghi “BỎ QUA · KHÔNG E-FORM”, không ghi HO�
  body.v38-clean-workflow #v38NavSignature{order:4!important}
  body.v38-clean-workflow #v38CleanNav>.v38NavBtn:not(#v38NavHome):not(#v38NavFlights):not(#v38NavMulti):not(#v38NavSignature){display:none!important}
  body.v38-clean-workflow #v38CleanNav>.v38NavSpacer{display:none!important}
+ body.v38-clean-workflow #roleAccountCluster,body.v38-clean-workflow #roleStatusBadge{display:none!important}
 }
 `;document.head.appendChild(s);
 })();
@@ -5707,13 +5708,28 @@ Phần của ${who} được ghi “BỎ QUA · KHÔNG E-FORM”, không ghi HO�
   'use strict';
   if(root.__SAGS_V2243_LOCK)return;root.__SAGS_V2243_LOCK=true;
   const $=id=>document.getElementById(id);
-  function formOpen(){const idle=$('roleHomeIdle');if(!idle)return false;try{return getComputedStyle(idle).display==='none'}catch(_){return false}}
+  function formOpen(){
+    let sid='',group='';
+    try{sid=String(typeof activeFlightSessionId!=='undefined'?activeFlightSessionId:(root.activeFlightSessionId||'')).trim()}catch(_){sid=String(root.activeFlightSessionId||'').trim()}
+    try{group=String(typeof activeFormGroup!=='undefined'?activeFormGroup:(root.activeFormGroup||'')).trim()}catch(_){group=String(root.activeFormGroup||'').trim()}
+    if(sid&&group)return true;
+    const login=$('roleLoginModal');try{if(login&&getComputedStyle(login).display!=='none')return false}catch(_){}
+    const visible=[...document.querySelectorAll('.sheet')].some(x=>{try{return !x.classList.contains('hide')&&getComputedStyle(x).display!=='none'}catch(_){return !x.classList.contains('hide')}});
+    return !!group&&visible;
+  }
   function caption(btn,text){if(!btn)return;const c=btn.querySelector('.v2236NavLabel');if(c){if(c.textContent!==text)c.textContent=text}else if(btn.textContent!==text)btn.textContent=text}
   function label(btn,html){if(btn&&btn.textContent.trim()!==html.replace(/<[^>]*>/g,'').trim())btn.innerHTML=html}
   function fix(){
-    const bar=document.querySelector('.toolbar.compact-main-toolbar'),row=$('v324FormActions'),nav=$('v38CleanNav');if(!bar||!nav)return;
+    const bar=document.querySelector('.toolbar.compact-main-toolbar'),nav=$('v38CleanNav');if(!bar||!nav)return;
+    let row=$('v324FormActions');
+    if(!row){
+      row=document.createElement('div');row.id='v324FormActions';
+      row.innerHTML='<button id="v324ExportBtn" class="v324FormAction v324Export" type="button">📤 XUẤT</button><button id="v1113QrFormBtn" class="v324FormAction v324Qr" type="button">▣ XUẤT QR</button><button id="v324HandoverBtn" class="v324FormAction v324Handover" type="button">✓ HOÀN TẤT</button><button id="v1134QuickTimeBtn" class="v324FormAction" type="button">⏱ NHẬP GIỜ NHANH</button>';
+      $('v324ExportBtn').onclick=()=>root.openExportChoiceMenu?.();$('v1113QrFormBtn').onclick=()=>root.v1113ExportCurrentQr?.();$('v324HandoverBtn').onclick=()=>root.v324ConfirmRosterHandover?.();$('v1134QuickTimeBtn').onclick=()=>root.openQuickTimePanel?.();
+    }
     if(row&&row.parentElement!==bar)bar.insertBefore(row,nav);else if(row&&row.nextElementSibling!==nav)bar.insertBefore(row,nav);
     const opened=formOpen();
+    const account=$('roleAccountCluster'),saved=$('roleStatusBadge');for(const el of [account,saved])if(el&&el.style.getPropertyValue('display')!=='none')el.style.setProperty('display','none','important');
     if(row){
       row.classList.toggle('show',opened);
       row.classList.remove('one','two','three');
@@ -5730,6 +5746,7 @@ Phần của ${who} được ghi “BỎ QUA · KHÔNG E-FORM”, không ghi HO�
     const home=$('v38NavHome'),flights=$('v38NavFlights'),multi=$('v38NavMulti'),sign=$('v38NavSignature');
     [home,flights,multi,sign].forEach((b,i)=>{if(b&&nav.children[i]!==b)nav.insertBefore(b,nav.children[i]||null)});
     caption(home,'Trang chủ');caption(flights,'Chuyến');caption(multi,'Multi');caption(sign,'Ký');
+    for(const el of bar.querySelectorAll('button,span,div')){const t=String(el.textContent||'').trim().toUpperCase().replace(/^✓\s*/,'');if(t==='ĐÃ LƯU'&&![row,nav].includes(el)&&el.style.getPropertyValue('display')!=='none')el.style.setProperty('display','none','important')}
   }
   function install(){fix();const mo=new MutationObserver(()=>requestAnimationFrame(fix));mo.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class','style']});setInterval(fix,700)}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();root.addEventListener('pageshow',()=>setTimeout(fix,80),{passive:true});
