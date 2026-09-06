@@ -1,10 +1,10 @@
 {
-  "version": "V2.2.13",
-  "displayVersion": "V2.2.13",
-  "label": "V2.2.13",
-  "build": "V2.2.13-CLEANING-SAVE-MANAGER",
+  "version": "V2.2.14",
+  "displayVersion": "V2.2.14",
+  "label": "V2.2.14",
+  "build": "V2.2.14-COMPACT-LIMIT-CLEANING-STA-STD",
   "releasedAt": "2026-09-06T12:30:00+07:00",
-  "type": "cleaning-save-manager",
-  "notes": "Kế thừa V2.2.12. Bổ sung khu vực LỊCH VỆ SINH TÀU BAY cho AD hiển thị dữ liệu AI đã đọc giống LIMIT; hỗ trợ nhập/sửa, chọn SAGS hoặc VIETSKY, LƯU, bật/tắt, xóa, lọc theo ngày và tìm Flight No/A/C Reg/route. Giữ hai mốc cảnh báo ĐH tại STA-10 và CHOCK ON.",
-  "message": "Có bản cập nhật V2.2.13"
+  "type": "compact-limit-cleaning-ui",
+  "notes": "Kế thừa V2.2.13. Tinh gọn quản lý LIMIT và LỊCH VỆ SINH thành thanh tab cố định LIMIT/LỊCH VỆ SINH/AI ẢNH. Lịch vệ sinh mặc định chỉ hiện danh sách; biểu mẫu chỉ mở khi bấm THÊM LỊCH hoặc SỬA. Bổ sung STA và STD để AI tự đọc khi ảnh có giờ hoặc AD nhập tay, đồng thời hiển thị trực tiếp trên từng dòng lịch.",
+  "message": "Có bản cập nhật V2.2.14"
 }

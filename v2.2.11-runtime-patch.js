@@ -62,6 +62,7 @@
     return '';
   }
   function clockMinutes(v){const d=S(v).replace(/[^0-9]/g,'');if(d.length<3||d.length>4)return null;const s=d.padStart(4,'0'),h=Number(s.slice(0,2)),m=Number(s.slice(2));return h<=23&&m<=59?h*60+m:null}
+  function normalizeClock(v){const n=clockMinutes(v);return n===null?'':`${String(Math.floor(n/60)).padStart(2,'0')}:${String(n%60).padStart(2,'0')}`}
   function clockMs(date,clock){const n=clockMinutes(clock),p=S(date).split('-').map(Number);if(n===null||p.length!==3||!p[0]||!p[1]||!p[2])return null;return new Date(p[0],p[1]-1,p[2],Math.floor(n/60),n%60,0,0).getTime()}
 
   function ensureCss(){
@@ -138,7 +139,7 @@ QUY TẮC:
 5) sourceImageIndex là số thứ tự ảnh bắt đầu từ 1.
 
 Chỉ trả JSON hợp lệ, không markdown:
-{"documents":[{"sourceImageIndex":1,"documentType":"LIMIT|CLEANING|UNKNOWN","documentDate":"YYYY-MM-DD hoặc rỗng","provider":"SAGS|VIETSKY|UNKNOWN","confidence":0.0,"items":[{"kind":"LIMIT","flightNo":"","acReg":"","category":"OTHERS","restriction":"","effectiveFrom":"","effectiveTo":"","action":"UPSERT","confidence":0.0,"needsReview":false},{"kind":"CLEANING","date":"","arrivalFlight":"","departureFlight":"","route":"","acReg":"","acType":"","provider":"SAGS|VIETSKY|UNKNOWN","confidence":0.0,"needsReview":false}]}]}
+{"documents":[{"sourceImageIndex":1,"documentType":"LIMIT|CLEANING|UNKNOWN","documentDate":"YYYY-MM-DD hoặc rỗng","provider":"SAGS|VIETSKY|UNKNOWN","confidence":0.0,"items":[{"kind":"LIMIT","flightNo":"","acReg":"","category":"OTHERS","restriction":"","effectiveFrom":"","effectiveTo":"","action":"UPSERT","confidence":0.0,"needsReview":false},{"kind":"CLEANING","date":"","arrivalFlight":"","departureFlight":"","sta":"HH:MM hoặc rỗng","std":"HH:MM hoặc rỗng","route":"","acReg":"","acType":"","provider":"SAGS|VIETSKY|UNKNOWN","confidence":0.0,"needsReview":false}]}]}
 
 TÊN ẢNH:
 ${files.map((f,i)=>String(i+1)+'. '+f.name).join('\n')}`;}
@@ -155,7 +156,7 @@ ${files.map((f,i)=>String(i+1)+'. '+f.name).join('\n')}`;}
           if(action==='CLEAR'||needsReview||(!row.acReg&&!row.flightNo)||!restriction)review.push(row);else limits.push(row);
         }else if(kind.includes('CLEAN')){
           const provider=['SAGS','VIETSKY'].includes(U(raw?.provider))?U(raw.provider):(['SAGS','VIETSKY'].includes(docProvider)?docProvider:'UNKNOWN');
-          const row={kind:'CLEANING',sourceFile,imageIndex,date:normalizeISO(raw?.date)||docDate,arrivalFlight:normFlight(raw?.arrivalFlight),departureFlight:normFlight(raw?.departureFlight),route:U(raw?.route),acReg:normReg(raw?.acReg),displayReg:displayReg(raw?.acReg),acType:U(raw?.acType),provider,confidence,needsReview};
+          const row={kind:'CLEANING',sourceFile,imageIndex,date:normalizeISO(raw?.date)||docDate,arrivalFlight:normFlight(raw?.arrivalFlight),departureFlight:normFlight(raw?.departureFlight),sta:normalizeClock(raw?.sta),std:normalizeClock(raw?.std),route:U(raw?.route),acReg:normReg(raw?.acReg),displayReg:displayReg(raw?.acReg),acType:U(raw?.acType),provider,confidence,needsReview};
           if(needsReview||!row.date||provider==='UNKNOWN'||(!row.arrivalFlight&&!row.departureFlight&&!row.acReg))review.push(row);else cleaning.push(row);
         }
       }
@@ -174,7 +175,7 @@ ${files.map((f,i)=>String(i+1)+'. '+f.name).join('\n')}`;}
   function cleanKey(x){return [S(x.date),normFlight(x.arrivalFlight),normFlight(x.departureFlight),normReg(x.acReg)].join('|')}
   async function saveCleaning(rows){
     if(!rows.length)return 0;let old={};try{old=(await db(CLEAN_PUBLIC).once('value')).val()||{}}catch(_){}const now=Date.now(),arr=Array.isArray(old.items)?old.items.slice():Object.values(old.items||{});
-    for(const r of rows){const found=arr.find(x=>cleanKey(x)===cleanKey(r)),item={...(found||{}),id:S(found?.id||uid('CLEAN')),source:'AI_MULTI_IMAGE',active:true,date:r.date,arrivalFlight:r.arrivalFlight,departureFlight:r.departureFlight,flights:[r.arrivalFlight,r.departureFlight].filter(Boolean),route:r.route,acReg:r.acReg,displayReg:r.displayReg,acType:r.acType,provider:r.provider,sourceFile:r.sourceFile,aiConfidence:r.confidence,createdAtMs:Number(found?.createdAtMs||now),createdBy:found?.createdBy||actor(),updatedAtMs:now,updatedBy:actor()};if(found)arr[arr.indexOf(found)]=item;else arr.push(item)}
+    for(const r of rows){const found=arr.find(x=>cleanKey(x)===cleanKey(r)),item={...(found||{}),id:S(found?.id||uid('CLEAN')),source:'AI_MULTI_IMAGE',active:true,date:r.date,arrivalFlight:r.arrivalFlight,departureFlight:r.departureFlight,flights:[r.arrivalFlight,r.departureFlight].filter(Boolean),sta:r.sta,std:r.std,route:r.route,acReg:r.acReg,displayReg:r.displayReg,acType:r.acType,provider:r.provider,sourceFile:r.sourceFile,aiConfidence:r.confidence,createdAtMs:Number(found?.createdAtMs||now),createdBy:found?.createdBy||actor(),updatedAtMs:now,updatedBy:actor()};if(found)arr[arr.indexOf(found)]=item;else arr.push(item)}
     const catalog={schema:1,kind:'sags_aircraft_cleaning_catalog_v1',version:now,items:arr,updatedAtMs:now,updatedBy:actor()};await db(CLEAN_PUBLIC).set(catalog);await db(CLEAN_SIGNAL).set({version:now,action:'AI_MULTI_IMAGE_UPSERT',updatedAtMs:now,updatedBy:actor()});
     try{const fs=firestore(),col=collectionName();if(fs&&col)await fs.collection(col).doc('AIRCRAFT_CLEANING_CATALOG_V1').set(catalog,{merge:false})}catch(e){console.info('V2.2.11 CLEANING Firestore mirror skipped',e?.message||e)}
     applyCleanCatalog(catalog);return rows.length;

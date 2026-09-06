@@ -1,7 +1,7 @@
-/* E-REPORT/SAGS V2.2.13 · LIGHTWEIGHT SAFE UPDATE */
-const CACHE_NAME="sags-v2.2.13-cleaning-save-manager";
-const BUILD="V2.2.13-CLEANING-SAVE-MANAGER";
-const DISPLAY_VERSION="V2.2.13";
+/* E-REPORT/SAGS V2.2.14 · LIGHTWEIGHT SAFE UPDATE */
+const CACHE_NAME="sags-v2.2.14-compact-limit-cleaning-sta-std";
+const BUILD="V2.2.14-COMPACT-LIMIT-CLEANING-STA-STD";
+const DISPLAY_VERSION="V2.2.14";
 
 const PATCH_V21="./v2.1-runtime-patch.js";
 const PATCH_V22="./v2.2-runtime-patch.js";
@@ -14,6 +14,7 @@ const PATCH_V2210="./v2.2.10-runtime-patch.js";
 const PATCH_V2211="./v2.2.11-runtime-patch.js";
 const PATCH_V2212="./v2.2.12-runtime-patch.js";
 const PATCH_V2213="./v2.2.13-runtime-patch.js";
+const PATCH_V2214="./v2.2.14-runtime-patch.js";
 
 const FRESH_SUFFIXES=[
   "/version.json","/manifest.webmanifest","/index.html","/app.js","/ai.js",
@@ -23,7 +24,7 @@ const FRESH_SUFFIXES=[
   "/v2.2.6-runtime-patch.js","/v2.2.7-runtime-patch.js",
   "/v2.2.9-runtime-patch.js","/v2.2.10-runtime-patch.js",
   "/v2.2.11-runtime-patch.js","/v2.2.12-runtime-patch.js",
-  "/v2.2.13-runtime-patch.js"
+  "/v2.2.13-runtime-patch.js","/v2.2.14-runtime-patch.js"
 ];
 
 function isFreshPath(pathname){return FRESH_SUFFIXES.some(x=>pathname.endsWith(x));}
@@ -32,7 +33,7 @@ async function fetchNoStore(path){
 }
 async function safePut(cache,key,response){
   try{if(response&&response.ok)await cache.put(key,response.clone())}
-  catch(e){console.info("V2.2.13 cache put skipped",key,e?.name||e?.message||e)}
+  catch(e){console.info("V2.2.14 cache put skipped",key,e?.name||e?.message||e)}
 }
 function stripRetiredScripts(out){
   return String(out||"")
@@ -61,6 +62,7 @@ function patchIndexHtml(html){
   out=injectScript(out,"v2.2.11-runtime-patch.js");
   out=injectScript(out,"v2.2.12-runtime-patch.js");
   out=injectScript(out,"v2.2.13-runtime-patch.js");
+  out=injectScript(out,"v2.2.14-runtime-patch.js");
   return out;
 }
 async function validateRelease(){
@@ -80,7 +82,8 @@ async function validateRelease(){
     [PATCH_V2210,"V2.2.10-INDEPENDENT-DEP-SAME-WORKSPACE"],
     [PATCH_V2211,"V2.2.11-AI-LIMIT-CLEANING-MULTI-IMAGE"],
     [PATCH_V2212,"V2.2.12-AI-APP-CHECK-PC-MYFLIGHT-FIX"],
-    [PATCH_V2213,BUILD]
+    [PATCH_V2213,"V2.2.13-CLEANING-SAVE-MANAGER"],
+    [PATCH_V2214,BUILD]
   ];
   for(const [path,marker] of checks){
     const r=await fetchNoStore(path+"?swcheck="+Date.now());
