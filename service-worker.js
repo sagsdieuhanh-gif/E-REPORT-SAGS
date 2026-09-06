@@ -1,7 +1,7 @@
 /* E-REPORT/SAGS V2.2.16 · LIGHTWEIGHT SAFE UPDATE */
-const CACHE_NAME="sags-v2.2.46-toolbar-two-rows-fast-myflight";
-const BUILD="V2.2.46-TOOLBAR-2ROWS-FAST-MYFLIGHT";
-const DISPLAY_VERSION="V2.2.46";
+const CACHE_NAME="sags-v2.2.41-fullname-after-colon";
+const BUILD="V2.2.41-FULLNAME-AFTER-COLON";
+const DISPLAY_VERSION="V2.2.41";
 
 const PATCH_V21="./v2.1-runtime-patch.js";
 const PATCH_V22="./v2.2-runtime-patch.js";
@@ -55,7 +55,6 @@ function patchIndexHtml(html){
   let out=stripRetiredScripts(String(html||""));
   out=out.replace(/(const\s+APP_BUILD_VERSION\s*=\s*)["'][^"']+["'](\s*;?)/,`$1"${BUILD}"$2`);
   out=out.replace(/(const\s+APP_DISPLAY_VERSION\s*=\s*)["'][^"']+["'](\s*;?)/,`$1"${DISPLAY_VERSION}"$2`);
-  out=out.replace(/(\.\/app\.js\?v=)[^"'\s>]+/g,`$1${BUILD}`);
   out=injectScript(out,"v2.1-runtime-patch.js");
   out=injectScript(out,"v2.2-runtime-patch.js");
   out=injectScript(out,"v2.2.2-runtime-patch.js");
@@ -79,11 +78,6 @@ async function validateRelease(){
   const vd=await vr.clone().json();
   if(String(vd?.build||"").trim()!==BUILD)throw new Error("version.json BUILD mismatch");
   if(String(vd?.displayVersion||vd?.version||"").trim()!==DISPLAY_VERSION)throw new Error("version.json VERSION mismatch");
-
-  const appRes=await fetchNoStore("./app.js?swcheck="+Date.now());
-  if(!appRes.ok)throw new Error("app.js HTTP "+appRes.status);
-  const appText=await appRes.text();
-  if(!appText.includes("V2.2.46 · V2.2.41 BASE · TWO-ROW TOOLBAR · FAST MY FLIGHT"))throw new Error("app.js BUILD mismatch");
 
   const checks=[
     [PATCH_V22,"V2.2-ARRDEP-CHOICE-LOCALFIRST"],

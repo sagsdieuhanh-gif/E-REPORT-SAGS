@@ -1,10 +1,10 @@
 {
-  "version": "V2.2.46",
-  "displayVersion": "V2.2.46",
-  "label": "V2.2.46",
-  "build": "V2.2.46-TOOLBAR-2ROWS-FAST-MYFLIGHT",
-  "releasedAt": "2026-09-06T20:15:00Z",
-  "type": "toolbar-two-rows-fast-myflight",
-  "notes": "Dựng lại từ V2.2.41. Thanh công cụ dưới gồm đúng hai hàng, mỗi hàng bốn nút bằng nhau và giữ màu sắc/bo góc theo style dự án. My Flight hiển thị dữ liệu gần nhất ngay và đối soát Firebase ở nền để giảm cảm giác trễ.",
-  "message": "Có bản cập nhật V2.2.46"
+  "version": "V2.2.41",
+  "displayVersion": "V2.2.41",
+  "label": "V2.2.41",
+  "build": "V2.2.41-FULLNAME-AFTER-COLON",
+  "releasedAt": "2026-09-06T09:00:00Z",
+  "type": "fullname-after-colon",
+  "notes": "Đặt Full name sát sau dấu hai chấm và căn trái trên dòng chấm; giữ cỡ chữ gốc, chỉ co khi tên thực sự vượt dòng; xóa căn giữa sai của bản trước.",
+  "message": "Có bản cập nhật V2.2.41"
 }
