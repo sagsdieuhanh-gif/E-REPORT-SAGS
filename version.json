@@ -1,10 +1,10 @@
 {
-  "version": "V2.2.14",
-  "displayVersion": "V2.2.14",
-  "label": "V2.2.14",
-  "build": "V2.2.14-COMPACT-LIMIT-CLEANING-STA-STD",
-  "releasedAt": "2026-09-06T12:30:00+07:00",
-  "type": "compact-limit-cleaning-ui",
-  "notes": "Kế thừa V2.2.13. Tinh gọn quản lý LIMIT và LỊCH VỆ SINH thành thanh tab cố định LIMIT/LỊCH VỆ SINH/AI ẢNH. Lịch vệ sinh mặc định chỉ hiện danh sách; biểu mẫu chỉ mở khi bấm THÊM LỊCH hoặc SỬA. Bổ sung STA và STD để AI tự đọc khi ảnh có giờ hoặc AD nhập tay, đồng thời hiển thị trực tiếp trên từng dòng lịch.",
-  "message": "Có bản cập nhật V2.2.14"
+  "version": "V2.2.16",
+  "displayVersion": "V2.2.16",
+  "label": "V2.2.16",
+  "build": "V2.2.16-DATAHUB-COMBINED-LIMIT-CLEANING-ICON",
+  "releasedAt": "2026-09-06T13:15:00+07:00",
+  "type": "datahub-combined-limit-cleaning-icon",
+  "notes": "Kế thừa V2.2.15. Giữ ba thẻ DỮ LIỆU KHAI THÁC; A/C LIMITS và LỊCH VỆ SINH nằm chung một thẻ, dùng icon kết hợp tàu bay cảnh báo và chổi vệ sinh. Hai danh sách vẫn yêu cầu chọn ngày trước khi hiển thị.",
+  "message": "Có bản cập nhật V2.2.16"
 }
