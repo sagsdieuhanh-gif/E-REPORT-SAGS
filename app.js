@@ -3086,6 +3086,94 @@ Không ghi đè working envelope của nhân viên đang thao tác.`);
   setTimeout(()=>{ensureUI();ensureButton();startMailbox();startRevocations();},900);
 })(typeof window!=="undefined"?window:globalThis);
 
+/* ===== V2.2.32 MOBILE ACTION CONSISTENCY ===== */
+(function(){
+  const css=`
+/* Form action bar: same rounded, calm action language as the logged-in home screen. */
+#v324FormActions{gap:7px!important;padding:4px 0 6px!important}
+.v324FormAction{min-height:44px!important;border-radius:16px!important;padding:7px 10px!important;font:900 11px/1.1 Arial!important;box-shadow:0 2px 0 rgba(7,43,77,.13)!important}
+#v1134QuickTimeBtn{background:#edf5ff!important;color:#174f86!important;border-color:#a8c5e4!important}
+
+/* Quick-time: make every row compact enough to see the full page on a phone. */
+#quickTimeModal{align-items:flex-end!important}
+.quickTimePanel{height:min(91dvh,820px)!important;max-height:calc(var(--sags-vv-height,100dvh) - 10px)!important;border-radius:22px 22px 0 0!important}
+.quickTimeHead{padding:7px 11px 6px!important}
+.quickTimeTabs{margin-top:6px!important;gap:6px!important}
+.quickTimeTab{min-height:29px!important;border-radius:14px!important;font-size:10.5px!important}
+.quickTimePageDots{margin-top:4px!important}
+.quickTimeBody{padding:0 9px 7px!important}
+.quickTimePageTitle{padding:5px 2px 4px!important;font-size:9px!important}
+.quickTimeColumnHead{padding-bottom:3px!important}
+.quickTimeRow{min-height:43px!important;padding:2px 0!important;grid-template-columns:minmax(94px,1fr) 94px 94px!important;gap:4px!important}
+.quickTimeLabel{font-size:10px!important;line-height:1.08!important;padding-left:6px!important}
+.quickTimeTimeCell,.quickTimeSingleCell{height:34px!important}
+.quickTimeTimeCell{width:94px!important}
+.quickTimeInput{height:34px!important;border-radius:13px!important;font:900 12px/32px Arial!important;padding:0 33px 0 8px!important}
+.quickTimeNow{width:29px!important;height:29px!important;top:2px!important;right:2px!important;border-radius:11px!important;font:900 16px/29px Arial!important}
+.quickTimeSwipeHint{padding:5px 0 0!important;font-size:8px!important}
+.quickTimeFooter{padding:6px 10px calc(7px + env(safe-area-inset-bottom))!important}
+.quickTimeFooterActions{grid-template-columns:minmax(0,1fr) 94px 88px!important;gap:6px!important}
+.quickTimeSave,.quickTimeNA,.quickTimeClear{min-height:40px!important;border-radius:15px!important}
+.quickTimeSave{font-size:13px!important}.quickTimeNA,.quickTimeClear{font-size:9px!important;padding:0 5px!important}
+.quickTimeSaveStatus{min-height:10px!important;margin-top:2px!important;font-size:8px!important}
+@media(max-width:390px){.quickTimeRow{grid-template-columns:minmax(80px,1fr) 88px 88px!important}.quickTimeTimeCell{width:88px!important}.quickTimeLabel{font-size:9.5px!important}.quickTimeFooterActions{grid-template-columns:minmax(0,1fr) 86px 79px!important;gap:4px!important}}
+
+/* Keep the attachment source sheet above the bottom form toolbar. */
+#attachmentSourceModal{z-index:35000!important;align-items:flex-end!important;padding:14px 14px calc(235px + env(safe-area-inset-bottom))!important;overflow-y:auto!important}
+.attachmentSourceBox{border-radius:22px!important;padding:14px!important;box-shadow:0 14px 36px rgba(0,0,0,.36)!important}
+.attachmentSourceBox button{min-height:44px!important;border-radius:15px!important;margin-top:7px!important;font-size:14px!important}
+`;
+  function install(){if(document.getElementById('v2232MobileActionStyle'))return;const s=document.createElement('style');s.id='v2232MobileActionStyle';s.textContent=css;document.head.appendChild(s);}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
+})();
+
+/* ===== BBBT FIRST ROW AUTO-FILL =====
+ * Write the logged-in account's identity as soon as the BBBT is opened.
+ * This is intentionally independent of the "Nhập nhanh BBBT" dialog.
+ */
+(function(root){
+  'use strict';
+  function text(v){return String(v??'').trim();}
+  function identity(){
+    let profile={},meta=null,group='',role='';
+    try{profile=(typeof currentUserProfile!=='undefined'&&currentUserProfile)||{};}catch(_){ }
+    try{role=text((typeof currentRole!=='undefined'&&currentRole)||profile.role||profile.roleCode).toUpperCase();}catch(_){ }
+    try{meta=typeof currentFlightSessionMeta==='function'?currentFlightSessionMeta():null;}catch(_){ }
+    try{group=text(meta?.initialGroup||meta?.rosterSourceColumn||state?.rosterFormGroup||state?.activeFormGroup).toUpperCase();}catch(_){ }
+    const name=text(profile.name||profile.fullName||profile.displayName||profile.username);
+    let duty='';
+    if(role==='PVHLNG') duty='PVHLNG';
+    else if(role==='LOSTFOUND') duty='LOST & FOUND';
+    else if(/551|GRND_LD/.test(group)) duty='LOADING SUPERVISOR';
+    else if(/423|421|FSAGS|GRND_COR/.test(group)) duty='CO-ORDINATOR';
+    return {name,duty};
+  }
+  function fill(){
+    try{
+      if(typeof state==='undefined'||!state)return false;
+      const who=identity();if(!who.name||!who.duty)return false;
+      const changed=state.bbbtPerson1!==who.name||state.bbbtDuty1!==who.duty;
+      state.bbbtPerson1=who.name;state.bbbtDuty1=who.duty;
+      if(changed){try{persist?.();}catch(_){}try{draw?.();}catch(_){}}
+      return changed;
+    }catch(_){return false;}
+  }
+  function hook(){
+    const base=root.showFormGroup;
+    if(typeof base!=='function'||base.__bbbtFirstRow)return;
+    const wrapped=function(group){
+      const out=base.apply(this,arguments);
+      if(text(group).toLowerCase()==='bbbt')setTimeout(fill,0);
+      return out;
+    };
+    wrapped.__bbbtFirstRow=true;wrapped.__bbbtFirstRowBase=base;root.showFormGroup=wrapped;
+    try{showFormGroup=wrapped;}catch(_){}
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(hook,0),{once:true});
+  else setTimeout(hook,0);
+  setTimeout(hook,700);setTimeout(hook,2200);
+})(typeof window!=='undefined'?window:globalThis);
+
 /* ===== END daily-roster.js ===== */
 
 /* ===== BEGIN roster-extra-seed.js ===== */

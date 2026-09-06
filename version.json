@@ -1,10 +1,10 @@
 {
-  "version": "V2.2.30",
-  "displayVersion": "V2.2.30",
-  "label": "V2.2.30",
-  "build": "V2.2.30-BBBT-ACCOUNT-FIRST-ROW",
+  "version": "V2.2.32",
+  "displayVersion": "V2.2.32",
+  "label": "V2.2.32",
+  "build": "V2.2.32-MOBILE-ACTION-LAYOUT",
   "releasedAt": "2026-09-06T13:15:00+07:00",
-  "type": "bbbt-account-first-row",
-  "notes": "BBBT tự điền hàng số 1 theo tài khoản đang đăng nhập: họ tên đầy đủ; nhiệm vụ PVHLNG và LOST & FOUND lấy theo chức năng tài khoản, 42.3/42.1 là CO-ORDINATOR và 55.1 là LOADING SUPERVISOR.",
-  "message": "Có bản cập nhật V2.2.30"
+  "type": "mobile-action-layout",
+  "notes": "Đồng bộ nút bo tròn theo giao diện chính; nén bảng Nhập giờ nhanh; cân lại chữ và ô giờ; đưa hộp Thêm/Chụp ảnh lên trên thanh công cụ để thấy đủ hai lựa chọn.",
+  "message": "Có bản cập nhật V2.2.32"
 }
