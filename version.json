@@ -1,10 +1,10 @@
 {
-  "version": "V2.2.38",
-  "displayVersion": "V2.2.38",
-  "label": "V2.2.38",
-  "build": "V2.2.38-CORRECT-LIR-LABEL",
+  "version": "V2.2.39",
+  "displayVersion": "V2.2.39",
+  "label": "V2.2.39",
+  "build": "V2.2.39-SIGNATURE-GEOMETRY-FIX",
   "releasedAt": "2026-09-06T09:00:00Z",
-  "type": "correct-lir-label",
-  "notes": "Đổi nhãn CHECK-IN / LIR thành CHECK LATEST LIR BEFORE LOADING; giữ toàn bộ chức năng V2.2.37.",
-  "message": "Có bản cập nhật V2.2.38"
+  "type": "signature-geometry-fix",
+  "notes": "Căn giữa chữ ký một người, chỉ chia trái/phải khi có hai người; tự cắt khoảng trắng ảnh ký và tự co họ tên trên 42.3, 42.1, 55.1, BBBT; giữ toàn bộ chức năng V2.2.38.",
+  "message": "Có bản cập nhật V2.2.39"
 }

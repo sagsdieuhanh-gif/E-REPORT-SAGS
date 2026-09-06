@@ -3229,6 +3229,26 @@ body.v38-clean-workflow #v38CleanNav #roleBtnActionCenter{
   setTimeout(install,900);setTimeout(decorate,2400);
 })(typeof window!=='undefined'?window:globalThis);
 
+/* ===== V2.2.39 · SIGNATURE GEOMETRY NORMALIZER (ALL FORMS) ===== */
+(function(root){
+  'use strict';
+  if(root.__SAGS_V2239_SIGNATURE_NORMALIZER)return;root.__SAGS_V2239_SIGNATURE_NORMALIZER=true;
+  const cache=new Map(),normalized=new Set();let timer=0,running=false;
+  function load(src){return new Promise((ok,no)=>{const im=new Image();im.onload=()=>ok(im);im.onerror=no;im.src=src})}
+  async function trim(src){
+    if(!src||normalized.has(src))return src;if(cache.has(src))return cache.get(src);
+    const task=(async()=>{try{const im=await load(src),w=im.naturalWidth||im.width,h=im.naturalHeight||im.height;if(!w||!h)return src;const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(im,0,0,w,h);const p=x.getImageData(0,0,w,h).data;let l=w,t=h,r=-1,b=-1;for(let yy=0;yy<h;yy++)for(let xx=0;xx<w;xx++){const i=(yy*w+xx)*4;if(p[i+3]>18&&(p[i]<245||p[i+1]<245||p[i+2]<245)){l=Math.min(l,xx);r=Math.max(r,xx);t=Math.min(t,yy);b=Math.max(b,yy)}}if(r<l||b<t)return src;const px=Math.max(3,Math.round((r-l+1)*.05)),py=Math.max(3,Math.round((b-t+1)*.1));l=Math.max(0,l-px);r=Math.min(w-1,r+px);t=Math.max(0,t-py);b=Math.min(h-1,b+py);if(l<=w*.015&&r>=w*.985&&t<=h*.015&&b>=h*.985)return src;const o=document.createElement('canvas');o.width=r-l+1;o.height=b-t+1;o.getContext('2d').drawImage(c,l,t,o.width,o.height,0,0,o.width,o.height);const out=o.toDataURL('image/png');normalized.add(out);return out}catch(_){return src}})();cache.set(src,task);return task;
+  }
+  async function normalize(){
+    if(running)return;let fs,st;try{fs=fields;st=state}catch(_){return}if(!Array.isArray(fs)||!st)return;running=true;let changed=false;
+    try{for(const f of fs){if(f?.type!=='signature'||!st[f.key])continue;const before=st[f.key],after=await trim(before);if(after&&after!==before){st[f.key]=after;changed=true}}if(changed){try{persist?.()}catch(_){}try{activeKey=null}catch(_){}try{draw?.()}catch(_){}}}finally{running=false}
+  }
+  function schedule(ms=180){clearTimeout(timer);timer=setTimeout(normalize,ms)}
+  function wrap(name){const base=root[name];if(typeof base!=='function'||base.__v2239SigGeometry)return;const fn=function(){const out=base.apply(this,arguments);Promise.resolve(out).finally(()=>schedule(name==='switchFlightSession'?420:180));return out};fn.__v2239SigGeometry=true;fn.__v2239Base=base;root[name]=fn;try{if(name==='showFormGroup')showFormGroup=fn;else if(name==='switchFlightSession')switchFlightSession=fn}catch(_){}}
+  function install(){wrap('showFormGroup');wrap('switchFlightSession');schedule(500)}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();setTimeout(install,900);setTimeout(install,2400);document.addEventListener('click',()=>schedule(260),true);
+})(typeof window!=='undefined'?window:globalThis);
+
 /* ===== V2.2.32 MOBILE ACTION CONSISTENCY ===== */
 (function(){
   const css=`
@@ -3361,6 +3381,16 @@ body.v38-clean-workflow #v38CleanNav #roleBtnActionCenter{
     return owner===user?item:null;
   }
   function image(src){return new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=reject;im.src=src})}
+  async function trimSignature(src){
+    try{
+      const im=await image(src),c=document.createElement('canvas');c.width=im.naturalWidth||im.width;c.height=im.naturalHeight||im.height;
+      const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(im,0,0,c.width,c.height);const d=x.getImageData(0,0,c.width,c.height).data;
+      let l=c.width,t=c.height,r=-1,b=-1;
+      for(let yy=0;yy<c.height;yy++)for(let xx=0;xx<c.width;xx++){const i=(yy*c.width+xx)*4,a=d[i+3];if(a>18&&(d[i]<245||d[i+1]<245||d[i+2]<245)){if(xx<l)l=xx;if(xx>r)r=xx;if(yy<t)t=yy;if(yy>b)b=yy}}
+      if(r<l||b<t)return src;const px=Math.max(3,Math.round((r-l+1)*.045)),py=Math.max(3,Math.round((b-t+1)*.08));l=Math.max(0,l-px);r=Math.min(c.width-1,r+px);t=Math.max(0,t-py);b=Math.min(c.height-1,b+py);
+      const out=document.createElement('canvas');out.width=r-l+1;out.height=b-t+1;out.getContext('2d').drawImage(c,l,t,out.width,out.height,0,0,out.width,out.height);return out.toDataURL('image/png');
+    }catch(_){return src}
+  }
   function drawFit(ctx,im,x,y,w,h){const k=Math.min(w/im.width,h/im.height),dw=im.width*k,dh=im.height*k;ctx.drawImage(im,x+(w-dw)/2,y+(h-dh)/2,dw,dh)}
   async function combine(a,b){
     const [ia,ib]=await Promise.all([image(a),image(b)]),c=document.createElement('canvas');c.width=1600;c.height=420;
@@ -3370,11 +3400,16 @@ body.v38-clean-workflow #v38CleanNav #roleBtnActionCenter{
   function registry(){if(!state.autoSignatureParticipantsV2235||typeof state.autoSignatureParticipantsV2235!=='object')state.autoSignatureParticipantsV2235={};return state.autoSignatureParticipantsV2235}
   async function addSignature(key,nameKey,person,sig){
     const reg=registry(),list=Array.isArray(reg[key])?reg[key]:[];
-    if(list.some(x=>S(x.username).toLowerCase()===person.username))return false;
+    const clean=await trimSignature(sig),existing=list.find(x=>S(x.username).toLowerCase()===person.username);
+    if(existing){
+      // Repair releases that accidentally kept a two-person/whitespace canvas for one signer.
+      if(list.length===1){const changed=S(state[key])!==S(clean);state[key]=clean;existing.signature=clean;if(nameKey)state[nameKey]=S(existing.name||person.name);return changed}
+      return false;
+    }
     if(list.length>=2)return false;
-    const next={username:person.username,name:person.name,duty:person.duty,leg:person.leg,assignmentId:person.assignmentId,atMs:Date.now()};
-    if(!S(state[key])||!list.length)state[key]=sig;
-    else state[key]=await combine(state[key],sig);
+    const next={username:person.username,name:person.name,duty:person.duty,leg:person.leg,assignmentId:person.assignmentId,signature:clean,atMs:Date.now()};
+    if(!S(state[key])||!list.length)state[key]=clean;
+    else state[key]=await combine(state[key],clean);
     list.push(next);reg[key]=list;
     if(nameKey)state[nameKey]=list.map(x=>S(x.name)).filter(Boolean).join(' / ');
     return true;
