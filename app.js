@@ -3086,6 +3086,149 @@ Không ghi đè working envelope của nhân viên đang thao tác.`);
   setTimeout(()=>{ensureUI();ensureButton();startMailbox();startRevocations();},900);
 })(typeof window!=="undefined"?window:globalThis);
 
+/* ===== V2.2.36 · PROJECT-WIDE ROUNDED BLUE/LIME UI ===== */
+(function(root){
+  'use strict';
+  const STYLE_ID='v2236ProjectTheme';
+  const css=`
+:root{
+  --v2236-navy:#123d73;--v2236-blue:#285ca8;--v2236-blue2:#1d4b91;
+  --v2236-lime:#b8d62d;--v2236-yellow:#d7d52d;--v2236-ink:#153a66;
+  --v2236-line:rgba(255,255,255,.14);--v2236-radius:18px;
+}
+button{border-radius:var(--v2236-radius)!important;font-weight:900!important;transition:transform .12s ease,filter .12s ease,box-shadow .12s ease!important;-webkit-tap-highlight-color:transparent}
+button:active{transform:translateY(1px) scale(.985)!important;filter:brightness(.95)}
+button:disabled{opacity:.48!important;filter:saturate(.55)!important}
+.panel,.templateBox,.exportBox,.formMenuBox,.flightSessionBox,.flightTypeEditBox,.finalFormsBox,
+.roleLoginCard,.sagsAdminPanel,.v488Panel,.acls-panel,.drPanel,.ahPanel,.fwcPanel,.fwcMultiPanel,.v310ShiftPanel,.v320ModalPanel,
+.v327Panel,.v340Panel,.v342Panel,#v1111QrPanel,#v1111QrScanPanel,.sagsActionPopupCard{
+  border-radius:24px!important;box-shadow:0 18px 52px rgba(4,35,74,.28)!important;
+}
+input:not([type=checkbox]):not([type=radio]):not([type=file]),select,textarea{
+  border-radius:14px!important;border-color:#adc1d5!important;outline:none;
+}
+input:not([type=checkbox]):not([type=radio]):not([type=file]):focus,select:focus,textarea:focus{
+  border-color:#356db5!important;box-shadow:0 0 0 3px rgba(53,109,181,.16)!important;
+}
+.actions button,.templateActions button,.exportActions button,.exportChoiceGrid button,.formMenuGrid button,
+.ffIncomingActions button,.fs09CloudToastActions button,.finalFormsChoices button,.flightSessionCreate button,
+.drBtn,.ahClose,.ahBack,.ahItem,.ahRosterBtn,.aclBtn,.aclai-btn,.acls-save,.acls-reset,
+.v310ShiftBtn,.v320Btn,.v327Btn,.v340Btn,.v342Btn,#v1111QrActions button,#v1111QrScanActions button{
+  border:1px solid var(--v2236-line)!important;border-radius:17px!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.15),0 5px 13px rgba(12,55,104,.15)!important;
+}
+.save,.dark,.drBtn:not(.secondary),.aclBtn,.aclai-btn,.v310ShiftBtn,.v320Btn:not(.gray):not(.green),
+.v327Btn:not(.gray):not(.red),.v340Btn:not(.gray):not(.green),.v342Btn,
+#v1111QrShare,#v1111QrTorch,.fs09CloudToastActions .primary{
+  background:linear-gradient(180deg,var(--v2236-blue),var(--v2236-blue2))!important;color:#fff!important;
+}
+.cancel,.light,.secondary,.gray,.drBtn.secondary,.v320Btn.gray,.v327Btn.gray,.v340Btn.gray,#v1111QrClose{
+  background:linear-gradient(180deg,#f8fbff,#e8f0f8)!important;color:var(--v2236-ink)!important;border-color:#bfd0df!important;
+}
+.del,.danger,.dangerAccountBtn,.red,.v327Btn.red{
+  background:linear-gradient(180deg,#c84137,#a9231c)!important;color:#fff!important;border-color:#8f1d17!important;
+}
+.green,.publish,.v320Btn.green,.v340Btn.green,.ahRosterBtn,.acls-save{
+  background:linear-gradient(135deg,#d9d52b,var(--v2236-lime))!important;color:var(--v2236-ink)!important;border-color:#edf3a4!important;
+}
+body.v38-clean-workflow .toolbar.compact-main-toolbar{
+  background:linear-gradient(180deg,#2b61ad 0%,#173f7f 100%)!important;
+  border:1px solid rgba(255,255,255,.16)!important;border-bottom:0!important;
+  border-radius:24px 24px 0 0!important;padding:8px max(8px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))!important;
+  gap:7px!important;box-shadow:0 -7px 24px rgba(3,31,68,.30)!important;
+}
+body.v38-clean-workflow #v38CleanNav{
+  display:flex!important;flex-wrap:nowrap!important;overflow-x:auto!important;gap:8px!important;
+  padding:1px!important;scroll-snap-type:x proximity;align-items:stretch!important;
+}
+body.v38-clean-workflow #v38CleanNav .v38NavBtn{
+  flex:0 0 clamp(92px,23vw,150px)!important;min-width:92px!important;width:auto!important;
+  height:68px!important;min-height:68px!important;padding:7px 6px!important;border-radius:22px!important;
+  border:2px solid rgba(255,255,255,.08)!important;
+  background:linear-gradient(180deg,#315fa2,#244c89)!important;color:#f8fbff!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 4px 12px rgba(3,31,68,.18)!important;
+  font:900 12px/1.05 Arial!important;white-space:normal!important;scroll-snap-align:start;
+  display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:4px!important;
+}
+body.v38-clean-workflow #v38CleanNav .v38NavBtn.v2236-active{
+  background:linear-gradient(135deg,var(--v2236-yellow),var(--v2236-lime))!important;
+  color:var(--v2236-ink)!important;border-color:#eff5a4!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 5px 14px rgba(11,47,91,.20)!important;
+}
+.v2236NavIcon{display:block;font-size:24px;line-height:1}.v2236NavLabel{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+body.v38-clean-workflow #v38CleanNav .v326GrantedPermission,
+body.v38-clean-workflow #v38CleanNav #v327ReassignNav,
+body.v38-clean-workflow #v38CleanNav #v38NavAdmin,
+body.v38-clean-workflow #v38CleanNav #roleBtnActionCenter{
+  background:linear-gradient(180deg,#315fa2,#244c89)!important;color:#fff!important;border-color:rgba(255,255,255,.10)!important;
+}
+#v324FormActions{gap:8px!important;padding:2px 0!important}
+.v324FormAction{
+  min-height:52px!important;border-radius:20px!important;padding:8px 7px!important;
+  background:linear-gradient(180deg,#315fa2,#244c89)!important;color:#fff!important;
+  border:2px solid rgba(255,255,255,.09)!important;font:900 12px/1.08 Arial!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.13),0 4px 12px rgba(3,31,68,.18)!important;
+}
+.v324Export,.quickTimeSave{
+  background:linear-gradient(135deg,#d9d52b,var(--v2236-lime))!important;color:var(--v2236-ink)!important;border-color:#edf3a4!important;
+}
+.v324Handover{background:linear-gradient(180deg,#315fa2,#244c89)!important;color:#fff!important;border-color:rgba(255,255,255,.10)!important}
+.v324Qr{background:linear-gradient(180deg,#315fa2,#244c89)!important;color:#fff!important;border-color:rgba(255,255,255,.10)!important}
+.quickTimeFooterActions{gap:8px!important;background:linear-gradient(180deg,#2b61ad,#173f7f)!important;padding:7px!important;border-radius:20px!important}
+.quickTimeSave,.quickTimeNA,.quickTimeClear{min-height:48px!important;border-radius:18px!important;border:2px solid rgba(255,255,255,.09)!important}
+.quickTimeNA,.quickTimeClear{background:linear-gradient(180deg,#315fa2,#244c89)!important;color:#fff!important}
+.bq-foot{gap:8px!important}.bq-foot button{border-radius:19px!important}
+.toolbar-row.main-actions>button{
+  border-radius:19px!important;background:linear-gradient(180deg,#315fa2,#244c89)!important;color:#fff!important;
+  border:2px solid rgba(255,255,255,.09)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 4px 10px rgba(3,31,68,.18)!important;
+}
+#roleLoginSubmit,#appUpdateNowBtn,.sagsAdminBtn:not(.secondary):not(.danger):not(.warn),.fleetMiniBtn:not(.good),
+.flightTypeEditBtn,.flightOpsBtn,.rsBtn:not(.gray):not(.green),button[class*="Btn"]:not(.secondary):not(.gray):not(.green):not(.danger):not(.red):not(.warn):not(.orange):not(.active):not(.on){
+  background:linear-gradient(180deg,#315fa2,#244c89)!important;color:#fff!important;
+  border-color:rgba(255,255,255,.10)!important;
+}
+#roleLoginSubmit,.fleetMiniBtn.good,button.active,button.on,button[aria-pressed="true"],button[aria-selected="true"],body.v38-clean-workflow #v38CleanNav .v38NavBtn.v2236-active{
+  background:linear-gradient(135deg,#d9d52b,var(--v2236-lime))!important;color:var(--v2236-ink)!important;
+  border-color:#edf3a4!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 5px 14px rgba(11,47,91,.18)!important;
+}
+.sagsAdminBtn.secondary,button[class*="Btn"].secondary,button[class*="Btn"].gray{
+  background:linear-gradient(180deg,#f8fbff,#e8f0f8)!important;color:var(--v2236-ink)!important;border-color:#bfd0df!important;
+}
+.sagsAdminBtn.danger,.sagsAdminBtn.warn,button[class*="Btn"].danger,button[class*="Btn"].red{
+  background:linear-gradient(180deg,#c84137,#a9231c)!important;color:#fff!important;border-color:#8f1d17!important;
+}
+.sagsAdminCard,.fleetManagerCard,.aclCard,.acls-step,.drField,.v320Card,.v310ShiftCard,.v342Card,.rsCard,.v339Card,.v338Doc{
+  border-radius:18px!important;
+}
+@media(max-width:600px){
+  body{padding-bottom:132px!important}
+  body.v38-clean-workflow #v38CleanNav .v38NavBtn{flex-basis:calc((100vw - 43px)/4)!important;min-width:82px!important;height:64px!important;min-height:64px!important;font-size:10.5px!important;border-radius:20px!important}
+  .v2236NavIcon{font-size:21px}.v324FormAction{min-height:48px!important;font-size:10.5px!important}
+  .panel,.templateBox,.exportBox,.formMenuBox,.flightSessionBox,.flightTypeEditBox,.finalFormsBox{border-radius:21px!important}
+}
+@media(max-width:380px){body.v38-clean-workflow #v38CleanNav .v38NavBtn{flex-basis:calc((100vw - 39px)/4)!important;min-width:74px!important;font-size:9.5px!important;padding-left:3px!important;padding-right:3px!important}}
+@media print{body{padding-bottom:0!important}}
+`;
+  function installStyle(){if(document.getElementById(STYLE_ID))return;const s=document.createElement('style');s.id=STYLE_ID;s.textContent=css;document.head.appendChild(s)}
+  const labels={
+    v38NavFlights:['✈','My Flight'],v38NavMulti:['⇄','Multi'],v310ShiftNav:['↔','Giao ca'],
+    v38NavSignature:['✍','Ký'],v38NavAdmin:['☰','Menu'],v327ReassignNav:['↻','Đổi người']
+  };
+  function decorateButton(b){
+    if(!b)return;let spec=labels[b.id];
+    if(!spec){const raw=String(b.textContent||'').trim(),m=raw.match(/^([^A-Za-zÀ-ỹ0-9]+)?\s*(.*)$/);spec=[String(m?.[1]||'•').trim()||'•',String(m?.[2]||raw).replace(/\s*·\s*\d+\s*$/,'').trim()||raw]}
+    const count=(String(b.textContent||'').match(/·\s*(\d+)/)||[])[1];const label=count?`${spec[1]} (${count})`:spec[1];
+    if(b.querySelector('.v2236NavIcon')&&b.querySelector('.v2236NavLabel')?.textContent===label)return;
+    b.textContent='';const icon=document.createElement('span'),caption=document.createElement('span');
+    icon.className='v2236NavIcon';icon.textContent=spec[0];caption.className='v2236NavLabel';caption.textContent=label;b.append(icon,caption);
+  }
+  function decorate(){installStyle();const nav=document.getElementById('v38CleanNav');if(!nav)return;nav.querySelectorAll('button').forEach(decorateButton);if(!nav.__v2236Click){nav.__v2236Click=true;nav.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;nav.querySelectorAll('button').forEach(x=>x.classList.remove('v2236-active'));b.classList.add('v2236-active')})}}
+  let queued=0;function schedule(){clearTimeout(queued);queued=setTimeout(decorate,40)}
+  function install(){installStyle();decorate();if(!root.__v2236ThemeObserver){root.__v2236ThemeObserver=new MutationObserver(schedule);root.__v2236ThemeObserver.observe(document.body,{childList:true,subtree:true,characterData:true})}}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
+  setTimeout(install,900);setTimeout(decorate,2400);
+})(typeof window!=='undefined'?window:globalThis);
+
 /* ===== V2.2.32 MOBILE ACTION CONSISTENCY ===== */
 (function(){
   const css=`
@@ -11178,3 +11321,12 @@ root.SAGS_QR_MATRIX=function(text){const QRCode=req('QRCode'),Level=req('QRError
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>setTimeout(install,0),{once:true});else setTimeout(install,0);
   setTimeout(install,900);setTimeout(install,2400);setTimeout(install,4200);
 })(typeof window!=="undefined"?window:globalThis);
+
+/* Keep the V2.2.36 theme stylesheet after dynamically injected legacy styles. */
+(function(){
+  let timer=0,observer=null;
+  function lift(){const s=document.getElementById('v2236ProjectTheme');if(s&&document.head.lastElementChild!==s)document.head.appendChild(s)}
+  function install(){lift();if(observer)return;observer=new MutationObserver(()=>{clearTimeout(timer);timer=setTimeout(lift,30)});observer.observe(document.head,{childList:true})}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
+  setTimeout(lift,1200);setTimeout(lift,3200);
+})();

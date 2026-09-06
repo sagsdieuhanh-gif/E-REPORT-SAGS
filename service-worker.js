@@ -1,7 +1,7 @@
 /* E-REPORT/SAGS V2.2.16 · LIGHTWEIGHT SAFE UPDATE */
-const CACHE_NAME="sags-v2.2.35-auto-roster-signature-handover";
-const BUILD="V2.2.35-AUTO-ROSTER-SIGNATURE-HANDOVER";
-const DISPLAY_VERSION="V2.2.35";
+const CACHE_NAME="sags-v2.2.36-project-wide-rounded-theme";
+const BUILD="V2.2.36-PROJECT-WIDE-ROUNDED-THEME";
+const DISPLAY_VERSION="V2.2.36";
 
 const PATCH_V21="./v2.1-runtime-patch.js";
 const PATCH_V22="./v2.2-runtime-patch.js";
