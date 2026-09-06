@@ -1,10 +1,10 @@
 {
-  "version": "V2.2.40",
-  "displayVersion": "V2.2.40",
-  "label": "V2.2.40",
-  "build": "V2.2.40-SIGNER-LAYOUT-LOCK",
+  "version": "V2.2.41",
+  "displayVersion": "V2.2.41",
+  "label": "V2.2.41",
+  "build": "V2.2.41-FULLNAME-AFTER-COLON",
   "releasedAt": "2026-09-06T09:00:00Z",
-  "type": "signer-layout-lock",
-  "notes": "Khóa tọa độ và tự co họ tên người ký sau lớp bố cục đã lưu, ngăn cấu hình dx/fs cũ đẩy tên sang phải; giữ chuẩn hóa chữ ký trên toàn bộ biểu mẫu.",
-  "message": "Có bản cập nhật V2.2.40"
+  "type": "fullname-after-colon",
+  "notes": "Đặt Full name sát sau dấu hai chấm và căn trái trên dòng chấm; giữ cỡ chữ gốc, chỉ co khi tên thực sự vượt dòng; xóa căn giữa sai của bản trước.",
+  "message": "Có bản cập nhật V2.2.41"
 }

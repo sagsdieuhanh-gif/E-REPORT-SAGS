@@ -3256,7 +3256,7 @@ body.v38-clean-workflow #v38CleanNav #roleBtnActionCenter{
   const nameKey=/(?:coordArrName|coordDepName|representativeName|engineerName|loadingStaffName|bbbtPerson[123]|bbbtDuty[123])$/i;
   function allFields(){try{return Array.isArray(fields)?fields:(Array.isArray(root.fields)?root.fields:[])}catch(_){return []}}
   function geom(f){try{return typeof abs==='function'?abs(f):{vx:Number(f.vx||f.x),vy:Number(f.vy||f.y),vw:Number(f.vw||f.w),vh:Number(f.vh||f.h)}}catch(_){return {vx:Number(f.vx||f.x),vy:Number(f.vy||f.y),vw:Number(f.vw||f.w),vh:Number(f.vh||f.h)}}}
-  function fit(text,width,preferred){const c=(root.__v2240NameMeasure||=document.createElement('canvas')),x=c.getContext('2d');let fs=Math.min(16,Math.max(9,Number(preferred)||14));while(fs>9){x.font=`700 ${fs}px "Times New Roman"`;if(x.measureText(text).width<=Math.max(20,width-6))break;fs-=.5}return fs}
+  function fit(text,width,preferred){const c=(root.__v2240NameMeasure||=document.createElement('canvas')),x=c.getContext('2d');let fs=Math.min(20,Math.max(11,Number(preferred)||18));while(fs>11){x.font=`700 ${fs}px "Times New Roman"`;if(x.measureText(text).width<=Math.max(20,width-6))break;fs-=.5}return fs}
   function repair(){
     for(const f of allFields()){
       if(!nameKey.test(String(f?.key||'')))continue;const svg=document.getElementById('svg'+Number(f.page));if(!svg)continue;const a=geom(f),val=String((typeof state!=='undefined'&&state?.[f.key])||'');
@@ -3264,7 +3264,7 @@ body.v38-clean-workflow #v38CleanNav #roleBtnActionCenter{
         if(el.classList.contains('hit')||el.classList.contains('v368-layout-hit'))continue;const tag=el.tagName.toLowerCase();
         el.removeAttribute('transform');
         if(tag==='text'){
-          const center=String(f.align||'').toLowerCase()==='center'||/coordArrName|coordDepName|representativeName|bbbtPerson|bbbtDuty/i.test(String(f.key));
+          const center=/bbbtPerson|bbbtDuty/i.test(String(f.key));
           el.setAttribute('x',String(center?a.vx+a.vw/2:a.vx+3));el.setAttribute('text-anchor',center?'middle':'start');const fs=fit(val,a.vw,f.font);el.setAttribute('font-size',String(fs));
           const m=(root.__v2240NameMeasure||=document.createElement('canvas')).getContext('2d');m.font=`700 ${fs}px "Times New Roman"`;if(m.measureText(val).width>a.vw-6){el.setAttribute('textLength',String(Math.max(20,a.vw-6)));el.setAttribute('lengthAdjust','spacingAndGlyphs')}else{el.removeAttribute('textLength');el.removeAttribute('lengthAdjust')}
         }else if(tag==='foreignobject'){
@@ -6902,7 +6902,7 @@ window.SAGS_PUBLISHED_FORM_LAYOUT={
       "fs": 14,
       "dx": 0,
       "dy": 0,
-      "align": "center",
+      "align": "left",
       "dw": 0,
       "dh": 0
     },
@@ -6912,7 +6912,7 @@ window.SAGS_PUBLISHED_FORM_LAYOUT={
       "hx": -24.4,
       "hy": 0,
       "fs": 14,
-      "align": "center",
+      "align": "left",
       "dx": 0,
       "dy": 0,
       "dw": 0,
@@ -7367,7 +7367,7 @@ window.SAGS_PUBLISHED_FORM_LAYOUT={
     "7:f421_representativeName": {
       "dx": 0,
       "dy": 0,
-      "fs": 15,
+      "fs": 18,
       "hx": -55.5,
       "hy": -12.3,
       "hw": 114,
@@ -7380,8 +7380,8 @@ window.SAGS_PUBLISHED_FORM_LAYOUT={
       "hh": 0,
       "dx": 0,
       "dy": 0,
-      "fs": 15,
-      "align": "center"
+      "fs": 18,
+      "align": "left"
     },
     "7:f421_coordDepName": {
       "hx": -49.9,
@@ -7390,8 +7390,8 @@ window.SAGS_PUBLISHED_FORM_LAYOUT={
       "hh": 0,
       "dx": 0,
       "dy": 0,
-      "fs": 15,
-      "align": "center"
+      "fs": 18,
+      "align": "left"
     },
     "9:f551_date": {
       "dx": 8,
