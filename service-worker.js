@@ -1,7 +1,7 @@
-/* E-REPORT/SAGS V2.2.9 · LIGHTWEIGHT SAFE UPDATE */
-const CACHE_NAME="sags-v2.2.9-pdf-export-complete-share-fix";
-const BUILD="V2.2.9-PDF-EXPORT-COMPLETE-SHARE-FIX";
-const DISPLAY_VERSION="V2.2.9";
+/* E-REPORT/SAGS V2.2.10 · LIGHTWEIGHT SAFE UPDATE */
+const CACHE_NAME="sags-v2.2.10-independent-dep-same-workspace";
+const BUILD="V2.2.10-INDEPENDENT-DEP-SAME-WORKSPACE";
+const DISPLAY_VERSION="V2.2.10";
 
 const PATCH_V21="./v2.1-runtime-patch.js";
 const PATCH_V22="./v2.2-runtime-patch.js";
@@ -10,6 +10,7 @@ const PATCH_V225="./v2.2.5-runtime-patch.js";
 const PATCH_V226="./v2.2.6-runtime-patch.js";
 const PATCH_V227="./v2.2.7-runtime-patch.js";
 const PATCH_V229="./v2.2.9-runtime-patch.js";
+const PATCH_V2210="./v2.2.10-runtime-patch.js";
 
 const FRESH_SUFFIXES=[
   "/version.json","/manifest.webmanifest","/index.html","/app.js","/ai.js",
@@ -17,7 +18,7 @@ const FRESH_SUFFIXES=[
   "/daily-roster.js","/v2.1-runtime-patch.js","/v2.2-runtime-patch.js",
   "/v2.2.2-runtime-patch.js","/v2.2.5-runtime-patch.js",
   "/v2.2.6-runtime-patch.js","/v2.2.7-runtime-patch.js",
-  "/v2.2.9-runtime-patch.js"
+  "/v2.2.9-runtime-patch.js","/v2.2.10-runtime-patch.js"
 ];
 
 function isFreshPath(pathname){return FRESH_SUFFIXES.some(x=>pathname.endsWith(x));}
@@ -26,7 +27,7 @@ async function fetchNoStore(path){
 }
 async function safePut(cache,key,response){
   try{if(response&&response.ok)await cache.put(key,response.clone())}
-  catch(e){console.info("V2.2.9 cache put skipped",key,e?.name||e?.message||e)}
+  catch(e){console.info("V2.2.10 cache put skipped",key,e?.name||e?.message||e)}
 }
 function stripRetiredScripts(out){
   return String(out||"")
@@ -51,6 +52,7 @@ function patchIndexHtml(html){
   out=injectScript(out,"v2.2.6-runtime-patch.js");
   out=injectScript(out,"v2.2.7-runtime-patch.js");
   out=injectScript(out,"v2.2.9-runtime-patch.js");
+  out=injectScript(out,"v2.2.10-runtime-patch.js");
   return out;
 }
 async function validateRelease(){
@@ -66,7 +68,8 @@ async function validateRelease(){
     [PATCH_V225,"V2.2.5-SIGNATURE-EXPORT-STORAGE-FIX-R2"],
     [PATCH_V226,"V2.2.6-SIGNATURE-LEGACY-QUOTA-FIX"],
     [PATCH_V227,"V2.2.7-SIGNATURE-STORAGE-RECOVERY"],
-    [PATCH_V229,BUILD]
+    [PATCH_V229,"V2.2.9-PDF-EXPORT-COMPLETE-SHARE-FIX"],
+    [PATCH_V2210,BUILD]
   ];
   for(const [path,marker] of checks){
     const r=await fetchNoStore(path+"?swcheck="+Date.now());
@@ -77,8 +80,9 @@ async function validateRelease(){
   const ir=await fetchNoStore("./index.html?swcheck="+Date.now());
   if(!ir.ok)throw new Error("index.html HTTP "+ir.status);
 }
+
 self.addEventListener("install",event=>{
-  // SAFE UPDATE: wait until operator presses UPDATE.
+  // SAFE UPDATE: never force reload while operator is working.
   event.waitUntil(validateRelease());
 });
 self.addEventListener("activate",event=>{
@@ -96,6 +100,7 @@ self.addEventListener("fetch",event=>{
   if(event.request.method!=="GET")return;
   const url=new URL(event.request.url);
   if(url.origin!==self.location.origin)return;
+
   const nav=event.request.mode==="navigate";
   const isVersion=url.pathname.endsWith("/version.json");
 
@@ -112,6 +117,7 @@ self.addEventListener("fetch",event=>{
     })());
     return;
   }
+
   if(nav){
     event.respondWith((async()=>{
       const c=await caches.open(CACHE_NAME);
@@ -133,6 +139,7 @@ self.addEventListener("fetch",event=>{
     })());
     return;
   }
+
   if(isFreshPath(url.pathname)){
     event.respondWith((async()=>{
       const c=await caches.open(CACHE_NAME);
@@ -149,6 +156,7 @@ self.addEventListener("fetch",event=>{
     })());
     return;
   }
+
   event.respondWith((async()=>{
     const c=await caches.open(CACHE_NAME);
     const hit=await c.match(event.request);

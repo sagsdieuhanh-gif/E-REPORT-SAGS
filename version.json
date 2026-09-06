@@ -1,10 +1,10 @@
 {
-  "version": "V2.2.9",
-  "displayVersion": "V2.2.9",
-  "label": "V2.2.9",
-  "build": "V2.2.9-PDF-EXPORT-COMPLETE-SHARE-FIX",
-  "releasedAt": "2026-09-04T01:15:00+07:00",
-  "type": "pdf-export-complete-share-fix",
-  "notes": "Sửa lỗi thực tế PDF đã tạo/xuất xong nhưng cửa sổ XUẤT còn đứng ở 'Đang hoàn tất PDF...' và phải bấm XUẤT lần hai mới mở Share Sheet. V2.2.9 kiểm tra user activation trước Web Share, không chờ vô hạn Promise share bị treo; giữ File PDF đã tạo và hiện nút CHIA SẺ / LƯU PDF để người dùng bấm bằng một user gesture mới. Khi PDF đã hoàn tất, trạng thái được chuyển sang PDF đã tạo xong và nút ĐÓNG được mở lại. Không thay đổi dữ liệu biểu mẫu/chữ ký/FINAL/CROSSCHECK/KẾT SỔ. Kế thừa V2.2.7.",
-  "message": "V2.2.9"
+  "version": "V2.2.10",
+  "displayVersion": "V2.2.10",
+  "label": "V2.2.10",
+  "build": "V2.2.10-INDEPENDENT-DEP-SAME-WORKSPACE",
+  "releasedAt": "2026-09-06T10:55:00+07:00",
+  "type": "independent-dep-same-workspace",
+  "notes": "Giữ nguyên nguyên tắc 1 chuyến bay = 1 flight workspace. Nếu ARR trước đã hoàn tất, giữ luồng V2.2.2 hiện tại. Nếu ARR chưa nhận/chưa hoàn tất/không có predecessor hợp lệ, người được phân DEP có thể nhận ngay; hệ thống tự tạo DEP độc lập trong cùng flight_records/{date}/{flightId}, chỉ điền thông tin chuyến đi (flight DEP, STD/ETD, A/C, điểm đến, bay/gate phù hợp), không copy dữ liệu khai thác ARR. Một active DEP instance/form vẫn được khóa bằng transaction. Nếu ARR hoàn tất muộn, không được reset/ghi đè DEP độc lập đang làm. Không heartbeat, không tạo flight record thứ hai.",
+  "message": "V2.2.10"
 }
