@@ -2519,8 +2519,11 @@ if(phase==='flight'){
       const manRef=sagsV470Ref(MANIFEST_PATH+"/"+safeKey(opDate));let old={};try{old=(await manRef.once("value")).val()||{};}catch(e){}
       oldManByDate[opDate]=old;
       const oldItems=old.items||{},nextItems={},patch={},now=Date.now(),by=normUser(currentUserProfile?.username||"");
-      const sessionById={};
+      const sessionById={},mailByAssignment={};
       await Promise.all(Object.keys(oldItems).map(async id=>{try{sessionById[id]=(await sagsV470Ref(`${SESSION_PATH}/${safeKey(id)}`).once('value')).val()||{}}catch(_){sessionById[id]={}}}));
+      // A roster item may already exist while its recipient mailbox was lost by an
+      // older sync.  Read the exact mailbox entry so an unchanged roster can heal it.
+      await Promise.all(recs0.map(async r=>{const id=S(r?.assignmentId),u=normUser(r?.targetUser);if(!id||!u)return;try{mailByAssignment[id]=(await sagsV470Ref(`${MAIL_PATH}/${safeKey(u)}/items/${safeKey(id)}`).once('value')).val()||null}catch(_){mailByAssignment[id]=null}}));
       const protectedIds=new Set(Object.keys(oldItems).filter(id=>protectRosterAssignment(sessionById[id]))),replacementUsed=new Set();
       const nextFlightKeys=new Set(recs0.map(r=>rosterFlightKey(r.flightRaw||r.flightName)).filter(Boolean));
       let dateWrites=0,dateRemoves=0,dateDeferred=0,dateOwnerChanges=0;
@@ -2553,7 +2556,11 @@ if(phase==='flight'){
         // revoked user's device, but the stale assignment itself is revoked immediately.
         lockedPair=null;
         nextItems[r.assignmentId]=nextItem;
-        if(sameRosterDelta(oldItem,nextItem)){unchanged++;continue;}
+        const mailboxPresent=!!mailByAssignment[S(r.assignmentId)];
+        if(sameRosterDelta(oldItem,nextItem)&&mailboxPresent){unchanged++;continue;}
+        // V2.2.20: backfill a missing mailbox even when the roster itself is unchanged.
+        // This is essential for split ARR/DEP rows: the DEP owner must receive the task
+        // immediately and never depend on the ARR owner completing their part.
 
         const payload={engine:ENGINE,schema:2,assignmentId:r.assignmentId,targetUser:r.targetUser,originalTargetUser:baseRec.originalTargetUser||baseRec.targetUser,opDate:r.opDate,date:r.date,flightId:resolvedFlightId,flightRaw:r.flightRaw,flightName:r.flightName||"",arrFlight:r.arrFlight,depFlight:r.depFlight,sta:r.sta,std:r.std,eta:r.eta||"",etd:r.etd||"",arrFlightDate:r.arrFlightDate||r.opDate,depFlightDate:r.depFlightDate||r.opDate,etaFlightDate:r.etaFlightDate||r.arrFlightDate||r.opDate,etdFlightDate:r.etdFlightDate||r.depFlightDate||r.opDate,staClock:r.staClock||"",stdClock:r.stdClock||"",etaClock:r.etaClock||"",etdClock:r.etdClock||"",staDayOffset:safeFiniteNumber(r.staDayOffset,0),stdDayOffset:safeFiniteNumber(r.stdDayOffset,0),etaDayOffset:safeFiniteNumber(r.etaDayOffset,0),etdDayOffset:safeFiniteNumber(r.etdDayOffset,0),staSortMinute:safeSortMinute(r.staSortMinute,r.opDate,r.arrFlightDate||r.opDate,r.staClock),stdSortMinute:safeSortMinute(r.stdSortMinute,r.opDate,r.depFlightDate||r.opDate,r.stdClock),etaSortMinute:safeSortMinute(r.etaSortMinute,r.opDate,r.etaFlightDate||r.arrFlightDate||r.opDate,r.etaClock),etdSortMinute:safeSortMinute(r.etdSortMinute,r.opDate,r.etdFlightDate||r.depFlightDate||r.opDate,r.etdClock),acReg:r.acReg,acType:r.acType,route:r.route,route1:r.route1,route3:r.route3,bay:r.bay,formGroup:r.formGroup,sourceColumn:r.sourceColumn,roleKey:r.roleKey,assignmentLeg:S(r.assignmentLeg),assignmentFlight:S(r.assignmentFlight),assignmentTime:S(r.assignmentTime),assignmentScope:S(r.assignmentScope||"TURNAROUND"),rosterLegSplit:r.rosterLegSplit===true,workPartOrder:safeFiniteNumber(r.workPartOrder,1),workPartTotal:safeFiniteNumber(r.workPartTotal,1),workPartSequenceSource:S(r.workPartSequenceSource||r.sourceColumn),coAssigneeGroupId:S(r.coAssigneeGroupId),coAssigneeMode:S(r.coAssigneeMode),coAssigneeRank:safeFiniteNumber(r.coAssigneeRank,1),coAssigneeTotal:safeFiniteNumber(r.coAssigneeTotal,1),coAssigneeUsers:Array.isArray(r.coAssigneeUsers)?r.coAssigneeUsers.map(normUser).filter(Boolean):[],sourceFile:data.fileName||"",active:true,manualOverride:manual,publishedAtMs:now,publishedBy:by};
         patch[`${MANIFEST_PATH}/${safeKey(opDate)}/items/${safeKey(r.assignmentId)}`]=nextItem;
@@ -10935,4 +10942,3 @@ root.SAGS_QR_MATRIX=function(text){const QRCode=req('QRCode'),Level=req('QRError
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>setTimeout(install,0),{once:true});else setTimeout(install,0);
   setTimeout(install,900);setTimeout(install,2400);setTimeout(install,4200);
 })(typeof window!=="undefined"?window:globalThis);
-
