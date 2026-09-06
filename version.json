@@ -1,10 +1,10 @@
 {
-  "version": "V2.2.16",
-  "displayVersion": "V2.2.16",
-  "label": "V2.2.16",
-  "build": "V2.2.16-DATAHUB-COMBINED-LIMIT-CLEANING-ICON",
+  "version": "V2.2.17",
+  "displayVersion": "V2.2.17",
+  "label": "V2.2.17",
+  "build": "V2.2.17-TODAY-DEFAULT-ARRIVAL-CLEANING",
   "releasedAt": "2026-09-06T13:15:00+07:00",
-  "type": "datahub-combined-limit-cleaning-icon",
-  "notes": "Kế thừa V2.2.15. Giữ ba thẻ DỮ LIỆU KHAI THÁC; A/C LIMITS và LỊCH VỆ SINH nằm chung một thẻ, dùng icon kết hợp tàu bay cảnh báo và chổi vệ sinh. Hai danh sách vẫn yêu cầu chọn ngày trước khi hiển thị.",
-  "message": "Có bản cập nhật V2.2.16"
+  "type": "today-default-arrival-cleaning",
+  "notes": "Kế thừa V2.2.16. A/C LIMITS và LỊCH VỆ SINH tự hiển thị dữ liệu ngày hiện tại khi mở. Lịch vệ sinh nhận diện theo ngày + chuyến đến; chuyến đi chỉ để tham khảo và các bản ghi trùng được gộp.",
+  "message": "Có bản cập nhật V2.2.17"
 }

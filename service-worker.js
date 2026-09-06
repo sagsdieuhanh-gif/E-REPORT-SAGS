@@ -1,7 +1,7 @@
 /* E-REPORT/SAGS V2.2.16 · LIGHTWEIGHT SAFE UPDATE */
-const CACHE_NAME="sags-v2.2.16-datahub-combined-limit-cleaning-icon";
-const BUILD="V2.2.16-DATAHUB-COMBINED-LIMIT-CLEANING-ICON";
-const DISPLAY_VERSION="V2.2.16";
+const CACHE_NAME="sags-v2.2.17-today-default-arrival-cleaning";
+const BUILD="V2.2.17-TODAY-DEFAULT-ARRIVAL-CLEANING";
+const DISPLAY_VERSION="V2.2.17";
 
 const PATCH_V21="./v2.1-runtime-patch.js";
 const PATCH_V22="./v2.2-runtime-patch.js";
@@ -17,6 +17,7 @@ const PATCH_V2213="./v2.2.13-runtime-patch.js";
 const PATCH_V2214="./v2.2.14-runtime-patch.js";
 const PATCH_V2215="./v2.2.15-runtime-patch.js";
 const PATCH_V2216="./v2.2.16-runtime-patch.js";
+const PATCH_V2217="./v2.2.17-runtime-patch.js";
 
 const FRESH_SUFFIXES=[
   "/version.json","/manifest.webmanifest","/index.html","/app.js","/ai.js",
@@ -27,7 +28,7 @@ const FRESH_SUFFIXES=[
   "/v2.2.9-runtime-patch.js","/v2.2.10-runtime-patch.js",
   "/v2.2.11-runtime-patch.js","/v2.2.12-runtime-patch.js",
   "/v2.2.13-runtime-patch.js","/v2.2.14-runtime-patch.js",
-  "/v2.2.15-runtime-patch.js","/v2.2.16-runtime-patch.js"
+  "/v2.2.15-runtime-patch.js","/v2.2.16-runtime-patch.js","/v2.2.17-runtime-patch.js"
 ];
 
 function isFreshPath(pathname){return FRESH_SUFFIXES.some(x=>pathname.endsWith(x));}
@@ -68,6 +69,7 @@ function patchIndexHtml(html){
   out=injectScript(out,"v2.2.14-runtime-patch.js");
   out=injectScript(out,"v2.2.15-runtime-patch.js");
   out=injectScript(out,"v2.2.16-runtime-patch.js");
+  out=injectScript(out,"v2.2.17-runtime-patch.js");
   return out;
 }
 async function validateRelease(){
@@ -90,7 +92,8 @@ async function validateRelease(){
     [PATCH_V2213,"V2.2.13-CLEANING-SAVE-MANAGER"],
     [PATCH_V2214,"V2.2.14-COMPACT-LIMIT-CLEANING-STA-STD"],
     [PATCH_V2215,"V2.2.15-DATE-FIRST-LIMIT-CLEANING"],
-    [PATCH_V2216,BUILD]
+    [PATCH_V2216,"V2.2.16-DATAHUB-COMBINED-LIMIT-CLEANING-ICON"],
+    [PATCH_V2217,BUILD]
   ];
   for(const [path,marker] of checks){
     const r=await fetchNoStore(path+"?swcheck="+Date.now());
