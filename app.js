@@ -3152,8 +3152,10 @@ Không ghi đè working envelope của nhân viên đang thao tác.`);
     try{
       if(typeof state==='undefined'||!state)return false;
       const who=identity();if(!who.name||!who.duty)return false;
-      const changed=state.bbbtPerson1!==who.name||state.bbbtDuty1!==who.duty;
-      state.bbbtPerson1=who.name;state.bbbtDuty1=who.duty;
+      const signed=state.autoSignatureParticipantsV2235?.bbbtSigAgent1;
+      const first=(Array.isArray(signed)&&signed[0])||who;
+      const changed=state.bbbtPerson1!==text(first.name)||state.bbbtDuty1!==text(first.duty);
+      state.bbbtPerson1=text(first.name);state.bbbtDuty1=text(first.duty);
       if(changed){try{persist?.();}catch(_){}try{draw?.();}catch(_){}}
       return changed;
     }catch(_){return false;}
@@ -3181,6 +3183,111 @@ Không ghi đè working envelope của nhân viên đang thao tác.`);
       if(page&&!page.classList.contains('hide')&&getComputedStyle(page).display!=='none')fill();
     }catch(_){}
   },900);
+})(typeof window!=='undefined'?window:globalThis);
+
+/* ===== V2.2.35 · AUTO ROSTER SIGNATURE + TWO-PERSON HANDOVER ===== */
+(function(root){
+  'use strict';
+  const S=v=>String(v??'').trim(),U=v=>S(v).toUpperCase();
+  let timer=0,running=false,lastDone='';
+  function profile(){try{return (typeof currentUserProfile!=='undefined'&&currentUserProfile)||{}}catch(_){return {}}}
+  function username(){const p=profile();return U(p.username||p.userName||p.login||'')}
+  function fullName(t){const p=profile();return S(p.name||p.fullName||p.displayName||t?.fullname||p.username)}
+  function accountRole(){const p=profile();try{return U((typeof currentRole!=='undefined'&&currentRole)||p.role||p.roleCode)}catch(_){return U(p.role||p.roleCode)}}
+  function sessionMeta(){try{return typeof currentFlightSessionMeta==='function'?currentFlightSessionMeta():root.currentFlightSessionMeta?.()}catch(_){return null}}
+  function template(){try{return typeof getSavedTemplate==='function'?getSavedTemplate():null}catch(_){return null}}
+  function canonicalGroup(v){const x=U(v).replace(/[^A-Z0-9]/g,'');if(x.includes('551')||x==='GRNDLD')return 'FSAGS551';if(x.includes('421'))return 'FSAGS421';if(x.includes('423')||x==='FSAGS'||x==='GRNDCOR')return 'FSAGS';return x}
+  function dutyFor(group){const r=accountRole();if(r==='PVHLNG')return 'PVHLNG';if(r==='LOSTFOUND'||r==='LNF')return 'LOST & FOUND';if(group==='FSAGS551')return 'LOADING SUPERVISOR';if(group==='FSAGS'||group==='FSAGS421')return 'CO-ORDINATOR';const p=profile();return U(p.jobTitle||p.position||p.functionName||p.departmentName||r)}
+  function safe(v){return S(v).replace(/[.#$\[\]\/]/g,'_')}
+  async function dbValue(path){try{const ref=(root.sagsV470Ref||((typeof sagsV470Ref==='function')?sagsV470Ref:null));if(!ref)return null;return (await ref(path).once('value')).val()}catch(_){return null}}
+  async function assignment(meta,user){
+    const date=S(meta?.rosterOpDate||meta?.opDate),aid=S(meta?.rosterAssignmentId);
+    if(!date||!aid)return null;
+    let item=await dbValue(`roster_manifests/${safe(date)}/items/${safe(aid)}`);
+    if(!item)item=await dbValue(`roster_mail/${safe(user)}/items/${safe(aid)}`);
+    if(!item)item={assignmentId:aid,opDate:date,user:meta?.rosterOwner,formGroup:meta?.initialGroup,sourceColumn:meta?.rosterSourceColumn,assignmentLeg:meta?.assignmentLeg,assignmentScope:meta?.assignmentScope};
+    const owner=U(item.user||item.targetUser||meta?.rosterOwner);
+    return owner===user?item:null;
+  }
+  function image(src){return new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=reject;im.src=src})}
+  function drawFit(ctx,im,x,y,w,h){const k=Math.min(w/im.width,h/im.height),dw=im.width*k,dh=im.height*k;ctx.drawImage(im,x+(w-dw)/2,y+(h-dh)/2,dw,dh)}
+  async function combine(a,b){
+    const [ia,ib]=await Promise.all([image(a),image(b)]),c=document.createElement('canvas');c.width=1600;c.height=420;
+    const x=c.getContext('2d');x.clearRect(0,0,c.width,c.height);drawFit(x,ia,0,0,780,420);drawFit(x,ib,820,0,780,420);
+    return c.toDataURL('image/png');
+  }
+  function registry(){if(!state.autoSignatureParticipantsV2235||typeof state.autoSignatureParticipantsV2235!=='object')state.autoSignatureParticipantsV2235={};return state.autoSignatureParticipantsV2235}
+  async function addSignature(key,nameKey,person,sig){
+    const reg=registry(),list=Array.isArray(reg[key])?reg[key]:[];
+    if(list.some(x=>U(x.username)===person.username))return false;
+    if(list.length>=2)return false;
+    const next={username:person.username,name:person.name,duty:person.duty,leg:person.leg,assignmentId:person.assignmentId,atMs:Date.now()};
+    if(!S(state[key])||!list.length)state[key]=sig;
+    else state[key]=await combine(state[key],sig);
+    list.push(next);reg[key]=list;
+    if(nameKey)state[nameKey]=list.map(x=>S(x.name)).filter(Boolean).join(' / ');
+    return true;
+  }
+  function set423Ops(prefix){
+    const arr=S(state[prefix+'sigArr']),dep=S(state[prefix+'sigDep']);
+    state[prefix+'turnaround']=!!(arr&&dep);state[prefix+'nightStop']=!!(arr&&!dep);state[prefix+'departure']=!!(!arr&&dep);
+  }
+  function set551Ops(){
+    const list=registry().f551_loadingStaffSig||[],legs=new Set(list.map(x=>U(x.leg)).filter(Boolean));
+    const both=legs.has('BOTH')||(legs.has('ARR')&&legs.has('DEP'))||(!legs.size&&list.length>0);
+    state.f551_turnaround=both;state.f551_arrivalOnly=!both&&legs.has('ARR');state.f551_departureOnly=!both&&legs.has('DEP');
+  }
+  function bbbtHasEnteredData(){
+    const keys=['bbbtReportAt','bbbtFoundSorting','bbbtFoundParking','bbbtFoundOther','bbbtFoundOtherText','bbbtPerson2','bbbtDuty2','bbbtPerson3','bbbtDuty3','bbbtBaggage','bbbtCargo','bbbtMail','bbbtULD','bbbtBrokenHandle','bbbtMissingWheel','bbbtDented','bbbtWet','bbbtTorn','bbbtScratched','bbbtLeaking','bbbtDamageOther','bbbtDamageOtherText','bbbtDetail','bbbtFoundOffload','bbbtFoundLoading','bbbtFoundUnidentified','bbbtFoundWhileOther','bbbtFoundWhileOtherText','bbbtReportRep','bbbtTakePicture','bbbtTape','bbbtHandover','bbbtHandlingOther','bbbtHandlingOtherText','bbbtComment','bbbtSigAirline','bbbtSigAgent2'];
+    return keys.some(k=>typeof state[k]==='boolean'?state[k]:!!S(state[k]))||(Array.isArray(state.bbbtAttachments)&&state.bbbtAttachments.length>0);
+  }
+  function freshBbbtForHandover(person){
+    const prior=registry().bbbtSigAgent1||[];if(!prior.length||U(prior[0]?.username)===person.username)return false;
+    const keep={};for(const k of ['bbbtFlight','bbbtRegn','bbbtAcType','bbbtDateText','bbbtRoute'])keep[k]=state[k];
+    const hadEnteredData=bbbtHasEnteredData();
+    try{for(const f of fields.filter(x=>x.page===4)){state[f.key]=(f.type==='check'||f.type==='displayCheck')?false:''}}catch(_){
+      for(const k of Object.keys(state).filter(k=>k.startsWith('bbbt')))state[k]='';
+    }
+    Object.assign(state,keep);state.bbbtAttachments=[];state.bbbtCxrNo=null;state.bbbtCreatedForHandoverV2235=hadEnteredData;registry().bbbtSigAgent1=[];return true;
+  }
+  function fillBbbtRows(){
+    const a=(registry().bbbtSigAgent1||[])[0];if(a){state.bbbtPerson1=S(a.name);state.bbbtDuty1=S(a.duty)}
+  }
+  async function apply(){
+    if(running||typeof state==='undefined'||!state)return;
+    const meta=sessionMeta(),user=username(),aid=S(meta?.rosterAssignmentId);if(!meta||!user||!aid)return;
+    const t=template();if(!S(t?.signature))return;
+    const doneKey=`${meta.id||''}|${aid}|${user}`;if(doneKey===lastDone)return;
+    running=true;
+    try{
+      const item=await assignment(meta,user);if(!item)return;
+      const group=canonicalGroup(item.formGroup||meta.initialGroup||item.sourceColumn||meta.rosterSourceColumn),rawLeg=U(item.assignmentLeg),leg=(rawLeg==='ARR'||rawLeg==='DEP')?rawLeg:'BOTH';
+      const person={username:user,name:fullName(t),duty:dutyFor(group),leg,assignmentId:aid};if(!person.name||!person.duty)return;
+      let changed=false;
+      if(group==='FSAGS'){
+        if(leg==='ARR'||leg==='BOTH')changed=(await addSignature('sigArr','coordArrName',person,t.signature))||changed;
+        if(leg==='DEP'||leg==='BOTH')changed=(await addSignature('sigDep','coordDepName',person,t.signature))||changed;
+        set423Ops('');
+      }else if(group==='FSAGS421'){
+        if(leg==='ARR'||leg==='BOTH')changed=(await addSignature('f421_sigArr','f421_coordArrName',person,t.signature))||changed;
+        if(leg==='DEP'||leg==='BOTH')changed=(await addSignature('f421_sigDep','f421_coordDepName',person,t.signature))||changed;
+        set423Ops('f421_');
+      }else if(group==='FSAGS551'){
+        changed=(await addSignature('f551_loadingStaffSig','f551_loadingStaffName',person,t.signature))||changed;set551Ops();
+      }
+      freshBbbtForHandover(person);
+      changed=(await addSignature('bbbtSigAgent1',null,person,t.signature))||changed;fillBbbtRows();
+      try{persist?.()}catch(_){}try{activeKey=null}catch(_){}try{draw?.()}catch(_){}
+      lastDone=doneKey;
+      if(changed)try{root.showToast?.('Đã tự ký theo DAILY ROSTER.')}catch(_){}
+    }catch(e){console.warn('V2.2.35 auto roster signature',e)}finally{running=false}
+  }
+  function schedule(delay=180){clearTimeout(timer);timer=setTimeout(apply,delay)}
+  function wrap(name){const base=root[name];if(typeof base!=='function'||base.__v2235AutoSign)return;const fn=function(){const out=base.apply(this,arguments);schedule(name==='switchFlightSession'?350:180);return out};fn.__v2235AutoSign=true;fn.__v2235Base=base;root[name]=fn;try{if(name==='showFormGroup')showFormGroup=fn;else if(name==='switchFlightSession')switchFlightSession=fn}catch(_){}}
+  function install(){wrap('showFormGroup');wrap('switchFlightSession');schedule(500)}
+  root.v2235AutoRosterSign=()=>schedule(0);
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
+  setTimeout(install,800);setTimeout(install,2400);
 })(typeof window!=='undefined'?window:globalThis);
 
 /* ===== END daily-roster.js ===== */

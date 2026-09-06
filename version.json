@@ -1,10 +1,10 @@
 {
-  "version": "V2.2.33",
-  "displayVersion": "V2.2.33",
-  "label": "V2.2.33",
-  "build": "V2.2.33-BBBT-COMPANION-AUTOFILL",
-  "releasedAt": "2026-09-06T13:15:00+07:00",
-  "type": "bbbt-companion-autofill",
-  "notes": "Sửa tự điền BBBT khi BBBT nằm nối dưới 42.3, 42.1 hoặc 55.1; tự kiểm tra khi trang BBBT hiển thị và ghi ngay họ tên đầy đủ cùng nhiệm vụ của tài khoản.",
-  "message": "Có bản cập nhật V2.2.33"
+  "version": "V2.2.35",
+  "displayVersion": "V2.2.35",
+  "label": "V2.2.35",
+  "build": "V2.2.35-AUTO-ROSTER-SIGNATURE-HANDOVER",
+  "releasedAt": "2026-09-06T18:45:00+07:00",
+  "type": "auto-roster-signature-handover",
+  "notes": "Tự ký đúng người nhận việc theo DAILY ROSTER; tự chọn ARR, DEP hoặc TURNAROUND; hỗ trợ hai chữ ký trong cùng ô nghiệp vụ; khi bàn giao, BBBT đã nhập được giữ ở phần cũ và phiên mới tạo BBBT riêng với người mới ở dòng 1.",
+  "message": "Có bản cập nhật V2.2.35"
 }
