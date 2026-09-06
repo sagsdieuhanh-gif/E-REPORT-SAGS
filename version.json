@@ -1,10 +1,10 @@
 {
-  "version": "V2.2.17",
-  "displayVersion": "V2.2.17",
-  "label": "V2.2.17",
-  "build": "V2.2.17-TODAY-DEFAULT-ARRIVAL-CLEANING",
+  "version": "V2.2.18",
+  "displayVersion": "V2.2.18",
+  "label": "V2.2.18",
+  "build": "V2.2.18-UI-FREEZE-FIX",
   "releasedAt": "2026-09-06T13:15:00+07:00",
-  "type": "today-default-arrival-cleaning",
-  "notes": "Kế thừa V2.2.16. A/C LIMITS và LỊCH VỆ SINH tự hiển thị dữ liệu ngày hiện tại khi mở. Lịch vệ sinh nhận diện theo ngày + chuyến đến; chuyến đi chỉ để tham khảo và các bản ghi trùng được gộp.",
-  "message": "Có bản cập nhật V2.2.17"
+  "type": "ui-freeze-fix",
+  "notes": "Sửa vòng lặp theo dõi giao diện của V2.2.17 làm treo thao tác My Flight; vẫn giữ hiển thị mặc định ngày hiện tại và quy tắc lịch vệ sinh theo chuyến đến.",
+  "message": "Có bản cập nhật V2.2.18"
 }

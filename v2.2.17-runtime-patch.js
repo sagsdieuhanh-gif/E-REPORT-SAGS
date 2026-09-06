@@ -3,7 +3,7 @@
  */
 (function(root){
   'use strict';
-  const BUILD='V2.2.17-TODAY-DEFAULT-ARRIVAL-CLEANING';
+  const BUILD='V2.2.18-UI-FREEZE-FIX';
   if(root.__SAGS_V2217_TODAY_DEFAULT===BUILD)return;
   root.__SAGS_V2217_TODAY_DEFAULT=BUILD;
   const $=id=>document.getElementById(id),S=v=>String(v??'').trim();
@@ -19,6 +19,6 @@
   function scheduleCleanup(){clearTimeout(cleanTimer);cleanTimer=setTimeout(()=>collapseArrivalDuplicates().catch(()=>{}),850);setTimeout(()=>collapseArrivalDuplicates().catch(()=>{}),2200)}
   function install(){defaults();const save=$('v2213Save');if(save&&!save.dataset.v2217Bound){save.dataset.v2217Bound='1';save.addEventListener('click',scheduleCleanup)}}
   const observer=new MutationObserver(install);
-  function start(){install();if(document.body)observer.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['style']});setTimeout(defaults,100);setTimeout(defaults,450);setTimeout(()=>collapseArrivalDuplicates().catch(()=>{}),1500)}
+  function start(){install();if(document.body)observer.observe(document.body,{childList:true,subtree:true});setTimeout(defaults,100);setTimeout(defaults,450);setTimeout(()=>collapseArrivalDuplicates().catch(()=>{}),1500)}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();root.addEventListener('pageshow',()=>setTimeout(defaults,80),{passive:true});
 })(typeof window!=='undefined'?window:globalThis);

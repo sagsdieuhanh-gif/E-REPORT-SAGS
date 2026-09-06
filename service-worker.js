@@ -1,7 +1,7 @@
 /* E-REPORT/SAGS V2.2.16 · LIGHTWEIGHT SAFE UPDATE */
-const CACHE_NAME="sags-v2.2.17-today-default-arrival-cleaning";
-const BUILD="V2.2.17-TODAY-DEFAULT-ARRIVAL-CLEANING";
-const DISPLAY_VERSION="V2.2.17";
+const CACHE_NAME="sags-v2.2.18-ui-freeze-fix";
+const BUILD="V2.2.18-UI-FREEZE-FIX";
+const DISPLAY_VERSION="V2.2.18";
 
 const PATCH_V21="./v2.1-runtime-patch.js";
 const PATCH_V22="./v2.2-runtime-patch.js";
@@ -93,7 +93,7 @@ async function validateRelease(){
     [PATCH_V2214,"V2.2.14-COMPACT-LIMIT-CLEANING-STA-STD"],
     [PATCH_V2215,"V2.2.15-DATE-FIRST-LIMIT-CLEANING"],
     [PATCH_V2216,"V2.2.16-DATAHUB-COMBINED-LIMIT-CLEANING-ICON"],
-    [PATCH_V2217,BUILD]
+    [PATCH_V2217,"V2.2.18-UI-FREEZE-FIX"]
   ];
   for(const [path,marker] of checks){
     const r=await fetchNoStore(path+"?swcheck="+Date.now());
