@@ -1069,12 +1069,37 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
   }
 
+  // BBBT must identify the account that is actually opening this assigned form.
+  // The duty is derived from the form/assignment code, never from an abbreviated
+  // username typed in an earlier BBBT.
+  function bbbtFirstPerson(){
+    let p={},meta=null,group='',accountRole='';
+    try{p=(typeof currentUserProfile!=='undefined' && currentUserProfile)||{};}catch(_){ }
+    try{accountRole=String((typeof currentRole!=='undefined'&&currentRole)||p.role||p.roleCode||'').trim().toUpperCase();}catch(_){ }
+    try{meta=typeof currentFlightSessionMeta==='function'?currentFlightSessionMeta():null;}catch(_){ }
+    try{group=String(meta?.initialGroup||meta?.rosterSourceColumn||appState()?.rosterFormGroup||appState()?.activeFormGroup||'').toUpperCase();}catch(_){ }
+    const name=String(p.name||p.fullName||p.displayName||p.username||'').trim();
+    let duty='';
+    if(accountRole==='PVHLNG') duty='PVHLNG';
+    else if(accountRole==='LOSTFOUND') duty='LOST & FOUND';
+    else if(/551|GRND_LD/.test(group)) duty='LOADING SUPERVISOR';
+    else if(/423|421|FSAGS|GRND_COR/.test(group)) duty='CO-ORDINATOR';
+    return {name,duty};
+  }
+
+  function applyBbbtFirstPerson(target){
+    const who=bbbtFirstPerson();
+    if(who.name) target.bbbtPerson1=who.name;
+    if(who.duty) target.bbbtDuty1=who.duty;
+  }
+
   function cloneDraft(){
     const s=appState();
     if(!s) return false;
     draft={};
     for(const k of BOOL_KEYS) draft[k]=!!s[k];
     for(const k of TEXT_KEYS) draft[k]=String(s[k]??'');
+    applyBbbtFirstPerson(draft);
     morePeople=!!(draft.bbbtPerson2||draft.bbbtDuty2||draft.bbbtPerson3||draft.bbbtDuty3);
     return true;
   }
@@ -1196,6 +1221,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     const s=appState();
     if(!s){alert('Không đọc được dữ liệu BBBT hiện tại.');return;}
     document.querySelectorAll(`#${MODAL_ID} [data-bq-input]`).forEach(syncInputToDraft);
+    applyBbbtFirstPerson(draft);
     const report=document.getElementById('bqReportAt');
     if(report) draft.bbbtReportAt=report.value;
     const nt=normalizeTime(draft.bbbtReportAt);

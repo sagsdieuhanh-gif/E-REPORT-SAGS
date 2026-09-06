@@ -1,10 +1,10 @@
 {
-  "version": "V2.2.21",
-  "displayVersion": "V2.2.21",
-  "label": "V2.2.21",
-  "build": "V2.2.21-ADD-DEP-KEEP-423",
+  "version": "V2.2.30",
+  "displayVersion": "V2.2.30",
+  "label": "V2.2.30",
+  "build": "V2.2.30-BBBT-ACCOUNT-FIRST-ROW",
   "releasedAt": "2026-09-06T13:15:00+07:00",
-  "type": "remove-literal-newlines",
-  "notes": "Xóa ký tự xuống dòng bị hiển thị nhầm dạng chữ \\n trên giao diện; giữ bản sửa treo My Flight và toàn bộ chức năng V2.2.18.",
-  "message": "Có bản cập nhật V2.2.21"
+  "type": "bbbt-account-first-row",
+  "notes": "BBBT tự điền hàng số 1 theo tài khoản đang đăng nhập: họ tên đầy đủ; nhiệm vụ PVHLNG và LOST & FOUND lấy theo chức năng tài khoản, 42.3/42.1 là CO-ORDINATOR và 55.1 là LOADING SUPERVISOR.",
+  "message": "Có bản cập nhật V2.2.30"
 }
