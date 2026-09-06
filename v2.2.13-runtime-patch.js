@@ -1,0 +1,86 @@
+/* E-REPORT/SAGS V2.2.13 · AIRCRAFT CLEANING SAVE + MANAGER
+ * BUILD: V2.2.13-CLEANING-SAVE-MANAGER
+ */
+(function(root){
+  'use strict';
+  const BUILD='V2.2.13-CLEANING-SAVE-MANAGER';
+  if(root.__SAGS_V2213_CLEANING_MANAGER===BUILD)return;
+  root.__SAGS_V2213_CLEANING_MANAGER=BUILD;
+
+  const PUBLIC='aircraft_cleaning/catalog_public';
+  const SIGNAL='aircraft_cleaning/catalog_signal';
+  const S=v=>String(v??'').trim();
+  const U=v=>S(v).toUpperCase();
+  const $=id=>document.getElementById(id);
+  const esc=v=>S(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const normFlight=v=>U(v).replace(/[^A-Z0-9]/g,'');
+  const normReg=v=>U(v).replace(/[^A-Z0-9]/g,'');
+  const displayReg=v=>U(v).replace(/^([A-Z]{2})A(?=\d)/,'$1-A');
+  const safe=v=>S(v).replace(/[.#$\[\]\/]/g,'_');
+  const uid=()=>`CLEAN_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,8)}`.toUpperCase();
+  let catalog={schema:1,kind:'sags_aircraft_cleaning_catalog_v1',version:0,items:[]};
+  let editId='',signalRef=null,loading=false,panelObserver=null;
+
+  function profile(){try{return root.__sagsGetSession?.()?.profile||root.currentUserProfile||{}}catch(_){return root.currentUserProfile||{}}}
+  function role(){return U(root.currentRole||profile().role||profile().roleCode).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/Đ/g,'D').replace(/[^A-Z0-9]/g,'')}
+  function isAdmin(){return ['AD','ADMIN','ROLEADMIN'].includes(role())}
+  function actor(){const p=profile();return {role:role(),username:S(p.username||p.userName),name:S(p.name||p.fullName||p.displayName)}}
+  function db(path=''){if(typeof root.sagsV470Ref!=='function')throw new Error('Firebase chưa sẵn sàng.');return root.sagsV470Ref(path)}
+  function today(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+  function itemsOf(v){return (Array.isArray(v?.items)?v.items:Object.values(v?.items||{})).filter(Boolean)}
+  function keyOf(x){return [S(x.date),normFlight(x.arrivalFlight),normFlight(x.departureFlight),normReg(x.acReg)].join('|')}
+  function popup(type,title,message){if(typeof root.sagsActionPopup==='function')return root.sagsActionPopup({type,title,message});alert(`${title}\n\n${message}`)}
+  function status(message,error=false){const e=$('v2213Status');if(e){e.textContent=S(message);e.classList.toggle('err',!!error)}}
+
+  function ensureCss(){
+    if($('v2213Style'))return;
+    const st=document.createElement('style');st.id='v2213Style';st.textContent=`
+.v2213-open{width:100%;margin:8px 0 2px!important;background:#087443!important;color:#fff!important;border:0!important;border-radius:11px!important;min-height:46px!important;font-weight:900!important}
+#v2213Modal{position:fixed;inset:0;z-index:19520;display:none;align-items:center;justify-content:center;padding:max(10px,env(safe-area-inset-top)) 10px max(10px,env(safe-area-inset-bottom));box-sizing:border-box;background:rgba(3,15,28,.72);backdrop-filter:blur(3px)}
+.v2213-panel{width:min(96vw,930px);max-height:94dvh;overflow:auto;background:#f7f9fb;border-radius:18px;padding:15px;box-sizing:border-box;box-shadow:0 24px 80px rgba(0,0,0,.42);font:14px/1.4 Arial;color:#19334d}.v2213-head{display:flex;justify-content:space-between;align-items:center;gap:10px}.v2213-head h3{margin:0;color:#087443;font:900 21px Arial}.v2213-close,.v2213-btn{border:0;border-radius:10px;min-height:42px;padding:9px 13px;font-weight:900;cursor:pointer}.v2213-close{background:#e7edf2;color:#30495d}.v2213-btn{background:#075ea8;color:#fff}.v2213-btn.good{background:#087443}.v2213-btn.gray{background:#e7edf2;color:#30495d}.v2213-box{margin-top:11px;padding:12px;border:1px solid #cfdae3;border-radius:13px;background:#fff}.v2213-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.v2213-field{display:flex;flex-direction:column;gap:4px}.v2213-field.wide{grid-column:span 2}.v2213-field label{font-size:11px;font-weight:900;color:#52687a}.v2213-field input,.v2213-field select{width:100%;box-sizing:border-box;border:1px solid #aebdca;border-radius:9px;padding:10px;background:#fff;color:#17354d;font-weight:800}.v2213-check{display:flex;align-items:center;gap:8px;font-weight:900;padding-top:22px}.v2213-check input{width:20px;height:20px;accent-color:#087443}.v2213-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.v2213-status{min-height:20px;margin-top:8px;color:#087443;font-weight:900;white-space:pre-wrap}.v2213-status.err{color:#b42318}.v2213-filter{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}.v2213-filter input{min-width:180px;flex:1;border:1px solid #aebdca;border-radius:9px;padding:9px;font-weight:800}.v2213-list{display:grid;gap:8px}.v2213-item{border:1px solid #d2dde6;border-radius:12px;padding:10px;background:#fff}.v2213-item.off{opacity:.58}.v2213-item-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}.v2213-title{font:900 16px Arial;color:#173f60}.v2213-provider{display:inline-block;border-radius:999px;padding:5px 9px;background:#e8f7ee;color:#087443;font:900 11px Arial}.v2213-provider.vietsky{background:#fff0dc;color:#995500}.v2213-meta{margin-top:5px;color:#5a7082;font-size:12px;font-weight:800}.v2213-source{margin-top:4px;color:#748493;font-size:10px}.v2213-item-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.v2213-item-actions button{border:1px solid #bdcad4;border-radius:8px;padding:7px 10px;background:#f1f5f8;color:#29475f;font-weight:900}.v2213-item-actions .danger{border-color:#e3b4b0;background:#fff5f4;color:#a51f16}.v2213-empty{padding:18px;text-align:center;color:#66798a;font-weight:800}
+@media(max-width:720px){.v2213-grid{grid-template-columns:1fr 1fr}.v2213-field.wide{grid-column:span 2}}@media(max-width:470px){.v2213-grid{grid-template-columns:1fr}.v2213-field.wide{grid-column:span 1}.v2213-check{padding-top:5px}.v2213-actions>*{flex:1}}
+`;document.head.appendChild(st);
+  }
+
+  function ensureUi(){
+    ensureCss();if($('v2213Modal'))return;
+    const m=document.createElement('div');m.id='v2213Modal';m.innerHTML=`<div class="v2213-panel"><div class="v2213-head"><h3>🧹 LỊCH VỆ SINH TÀU BAY</h3><button id="v2213Close" class="v2213-close" type="button">ĐÓNG</button></div><div class="v2213-box"><div class="v2213-grid"><div class="v2213-field"><label>NGÀY</label><input id="v2213Date" type="date"></div><div class="v2213-field"><label>CHUYẾN ĐẾN</label><input id="v2213Arr" placeholder="VJ5347"></div><div class="v2213-field"><label>CHUYẾN ĐI</label><input id="v2213Dep" placeholder="VJ5513"></div><div class="v2213-field"><label>A/C REG</label><input id="v2213Reg" placeholder="VN-A202"></div><div class="v2213-field wide"><label>ROUTE</label><input id="v2213Route" placeholder="TPE-CXR-ICN"></div><div class="v2213-field"><label>LOẠI TÀU BAY</label><input id="v2213Type" placeholder="A21N-Y240"></div><div class="v2213-field"><label>ĐƠN VỊ DỌN VỆ SINH</label><select id="v2213Provider"><option value="SAGS">SAGS</option><option value="VIETSKY">VIETSKY</option></select></div><label class="v2213-check"><input id="v2213Active" type="checkbox" checked> ĐANG ÁP DỤNG</label></div><div class="v2213-actions"><button id="v2213Save" class="v2213-btn good" type="button">LƯU LỊCH VỆ SINH</button><button id="v2213Clear" class="v2213-btn gray" type="button">NHẬP MỚI</button></div><div id="v2213Status" class="v2213-status"></div></div><div class="v2213-box"><div class="v2213-filter"><input id="v2213FilterDate" type="date"><input id="v2213FilterText" placeholder="Tìm Flight No, A/C Reg, route..."><button id="v2213Refresh" class="v2213-btn" type="button">TẢI LẠI</button></div><div id="v2213List" class="v2213-list"></div></div></div>`;document.body.appendChild(m);
+    $('v2213Close').onclick=close;$('v2213Save').onclick=save;$('v2213Clear').onclick=()=>clearForm(true);$('v2213Refresh').onclick=load;$('v2213FilterDate').oninput=render;$('v2213FilterText').oninput=render;
+    $('v2213List').onclick=e=>{const b=e.target.closest('button[data-action]');if(!b)return;const id=S(b.dataset.id),action=S(b.dataset.action);if(action==='edit')edit(id);else if(action==='toggle')toggle(id);else if(action==='delete')remove(id)};
+    clearForm(false);
+  }
+
+  function injectButton(){
+    const panel=$('aclSimplePanel');if(!panel||$('v2213Open'))return false;
+    const b=document.createElement('button');b.id='v2213Open';b.type='button';b.className='v2213-open';b.textContent='🧹 LỊCH VỆ SINH TÀU BAY · LƯU & QUẢN LÝ';b.onclick=open;
+    const anchor=$('v2211CommonUpload')||panel.querySelector('.acls-top');anchor?.insertAdjacentElement('afterend',b);return true;
+  }
+  function watchPanel(){if(injectButton()){panelObserver?.disconnect();panelObserver=null;return}if(panelObserver||!document.body)return;panelObserver=new MutationObserver(()=>{if(injectButton()){panelObserver.disconnect();panelObserver=null}});panelObserver.observe(document.body,{childList:true,subtree:true})}
+  function clearForm(message=true){editId='';if($('v2213Date'))$('v2213Date').value=today();for(const id of ['v2213Arr','v2213Dep','v2213Reg','v2213Route','v2213Type'])if($(id))$(id).value='';if($('v2213Provider'))$('v2213Provider').value='SAGS';if($('v2213Active'))$('v2213Active').checked=true;if($('v2213Save'))$('v2213Save').textContent='LƯU LỊCH VỆ SINH';if(message)status('Sẵn sàng nhập lịch mới.')}
+  function readForm(){return {date:S($('v2213Date')?.value),arrivalFlight:normFlight($('v2213Arr')?.value),departureFlight:normFlight($('v2213Dep')?.value),route:U($('v2213Route')?.value),acReg:normReg($('v2213Reg')?.value),displayReg:displayReg($('v2213Reg')?.value),acType:U($('v2213Type')?.value),provider:U($('v2213Provider')?.value),active:!!$('v2213Active')?.checked}}
+  async function load(){
+    if(loading)return;loading=true;status('Đang tải lịch vệ sinh...');
+    try{const v=(await db(PUBLIC).once('value')).val()||{};catalog={...v,schema:1,kind:'sags_aircraft_cleaning_catalog_v1',version:Number(v.version||0),items:itemsOf(v)};render();status(`Đã tải ${catalog.items.length} dòng lịch vệ sinh.`)}catch(e){status('Không tải được lịch vệ sinh: '+S(e?.message||e),true)}finally{loading=false}
+  }
+  async function write(action){const now=Date.now();catalog={...catalog,schema:1,kind:'sags_aircraft_cleaning_catalog_v1',version:now,updatedAtMs:now,updatedBy:actor(),items:catalog.items};await db(PUBLIC).set(catalog);await db(SIGNAL).set({version:now,action,updatedAtMs:now,updatedBy:actor()});render()}
+  async function save(){
+    if(!isAdmin())return popup('warning','KHÔNG CÓ QUYỀN','Chỉ AD được lưu lịch vệ sinh.');const row=readForm();
+    if(!row.date)return status('Phải chọn NGÀY.',true);if(!['SAGS','VIETSKY'].includes(row.provider))return status('Phải chọn SAGS hoặc VIETSKY.',true);if(!row.arrivalFlight&&!row.departureFlight&&!row.acReg)return status('Phải có Flight No hoặc A/C Reg.',true);
+    const now=Date.now(),found=editId?catalog.items.find(x=>S(x.id)===editId):catalog.items.find(x=>keyOf(x)===keyOf(row));const item={...(found||{}),...row,id:S(found?.id||uid()),flights:[row.arrivalFlight,row.departureFlight].filter(Boolean),source:S(found?.source||'MANUAL_AD'),createdAtMs:Number(found?.createdAtMs||now),createdBy:found?.createdBy||actor(),updatedAtMs:now,updatedBy:actor()};
+    if(found)catalog.items[catalog.items.indexOf(found)]=item;else catalog.items.push(item);
+    try{status('Đang lưu...');await write(editId?'MANUAL_UPDATE':'MANUAL_UPSERT');clearForm(false);status(`✓ ĐÃ LƯU · ${row.provider} DỌN VỆ SINH TÀU BAY`);popup('success','ĐÃ LƯU LỊCH VỆ SINH',`${[row.arrivalFlight,row.departureFlight].filter(Boolean).join('/')||displayReg(row.acReg)} · ${row.provider} dọn vệ sinh tàu bay.`)}catch(e){status('Lưu thất bại: '+S(e?.message||e),true)}
+  }
+  function edit(id){const x=catalog.items.find(v=>S(v.id)===id);if(!x)return;editId=id;$('v2213Date').value=S(x.date);$('v2213Arr').value=S(x.arrivalFlight);$('v2213Dep').value=S(x.departureFlight);$('v2213Reg').value=S(x.displayReg||displayReg(x.acReg));$('v2213Route').value=S(x.route);$('v2213Type').value=S(x.acType);$('v2213Provider').value=U(x.provider)==='VIETSKY'?'VIETSKY':'SAGS';$('v2213Active').checked=x.active!==false;$('v2213Save').textContent='LƯU THAY ĐỔI';status(`Đang sửa ${S(x.date)} · ${S(x.provider)}.`);document.querySelector('#v2213Modal .v2213-panel')?.scrollTo({top:0,behavior:'smooth'})}
+  async function toggle(id){const x=catalog.items.find(v=>S(v.id)===id);if(!x)return;x.active=x.active===false;x.updatedAtMs=Date.now();x.updatedBy=actor();try{await write('MANUAL_TOGGLE')}catch(e){status('Không đổi được trạng thái: '+S(e?.message||e),true)}}
+  async function remove(id){const x=catalog.items.find(v=>S(v.id)===id);if(!x||!confirm(`XÓA LỊCH VỆ SINH\n\n${S(x.date)} · ${[x.arrivalFlight,x.departureFlight].filter(Boolean).join('/')} · ${S(x.provider)}?`))return;catalog.items=catalog.items.filter(v=>S(v.id)!==id);try{await write('MANUAL_DELETE');if(editId===id)clearForm(false);status('Đã xóa lịch vệ sinh.')}catch(e){status('Xóa thất bại: '+S(e?.message||e),true)}}
+  function render(){
+    const host=$('v2213List');if(!host)return;const d=S($('v2213FilterDate')?.value),q=U($('v2213FilterText')?.value);const rows=catalog.items.filter(x=>(!d||S(x.date)===d)&&(!q||U([x.arrivalFlight,x.departureFlight,x.route,x.acReg,x.displayReg,x.acType,x.provider].join(' ')).includes(q))).sort((a,b)=>S(b.date).localeCompare(S(a.date))||S(a.arrivalFlight||a.departureFlight).localeCompare(S(b.arrivalFlight||b.departureFlight)));
+    host.innerHTML=rows.length?rows.map(x=>{const provider=U(x.provider)==='VIETSKY'?'VIETSKY':'SAGS',flight=[x.arrivalFlight,x.departureFlight].filter(Boolean).join(' / ')||'CHƯA CÓ FLIGHT NO';return `<div class="v2213-item ${x.active===false?'off':''}"><div class="v2213-item-head"><div><div class="v2213-title">${esc(S(x.date))} · ${esc(flight)}</div><div class="v2213-meta">${esc(S(x.route)||'—')} · A/C ${esc(S(x.displayReg||displayReg(x.acReg))||'—')} · ${esc(S(x.acType)||'—')}</div></div><span class="v2213-provider ${provider==='VIETSKY'?'vietsky':''}">${provider} DỌN VỆ SINH</span></div><div class="v2213-source">${x.active===false?'TẠM TẮT · ':''}${esc(S(x.source||'MANUAL'))}${x.sourceFile?' · '+esc(x.sourceFile):''}</div><div class="v2213-item-actions"><button data-action="edit" data-id="${esc(x.id)}">SỬA</button><button data-action="toggle" data-id="${esc(x.id)}">${x.active===false?'BẬT LẠI':'TẠM TẮT'}</button><button class="danger" data-action="delete" data-id="${esc(x.id)}">XÓA</button></div></div>`}).join(''):'<div class="v2213-empty">Chưa có lịch vệ sinh phù hợp.</div>';
+  }
+  async function open(){if(!isAdmin())return popup('warning','KHÔNG CÓ QUYỀN','Chỉ AD được quản lý lịch vệ sinh.');ensureUi();$('v2213Modal').style.display='flex';await load()}
+  function close(){$('v2213Modal').style.display='none'}
+  function startSignal(){try{if(signalRef)return;signalRef=db(SIGNAL);signalRef.on('value',snap=>{const v=Number(snap?.val?.()?.version||0);if(v&&v!==Number(catalog.version||0)&&$('v2213Modal')?.style.display==='flex')load()})}catch(_){}}
+  function install(){ensureUi();watchPanel();startSignal()}
+  install();setTimeout(install,400);setTimeout(install,1400);root.addEventListener('pageshow',()=>setTimeout(install,100),{passive:true});document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(install,100)},{passive:true});
+  root.SAGSCleaningAdmin={build:BUILD,open,close,refresh:load};
+})(typeof window!=='undefined'?window:globalThis);

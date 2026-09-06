@@ -1,10 +1,10 @@
 {
-  "version": "V2.2.12",
-  "displayVersion": "V2.2.12",
-  "label": "V2.2.12",
-  "build": "V2.2.12-AI-APP-CHECK-PC-MYFLIGHT-FIX",
+  "version": "V2.2.13",
+  "displayVersion": "V2.2.13",
+  "label": "V2.2.13",
+  "build": "V2.2.13-CLEANING-SAVE-MANAGER",
   "releasedAt": "2026-09-06T12:30:00+07:00",
-  "type": "ai-app-check-pc-myflight-fix",
-  "notes": "Kế thừa V2.2.11. Sửa AI import thất bại do gọi sai Firebase App Check. Sửa MY FLIGHT nhấp nháy liên tục trên PC: chỉ render một lần khi mở, gộp lệnh mở trùng, không xóa nội dung khi dữ liệu không đổi và vẫn cập nhật khi dữ liệu chuyến thực sự thay đổi. Giữ upload chung nhiều ảnh LIMIT + LỊCH VỆ SINH, cảnh báo ĐH tại STA-10 và CHOCK ON.",
-  "message": "Có bản cập nhật V2.2.12"
+  "type": "cleaning-save-manager",
+  "notes": "Kế thừa V2.2.12. Bổ sung khu vực LỊCH VỆ SINH TÀU BAY cho AD hiển thị dữ liệu AI đã đọc giống LIMIT; hỗ trợ nhập/sửa, chọn SAGS hoặc VIETSKY, LƯU, bật/tắt, xóa, lọc theo ngày và tìm Flight No/A/C Reg/route. Giữ hai mốc cảnh báo ĐH tại STA-10 và CHOCK ON.",
+  "message": "Có bản cập nhật V2.2.13"
 }
