@@ -1,7 +1,7 @@
 /* E-REPORT/SAGS V2.2.16 · LIGHTWEIGHT SAFE UPDATE */
-const CACHE_NAME="sags-v2.2.36-project-wide-rounded-theme";
-const BUILD="V2.2.36-PROJECT-WIDE-ROUNDED-THEME";
-const DISPLAY_VERSION="V2.2.36";
+const CACHE_NAME="sags-v2.2.37-auto-sign-cleaning-safe-delete";
+const BUILD="V2.2.37-AUTO-SIGN-CLEANING-SAFE-DELETE";
+const DISPLAY_VERSION="V2.2.37";
 
 const PATCH_V21="./v2.1-runtime-patch.js";
 const PATCH_V22="./v2.2-runtime-patch.js";

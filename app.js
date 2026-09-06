@@ -2846,16 +2846,16 @@ Không ghi đè working envelope của nhân viên đang thao tác.`);
     const seed=seedFor(rec),now=Date.now(),shared=await readSharedAssignment(rec.assignmentId);
     if(!id){
       id=makeRosterLocalId(rec);if(list.some(x=>x.id===id))id=id+"-"+Math.random().toString(36).slice(2,6);
-      meta={id,name:rec.assignmentFlight||rec.flightName||[rec.arrFlight,rec.depFlight].filter(Boolean).join(" / ")||rec.flightRaw,customName:true,initialGroup:rec.formGroup||"fsags",arrivalOp:"passenger",departureOp:"passenger",createdAt:opDateMs(rec.opDate),updatedAt:now,rosterAssignmentId:rec.assignmentId,rosterFlightId:S(rec.flightId),rosterAutoReceived:true,rosterSourceColumn:rec.sourceColumn,rosterOpDate:rec.opDate,rosterOwner:me};
+      meta={id,name:rec.assignmentFlight||rec.flightName||[rec.arrFlight,rec.depFlight].filter(Boolean).join(" / ")||rec.flightRaw,customName:true,initialGroup:rec.formGroup||"fsags",arrivalOp:"passenger",departureOp:"passenger",createdAt:opDateMs(rec.opDate),updatedAt:now,rosterAssignmentId:rec.assignmentId,rosterFlightId:S(rec.flightId),rosterAutoReceived:true,rosterSourceColumn:rec.sourceColumn,rosterOpDate:rec.opDate,rosterOwner:me,rosterAssignmentLeg:S(rec.assignmentLeg),rosterAssignmentScope:S(rec.assignmentScope||"TURNAROUND"),rosterFormGroup:S(rec.formGroup)};
       list.push(meta);writeFlightSessionList(list);
       let env=shared?.envelope&&typeof shared.envelope==="object"?JSON.parse(JSON.stringify(shared.envelope)):{state:{},mainForm:meta.initialGroup,activeFormGroup:meta.initialGroup,currentPage:startPageForGroup(meta.initialGroup),scrollY:0,arrivalOp:"passenger",departureOp:"passenger"};
       env.mainForm=meta.initialGroup;env.activeFormGroup=meta.initialGroup;env.currentPage=startPageForGroup(meta.initialGroup);
-      env=mergeRosterSeed(env,seed);env.rosterAssignmentId=rec.assignmentId;env.rosterAutoReceived=true;env.rosterReceivedAtMs=now;
+      env=mergeRosterSeed(env,seed);env.rosterAssignmentId=rec.assignmentId;env.rosterAutoReceived=true;env.rosterReceivedAtMs=now;env.rosterAssignmentLeg=S(rec.assignmentLeg);env.rosterAssignmentScope=S(rec.assignmentScope||"TURNAROUND");env.rosterFormGroup=S(rec.formGroup);
       localStorage.setItem(flightSessionStorageKey(id),JSON.stringify(env));
       if(!shared)void writeSharedAssignment(rec.assignmentId,env,me,meta.initialGroup,true);
       return {ok:true,created:true,id};
     }
-    meta.rosterAssignmentId=rec.assignmentId;meta.rosterFlightId=S(rec.flightId||meta.rosterFlightId);if(S(rec.assignmentFlight))meta.name=S(rec.assignmentFlight);meta.rosterAutoReceived=true;meta.rosterSourceColumn=rec.sourceColumn;meta.rosterOpDate=rec.opDate;meta.rosterOwner=me;meta.initialGroup=rec.formGroup||meta.initialGroup;meta.updatedAt=now;writeFlightSessionList(list);
+    meta.rosterAssignmentId=rec.assignmentId;meta.rosterFlightId=S(rec.flightId||meta.rosterFlightId);if(S(rec.assignmentFlight))meta.name=S(rec.assignmentFlight);meta.rosterAutoReceived=true;meta.rosterSourceColumn=rec.sourceColumn;meta.rosterOpDate=rec.opDate;meta.rosterOwner=me;meta.rosterAssignmentLeg=S(rec.assignmentLeg);meta.rosterAssignmentScope=S(rec.assignmentScope||"TURNAROUND");meta.rosterFormGroup=S(rec.formGroup);meta.initialGroup=rec.formGroup||meta.initialGroup;meta.updatedAt=now;writeFlightSessionList(list);
     const isActiveNow=(typeof activeFlightSessionId!=="undefined"&&S(activeFlightSessionId)===S(id));
     // Flush the currently edited form first. Remote roster/session data must never win over
     // the active local form merely because a mailbox value event arrived.
@@ -2870,7 +2870,7 @@ Không ghi đè working envelope của nhân viên đang thao tác.`);
       const incoming=JSON.parse(JSON.stringify(shared.envelope));incoming.rosterSharedAtMs=sharedEnvelopeAt||Date.now();env=incoming;
     }
     env.mainForm=rec.formGroup||env.mainForm;env.activeFormGroup=env.mainForm;env.currentPage=startPageForGroup(env.mainForm);
-    env=mergeRosterSeed(env,seed);env.rosterAssignmentId=rec.assignmentId;env.rosterAutoReceived=true;env.rosterReceivedAtMs=env.rosterReceivedAtMs||now;
+    env=mergeRosterSeed(env,seed);env.rosterAssignmentId=rec.assignmentId;env.rosterAutoReceived=true;env.rosterReceivedAtMs=env.rosterReceivedAtMs||now;env.rosterAssignmentLeg=S(rec.assignmentLeg);env.rosterAssignmentScope=S(rec.assignmentScope||"TURNAROUND");env.rosterFormGroup=S(rec.formGroup);
     localStorage.setItem(flightSessionStorageKey(id),JSON.stringify(env));
     return {ok:true,created:false,id};
   }
@@ -3331,14 +3331,18 @@ body.v38-clean-workflow #v38CleanNav #roleBtnActionCenter{
 /* ===== V2.2.35 · AUTO ROSTER SIGNATURE + TWO-PERSON HANDOVER ===== */
 (function(root){
   'use strict';
+  if(root.__SAGS_V2237_AUTO_SIGN_INSTALLED)return;
+  root.__SAGS_V2237_AUTO_SIGN_INSTALLED=true;
   const S=v=>String(v??'').trim(),U=v=>S(v).toUpperCase();
   let timer=0,running=false,lastDone='';
   function profile(){try{return (typeof currentUserProfile!=='undefined'&&currentUserProfile)||{}}catch(_){return {}}}
-  function username(){const p=profile();return U(p.username||p.userName||p.login||'')}
+  function username(){const p=profile();return S(p.username||p.userName||p.login||'').toLowerCase()}
   function fullName(t){const p=profile();return S(p.name||p.fullName||p.displayName||t?.fullname||p.username)}
   function accountRole(){const p=profile();try{return U((typeof currentRole!=='undefined'&&currentRole)||p.role||p.roleCode)}catch(_){return U(p.role||p.roleCode)}}
   function sessionMeta(){try{return typeof currentFlightSessionMeta==='function'?currentFlightSessionMeta():root.currentFlightSessionMeta?.()}catch(_){return null}}
+  function sessionEnvelope(meta){try{return root.readFlightSessionEnvelope?.(meta?.id)||{}}catch(_){return {}}}
   function template(){try{return typeof getSavedTemplate==='function'?getSavedTemplate():null}catch(_){return null}}
+  function notify(key,message){try{const k=`v2237Notice:${key}`;if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1');if(typeof root.sagsActionPopup==='function')root.sagsActionPopup({type:'auto',title:'TỰ KÝ DAILY ROSTER',message});else if(typeof root.showToast==='function')root.showToast(message)}catch(_){}}
   function canonicalGroup(v){const x=U(v).replace(/[^A-Z0-9]/g,'');if(x.includes('551')||x==='GRNDLD')return 'FSAGS551';if(x.includes('421'))return 'FSAGS421';if(x.includes('423')||x==='FSAGS'||x==='GRNDCOR')return 'FSAGS';return x}
   function dutyFor(group){const r=accountRole();if(r==='PVHLNG')return 'PVHLNG';if(r==='LOSTFOUND'||r==='LNF')return 'LOST & FOUND';if(group==='FSAGS551')return 'LOADING SUPERVISOR';if(group==='FSAGS'||group==='FSAGS421')return 'CO-ORDINATOR';const p=profile();return U(p.jobTitle||p.position||p.functionName||p.departmentName||r)}
   function safe(v){return S(v).replace(/[.#$\[\]\/]/g,'_')}
@@ -3346,10 +3350,14 @@ body.v38-clean-workflow #v38CleanNav #roleBtnActionCenter{
   async function assignment(meta,user){
     const date=S(meta?.rosterOpDate||meta?.opDate),aid=S(meta?.rosterAssignmentId);
     if(!date||!aid)return null;
-    let item=await dbValue(`roster_manifests/${safe(date)}/items/${safe(aid)}`);
+    const env=sessionEnvelope(meta);
+    // Firebase rules may allow reading the date manifest but reject a direct child read.
+    // Read the whole manifest first, then use the lowercase mailbox key as fallback.
+    const manifest=await dbValue(`roster_manifests/${safe(date)}`);
+    let item=manifest?.items?.[aid]||manifest?.items?.[safe(aid)]||null;
     if(!item)item=await dbValue(`roster_mail/${safe(user)}/items/${safe(aid)}`);
-    if(!item)item={assignmentId:aid,opDate:date,user:meta?.rosterOwner,formGroup:meta?.initialGroup,sourceColumn:meta?.rosterSourceColumn,assignmentLeg:meta?.assignmentLeg,assignmentScope:meta?.assignmentScope};
-    const owner=U(item.user||item.targetUser||meta?.rosterOwner);
+    if(!item)item={assignmentId:aid,opDate:date,user:meta?.rosterOwner,formGroup:meta?.rosterFormGroup||env?.rosterFormGroup||meta?.initialGroup,sourceColumn:meta?.rosterSourceColumn,assignmentLeg:meta?.rosterAssignmentLeg||env?.rosterAssignmentLeg,assignmentScope:meta?.rosterAssignmentScope||env?.rosterAssignmentScope};
+    const owner=S(item.user||item.targetUser||meta?.rosterOwner).toLowerCase();
     return owner===user?item:null;
   }
   function image(src){return new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=reject;im.src=src})}
@@ -3362,7 +3370,7 @@ body.v38-clean-workflow #v38CleanNav #roleBtnActionCenter{
   function registry(){if(!state.autoSignatureParticipantsV2235||typeof state.autoSignatureParticipantsV2235!=='object')state.autoSignatureParticipantsV2235={};return state.autoSignatureParticipantsV2235}
   async function addSignature(key,nameKey,person,sig){
     const reg=registry(),list=Array.isArray(reg[key])?reg[key]:[];
-    if(list.some(x=>U(x.username)===person.username))return false;
+    if(list.some(x=>S(x.username).toLowerCase()===person.username))return false;
     if(list.length>=2)return false;
     const next={username:person.username,name:person.name,duty:person.duty,leg:person.leg,assignmentId:person.assignmentId,atMs:Date.now()};
     if(!S(state[key])||!list.length)state[key]=sig;
@@ -3385,7 +3393,7 @@ body.v38-clean-workflow #v38CleanNav #roleBtnActionCenter{
     return keys.some(k=>typeof state[k]==='boolean'?state[k]:!!S(state[k]))||(Array.isArray(state.bbbtAttachments)&&state.bbbtAttachments.length>0);
   }
   function freshBbbtForHandover(person){
-    const prior=registry().bbbtSigAgent1||[];if(!prior.length||U(prior[0]?.username)===person.username)return false;
+    const prior=registry().bbbtSigAgent1||[];if(!prior.length||S(prior[0]?.username).toLowerCase()===person.username)return false;
     const keep={};for(const k of ['bbbtFlight','bbbtRegn','bbbtAcType','bbbtDateText','bbbtRoute'])keep[k]=state[k];
     const hadEnteredData=bbbtHasEnteredData();
     try{for(const f of fields.filter(x=>x.page===4)){state[f.key]=(f.type==='check'||f.type==='displayCheck')?false:''}}catch(_){
@@ -3399,12 +3407,12 @@ body.v38-clean-workflow #v38CleanNav #roleBtnActionCenter{
   async function apply(){
     if(running||typeof state==='undefined'||!state)return;
     const meta=sessionMeta(),user=username(),aid=S(meta?.rosterAssignmentId);if(!meta||!user||!aid)return;
-    const t=template();if(!S(t?.signature))return;
+    const t=template();if(!S(t?.signature)){notify(`sig:${aid}`,'Tài khoản chưa lưu mẫu chữ ký nên chưa thể tự ký.');return;}
     const doneKey=`${meta.id||''}|${aid}|${user}`;if(doneKey===lastDone)return;
     running=true;
     try{
-      const item=await assignment(meta,user);if(!item)return;
-      const group=canonicalGroup(item.formGroup||meta.initialGroup||item.sourceColumn||meta.rosterSourceColumn),rawLeg=U(item.assignmentLeg),leg=(rawLeg==='ARR'||rawLeg==='DEP')?rawLeg:'BOTH';
+      const item=await assignment(meta,user);if(!item){notify(`roster:${aid}`,'Không đọc được phân công của tài khoản này. Hãy tải lại MY FLIGHT.');return;}
+      const env=sessionEnvelope(meta),group=canonicalGroup(item.formGroup||meta.rosterFormGroup||env.rosterFormGroup||meta.initialGroup||item.sourceColumn||meta.rosterSourceColumn),rawLeg=U(item.assignmentLeg||meta.rosterAssignmentLeg||env.rosterAssignmentLeg),leg=(rawLeg==='ARR'||rawLeg==='DEP')?rawLeg:'BOTH';
       const person={username:user,name:fullName(t),duty:dutyFor(group),leg,assignmentId:aid};if(!person.name||!person.duty)return;
       let changed=false;
       if(group==='FSAGS'){
@@ -3422,13 +3430,16 @@ body.v38-clean-workflow #v38CleanNav #roleBtnActionCenter{
       changed=(await addSignature('bbbtSigAgent1',null,person,t.signature))||changed;fillBbbtRows();
       try{persist?.()}catch(_){}try{activeKey=null}catch(_){}try{draw?.()}catch(_){}
       lastDone=doneKey;
-      if(changed)try{root.showToast?.('Đã tự ký theo DAILY ROSTER.')}catch(_){}
+      if(changed)try{if(typeof root.sagsActionPopup==='function')root.sagsActionPopup({type:'auto',title:'DAILY ROSTER',message:`Đã tự ký và tự tích phần ${leg==='ARR'?'ĐẾN':leg==='DEP'?'ĐI':'ĐẾN + ĐI'}.`});else root.showToast?.('Đã tự ký theo DAILY ROSTER.')}catch(_){}
     }catch(e){console.warn('V2.2.35 auto roster signature',e)}finally{running=false}
   }
-  function schedule(delay=180){clearTimeout(timer);timer=setTimeout(apply,delay)}
+  function schedule(delay=180){clearTimeout(timer);timer=setTimeout(apply,delay);setTimeout(apply,delay+650);setTimeout(apply,delay+1700)}
   function wrap(name){const base=root[name];if(typeof base!=='function'||base.__v2235AutoSign)return;const fn=function(){const out=base.apply(this,arguments);schedule(name==='switchFlightSession'?350:180);return out};fn.__v2235AutoSign=true;fn.__v2235Base=base;root[name]=fn;try{if(name==='showFormGroup')showFormGroup=fn;else if(name==='switchFlightSession')switchFlightSession=fn}catch(_){}}
   function install(){wrap('showFormGroup');wrap('switchFlightSession');schedule(500)}
   root.v2235AutoRosterSign=()=>schedule(0);
+  root.v2237AutoRosterSign=root.v2235AutoRosterSign;
+  document.addEventListener('click',()=>schedule(260),true);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)schedule(180)});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
   setTimeout(install,800);setTimeout(install,2400);
 })(typeof window!=='undefined'?window:globalThis);
@@ -11330,3 +11341,45 @@ root.SAGS_QR_MATRIX=function(text){const QRCode=req('QRCode'),Level=req('QRError
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
   setTimeout(lift,1200);setTimeout(lift,3200);
 })();
+
+/* ===== V2.2.37 · SAFE CLEANING DAY DELETE + COMPACT LIMIT ENTRY ===== */
+(function(root){
+  'use strict';
+  if(root.__SAGS_V2237_CLEANING_LIMIT)return;root.__SAGS_V2237_CLEANING_LIMIT=true;
+  const S=v=>String(v??'').trim(),U=v=>S(v).toUpperCase(),$=id=>document.getElementById(id);
+  function profile(){try{return root.__sagsGetSession?.()?.profile||root.currentUserProfile||{}}catch(_){return root.currentUserProfile||{}}}
+  function isAdmin(){const p=profile(),r=U(root.currentRole||p.role||p.roleCode).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/Đ/g,'D').replace(/[^A-Z0-9]/g,'');return ['AD','ADMIN','ROLEADMIN'].includes(r)}
+  function actor(){const p=profile();return {role:'AD',username:S(p.username||p.userName),name:S(p.name||p.fullName||p.displayName)}}
+  function db(path){if(typeof root.sagsV470Ref!=='function')throw new Error('Firebase chưa sẵn sàng.');return root.sagsV470Ref(path)}
+  function itemsOf(v){return (Array.isArray(v?.items)?v.items:Object.values(v?.items||{})).filter(Boolean)}
+  function localDate(v){const a=S(v).split('-').map(Number);return a.length===3&&a.every(Number.isFinite)?new Date(a[0],a[1]-1,a[2]):null}
+  function cutoffMs(day){const d=localDate(day);if(!d)return 0;d.setDate(d.getDate()+1);d.setHours(6,0,0,0);return d.getTime()}
+  function popup(type,title,message){if(typeof root.sagsActionPopup==='function')root.sagsActionPopup({type,title,message});else alert(`${title}\n\n${message}`)}
+  async function deleteCleaningDay(){
+    if(!isAdmin())return popup('warning','KHÔNG CÓ QUYỀN','Chỉ AD được xóa lịch vệ sinh.');
+    const day=S($('v2213FilterDate')?.value);if(!day)return popup('warning','CHƯA CHỌN NGÀY','Chọn ngày lịch vệ sinh cần xóa.');
+    try{
+      const ref=db('aircraft_cleaning/catalog_public'),snap=(await ref.once('value')).val()||{},all=itemsOf(snap),rows=all.filter(x=>S(x.date)===day);
+      if(!rows.length)return popup('auto','KHÔNG CÓ DỮ LIỆU',`Ngày ${day} không có lịch vệ sinh.`);
+      const withinSafety=Date.now()<cutoffMs(day),protectedRows=withinSafety?rows.filter(x=>x.active!==false):[],protectedIds=new Set(protectedRows.map(x=>S(x.id))),removable=rows.filter(x=>!protectedIds.has(S(x.id)));
+      if(!removable.length)return popup('warning','ĐANG GIỮ CHUYẾN QUA NGÀY',`Chưa xóa ${protectedRows.length} chuyến ngày ${day}. Lịch đang áp dụng được giữ đến 06:00 sáng hôm sau để chuyến qua 00:00 không bị mất.`);
+      if(!confirm(`XÓA LỊCH VỆ SINH THEO NGÀY\n\nNgày ${day}: xóa ${removable.length} dòng.${protectedRows.length?`\nGiữ lại ${protectedRows.length} chuyến đang áp dụng qua ngày đến 06:00.`:''}`))return;
+      const removeIds=new Set(removable.map(x=>S(x.id))),now=Date.now(),next={...snap,schema:1,kind:'sags_aircraft_cleaning_catalog_v1',version:now,updatedAtMs:now,updatedBy:actor(),items:all.filter(x=>!removeIds.has(S(x.id)))};
+      await ref.set(next);await db('aircraft_cleaning/catalog_signal').set({version:now,action:'MANUAL_DELETE_DAY_SAFE',date:day,removed:removable.length,protected:protectedRows.length,updatedAtMs:now,updatedBy:actor()});
+      await root.SAGSCleaningAdmin?.refresh?.();popup('success','ĐÃ XÓA LỊCH VỆ SINH',`Đã xóa ${removable.length} dòng ngày ${day}.${protectedRows.length?` Giữ lại ${protectedRows.length} chuyến đang áp dụng qua ngày.`:''}`);
+    }catch(e){popup('error','KHÔNG XÓA ĐƯỢC',S(e?.message||e))}
+  }
+  function installCleaningButton(){
+    const filter=$('v2213FilterDate'),box=filter?.closest('.v2213-filter');if(!box||$('v2237DeleteCleaningDay'))return;
+    const b=document.createElement('button');b.id='v2237DeleteCleaningDay';b.type='button';b.className='v2213-btn v2237-delete-day';b.textContent='XÓA NGÀY';b.onclick=deleteCleaningDay;box.appendChild(b);
+  }
+  function installCss(){if($('v2237CompactLimitStyle'))return;const s=document.createElement('style');s.id='v2237CompactLimitStyle';s.textContent=`
+#v2237DeleteCleaningDay{background:#b42318;color:#fff}.v2213-filter #v2237DeleteCleaningDay{flex:0 0 auto}
+@media(max-width:620px){
+ #aclSimpleModal{padding:5px}.acls-panel{width:99vw;max-height:98dvh;padding:8px;border-radius:16px;font-size:12px}.acls-top{top:-8px;padding:5px 0 7px}.acls-step{padding:8px;margin:6px 0;border-radius:11px}.acls-step-title{font-size:13px;margin-bottom:5px}.acls-num{width:22px;height:22px}.acls-reg{padding:9px 11px;font-size:16px}.acls-hint{margin-top:4px;font-size:11px}.acls-type{padding:7px 9px;margin:5px 0;border-radius:10px}.acls-type>label{font-size:14px;gap:7px}.acls-type input[type=checkbox]{width:19px;height:19px}.acls-detail{margin-top:6px;padding-top:6px}.acls-chip{padding:6px 9px}.acls-textarea{min-height:54px;padding:7px;font-size:12px}.acls-grid{gap:6px}.acls-date{padding:7px}.acls-save-row{bottom:-8px;padding:6px 0 3px}.acls-save{min-width:150px;padding:10px;font-size:14px}.acls-reset{padding:9px}.acls-help{padding:7px;margin-top:6px;font-size:10px}.acls-roles{gap:4px}.acls-role{padding:5px}.v2213-filter #v2237DeleteCleaningDay{width:100%}
+}`;document.head.appendChild(s)}
+  function install(){installCss();installCleaningButton()}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
+  const mo=new MutationObserver(install);mo.observe(document.documentElement,{childList:true,subtree:true});setTimeout(install,700);setTimeout(install,2200);
+  root.v2237DeleteCleaningDay=deleteCleaningDay;
+})(typeof window!=='undefined'?window:globalThis);

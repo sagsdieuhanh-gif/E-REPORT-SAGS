@@ -1,10 +1,10 @@
 {
-  "version": "V2.2.36",
-  "displayVersion": "V2.2.36",
-  "label": "V2.2.36",
-  "build": "V2.2.36-PROJECT-WIDE-ROUNDED-THEME",
-  "releasedAt": "2026-09-06T19:20:00+07:00",
-  "type": "project-wide-rounded-theme",
-  "notes": "Đồng bộ toàn bộ giao diện theo phong cách nút bo tròn xanh gradient; trạng thái đang chọn và thao tác chính dùng vàng xanh; thanh điều hướng điện thoại hiển thị bốn nút lớn và hỗ trợ vuốt ngang khi có thêm chức năng.",
-  "message": "Có bản cập nhật V2.2.36"
+  "version": "V2.2.37",
+  "displayVersion": "V2.2.37",
+  "label": "V2.2.37",
+  "build": "V2.2.37-AUTO-SIGN-CLEANING-SAFE-DELETE",
+  "releasedAt": "2026-09-06T09:00:00Z",
+  "type": "auto-sign-cleaning-safe-delete-compact-limit",
+  "notes": "Sửa tự ký và tự tích ARR/DEP theo Daily Roster; lưu đủ assignment leg vào phiên; thêm xóa lịch vệ sinh theo ngày có bảo vệ chuyến qua 00:00 đến 06:00; thu gọn phần nhập LIMIT thủ công.",
+  "message": "Có bản cập nhật V2.2.37"
 }
