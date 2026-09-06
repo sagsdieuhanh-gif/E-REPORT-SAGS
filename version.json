@@ -1,10 +1,10 @@
 {
-  "version": "V2.2.45",
-  "displayVersion": "V2.2.45",
-  "label": "V2.2.45",
-  "build": "V2.2.45-APPJS-CACHE-BUST",
-  "releasedAt": "2026-09-06T20:40:00Z",
-  "type": "appjs-cache-bust",
-  "notes": "Đổi cache key cho toàn bộ tám phase app.js và bắt Service Worker xác minh đúng app.js mới trước khi cài; bảo đảm sửa thanh công cụ hai hàng và Full name thực sự được tải.",
-  "message": "Có bản cập nhật V2.2.45"
+  "version": "V2.2.41",
+  "displayVersion": "V2.2.41",
+  "label": "V2.2.41",
+  "build": "V2.2.41-FULLNAME-AFTER-COLON",
+  "releasedAt": "2026-09-06T09:00:00Z",
+  "type": "fullname-after-colon",
+  "notes": "Đặt Full name sát sau dấu hai chấm và căn trái trên dòng chấm; giữ cỡ chữ gốc, chỉ co khi tên thực sự vượt dòng; xóa căn giữa sai của bản trước.",
+  "message": "Có bản cập nhật V2.2.41"
 }
