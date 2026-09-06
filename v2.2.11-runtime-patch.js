@@ -111,8 +111,12 @@
       let cfg={};try{cfg=await root.sagsAiLoadConfig?.(true)||{}}catch(_){}
       let app;try{app=appMod.getApp('sags-v2211-import-ai')}catch(_){app=appMod.initializeApp(opts,'sags-v2211-import-ai')}
       const siteKey=S(cfg.appCheckSiteKey||APP_CHECK_SITE_KEY_FALLBACK);if(!siteKey)throw new Error('Chưa cấu hình App Check cho AI.');
-      try{appCheckMod.initializeAppCheck(app,{provider:new appCheckMod.ReCaptchaEnterpriseProvider(siteKey),isTokenAutoRefreshEnabled:true})}catch(_){}
-      const check=appCheckMod.getAppCheck(app),token=await appCheckMod.getToken(check,false);if(!token?.token)throw new Error('Không lấy được App Check token.');
+      let check=root.__SAGS_V2211_APP_CHECK_INSTANCE||null;
+      if(!check)try{check=appCheckMod.initializeAppCheck(app,{provider:new appCheckMod.ReCaptchaEnterpriseProvider(siteKey),isTokenAutoRefreshEnabled:true});root.__SAGS_V2211_APP_CHECK_INSTANCE=check}catch(_){
+        check=app?._container?.getProvider?.('app-check')?.getImmediate?.({optional:true})||null;
+      }
+      if(!check)throw new Error('Không khởi tạo được App Check cho AI.');
+      const token=await appCheckMod.getToken(check,false);if(!token?.token)throw new Error('Không lấy được App Check token.');
       const ai=aiMod.getAI(app,{backend:new aiMod.GoogleAIBackend()});
       const modelName=S(cfg.fastModel||cfg.model||AI_MODEL_FALLBACK);
       return {model:aiMod.getGenerativeModel(ai,{model:modelName,generationConfig:{responseMimeType:'application/json',temperature:0.05}}),modelName};

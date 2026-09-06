@@ -1,10 +1,10 @@
 {
-  "version": "V2.2.11",
-  "displayVersion": "V2.2.11",
-  "label": "V2.2.11",
-  "build": "V2.2.11-AI-LIMIT-CLEANING-MULTI-IMAGE",
+  "version": "V2.2.12",
+  "displayVersion": "V2.2.12",
+  "label": "V2.2.12",
+  "build": "V2.2.12-AI-APP-CHECK-PC-MYFLIGHT-FIX",
   "releasedAt": "2026-09-06T12:30:00+07:00",
-  "type": "ai-limit-cleaning-multi-image",
-  "notes": "Kế thừa V2.2.10. AD có một nút chung chọn đồng thời nhiều ảnh A/C LIMITS và LỊCH VỆ SINH TÀU BAY; AI tự phân loại từng ảnh, tự lưu/gán các dòng đủ độ tin cậy và đưa dòng không chắc chắn vào hàng chờ AD xác nhận. Lịch vệ sinh phân biệt SAGS PVTT hoặc VIETSKY, ghép theo ngày + Flight No/A/C Reg trong cùng flight workspace. ĐH nhận popup vệ sinh lần 1 tại STA-10 phút và lần 2 ngay khi có CHOCK ON; mỗi mốc chỉ hiện một lần, dữ liệu cập nhật mới thay cảnh báo cũ. Không heartbeat; giữ popup tuần tự và cơ chế cập nhật an toàn.",
-  "message": "Có bản cập nhật V2.2.11"
+  "type": "ai-app-check-pc-myflight-fix",
+  "notes": "Kế thừa V2.2.11. Sửa AI import thất bại do gọi sai Firebase App Check. Sửa MY FLIGHT nhấp nháy liên tục trên PC: chỉ render một lần khi mở, gộp lệnh mở trùng, không xóa nội dung khi dữ liệu không đổi và vẫn cập nhật khi dữ liệu chuyến thực sự thay đổi. Giữ upload chung nhiều ảnh LIMIT + LỊCH VỆ SINH, cảnh báo ĐH tại STA-10 và CHOCK ON.",
+  "message": "Có bản cập nhật V2.2.12"
 }

@@ -684,19 +684,15 @@
     if(typeof base!=='function')return false;
     if(base.__v2210IndependentDep){listPatched=true;return true}
 
+    let listRun=null;
     const wrapped=async function(d){
-      const date=S(d)||opDate();
-      let r=await base.apply(this,arguments);
-      try{
-        const changed=await markIndependentEligible(date);
-        if(changed){
-          await sleep(30);
-          r=await base.call(this,date);
-        }
-      }catch(e){
-        console.info('V2.2.10 MY FLIGHT independent eligibility',e?.message||e);
-      }
-      return r;
+      const date=S(d)||opDate(),self=this,args=arguments;
+      if(listRun)return listRun;
+      listRun=(async()=>{
+        try{await markIndependentEligible(date)}catch(e){console.info('V2.2.10 MY FLIGHT independent eligibility',e?.message||e)}
+        return base.apply(self,args);
+      })();
+      try{return await listRun}finally{listRun=null}
     };
     wrapped.__v2210IndependentDep=1;
     wrapped.__v2210Base=base;
