@@ -1,7 +1,7 @@
 /* E-REPORT/SAGS V2.2.16 · LIGHTWEIGHT SAFE UPDATE */
-const CACHE_NAME="sags-v2.2.39-signature-geometry-fix";
-const BUILD="V2.2.39-SIGNATURE-GEOMETRY-FIX";
-const DISPLAY_VERSION="V2.2.39";
+const CACHE_NAME="sags-v2.2.40-signer-layout-lock";
+const BUILD="V2.2.40-SIGNER-LAYOUT-LOCK";
+const DISPLAY_VERSION="V2.2.40";
 
 const PATCH_V21="./v2.1-runtime-patch.js";
 const PATCH_V22="./v2.2-runtime-patch.js";

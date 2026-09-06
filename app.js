@@ -3249,6 +3249,34 @@ body.v38-clean-workflow #v38CleanNav #roleBtnActionCenter{
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();setTimeout(install,900);setTimeout(install,2400);document.addEventListener('click',()=>schedule(260),true);
 })(typeof window!=='undefined'?window:globalThis);
 
+/* ===== V2.2.40 · LOCK SIGNER NAME GEOMETRY AFTER SAVED LAYOUT ===== */
+(function(root){
+  'use strict';
+  if(root.__SAGS_V2240_SIGNER_NAME_LOCK)return;root.__SAGS_V2240_SIGNER_NAME_LOCK=true;
+  const nameKey=/(?:coordArrName|coordDepName|representativeName|engineerName|loadingStaffName|bbbtPerson[123]|bbbtDuty[123])$/i;
+  function allFields(){try{return Array.isArray(fields)?fields:(Array.isArray(root.fields)?root.fields:[])}catch(_){return []}}
+  function geom(f){try{return typeof abs==='function'?abs(f):{vx:Number(f.vx||f.x),vy:Number(f.vy||f.y),vw:Number(f.vw||f.w),vh:Number(f.vh||f.h)}}catch(_){return {vx:Number(f.vx||f.x),vy:Number(f.vy||f.y),vw:Number(f.vw||f.w),vh:Number(f.vh||f.h)}}}
+  function fit(text,width,preferred){const c=(root.__v2240NameMeasure||=document.createElement('canvas')),x=c.getContext('2d');let fs=Math.min(16,Math.max(9,Number(preferred)||14));while(fs>9){x.font=`700 ${fs}px "Times New Roman"`;if(x.measureText(text).width<=Math.max(20,width-6))break;fs-=.5}return fs}
+  function repair(){
+    for(const f of allFields()){
+      if(!nameKey.test(String(f?.key||'')))continue;const svg=document.getElementById('svg'+Number(f.page));if(!svg)continue;const a=geom(f),val=String((typeof state!=='undefined'&&state?.[f.key])||'');
+      for(const el of svg.querySelectorAll(`[data-field-key="${CSS.escape(String(f.key))}"]`)){
+        if(el.classList.contains('hit')||el.classList.contains('v368-layout-hit'))continue;const tag=el.tagName.toLowerCase();
+        el.removeAttribute('transform');
+        if(tag==='text'){
+          const center=String(f.align||'').toLowerCase()==='center'||/coordArrName|coordDepName|representativeName|bbbtPerson|bbbtDuty/i.test(String(f.key));
+          el.setAttribute('x',String(center?a.vx+a.vw/2:a.vx+3));el.setAttribute('text-anchor',center?'middle':'start');const fs=fit(val,a.vw,f.font);el.setAttribute('font-size',String(fs));
+          const m=(root.__v2240NameMeasure||=document.createElement('canvas')).getContext('2d');m.font=`700 ${fs}px "Times New Roman"`;if(m.measureText(val).width>a.vw-6){el.setAttribute('textLength',String(Math.max(20,a.vw-6)));el.setAttribute('lengthAdjust','spacingAndGlyphs')}else{el.removeAttribute('textLength');el.removeAttribute('lengthAdjust')}
+        }else if(tag==='foreignobject'){
+          el.setAttribute('x',String(a.vx));el.setAttribute('width',String(a.vw));const d=el.querySelector('div');if(d){d.style.textAlign=String(f.align||'').toLowerCase()==='center'?'center':'left';d.style.fontSize=fit(val,a.vw,f.font)+'px'}
+        }
+      }
+    }
+  }
+  function hook(){const base=root.v368ApplySavedLayout;if(typeof base==='function'&&!base.__v2240SignerLock){const fn=function(){const r=base.apply(this,arguments);repair();return r};fn.__v2240SignerLock=true;fn.__v2240Base=base;root.v368ApplySavedLayout=fn;try{v368ApplySavedLayout=fn}catch(_){}}repair()}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',hook,{once:true});else hook();setTimeout(hook,500);setTimeout(hook,1400);setTimeout(hook,3200);document.addEventListener('click',()=>setTimeout(repair,120),true);root.addEventListener('pageshow',()=>setTimeout(hook,120),{passive:true});
+})(typeof window!=='undefined'?window:globalThis);
+
 /* ===== V2.2.32 MOBILE ACTION CONSISTENCY ===== */
 (function(){
   const css=`
@@ -6871,11 +6899,11 @@ window.SAGS_PUBLISHED_FORM_LAYOUT={
       "hh": 0,
       "hx": -37.8,
       "hy": -3.3,
-      "fs": 23,
-      "dx": 10.3,
-      "dy": -0.6,
+      "fs": 14,
+      "dx": 0,
+      "dy": 0,
       "align": "center",
-      "dw": -36,
+      "dw": 0,
       "dh": 0
     },
     "2:coordDepName": {
@@ -6883,11 +6911,11 @@ window.SAGS_PUBLISHED_FORM_LAYOUT={
       "hh": 0,
       "hx": -24.4,
       "hy": 0,
-      "fs": 23,
+      "fs": 14,
       "align": "center",
-      "dx": 15,
-      "dy": -0.3,
-      "dw": -14,
+      "dx": 0,
+      "dy": 0,
+      "dw": 0,
       "dh": 0
     },
     "1:estimatedBag": {
@@ -7337,9 +7365,9 @@ window.SAGS_PUBLISHED_FORM_LAYOUT={
       "fs": 23
     },
     "7:f421_representativeName": {
-      "dx": 142,
-      "dy": -4,
-      "fs": 23,
+      "dx": 0,
+      "dy": 0,
+      "fs": 15,
       "hx": -55.5,
       "hy": -12.3,
       "hw": 114,
@@ -7350,9 +7378,9 @@ window.SAGS_PUBLISHED_FORM_LAYOUT={
       "hy": -8.2,
       "hw": 106,
       "hh": 0,
-      "dx": 138,
-      "dy": -4,
-      "fs": 23,
+      "dx": 0,
+      "dy": 0,
+      "fs": 15,
       "align": "center"
     },
     "7:f421_coordDepName": {
@@ -7360,9 +7388,9 @@ window.SAGS_PUBLISHED_FORM_LAYOUT={
       "hy": -7.8,
       "hw": 98,
       "hh": 0,
-      "dx": 119,
-      "dy": -4,
-      "fs": 23,
+      "dx": 0,
+      "dy": 0,
+      "fs": 15,
       "align": "center"
     },
     "9:f551_date": {
