@@ -3915,6 +3915,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-functions-compat.js"></script>
 <script>
 window.SAGS_FIREBASE_AUTH_SDK_READY = !!(window.firebase && typeof window.firebase.auth === "function");
 </script>
@@ -11121,8 +11122,8 @@ try {
   if(h) h.textContent="Lỗi khởi tạo: "+err.message;
   alert("Lỗi JavaScript: "+err.message);
 }
-const APP_BUILD_VERSION="V2.2.19-REMOVE-LITERAL-NEWLINES";
-const APP_DISPLAY_VERSION="V2.2.19";
+const APP_BUILD_VERSION="V2.2.21-ADD-DEP-KEEP-423";
+const APP_DISPLAY_VERSION="V2.2.21";
 // V1.1.103: hotfix duy nhất lỗi Firebase RTDB ancestor/descendant khi đồng bộ DAILY ROSTER; không thay đổi nghiệp vụ khác.
 // V4.21 — SAFE UPDATE SAVE
 // Before switching to a newly installed app version, force-save all current
@@ -28186,5 +28187,27 @@ body.v38-clean-workflow #v1134QuickTimeBtn{background:#eef6ff!important;color:#0
 <script src="./v2.2.14-runtime-patch.js?v=V2.2.14"></script>
 <script src="./v2.2.16-runtime-patch.js?v=V2.2.16"></script>
 <script src="./v2.2.17-runtime-patch.js?v=V2.2.17"></script>
+<script>
+/* V2.2.20 — AD reset existing Firebase Authentication account via callable backend. */
+window.adminResetAccountPassword=async function(uid){
+  if(currentRole!=="AD")return roleDenied("Chỉ AD được khôi phục mật khẩu.");
+  const snap=await firebase.firestore().collection("users").doc(uid).get();
+  if(!snap.exists)return alert("Không tìm thấy hồ sơ tài khoản.");
+  const d=snap.data()||{},name=String(d.name||d.username||d.email||uid);
+  if(!confirm("KHÔI PHỤC MẬT KHẨU AUTH\n\n"+name+"\n\nMật khẩu sẽ về 123456, tài khoản được mở lại và bắt buộc đổi mật khẩu khi đăng nhập.\n\nKhông xóa Firebase Authentication. Tiếp tục?"))return;
+  try{
+    setAccountManagerStatus("Đang khôi phục Firebase Authentication cho "+name+"...");
+    const call=firebase.app().functions("asia-southeast1").httpsCallable("adminResetAuthPassword");
+    await call({uid:String(uid)});
+    setAccountManagerStatus("✓ Đã khôi phục AUTH cho "+name+". Mật khẩu: 123456.");
+    alert("ĐÃ KHÔI PHỤC AUTH\n\nTài khoản: "+name+"\nMật khẩu tạm: 123456\n\nNgười dùng phải đổi mật khẩu khi đăng nhập.");
+    await refreshAccountManager();
+  }catch(e){
+    const msg=String(e?.message||e);
+    setAccountManagerStatus("Không khôi phục được AUTH: "+msg,true);
+    alert("KHÔNG KHÔI PHỤC ĐƯỢC AUTH\n\n"+msg+"\n\nKiểm tra Cloud Function adminResetAuthPassword đã được deploy.");
+  }
+};
+</script>
 </body>
 </html>
