@@ -2207,11 +2207,17 @@ if(phase==='flight'){
       if(!ldUsers.length){
         addCorEntries(corEntries,"fsags","Grnd_Cor","COR");
       }else{
-        const commonEntries=corEntries.filter(e=>ldSet.has(e.user));
+        // A person already listed in both Cor and Ld remains the original 42.3
+        // turnaround owner.  Keep a leg-less assignment ID so adding a DEP worker
+        // later never replaces or duplicates that person's in-progress 42.3.
+        const commonUsers=[...new Set(corEntries.filter(e=>ldSet.has(e.user)).map(e=>e.user))];
+        const commonEntries=commonUsers.map((user,groupIndex)=>({user,leg:"",groupIndex,coIndex:0,groupUsers:[user]}));
         const corOnlyEntries=corEntries.filter(e=>!ldSet.has(e.user));
         addCorEntries(commonEntries,"fsags","Grnd_Cor + Grnd_Ld","BOTH");
         addCorEntries(corOnlyEntries,"fsags421","Grnd_Cor","COR");
-        const ldEntries=groupEntries(ldGroups,"");
+        // The common ARR owner must not receive a second 55.1.  Only newly-added
+        // Loading staff receive 55.1, and they are published immediately.
+        const ldEntries=groupEntries(ldGroups,"").filter(e=>!commonUsers.includes(e.user));
         addCorEntries(ldEntries,"fsags551","Grnd_Ld","LD");
       }
       // V1.82: Grnd_Ls là nguồn phân công CBTT. Mỗi username trong Grnd_Ls sinh nhiệm vụ FINAL/CROSSCHECK cho đúng chuyến.
