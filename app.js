@@ -3163,7 +3163,9 @@ Không ghi đè working envelope của nhân viên đang thao tác.`);
     if(typeof base!=='function'||base.__bbbtFirstRow)return;
     const wrapped=function(group){
       const out=base.apply(this,arguments);
-      if(text(group).toLowerCase()==='bbbt')setTimeout(fill,0);
+      // BBBT is displayed as a companion page under 42.3 / 42.1 / 55.1,
+      // so it must also be filled when those parent form groups are opened.
+      if(['bbbt','fsags','fsags421','fsags551'].includes(text(group).toLowerCase()))setTimeout(fill,0);
       return out;
     };
     wrapped.__bbbtFirstRow=true;wrapped.__bbbtFirstRowBase=base;root.showFormGroup=wrapped;
@@ -3172,6 +3174,13 @@ Không ghi đè working envelope của nhân viên đang thao tác.`);
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(hook,0),{once:true});
   else setTimeout(hook,0);
   setTimeout(hook,700);setTimeout(hook,2200);
+  // Covers direct page/session restores where showFormGroup is not called again.
+  setInterval(()=>{
+    try{
+      const page=document.getElementById('page4');
+      if(page&&!page.classList.contains('hide')&&getComputedStyle(page).display!=='none')fill();
+    }catch(_){}
+  },900);
 })(typeof window!=='undefined'?window:globalThis);
 
 /* ===== END daily-roster.js ===== */

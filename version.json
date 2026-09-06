@@ -1,10 +1,10 @@
 {
-  "version": "V2.2.32",
-  "displayVersion": "V2.2.32",
-  "label": "V2.2.32",
-  "build": "V2.2.32-MOBILE-ACTION-LAYOUT",
+  "version": "V2.2.33",
+  "displayVersion": "V2.2.33",
+  "label": "V2.2.33",
+  "build": "V2.2.33-BBBT-COMPANION-AUTOFILL",
   "releasedAt": "2026-09-06T13:15:00+07:00",
-  "type": "mobile-action-layout",
-  "notes": "Đồng bộ nút bo tròn theo giao diện chính; nén bảng Nhập giờ nhanh; cân lại chữ và ô giờ; đưa hộp Thêm/Chụp ảnh lên trên thanh công cụ để thấy đủ hai lựa chọn.",
-  "message": "Có bản cập nhật V2.2.32"
+  "type": "bbbt-companion-autofill",
+  "notes": "Sửa tự điền BBBT khi BBBT nằm nối dưới 42.3, 42.1 hoặc 55.1; tự kiểm tra khi trang BBBT hiển thị và ghi ngay họ tên đầy đủ cùng nhiệm vụ của tài khoản.",
+  "message": "Có bản cập nhật V2.2.33"
 }
