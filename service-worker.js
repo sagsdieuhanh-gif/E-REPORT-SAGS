@@ -1,7 +1,7 @@
 /* E-REPORT/SAGS V2.2.16 · LIGHTWEIGHT SAFE UPDATE */
-const CACHE_NAME="sags-v2.2.44-form-action-row-detect";
-const BUILD="V2.2.44-FORM-ACTION-ROW-DETECT";
-const DISPLAY_VERSION="V2.2.44";
+const CACHE_NAME="sags-v2.2.45-appjs-cache-bust";
+const BUILD="V2.2.45-APPJS-CACHE-BUST";
+const DISPLAY_VERSION="V2.2.45";
 
 const PATCH_V21="./v2.1-runtime-patch.js";
 const PATCH_V22="./v2.2-runtime-patch.js";
@@ -53,6 +53,7 @@ function injectScript(out,file){
 }
 function patchIndexHtml(html){
   let out=stripRetiredScripts(String(html||""));
+  out=out.replace(/(\.\/app\.js\?v=)[^"'\s>]+/g,`$1${DISPLAY_VERSION}-APPJS-CACHE-BUST`);
   out=out.replace(/(const\s+APP_BUILD_VERSION\s*=\s*)["'][^"']+["'](\s*;?)/,`$1"${BUILD}"$2`);
   out=out.replace(/(const\s+APP_DISPLAY_VERSION\s*=\s*)["'][^"']+["'](\s*;?)/,`$1"${DISPLAY_VERSION}"$2`);
   out=injectScript(out,"v2.1-runtime-patch.js");
@@ -103,6 +104,10 @@ async function validateRelease(){
   }
   const ir=await fetchNoStore("./index.html?swcheck="+Date.now());
   if(!ir.ok)throw new Error("index.html HTTP "+ir.status);
+  const ar=await fetchNoStore("./app.js?swcheck="+Date.now());
+  if(!ar.ok)throw new Error("app.js HTTP "+ar.status);
+  const at=await ar.text();
+  if(!at.includes("V2.2.45-APPJS-CACHE-BUST"))throw new Error("app.js marker mismatch");
 }
 
 self.addEventListener("install",event=>{

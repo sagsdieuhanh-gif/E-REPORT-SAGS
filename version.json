@@ -1,10 +1,10 @@
 {
-  "version": "V2.2.44",
-  "displayVersion": "V2.2.44",
-  "label": "V2.2.44",
-  "build": "V2.2.44-FORM-ACTION-ROW-DETECT",
-  "releasedAt": "2026-09-06T20:20:00Z",
-  "type": "form-action-row-detect",
-  "notes": "Nhận diện trực tiếp chuyến và biểu mẫu đang mở để luôn hiện hàng Xuất, Xuất QR, Hoàn tất, Nhập giờ nhanh; không còn phụ thuộc trạng thái hiển thị của lớp Trang chủ. Ẩn hoàn toàn nhãn Đã lưu khỏi thanh công cụ.",
-  "message": "Có bản cập nhật V2.2.44"
+  "version": "V2.2.45",
+  "displayVersion": "V2.2.45",
+  "label": "V2.2.45",
+  "build": "V2.2.45-APPJS-CACHE-BUST",
+  "releasedAt": "2026-09-06T20:40:00Z",
+  "type": "appjs-cache-bust",
+  "notes": "Đổi cache key cho toàn bộ tám phase app.js và bắt Service Worker xác minh đúng app.js mới trước khi cài; bảo đảm sửa thanh công cụ hai hàng và Full name thực sự được tải.",
+  "message": "Có bản cập nhật V2.2.45"
 }
