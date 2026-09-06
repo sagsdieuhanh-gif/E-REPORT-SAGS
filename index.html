@@ -7085,6 +7085,8 @@ function draw(){
    d.textContent=val;fo.appendChild(d);svg.appendChild(fo);continue;
   }
   const isManual=(f.type==="text"||f.type==="number"||f.type==="display");
+  const signatureNameField=/(?:coordArrName|coordDepName|representativeName|engineerName|loadingStaffName|bbbtPerson[123]|bbbtDuty[123])$/i.test(String(f.key||""));
+  if(signatureNameField&&!/^bbbt(?:Person|Duty)/i.test(String(f.key||""))){f.writeOnLine=true;f.lineRatio=.66;f.displayDy=-2;f.align="left";f.leftValue=true}
   const manualInset=(f.manualInset ?? 0);
   const forceManualCenter=(f.type==="text"||f.type==="number") && !f.leftValue;
   const drawX=a.vx, drawY=a.vy, drawW=a.vw, drawH=a.vh;
@@ -7094,7 +7096,6 @@ function draw(){
     ? drawY+drawH*(Number.isFinite(Number(f.lineRatio))?Number(f.lineRatio):0.66)+(f.displayDy||0)
     : drawY+drawH/2+(f.displayDy||0);
   const maxFont=Math.max(11,drect.h*0.76);
-  const signatureNameField=/(?:coordArrName|coordDepName|representativeName|engineerName|loadingStaffName|bbbtPerson[123]|bbbtDuty[123])$/i.test(String(f.key||""));
   const renderFont=signatureNameField?v1101AutoFitSingleLineFont(val,drawW,drawH,Math.min(Number(f.font)||18,20),11):(String(f.key||"").startsWith("f09_") ? 18 : (V1101_FONT23_PAGES.has(f.page) ? v1101AutoFitSingleLineFont(val,drawW,drawH,23,9) : Math.min(f.font,maxFont)));
   const ty=baseTy-(v1104Is421DottedSingle(f)?v1104DottedLiftPx(renderFont):0);
   const t=E("text",{
@@ -11122,8 +11123,8 @@ try {
   if(h) h.textContent="Lỗi khởi tạo: "+err.message;
   alert("Lỗi JavaScript: "+err.message);
 }
-const APP_BUILD_VERSION="V2.2.41-FULLNAME-AFTER-COLON";
-const APP_DISPLAY_VERSION="V2.2.41";
+const APP_BUILD_VERSION="V2.2.42-FULLNAME-ABOVE-DOTS";
+const APP_DISPLAY_VERSION="V2.2.42";
 // V1.1.103: hotfix duy nhất lỗi Firebase RTDB ancestor/descendant khi đồng bộ DAILY ROSTER; không thay đổi nghiệp vụ khác.
 // V4.21 — SAFE UPDATE SAVE
 // Before switching to a newly installed app version, force-save all current

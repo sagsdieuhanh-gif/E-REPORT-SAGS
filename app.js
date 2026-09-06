@@ -3211,7 +3211,7 @@ body.v38-clean-workflow #v38CleanNav #roleBtnActionCenter{
 `;
   function installStyle(){if(document.getElementById(STYLE_ID))return;const s=document.createElement('style');s.id=STYLE_ID;s.textContent=css;document.head.appendChild(s)}
   const labels={
-    v38NavFlights:['✈','My Flight'],v38NavMulti:['⇄','Multi'],v310ShiftNav:['↔','Giao ca'],
+    v38NavHome:['⌂','Trang chủ'],v38NavFlights:['✈','Chuyến'],v38NavMulti:['⇄','Multi'],v310ShiftNav:['↔','Giao ca'],
     v38NavSignature:['✍','Ký'],v38NavAdmin:['☰','Menu'],v327ReassignNav:['↻','Đổi người']
   };
   function decorateButton(b){
@@ -3266,6 +3266,7 @@ body.v38-clean-workflow #v38CleanNav #roleBtnActionCenter{
         if(tag==='text'){
           const center=/bbbtPerson|bbbtDuty/i.test(String(f.key));
           el.setAttribute('x',String(center?a.vx+a.vw/2:a.vx+3));el.setAttribute('text-anchor',center?'middle':'start');const fs=fit(val,a.vw,f.font);el.setAttribute('font-size',String(fs));
+          if(!center){el.setAttribute('y',String(a.vy+a.vh*.66-2));el.setAttribute('dominant-baseline','alphabetic')}
           const m=(root.__v2240NameMeasure||=document.createElement('canvas')).getContext('2d');m.font=`700 ${fs}px "Times New Roman"`;if(m.measureText(val).width>a.vw-6){el.setAttribute('textLength',String(Math.max(20,a.vw-6)));el.setAttribute('lengthAdjust','spacingAndGlyphs')}else{el.removeAttribute('textLength');el.removeAttribute('lengthAdjust')}
         }else if(tag==='foreignobject'){
           el.setAttribute('x',String(a.vx));el.setAttribute('width',String(a.vw));const d=el.querySelector('div');if(d){d.style.textAlign=String(f.align||'').toLowerCase()==='center'?'center':'left';d.style.fontSize=fit(val,a.vw,f.font)+'px'}
@@ -4701,7 +4702,8 @@ body.v38-clean-workflow #v38NavRS,body.v38-clean-workflow #readSignQuickBtn,body
     // every few seconds caused READ & SIGN and GIAO CA to visibly blink on mobile.
     if(nav.dataset.v311Sig===sig && document.getElementById('v38NavFlights') && document.getElementById('v38NavMulti'))return;
     nav.dataset.v311Sig=sig;
-    nav.innerHTML=`<button class="v38NavBtn flights" id="v38NavFlights">✈ CHUYẾN</button><button class="v38NavBtn multi" id="v38NavMulti">⇄ MULTI</button>${shiftAvailable?'<button class="v38NavBtn shift" id="v310ShiftNav">↔ GIAO CA</button>':''}${signAvailable?'<button class="v38NavBtn sign" id="v38NavSignature">✍ KÝ</button>':''}<span class="v38NavSpacer"></span>${isAD()?'<button class="v38NavBtn admin" id="v38NavAdmin">⚙ QUẢN LÝ</button>':''}`;
+    nav.innerHTML=`<button class="v38NavBtn home" id="v38NavHome">⌂ TRANG CHỦ</button><button class="v38NavBtn flights" id="v38NavFlights">✈ CHUYẾN</button><button class="v38NavBtn multi" id="v38NavMulti">⇄ MULTI</button>${signAvailable?'<button class="v38NavBtn sign" id="v38NavSignature">✍ KÝ</button>':''}${shiftAvailable?'<button class="v38NavBtn shift" id="v310ShiftNav">↔ GIAO CA</button>':''}<span class="v38NavSpacer"></span>${isAD()?'<button class="v38NavBtn admin" id="v38NavAdmin">⚙ QUẢN LÝ</button>':''}`;
+    document.getElementById('v38NavHome').onclick=()=>root.showRoleHomeIdle?.();
     document.getElementById('v38NavFlights').onclick=()=>root.flightWorkspaceOpenList?.(today());
     document.getElementById('v38NavMulti').onclick=()=>root.sagsV36OpenMultitask?.();
     const sh=document.getElementById('v310ShiftNav');if(sh)sh.onclick=()=>root.v310ShiftOpen?.('create');
@@ -5638,10 +5640,13 @@ Phần của ${who} được ghi “BỎ QUA · KHÔNG E-FORM”, không ghi HO�
     let row=document.getElementById('v324FormActions');
     if(!row){
       row=document.createElement('div');row.id='v324FormActions';
-      row.innerHTML='<button id="v324ExportBtn" class="v324FormAction v324Export" type="button" title="Xuất / Chia sẻ">📤 XUẤT</button><button id="v324HandoverBtn" class="v324FormAction v324Handover" type="button" style="display:none" title="Hoàn tất phần của tôi">✓ HOÀN TẤT</button><button id="v1113QrFormBtn" class="v324FormAction v324Qr" type="button" style="display:none">▣ XUẤT QR</button><button id="v1134QuickTimeBtn" class="v324FormAction" type="button" style="display:none" title="Nhập nhanh các mốc giờ">⏱ NHẬP NHANH</button>';
-      document.body.appendChild(row);
+      row.innerHTML='<button id="v324ExportBtn" class="v324FormAction v324Export" type="button" title="Xuất / Chia sẻ">📤 XUẤT</button><button id="v1113QrFormBtn" class="v324FormAction v324Qr" type="button" style="display:none">▣ XUẤT QR</button><button id="v324HandoverBtn" class="v324FormAction v324Handover" type="button" style="display:none" title="Hoàn tất phần của tôi">✓ HOÀN TẤT</button><button id="v1134QuickTimeBtn" class="v324FormAction" type="button" style="display:none" title="Nhập nhanh các mốc giờ">⏱ NHẬP GIỜ NHANH</button>';
+      bar.insertBefore(row,document.getElementById('v38CleanNav')||null);
       document.getElementById('v324ExportBtn').onclick=()=>{if(typeof root.openExportChoiceMenu==='function')root.openExportChoiceMenu();else alert('Chức năng Xuất/Chia sẻ chưa sẵn sàng.')}
     }
+    /* Keep form actions inside the fixed toolbar so mobile always has exactly
+       one form-action row followed by one navigation row. */
+    if(row.parentElement!==bar)bar.insertBefore(row,document.getElementById('v38CleanNav')||null);
     const hb=document.getElementById('v324HandoverBtn'),qb=document.getElementById('v1113QrFormBtn'),qt=document.getElementById('v1134QuickTimeBtn');
     if(hb)hb.style.display='none';if(qb)qb.style.display='none';
     if(qt){qt.style.display=v1134QuickAllowed()?'inline-flex':'none';qt.onclick=v1134OpenQuickTime;}
@@ -5675,6 +5680,24 @@ Phần của ${who} được ghi “BỎ QUA · KHÔNG E-FORM”, không ghi HO�
   install();setTimeout(install,350);setTimeout(install,1200);
   root.__SAGS_V324_BUILD=BUILD;
 })(typeof window!=='undefined'?window:globalThis);
+
+/* ===== V2.2.42 · TWO-ROW MOBILE TOOLBAR ===== */
+(function(){
+  if(document.getElementById('v2242TwoRowToolbar'))return;
+  const s=document.createElement('style');s.id='v2242TwoRowToolbar';s.textContent=`
+@media(max-width:620px){
+ body.v38-clean-workflow .toolbar.compact-main-toolbar{display:grid!important;grid-template-columns:1fr!important;gap:7px!important}
+ body.v38-clean-workflow #v324FormActions.show{grid-column:1!important;display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:7px!important;padding:0!important}
+ body.v38-clean-workflow #v324FormActions .v324FormAction{width:100%!important;min-width:0!important;min-height:58px!important;padding:6px 3px!important;border-radius:20px!important;font-size:10px!important}
+ body.v38-clean-workflow #v38CleanNav{grid-column:1!important;display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;overflow-x:auto!important;gap:7px!important;padding:0!important}
+ body.v38-clean-workflow #v38CleanNav .v38NavBtn{width:100%!important;min-width:0!important;max-width:none!important;flex:none!important;height:58px!important;min-height:58px!important;border-radius:20px!important}
+ body.v38-clean-workflow #v38NavHome{order:1!important}
+ body.v38-clean-workflow #v38NavFlights{order:2!important}
+ body.v38-clean-workflow #v38NavMulti{order:3!important}
+ body.v38-clean-workflow #v38NavSignature{order:4!important}
+}
+`;document.head.appendChild(s);
+})();
 /* ===== END v324-direct-myflight-handover.js ===== */
 
 
