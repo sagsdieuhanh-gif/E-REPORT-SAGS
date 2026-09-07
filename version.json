@@ -2,8 +2,8 @@
   "version": "V4.2.22",
   "displayVersion": "V4.2.22",
   "label": "V4.2.22",
-  "build": "V4.2.22",
-  "releasedAt": "2026-09-06T20:25:00Z",
+  "build": "V4.2.22-TOOLBAR-ROW2-FIX",
+  "releasedAt": "2026-09-07T00:00:00Z",
   "type": "top-toolbar-row-permanent",
   "notes": "Tập trung sửa hàng trên thanh công cụ: hàng Xuất, Xuất QR, Hoàn tất và Nhập giờ nhanh luôn hiển thị sau đăng nhập; nút chưa khả dụng chỉ bị làm mờ. Tự gắn lại hàng trên nếu thanh công cụ được dựng lại.",
   "message": "Có bản cập nhật V4.2.22"

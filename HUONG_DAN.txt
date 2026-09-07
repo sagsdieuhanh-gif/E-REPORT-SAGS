@@ -1,4 +1,4 @@
-V4.2.22 FIX TOOLBAR ROW 2 AUTO
+U4222 FINAL
 
 Chay:
-unzip V4222_FIX_TB2_AUTO.zip && bash update.sh
+unzip -o ~/storage/downloads/U4222.zip -d ~/E-REPORT-SAGS && cd ~/E-REPORT-SAGS && bash u

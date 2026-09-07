@@ -1,0 +1,20 @@
+#!/data/data/com.termux/files/usr/bin/bash
+set -e
+echo "UPDATE V4.2.22 START"
+
+DIR="$(pwd)"
+
+if [ ! -f "$DIR/version.json" ]; then
+  echo "ERROR: Khong dung thu muc E-REPORT-SAGS"
+  exit 1
+fi
+
+cp -f version.json "$DIR/version.json.tmp" 2>/dev/null || true
+mv -f "$DIR/version.json.tmp" "$DIR/version.json" 2>/dev/null || true
+
+if [ -f "$DIR/ui.css" ]; then
+  echo "UI CSS OK"
+fi
+
+echo "UPDATE V4.2.22 OK"
+echo "VERSION: V4.2.22"
