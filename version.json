@@ -1,10 +1,10 @@
 {
-  "version": "V4.2.22",
-  "displayVersion": "V4.2.22",
-  "label": "V4.2.22",
-  "build": "V4.2.22",
-  "releasedAt": "2026-09-06T20:25:00Z",
-  "type": "top-toolbar-row-permanent",
-  "notes": "Tập trung sửa hàng trên thanh công cụ: hàng Xuất, Xuất QR, Hoàn tất và Nhập giờ nhanh luôn hiển thị sau đăng nhập; nút chưa khả dụng chỉ bị làm mờ. Tự gắn lại hàng trên nếu thanh công cụ được dựng lại.",
-  "message": "Có bản cập nhật V4.2.22"
+  "version": "V2.2.41",
+  "displayVersion": "V2.2.41",
+  "label": "V2.2.41",
+  "build": "V2.2.41-FULLNAME-AFTER-COLON",
+  "releasedAt": "2026-09-06T09:00:00Z",
+  "type": "fullname-after-colon",
+  "notes": "Đặt Full name sát sau dấu hai chấm và căn trái trên dòng chấm; giữ cỡ chữ gốc, chỉ co khi tên thực sự vượt dòng; xóa căn giữa sai của bản trước.",
+  "message": "Có bản cập nhật V2.2.41"
 }
