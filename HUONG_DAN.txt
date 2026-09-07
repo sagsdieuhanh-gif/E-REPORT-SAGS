@@ -1,4 +1,0 @@
-U4222 FINAL
-
-Chay:
-unzip -o ~/storage/downloads/U4222.zip -d ~/E-REPORT-SAGS && cd ~/E-REPORT-SAGS && bash u
