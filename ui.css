@@ -868,3 +868,18 @@ body .compact-main-toolbar .badge{
 /* V4.2.22 TOOLBAR ROW 2 FIX */
 /* force row2 visible after V2.2.47 hide rules */
 .compact-main-toolbar .toolbar-row.row2{display:grid!important;visibility:visible!important;opacity:1!important;height:auto!important;max-height:none!important;overflow:visible!important}
+
+
+/* RESTORE V2.2.41 TOOLBAR VISIBILITY PATCH
+   Chỉ gỡ lỗi mất thanh công cụ do các rule CLEAN CORE cũ ẩn .compact-main-toolbar.
+   Không thay đổi logic nghiệp vụ, quyền hoặc nút chức năng. */
+body.v157-authenticated .toolbar.compact-main-toolbar{
+  display:grid!important;
+  visibility:visible!important;
+  opacity:1!important;
+}
+body.v157-authenticated .toolbar.compact-main-toolbar .toolbar-row.main-actions{
+  display:grid!important;
+  visibility:visible!important;
+  opacity:1!important;
+}
