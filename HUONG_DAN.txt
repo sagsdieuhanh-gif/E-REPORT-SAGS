@@ -1,0 +1,4 @@
+V4.2.22 FIX TOOLBAR ROW 2 AUTO
+
+Chay:
+unzip V4222_FIX_TB2_AUTO.zip && bash update.sh

@@ -865,3 +865,6 @@ body .compact-main-toolbar .badge{
 @media(max-width:600px){
   #v157BottomBar,body .compact-main-toolbar{box-shadow:0 -7px 20px rgba(10,26,58,.22)!important}
 }
+/* V4.2.22 TOOLBAR ROW 2 FIX */
+/* force row2 visible after V2.2.47 hide rules */
+.compact-main-toolbar .toolbar-row.row2{display:grid!important;visibility:visible!important;opacity:1!important;height:auto!important;max-height:none!important;overflow:visible!important}
