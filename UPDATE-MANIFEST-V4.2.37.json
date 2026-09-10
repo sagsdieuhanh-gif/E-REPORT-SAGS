@@ -1,0 +1,37 @@
+{
+  "version": "V4.2.37",
+  "base": "V4.2.36",
+  "purpose": "AD FORM LIBRARY + DIRECT OPEN",
+  "checks": {
+    "v2.2.19-runtime-patch.js": "OK",
+    "service-worker.js": "OK",
+    "library_ui": "OK",
+    "embedded_templates": "OK",
+    "existing_launchers": "OK",
+    "admin_only": "OK",
+    "alignment_reused": "OK",
+    "sw_inject": "OK"
+  },
+  "files": [
+    {
+      "path": "v2.2.19-runtime-patch.js",
+      "sha256": "fb99393814bd0f1d174153e63d84e91d1a1f1afc07df6eb4b212a8e42f06c575",
+      "size": 14895
+    },
+    {
+      "path": "service-worker.js",
+      "sha256": "5ad6877b8a1daeb2d3361d47ca1ddf7cb8e20059a580f2a96b31d1039820dbba",
+      "size": 18706
+    },
+    {
+      "path": "version.json",
+      "sha256": "6753672d082fa4958eef9fa4c08d60b3195769c9feeb6e3f16a704cf775ebf4a",
+      "size": 603
+    },
+    {
+      "path": "HDSD-V4.2.37.md",
+      "sha256": "a463463c26dd7b2906ad044c6f4eac5751dd227371259b13a5132bab8bd3c3d3",
+      "size": 1843
+    }
+  ]
+}

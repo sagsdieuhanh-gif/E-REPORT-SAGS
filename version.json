@@ -1,10 +1,10 @@
 {
-  "version": "V4.2.36",
-  "displayVersion": "V4.2.36",
-  "label": "V4.2.36",
-  "build": "V4.2.36-AD-FORM-ALIGN",
-  "releasedAt": "2026-09-10T07:51:46Z",
-  "type": "admin-form-alignment",
-  "notes": "Thêm chức năng AD căn chỉnh biểu mẫu trực quan. AD mở mẫu, chọn ô và kéo hoặc dùng mũi tên 1/5 px; có tùy chọn dịch cả dòng. LƯU ÁP DỤNG lưu cấu hình theo từng mẫu/từng ô vào Firebase ui_form_alignment và mọi máy tự đọc/áp dụng khi mở cùng biểu mẫu.",
-  "message": "Có bản cập nhật V4.2.36 · AD CĂN CHỈNH BIỂU MẪU"
+  "version": "V4.2.37",
+  "displayVersion": "V4.2.37",
+  "label": "V4.2.37",
+  "build": "V4.2.37-AD-FORM-LIBRARY",
+  "releasedAt": "2026-09-10T08:13:10Z",
+  "type": "admin-form-library",
+  "notes": "AD Form Alignment Center có thêm MỞ BIỂU MẪU. Hệ thống tự quét biểu mẫu nhúng và các nút mở biểu mẫu hiện có, cho AD chọn mẫu trực tiếp rồi vào chế độ căn chỉnh; không cần mở biểu mẫu trước. Giữ lưu Firebase và tự áp dụng đa máy.",
+  "message": "Có bản cập nhật V4.2.37 · AD MỞ BIỂU MẪU NGAY TRONG CĂN CHỈNH"
 }
