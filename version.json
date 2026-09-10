@@ -1,10 +1,10 @@
 {
-  "version": "V4.2.32",
-  "displayVersion": "V4.2.32",
-  "label": "V4.2.32",
-  "build": "V4.2.32-TIME-FIRST-REPORT",
-  "releasedAt": "2026-09-10T06:54:23Z",
-  "type": "shift-report-time-first",
-  "notes": "Sửa tận gốc BÁO CÁO CA theo TIME-FIRST: lọc hồ sơ theo cửa sổ thời gian trước khi đọc workspace; chỉ dùng workspace khi workspace.flightId khớp chính xác flight_record.flightId; C.aggregate tiếp tục tính cuối cùng đúng khoảng TỪ–ĐẾN. Không lấy workspace của chuyến khác.",
-  "message": "Có bản cập nhật V4.2.32 · BÁO CÁO TỔNG HỢP THEO THỜI GIAN"
+  "version": "V4.2.33",
+  "displayVersion": "V4.2.33",
+  "label": "V4.2.33",
+  "build": "V4.2.33-DATE-SHIFT-EXPORT",
+  "releasedAt": "2026-09-10T07:16:33Z",
+  "type": "ultra-simple-shift-report",
+  "notes": "BÁO CÁO CA chỉ còn chọn NGÀY và CA SÁNG/CA TỐI. Nút TẠO & XUẤT PDF tự đặt giờ ca, tự chọn phạm vi toàn ca, đọc kho lưu trữ, tổng hợp TIME-FIRST và mở IN/LƯU PDF. Không hiển thị TỪ/ĐẾN, ngày nguồn, phạm vi, biểu mẫu chỉnh tay hay tác vụ trung gian.",
+  "message": "Có bản cập nhật V4.2.33 · CHỌN NGÀY + CA → XUẤT PDF"
 }

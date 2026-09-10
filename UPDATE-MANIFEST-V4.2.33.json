@@ -1,0 +1,49 @@
+{
+  "version": "V4.2.33",
+  "base": "V4.2.32 TIME-FIRST + V4.2.29 SMART VOICE",
+  "purpose": "ONLY DATE + SHIFT, THEN EXPORT",
+  "shiftPresets": {
+    "day": "08:15-18:15",
+    "night": "18:15-08:15 next day"
+  },
+  "automatic": {
+    "scope": "all",
+    "archive": true,
+    "load": true,
+    "printPdf": true,
+    "quickIncidentAggregation": true
+  },
+  "checks": {
+    "report.js": "OK",
+    "service-worker.js": "OK",
+    "ultra_ui_fields": "OK",
+    "time_first_preserved": "OK"
+  },
+  "files": [
+    {
+      "path": "report.js",
+      "sha256": "10fc2145fd4a90f68603e10f8a22bd4b4fb301480d77c3a413b6ecf0a775a4c1",
+      "size": 27187
+    },
+    {
+      "path": "report.css",
+      "sha256": "4464e11030ad300ddc6af316f4459b16deb61f6383e5bcb853edaa9e389cab8a",
+      "size": 2408
+    },
+    {
+      "path": "service-worker.js",
+      "sha256": "1097761ad2228f17b679fc3256fad764860f900f6ed8d9fba78ae219f721aad1",
+      "size": 13801
+    },
+    {
+      "path": "version.json",
+      "sha256": "67ca9071d4305f9ac09b423807527ddf577b14b045fd27cf820f8967274a4f85",
+      "size": 613
+    },
+    {
+      "path": "HDSD-V4.2.33.md",
+      "sha256": "43bd755c3fb843c37a34e0d1d5712050d95f0a6d7d7a083a41affb37e75f46ef",
+      "size": 1658
+    }
+  ]
+}

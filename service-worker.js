@@ -1,7 +1,7 @@
-/* E-REPORT/SAGS V4.2.32 · TIME-FIRST SHIFT REPORT */
-const CACHE_NAME="sags-v4.2.32-time-first-report";
-const BUILD="V4.2.32-TIME-FIRST-REPORT";
-const DISPLAY_VERSION="V4.2.32";
+/* E-REPORT/SAGS V4.2.33 · DATE + SHIFT -> EXPORT */
+const CACHE_NAME="sags-v4.2.33-date-shift-export";
+const BUILD="V4.2.33-DATE-SHIFT-EXPORT";
+const DISPLAY_VERSION="V4.2.33";
 
 const PATCH_V21="./v2.1-runtime-patch.js";
 const PATCH_V22="./v2.2-runtime-patch.js";
@@ -38,7 +38,7 @@ async function fetchNoStore(path){
 }
 async function safePut(cache,key,response){
   try{if(response&&response.ok)await cache.put(key,response.clone())}
-  catch(e){console.info("V4.2.32 cache put skipped",key,e?.name||e?.message||e)}
+  catch(e){console.info("V4.2.33 cache put skipped",key,e?.name||e?.message||e)}
 }
 function stripRetiredScripts(out){
   return String(out||"")
@@ -84,7 +84,7 @@ async function validateRelease(){
     ["./shift-report-core.js","V4.2.24"],
     ["./shift-report.js","V4.2.24-SHIFT-REPORT"],
     ["./quick-incident.js","V4.2.23-VOICE-PHOTO"],
-    ["./report.js","V4.2.30"],
+    ["./report.js","V4.2.33"],
     [PATCH_V22,"V2.2-ARRDEP-CHOICE-LOCALFIRST"],
     [PATCH_V222,"V2.2.2-DEP-RECEIVE-AFTER-ARR"],
     [PATCH_V225,"V2.2.5-SIGNATURE-EXPORT-STORAGE-FIX-R2"],
@@ -168,7 +168,7 @@ if($('srArchive').checked)`;
       changed=true;
     }
 
-    if(!changed)console.warn("V4.2.32: không tìm thấy mẫu TIME-FIRST cần vá trong shift-report.js");
+    if(!changed)console.warn("V4.2.33: không tìm thấy mẫu TIME-FIRST cần vá trong shift-report.js");
 
     const headers=new Headers(response.headers);
     headers.delete("content-length");
