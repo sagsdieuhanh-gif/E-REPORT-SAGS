@@ -1,4 +1,4 @@
-/* E-REPORT/SAGS V4.2.25 · legacy report UI retired */
+/* E-REPORT/SAGS V4.2.26 · legacy reports permanently hidden */
 #v1171ReportModal,
 .v1171Panel,
 .v1171Tabs,
@@ -7,5 +7,11 @@
 .v1171Actions,
 #v1171Output,
 #v1171Status{
+  display:none !important;
+}
+
+/* Old inline-handler buttons are hidden even before JS cleanup executes. */
+[onclick*="v1171OpenDayReport"],
+[onclick*="v1171OpenNightReport"]{
   display:none !important;
 }

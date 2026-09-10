@@ -1,49 +1,71 @@
-/* E-REPORT/SAGS V4.2.25 · REMOVE LEGACY REPORTS
-   Legacy day/night report UI is retired.
-   Only the current SHIFT REPORT (sagsShiftOpen) remains available. */
+/* E-REPORT/SAGS V4.2.26 · HARD REMOVE LEGACY REPORT BUTTONS
+   Retire every legacy DAY BRIEF / NIGHT REPORT entry point.
+   Keep only the current SHIFT REPORT. */
 (function(root){
   "use strict";
-  if(root.__SAGS_REPORT_V425_CLEANUP)return;
-  root.__SAGS_REPORT_V425_CLEANUP=true;
+  if(root.__SAGS_REPORT_V426_CLEANUP)return;
+  root.__SAGS_REPORT_V426_CLEANUP=true;
 
-  function openNewReport(){
-    if(typeof root.sagsShiftOpen==="function"){
-      return root.sagsShiftOpen();
-    }
-    try{
-      alert("BÁO CÁO CA đang được nạp. Vui lòng mở lại sau khi giao diện hoàn tất.");
-    }catch(_){}
+  const OLD_FN_NAMES=["v1171OpenDayReport","v1171OpenNightReport"];
+
+  function norm(v){
+    return String(v??"")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g,"")
+      .replace(/Đ/g,"D").replace(/đ/g,"d")
+      .replace(/\s+/g," ")
+      .trim()
+      .toUpperCase();
   }
 
-  // Compatibility only: any old caller now opens the new report.
-  root.v1171OpenDayReport=openNewReport;
-  root.v1171OpenNightReport=openNewReport;
+  function isLegacyControl(el){
+    if(!el || el.id==="srOpen" || el.id==="srFromOld") return false;
 
-  function retireLegacyReportUi(){
-    // Remove the legacy modal if an older cached/runtime block created it.
-    const oldModal=document.getElementById("v1171ReportModal");
-    if(oldModal) oldModal.remove();
+    const t=norm(el.textContent);
+    const title=norm(el.getAttribute?.("title"));
+    const aria=norm(el.getAttribute?.("aria-label"));
+    const onclick=String(el.getAttribute?.("onclick")||"");
 
-    // Remove buttons/links that explicitly call the retired report entry points.
-    document.querySelectorAll(
-      '[onclick*="v1171OpenDayReport"],[onclick*="v1171OpenNightReport"]'
+    // Match the labels actually shown on the toolbar, with/without icons/prefixes.
+    const legacyText=
+      t.includes("GIAO BAN NGAY") ||
+      t.includes("BAO CAO BAY DEM") ||
+      t.includes("BAO CAO CHIEU DEM") ||
+      t.includes("BAO CAO TINH HINH PHUC VU BAY CHIEU DEM") ||
+      title.includes("GIAO BAN NGAY") ||
+      title.includes("BAO CAO BAY DEM") ||
+      aria.includes("GIAO BAN NGAY") ||
+      aria.includes("BAO CAO BAY DEM");
+
+    const legacyHandler=OLD_FN_NAMES.some(fn=>onclick.includes(fn));
+    return legacyText || legacyHandler;
+  }
+
+  function removeLegacyControls(rootNode=document){
+    // Remove retired modal from old report.js/runtime cache.
+    document.getElementById("v1171ReportModal")?.remove();
+
+    // Toolbar controls can be inserted after login/role changes, so scan all clickable controls.
+    rootNode.querySelectorAll?.(
+      'button,a,[role="button"],input[type="button"],input[type="submit"]'
     ).forEach(el=>{
-      if(el.id!=="srOpen") el.remove();
-    });
-
-    // Remove obvious legacy report controls left by old HTML/runtime patches,
-    // while never touching the current "BÁO CÁO CA" button.
-    document.querySelectorAll("button,a").forEach(el=>{
-      if(el.id==="srOpen")return;
-      const t=String(el.textContent||"").trim().toUpperCase();
-      if(
-        t==="BÁO CÁO GIAO BAN NGÀY" ||
-        t==="BÁO CÁO BAY ĐÊM" ||
-        t==="BÁO CÁO CHIỀU ĐÊM" ||
-        t==="BÁO CÁO TÌNH HÌNH PHỤC VỤ BAY CHIỀU ĐÊM"
-      ) el.remove();
+      if(isLegacyControl(el)) el.remove();
     });
   }
+
+  // Any stale direct call is retired. It does NOT open another report.
+  root.v1171OpenDayReport=function(){ removeLegacyControls(); };
+  root.v1171OpenNightReport=function(){ removeLegacyControls(); };
+
+  // Block a legacy control at capture phase even if an old runtime inserts it
+  // between MutationObserver cycles.
+  document.addEventListener("click",function(ev){
+    const el=ev.target?.closest?.('button,a,[role="button"],input[type="button"],input[type="submit"]');
+    if(!isLegacyControl(el))return;
+    ev.preventDefault();
+    ev.stopImmediatePropagation();
+    el.remove();
+  },true);
 
   let queued=false;
   function scheduleCleanup(){
@@ -51,18 +73,25 @@
     queued=true;
     requestAnimationFrame(()=>{
       queued=false;
-      retireLegacyReportUi();
+      removeLegacyControls();
     });
   }
 
   if(document.readyState==="loading"){
-    document.addEventListener("DOMContentLoaded",retireLegacyReportUi,{once:true});
+    document.addEventListener("DOMContentLoaded",()=>removeLegacyControls(),{once:true});
   }else{
-    retireLegacyReportUi();
+    removeLegacyControls();
   }
 
+  // Old toolbar code can recreate buttons after authentication/profile rendering.
   new MutationObserver(scheduleCleanup).observe(document.documentElement,{
     childList:true,
-    subtree:true
+    subtree:true,
+    characterData:true
+  });
+
+  // Extra post-login safety without a continuous timer.
+  ["sags:login","sags:rolechange","sags:profilechange","sags:ui-ready"].forEach(name=>{
+    window.addEventListener(name,scheduleCleanup);
   });
 })(typeof window!=="undefined"?window:globalThis);

@@ -1,10 +1,10 @@
 {
-  "version": "V4.2.25",
-  "displayVersion": "V4.2.25",
-  "label": "V4.2.25",
-  "build": "V4.2.25-REPORT-CLEANUP",
-  "releasedAt": "2026-09-10T06:01:58Z",
+  "version": "V4.2.26",
+  "displayVersion": "V4.2.26",
+  "label": "V4.2.26",
+  "build": "V4.2.26-ONLY-SHIFT-REPORT",
+  "releasedAt": "2026-09-10T06:08:13Z",
   "type": "report-cleanup",
-  "notes": "Bỏ toàn bộ giao diện/chức năng báo cáo ngày-đêm cũ V1.1.x; chỉ giữ BÁO CÁO KHAI THÁC CA TRỰC hiện hành. Lệnh cũ được chuyển sang báo cáo ca để tránh lỗi từ cache/runtime cũ.",
-  "message": "Có bản cập nhật V4.2.25 · CHỈ GIỮ BÁO CÁO CA"
+  "notes": "Gỡ cứng mọi nút báo cáo cũ GIAO BAN NGÀY / BÁO CÁO BAY ĐÊM, kể cả nút được runtime cũ chèn lại sau đăng nhập. Chỉ giữ BÁO CÁO CA hiện hành.",
+  "message": "Có bản cập nhật V4.2.26 · CHỈ GIỮ BÁO CÁO CA"
 }

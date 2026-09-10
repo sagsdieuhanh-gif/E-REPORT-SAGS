@@ -1,0 +1,32 @@
+{
+  "version": "V4.2.26",
+  "base": "V4.2.25 / V4.2.24 main code",
+  "purpose": "REMOVE VISIBLE LEGACY GIAO BAN NGAY / BAO CAO BAY DEM BUTTONS",
+  "files": [
+    {
+      "path": "report.js",
+      "sha256": "e272661946e2b98de55af7ca7ecc3d77b1ad5ae32ab39a297df9097e082d4970",
+      "size": 3331
+    },
+    {
+      "path": "report.css",
+      "sha256": "70c0b78e6f445e5ae166b1a8bc765ec1a38e729c2f024ff23cd67da26de390f3",
+      "size": 381
+    },
+    {
+      "path": "version.json",
+      "sha256": "a087c37a25e5a0135b8f716e32340883fa22cfd5467b8c515364d9eedb538abf",
+      "size": 458
+    },
+    {
+      "path": "service-worker.js",
+      "sha256": "47663d86fee9f9ddb31a859dcd636b5dfdb91ae41b8a356aaaba3d641a5cc30e",
+      "size": 8171
+    },
+    {
+      "path": "HDSD-V4.2.26.md",
+      "sha256": "5e871b4b5adb1c6cd6141e10064f17e691ea6c9790169306ed545fd2e14790cb",
+      "size": 960
+    }
+  ]
+}
