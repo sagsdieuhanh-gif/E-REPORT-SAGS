@@ -1,0 +1,32 @@
+{
+  "version": "V4.2.31",
+  "base": "V4.2.30",
+  "purpose": "SHIFT REPORT WORKSPACE MISMATCH SAFE SKIP",
+  "behavior": {
+    "mismatched_workspace": "skip workspace only",
+    "wrong_workspace_data_used": false,
+    "whole_report_aborted": false,
+    "operator_warning": true
+  },
+  "checks": {
+    "service-worker.js": "OK",
+    "workspace_patch_simulation": "OK"
+  },
+  "files": [
+    {
+      "path": "service-worker.js",
+      "sha256": "ad3f4a8aa892b3443addca60b03b7ac5388e09553d6fe3b185f5d845b118f029",
+      "size": 10530
+    },
+    {
+      "path": "version.json",
+      "sha256": "0709fab081845e1a811eabd46fb447dddddb4ee35b158e50925dcb7880acf813",
+      "size": 610
+    },
+    {
+      "path": "HDSD-V4.2.31.md",
+      "sha256": "0c3fcf42d9378d5a00e10ea8e46ff953f303f2a46c687d8b4de1304977504ad4",
+      "size": 1278
+    }
+  ]
+}

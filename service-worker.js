@@ -1,7 +1,7 @@
-/* E-REPORT/SAGS V4.2.30 · LIGHTWEIGHT SAFE UPDATE */
-const CACHE_NAME="sags-v4.2.30-simple-report-ui";
-const BUILD="V4.2.30-SIMPLE-REPORT-UI";
-const DISPLAY_VERSION="V4.2.30";
+/* E-REPORT/SAGS V4.2.31 · WORKSPACE MISMATCH SAFE FIX */
+const CACHE_NAME="sags-v4.2.31-workspace-mismatch-fix";
+const BUILD="V4.2.31-WORKSPACE-MISMATCH-FIX";
+const DISPLAY_VERSION="V4.2.31";
 
 const PATCH_V21="./v2.1-runtime-patch.js";
 const PATCH_V22="./v2.2-runtime-patch.js";
@@ -38,7 +38,7 @@ async function fetchNoStore(path){
 }
 async function safePut(cache,key,response){
   try{if(response&&response.ok)await cache.put(key,response.clone())}
-  catch(e){console.info("V4.2.30 cache put skipped",key,e?.name||e?.message||e)}
+  catch(e){console.info("V4.2.31 cache put skipped",key,e?.name||e?.message||e)}
 }
 function stripRetiredScripts(out){
   return String(out||"")
@@ -110,6 +110,48 @@ async function validateRelease(){
   if(!ir.ok)throw new Error("index.html HTTP "+ir.status);
 }
 
+
+function patchShiftReportWorkspaceMismatch(response){
+  if(!response||!response.ok)return response;
+  return response.text().then(text=>{
+    let out=String(text||"");
+    let changed=false;
+
+    // A stale/reused workspaceKey must never stop the whole Shift Report.
+    // Do NOT consume envelope data from a workspace whose flightId belongs to another flight.
+    const mismatchRe=/if\(w\?\.flightId\s*&&\s*S\(w\.flightId\)\s*!==\s*S\(r\.flightId\)\)\s*throw Error\('Workspace không khớp flightId: '\s*\+\s*r\.flightId\);/;
+    if(mismatchRe.test(out)){
+      out=out.replace(
+        mismatchRe,
+        "if(w?.flightId&&S(w.flightId)!==S(r.flightId)){r._workspaceMismatch=r._workspaceMismatch||[];r._workspaceMismatch.push({workspaceKey:wk,workspaceFlightId:S(w.flightId),recordFlightId:S(r.flightId)});console.warn('BÁO CÁO CA · bỏ qua workspace không khớp',wk,w.flightId,r.flightId);continue;}"
+      );
+      changed=true;
+    }
+
+    // Tell the operator that stale links were skipped, while allowing aggregation to finish.
+    const doneNeedle="render();saveLocal();status('Đã tổng hợp '+model.relevant.length+' hồ sơ liên quan. Rà soát số liệu và sự việc trước khi chốt.')";
+    if(out.includes(doneNeedle)){
+      out=out.replace(
+        doneNeedle,
+        "render();saveLocal();const mismatchCount=records.reduce((n,x)=>n+((x._workspaceMismatch||[]).length),0);status('Đã tổng hợp '+model.relevant.length+' hồ sơ liên quan.'+(mismatchCount?' Đã bỏ qua '+mismatchCount+' workspace liên kết sai chuyến; dữ liệu của workspace sai không được sử dụng.':'')+' Rà soát số liệu và sự việc trước khi chốt.')"
+      );
+      changed=true;
+    }
+
+    if(!changed)console.warn("V4.2.31: không tìm thấy mẫu workspace mismatch cần vá trong shift-report.js");
+    const headers=new Headers(response.headers);
+    headers.delete("content-length");
+    headers.delete("content-encoding");
+    headers.set("Content-Type","application/javascript; charset=utf-8");
+    headers.set("Cache-Control","no-cache");
+    return new Response(out,{
+      status:response.status,
+      statusText:response.statusText,
+      headers
+    });
+  });
+}
+
 self.addEventListener("install",event=>{event.waitUntil(validateRelease())});
 self.addEventListener("activate",event=>{
   event.waitUntil((async()=>{
@@ -169,7 +211,10 @@ self.addEventListener("fetch",event=>{
     event.respondWith((async()=>{
       const c=await caches.open(CACHE_NAME);
       try{
-        const r=await fetch(event.request,{cache:"no-store"});
+        let r=await fetch(event.request,{cache:"no-store"});
+        if(url.pathname.endsWith("/shift-report.js")){
+          r=await patchShiftReportWorkspaceMismatch(r);
+        }
         await safePut(c,event.request,r);
         return r;
       }catch(_){

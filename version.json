@@ -1,10 +1,10 @@
 {
-  "version": "V4.2.30",
-  "displayVersion": "V4.2.30",
-  "label": "V4.2.30",
-  "build": "V4.2.30-SIMPLE-REPORT-UI",
-  "releasedAt": "2026-09-10T06:40:20Z",
-  "type": "report-ui-simplify",
-  "notes": "Soạn lại giao diện BÁO CÁO CA và BÁO CÁO NHANH theo kiểu gọn, trực quan: chia bước rõ ràng, gom nhóm trường nhập, giữ 3 nút chính, thu gọn tác vụ nâng cao và lịch sử. Tiếp tục chỉ AD/DH/ĐH được lập-chốt-xuất báo cáo ca; tài khoản nghiệp vụ dùng báo cáo nhanh.",
-  "message": "Có bản cập nhật V4.2.30 · GIAO DIỆN BÁO CÁO ĐƠN GIẢN"
+  "version": "V4.2.31",
+  "displayVersion": "V4.2.31",
+  "label": "V4.2.31",
+  "build": "V4.2.31-WORKSPACE-MISMATCH-FIX",
+  "releasedAt": "2026-09-10T06:48:56Z",
+  "type": "shift-report-hotfix",
+  "notes": "Sửa BÁO CÁO CA bị dừng với lỗi Workspace không khớp flightId. Workspace có flightId khác chuyến hiện tại sẽ bị bỏ qua an toàn; dữ liệu workspace sai không được sử dụng. Báo cáo tiếp tục tổng hợp và hiển thị số workspace liên kết sai đã bỏ qua.",
+  "message": "Có bản cập nhật V4.2.31 · SỬA WORKSPACE KHÔNG KHỚP FLIGHT"
 }
