@@ -1,0 +1,35 @@
+{
+  "version": "V4.2.32",
+  "base": "V4.2.31",
+  "purpose": "TIME-FIRST -> FLIGHT -> EXACT WORKSPACE -> AGGREGATE",
+  "behavior": {
+    "prefilter_before_workspace": true,
+    "candidate_window": "from - 24h to to + 12h, plus carry-over/missing-time same-day records",
+    "final_window": "exact [from,to) by existing C.aggregate",
+    "workspace_match": "workspace.flightId must equal flight_record.flightId",
+    "use_mismatched_workspace": false
+  },
+  "checks": {
+    "service-worker.js": "OK",
+    "time_first_block_match": "OK",
+    "exact_workspace_rule_present": "OK",
+    "final_exact_aggregate_preserved": "OK"
+  },
+  "files": [
+    {
+      "path": "service-worker.js",
+      "sha256": "a4914f3d27a56a5a233f9c6d7c7b8f5edd70dcbee94e0958cb2e0adb56658230",
+      "size": 13802
+    },
+    {
+      "path": "version.json",
+      "sha256": "7e0033037098aed25413f9a16ace5fe2e4dc11946605bbe3da4294330058c038",
+      "size": 631
+    },
+    {
+      "path": "HDSD-V4.2.32.md",
+      "sha256": "c48d4b6eff9e019102d23db334ea2a7f6a192b3f22aa2b9848c56550172b2ad2",
+      "size": 2529
+    }
+  ]
+}

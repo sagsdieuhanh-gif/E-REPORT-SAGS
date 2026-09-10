@@ -1,7 +1,7 @@
-/* E-REPORT/SAGS V4.2.31 · WORKSPACE MISMATCH SAFE FIX */
-const CACHE_NAME="sags-v4.2.31-workspace-mismatch-fix";
-const BUILD="V4.2.31-WORKSPACE-MISMATCH-FIX";
-const DISPLAY_VERSION="V4.2.31";
+/* E-REPORT/SAGS V4.2.32 · TIME-FIRST SHIFT REPORT */
+const CACHE_NAME="sags-v4.2.32-time-first-report";
+const BUILD="V4.2.32-TIME-FIRST-REPORT";
+const DISPLAY_VERSION="V4.2.32";
 
 const PATCH_V21="./v2.1-runtime-patch.js";
 const PATCH_V22="./v2.2-runtime-patch.js";
@@ -38,7 +38,7 @@ async function fetchNoStore(path){
 }
 async function safePut(cache,key,response){
   try{if(response&&response.ok)await cache.put(key,response.clone())}
-  catch(e){console.info("V4.2.31 cache put skipped",key,e?.name||e?.message||e)}
+  catch(e){console.info("V4.2.32 cache put skipped",key,e?.name||e?.message||e)}
 }
 function stripRetiredScripts(out){
   return String(out||"")
@@ -111,34 +111,65 @@ async function validateRelease(){
 }
 
 
-function patchShiftReportWorkspaceMismatch(response){
+function patchShiftReportTimeFirst(response){
   if(!response||!response.ok)return response;
   return response.text().then(text=>{
     let out=String(text||"");
     let changed=false;
 
-    // A stale/reused workspaceKey must never stop the whole Shift Report.
-    // Do NOT consume envelope data from a workspace whose flightId belongs to another flight.
-    const mismatchRe=/if\(w\?\.flightId\s*&&\s*S\(w\.flightId\)\s*!==\s*S\(r\.flightId\)\)\s*throw Error\('Workspace không khớp flightId: '\s*\+\s*r\.flightId\);/;
-    if(mismatchRe.test(out)){
+    /*
+      TIME-FIRST strategy:
+      1) Read flight_records only as source candidates.
+      2) Pre-filter by report time / nearby operational time BEFORE reading workspaces.
+      3) Read only workspace keys of those candidates.
+      4) Accept a workspace only when workspace.flightId === flight_record.flightId.
+      5) C.aggregate still performs the final exact [from,to) calculation.
+    */
+    const workspaceBlock=/const cache=new Map\(\);await batch\(records,async r=>\{[\s\S]*?\}\);\nif\(\$\('srArchive'\)\.checked\)/;
+
+    if(workspaceBlock.test(out)){
+      const replacement=`const candidateFrom=from-24*3600000,candidateTo=to+12*3600000,reportStartDay=C.day(from),reportEndDay=C.day(to-1);
+const preTimeCandidate=r=>{try{const n=C.normalize(r,overrides[S(r.opDate)+'/'+S(r.flightId)]||{}),times=[n.sta,n.std,n.etd,n.on,n.door,n.pb].filter(Number.isFinite),op=S(r.opDate),dayMatch=op>=reportStartDay&&op<=reportEndDay,nearTime=times.some(t=>t>=candidateFrom&&t<candidateTo),carried=Number.isFinite(n.on)&&n.on<from&&(!Number.isFinite(n.pb)||n.pb>=from),unknown=dayMatch&&(!n.legs.length||n.legs.some(l=>!Number.isFinite(l.plan)));return nearTime||carried||unknown}catch(_){const op=S(r.opDate);return op>=reportStartDay&&op<=reportEndDay}};
+const allSourceRecords=records,timeCandidates=records.filter(preTimeCandidate);let timeFilteredOut=allSourceRecords.length-timeCandidates.length,workspaceRejected=0;records=timeCandidates;
+status('Đã lọc theo thời gian. Đang đọc workspace đúng chuyến…');
+const cache=new Map();await batch(records,async r=>{const assignments=Object.values(r.assignments||{}).filter(a=>['FSAGS','FSAGS421','FSAGS423'].includes(U(a.formGroup))||/GRND_COR/.test(U(a.sourceColumn))),keys=[r.modules?.RAMP?.workspaceKey,...assignments.map(a=>a.workspaceKey||a.rosterWorkspaceKey)].filter(Boolean);let best=null;const candidates=[];for(const wk of [...new Set(keys)]){if(!cache.has(wk))cache.set(wk,db('roster_flight_workspaces/'+safe(wk)).once('value'));const w=(await cache.get(wk)).val();if(!w||S(w.flightId)!==S(r.flightId)){workspaceRejected++;continue}if(w?.envelope?.state)candidates.push({...w,_wk:wk});if(w?.envelope?.state&&(!best||Number(w.envelopeUpdatedAtMs||w.updatedAtMs)>Number(best.envelopeUpdatedAtMs||best.updatedAtMs)))best=w}if(best){r._ramp=times(best.envelope.state);for(const key of ['chockOn','doorClose','pushback']){const compatible=candidates.filter(w=>{const scopes=assignments.filter(a=>(a.workspaceKey||a.rosterWorkspaceKey)===w._wk).map(a=>U(a.assignmentScope||'BOTH'));return !scopes.length||scopes.some(s=>s==='BOTH'||(key==='chockOn'?!s.includes('DEP'):!s.includes('ARR')))}).sort((a,b)=>Number(b.envelopeUpdatedAtMs||b.updatedAtMs)-Number(a.envelopeUpdatedAtMs||a.updatedAtMs));if(compatible.length)r._ramp[key]=times(compatible[0].envelope.state)[key]}r._source='Biểu mẫu chung · '+S(best.workspaceKey);r.route1=r.route1||best.envelope.state.route1||best.envelope.state.f421_route1;r.route3=r.route3||best.envelope.state.route3||best.envelope.state.f421_route3}});
+if($('srArchive').checked)`;
+      out=out.replace(workspaceBlock,replacement);
+      changed=true;
+    }
+
+    // Archive records are also time-prefiltered before being added to aggregation input.
+    const archivePush="const old=await root.sagsShiftReadArchive(d,records);records.push(...old)";
+    if(out.includes(archivePush)){
       out=out.replace(
-        mismatchRe,
-        "if(w?.flightId&&S(w.flightId)!==S(r.flightId)){r._workspaceMismatch=r._workspaceMismatch||[];r._workspaceMismatch.push({workspaceKey:wk,workspaceFlightId:S(w.flightId),recordFlightId:S(r.flightId)});console.warn('BÁO CÁO CA · bỏ qua workspace không khớp',wk,w.flightId,r.flightId);continue;}"
+        archivePush,
+        "const old=await root.sagsShiftReadArchive(d,records),oldCandidates=old.filter(preTimeCandidate);timeFilteredOut+=old.length-oldCandidates.length;records.push(...oldCandidates)"
       );
       changed=true;
     }
 
-    // Tell the operator that stale links were skipped, while allowing aggregation to finish.
+    // Persist diagnostic strategy in coverage without changing report calculation.
+    const coverageNeedle="model.coverage={from:sourceFrom,to:endDay,archive:$('srArchive').checked};";
+    if(out.includes(coverageNeedle)){
+      out=out.replace(
+        coverageNeedle,
+        "model.coverage={from:sourceFrom,to:endDay,archive:$('srArchive').checked,strategy:'TIME_FIRST',timeFilteredOut,workspaceRejected};"
+      );
+      changed=true;
+    }
+
+    // Clear status tells operator exactly what happened.
     const doneNeedle="render();saveLocal();status('Đã tổng hợp '+model.relevant.length+' hồ sơ liên quan. Rà soát số liệu và sự việc trước khi chốt.')";
     if(out.includes(doneNeedle)){
       out=out.replace(
         doneNeedle,
-        "render();saveLocal();const mismatchCount=records.reduce((n,x)=>n+((x._workspaceMismatch||[]).length),0);status('Đã tổng hợp '+model.relevant.length+' hồ sơ liên quan.'+(mismatchCount?' Đã bỏ qua '+mismatchCount+' workspace liên kết sai chuyến; dữ liệu của workspace sai không được sử dụng.':'')+' Rà soát số liệu và sự việc trước khi chốt.')"
+        "render();saveLocal();status('Đã tổng hợp theo thời gian: '+model.relevant.length+' hồ sơ liên quan.'+(timeFilteredOut?' Đã loại '+timeFilteredOut+' hồ sơ ngoài cửa sổ trước khi đọc workspace.':'')+(workspaceRejected?' Đã bỏ '+workspaceRejected+' workspace không thuộc đúng flightId.':'')+' Rà soát số liệu và sự việc trước khi chốt.')"
       );
       changed=true;
     }
 
-    if(!changed)console.warn("V4.2.31: không tìm thấy mẫu workspace mismatch cần vá trong shift-report.js");
+    if(!changed)console.warn("V4.2.32: không tìm thấy mẫu TIME-FIRST cần vá trong shift-report.js");
+
     const headers=new Headers(response.headers);
     headers.delete("content-length");
     headers.delete("content-encoding");
@@ -213,7 +244,7 @@ self.addEventListener("fetch",event=>{
       try{
         let r=await fetch(event.request,{cache:"no-store"});
         if(url.pathname.endsWith("/shift-report.js")){
-          r=await patchShiftReportWorkspaceMismatch(r);
+          r=await patchShiftReportTimeFirst(r);
         }
         await safePut(c,event.request,r);
         return r;
