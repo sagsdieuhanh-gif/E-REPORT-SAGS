@@ -1,10 +1,10 @@
 {
-  "version": "V4.2.35",
-  "displayVersion": "V4.2.35",
-  "label": "V4.2.35",
-  "build": "V4.2.35-STRICT-SHIFT-DEDUP",
-  "releasedAt": "2026-09-10T07:44:51Z",
-  "type": "shift-report-count-fix",
-  "notes": "Siết dữ liệu BÁO CÁO CA: gộp hồ sơ live + archive theo flightId/opDate trước khi tính; mỗi flightId chỉ giữ một bản tốt nhất; chống trùng lượt theo flightId+direction; chuyến bàn giao chỉ nhận từ ca ngay trước; hồ sơ không có thời gian xác định không được tự đưa vào PDF chỉ vì cùng ngày. Giữ TIME-FIRST và giao diện Ngày + Ca → Xuất PDF.",
-  "message": "Có bản cập nhật V4.2.35 · SỬA SỐ LIỆU BÁO CÁO BỊ NHIỀU"
+  "version": "V4.2.36",
+  "displayVersion": "V4.2.36",
+  "label": "V4.2.36",
+  "build": "V4.2.36-AD-FORM-ALIGN",
+  "releasedAt": "2026-09-10T07:51:46Z",
+  "type": "admin-form-alignment",
+  "notes": "Thêm chức năng AD căn chỉnh biểu mẫu trực quan. AD mở mẫu, chọn ô và kéo hoặc dùng mũi tên 1/5 px; có tùy chọn dịch cả dòng. LƯU ÁP DỤNG lưu cấu hình theo từng mẫu/từng ô vào Firebase ui_form_alignment và mọi máy tự đọc/áp dụng khi mở cùng biểu mẫu.",
+  "message": "Có bản cập nhật V4.2.36 · AD CĂN CHỈNH BIỂU MẪU"
 }

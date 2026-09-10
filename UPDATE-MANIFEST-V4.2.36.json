@@ -1,0 +1,38 @@
+{
+  "version": "V4.2.36",
+  "base": "V4.2.35",
+  "purpose": "AD VISUAL FORM ALIGNMENT + FIREBASE SYNC",
+  "storagePath": "ui_form_alignment/<templateKey>",
+  "checks": {
+    "v2.2.18-runtime-patch.js": "OK",
+    "service-worker.js": "OK",
+    "firebase_sync": "OK",
+    "admin_only_editor": "OK",
+    "cross_device_listener": "OK",
+    "row_alignment": "OK",
+    "relative_offsets": "OK",
+    "sw_inject": "OK"
+  },
+  "files": [
+    {
+      "path": "v2.2.18-runtime-patch.js",
+      "sha256": "cc96256f15d5f7919391d8229bafef391bcff96c8413718168c104aefb057870",
+      "size": 21344
+    },
+    {
+      "path": "service-worker.js",
+      "sha256": "0eabc2dd924d40a907e79fae2237c047d7f4db492e190d925cbce31fae444c85",
+      "size": 18527
+    },
+    {
+      "path": "version.json",
+      "sha256": "7e451df03dcf3f9663d39a978ce21ec314d9a56beae49177c723fafe3a1d3fe3",
+      "size": 604
+    },
+    {
+      "path": "HDSD-V4.2.36.md",
+      "sha256": "05ca13d22953c22a86ccb67a676ba9fdb7fd13be58b6038a4198dfbf36d9e310",
+      "size": 2382
+    }
+  ]
+}

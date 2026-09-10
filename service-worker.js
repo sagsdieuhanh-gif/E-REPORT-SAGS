@@ -1,7 +1,7 @@
-/* E-REPORT/SAGS V4.2.35 · STRICT SHIFT DEDUP */
-const CACHE_NAME="sags-v4.2.35-strict-shift-dedup";
-const BUILD="V4.2.35-STRICT-SHIFT-DEDUP";
-const DISPLAY_VERSION="V4.2.35";
+/* E-REPORT/SAGS V4.2.36 · AD FORM ALIGN */
+const CACHE_NAME="sags-v4.2.36-ad-form-align";
+const BUILD="V4.2.36-AD-FORM-ALIGN";
+const DISPLAY_VERSION="V4.2.36";
 
 const PATCH_V21="./v2.1-runtime-patch.js";
 const PATCH_V22="./v2.2-runtime-patch.js";
@@ -18,6 +18,7 @@ const PATCH_V2214="./v2.2.14-runtime-patch.js";
 const PATCH_V2215="./v2.2.15-runtime-patch.js";
 const PATCH_V2216="./v2.2.16-runtime-patch.js";
 const PATCH_V2217="./v2.2.17-runtime-patch.js";
+const PATCH_V2218="./v2.2.18-runtime-patch.js";
 
 const FRESH_SUFFIXES=[
   "/shift-report-core.js","/shift-report.js","/shift-report.css","/quick-incident.js","/quick-incident.css",
@@ -29,7 +30,7 @@ const FRESH_SUFFIXES=[
   "/v2.2.9-runtime-patch.js","/v2.2.10-runtime-patch.js",
   "/v2.2.11-runtime-patch.js","/v2.2.12-runtime-patch.js",
   "/v2.2.13-runtime-patch.js","/v2.2.14-runtime-patch.js",
-  "/v2.2.15-runtime-patch.js","/v2.2.16-runtime-patch.js","/v2.2.17-runtime-patch.js"
+  "/v2.2.15-runtime-patch.js","/v2.2.16-runtime-patch.js","/v2.2.17-runtime-patch.js","/v2.2.18-runtime-patch.js"
 ];
 
 function isFreshPath(pathname){return FRESH_SUFFIXES.some(x=>pathname.endsWith(x));}
@@ -38,7 +39,7 @@ async function fetchNoStore(path){
 }
 async function safePut(cache,key,response){
   try{if(response&&response.ok)await cache.put(key,response.clone())}
-  catch(e){console.info("V4.2.35 cache put skipped",key,e?.name||e?.message||e)}
+  catch(e){console.info("V4.2.36 cache put skipped",key,e?.name||e?.message||e)}
 }
 function stripRetiredScripts(out){
   return String(out||"")
@@ -71,6 +72,7 @@ function patchIndexHtml(html){
   out=injectScript(out,"v2.2.15-runtime-patch.js");
   out=injectScript(out,"v2.2.16-runtime-patch.js");
   out=injectScript(out,"v2.2.17-runtime-patch.js");
+  out=injectScript(out,"v2.2.18-runtime-patch.js");
   return out;
 }
 async function validateRelease(){
@@ -98,7 +100,8 @@ async function validateRelease(){
     [PATCH_V2214,"V2.2.14-COMPACT-LIMIT-CLEANING-STA-STD"],
     [PATCH_V2215,"V2.2.15-DATE-FIRST-LIMIT-CLEANING"],
     [PATCH_V2216,"V2.2.16-DATAHUB-COMBINED-LIMIT-CLEANING-ICON"],
-    [PATCH_V2217,"V2.2.19-REMOVE-LITERAL-NEWLINES"]
+    [PATCH_V2217,"V2.2.19-REMOVE-LITERAL-NEWLINES"],
+    [PATCH_V2218,"V2.2.18-AD-FORM-ALIGN"]
   ];
   for(const [path,marker] of checks){
     const r=await fetchNoStore(path+"?swcheck="+Date.now());
@@ -230,7 +233,7 @@ function patchShiftReportCoreStrict(response){
       changed++;
     }
 
-    if(changed<3)console.warn("V4.2.35: strict core patch applied partially",changed);
+    if(changed<3)console.warn("V4.2.36: strict core patch applied partially",changed);
 
     out="/* SAGS V4.2.35-STRICT-SHIFT-DEDUP · runtime patched */\n"+out;
     const headers=new Headers(response.headers);
