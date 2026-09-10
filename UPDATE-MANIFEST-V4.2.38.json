@@ -1,0 +1,42 @@
+{
+  "version": "V4.2.38",
+  "base": "V4.2.37",
+  "purpose": "ALWAYS SHOW EDIT BUTTON AFTER OPEN FORM",
+  "checks": {
+    "v2.2.18-runtime-patch.js": "OK",
+    "v2.2.19-runtime-patch.js": "OK",
+    "service-worker.js": "OK",
+    "edit_now_button": "OK",
+    "direct_preview_stage": "OK",
+    "top_zindex": "OK",
+    "launcher_button": "OK",
+    "firebase_alignment_preserved": "OK"
+  },
+  "files": [
+    {
+      "path": "v2.2.18-runtime-patch.js",
+      "sha256": "92a4be836e4643004734e1a46d751d3093ffab1c4a9a89ce90d03e265f32d492",
+      "size": 21556
+    },
+    {
+      "path": "v2.2.19-runtime-patch.js",
+      "sha256": "0a5dc0ce39eaeff4fda146ef2759509f6454433415daa057d0d00401ece0d4f3",
+      "size": 16854
+    },
+    {
+      "path": "service-worker.js",
+      "sha256": "fa2e32958f5448ab418e19bdb1871f0f6a12b54106df874340c780adedde1b0f",
+      "size": 18712
+    },
+    {
+      "path": "version.json",
+      "sha256": "1cafbf4d7360172013780034c58aee26887f1c57c9a1426fffb6671c8b3ea912",
+      "size": 689
+    },
+    {
+      "path": "HDSD-V4.2.38.md",
+      "sha256": "c027f07e79fde5318c3e38b46bd7553f602611c1629cb3680ab203edce3e98c4",
+      "size": 1144
+    }
+  ]
+}

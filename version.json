@@ -1,10 +1,10 @@
 {
-  "version": "V4.2.37",
-  "displayVersion": "V4.2.37",
-  "label": "V4.2.37",
-  "build": "V4.2.37-AD-FORM-LIBRARY",
-  "releasedAt": "2026-09-10T08:13:10Z",
-  "type": "admin-form-library",
-  "notes": "AD Form Alignment Center có thêm MỞ BIỂU MẪU. Hệ thống tự quét biểu mẫu nhúng và các nút mở biểu mẫu hiện có, cho AD chọn mẫu trực tiếp rồi vào chế độ căn chỉnh; không cần mở biểu mẫu trước. Giữ lưu Firebase và tự áp dụng đa máy.",
-  "message": "Có bản cập nhật V4.2.37 · AD MỞ BIỂU MẪU NGAY TRONG CĂN CHỈNH"
+  "version": "V4.2.38",
+  "displayVersion": "V4.2.38",
+  "label": "V4.2.38",
+  "build": "V4.2.38-ALIGN-EDIT-BUTTON",
+  "releasedAt": "2026-09-10T08:26:03Z",
+  "type": "form-align-edit-button",
+  "notes": "Sửa mở được biểu mẫu nhưng không thấy nút chỉnh. Sau khi AD mở mẫu từ thư viện, luôn hiện nút nổi 🛠 CHỈNH NGAY ở lớp trên cùng. Mẫu preview được truyền trực tiếp vào bộ căn chỉnh qua sagsFormAlignUseStage; mẫu mở bằng chức năng nghiệp vụ vẫn có nút CHỈNH NGAY và tự kích hoạt khi form tải xong.",
+  "message": "Có bản cập nhật V4.2.38 · HIỆN NÚT CHỈNH NGAY TRÊN BIỂU MẪU"
 }

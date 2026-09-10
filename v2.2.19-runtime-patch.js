@@ -1,4 +1,4 @@
-/* E-REPORT/SAGS V4.2.37 · V2.2.19-AD-FORM-LIBRARY
+/* E-REPORT/SAGS V4.2.38 · V2.2.19-AD-FORM-LIBRARY
    AD can open form templates directly from Form Alignment Center. */
 (function(root){
   'use strict';
@@ -106,6 +106,11 @@
 .sagsLibIntro{margin:8px 0 10px;color:#4e6475}.sagsLibTools{display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:10px}.sagsLibTools input{min-height:44px;padding:9px;border:1px solid #a9bdcc;border-radius:10px;font-size:16px}.sagsLibTools button{min-height:44px;border:1px solid #a9bdcc;border-radius:10px;background:#f4f8fb;font-weight:800}
 #sagsAlignLibraryList{display:grid;grid-template-columns:1fr 1fr;gap:9px}.sagsLibItem{display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:left;min-height:62px;padding:10px 12px;border:1px solid #c3d3df;border-radius:12px;background:#fff;color:#17364a}.sagsLibItem strong{display:block}.sagsLibItem small{display:block;color:#62788a;margin-top:2px}.sagsLibItem em{font-style:normal;font-weight:900;color:#0b6398}.sagsLibEmpty{grid-column:1/-1;padding:18px;text-align:center;background:#f5f8fb;border-radius:12px}
 #sagsAlignLibraryBtn{position:fixed;right:14px;bottom:calc(132px + env(safe-area-inset-bottom));z-index:100480;min-height:46px;padding:10px 14px;border:0;border-radius:999px;background:#fff;color:#0b6398;font:800 14px Arial;box-shadow:0 5px 18px #0003}
+
+#sagsAlignEditNow[hidden]{display:none!important}
+#sagsAlignEditNow{position:fixed;right:14px;bottom:calc(72px + env(safe-area-inset-bottom));z-index:2147482995;display:block;min-width:168px;min-height:54px;padding:11px 16px;border:0;border-radius:999px;background:#0b6398;color:#fff;font:900 16px Arial;box-shadow:0 6px 22px #0005}
+#sagsAlignEditNow small{display:block;font-size:11px;font-weight:600;margin-top:2px;opacity:.9}
+
 #sagsAlignPreview{position:fixed;inset:0;z-index:100640;background:#e8eef3;overflow:auto;padding:max(56px,env(safe-area-inset-top)) 10px max(80px,env(safe-area-inset-bottom));box-sizing:border-box}
 .sagsPreviewBar{position:fixed;left:0;right:0;top:0;z-index:100645;display:flex;align-items:center;justify-content:space-between;gap:10px;background:#17364a;color:#fff;padding:max(8px,env(safe-area-inset-top)) 10px 8px}.sagsPreviewBar button{min-height:42px;border:0;border-radius:9px;background:#fff;color:#17364a;font-weight:800;padding:8px 12px}.sagsPreviewTitle{font-weight:900;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #sagsAlignPreviewBody{min-width:300px;min-height:500px;background:#fff;border-radius:8px;padding:6px;box-shadow:0 4px 18px #0002;overflow:auto}.sagsAlignPreviewClone{display:block!important;visibility:visible!important;opacity:1!important;position:relative!important;left:auto!important;top:auto!important;margin:0 auto!important;transform:none!important}
@@ -118,6 +123,13 @@
     if(!$('sagsAlignLibraryBtn')){
       const b=document.createElement('button');b.id='sagsAlignLibraryBtn';b.type='button';b.hidden=!isAdmin();b.textContent='🗂 MỞ BIỂU MẪU';b.onclick=openLibrary;document.body.appendChild(b);
     }
+    if(!$('sagsAlignEditNow')){
+      const b=document.createElement('button');
+      b.id='sagsAlignEditNow';b.type='button';b.hidden=true;
+      b.innerHTML='🛠 CHỈNH NGAY<small>căn vị trí ô nhập</small>';
+      b.onclick=()=>startEditingOpenedForm();
+      document.body.appendChild(b);
+    }
     if(!$('sagsAlignLibrary')){
       const m=document.createElement('section');m.id='sagsAlignLibrary';m.hidden=true;
       m.innerHTML=`<div class="sagsLibPanel"><div class="sagsLibHead"><h2>BIỂU MẪU ĐỂ CĂN CHỈNH</h2><button id="sagsLibClose" type="button">✕</button></div><p class="sagsLibIntro">Chọn biểu mẫu. Hệ thống sẽ mở mẫu hoặc gọi đúng chức năng đang có trong ứng dụng, sau đó vào chế độ căn chỉnh.</p><div class="sagsLibTools"><input id="sagsLibSearch" type="search" placeholder="Tìm FINAL, KẾT SỔ, FSAGS, RNS…"><button id="sagsLibRefresh" type="button">QUÉT LẠI</button></div><div id="sagsAlignLibraryList"></div></div>`;
@@ -127,15 +139,46 @@
     }
     if(!$('sagsAlignPreview')){
       const p=document.createElement('section');p.id='sagsAlignPreview';p.hidden=true;
-      p.innerHTML='<div class="sagsPreviewBar"><button id="sagsPreviewBack" type="button">← DANH SÁCH</button><div id="sagsPreviewTitle" class="sagsPreviewTitle"></div><button id="sagsPreviewAlign" type="button">CĂN CHỈNH</button></div><div id="sagsAlignPreviewBody"></div>';
+      p.innerHTML='<div class="sagsPreviewBar"><button id="sagsPreviewBack" type="button">← DANH SÁCH</button><div id="sagsPreviewTitle" class="sagsPreviewTitle"></div><button id="sagsPreviewAlign" type="button">🛠 CHỈNH NGAY</button></div><div id="sagsAlignPreviewBody"></div>';
       document.body.appendChild(p);
       $('sagsPreviewBack').onclick=()=>{closePreview();openLibrary()};
-      $('sagsPreviewAlign').onclick=()=>{try{root.sagsFormAlignOpen?.()}catch(e){alert(S(e?.message||e))}};
+      $('sagsPreviewAlign').onclick=()=>startEditingOpenedForm();
     }
   }
+  let openedFormMode="",openedPreviewStage=null;
+
+  function showEditNow(mode,stage){
+    openedFormMode=mode||"launcher";
+    openedPreviewStage=stage||null;
+    const b=$('sagsAlignEditNow');
+    if(!b)return;
+    b.hidden=!isAdmin();
+    b.style.display=isAdmin()?'block':'none';
+  }
+  function hideEditNow(){
+    openedFormMode="";openedPreviewStage=null;
+    const b=$('sagsAlignEditNow');if(b){b.hidden=true;b.style.display='none'}
+  }
+  function startEditingOpenedForm(){
+    if(!isAdmin())return;
+    try{
+      if(openedPreviewStage&&openedPreviewStage.isConnected&&typeof root.sagsFormAlignUseStage==='function'){
+        const ok=root.sagsFormAlignUseStage(openedPreviewStage);
+        if(ok)return;
+      }
+      root.sagsFormAlignOpen?.();
+      setTimeout(()=>{
+        const info=root.sagsFormAlignInfo?.();
+        if(!info?.editing){
+          alert('Chưa nhận diện được vùng ô nhập của biểu mẫu. Hãy chạm lại CHỈNH NGAY sau khi biểu mẫu tải xong hoàn toàn.');
+        }
+      },250);
+    }catch(e){alert('Chưa mở được chế độ căn chỉnh: '+S(e?.message||e))}
+  }
+
   function closeLibrary(){const m=$('sagsAlignLibrary');if(m)m.hidden=true}
   function openLibrary(){if(!isAdmin())return;ensureUi();$('sagsAlignLibrary').hidden=false;renderList()}
-  function closePreview(){const p=$('sagsAlignPreview');if(p)p.hidden=true;const b=$('sagsAlignPreviewBody');if(b)b.innerHTML=''}
+  function closePreview(){const p=$('sagsAlignPreview');if(p)p.hidden=true;const b=$('sagsAlignPreviewBody');if(b)b.innerHTML='';hideEditNow()}
   function renderList(){
     ensureUi();const list=$('sagsAlignLibraryList');if(!list)return;const q=norm($('sagsLibSearch')?.value||'');list.innerHTML='';
     const items=libraryItems().filter(x=>!q||norm(x.label+' '+(x.rawLabel||'')+' '+(x.bg||'')).includes(q));
@@ -157,13 +200,14 @@
     const clone=item.el.cloneNode(true);cleanClone(clone);clone.removeAttribute('hidden');clone.setAttribute('aria-hidden','false');clone.classList.add('sagsAlignPreviewClone');
     clone.style.setProperty('display','block','important');clone.style.setProperty('visibility','visible','important');clone.style.setProperty('opacity','1','important');
     body.appendChild(clone);$('sagsPreviewTitle').textContent=item.label;preview.hidden=false;
-    setTimeout(()=>{try{root.sagsFormAlignOpen?.()}catch(_){}},150);
+    showEditNow('preview',clone);
+    setTimeout(()=>{try{root.sagsFormAlignUseStage?.(clone)}catch(_){}},180);
   }
   function openLauncher(item){
     if(item.disabled){alert('Biểu mẫu này đang bị khóa theo trạng thái nghiệp vụ. Hệ thống sẽ thử mở nhưng có thể cần chọn chuyến/workspace trước.');}
-    closeLibrary();
-    try{item.el.click()}catch(e){alert('Không mở được biểu mẫu: '+S(e?.message||e));return}
-    let tries=0;const timer=setInterval(()=>{tries++;try{const info=root.sagsFormAlignInfo?.();if(info?.fieldCount>0){clearInterval(timer);root.sagsFormAlignOpen?.();}}catch(_){}if(tries>=8)clearInterval(timer)},250);
+    closeLibrary();showEditNow('launcher',null);
+    try{item.el.click()}catch(e){hideEditNow();alert('Không mở được biểu mẫu: '+S(e?.message||e));return}
+    let tries=0;const timer=setInterval(()=>{tries++;try{const info=root.sagsFormAlignInfo?.();if(info?.fieldCount>0){clearInterval(timer);root.sagsFormAlignOpen?.();}}catch(_){}if(tries>=12)clearInterval(timer)},250);
   }
   function enhanceAdminCard(){
     const card=$('sagsAlignAdminCard');if(!card||!isAdmin())return;
@@ -175,9 +219,10 @@
     ensureUi();const lib=$('sagsAlignLibraryBtn');if(lib){lib.hidden=!isAdmin();lib.style.display=isAdmin()?'block':'none'}
     enhanceAdminCard();
     const old=$('sagsAlignLaunch');if(old&&isAdmin()){
-      // If no active form, old button may be hidden. The new library button remains available.
       old.title='Căn biểu mẫu đang mở';
     }
+    const edit=$('sagsAlignEditNow');
+    if(edit&&openedFormMode&&isAdmin()){edit.hidden=false;edit.style.display='block'}
   }
   let queued=false;function schedule(){if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;syncLaunchButton()})}
   new MutationObserver(schedule).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden','class','style']});

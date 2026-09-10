@@ -1,4 +1,4 @@
-/* E-REPORT/SAGS V4.2.36 · V2.2.18-AD-FORM-ALIGN
+/* E-REPORT/SAGS V4.2.38 · V2.2.18-AD-FORM-ALIGN
    AD visual form alignment editor.
    Saved config lives in Firebase and auto-applies on other devices. */
 (function(root){
@@ -81,7 +81,7 @@
     return score;
   }
   function detectStage(){
-    const explicit=[...document.querySelectorAll('[data-template-id],[data-form-id],.form-page,.template-page,.form-canvas,.sheet-page,.document-page')]
+    const explicit=[...document.querySelectorAll('[data-template-id],[data-form-id],.form-page,.template-page,.form-canvas,.sheet-page,.document-page,.sagsAlignPreviewClone')]
       .filter(visible).map(el=>[candidateScore(el)+4,el]).sort((a,b)=>b[0]-a[0]);
     if(explicit[0]?.[0]>=4)return explicit[0][1];
 
@@ -317,9 +317,9 @@
     if($("sagsAlignStyle"))return;
     const st=document.createElement("style");st.id="sagsAlignStyle";
     st.textContent=`
-#sagsAlignLaunch{position:fixed;right:14px;bottom:calc(76px + env(safe-area-inset-bottom));z-index:100500;min-height:46px;padding:10px 14px;border:0;border-radius:999px;background:#0b6398;color:#fff;font:800 14px Arial;box-shadow:0 5px 18px #0003}
+#sagsAlignLaunch{position:fixed;right:14px;bottom:calc(76px + env(safe-area-inset-bottom));z-index:2147482990;min-height:46px;padding:10px 14px;border:0;border-radius:999px;background:#0b6398;color:#fff;font:800 14px Arial;box-shadow:0 5px 18px #0003}
 #sagsAlignPanel[hidden],#sagsAlignLaunch[hidden]{display:none!important}
-#sagsAlignPanel{position:fixed;left:50%;bottom:max(8px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:100700;width:min(560px,calc(100vw - 16px));max-height:48dvh;overflow:auto;background:#fff;color:#17364a;border:1px solid #b8cad8;border-radius:16px;padding:12px;box-shadow:0 12px 40px #0005;font:14px/1.35 Arial}
+#sagsAlignPanel{position:fixed;left:50%;bottom:max(8px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:2147483005;width:min(560px,calc(100vw - 16px));max-height:48dvh;overflow:auto;background:#fff;color:#17364a;border:1px solid #b8cad8;border-radius:16px;padding:12px;box-shadow:0 12px 40px #0005;font:14px/1.35 Arial}
 .sagsAlignHead{display:flex;align-items:center;justify-content:space-between;gap:8px}.sagsAlignHead>div{display:flex;flex-direction:column;gap:3px}.sagsAlignHead small{font-weight:400;max-width:390px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #sagsAlignPanel button,#sagsAlignPanel select{min-height:42px;border:1px solid #a9bdcc;border-radius:10px;background:#f7fafc;color:#17364a;font-weight:800}
 #sagsAlignClose{width:44px}.sagsAlignOptions{display:flex;align-items:center;gap:14px;margin:10px 0}.sagsAlignOptions label{display:flex;align-items:center;gap:6px;font-weight:800}.sagsAlignOptions input{width:22px;height:22px}
@@ -428,6 +428,13 @@
   ["sags:login","sags:rolechange","sags:profilechange","sags:ui-ready"].forEach(n=>root.addEventListener?.(n,scheduleScan));
 
   root.sagsFormAlignOpen=()=>{scan();enterEdit()};
+  root.sagsFormAlignUseStage=(stage)=>{
+    if(!isAdmin())return false;
+    if(!stage||!stage.isConnected)return false;
+    subscribe(stage);
+    enterEdit();
+    return true;
+  };
   root.sagsFormAlignInfo=()=>({templateKey:activeKey,label:activeLabel,editing,admin:isAdmin(),fieldCount:activeStage?fieldsOf(activeStage).length:0});
 
   ensureUi();scan();
