@@ -1,10 +1,10 @@
 {
-  "version": "V4.2.29",
-  "displayVersion": "V4.2.29",
-  "label": "V4.2.29",
-  "build": "V4.2.29-SMART-VOICE",
-  "releasedAt": "2026-09-10T06:26:55Z",
-  "type": "smart-voice",
-  "notes": "Cải thiện nhận giọng nói cho BÁO CÁO NHANH và BÁO CÁO CA: chỉ chốt kết quả final, lọc cụm lặp, ghép phần chồng giữa các đoạn, chọn alternative tốt hơn, bỏ kết quả confidence quá thấp khi trình duyệt có cung cấp, tự dừng sau 6 giây im lặng/60 giây mỗi lượt và chuẩn hóa một số thuật ngữ khai thác. Không lưu bản ghi âm.",
-  "message": "Có bản cập nhật V4.2.29 · SMART VOICE"
+  "version": "V4.2.30",
+  "displayVersion": "V4.2.30",
+  "label": "V4.2.30",
+  "build": "V4.2.30-SIMPLE-REPORT-UI",
+  "releasedAt": "2026-09-10T06:40:20Z",
+  "type": "report-ui-simplify",
+  "notes": "Soạn lại giao diện BÁO CÁO CA và BÁO CÁO NHANH theo kiểu gọn, trực quan: chia bước rõ ràng, gom nhóm trường nhập, giữ 3 nút chính, thu gọn tác vụ nâng cao và lịch sử. Tiếp tục chỉ AD/DH/ĐH được lập-chốt-xuất báo cáo ca; tài khoản nghiệp vụ dùng báo cáo nhanh.",
+  "message": "Có bản cập nhật V4.2.30 · GIAO DIỆN BÁO CÁO ĐƠN GIẢN"
 }

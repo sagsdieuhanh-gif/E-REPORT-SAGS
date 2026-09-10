@@ -1,0 +1,48 @@
+{
+  "version": "V4.2.30",
+  "base": "V4.2.29 / current shift-report V4.2.24 + quick-incident V4.2.23",
+  "purpose": "SIMPLIFY REPORT UI",
+  "summary": {
+    "official_report": "4-step simple layout",
+    "quick_report": "3-step simple layout",
+    "roles": {
+      "official_shift_report": [
+        "AD",
+        "DH",
+        "ĐH"
+      ],
+      "quick_report": "all authenticated operational accounts except VIEW/VIEWER"
+    }
+  },
+  "syntaxCheck": {
+    "report.js": "OK",
+    "service-worker.js": "OK"
+  },
+  "files": [
+    {
+      "path": "report.js",
+      "sha256": "912f7561954f5c45d3f0596efb850cac789b502967dae168f52a6dde779312f6",
+      "size": 17438
+    },
+    {
+      "path": "report.css",
+      "sha256": "fb498850b321b9666c295e6aa07f16bb00b42e5c177a0f8f51e4265f4544178e",
+      "size": 4283
+    },
+    {
+      "path": "version.json",
+      "sha256": "0c76c9a04ca35c9e2eb35200f5c0d5c74bf4054c35b86828a7c460eb1589d531",
+      "size": 622
+    },
+    {
+      "path": "service-worker.js",
+      "sha256": "0fbb830cca6647a67c7177a75a4842a3008d55b83dd65ad1186ec1937a6419f3",
+      "size": 8166
+    },
+    {
+      "path": "HDSD-V4.2.30.md",
+      "sha256": "4c71592e7efccecfc96cf7ea314eecef395cb3d0be4685a8ae8e57a6c7bcf9a5",
+      "size": 1729
+    }
+  ]
+}

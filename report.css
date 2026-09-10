@@ -1,4 +1,5 @@
-/* E-REPORT/SAGS V4.2.29 · report roles + voice */
+/* E-REPORT/SAGS V4.2.30 · simple report UI */
+
 #v1171ReportModal,
 .v1171Panel,
 .v1171Tabs,
@@ -11,41 +12,254 @@
 }
 [data-v157-key="night"]{display:none !important}
 
-.srVoiceBtn{
-  margin:.45rem 0 .9rem;
-  min-height:38px;
-  padding:.55rem .85rem;
-  border-radius:10px;
-  font-weight:800;
-  cursor:pointer;
-}
-.srVoiceBtn.listening{
-  outline:3px solid currentColor;
-  outline-offset:2px;
-}
-.qiSharedReportNote{
+/* Shared shell */
+.sgrShell{
   display:flex;
   flex-direction:column;
-  gap:.3rem;
-  margin:.8rem 0;
-  padding:.75rem .85rem;
-  border:1px solid currentColor;
-  border-radius:10px;
+  gap:12px;
+  margin-top:10px;
 }
-.qiSharedReportNote span{font-size:.92em;line-height:1.45}
-.qiAutoAggregate{
-  font-weight:700;
-  margin:.55rem 0 0;
+.sgrIntro{
+  padding:12px 14px;
+  border:1px solid #d7e1ef;
+  border-radius:14px;
+  background:#f6f9fc;
+  display:flex;
+  flex-direction:column;
+  gap:5px;
 }
-
-
-/* Smart Voice V4.2.29 */
-.qiSpeech [role="status"]{
-  display:block;
-  margin:.45rem 0 .75rem;
+.sgrIntro b{
+  font-size:15px;
+  line-height:1.3;
+}
+.sgrIntro span{
+  font-size:13px;
+  line-height:1.45;
+  color:#415872;
+}
+.sgrSteps{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:8px;
+}
+.sgrStep{
+  text-align:center;
+  border:1px solid #d7e1ef;
+  border-radius:12px;
+  background:#fff;
+  padding:10px 8px;
+  font-weight:800;
+  font-size:12px;
+  line-height:1.3;
+}
+.sgrCard{
+  border:1px solid #d7e1ef;
+  border-radius:16px;
+  background:#fff;
+  overflow:hidden;
+}
+.sgrCardHead{
+  padding:12px 14px 10px;
+  border-bottom:1px solid #edf2f7;
+  background:#fbfdff;
+}
+.sgrCardHead h3{
+  margin:0;
+  font-size:15px;
   line-height:1.35;
 }
-.qiSpeech button.listening,
-.srVoiceBtn.listening{
-  font-weight:900;
+.sgrCardHead p{
+  margin:5px 0 0;
+  font-size:12px;
+  line-height:1.45;
+  color:#5e7389;
+}
+.sgrCardBody{
+  padding:12px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.sgrFold{
+  border:1px solid #e1e8f0;
+  border-radius:12px;
+  background:#fcfdff;
+  padding:0;
+}
+.sgrFold > summary{
+  cursor:pointer;
+  padding:11px 13px;
+  font-weight:800;
+  list-style:none;
+}
+.sgrFold > summary::-webkit-details-marker{display:none}
+.sgrFold > *:not(summary){
+  margin:0 12px 12px;
+}
+
+.sgrPrimaryRow,
+.sgrSecondaryRow{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.sgrPrimaryRow button,
+.sgrSecondaryRow button,
+#qiSave,#qiSend,#qiNew{
+  min-height:42px;
+  border-radius:12px;
+  font-weight:800;
+}
+.sgrPrimaryRow button{flex:1 1 150px}
+.sgrSecondaryRow button{flex:1 1 120px}
+
+.sgrSharedNote{
+  padding:10px 12px;
+  border:1px solid #d7e1ef;
+  border-radius:12px;
+  background:#f6f9fc;
+  font-size:13px;
+  line-height:1.45;
+}
+.sgrAutoUsed{
+  margin-top:8px;
+  font-weight:700;
+}
+.sgrHistory{
+  margin-top:2px;
+}
+
+/* Shift report clean-up */
+#srModal .srPanel{
+  width:min(980px,96vw);
+  max-height:94dvh;
+  overflow:auto;
+}
+#srModal .srPanel > header{
+  position:sticky;
+  top:0;
+  z-index:3;
+  background:#fff;
+  padding-bottom:10px;
+}
+#srModal .srGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+#srModal label{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  font-weight:700;
+}
+#srModal input,
+#srModal select,
+#srModal textarea{
+  min-height:42px;
+  border-radius:12px;
+  box-sizing:border-box;
+}
+#srEditable{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+#srEditable h3{
+  margin:2px 0 0;
+  font-size:14px;
+}
+#srEditable textarea{
+  min-height:96px;
+}
+#srResults .srScroll{
+  overflow:auto;
+}
+#srBusy{
+  padding:9px 12px;
+  border-radius:10px;
+  background:#f6f9fc;
+  font-weight:700;
+}
+#srStatus{
+  min-height:20px;
+  font-weight:700;
+}
+
+/* Quick report clean-up */
+#qiModal .qiPanel{
+  width:min(760px,96vw);
+  max-height:94dvh;
+  overflow:auto;
+}
+#qiModal .qiPanel > header{
+  position:sticky;
+  top:0;
+  z-index:3;
+  background:#fff;
+  padding-bottom:10px;
+}
+#qiModal .qiGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+#qiModal label{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  font-weight:700;
+}
+#qiModal input,
+#qiModal select,
+#qiModal textarea{
+  min-height:42px;
+  border-radius:12px;
+  box-sizing:border-box;
+}
+#qiModal textarea{
+  min-height:94px;
+}
+#qiStatus{
+  min-height:20px;
+  font-weight:700;
+}
+#qiPhotos{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+#qiPhotos > *{
+  border:1px solid #d7e1ef;
+  border-radius:12px;
+  padding:8px;
+  background:#fff;
+}
+.qiSpeech{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+.qiSpeech > button{
+  align-self:flex-start;
+  min-height:42px;
+  border-radius:12px;
+  font-weight:800;
+}
+
+/* Mobile */
+@media (max-width: 720px){
+  .sgrSteps{grid-template-columns:1fr 1fr}
+  #srModal .srGrid,
+  #qiModal .qiGrid,
+  #qiPhotos{
+    grid-template-columns:1fr;
+  }
+  .sgrPrimaryRow button,
+  .sgrSecondaryRow button,
+  #qiSave,#qiSend,#qiNew{
+    flex:1 1 100%;
+    width:100%;
+  }
 }
