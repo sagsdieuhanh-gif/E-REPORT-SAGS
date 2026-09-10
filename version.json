@@ -1,10 +1,10 @@
 {
-  "version": "V4.2.27",
-  "displayVersion": "V4.2.27",
-  "label": "V4.2.27",
-  "build": "V4.2.27-REPORT-LOGIN-FIX",
-  "releasedAt": "2026-09-10T06:10:33Z",
-  "type": "report-login-fix",
-  "notes": "Sửa BÁO CÁO CA nhận đúng tài khoản từ __sagsGetSession().profile.username/profile.role. Trong menu Báo cáo điều hành chỉ giữ một mục BÁO CÁO CA; bỏ Báo cáo bay đêm và không còn form báo cáo cũ.",
-  "message": "Có bản cập nhật V4.2.27 · SỬA ĐĂNG NHẬP BÁO CÁO CA"
+  "version": "V4.2.28",
+  "displayVersion": "V4.2.28",
+  "label": "V4.2.28",
+  "build": "V4.2.28-REPORT-QUICK-VOICE",
+  "releasedAt": "2026-09-10T06:17:10Z",
+  "type": "report-role-voice",
+  "notes": "Tách quyền BÁO CÁO CA và BÁO CÁO NHANH. AD/DH/ĐH được lập-chốt-xuất báo cáo ca. Tài khoản nghiệp vụ không phải VIEW/VIEWER được nói/chụp ảnh gửi báo cáo nhanh vào nguồn chung incident_index; báo cáo ca tự tổng hợp. Thêm micro trực tiếp cho Thay đổi khai thác, Diễn biến/Xử lý, Bàn giao và Kiến nghị.",
+  "message": "Có bản cập nhật V4.2.28 · BÁO CÁO NHANH + NÓI TRỰC TIẾP"
 }

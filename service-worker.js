@@ -1,7 +1,7 @@
-/* E-REPORT/SAGS V4.2.27 · LIGHTWEIGHT SAFE UPDATE */
-const CACHE_NAME="sags-v4.2.27-report-login-fix";
-const BUILD="V4.2.27-REPORT-LOGIN-FIX";
-const DISPLAY_VERSION="V4.2.27";
+/* E-REPORT/SAGS V4.2.28 · LIGHTWEIGHT SAFE UPDATE */
+const CACHE_NAME="sags-v4.2.28-report-quick-voice";
+const BUILD="V4.2.28-REPORT-QUICK-VOICE";
+const DISPLAY_VERSION="V4.2.28";
 
 const PATCH_V21="./v2.1-runtime-patch.js";
 const PATCH_V22="./v2.2-runtime-patch.js";
@@ -38,7 +38,7 @@ async function fetchNoStore(path){
 }
 async function safePut(cache,key,response){
   try{if(response&&response.ok)await cache.put(key,response.clone())}
-  catch(e){console.info("V4.2.27 cache put skipped",key,e?.name||e?.message||e)}
+  catch(e){console.info("V4.2.28 cache put skipped",key,e?.name||e?.message||e)}
 }
 function stripRetiredScripts(out){
   return String(out||"")
@@ -84,7 +84,7 @@ async function validateRelease(){
     ["./shift-report-core.js","V4.2.24"],
     ["./shift-report.js","V4.2.24-SHIFT-REPORT"],
     ["./quick-incident.js","V4.2.23-VOICE-PHOTO"],
-    ["./report.js","V4.2.27"],
+    ["./report.js","V4.2.28"],
     [PATCH_V22,"V2.2-ARRDEP-CHOICE-LOCALFIRST"],
     [PATCH_V222,"V2.2.2-DEP-RECEIVE-AFTER-ARR"],
     [PATCH_V225,"V2.2.5-SIGNATURE-EXPORT-STORAGE-FIX-R2"],

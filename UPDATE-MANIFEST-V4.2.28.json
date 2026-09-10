@@ -1,0 +1,45 @@
+{
+  "version": "V4.2.28",
+  "base": "V4.2.27 / current shift-report V4.2.24 + quick-incident V4.2.23",
+  "purpose": "OFFICIAL REPORT ROLE + QUICK VOICE REPORT PIPELINE",
+  "permissionModel": {
+    "officialShiftReport": [
+      "AD",
+      "DH",
+      "ĐH"
+    ],
+    "quickReport": "all authenticated operational accounts except VIEW/VIEWER"
+  },
+  "dataFlow": "Quick Report -> incident_index/shared flight incidents -> Shift Report TỔNG HỢP -> AD/DH/ĐH review/finalize/export",
+  "syntaxCheck": {
+    "report.js": "OK",
+    "service-worker.js": "OK"
+  },
+  "files": [
+    {
+      "path": "report.js",
+      "sha256": "e14d103ed17f44e511d6f086006e38a55e4a257db615342a9cc11a17dfae6051",
+      "size": 13018
+    },
+    {
+      "path": "report.css",
+      "sha256": "611211e9c9f9a8782c5c9bc7aba06a2ae4e7c872060447aea46b7f5b3a23e909",
+      "size": 761
+    },
+    {
+      "path": "version.json",
+      "sha256": "4def46205986468bbf77a4960eee1e376b5d8ce35b2d40355370eab2a60ec020",
+      "size": 670
+    },
+    {
+      "path": "service-worker.js",
+      "sha256": "86d011e5a898a56170858c3b3f1f52b70c4d47522b051e578dfb66c1139bc1a5",
+      "size": 8170
+    },
+    {
+      "path": "HDSD-V4.2.28.md",
+      "sha256": "358689bcb26e1dc1e0e6650010149fb571054bab0d992ad7d1e47a2fe4ff7624",
+      "size": 2537
+    }
+  ]
+}
