@@ -1,7 +1,7 @@
-/* E-REPORT/SAGS V4.2.33 · DATE + SHIFT -> EXPORT */
-const CACHE_NAME="sags-v4.2.33-date-shift-export";
-const BUILD="V4.2.33-DATE-SHIFT-EXPORT";
-const DISPLAY_VERSION="V4.2.33";
+/* E-REPORT/SAGS V4.2.35 · STRICT SHIFT DEDUP */
+const CACHE_NAME="sags-v4.2.35-strict-shift-dedup";
+const BUILD="V4.2.35-STRICT-SHIFT-DEDUP";
+const DISPLAY_VERSION="V4.2.35";
 
 const PATCH_V21="./v2.1-runtime-patch.js";
 const PATCH_V22="./v2.2-runtime-patch.js";
@@ -38,7 +38,7 @@ async function fetchNoStore(path){
 }
 async function safePut(cache,key,response){
   try{if(response&&response.ok)await cache.put(key,response.clone())}
-  catch(e){console.info("V4.2.33 cache put skipped",key,e?.name||e?.message||e)}
+  catch(e){console.info("V4.2.35 cache put skipped",key,e?.name||e?.message||e)}
 }
 function stripRetiredScripts(out){
   return String(out||"")
@@ -84,7 +84,7 @@ async function validateRelease(){
     ["./shift-report-core.js","V4.2.24"],
     ["./shift-report.js","V4.2.24-SHIFT-REPORT"],
     ["./quick-incident.js","V4.2.23-VOICE-PHOTO"],
-    ["./report.js","V4.2.33"],
+    ["./report.js","V4.2.35"],
     [PATCH_V22,"V2.2-ARRDEP-CHOICE-LOCALFIRST"],
     [PATCH_V222,"V2.2.2-DEP-RECEIVE-AFTER-ARR"],
     [PATCH_V225,"V2.2.5-SIGNATURE-EXPORT-STORAGE-FIX-R2"],
@@ -168,7 +168,7 @@ if($('srArchive').checked)`;
       changed=true;
     }
 
-    if(!changed)console.warn("V4.2.33: không tìm thấy mẫu TIME-FIRST cần vá trong shift-report.js");
+    if(!changed)console.warn("V4.2.35: không tìm thấy mẫu TIME-FIRST cần vá trong shift-report.js");
 
     const headers=new Headers(response.headers);
     headers.delete("content-length");
@@ -180,6 +180,65 @@ if($('srArchive').checked)`;
       statusText:response.statusText,
       headers
     });
+  });
+}
+
+
+function patchShiftReportCoreStrict(response){
+  if(!response||!response.ok)return response;
+  return response.text().then(text=>{
+    let out=String(text||"");
+    let changed=0;
+
+    // 1) Deduplicate current + archive at FLIGHT level.
+    // Same flightId/opDate must produce only one normalized flight.
+    const allNeedle="const all=records.map(r=>normalize(r,overrides[S(r.opDate)+'/'+S(r.flightId)]||{}));";
+    if(out.includes(allNeedle)){
+      out=out.replace(allNeedle,
+        "const normalized=records.map(r=>normalize(r,overrides[S(r.opDate)+'/'+S(r.flightId)]||{})),flightMap=new Map(),score=f=>[f.on,f.door,f.pb,f.sta,f.std,f.etd].filter(Number.isFinite).length+f.legs.reduce((n,l)=>n+(Number.isFinite(l.plan)?1:0)+(Number.isFinite(l.actual)?2:0)+(Number.isFinite(l.door)?1:0),0)+Object.keys(f.assignments||{}).length*.01;for(const f of normalized){const old=flightMap.get(f.id);if(!old){flightMap.set(f.id,f);continue}const keep=score(f)>score(old)?f:old,other=keep===f?old:f;keep.assignments={...(other.assignments||{}),...(keep.assignments||{})};keep.warnings=[...new Set([...(other.warnings||[]),...(keep.warnings||[])])];flightMap.set(f.id,keep)}const all=[...flightMap.values()];"
+      );
+      changed++;
+    }
+
+    // 2) Strict shift relevance:
+    // - exact planned/actual/door time in [from,to), OR
+    // - carry-over only from immediately previous shift.
+    // Remove same-day records with no usable time from the exported appendix/totals.
+    const relevantRe=/const relevant=flights\.filter\(f=>f\.legs\.some\(l=>planned\(l\.plan\)\|\|inside\(l\.actual\)\|\|inside\(l\.door\)\)\|\|\(\(!f\.legs\.length\|\|f\.legs\.some\(l=>!Number\.isFinite\(l\.plan\)&&!Number\.isFinite\(l\.actual\)\)\)&&f\.opDate>=day\(from\)&&f\.opDate<=day\(to-1\)\)\|\|\(Number\.isFinite\(f\.on\)&&f\.on<cutoff&&\(!Number\.isFinite\(f\.pb\)\|\|f\.pb>=from\)\)\);/;
+    if(relevantRe.test(out)){
+      out=out.replace(relevantRe,
+        "const startDay=day(from),startClock=local(from).slice(11),carryFrom=startClock==='08:15'?parse(addDay(startDay,-1)+'T18:15'):startClock==='18:15'?parse(startDay+'T08:15'):from-14*3600000;const relevant=flights.filter(f=>f.legs.some(l=>planned(l.plan)||inside(l.actual)||inside(l.door))||(Number.isFinite(f.on)&&f.on>=carryFrom&&f.on<from&&(!Number.isFinite(f.pb)||f.pb>=from)));"
+      );
+      changed++;
+    }
+
+    // 3) Stronger leg dedupe. Prefer stable flightId+direction.
+    const legNeedle="const legMap=new Map(),duplicateWarnings=[];for(const l of relevant.flatMap(f=>f.legs)){const stamp=Number.isFinite(l.plan)?day(l.plan):l.opDate,key=[l.dir,l.num,stamp].join('|');if(legMap.has(key)){duplicateWarnings.push(l.num+': hồ sơ trùng lượt, chỉ tính một lần');continue}legMap.set(key,l)}";
+    if(out.includes(legNeedle)){
+      out=out.replace(legNeedle,
+        "const legMap=new Map(),duplicateWarnings=[];for(const l of relevant.flatMap(f=>f.legs)){const stamp=Number.isFinite(l.plan)?day(l.plan):Number.isFinite(l.actual)?day(l.actual):l.opDate,key=l.flightId?[l.flightId,l.dir].join('|'):[l.dir,l.num,stamp].join('|');if(legMap.has(key)){duplicateWarnings.push(l.num+': hồ sơ trùng lượt, chỉ tính một lần');const old=legMap.get(key),oldScore=(Number.isFinite(old.actual)?2:0)+(Number.isFinite(old.plan)?1:0)+(Number.isFinite(old.door)?1:0),newScore=(Number.isFinite(l.actual)?2:0)+(Number.isFinite(l.plan)?1:0)+(Number.isFinite(l.door)?1:0);if(newScore>oldScore)legMap.set(key,l);continue}legMap.set(key,l)}"
+      );
+      changed++;
+    }
+
+    // 4) Unassigned counter must describe only flights relevant to this shift.
+    const unassignedNeedle="unassigned:all.filter(f=>!Object.values(f.assignments).some(a=>a.active!==false)).length";
+    if(out.includes(unassignedNeedle)){
+      out=out.replace(unassignedNeedle,
+        "unassigned:relevant.filter(f=>!Object.values(f.assignments).some(a=>a.active!==false)).length"
+      );
+      changed++;
+    }
+
+    if(changed<3)console.warn("V4.2.35: strict core patch applied partially",changed);
+
+    out="/* SAGS V4.2.35-STRICT-SHIFT-DEDUP · runtime patched */\n"+out;
+    const headers=new Headers(response.headers);
+    headers.delete("content-length");
+    headers.delete("content-encoding");
+    headers.set("Content-Type","application/javascript; charset=utf-8");
+    headers.set("Cache-Control","no-cache");
+    return new Response(out,{status:response.status,statusText:response.statusText,headers});
   });
 }
 
@@ -245,6 +304,9 @@ self.addEventListener("fetch",event=>{
         let r=await fetch(event.request,{cache:"no-store"});
         if(url.pathname.endsWith("/shift-report.js")){
           r=await patchShiftReportTimeFirst(r);
+        }
+        if(url.pathname.endsWith("/shift-report-core.js")){
+          r=await patchShiftReportCoreStrict(r);
         }
         await safePut(c,event.request,r);
         return r;

@@ -1,0 +1,41 @@
+{
+  "version": "V4.2.35",
+  "base": "V4.2.34",
+  "purpose": "STRICT SHIFT COUNT + LIVE/ARCHIVE DEDUP",
+  "checks": {
+    "report.js": "OK",
+    "service-worker.js": "OK",
+    "flight_level_dedupe": "OK",
+    "strict_previous_shift": "OK",
+    "leg_dedupe": "OK",
+    "time_first_preserved": "OK",
+    "ultra_export_preserved": "OK"
+  },
+  "files": [
+    {
+      "path": "report.js",
+      "sha256": "3f130bb89e576391925aff1900124e3eb300d819fbedc3a0d2fbae9a848d2c87",
+      "size": 28158
+    },
+    {
+      "path": "report.css",
+      "sha256": "71268729c3a3fbe3b4bc76f48929c46fda1d013fa9a1ce730d9a48cc849881c2",
+      "size": 2887
+    },
+    {
+      "path": "service-worker.js",
+      "sha256": "2e1738055e13f691ef9012eb56d00507b9d3ecd112886c43baae2d557991ebc7",
+      "size": 18371
+    },
+    {
+      "path": "version.json",
+      "sha256": "c32e5e2cae4e9b7c708ef5cce7dab5302f78369e4fe97202b53540f439ca731e",
+      "size": 726
+    },
+    {
+      "path": "HDSD-V4.2.35.md",
+      "sha256": "7ffdff4ccb7ec606e9e2674158ec2ebfba27827284e066bf2936842add1e6f52",
+      "size": 1683
+    }
+  ]
+}

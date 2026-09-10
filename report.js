@@ -1,4 +1,4 @@
-/* E-REPORT/SAGS V4.2.33
+/* E-REPORT/SAGS V4.2.35
    ONE OFFICIAL SHIFT REPORT + QUICK VOICE REPORT PIPELINE
    - AD / DH / ĐH: create, finalize and export Shift Report.
    - Other authenticated operational accounts: Quick Report via voice/photo.
@@ -484,11 +484,25 @@
     const panel=document.querySelector("#srModal .srPanel");
     if(!panel)return;
 
+    // IMPORTANT: MutationObserver runs after DOM changes. Reusing the same shell
+    // prevents NGÀY/CA/XUẤT from being destroyed and recreated while rendering.
+    const existingShell=panel.querySelector(":scope > .sgrUltraShell");
+    const existingExport=existingShell?.querySelector("#sgrUltraExport");
+    if(existingShell&&existingExport){
+      existingShell.hidden=false;
+      existingShell.style.display="flex";
+      existingExport.hidden=false;
+      existingExport.style.display="block";
+      existingExport.style.visibility="visible";
+      existingExport.style.opacity=existingExport.disabled?".65":"1";
+      return;
+    }
+
     const title=document.getElementById("srTitle");
     if(title)title.textContent="BÁO CÁO CA";
 
     // Remove a previous simplified shell if an old runtime happened to create one.
-    panel.querySelectorAll(":scope > .sgrShell,:scope > .sgrUltraShell").forEach(el=>el.remove());
+    panel.querySelectorAll(":scope > .sgrShell").forEach(el=>el.remove());
 
     const shell=document.createElement("div");
     shell.className="sgrUltraShell";
@@ -521,6 +535,12 @@
     exportBtn.type="button";
     exportBtn.id="sgrUltraExport";
     exportBtn.textContent="TẠO & XUẤT PDF";
+    exportBtn.hidden=false;
+    exportBtn.style.cssText="display:block!important;visibility:visible!important;opacity:1;width:100%;min-height:58px;font-size:17px;font-weight:900;position:relative;z-index:20";
+
+    const exportWrap=document.createElement("div");
+    exportWrap.className="sgrUltraExportWrap";
+    exportWrap.appendChild(exportBtn);
 
     const note=document.createElement("div");
     note.className="sgrUltraNote";
@@ -531,7 +551,7 @@
     visibleStatus.setAttribute("role","status");
     visibleStatus.setAttribute("aria-live","polite");
 
-    shell.append(intro,fields,exportBtn,note,visibleStatus);
+    shell.append(intro,fields,exportWrap,note,visibleStatus);
     panel.querySelector("header")?.insertAdjacentElement("afterend",shell);
 
     const internalDay=document.getElementById("srDay");

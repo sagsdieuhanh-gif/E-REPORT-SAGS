@@ -1,10 +1,10 @@
 {
-  "version": "V4.2.33",
-  "displayVersion": "V4.2.33",
-  "label": "V4.2.33",
-  "build": "V4.2.33-DATE-SHIFT-EXPORT",
-  "releasedAt": "2026-09-10T07:16:33Z",
-  "type": "ultra-simple-shift-report",
-  "notes": "BÁO CÁO CA chỉ còn chọn NGÀY và CA SÁNG/CA TỐI. Nút TẠO & XUẤT PDF tự đặt giờ ca, tự chọn phạm vi toàn ca, đọc kho lưu trữ, tổng hợp TIME-FIRST và mở IN/LƯU PDF. Không hiển thị TỪ/ĐẾN, ngày nguồn, phạm vi, biểu mẫu chỉnh tay hay tác vụ trung gian.",
-  "message": "Có bản cập nhật V4.2.33 · CHỌN NGÀY + CA → XUẤT PDF"
+  "version": "V4.2.35",
+  "displayVersion": "V4.2.35",
+  "label": "V4.2.35",
+  "build": "V4.2.35-STRICT-SHIFT-DEDUP",
+  "releasedAt": "2026-09-10T07:44:51Z",
+  "type": "shift-report-count-fix",
+  "notes": "Siết dữ liệu BÁO CÁO CA: gộp hồ sơ live + archive theo flightId/opDate trước khi tính; mỗi flightId chỉ giữ một bản tốt nhất; chống trùng lượt theo flightId+direction; chuyến bàn giao chỉ nhận từ ca ngay trước; hồ sơ không có thời gian xác định không được tự đưa vào PDF chỉ vì cùng ngày. Giữ TIME-FIRST và giao diện Ngày + Ca → Xuất PDF.",
+  "message": "Có bản cập nhật V4.2.35 · SỬA SỐ LIỆU BÁO CÁO BỊ NHIỀU"
 }

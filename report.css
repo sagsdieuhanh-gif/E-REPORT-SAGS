@@ -1,4 +1,4 @@
-/* E-REPORT/SAGS V4.2.33 · DATE + SHIFT -> EXPORT */
+/* E-REPORT/SAGS V4.2.35 · EXPORT BUTTON VISIBILITY FIX */
 #v1171ReportModal,
 .v1171Panel,
 .v1171Tabs,
@@ -134,4 +134,26 @@
 }
 @media(max-width:640px){
   .sgrUltraFields{grid-template-columns:1fr}
+}
+
+
+/* V4.2.34: export CTA must remain visible after NGÀY / CA */
+.sgrUltraExportWrap{
+  display:block !important;
+  visibility:visible !important;
+  position:sticky;
+  bottom:0;
+  z-index:20;
+  padding:8px 0 max(8px,env(safe-area-inset-bottom));
+  background:#fff;
+}
+#sgrUltraExport{
+  display:block !important;
+  visibility:visible !important;
+  width:100% !important;
+  min-height:58px !important;
+  opacity:1;
+}
+#sgrUltraExport:not(:disabled){
+  opacity:1 !important;
 }
