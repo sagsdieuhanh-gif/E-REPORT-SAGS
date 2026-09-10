@@ -1,10 +1,10 @@
 {
-  "version": "V4.2.38",
-  "displayVersion": "V4.2.38",
-  "label": "V4.2.38",
-  "build": "V4.2.38-ALIGN-EDIT-BUTTON",
-  "releasedAt": "2026-09-10T08:26:03Z",
-  "type": "form-align-edit-button",
-  "notes": "Sửa mở được biểu mẫu nhưng không thấy nút chỉnh. Sau khi AD mở mẫu từ thư viện, luôn hiện nút nổi 🛠 CHỈNH NGAY ở lớp trên cùng. Mẫu preview được truyền trực tiếp vào bộ căn chỉnh qua sagsFormAlignUseStage; mẫu mở bằng chức năng nghiệp vụ vẫn có nút CHỈNH NGAY và tự kích hoạt khi form tải xong.",
-  "message": "Có bản cập nhật V4.2.38 · HIỆN NÚT CHỈNH NGAY TRÊN BIỂU MẪU"
+  "version": "V4.2.39",
+  "displayVersion": "V4.2.39",
+  "label": "V4.2.39",
+  "build": "V4.2.39-UPDATE-FIX-FORM-SEARCH",
+  "releasedAt": "2026-09-10T08:33:18Z",
+  "type": "update-fix-form-search",
+  "notes": "Sửa lỗi cập nhật do Service Worker kiểm tra cứng các file/marker cũ. Bản nhẹ chỉ kiểm version.json và file thay đổi. Thư viện căn chỉnh AD thêm chọn nhanh loại biểu mẫu, chip FINAL/KẾT SỔ/FSAGS/RNS/CLEANING, tìm tên/mã và đếm kết quả.",
+  "message": "Có bản cập nhật V4.2.39 · SỬA CẬP NHẬT + TÌM NHANH BIỂU MẪU"
 }

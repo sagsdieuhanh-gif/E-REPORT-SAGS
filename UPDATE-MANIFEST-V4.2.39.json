@@ -1,0 +1,43 @@
+{
+  "version": "V4.2.39",
+  "base": "V4.2.38",
+  "purpose": "FIX UPDATE INSTALL + QUICK FORM TYPE SEARCH",
+  "checks": {
+    "v2.2.18-runtime-patch.js": "OK",
+    "v2.2.19-runtime-patch.js": "OK",
+    "service-worker.js": "OK",
+    "lightweight_validation": "OK",
+    "type_selector": "OK",
+    "quick_chips": "OK",
+    "combined_filter": "OK",
+    "edit_now_preserved": "OK",
+    "firebase_preserved": "OK"
+  },
+  "files": [
+    {
+      "path": "v2.2.18-runtime-patch.js",
+      "sha256": "f1d40c46b47f47ecbce4bcd4c47535eb76cfa7e6356709fb5100ee1c1fd06213",
+      "size": 21556
+    },
+    {
+      "path": "v2.2.19-runtime-patch.js",
+      "sha256": "b180054ca6877b70dcd91ac47bae243a0511c0d6dc4c8a417ef6ff2dcc31dac5",
+      "size": 19766
+    },
+    {
+      "path": "service-worker.js",
+      "sha256": "c249a962c8406318d31130fb11d15d664f70cfc8788ab7eca64ab1705e1549ed",
+      "size": 17939
+    },
+    {
+      "path": "version.json",
+      "sha256": "d488d1715dc6721f40a30bd025dd2f78e936b4ded0d57b8b05276d4eb7da960d",
+      "size": 601
+    },
+    {
+      "path": "HDSD-V4.2.39.md",
+      "sha256": "ee1aef0c0a0718905d441845b4df84060043c8926cba22c87c71f8fb4c7e633d",
+      "size": 1192
+    }
+  ]
+}

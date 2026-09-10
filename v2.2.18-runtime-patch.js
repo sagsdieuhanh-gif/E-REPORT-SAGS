@@ -1,4 +1,4 @@
-/* E-REPORT/SAGS V4.2.38 · V2.2.18-AD-FORM-ALIGN
+/* E-REPORT/SAGS V4.2.39 · V2.2.18-AD-FORM-ALIGN
    AD visual form alignment editor.
    Saved config lives in Firebase and auto-applies on other devices. */
 (function(root){
