@@ -1,0 +1,36 @@
+{
+  "version": "V4.2.27",
+  "base": "V4.2.26 / current V4.2.24 shift report",
+  "purpose": "FIX SHIFT REPORT AUTH SESSION + KEEP ONLY ONE CURRENT REPORT ENTRY",
+  "syntaxCheck": {
+    "report.js": "OK",
+    "service-worker.js": "OK"
+  },
+  "files": [
+    {
+      "path": "report.js",
+      "sha256": "5739c50af2f30439bdf86158d37fe98fe5553bf3830d8e7b49d0e8d5a3c6ec17",
+      "size": 5045
+    },
+    {
+      "path": "report.css",
+      "sha256": "adef1ce96b7fac840ad33299a4157af8a0c1ac3ff0722584981e8efc803b27af",
+      "size": 329
+    },
+    {
+      "path": "version.json",
+      "sha256": "d64c2c13944ed69c96562971c96da6ccfa5fe44248974d8f82cce1963cd22a4a",
+      "size": 521
+    },
+    {
+      "path": "service-worker.js",
+      "sha256": "fa282dbce63ad1ed94b711324c3cb998dbfeccd56636a4f425c9807cf8131a68",
+      "size": 8166
+    },
+    {
+      "path": "HDSD-V4.2.27.md",
+      "sha256": "fccce25500e36e3eabcc2b7ff35bb2ce3b398fa1585d70a7d42d2310662f7881",
+      "size": 1046
+    }
+  ]
+}

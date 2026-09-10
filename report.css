@@ -1,4 +1,4 @@
-/* E-REPORT/SAGS V4.2.26 · legacy reports permanently hidden */
+/* E-REPORT/SAGS V4.2.27 · only current shift report */
 #v1171ReportModal,
 .v1171Panel,
 .v1171Tabs,
@@ -10,8 +10,7 @@
   display:none !important;
 }
 
-/* Old inline-handler buttons are hidden even before JS cleanup executes. */
-[onclick*="v1171OpenDayReport"],
-[onclick*="v1171OpenNightReport"]{
+/* Retired second report drawer item: JS removes it; CSS prevents flash. */
+[data-v157-key="night"]{
   display:none !important;
 }

@@ -1,7 +1,7 @@
-/* E-REPORT/SAGS V4.2.26 · LIGHTWEIGHT SAFE UPDATE */
-const CACHE_NAME="sags-v4.2.26-only-shift-report";
-const BUILD="V4.2.26-ONLY-SHIFT-REPORT";
-const DISPLAY_VERSION="V4.2.26";
+/* E-REPORT/SAGS V4.2.27 · LIGHTWEIGHT SAFE UPDATE */
+const CACHE_NAME="sags-v4.2.27-report-login-fix";
+const BUILD="V4.2.27-REPORT-LOGIN-FIX";
+const DISPLAY_VERSION="V4.2.27";
 
 const PATCH_V21="./v2.1-runtime-patch.js";
 const PATCH_V22="./v2.2-runtime-patch.js";
@@ -20,7 +20,8 @@ const PATCH_V2216="./v2.2.16-runtime-patch.js";
 const PATCH_V2217="./v2.2.17-runtime-patch.js";
 
 const FRESH_SUFFIXES=[
-  "/shift-report-core.js","/shift-report.js","/shift-report.css","/quick-incident.js","/quick-incident.css","/version.json","/manifest.webmanifest","/index.html","/app.js","/ai.js",
+  "/shift-report-core.js","/shift-report.js","/shift-report.css","/quick-incident.js","/quick-incident.css",
+  "/version.json","/manifest.webmanifest","/index.html","/app.js","/ai.js",
   "/ui.css","/ui.js","/ios-export.js","/report.css","/report.js","/theme.css",
   "/daily-roster.js","/v2.1-runtime-patch.js","/v2.2-runtime-patch.js",
   "/v2.2.2-runtime-patch.js","/v2.2.5-runtime-patch.js",
@@ -37,7 +38,7 @@ async function fetchNoStore(path){
 }
 async function safePut(cache,key,response){
   try{if(response&&response.ok)await cache.put(key,response.clone())}
-  catch(e){console.info("V4.2.26 cache put skipped",key,e?.name||e?.message||e)}
+  catch(e){console.info("V4.2.27 cache put skipped",key,e?.name||e?.message||e)}
 }
 function stripRetiredScripts(out){
   return String(out||"")
@@ -83,7 +84,7 @@ async function validateRelease(){
     ["./shift-report-core.js","V4.2.24"],
     ["./shift-report.js","V4.2.24-SHIFT-REPORT"],
     ["./quick-incident.js","V4.2.23-VOICE-PHOTO"],
-    ["./report.js","V4.2.26"],
+    ["./report.js","V4.2.27"],
     [PATCH_V22,"V2.2-ARRDEP-CHOICE-LOCALFIRST"],
     [PATCH_V222,"V2.2.2-DEP-RECEIVE-AFTER-ARR"],
     [PATCH_V225,"V2.2.5-SIGNATURE-EXPORT-STORAGE-FIX-R2"],
@@ -109,9 +110,7 @@ async function validateRelease(){
   if(!ir.ok)throw new Error("index.html HTTP "+ir.status);
 }
 
-self.addEventListener("install",event=>{
-  event.waitUntil(validateRelease());
-});
+self.addEventListener("install",event=>{event.waitUntil(validateRelease())});
 self.addEventListener("activate",event=>{
   event.waitUntil((async()=>{
     const keys=await caches.keys();
@@ -127,7 +126,6 @@ self.addEventListener("fetch",event=>{
   if(event.request.method!=="GET")return;
   const url=new URL(event.request.url);
   if(url.origin!==self.location.origin)return;
-
   const nav=event.request.mode==="navigate";
   const isVersion=url.pathname.endsWith("/version.json");
 

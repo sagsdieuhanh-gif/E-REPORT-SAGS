@@ -1,10 +1,10 @@
 {
-  "version": "V4.2.26",
-  "displayVersion": "V4.2.26",
-  "label": "V4.2.26",
-  "build": "V4.2.26-ONLY-SHIFT-REPORT",
-  "releasedAt": "2026-09-10T06:08:13Z",
-  "type": "report-cleanup",
-  "notes": "Gỡ cứng mọi nút báo cáo cũ GIAO BAN NGÀY / BÁO CÁO BAY ĐÊM, kể cả nút được runtime cũ chèn lại sau đăng nhập. Chỉ giữ BÁO CÁO CA hiện hành.",
-  "message": "Có bản cập nhật V4.2.26 · CHỈ GIỮ BÁO CÁO CA"
+  "version": "V4.2.27",
+  "displayVersion": "V4.2.27",
+  "label": "V4.2.27",
+  "build": "V4.2.27-REPORT-LOGIN-FIX",
+  "releasedAt": "2026-09-10T06:10:33Z",
+  "type": "report-login-fix",
+  "notes": "Sửa BÁO CÁO CA nhận đúng tài khoản từ __sagsGetSession().profile.username/profile.role. Trong menu Báo cáo điều hành chỉ giữ một mục BÁO CÁO CA; bỏ Báo cáo bay đêm và không còn form báo cáo cũ.",
+  "message": "Có bản cập nhật V4.2.27 · SỬA ĐĂNG NHẬP BÁO CÁO CA"
 }
