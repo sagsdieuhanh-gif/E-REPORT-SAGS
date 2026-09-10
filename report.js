@@ -1,4 +1,4 @@
-/* E-REPORT/SAGS V4.2.35
+/* E-REPORT/SAGS V4.2.40
    ONE OFFICIAL SHIFT REPORT + QUICK VOICE REPORT PIPELINE
    - AD / DH / ĐH: create, finalize and export Shift Report.
    - Other authenticated operational accounts: Quick Report via voice/photo.

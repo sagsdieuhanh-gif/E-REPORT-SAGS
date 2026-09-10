@@ -1,0 +1,52 @@
+{
+  "version": "V4.2.40",
+  "base": "V4.2.35",
+  "purpose": "REMOVE ALL FORM ALIGNMENT FEATURES",
+  "removed": [
+    "V4.2.36 AD FORM ALIGN",
+    "V4.2.37 FORM LIBRARY",
+    "V4.2.38 EDIT BUTTON",
+    "V4.2.39 FORM SEARCH"
+  ],
+  "checks": {
+    "report.js": "OK",
+    "service-worker.js": "OK",
+    "v2.2.18-runtime-patch.js": "OK",
+    "no_form_library": "OK",
+    "no_alignment_editor": "OK",
+    "stale_ui_cleanup": "OK",
+    "report_baseline_preserved": "OK"
+  },
+  "files": [
+    {
+      "path": "report.js",
+      "sha256": "0bb39e62d76489f7b7fd4caaaecf6cdbaa5f28fc99e0d08c189591bc95e0fe4d",
+      "size": 28158
+    },
+    {
+      "path": "report.css",
+      "sha256": "2843e24d2529cf7233332051d92eec47b48c2af87de5fccd0f50ab015667bc21",
+      "size": 2887
+    },
+    {
+      "path": "service-worker.js",
+      "sha256": "16628f8db89339a6c0d7712fdd91f5ddd22bdf922a6e769a78e9dc2a8ffb889e",
+      "size": 18552
+    },
+    {
+      "path": "v2.2.18-runtime-patch.js",
+      "sha256": "51b6c676cd25cda099fc2c36f8b51ffe33b03eb50d5ab3671eb7d7dc1e8426e3",
+      "size": 1348
+    },
+    {
+      "path": "version.json",
+      "sha256": "7c52a1e7b727e2b9891f7321e9c42aa1eb2147731bf1659cdf56cf1b9c97b8b4",
+      "size": 621
+    },
+    {
+      "path": "HDSD-V4.2.40.md",
+      "sha256": "1723042d82da3bb319fd18d716ae043a91bdd9d701932d08e2c38a41ffbb00f2",
+      "size": 1518
+    }
+  ]
+}
