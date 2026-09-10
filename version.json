@@ -1,10 +1,10 @@
 {
-  "version": "V4.2.22",
-  "displayVersion": "V4.2.22",
-  "label": "V4.2.22",
-  "build": "V4.2.22-TOOLBAR-ROW2-FIX",
-  "releasedAt": "2026-09-07T00:00:00Z",
-  "type": "top-toolbar-row-permanent",
-  "notes": "Tập trung sửa hàng trên thanh công cụ: hàng Xuất, Xuất QR, Hoàn tất và Nhập giờ nhanh luôn hiển thị sau đăng nhập; nút chưa khả dụng chỉ bị làm mờ. Tự gắn lại hàng trên nếu thanh công cụ được dựng lại.",
-  "message": "Có bản cập nhật V4.2.22"
+  "version": "V4.2.24",
+  "displayVersion": "V4.2.24",
+  "label": "V4.2.24",
+  "build": "V4.2.24-SHIFT-REPORT",
+  "releasedAt": "2026-09-10T00:00:00Z",
+  "type": "shift-report",
+  "notes": "Báo cáo ca 6 phần: chỉnh thời gian, thống kê sản lượng, đọc hồ sơ chung/kho lưu trữ, sự việc/bàn giao, chốt và UPDATE, xuất nội dung và in/PDF. Kế thừa ghi nhận giọng nói/ảnh V4.2.23.",
+  "message": "Có bản cập nhật V4.2.24 · BÁO CÁO CA"
 }

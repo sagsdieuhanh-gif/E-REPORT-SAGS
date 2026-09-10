@@ -1,0 +1,46 @@
+{
+  "version": "V4.2.24",
+  "base": "E-REPORT-SAGS-main.zip / version.json V4.2.22",
+  "files": [
+    {
+      "path": "HDSD-V4.2.24.md",
+      "sha256": "2b74121ebca3bbf1768da5fb59303d943de9b826c1b3cf87bd568679d71ce5ff"
+    },
+    {
+      "path": "app.js",
+      "sha256": "755d6ee90bde5be80740e0daaa1b0186cf3a14a00d838d2e3d53bc7eb72650d0"
+    },
+    {
+      "path": "index.html",
+      "sha256": "1818656e7d935fb1029253434e6f571b1731a068df1a134140ee6206883d1178"
+    },
+    {
+      "path": "quick-incident.css",
+      "sha256": "7d54f1a8433b9a473d9b7e135bc290f22551cbb6f19e3ebb2b66991d26ea9e1c"
+    },
+    {
+      "path": "quick-incident.js",
+      "sha256": "a57a65d3624c2327d54b4b0b512d514bc5c6c6733fec7dad63261ebbba028c83"
+    },
+    {
+      "path": "service-worker.js",
+      "sha256": "b409c7919d22cd6bd3d02b6ad6371fc98cc4805d13e187f10c48653bc1a70287"
+    },
+    {
+      "path": "shift-report-core.js",
+      "sha256": "b3e3e4a764999c71f209d032241ddbb9c9ee534b8e4caed64465b5287b97b197"
+    },
+    {
+      "path": "shift-report.css",
+      "sha256": "2321102c191f5b229c4f485cd801401a26f0731c77e706e44ddc0aac20f28b9c"
+    },
+    {
+      "path": "shift-report.js",
+      "sha256": "ef3e963bc4f8efa644fc93d7f207b0b898192cc7075b91962100cf9dcdf19a0a"
+    },
+    {
+      "path": "version.json",
+      "sha256": "059f7f383c5a5e390c557c1d029984e2e6ca803fd56cc7e8c399b1212beaa99b"
+    }
+  ]
+}

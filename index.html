@@ -2709,6 +2709,8 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <link rel="stylesheet" href="./ui.css?v=V2.0">
 <link rel="stylesheet" href="./report.css?v=V2.0">
 <link rel="stylesheet" href="./theme.css?v=V2.0">
+<link rel="stylesheet" href="./quick-incident.css?v=V4.2.23">
+<link rel="stylesheet" href="./shift-report.css?v=V4.2.24">
 </head>
 <body>
 <div aria-hidden="true" id="roleHomeIdle"></div>
@@ -11122,8 +11124,8 @@ try {
   if(h) h.textContent="Lỗi khởi tạo: "+err.message;
   alert("Lỗi JavaScript: "+err.message);
 }
-const APP_BUILD_VERSION="V2.2.41-FULLNAME-AFTER-COLON";
-const APP_DISPLAY_VERSION="V2.2.41";
+const APP_BUILD_VERSION="V4.2.24-SHIFT-REPORT";
+const APP_DISPLAY_VERSION="V4.2.24";
 // V1.1.103: hotfix duy nhất lỗi Firebase RTDB ancestor/descendant khi đồng bộ DAILY ROSTER; không thay đổi nghiệp vụ khác.
 // V4.21 — SAFE UPDATE SAVE
 // Before switching to a newly installed app version, force-save all current
@@ -11137,7 +11139,7 @@ async function sagsSaveBeforeAppUpdate(){
     try{ if(typeof persist==="function") persist(); }catch(e){ console.warn("persist before update",e); }
     // Save any active form-specific state if such hooks exist in this build.
     const hooks=[
-      "saveCurrentForm","saveActiveForm","saveDraft","saveCurrentDraft",
+      "sagsShiftSaveDraft","sagsQuickSaveDraft","saveCurrentForm","saveActiveForm","saveDraft","saveCurrentDraft",
       "persistCurrentForm","persistActiveForm","saveRampDraft","saveFlightSession"
     ];
     for(const name of hooks){
@@ -28209,5 +28211,8 @@ window.adminResetAccountPassword=async function(uid){
   }
 };
 </script>
+<script src="./quick-incident.js?v=V4.2.23"></script>
+<script src="./shift-report-core.js?v=V4.2.24"></script>
+<script src="./shift-report.js?v=V4.2.24"></script>
 </body>
 </html>

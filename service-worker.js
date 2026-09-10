@@ -1,7 +1,7 @@
 /* E-REPORT/SAGS V2.2.16 · LIGHTWEIGHT SAFE UPDATE */
-const CACHE_NAME="sags-v2.2.41-fullname-after-colon";
-const BUILD="V2.2.41-FULLNAME-AFTER-COLON";
-const DISPLAY_VERSION="V2.2.41";
+const CACHE_NAME="sags-v4.2.24-shift-report";
+const BUILD="V4.2.24-SHIFT-REPORT";
+const DISPLAY_VERSION="V4.2.24";
 
 const PATCH_V21="./v2.1-runtime-patch.js";
 const PATCH_V22="./v2.2-runtime-patch.js";
@@ -20,7 +20,7 @@ const PATCH_V2216="./v2.2.16-runtime-patch.js";
 const PATCH_V2217="./v2.2.17-runtime-patch.js";
 
 const FRESH_SUFFIXES=[
-  "/version.json","/manifest.webmanifest","/index.html","/app.js","/ai.js",
+  "/shift-report-core.js","/shift-report.js","/shift-report.css","/quick-incident.js","/quick-incident.css","/version.json","/manifest.webmanifest","/index.html","/app.js","/ai.js",
   "/ui.css","/ui.js","/ios-export.js","/report.css","/report.js","/theme.css",
   "/daily-roster.js","/v2.1-runtime-patch.js","/v2.2-runtime-patch.js",
   "/v2.2.2-runtime-patch.js","/v2.2.5-runtime-patch.js",
@@ -80,6 +80,9 @@ async function validateRelease(){
   if(String(vd?.displayVersion||vd?.version||"").trim()!==DISPLAY_VERSION)throw new Error("version.json VERSION mismatch");
 
   const checks=[
+    ["./shift-report-core.js","V4.2.24"],
+    ["./shift-report.js","V4.2.24-SHIFT-REPORT"],
+    ["./quick-incident.js","V4.2.23-VOICE-PHOTO"],
     [PATCH_V22,"V2.2-ARRDEP-CHOICE-LOCALFIRST"],
     [PATCH_V222,"V2.2.2-DEP-RECEIVE-AFTER-ARR"],
     [PATCH_V225,"V2.2.5-SIGNATURE-EXPORT-STORAGE-FIX-R2"],
