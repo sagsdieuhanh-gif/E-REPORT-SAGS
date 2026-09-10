@@ -1,10 +1,10 @@
 {
-  "version": "V4.2.28",
-  "displayVersion": "V4.2.28",
-  "label": "V4.2.28",
-  "build": "V4.2.28-REPORT-QUICK-VOICE",
-  "releasedAt": "2026-09-10T06:17:10Z",
-  "type": "report-role-voice",
-  "notes": "Tách quyền BÁO CÁO CA và BÁO CÁO NHANH. AD/DH/ĐH được lập-chốt-xuất báo cáo ca. Tài khoản nghiệp vụ không phải VIEW/VIEWER được nói/chụp ảnh gửi báo cáo nhanh vào nguồn chung incident_index; báo cáo ca tự tổng hợp. Thêm micro trực tiếp cho Thay đổi khai thác, Diễn biến/Xử lý, Bàn giao và Kiến nghị.",
-  "message": "Có bản cập nhật V4.2.28 · BÁO CÁO NHANH + NÓI TRỰC TIẾP"
+  "version": "V4.2.29",
+  "displayVersion": "V4.2.29",
+  "label": "V4.2.29",
+  "build": "V4.2.29-SMART-VOICE",
+  "releasedAt": "2026-09-10T06:26:55Z",
+  "type": "smart-voice",
+  "notes": "Cải thiện nhận giọng nói cho BÁO CÁO NHANH và BÁO CÁO CA: chỉ chốt kết quả final, lọc cụm lặp, ghép phần chồng giữa các đoạn, chọn alternative tốt hơn, bỏ kết quả confidence quá thấp khi trình duyệt có cung cấp, tự dừng sau 6 giây im lặng/60 giây mỗi lượt và chuẩn hóa một số thuật ngữ khai thác. Không lưu bản ghi âm.",
+  "message": "Có bản cập nhật V4.2.29 · SMART VOICE"
 }

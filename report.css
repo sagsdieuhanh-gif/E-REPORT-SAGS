@@ -1,4 +1,4 @@
-/* E-REPORT/SAGS V4.2.28 · report roles + voice */
+/* E-REPORT/SAGS V4.2.29 · report roles + voice */
 #v1171ReportModal,
 .v1171Panel,
 .v1171Tabs,
@@ -36,4 +36,16 @@
 .qiAutoAggregate{
   font-weight:700;
   margin:.55rem 0 0;
+}
+
+
+/* Smart Voice V4.2.29 */
+.qiSpeech [role="status"]{
+  display:block;
+  margin:.45rem 0 .75rem;
+  line-height:1.35;
+}
+.qiSpeech button.listening,
+.srVoiceBtn.listening{
+  font-weight:900;
 }

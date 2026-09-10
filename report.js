@@ -1,4 +1,4 @@
-/* E-REPORT/SAGS V4.2.28
+/* E-REPORT/SAGS V4.2.29
    ONE OFFICIAL SHIFT REPORT + QUICK VOICE REPORT PIPELINE
    - AD / DH / ĐH: create, finalize and export Shift Report.
    - Other authenticated operational accounts: Quick Report via voice/photo.
@@ -172,64 +172,227 @@
     });
   }
 
-  /* ---------- Direct voice entry inside the official Shift Report ---------- */
+  /* ---------- Smart Voice: de-duplicate, overlap-merge, aviation vocabulary ---------- */
   let activeVoice=null;
-
-  function stopVoice(abort=false){
-    if(!activeVoice)return;
-    const v=activeVoice;
-    activeVoice=null;
-    try{abort?v.rec.abort():v.rec.stop()}catch(_){}
-    try{v.btn.classList.remove("listening");v.btn.textContent="🎤 NÓI"}catch(_){}
-  }
 
   function voiceCtor(){
     return root.SpeechRecognition||root.webkitSpeechRecognition||null;
   }
 
-  function startVoice(textarea,btn){
-    if(!canOfficialReport())return;
+  function speechKey(v){
+    return S(v)
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g,"")
+      .replace(/Đ/g,"D").replace(/đ/g,"d")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g," ")
+      .trim();
+  }
+
+  function sameWords(a,b){
+    if(a.length!==b.length)return false;
+    for(let i=0;i<a.length;i++)if(speechKey(a[i])!==speechKey(b[i]))return false;
+    return true;
+  }
+
+  function collapseSpeechRepeats(text){
+    let tokens=S(text).replace(/\s+/g," ").split(" ").filter(Boolean);
+    // Browser STT on mobile can return patterns such as
+    // "khi kiểm tra khi kiểm tra" or repeated partial phrases.
+    for(let pass=0;pass<6;pass++){
+      let changed=false;
+      for(let i=0;i<tokens.length;i++){
+        const max=Math.min(8,Math.floor((tokens.length-i)/2));
+        for(let n=max;n>=1;n--){
+          const a=tokens.slice(i,i+n),b=tokens.slice(i+n,i+2*n);
+          if(sameWords(a,b)){
+            tokens.splice(i+n,n);
+            changed=true;
+            i=Math.max(-1,i-n);
+            break;
+          }
+        }
+      }
+      if(!changed)break;
+    }
+    return tokens.join(" ").trim();
+  }
+
+  function aviationTerms(text){
+    let t=S(text);
+    const upper=["apu","gpu","asu","fod","mvt","mva","uld","pax","adl","chd","inf","sta","std","eta","etd"];
+    for(const x of upper)t=t.replace(new RegExp(`\\b${x}\\b`,"gi"),x.toUpperCase());
+    t=t.replace(/\bpush\s*back\b/gi,"PUSHBACK")
+      .replace(/\bchock\s*on\b/gi,"CHOCK ON")
+      .replace(/\bchock\s*off\b/gi,"CHOCK OFF")
+      .replace(/\bdoor\s*close\b/gi,"DOOR CLOSE")
+      .replace(/\bs[\s-]*mod\b/gi,"S-MOD")
+      .replace(/\ba\s*\/\s*c\b/gi,"A/C");
+    return t.replace(/\s+([,.;:!?])/g,"$1").replace(/\s+/g," ").trim();
+  }
+
+  function cleanSpeech(text){
+    return aviationTerms(collapseSpeechRepeats(text));
+  }
+
+  function mergeSpeech(existing,incoming){
+    const current=S(existing),fresh=cleanSpeech(incoming);
+    if(!fresh)return current;
+
+    const curTokens=current.split(/\s+/).filter(Boolean);
+    const newTokens=fresh.split(/\s+/).filter(Boolean);
+    const curKeys=curTokens.map(speechKey),newKeys=newTokens.map(speechKey);
+    const recent=curKeys.slice(-40).join(" "),wholeNew=newKeys.join(" ");
+    if(wholeNew&&recent.includes(wholeNew))return current;
+
+    const max=Math.min(16,curKeys.length,newKeys.length);
+    let overlap=0;
+    for(let n=max;n>=1;n--){
+      if(curKeys.slice(-n).join(" ")===newKeys.slice(0,n).join(" ")){
+        overlap=n;break;
+      }
+    }
+    const add=newTokens.slice(overlap).join(" ").trim();
+    if(!add)return current;
+    return current+(current&&!/\s$/.test(current)?" ":"")+add;
+  }
+
+  function alternativeScore(alt){
+    const raw=S(alt?.transcript),clean=cleanSpeech(raw);
+    if(!clean)return -999;
+    const rawN=raw.split(/\s+/).filter(Boolean).length||1;
+    const cleanN=clean.split(/\s+/).filter(Boolean).length||1;
+    const repetitionLoss=Math.max(0,rawN-cleanN);
+    const conf=Number(alt?.confidence||0);
+    return (conf>0?conf:0.55)*10 + Math.min(cleanN,14)*0.03 - repetitionLoss*0.35;
+  }
+
+  function bestAlternative(result){
+    let best=null,score=-Infinity;
+    const count=Math.min(result?.length||0,3);
+    for(let i=0;i<count;i++){
+      const alt=result[i],s=alternativeScore(alt);
+      if(s>score){score=s;best=alt}
+    }
+    return best||result?.[0]||null;
+  }
+
+  function restoreVoiceUi(v,message=""){
+    clearTimeout(v.silenceTimer);
+    clearTimeout(v.maxTimer);
+    try{v.field.readOnly=v.wasReadOnly}catch(_){}
+    try{
+      v.btn.classList.remove("listening");
+      v.btn.textContent=v.idleLabel;
+      v.btn.setAttribute("aria-pressed","false");
+    }catch(_){}
+    if(v.hint&&message)v.hint.textContent=message;
+  }
+
+  function stopVoice(abort=false,message="Đã dừng. Đọc lại chữ trước khi lưu."){
+    if(!activeVoice)return;
+    const v=activeVoice;
+    activeVoice=null;
+    clearTimeout(v.silenceTimer);
+    clearTimeout(v.maxTimer);
+    try{abort?v.rec.abort():v.rec.stop()}catch(_){}
+    restoreVoiceUi(v,message);
+  }
+
+  function startSmartVoice(field,btn,hint,permissionFn){
+    if(permissionFn&&!permissionFn())return;
     const Ctor=voiceCtor();
-    if(!Ctor){
-      alert("Trình duyệt chưa hỗ trợ nhận giọng nói. Có thể dùng micro trên bàn phím điện thoại để nhập.");
+    if(!Ctor||!root.isSecureContext){
+      if(hint)hint.textContent="Trình duyệt chưa hỗ trợ nhận giọng nói hoặc chưa dùng HTTPS. Có thể dùng micro bàn phím.";
+      else alert("Trình duyệt chưa hỗ trợ nhận giọng nói. Có thể dùng micro trên bàn phím điện thoại để nhập.");
       return;
     }
-    if(activeVoice){stopVoice(false);return}
+    if(activeVoice){
+      if(activeVoice.field===field){stopVoice(false);return}
+      stopVoice(true,"Đã chuyển sang ô khác.");
+    }
+    if(field.disabled||field.readOnly)return;
 
     const rec=new Ctor();
     rec.lang="vi-VN";
     rec.continuous=true;
-    rec.interimResults=false;
-    const base=S(textarea.value);
-    let additions=[];
+    rec.interimResults=true;
+    try{rec.maxAlternatives=3}catch(_){}
 
-    rec.onresult=e=>{
-      for(let i=e.resultIndex;i<e.results.length;i++){
-        if(e.results[i].isFinal){
-          const t=S(e.results[i][0]?.transcript);
-          if(t)additions.push(t);
-        }
-      }
-      const extra=additions.join(" ").trim();
-      textarea.value=base+(base&&extra?" ":"")+extra;
-      textarea.dispatchEvent(new Event("input",{bubbles:true}));
-    };
-    rec.onerror=e=>{
-      if(e.error!=="aborted"&&e.error!=="no-speech"){
-        try{alert("Không nhận được giọng nói. Có thể dùng micro bàn phím để nhập.")}catch(_){}
-      }
-    };
-    rec.onend=()=>{
-      if(activeVoice?.rec===rec){
-        activeVoice=null;
-        btn.classList.remove("listening");
-        btn.textContent="🎤 NÓI";
-      }
-    };
-    activeVoice={rec,btn};
+    const idleLabel=S(btn.dataset.sagsIdleLabel||btn.textContent||"🎤 NÓI");
+    btn.dataset.sagsIdleLabel=idleLabel;
+    const v={rec,field,btn,hint,idleLabel,wasReadOnly:field.readOnly,silenceTimer:0,maxTimer:0,lastKey:"",lastAt:0};
+    activeVoice=v;
+    field.readOnly=true;
     btn.classList.add("listening");
     btn.textContent="■ DỪNG";
-    try{rec.start()}catch(_){stopVoice(true)}
+    btn.setAttribute("aria-pressed","true");
+    if(hint)hint.textContent="Đang nghe… nói từng câu ngắn, ngắt nhẹ giữa các ý.";
+
+    const armSilence=()=>{
+      clearTimeout(v.silenceTimer);
+      v.silenceTimer=setTimeout(()=>{
+        if(activeVoice===v)stopVoice(false,"Tự dừng vì đã im lặng. Đọc lại chữ trước khi lưu.");
+      },6000);
+    };
+    armSilence();
+    v.maxTimer=setTimeout(()=>{
+      if(activeVoice===v)stopVoice(false,"Đã đủ 60 giây. Có thể bấm NÓI để ghi tiếp.");
+    },60000);
+
+    rec.onspeechstart=armSilence;
+    rec.onresult=e=>{
+      if(activeVoice!==v||!field.isConnected)return;
+      armSilence();
+      let interim="";
+      for(let i=e.resultIndex;i<e.results.length;i++){
+        const r=e.results[i];
+        if(r.isFinal){
+          const alt=bestAlternative(r),conf=Number(alt?.confidence||0),text=cleanSpeech(alt?.transcript);
+          if(!text)continue;
+          // Confidence is not supplied by every browser. Only reject when it is
+          // explicitly very low; do not reject valid results whose confidence=0.
+          if(conf>0&&conf<0.24){
+            if(hint)hint.textContent="Đoạn vừa nói nghe chưa rõ nên chưa thêm. Nói lại chậm hơn một chút.";
+            continue;
+          }
+          const key=speechKey(text),now=Date.now();
+          if(key&&key===v.lastKey&&now-v.lastAt<5000)continue;
+          const merged=mergeSpeech(field.value,text);
+          if(merged!==field.value){
+            field.value=merged;
+            field.dispatchEvent(new Event("input",{bubbles:true}));
+            field.dispatchEvent(new Event("change",{bubbles:true}));
+          }
+          v.lastKey=key;v.lastAt=now;
+          if(hint)hint.textContent="Đã nhận: "+text;
+        }else{
+          const alt=bestAlternative(r);
+          interim=cleanSpeech(alt?.transcript);
+        }
+      }
+      if(interim&&hint)hint.textContent="Đang nghe: "+interim;
+    };
+    rec.onerror=e=>{
+      const msg=({
+        "not-allowed":"Chưa được cấp micro. Cho phép micro trong trình duyệt hoặc dùng micro bàn phím.",
+        "audio-capture":"Không mở được micro.",
+        "network":"Lỗi mạng khi nhận giọng nói. Chữ đã nhận được vẫn được giữ.",
+        "no-speech":"Chưa nghe rõ. Bấm NÓI để thử lại."
+      })[e.error]||"Nhận giọng nói đã dừng. Chữ đã nhận được vẫn được giữ.";
+      if(activeVoice===v)activeVoice=null;
+      restoreVoiceUi(v,msg);
+    };
+    rec.onend=()=>{
+      if(activeVoice===v){
+        activeVoice=null;
+        restoreVoiceUi(v,"Đã dừng. Đọc lại chữ trước khi lưu.");
+      }
+    };
+    try{rec.start()}catch(_){
+      if(activeVoice===v)activeVoice=null;
+      restoreVoiceUi(v,"Không khởi động được micro. Có thể dùng micro bàn phím.");
+    }
   }
 
   const VOICE_FIELDS=[
@@ -243,16 +406,20 @@
     if(!canOfficialReport())return;
     for(const [id,label] of VOICE_FIELDS){
       const ta=document.getElementById(id);
-      if(!ta||ta.dataset.sagsVoiceReady==="1")continue;
-      ta.dataset.sagsVoiceReady="1";
-      const b=document.createElement("button");
-      b.type="button";
-      b.className="srVoiceBtn";
-      b.textContent="🎤 NÓI";
-      b.title=label;
-      b.setAttribute("aria-label",label);
-      b.onclick=()=>startVoice(ta,b);
-      ta.insertAdjacentElement("afterend",b);
+      if(!ta)continue;
+      let b=ta.nextElementSibling?.classList?.contains("srVoiceBtn")?ta.nextElementSibling:null;
+      if(!b){
+        b=document.createElement("button");
+        b.type="button";
+        b.className="srVoiceBtn";
+        b.textContent="🎤 NÓI";
+        b.title=label;
+        b.setAttribute("aria-label",label);
+        ta.insertAdjacentElement("afterend",b);
+      }
+      b.dataset.sagsIdleLabel="🎤 NÓI";
+      b.onclick=()=>startSmartVoice(ta,b,null,canOfficialReport);
+      ta.dataset.sagsVoiceReady="2";
     }
   }
 
@@ -263,6 +430,23 @@
 
     const title=document.getElementById("qiTitle");
     if(title)title.textContent="BÁO CÁO NHANH · NÓI / ẢNH";
+
+    // Replace the V4.2.23 browser speech handler with Smart Voice without
+    // changing the Quick Report storage/data flow.
+    document.querySelectorAll("#qiModal .qiSpeech").forEach(box=>{
+      const field=box.previousElementSibling;
+      const b=box.querySelector("button");
+      const hint=box.querySelector('[role="status"]');
+      if(!field||field.tagName!=="TEXTAREA"||!b)return;
+      b.dataset.sagsIdleLabel="🎤 NÓI ĐỂ NHẬP";
+      b.dataset.sagsSmartVoice="1";
+      if(!b.classList.contains("listening"))b.textContent="🎤 NÓI ĐỂ NHẬP";
+      b.onclick=()=>startSmartVoice(field,b,hint,canQuickReport);
+      if(hint&&!hint.dataset.sagsSmartHint){
+        hint.dataset.sagsSmartHint="1";
+        hint.textContent="Nói từng câu ngắn; hệ thống tự lọc đoạn lặp và ghép phần bị chồng.";
+      }
+    });
 
     const send=document.getElementById("qiSend");
     if(send&&!document.getElementById("qiSharedReportNote")){
@@ -343,6 +527,17 @@
       return;
     }
 
+    const quickSpeechBox=el.closest?.(".qiSpeech");
+    if(quickSpeechBox&&el.tagName==="BUTTON"){
+      const field=quickSpeechBox.previousElementSibling;
+      if(field?.tagName==="TEXTAREA"){
+        ev.preventDefault();
+        ev.stopImmediatePropagation();
+        startSmartVoice(field,el,quickSpeechBox.querySelector('[role="status"]'),canQuickReport);
+        return;
+      }
+    }
+
     if(el.dataset?.sagsQuickReport==="1"){
       ensureSessionBridge();
     }
@@ -371,6 +566,10 @@
 
   ["sags:login","sags:rolechange","sags:profilechange","sags:ui-ready"].forEach(name=>{
     root.addEventListener?.(name,schedule);
+  });
+
+  root.addEventListener?.("visibilitychange",()=>{
+    if(document.hidden&&activeVoice)stopVoice(true,"Đã dừng micro khi ứng dụng ra nền.");
   });
 
   // Small non-sensitive diagnostics for support.

@@ -1,0 +1,48 @@
+{
+  "version": "V4.2.29",
+  "base": "V4.2.28",
+  "purpose": "Improve browser speech-to-text quality without storing audio",
+  "changes": [
+    "report.js",
+    "report.css",
+    "service-worker.js",
+    "version.json",
+    "HDSD-V4.2.29.md"
+  ],
+  "syntaxCheck": {
+    "report.js": "OK",
+    "service-worker.js": "OK"
+  },
+  "antiRepeatTest": {
+    "input": "khi khi khi kiểm khi kiểm tra khi kiểm tra khi kiểm tra s-mod khi kiểm tra s-mod khi kiểm tra s-mod",
+    "expected": "khi kiểm tra s-mod",
+    "result": "PASS"
+  },
+  "files": [
+    {
+      "path": "HDSD-V4.2.29.md",
+      "sha256": "087f6c81fc276ba26f3c5700bba13ff76f2c879893368c876837e66631caea06",
+      "size": 2349
+    },
+    {
+      "path": "report.css",
+      "sha256": "db3220051d7780ce3e6e75ab58a7307b89acfc89abee3d2fd03538cc698e429c",
+      "size": 953
+    },
+    {
+      "path": "report.js",
+      "sha256": "f2c56a99f3e95e08aa8f7da48c671bcfcfc428a2b8c7e7e5d6726c4a63d644f1",
+      "size": 21068
+    },
+    {
+      "path": "service-worker.js",
+      "sha256": "f9a040d423cb8dce41183c20e5171b27c530d82addf6929cc19139c6664d6be7",
+      "size": 8156
+    },
+    {
+      "path": "version.json",
+      "sha256": "5ac3c198bf30126a05a03edf957ea59d84c4bfc0b2c8a9f3df65a7f97f7349a4",
+      "size": 664
+    }
+  ]
+}
