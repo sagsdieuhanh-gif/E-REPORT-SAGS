@@ -1,10 +1,10 @@
 {
-  "version": "V4.2.24",
-  "displayVersion": "V4.2.24",
-  "label": "V4.2.24",
-  "build": "V4.2.24-SHIFT-REPORT",
-  "releasedAt": "2026-09-10T00:00:00Z",
-  "type": "shift-report",
-  "notes": "Báo cáo ca 6 phần: chỉnh thời gian, thống kê sản lượng, đọc hồ sơ chung/kho lưu trữ, sự việc/bàn giao, chốt và UPDATE, xuất nội dung và in/PDF. Kế thừa ghi nhận giọng nói/ảnh V4.2.23.",
-  "message": "Có bản cập nhật V4.2.24 · BÁO CÁO CA"
+  "version": "V4.2.25",
+  "displayVersion": "V4.2.25",
+  "label": "V4.2.25",
+  "build": "V4.2.25-REPORT-CLEANUP",
+  "releasedAt": "2026-09-10T06:01:58Z",
+  "type": "report-cleanup",
+  "notes": "Bỏ toàn bộ giao diện/chức năng báo cáo ngày-đêm cũ V1.1.x; chỉ giữ BÁO CÁO KHAI THÁC CA TRỰC hiện hành. Lệnh cũ được chuyển sang báo cáo ca để tránh lỗi từ cache/runtime cũ.",
+  "message": "Có bản cập nhật V4.2.25 · CHỈ GIỮ BÁO CÁO CA"
 }

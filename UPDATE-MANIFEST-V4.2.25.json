@@ -1,0 +1,32 @@
+{
+  "version": "V4.2.25",
+  "base": "E-REPORT-SAGS main / V4.2.24",
+  "purpose": "REMOVE ALL LEGACY REPORT FUNCTIONS; KEEP ONLY CURRENT SHIFT REPORT",
+  "files": [
+    {
+      "path": "report.js",
+      "sha256": "5b7c91dd0a61d5f10a7ae213ad3bccfc19ebd244f6f47b82bbb79bcff58f7e00",
+      "size": 2196
+    },
+    {
+      "path": "report.css",
+      "sha256": "506ce3bdd68804d955fdcd20d297071714238699615b2cbbcb9df4ae87e36a2e",
+      "size": 197
+    },
+    {
+      "path": "version.json",
+      "sha256": "20dc7e627ccbd59139c5578f05dbeb3c0e9fc68108f83e45f0d7d9d4d60d6267",
+      "size": 496
+    },
+    {
+      "path": "service-worker.js",
+      "sha256": "ad76e928752830e4e06fec31db4f61e2fd20b16adff0c0fbd18dd919363006ce",
+      "size": 8229
+    },
+    {
+      "path": "HDSD-V4.2.25.md",
+      "sha256": "e468812c2969abed48d081fba551c4ba2905049aa844ac5b96ff8795671acfd3",
+      "size": 1462
+    }
+  ]
+}
