@@ -1,10 +1,10 @@
 {
-  "version": "V4.2.49",
-  "displayVersion": "V4.2.49",
-  "label": "V4.2.49",
-  "build": "V4.2.49-AD-COORD-ENTRY-ROBUST",
-  "releasedAt": "2026-09-11T03:00:04Z",
-  "type": "robust-ad-coordinate-entry",
-  "notes": "Fix missing AD coordinate entry. AD detection now accepts session role, currentRole, currentUserProfile role/systemRole and body.role-admin. Coordinate entry binds to both original AD dashboard v181AdminCenter/v181AdminGrid and current v377AdminFormToolsRow/v377LayoutTuneSlot. Lightweight click/pageshow/focus retries handle dynamically opened AD management without global DOM observer. Served index force-injects exactly one V4.2.49 v2.2.18 script; v2.2.17 response has fallback loader. V4.2.48 Quick Incident removal and V4.2.47 performance/AD field authority remain.",
-  "message": "Có bản cập nhật V4.2.49 · KHÔI PHỤC CHẮC CHẮN CĂN CHỈNH BIỂU MẪU TRONG AD"
+  "version": "V4.2.50",
+  "displayVersion": "V4.2.50",
+  "label": "V4.2.50",
+  "build": "V4.2.50-SIGNATURE-LEFT-ALIGN-SYNC",
+  "releasedAt": "2026-09-11T10:32:31Z",
+  "type": "signature-display-consistency-fix",
+  "notes": "Synchronize printed signer-name display with BBBT left-edge behavior. Fix exact duplicate native SVG + v373 single-line text on 42.1/55.1. Force signer-name fields to left/start with zero inset while leaving signature images and touch regions untouched. Preserve AD coordinate editor, current coordinate JSON, report, Quick Incident removal and performance fixes.",
+  "message": "Có bản cập nhật V4.2.50 · ĐỒNG BỘ CHỮ KÝ/BBBT CĂN TRÁI"
 }

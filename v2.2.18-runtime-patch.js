@@ -1,4 +1,4 @@
-/* E-REPORT/SAGS V4.2.49 · V2.2.18-AD-COORD-ENTRY-ROBUST
+/* E-REPORT/SAGS V4.2.50 · V2.2.18-SIGNATURE-LEFT-ALIGN-SYNC
    ONLY AD -> AD Control Center -> CĂN CHỈNH BIỂU MẪU.
    Multi-form workflow:
    - drag vx/vy
@@ -12,7 +12,7 @@
    No Firebase. */
 (function(root){
   "use strict";
-  const BUILD="V2.2.18-AD-COORD-ENTRY-ROBUST";
+  const BUILD="V2.2.18-SIGNATURE-LEFT-ALIGN-SYNC";
   if(root.__SAGS_AD_FSAGS_BBBT_COORD===BUILD)return;
   root.__SAGS_AD_FSAGS_BBBT_COORD=BUILD;
 
@@ -177,6 +177,110 @@
     catch(_){return String(v).replace(/["\\]/g,"\\$&")}
   }
 
+  function isSignatureNameField(f){
+    const k=U(f?.key),l=U(f?.label);
+    if(!k)return false;
+
+    // Known signer-name families used by FSAGS 42.1 / 55.1 and compatible
+    // naming variants on other FSAGS forms. Do NOT touch signature image fields.
+    if(/(?:REPRESENTATIVE|COORD|COORDINATOR|ENGINEER|LOADINGSTAFF|LOADING_STAFF|AGENT|SIGNER|SIGNATURE|STAFF).*NAME/.test(k))return true;
+    if(/NAME.*(?:REPRESENTATIVE|COORD|COORDINATOR|ENGINEER|LOADINGSTAFF|LOADING_STAFF|AGENT|SIGNER|SIGNATURE|STAFF)/.test(k))return true;
+    if(/(?:REPRESENTATIVE|COORDINATOR|CO-ORDINATOR|ENGINEER|LOADING STAFF|SAGS-CXR AGENT|AGENT).*(?:NAME|HỌ TÊN|HỌ VÀ TÊN)/.test(l))return true;
+
+    // Exact currently-used keys observed in the active coordinate file.
+    return [
+      "F421_REPRESENTATIVENAME",
+      "F421_COORDARRNAME",
+      "F421_COORDDEPNAME",
+      "F551_LOADINGSTAFFNAME",
+      "F551_ENGINEERNAME"
+    ].includes(k);
+  }
+
+  function setFieldTextNodeLeft(el,x){
+    if(!el||el.tagName?.toLowerCase()!=="text")return;
+    el.setAttribute("x",String(x));
+    el.setAttribute("text-anchor","start");
+    el.classList.remove("center","right");
+    el.classList.add("left");
+    el.removeAttribute("transform");
+    el.style.removeProperty("transform");
+    el.style.removeProperty("translate");
+  }
+
+  function dedupeSameFieldText(nodes){
+    const textNodes=(nodes||[]).filter(el=>el.tagName?.toLowerCase()==="text");
+    if(textNodes.length<2)return 0;
+
+    const generated=textNodes.filter(el=>el.classList.contains("v373-line-render"));
+    const native=textNodes.filter(el=>!el.classList.contains("v373-line-render"));
+    let hidden=0;
+
+    // 42.1 / 55.1 can have one native SVG text plus one legacy
+    // v373 single-line renderer for the SAME value. V4.2.49 moved both to
+    // the AD coordinates, which made the name look doubled/offset.
+    // Suppress only exact single-line duplicates. Multiline rows are untouched.
+    if(generated.length===1 && native.length){
+      const g=generated[0],gt=S(g.textContent);
+      if(gt){
+        const sameNative=native.find(n=>S(n.textContent)===gt);
+        if(sameNative){
+          g.style.display="none";
+          g.setAttribute("data-sags-dedup-hidden","1");
+          sameNative.style.removeProperty("display");
+          sameNative.removeAttribute("data-sags-dedup-hidden");
+          hidden++;
+        }
+      }
+    }
+
+    // Undo a previous suppression if the renderer changed and there is no
+    // longer an exact duplicate.
+    if(!hidden){
+      textNodes.forEach(el=>{
+        if(el.getAttribute("data-sags-dedup-hidden")==="1"){
+          el.style.removeProperty("display");
+          el.removeAttribute("data-sags-dedup-hidden");
+        }
+      });
+    }
+    return hidden;
+  }
+
+  function normalizeSignatureNameRender(){
+    try{
+      const all=globalFields();
+      if(!all.length)return false;
+      for(const f of all){
+        if(!isSignatureNameField(f))continue;
+        if(U(f.type)==="SIGNATURE")continue; // image/signature pad stays untouched
+
+        f.align="left";
+        f.leftValue=true;
+        f.manualInset=0;
+
+        const svg=$("svg"+Number(f.page));
+        if(!svg)continue;
+        const x=Math.max(0,Number(f.vx)||0)*1241;
+        const selector='[data-field-key="'+cssEsc(S(f.key))+'"]';
+        const nodes=[...svg.querySelectorAll(selector)].filter(el=>
+          !el.classList.contains("hit") &&
+          !el.classList.contains("selected-region") &&
+          !el.classList.contains("v368-layout-hit")
+        );
+        dedupeSameFieldText(nodes);
+        nodes.forEach(el=>{
+          if(el.getAttribute("data-sags-dedup-hidden")==="1")return;
+          setFieldTextNodeLeft(el,x);
+        });
+      }
+      return true;
+    }catch(e){
+      console.warn("V4.2.50 signature-name normalize",e);
+      return false;
+    }
+  }
+
   /* AD FIELD AUTHORITY
      Any field present in fsags-display-coordinates.json / AD temporary draft
      MUST display according to AD configuration for every source of data:
@@ -209,8 +313,9 @@
           const vy=Number.isFinite(Number(c.vy))?Number(c.vy):Number(f.vy);
           const vw=Number.isFinite(Number(c.vw))?Number(c.vw):Number(f.vw);
           const vh=Number.isFinite(Number(c.vh))?Number(c.vh):Number(f.vh);
-          const al=["left","center","right"].includes(S(c.align).toLowerCase())
+          let al=["left","center","right"].includes(S(c.align).toLowerCase())
             ? S(c.align).toLowerCase() : "left";
+          if(isSignatureNameField(f))al="left";
 
           f.vx=vx; f.vy=vy; f.vw=vw; f.vh=vh;
           f.align=al; f.leftValue=(al==="left"); f.manualInset=0;
@@ -233,10 +338,15 @@
             !el.classList.contains("v368-layout-hit")
           );
 
-          const generated=nodes.filter(el=>el.classList.contains("v373-line-render"));
+          // Remove the exact one-line duplicate case before positioning.
+          // This is the visible double-name issue on some 42.1 / 55.1 signer fields.
+          dedupeSameFieldText(nodes);
+
+          const visibleNodes=nodes.filter(el=>el.getAttribute("data-sags-dedup-hidden")!=="1");
+          const generated=visibleNodes.filter(el=>el.classList.contains("v373-line-render"));
           const generatedCount=generated.length;
 
-          for(const el of nodes){
+          for(const el of visibleNodes){
             const tag=el.tagName.toLowerCase();
 
             if(tag==="foreignobject"){
@@ -290,9 +400,10 @@
           }
         }
       }
+      normalizeSignatureNameRender();
       return true;
     }catch(e){
-      console.warn("V4.2.47 AD field authority",e);
+      console.warn("V4.2.50 AD field/signature authority",e);
       return false;
     }
   }
@@ -313,6 +424,7 @@
 
       // Native draw() itself calls legacy layout. AD wins once, at the very end.
       enforceConfiguredRender(coordSource());
+      normalizeSignatureNameRender();
       return r;
     };
     wrapped.__sagsAdAuthorityWrapped=true;
@@ -334,6 +446,7 @@
       const r=old.apply(this,arguments);
       // Native layout may adjust unrelated fields; configured AD fields win last.
       enforceConfiguredRender(coordSource());
+      normalizeSignatureNameRender();
       return r;
     };
     wrapped.__sagsCoordAlignWrapped=true;
@@ -1038,6 +1151,11 @@
     activeFields:activeGroup?fieldCandidates(activeGroup,activePage).length:0,
     configUpdatedAt:S(config.updatedAt),
     performanceMode:"EVENT_DRIVEN_NO_GLOBAL_DOM_OBSERVER",
+    signatureDisplay:{
+      rule:"LEFT_EDGE_SINGLE_LAYER",
+      known421:["f421_representativeName","f421_coordArrName","f421_coordDepName"],
+      known551:["f551_loadingStaffName","f551_engineerName"]
+    },
     adDetection:{
       sessionRole:session().role,
       currentRole:U(root.currentRole),

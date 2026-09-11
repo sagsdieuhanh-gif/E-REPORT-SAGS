@@ -1,0 +1,42 @@
+{
+  "version": "V4.2.50",
+  "base": "V4.2.49",
+  "purpose": "SYNC BBBT/SIGNER NAME LEFT ALIGN + REMOVE EXACT DOUBLE RENDER ON 42.1/55.1",
+  "checks": {
+    "v2.2.18-runtime-patch.js": "OK",
+    "service-worker.js": "OK",
+    "signature_name_left_rule": "OK",
+    "421_known_names": "OK",
+    "551_known_names": "OK",
+    "single_line_dedupe": "OK",
+    "signature_image_untouched": "OK",
+    "touch_region_untouched": "OK",
+    "ad_coordinate_preserved": "OK",
+    "no_global_dom_observer": "OK",
+    "quick_incident_removal_preserved": "OK",
+    "coordinate_file_not_overwritten": "OK",
+    "no_firebase_alignment": "OK"
+  },
+  "files": [
+    {
+      "path": "v2.2.18-runtime-patch.js",
+      "sha256": "3a39c051859fbbf8dd3249147580f5b116dbb0bd82eba851153b76c6891ec604",
+      "size": 55350
+    },
+    {
+      "path": "service-worker.js",
+      "sha256": "4f6802a3891ddd7a53a80fdba6d2b2491eda52f8d1e1d5fe488fa2e4fe0171b5",
+      "size": 22753
+    },
+    {
+      "path": "version.json",
+      "sha256": "c9281a8ebdf111ee40c2f5c7fdd709b4e6c323d63242f1f6a124b858c752c0e5",
+      "size": 682
+    },
+    {
+      "path": "HDSD-V4.2.50.md",
+      "sha256": "cab8145596f3735c39bb3f86dd85749786407aaa97c2cce86fc5e5101671951d",
+      "size": 2233
+    }
+  ]
+}
