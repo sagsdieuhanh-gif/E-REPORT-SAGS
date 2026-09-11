@@ -1,4 +1,4 @@
-/* E-REPORT/SAGS V4.2.48 · V2.2.18-RESTORE-AD-COORD-REMOVE-QUICK
+/* E-REPORT/SAGS V4.2.49 · V2.2.18-AD-COORD-ENTRY-ROBUST
    ONLY AD -> AD Control Center -> CĂN CHỈNH BIỂU MẪU.
    Multi-form workflow:
    - drag vx/vy
@@ -12,7 +12,7 @@
    No Firebase. */
 (function(root){
   "use strict";
-  const BUILD="V2.2.18-RESTORE-AD-COORD-REMOVE-QUICK";
+  const BUILD="V2.2.18-AD-COORD-ENTRY-ROBUST";
   if(root.__SAGS_AD_FSAGS_BBBT_COORD===BUILD)return;
   root.__SAGS_AD_FSAGS_BBBT_COORD=BUILD;
 
@@ -47,7 +47,14 @@
       return {role:U(root.currentRole),username:S(root.currentUserProfile?.username)};
     }
   }
-  const isAdmin=()=>session().role==="AD";
+  const isAdmin=()=>{
+    const s=session();
+    return U(s.role)==="AD" ||
+      U(root.currentRole)==="AD" ||
+      U(root.currentUserProfile?.role)==="AD" ||
+      U(root.currentUserProfile?.systemRole)==="AD" ||
+      document.body?.classList.contains("role-admin")===true;
+  };
 
   function globalFields(){
     try{
@@ -443,52 +450,134 @@
     }
   }
 
-  let adminSlotObserver=null;
-  function ensureAdminCard(){
+  let adminSlotObserver=null,adminDashObserver=null;
+
+  function makeDashCard(){
+    let card=$("sagsCoord49AdminDashboardCard");
+    if(card)return card;
+    card=document.createElement("button");
+    card.id="sagsCoord49AdminDashboardCard";
+    card.type="button";
+    card.className="v181AdminCard";
+    card.setAttribute("data-sags-coord-entry","dashboard");
+    card.innerHTML='<span class="v181AdminIcon">↔</span><span class="v181AdminCardText"><b>CĂN CHỈNH BIỂU MẪU</b><small>FSAGS / BBBT · vị trí · rộng/cao · trái/giữa/phải · TEST</small></span><em>MỞ</em>';
+    card.onclick=openCenter;
+    return card;
+  }
+
+  function makeToolbarButton(){
+    let card=$("sagsCoord49AdminToolbarBtn");
+    if(card)return card;
+    card=document.createElement("button");
+    card.id="sagsCoord49AdminToolbarBtn";
+    card.type="button";
+    card.setAttribute("data-sags-coord-entry","toolbar");
+    card.textContent="↔ CĂN CHỈNH BIỂU MẪU";
+    card.title="FSAGS / BBBT · CTRL chọn nhiều · vị trí + rộng/cao · căn trái/giữa/phải · TEST";
+    card.style.background="#7c3aed";
+    card.style.color="#fff";
+    card.style.fontWeight="900";
+    card.onclick=openCenter;
+    return card;
+  }
+
+  function bindDashboardEntry(){
+    const center=$("v181AdminCenter");
+    if(!center)return false;
+
+    const grids=[...center.querySelectorAll(".v181AdminGrid")];
+    let grid=grids[grids.length-1]||null;
+    if(!grid){
+      grid=document.createElement("div");
+      grid.className="v181AdminGrid sagsCoord49FallbackGrid";
+      grid.setAttribute("data-sags-coord-grid","1");
+      center.appendChild(grid);
+    }
+
+    const card=makeDashCard();
+    if(card.parentElement!==grid)grid.appendChild(card);
+    card.style.display=isAdmin()?"":"none";
+
+    // Observe only the dashboard grid. No whole-document observer.
+    if(!adminDashObserver){
+      adminDashObserver=new MutationObserver(()=>{
+        const c=$("v181AdminCenter");
+        const gs=c?[...c.querySelectorAll(".v181AdminGrid")]:[];
+        const g=gs[gs.length-1];
+        const b=$("sagsCoord49AdminDashboardCard");
+        if(g&&(!b||b.parentElement!==g))queueMicrotask(bindDashboardEntry);
+      });
+      adminDashObserver.observe(grid,{childList:true});
+    }
+    return true;
+  }
+
+  function bindToolbarEntry(){
     const row=$("v377AdminFormToolsRow");
     const slot=$("v377LayoutTuneSlot");
     if(!row||!slot)return false;
 
-    // Old generic layout tool is retired. This slot is now reserved for
-    // the FSAGS/BBBT coordinate editor requested by AD.
-    const oldTune=$("v368LayoutTuneBtn");
-    if(oldTune)oldTune.remove();
+    // Retire the old generic layout button in this dedicated slot.
+    $("v368LayoutTuneBtn")?.remove();
 
-    let card=$("sagsCoord44AdminCard");
-    if(!card){
-      card=document.createElement("button");
-      card.id="sagsCoord44AdminCard";
-      card.type="button";
-      card.textContent="↔ CĂN CHỈNH BIỂU MẪU";
-      card.title="FSAGS / BBBT · CTRL chọn nhiều · vị trí + rộng/cao · căn trái/giữa/phải · TEST";
-      card.style.background="#7c3aed";
-      card.style.color="#fff";
-      card.style.fontWeight="900";
-      card.onclick=openCenter;
-    }
-
-    // Always keep the button in the CURRENT AD layout slot.
+    const card=makeToolbarButton();
     if(card.parentElement!==slot)slot.replaceChildren(card);
-    else{
-      [...slot.children].forEach(x=>{if(x!==card)x.remove()});
-    }
+    else [...slot.children].forEach(x=>{if(x!==card)x.remove()});
 
     card.style.display=isAdmin()?"block":"none";
 
-    // Observe only this tiny AD slot, never the whole document.
-    // If legacy UI tries to recreate its old tune button, restore ours.
     if(!adminSlotObserver){
       adminSlotObserver=new MutationObserver(()=>{
         const s=$("v377LayoutTuneSlot");
         if(!s)return;
-        const c=$("sagsCoord44AdminCard");
-        if(!c||c.parentElement!==s||s.children.length!==1){
-          queueMicrotask(ensureAdminCard);
+        const b=$("sagsCoord49AdminToolbarBtn");
+        if(!b||b.parentElement!==s||s.children.length!==1){
+          queueMicrotask(bindToolbarEntry);
         }
       });
       adminSlotObserver.observe(slot,{childList:true});
     }
     return true;
+  }
+
+  function ensureAdminCard(){
+    const admin=isAdmin();
+
+    if(!admin){
+      $("sagsCoord49AdminDashboardCard")?.remove();
+      const tb=$("sagsCoord49AdminToolbarBtn");
+      if(tb)tb.style.display="none";
+      return false;
+    }
+
+    // The original AD Control Center is preferred because this is where the
+    // user previously saw the coordinate function. The current form-tools
+    // row remains a second entry point/fallback.
+    const dash=bindDashboardEntry();
+    const toolbar=bindToolbarEntry();
+
+    return dash||toolbar;
+  }
+
+  function scheduleAdminEntry(){
+    // Opening AD management can create/reveal its DOM after the click.
+    // A few lightweight delayed checks are enough and do not redraw forms.
+    [0,80,250,700].forEach(ms=>setTimeout(ensureAdminCard,ms));
+  }
+
+  function installAdminClickWakeup(){
+    if(root.__SAGS_COORD49_CLICK_WAKEUP)return;
+    root.__SAGS_COORD49_CLICK_WAKEUP=true;
+    document.addEventListener("click",()=>{
+      if(isAdmin())scheduleAdminEntry();
+    },{capture:true,passive:true});
+    root.addEventListener?.("pageshow",scheduleAdminEntry);
+    root.addEventListener?.("focus",scheduleAdminEntry);
+    if(document.readyState==="loading"){
+      document.addEventListener("DOMContentLoaded",scheduleAdminEntry,{once:true});
+    }else{
+      scheduleAdminEntry();
+    }
   }
 
   function updateTempSummary(){
@@ -922,13 +1011,14 @@
     // DO NOT applyConfig()/draw() from generic DOM changes.
     ensureUi();
     ensureAdminCard();
+    installAdminClickWakeup();
     installQuickIncidentRemoval();
     installRoleUiHook();
   }
 
   // Role/session events are enough to maintain the AD menu entry.
   ["sags:login","sags:rolechange","sags:profilechange","sags:ui-ready"].forEach(n=>
-    root.addEventListener?.(n,scan)
+    root.addEventListener?.(n,()=>{scan();scheduleAdminEntry()})
   );
 
   // Reload coordinate JSON when app regains focus, but update the model only.
@@ -947,7 +1037,16 @@
     selectedCount:selectedList().length,tempStats:tempStats(),
     activeFields:activeGroup?fieldCandidates(activeGroup,activePage).length:0,
     configUpdatedAt:S(config.updatedAt),
-    performanceMode:"EVENT_DRIVEN_NO_GLOBAL_DOM_OBSERVER"
+    performanceMode:"EVENT_DRIVEN_NO_GLOBAL_DOM_OBSERVER",
+    adDetection:{
+      sessionRole:session().role,
+      currentRole:U(root.currentRole),
+      bodyRoleAdmin:document.body?.classList.contains("role-admin")===true,
+      dashboard:!!$("v181AdminCenter"),
+      toolbar:!!$("v377AdminFormToolsRow"),
+      dashboardButton:!!$("sagsCoord49AdminDashboardCard"),
+      toolbarButton:!!$("sagsCoord49AdminToolbarBtn")
+    }
   });
 
   ensureUi();
@@ -965,9 +1064,10 @@
     const p=installPdfAuthority();
     const q=installQuickIncidentRemoval();
     const u=installRoleUiHook();
-    const ad=ensureAdminCard();
+    ensureAdminCard();
+    installAdminClickWakeup();
     const c=applyConfig(temp||config,{redraw:false,enforce:false});
-    if((a&&b&&p&&q&&c&&ad)||tries>=20)clearInterval(bootTimer);
+    if((a&&b&&p&&q&&c)||tries>=20)clearInterval(bootTimer);
   },250);
 
   refreshConfig(true).then(()=>{
@@ -977,6 +1077,8 @@
     installPdfAuthority();
     installQuickIncidentRemoval();
     installRoleUiHook();
+    installAdminClickWakeup();
     ensureAdminCard();
+    scheduleAdminEntry();
   });
 })(typeof window==="undefined"?globalThis:window);

@@ -1,0 +1,44 @@
+{
+  "version": "V4.2.49",
+  "base": "V4.2.48",
+  "purpose": "ROBUST AD COORDINATE ENTRY ON BOTH AD SURFACES + RELIABLE RUNTIME LOAD",
+  "checks": {
+    "v2.2.18-runtime-patch.js": "OK",
+    "service-worker.js": "OK",
+    "admin_detection_robust": "OK",
+    "original_ad_dashboard_target": "OK",
+    "current_ad_toolbar_target": "OK",
+    "no_global_dom_observer": "OK",
+    "targeted_observers_only": "OK",
+    "dynamic_ad_open_retry": "OK",
+    "force_runtime18_in_index": "OK",
+    "runtime17_fallback_loader": "OK",
+    "quick_incident_still_removed": "OK",
+    "ad_field_authority_preserved": "OK",
+    "performance_preserved": "OK",
+    "coordinate_file_not_overwritten": "OK",
+    "no_firebase_alignment": "OK"
+  },
+  "files": [
+    {
+      "path": "v2.2.18-runtime-patch.js",
+      "sha256": "2a9cf4d6edf75fe6a550b5b4e575a544461214065578ca4b9cc35cfb69e5cb36",
+      "size": 50809
+    },
+    {
+      "path": "service-worker.js",
+      "sha256": "852da6731d821668063e5619c7efd72f8c09a5464c1950ef3282eba23891e7d0",
+      "size": 22735
+    },
+    {
+      "path": "version.json",
+      "sha256": "647d1d39d5a85a73dc974909fe79df4f5494c9b5883b5638349153e007ec5c9c",
+      "size": 901
+    },
+    {
+      "path": "HDSD-V4.2.49.md",
+      "sha256": "9f525ffbcaac03b6801427a49a4e1e6b7bf82cd43c31d15b8b02775477910ca0",
+      "size": 2503
+    }
+  ]
+}

@@ -1,7 +1,7 @@
-/* E-REPORT/SAGS V4.2.48 · RESTORE AD COORD + REMOVE QUICK INCIDENT */
-const CACHE_NAME="sags-v4.2.48-restore-ad-coord-remove-quick";
-const BUILD="V4.2.48-RESTORE-AD-COORD-REMOVE-QUICK";
-const DISPLAY_VERSION="V4.2.48";
+/* E-REPORT/SAGS V4.2.49 · ROBUST AD COORD ENTRY + QUICK INCIDENT RETIRED */
+const CACHE_NAME="sags-v4.2.49-ad-coord-entry-robust";
+const BUILD="V4.2.49-AD-COORD-ENTRY-ROBUST";
+const DISPLAY_VERSION="V4.2.49";
 
 const PATCH_V21="./v2.1-runtime-patch.js";
 const PATCH_V22="./v2.2-runtime-patch.js";
@@ -39,7 +39,7 @@ async function fetchNoStore(path){
 }
 async function safePut(cache,key,response){
   try{if(response&&response.ok)await cache.put(key,response.clone())}
-  catch(e){console.info("V4.2.48 cache put skipped",key,e?.name||e?.message||e)}
+  catch(e){console.info("V4.2.49 cache put skipped",key,e?.name||e?.message||e)}
 }
 function stripRetiredScripts(out){
   return String(out||"")
@@ -49,9 +49,21 @@ function stripRetiredScripts(out){
     .replace(/<script\b[^>]*\bquick-incident\.js(?:\?[^"'>\s]*)?[^>]*>\s*<\/script>\s*/gi,"")
     .replace(/<link\b[^>]*\bquick-incident\.css(?:\?[^"'>\s]*)?[^>]*>\s*/gi,"");
 }
+function escRe(s){return String(s).replace(/[.*+?^${}()|[\]\\]/g,"\\$&");}
+function scriptTagRe(file){
+  return new RegExp("<script\\b[^>]*\\bsrc=[\\\"'][^\\\"']*"+escRe(file)+"(?:\\?[^\\\"']*)?[\\\"'][^>]*>\\s*<\\/script>\\s*","gi");
+}
+function hasScriptTag(out,file){return scriptTagRe(file).test(String(out||""))}
 function injectScript(out,file){
-  if(out.includes(file))return out;
+  out=String(out||"");
+  if(hasScriptTag(out,file))return out;
   const tag=`<script src="./${file}?v=${encodeURIComponent(DISPLAY_VERSION)}"></script>`;
+  if(/<\/body>/i.test(out))return out.replace(/<\/body>/i,`${tag}\n</body>`);
+  return out+`\n${tag}\n`;
+}
+function forceInjectScript(out,file){
+  out=String(out||"").replace(scriptTagRe(file),"");
+  const tag=`<script src="./${file}?v=${encodeURIComponent(DISPLAY_VERSION)}" data-sags-coord-runtime="1"></script>`;
   if(/<\/body>/i.test(out))return out.replace(/<\/body>/i,`${tag}\n</body>`);
   return out+`\n${tag}\n`;
 }
@@ -74,7 +86,7 @@ function patchIndexHtml(html){
   out=injectScript(out,"v2.2.15-runtime-patch.js");
   out=injectScript(out,"v2.2.16-runtime-patch.js");
   out=injectScript(out,"v2.2.17-runtime-patch.js");
-  out=injectScript(out,"v2.2.18-runtime-patch.js");
+  out=forceInjectScript(out,"v2.2.18-runtime-patch.js");
   return out;
 }
 async function validateRelease(){
@@ -87,7 +99,7 @@ async function validateRelease(){
   const pr=await fetchNoStore(PATCH_V2218+"?swcheck="+Date.now());
   if(!pr.ok)throw new Error(PATCH_V2218+" HTTP "+pr.status);
   const pt=await pr.text();
-  if(!pt.includes("V2.2.18-RESTORE-AD-COORD-REMOVE-QUICK"))throw new Error(PATCH_V2218+" marker mismatch");
+  if(!pt.includes("V2.2.18-AD-COORD-ENTRY-ROBUST"))throw new Error(PATCH_V2218+" marker mismatch");
 
   const cr=await fetchNoStore("./fsags-display-coordinates.json?swcheck="+Date.now());
   if(!cr.ok)throw new Error("fsags-display-coordinates.json HTTP "+cr.status);
@@ -99,6 +111,42 @@ async function validateRelease(){
 }
 
 
+
+
+function patchRuntime17CoordinateBootstrap(response){
+  if(!response||!response.ok)return response;
+  return response.text().then(text=>{
+    let out=String(text||"");
+    if(!out.includes("__SAGS_COORD49_RUNTIME_BOOTSTRAP")){
+      out+=`
+;/* V4.2.49 coordinate runtime fallback loader */
+(function(root){
+  "use strict";
+  if(root.__SAGS_COORD49_RUNTIME_BOOTSTRAP)return;
+  root.__SAGS_COORD49_RUNTIME_BOOTSTRAP=true;
+  function boot(){
+    if(typeof root.sagsOpenCoordinateCenter==="function")return;
+    if(document.querySelector('script[data-sags-coord-runtime="1"]'))return;
+    const s=document.createElement("script");
+    s.src="./v2.2.18-runtime-patch.js?v=V4.2.49";
+    s.dataset.sagsCoordRuntime="1";
+    s.async=false;
+    (document.body||document.documentElement).appendChild(s);
+  }
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",()=>setTimeout(boot,0),{once:true});
+  }else setTimeout(boot,0);
+  setTimeout(boot,1200);
+})(typeof window==="undefined"?globalThis:window);
+`;
+    }
+    const headers=new Headers(response.headers);
+    headers.delete("content-length");headers.delete("content-encoding");
+    headers.set("Content-Type","application/javascript; charset=utf-8");
+    headers.set("Cache-Control","no-cache");
+    return new Response(out,{status:response.status,statusText:response.statusText,headers});
+  });
+}
 
 function patchAppRemoveQuickIncident(response){
   if(!response||!response.ok)return response;
@@ -246,7 +294,7 @@ function patchShiftReportCoreStrict(response){
       changed++;
     }
 
-    if(changed<3)console.warn("V4.2.48: strict core patch applied partially",changed);
+    if(changed<3)console.warn("V4.2.49: strict core patch applied partially",changed);
 
     out="/* SAGS V4.2.35-STRICT-SHIFT-DEDUP · runtime patched */\n"+out;
     const headers=new Headers(response.headers);
@@ -331,6 +379,9 @@ self.addEventListener("fetch",event=>{
       const c=await caches.open(CACHE_NAME);
       try{
         let r=await fetch(event.request,{cache:"no-store"});
+        if(url.pathname.endsWith("/v2.2.17-runtime-patch.js")){
+          r=await patchRuntime17CoordinateBootstrap(r);
+        }
         if(url.pathname.endsWith("/app.js")){
           r=await patchAppRemoveQuickIncident(r);
         }
