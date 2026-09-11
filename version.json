@@ -1,10 +1,10 @@
 {
-  "version": "V4.2.50",
-  "displayVersion": "V4.2.50",
-  "label": "V4.2.50",
-  "build": "V4.2.50-SIGNATURE-LEFT-ALIGN-SYNC",
-  "releasedAt": "2026-09-11T10:32:31Z",
-  "type": "signature-display-consistency-fix",
-  "notes": "Synchronize printed signer-name display with BBBT left-edge behavior. Fix exact duplicate native SVG + v373 single-line text on 42.1/55.1. Force signer-name fields to left/start with zero inset while leaving signature images and touch regions untouched. Preserve AD coordinate editor, current coordinate JSON, report, Quick Incident removal and performance fixes.",
-  "message": "Có bản cập nhật V4.2.50 · ĐỒNG BỘ CHỮ KÝ/BBBT CĂN TRÁI"
+  "version": "V4.2.52",
+  "displayVersion": "V4.2.52",
+  "label": "V4.2.52",
+  "build": "V4.2.52-LEFT-ONLY-PDF-FAST",
+  "releasedAt": "2026-09-11T12:38:02Z",
+  "type": "pdf-render-performance-fix",
+  "notes": "Restore fast PDF export while preserving V4.2.51 left-only field authority. Remove redundant pre-sendReport applyConfig wrapper; PDF wrapper now only scopes relevant pages. Coordinate model sync no longer sanitizes/clones on every draw. Post-draw enforcement scans each SVG once instead of querySelectorAll once per field. Old coordinate draw/PDF wrappers are unwrapped to prevent stacking. MY FLIGHT optimization and Quick Incident removal preserved.",
+  "message": "Có bản cập nhật V4.2.52 · TỐI ƯU XUẤT PDF"
 }

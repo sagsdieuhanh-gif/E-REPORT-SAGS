@@ -1,0 +1,48 @@
+{
+  "version": "V4.2.52",
+  "base": "V4.2.51",
+  "purpose": "RESTORE FAST PDF EXPORT WITHOUT REGRESSING LEFT-ONLY AD FIELD AUTHORITY",
+  "diagnosis": [
+    "native sendReport already batches draw using __SAGS_EXPORT_BATCH_DRAWN",
+    "recent coordinate layer redundantly applied model before sendReport and again inside wrapped draw",
+    "recent post-draw enforcement queried the SVG once per field",
+    "iOS restores UI with an additional draw after export, magnifying the coordinate-layer cost"
+  ],
+  "checks": {
+    "v2.2.18-runtime-patch.js": "OK",
+    "service-worker.js": "OK",
+    "no_hot_sanitize": "OK",
+    "one_svg_scan_pattern": "OK",
+    "managed_field_cache": "OK",
+    "old_pdf_apply_wrapper_removed": "OK",
+    "pdf_scope_only": "OK",
+    "old_wrapper_unwrap": "OK",
+    "left_only_preserved": "OK",
+    "quick_incident_removed": "OK",
+    "no_global_document_observer": "OK",
+    "coordinate_file_not_overwritten": "OK",
+    "perf_diagnostics": "OK"
+  },
+  "files": [
+    {
+      "path": "v2.2.18-runtime-patch.js",
+      "sha256": "89965f94de3d4a243e9f65868d0b24e8e58564ba0cddb2e71f85a17ea4bf089f",
+      "size": 53706
+    },
+    {
+      "path": "service-worker.js",
+      "sha256": "19e1d663200096a4fe6bc591b8735cc34067c7ff4c991739085be0a551a081b0",
+      "size": 22735
+    },
+    {
+      "path": "version.json",
+      "sha256": "214600f6b7398d199901f079ee97ca0325f31eff3438f09ee6cd5d8bd247139a",
+      "size": 738
+    },
+    {
+      "path": "HDSD-V4.2.52.md",
+      "sha256": "9fc01708adfe6274afb27020d14a7f9c614bd669a3726ef05c9387c56ddc004d",
+      "size": 2940
+    }
+  ]
+}

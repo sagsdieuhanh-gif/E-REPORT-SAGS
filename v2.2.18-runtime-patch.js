@@ -1,23 +1,25 @@
-/* E-REPORT/SAGS V4.2.50 · V2.2.18-SIGNATURE-LEFT-ALIGN-SYNC
+/* E-REPORT/SAGS V4.2.52 · V2.2.18-LEFT-ONLY-PDF-FAST
    ONLY AD -> AD Control Center -> CĂN CHỈNH BIỂU MẪU.
-   Multi-form workflow:
+   Clean coordinate model:
    - drag vx/vy
    - resize vw/vh
-   - align left / center / right
+   - ALL managed text values render LEFT only
+   - the left edge of the AD display region is always the text start
+   - no center/right mode, no field-specific signer patch
    - CTRL/CMD multi-select and edit together
    - LƯU TẠM to localStorage (this AD device only)
    - TEST HIỂN THỊ on real page*.png background
-   - continue other FSAGS/BBBT
    - XUẤT FILE CẬP NHẬT once -> fsags-display-coordinates.json
    No Firebase. */
 (function(root){
   "use strict";
-  const BUILD="V2.2.18-SIGNATURE-LEFT-ALIGN-SYNC";
+  const BUILD="V2.2.18-LEFT-ONLY-PDF-FAST";
   if(root.__SAGS_AD_FSAGS_BBBT_COORD===BUILD)return;
   root.__SAGS_AD_FSAGS_BBBT_COORD=BUILD;
 
   const CONFIG_URL="./fsags-display-coordinates.json";
-  const TEMP_KEY="sags.fsags-bbbt-coordinate-draft.v1";
+  const TEMP_KEY="sags.fsags-bbbt-coordinate-draft.left-only.v1";
+  const LEGACY_TEMP_KEY="sags.fsags-bbbt-coordinate-draft.v1";
   const $=id=>document.getElementById(id);
   const S=v=>String(v??"").trim();
   const U=v=>S(v).toUpperCase();
@@ -31,10 +33,13 @@
     loading208:{label:"FSAGS 208",pages:[13]},
     bbbt:{label:"BBBT · F/SAGS-CXR/56",pages:[4]}
   };
+  const MANAGED_PAGES=new Set(Object.values(FORMS).flatMap(x=>x.pages));
 
-  let config={schema:2,build:"FSAGS-BBBT-DISPLAY-COORDINATES-V1",pages:{}};
+  let config={schema:3,build:"FSAGS-BBBT-DISPLAY-COORDINATES-LEFT-ONLY-V1",pages:{}};
   let temp=null,draft=null,editing=false,testMode=false,activeGroup="",activePage=0,selected=null,selectedRects=[],drag=null;
   let baseByField=new WeakMap(),fetchAt=0,fetchJob=null,drawRaf=0;
+  let managedIndexArray=null,managedIndexLength=-1,managedFieldsCache=[],managedByPageCache=new Map();
+  let lastRenderPerf=null,lastPdfPerf=null;
 
   function session(){
     try{
@@ -73,9 +78,12 @@
     drawRaf=requestAnimationFrame(()=>{
       drawRaf=0;
       try{if(typeof draw==="function")draw()}catch(_){}
-      installLegacyLayoutGuard();
-      enforceConfiguredRender(coordSource());
     });
+  }
+  function isManagedDisplayField(f){
+    return MANAGED_PAGES.has(Number(f?.page)) &&
+      !!S(f?.key) &&
+      !["SIGNATURE","CHECK"].includes(U(f?.type));
   }
   function rememberBase(f){
     if(!baseByField.has(f)){
@@ -87,52 +95,118 @@
     }
     return baseByField.get(f);
   }
+  function forceFieldModelLeft(f){
+    if(!isManagedDisplayField(f))return;
+    f.align="left";
+    f.leftValue=true;
+    f.manualInset=0;
+  }
+
+  function managedIndex(){
+    const fs=globalFields();
+    if(fs===managedIndexArray && fs.length===managedIndexLength){
+      return {fields:managedFieldsCache,byPage:managedByPageCache};
+    }
+    managedIndexArray=fs;
+    managedIndexLength=fs.length;
+    managedFieldsCache=[];
+    managedByPageCache=new Map();
+
+    for(const f of fs){
+      if(!isManagedDisplayField(f))continue;
+      managedFieldsCache.push(f);
+      const p=Number(f.page),key=S(f.key);
+      if(!managedByPageCache.has(p))managedByPageCache.set(p,new Map());
+      managedByPageCache.get(p).set(key,f);
+    }
+    return {fields:managedFieldsCache,byPage:managedByPageCache};
+  }
+
+  function exportPageScope(){
+    const a=root.__SAGS_COORD_EXPORT_PAGES;
+    if(!Array.isArray(a)||!a.length)return null;
+    return new Set(a.map(Number).filter(n=>MANAGED_PAGES.has(n)));
+  }
   function resetFieldToBase(f){
     const b=rememberBase(f);
     f.vx=b.vx;f.vy=b.vy;f.vw=b.vw;f.vh=b.vh;
-    f.align=b.align;f.leftValue=b.leftValue;f.manualInset=b.manualInset;
+    if(isManagedDisplayField(f))forceFieldModelLeft(f);
+    else{
+      f.align=b.align;f.leftValue=b.leftValue;f.manualInset=b.manualInset;
+    }
     f.__sagsCoordOverride=false;
   }
   function pageCfg(page,source){
     return source?.pages?.[String(page)]||{fields:{}};
   }
+  function cleanNumber(v){
+    const n=Number(v);
+    return Number.isFinite(n)?n:null;
+  }
+  function sanitizeCoordinates(source,keepTempMeta=false){
+    const out={
+      schema:3,
+      build:"FSAGS-BBBT-DISPLAY-COORDINATES-LEFT-ONLY-V1",
+      pages:{}
+    };
+    for(const [pKey,pCfg] of Object.entries(source?.pages||{})){
+      const page=Number(pKey);
+      if(!MANAGED_PAGES.has(page))continue;
+      const fieldsOut={};
+      for(const [key,c] of Object.entries(pCfg?.fields||{})){
+        const g={};
+        for(const n of ["vx","vy","vw","vh"]){
+          const v=cleanNumber(c?.[n]);
+          if(v!==null)g[n]=+v.toFixed(7);
+        }
+        if(Object.keys(g).length)fieldsOut[S(key)]=g;
+      }
+      if(Object.keys(fieldsOut).length)out.pages[String(page)]={fields:fieldsOut};
+    }
+    if(source?.updatedAt)out.updatedAt=source.updatedAt;
+    if(source?.updatedBy)out.updatedBy=source.updatedBy;
+    if(source?.note)out.note=source.note;
+    if(keepTempMeta){
+      if(source?.tempSavedAt)out.tempSavedAt=source.tempSavedAt;
+      if(source?.tempSavedBy)out.tempSavedBy=source.tempSavedBy;
+    }
+    return out;
+  }
   function applyConfig(source,opts){
-    source=source||config;
-    const fs=globalFields();
-    if(!fs.length)return false;
-    for(const f of fs){
-      rememberBase(f);
-      resetFieldToBase(f);
+    source=(source&&source.pages)?source:config;
+    const idx=managedIndex();
+    if(!idx.fields.length)return false;
+
+    // Hot path: config/temp/draft are already sanitized when loaded/saved.
+    // Do not JSON-clone / rebuild the coordinate object on every draw.
+    for(const f of idx.fields){
+      const b=rememberBase(f);
       const c=pageCfg(f.page,source)?.fields?.[S(f.key)];
+
+      f.vx=Number.isFinite(Number(c?.vx))?Number(c.vx):b.vx;
+      f.vy=Number.isFinite(Number(c?.vy))?Number(c.vy):b.vy;
+      f.vw=Number.isFinite(Number(c?.vw))?Number(c.vw):b.vw;
+      f.vh=Number.isFinite(Number(c?.vh))?Number(c.vh):b.vh;
       f.__sagsCoordOverride=!!c;
-      if(!c)continue;
 
-      if(Number.isFinite(Number(c.vx)))f.vx=Number(c.vx);
-      if(Number.isFinite(Number(c.vy)))f.vy=Number(c.vy);
-      if(Number.isFinite(Number(c.vw)))f.vw=Number(c.vw);
-      if(Number.isFinite(Number(c.vh)))f.vh=Number(c.vh);
-
-      const al=["left","center","right"].includes(S(c.align).toLowerCase())
-        ? S(c.align).toLowerCase() : "left";
-
-      // AD field geometry/alignment is the final model authority.
-      f.align=al;
-      f.leftValue=(al==="left");
-      f.manualInset=0;
+      // Single global rule retained from V4.2.51.
+      forceFieldModelLeft(f);
     }
 
-    // IMPORTANT: no automatic draw here.
-    // Background UI such as MY FLIGHT must not cause a full FSAGS redraw.
     if(opts?.redraw===true)redraw();
-    else if(opts?.enforce===true)requestAnimationFrame(()=>enforceConfiguredRender(source));
+    else if(opts?.enforce===true)requestAnimationFrame(()=>enforceLeftRender(source));
     return true;
   }
 
   function loadTemp(){
     try{
-      const x=JSON.parse(localStorage.getItem(TEMP_KEY)||"null");
+      const raw=localStorage.getItem(TEMP_KEY)||localStorage.getItem(LEGACY_TEMP_KEY)||"null";
+      const x=JSON.parse(raw);
       if(x&&x.pages&&typeof x.pages==="object"){
-        temp=x;
+        temp=sanitizeCoordinates(x,true);
+        if(!temp.tempSavedAt)temp.tempSavedAt=x.tempSavedAt;
+        if(!temp.tempSavedBy)temp.tempSavedBy=x.tempSavedBy;
+        localStorage.setItem(TEMP_KEY,JSON.stringify(temp));
         return temp;
       }
     }catch(_){}
@@ -140,9 +214,7 @@
     return null;
   }
   function saveTempObject(obj){
-    const x=clone(obj);
-    x.schema=2;
-    x.build="FSAGS-BBBT-DISPLAY-COORDINATES-V1";
+    const x=sanitizeCoordinates(obj);
     x.tempSavedAt=new Date().toISOString();
     x.tempSavedBy=session().username||"AD";
     localStorage.setItem(TEMP_KEY,JSON.stringify(x));
@@ -151,12 +223,15 @@
     return x;
   }
   function clearTemp(){
-    try{localStorage.removeItem(TEMP_KEY)}catch(_){}
+    try{
+      localStorage.removeItem(TEMP_KEY);
+      localStorage.removeItem(LEGACY_TEMP_KEY);
+    }catch(_){}
     temp=null;
     updateTempSummary();
   }
   function workingBase(){
-    return clone(temp||config);
+    return sanitizeCoordinates(temp||config,true);
   }
   function tempStats(){
     const src=temp;
@@ -177,27 +252,30 @@
     catch(_){return String(v).replace(/["\\]/g,"\\$&")}
   }
 
-  function isSignatureNameField(f){
-    const k=U(f?.key),l=U(f?.label);
-    if(!k)return false;
+  function suppressExactSingleLineDuplicate(nodes){
+    const texts=(nodes||[]).filter(el=>el.tagName?.toLowerCase()==="text");
+    texts.forEach(el=>{
+      if(el.getAttribute("data-sags-dedup-hidden")==="1"){
+        el.style.removeProperty("display");
+        el.removeAttribute("data-sags-dedup-hidden");
+      }
+    });
+    if(texts.length<2)return;
 
-    // Known signer-name families used by FSAGS 42.1 / 55.1 and compatible
-    // naming variants on other FSAGS forms. Do NOT touch signature image fields.
-    if(/(?:REPRESENTATIVE|COORD|COORDINATOR|ENGINEER|LOADINGSTAFF|LOADING_STAFF|AGENT|SIGNER|SIGNATURE|STAFF).*NAME/.test(k))return true;
-    if(/NAME.*(?:REPRESENTATIVE|COORD|COORDINATOR|ENGINEER|LOADINGSTAFF|LOADING_STAFF|AGENT|SIGNER|SIGNATURE|STAFF)/.test(k))return true;
-    if(/(?:REPRESENTATIVE|COORDINATOR|CO-ORDINATOR|ENGINEER|LOADING STAFF|SAGS-CXR AGENT|AGENT).*(?:NAME|HỌ TÊN|HỌ VÀ TÊN)/.test(l))return true;
+    const native=texts.filter(el=>!el.classList.contains("v373-line-render"));
+    const generated=texts.filter(el=>el.classList.contains("v373-line-render"));
+    if(!native.length||generated.length!==1)return;
 
-    // Exact currently-used keys observed in the active coordinate file.
-    return [
-      "F421_REPRESENTATIVENAME",
-      "F421_COORDARRNAME",
-      "F421_COORDDEPNAME",
-      "F551_LOADINGSTAFFNAME",
-      "F551_ENGINEERNAME"
-    ].includes(k);
+    const g=generated[0],gt=S(g.textContent);
+    if(!gt)return;
+    const sameNative=native.find(n=>S(n.textContent)===gt);
+    if(sameNative){
+      g.style.display="none";
+      g.setAttribute("data-sags-dedup-hidden","1");
+    }
   }
 
-  function setFieldTextNodeLeft(el,x){
+  function forceSvgTextLeft(el,x){
     if(!el||el.tagName?.toLowerCase()!=="text")return;
     el.setAttribute("x",String(x));
     el.setAttribute("text-anchor","start");
@@ -206,148 +284,85 @@
     el.removeAttribute("transform");
     el.style.removeProperty("transform");
     el.style.removeProperty("translate");
+
+    // Avoid a new querySelectorAll allocation for every text node.
+    for(const t of el.children){
+      if(t.tagName?.toLowerCase()!=="tspan")continue;
+      t.setAttribute("x",String(x));
+      t.setAttribute("text-anchor","start");
+      t.removeAttribute("transform");
+      t.style.removeProperty("transform");
+      t.style.removeProperty("translate");
+    }
   }
 
-  function dedupeSameFieldText(nodes){
-    const textNodes=(nodes||[]).filter(el=>el.tagName?.toLowerCase()==="text");
-    if(textNodes.length<2)return 0;
+  /* SINGLE RENDER AUTHORITY
+     No left/center/right modes exist anymore.
 
-    const generated=textNodes.filter(el=>el.classList.contains("v373-line-render"));
-    const native=textNodes.filter(el=>!el.classList.contains("v373-line-render"));
-    let hidden=0;
+     For every managed FSAGS/BBBT display field:
+       - geometry = vx/vy/vw/vh from the coordinate file when present;
+       - otherwise geometry = the form's original geometry;
+       - text starts exactly at the field's LEFT edge (vx);
+       - text-anchor is always "start";
+       - leftValue=true and manualInset=0;
+       - old center/right values in existing JSON are ignored;
+       - signature images and touch/input x/y/w/h are untouched.
 
-    // 42.1 / 55.1 can have one native SVG text plus one legacy
-    // v373 single-line renderer for the SAME value. V4.2.49 moved both to
-    // the AD coordinates, which made the name look doubled/offset.
-    // Suppress only exact single-line duplicates. Multiline rows are untouched.
-    if(generated.length===1 && native.length){
-      const g=generated[0],gt=S(g.textContent);
-      if(gt){
-        const sameNative=native.find(n=>S(n.textContent)===gt);
-        if(sameNative){
-          g.style.display="none";
-          g.setAttribute("data-sags-dedup-hidden","1");
-          sameNative.style.removeProperty("display");
-          sameNative.removeAttribute("data-sags-dedup-hidden");
-          hidden++;
-        }
-      }
-    }
-
-    // Undo a previous suppression if the renderer changed and there is no
-    // longer an exact duplicate.
-    if(!hidden){
-      textNodes.forEach(el=>{
-        if(el.getAttribute("data-sags-dedup-hidden")==="1"){
-          el.style.removeProperty("display");
-          el.removeAttribute("data-sags-dedup-hidden");
-        }
-      });
-    }
-    return hidden;
-  }
-
-  function normalizeSignatureNameRender(){
+     This one generic rule replaces all field-specific signer/Refer fixes. */
+  function enforceLeftRender(source=coordSource()){
     try{
-      const all=globalFields();
-      if(!all.length)return false;
-      for(const f of all){
-        if(!isSignatureNameField(f))continue;
-        if(U(f.type)==="SIGNATURE")continue; // image/signature pad stays untouched
+      source=(source&&source.pages)?source:config;
+      const idx=managedIndex();
+      if(!idx.fields.length)return false;
 
-        f.align="left";
-        f.leftValue=true;
-        f.manualInset=0;
+      const scope=exportPageScope();
+      let pageScans=0,nodeCount=0,fieldGroups=0;
 
-        const svg=$("svg"+Number(f.page));
-        if(!svg)continue;
-        const x=Math.max(0,Number(f.vx)||0)*1241;
-        const selector='[data-field-key="'+cssEsc(S(f.key))+'"]';
-        const nodes=[...svg.querySelectorAll(selector)].filter(el=>
-          !el.classList.contains("hit") &&
-          !el.classList.contains("selected-region") &&
-          !el.classList.contains("v368-layout-hit")
-        );
-        dedupeSameFieldText(nodes);
-        nodes.forEach(el=>{
-          if(el.getAttribute("data-sags-dedup-hidden")==="1")return;
-          setFieldTextNodeLeft(el,x);
-        });
-      }
-      return true;
-    }catch(e){
-      console.warn("V4.2.50 signature-name normalize",e);
-      return false;
-    }
-  }
-
-  /* AD FIELD AUTHORITY
-     Any field present in fsags-display-coordinates.json / AD temporary draft
-     MUST display according to AD configuration for every source of data:
-     manual entry, N/A, quick entry, autofill, flight data, TEST and PDF.
-
-     Final rules:
-       left   -> x = vx
-       center -> x = vx + vw/2
-       right  -> x = vx + vw
-       y/width/height -> vy/vw/vh from AD field
-       no legacy translate/displayDy/writeOnLine offset may win afterwards.
-     Touch/input x/y/w/h is not changed. */
-  function enforceConfiguredRender(source=coordSource()){
-    try{
-      const pages=source?.pages||{};
-      const all=globalFields();
-      if(!all.length)return false;
-      const NS="http://www.w3.org/2000/svg";
-
-      for(const [pKey,pCfg] of Object.entries(pages)){
-        const page=Number(pKey);
+      for(const [page,pageFields] of idx.byPage.entries()){
+        if(scope && !scope.has(page))continue;
         const svg=document.getElementById("svg"+page);
         if(!svg)continue;
 
-        for(const [key,c] of Object.entries(pCfg?.fields||{})){
-          const f=all.find(x=>Number(x?.page)===page&&S(x?.key)===S(key));
-          if(!f||!c)continue;
+        // IMPORTANT PERFORMANCE FIX:
+        // exactly ONE selector scan per SVG page, not one scan per field.
+        const raw=svg.querySelectorAll("text[data-field-key],foreignObject[data-field-key]");
+        pageScans++;
 
-          const vx=Number.isFinite(Number(c.vx))?Number(c.vx):Number(f.vx);
-          const vy=Number.isFinite(Number(c.vy))?Number(c.vy):Number(f.vy);
-          const vw=Number.isFinite(Number(c.vw))?Number(c.vw):Number(f.vw);
-          const vh=Number.isFinite(Number(c.vh))?Number(c.vh):Number(f.vh);
-          let al=["left","center","right"].includes(S(c.align).toLowerCase())
-            ? S(c.align).toLowerCase() : "left";
-          if(isSignatureNameField(f))al="left";
+        const groups=new Map();
+        for(const el of raw){
+          const key=S(el.getAttribute("data-field-key"));
+          if(!key||!pageFields.has(key))continue;
+          if(!groups.has(key))groups.set(key,[]);
+          groups.get(key).push(el);
+          nodeCount++;
+        }
 
-          f.vx=vx; f.vy=vy; f.vw=vw; f.vh=vh;
-          f.align=al; f.leftValue=(al==="left"); f.manualInset=0;
-          f.__sagsCoordOverride=true;
+        for(const [key,nodes] of groups.entries()){
+          const f=pageFields.get(key);
+          if(!f)continue;
+          fieldGroups++;
 
-          const x=Math.max(0,vx)*1241;
-          const y=Math.max(0,vy)*1755;
-          const w=Math.max(.001,vw)*1241;
-          const h=Math.max(.001,vh)*1755;
-          const textX=al==="center"?(x+w/2):(al==="right"?(x+w):x);
-          const anchor=al==="center"?"middle":(al==="right"?"end":"start");
+          // Geometry is already placed into the field model before native draw().
+          // Re-read coordinate source only as a safeguard for a direct enforce call.
+          const b=rememberBase(f);
+          const c=pageCfg(page,source)?.fields?.[key];
+          f.vx=Number.isFinite(Number(c?.vx))?Number(c.vx):b.vx;
+          f.vy=Number.isFinite(Number(c?.vy))?Number(c.vy):b.vy;
+          f.vw=Number.isFinite(Number(c?.vw))?Number(c.vw):b.vw;
+          f.vh=Number.isFinite(Number(c?.vh))?Number(c.vh):b.vh;
+          f.__sagsCoordOverride=!!c;
+          forceFieldModelLeft(f);
 
-          const keyEsc=(root.CSS&&typeof root.CSS.escape==="function")
-            ? root.CSS.escape(String(key))
-            : String(key).replace(/["\\]/g,"\\$&");
-          const selector='[data-field-key="'+keyEsc+'"]';
-          const nodes=[...svg.querySelectorAll(selector)].filter(el=>
-            !el.classList.contains("hit") &&
-            !el.classList.contains("selected-region") &&
-            !el.classList.contains("v368-layout-hit")
-          );
+          const x=Math.max(0,Number(f.vx)||0)*1241;
+          const y=Math.max(0,Number(f.vy)||0)*1755;
+          const w=Math.max(.001,Number(f.vw)||.001)*1241;
+          const h=Math.max(.001,Number(f.vh)||.001)*1755;
 
-          // Remove the exact one-line duplicate case before positioning.
-          // This is the visible double-name issue on some 42.1 / 55.1 signer fields.
-          dedupeSameFieldText(nodes);
+          if(nodes.length>1)suppressExactSingleLineDuplicate(nodes);
 
-          const visibleNodes=nodes.filter(el=>el.getAttribute("data-sags-dedup-hidden")!=="1");
-          const generated=visibleNodes.filter(el=>el.classList.contains("v373-line-render"));
-          const generatedCount=generated.length;
-
-          for(const el of visibleNodes){
-            const tag=el.tagName.toLowerCase();
+          for(const el of nodes){
+            if(el.getAttribute("data-sags-dedup-hidden")==="1")continue;
+            const tag=el.tagName?.toLowerCase();
 
             if(tag==="foreignobject"){
               el.setAttribute("x",String(x));
@@ -357,102 +372,85 @@
               el.removeAttribute("transform");
               el.style.removeProperty("transform");
               el.style.removeProperty("translate");
-              const d=el.querySelector("div");
+              const d=el.firstElementChild;
               if(d){
                 d.style.width="100%";
                 d.style.height="100%";
                 d.style.boxSizing="border-box";
-                d.style.textAlign=al;
+                d.style.textAlign="left";
                 d.style.padding="0";
                 d.style.margin="0";
                 d.style.textIndent="0";
                 d.style.transform="none";
               }
-              continue;
+            }else if(tag==="text"){
+              forceSvgTextLeft(el,x);
             }
-
-            if(tag!=="text")continue;
-
-            // Generated multiline rows remain separate, but all lines are laid out
-            // inside the AD field rectangle. No legacy line dx/dy can move them.
-            if(el.classList.contains("v373-line-render") && generatedCount>1){
-              const rawIndex=Number(el.getAttribute("data-v373-line-index"));
-              const idx=Number.isFinite(rawIndex)?rawIndex:generated.indexOf(el);
-              const fs=Math.max(8,Number(el.getAttribute("font-size"))||Number(f.font)||16);
-              const lineH=Math.max(fs*1.12,10);
-              const lineY=Math.min(y+h-fs*.15,y+fs+(idx*lineH));
-              el.setAttribute("x",String(textX));
-              el.setAttribute("y",String(lineY));
-              el.setAttribute("text-anchor",anchor);
-              el.setAttribute("dominant-baseline","alphabetic");
-            }else{
-              el.setAttribute("x",String(textX));
-              el.setAttribute("y",String(y+h/2));
-              el.setAttribute("text-anchor",anchor);
-              el.setAttribute("dominant-baseline","middle");
-            }
-
-            el.classList.remove("left","center","right");
-            el.classList.add(al);
-            el.removeAttribute("transform");
-            el.style.removeProperty("transform");
-            el.style.removeProperty("translate");
           }
         }
       }
-      normalizeSignatureNameRender();
+
+      root.__SAGS_COORD_RENDER_SCAN_LAST={pageScans,nodeCount,fieldGroups,exportScoped:!!scope,at:Date.now()};
       return true;
     }catch(e){
-      console.warn("V4.2.50 AD field/signature authority",e);
+      console.warn("V4.2.52 left-only fast render",e);
       return false;
     }
   }
 
 
   let drawWrapped=false;
+  function unwrapCoordinateDraw(fn){
+    let cur=fn,guard=0;
+    while(cur&&cur.__sagsOriginal&&guard++<8){
+      if(cur.__sagsLeftOnlyWrapped||cur.__sagsAdAuthorityWrapped||cur.__sagsStrictLeftWrapped){
+        cur=cur.__sagsOriginal;
+        continue;
+      }
+      break;
+    }
+    return cur;
+  }
   function installDrawAuthority(){
     if(drawWrapped)return true;
-    let old=null;
-    try{old=root.draw||draw}catch(_){old=root.draw}
-    if(typeof old!=="function")return false;
-    if(old.__sagsAdAuthorityWrapped){drawWrapped=true;return true}
+    let current=null;
+    try{current=root.draw||draw}catch(_){current=root.draw}
+    if(typeof current!=="function")return false;
+    if(current.__sagsLeftOnlyFastWrapped){drawWrapped=true;return true}
 
+    // Prevent accumulated coordinate wrappers after several releases.
+    const old=unwrapCoordinateDraw(current);
     const wrapped=function(){
-      // Apply AD model geometry BEFORE native rendering.
-      applyConfig(coordSource(),{redraw:false,enforce:false});
-      const r=old.apply(this,arguments);
+      const t0=(root.performance?.now?.()??Date.now());
 
-      // Native draw() itself calls legacy layout. AD wins once, at the very end.
-      enforceConfiguredRender(coordSource());
-      normalizeSignatureNameRender();
+      // 1) Cheap model-only sync.
+      applyConfig(coordSource(),{redraw:false,enforce:false});
+      const t1=(root.performance?.now?.()??Date.now());
+
+      // 2) Native app draw once.
+      const r=old.apply(this,arguments);
+      const t2=(root.performance?.now?.()??Date.now());
+
+      // 3) One batched scan per relevant SVG page.
+      enforceLeftRender(coordSource());
+      const t3=(root.performance?.now?.()??Date.now());
+
+      lastRenderPerf={
+        modelMs:+(t1-t0).toFixed(1),
+        nativeDrawMs:+(t2-t1).toFixed(1),
+        enforceMs:+(t3-t2).toFixed(1),
+        totalMs:+(t3-t0).toFixed(1),
+        exportScoped:!!exportPageScope(),
+        at:Date.now()
+      };
+      root.__SAGS_COORD_PERF_LAST=lastRenderPerf;
       return r;
     };
-    wrapped.__sagsAdAuthorityWrapped=true;
+    wrapped.__sagsLeftOnlyFastWrapped=true;
     wrapped.__sagsOriginal=old;
     root.draw=wrapped;
     try{draw=wrapped}catch(_){}
     drawWrapped=true;
-    return true;
-  }
-
-  let legacyWrapped=false;
-  function installLegacyLayoutGuard(){
-    if(legacyWrapped)return true;
-    const old=root.v368ApplySavedLayout;
-    if(typeof old!=="function")return false;
-    if(old.__sagsCoordAlignWrapped){legacyWrapped=true;return true}
-
-    const wrapped=function(){
-      const r=old.apply(this,arguments);
-      // Native layout may adjust unrelated fields; configured AD fields win last.
-      enforceConfiguredRender(coordSource());
-      normalizeSignatureNameRender();
-      return r;
-    };
-    wrapped.__sagsCoordAlignWrapped=true;
-    wrapped.__sagsOriginal=old;
-    root.v368ApplySavedLayout=wrapped;
-    legacyWrapped=true;
     return true;
   }
 
@@ -465,7 +463,7 @@
         if(r.ok){
           const j=await r.json();
           if(j&&typeof j==="object"&&j.pages){
-            config={schema:2,build:"FSAGS-BBBT-DISPLAY-COORDINATES-V1",...j,pages:j.pages||{}};
+            config=sanitizeCoordinates(j);
           }
         }
       }catch(_){}
@@ -505,10 +503,9 @@
 .s44panelHead{display:flex;justify-content:space-between;gap:10px;align-items:center}.s44panelHead b{font-size:16px}.s44panelHead small{display:block;color:#5a7081}
 #s44selected{margin:8px 0;padding:8px 10px;background:#eef5fa;border-radius:9px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .s44sizeTools{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:7px 0}.s44sizeBox{display:grid;grid-template-columns:auto 1fr auto;gap:6px;align-items:center}.s44sizeBox span{text-align:center;font-weight:900}.s44sizeBox button{min-height:40px;border:1px solid #adc1cf;border-radius:9px;background:#f7fafc;font-weight:900}
-.s44alignTools{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:7px 0}.s44alignTools button{min-height:42px;border:1px solid #adc1cf;border-radius:10px;background:#f7fafc;color:#17364a;font-weight:900}.s44alignTools button.active{background:#0b6398;color:#fff;border-color:#0b6398}
 .s44actions{display:grid;grid-template-columns:1fr 1fr 1fr 1.25fr;gap:7px}.s44actions button{min-height:44px;border:1px solid #adc1cf;border-radius:10px;background:#f7fafc;color:#17364a;font-weight:900}.s44actions #s44tempSave{background:#0b6398;color:#fff}.s44actions #s44testBtn{background:#e9f5ec;color:#176438}
 #s44status{min-height:18px;margin:7px 0 0;font-weight:700}
-@media(max-width:640px){.s44list{grid-template-columns:1fr}.s44actions{grid-template-columns:1fr 1fr}.s44sizeTools{grid-template-columns:1fr}.s44alignTools{grid-template-columns:1fr 1fr 1fr}.s44temp{align-items:flex-start;flex-direction:column}#sagsCoord44Panel{max-height:56dvh}}
+@media(max-width:640px){.s44list{grid-template-columns:1fr}.s44actions{grid-template-columns:1fr 1fr}.s44sizeTools{grid-template-columns:1fr}.s44temp{align-items:flex-start;flex-direction:column}#sagsCoord44Panel{max-height:56dvh}}
 `;
     document.head.appendChild(st);
   }
@@ -520,7 +517,7 @@
       const m=document.createElement("section");m.id="sagsCoord44Center";m.hidden=true;
       m.innerHTML=`<div class="s44centerBox">
         <div class="s44head"><h3>CĂN CHỈNH BIỂU MẪU</h3><button id="s44centerClose" type="button">✕</button></div>
-        <p class="s44help">Chỉ dành cho AD. Chỉnh nhiều mẫu bằng LƯU TẠM; cuối cùng xuất một file cập nhật GitHub.</p>
+        <p class="s44help">Chỉ dành cho AD. Mọi giá trị FSAGS/BBBT chỉ render từ mép trái của vùng hiển thị; không còn căn giữa/căn phải.</p>
         <div class="s44temp"><div><b id="s44tempInfo">BẢN TẠM: CHƯA CÓ</b><div id="s44tempTime"></div></div>
           <div class="s44tempActions"><button id="s44clearTemp" type="button">XÓA BẢN TẠM</button><button id="s44exportAll" type="button">XUẤT FILE CẬP NHẬT</button></div>
         </div>
@@ -551,15 +548,13 @@
     if(!$("sagsCoord44Panel")){
       const p=document.createElement("section");p.id="sagsCoord44Panel";p.hidden=true;
       p.innerHTML=`<div class="s44panelHead"><div><b id="s44title">CĂN TỌA ĐỘ</b><small>Kéo khung = vị trí · CTRL + bấm = chọn nhiều · tay nắm = rộng/cao</small></div></div>
-      <div id="s44selected">Chạm một khung màu cam để chỉnh.</div>
-      <div class="s44alignTools"><button id="s44alignLeft" type="button">⇤ CĂN TRÁI</button><button id="s44alignCenter" type="button">↔ CĂN GIỮA</button><button id="s44alignRight" type="button">⇥ CĂN PHẢI</button></div>
+      <div id="s44selected">Chạm một khung màu cam để chỉnh. Chữ luôn bắt đầu tại mép trái.</div>
       <div class="s44sizeTools"><div class="s44sizeBox"><button id="s44wMinus" type="button">−</button><span id="s44wInfo">RỘNG</span><button id="s44wPlus" type="button">+</button></div><div class="s44sizeBox"><button id="s44hMinus" type="button">−</button><span id="s44hInfo">CAO</span><button id="s44hPlus" type="button">+</button></div></div>
       <div class="s44actions"><button id="s44cancel" type="button">HỦY</button><button id="s44reset" type="button">VỀ GỐC VÙNG</button><button id="s44testBtn" type="button">TEST HIỂN THỊ</button><button id="s44tempSave" type="button">LƯU TẠM</button></div>
       <p id="s44status" role="status"></p>`;
       document.body.appendChild(p);
       $("s44cancel").onclick=cancelEditor;$("s44reset").onclick=resetSelected;$("s44testBtn").onclick=toggleTest;$("s44tempSave").onclick=saveTempAndBack;
       $("s44wMinus").onclick=()=>resizeSelected(-3,0);$("s44wPlus").onclick=()=>resizeSelected(3,0);$("s44hMinus").onclick=()=>resizeSelected(0,-3);$("s44hPlus").onclick=()=>resizeSelected(0,3);
-      $("s44alignLeft").onclick=()=>applyAlignSelected("left");$("s44alignCenter").onclick=()=>applyAlignSelected("center");$("s44alignRight").onclick=()=>applyAlignSelected("right");
     }
   }
 
@@ -573,7 +568,7 @@
     card.type="button";
     card.className="v181AdminCard";
     card.setAttribute("data-sags-coord-entry","dashboard");
-    card.innerHTML='<span class="v181AdminIcon">↔</span><span class="v181AdminCardText"><b>CĂN CHỈNH BIỂU MẪU</b><small>FSAGS / BBBT · vị trí · rộng/cao · trái/giữa/phải · TEST</small></span><em>MỞ</em>';
+    card.innerHTML='<span class="v181AdminIcon">↔</span><span class="v181AdminCardText"><b>CĂN CHỈNH BIỂU MẪU</b><small>FSAGS / BBBT · vị trí · rộng/cao · chỉ render trái · TEST</small></span><em>MỞ</em>';
     card.onclick=openCenter;
     return card;
   }
@@ -586,7 +581,7 @@
     card.type="button";
     card.setAttribute("data-sags-coord-entry","toolbar");
     card.textContent="↔ CĂN CHỈNH BIỂU MẪU";
-    card.title="FSAGS / BBBT · CTRL chọn nhiều · vị trí + rộng/cao · căn trái/giữa/phải · TEST";
+    card.title="FSAGS / BBBT · CTRL chọn nhiều · vị trí + rộng/cao · chỉ render trái · TEST";
     card.style.background="#7c3aed";
     card.style.color="#fff";
     card.style.fontWeight="900";
@@ -743,6 +738,8 @@
   }
   function buildPage(page){
     activePage=Number(page)||0;testMode=false;$("sagsCoord44Preview").classList.remove("s44testing");$("s44testBtn").textContent="TEST HIỂN THỊ";
+    applyConfig(draft||temp||config,{redraw:false,enforce:false});
+    enforceLeftRender(draft||temp||config);
     $("s44bg").src=getBackgroundSrc(activePage);cloneRenderedSvg(activePage);$("s44test").innerHTML="";
     const layer=$("s44layer");layer.innerHTML="";
     for(const f of fieldCandidates(activeGroup,activePage)){rememberBase(f);layer.appendChild(rectFromField(f))}
@@ -751,11 +748,6 @@
   }
 
   function selectedList(){return selectedRects.filter(r=>r&&r.isConnected&&r._field)}
-  function alignOfField(f){
-    const c=draft?.pages?.[String(f.page)]?.fields?.[S(f.key)];
-    const a=S(c?.align||f?.align||"left").toLowerCase();
-    return ["left","center","right"].includes(a)?a:"left";
-  }
   function paintSelection(){
     const set=new Set(selectedList());
     $("s44layer")?.querySelectorAll(".s44rect").forEach(r=>{
@@ -798,72 +790,52 @@
     paintSelection();
     updateSelectedInfo();
   }
-  function updateAlignButtons(){
-    const rs=selectedList(),btns={
-      left:$("s44alignLeft"),center:$("s44alignCenter"),right:$("s44alignRight")
-    };
-    Object.values(btns).forEach(b=>b?.classList.remove("active"));
-    if(!rs.length)return;
-    const aligns=[...new Set(rs.map(r=>alignOfField(r._field)))];
-    if(aligns.length===1)btns[aligns[0]]?.classList.add("active");
-  }
   function updateSelectedInfo(){
     const info=$("s44selected"),wi=$("s44wInfo"),hi=$("s44hInfo"),rs=selectedList();
     if(!rs.length){
-      if(info)info.textContent="Chạm một khung màu cam để chỉnh. Giữ CTRL để chọn nhiều.";
+      if(info)info.textContent="Chạm một khung màu cam để chỉnh. Giữ CTRL để chọn nhiều. Chữ luôn bắt đầu tại mép trái.";
       if(wi)wi.textContent="RỘNG";
       if(hi)hi.textContent="CAO";
-      updateAlignButtons();
       return;
     }
     if(rs.length===1){
       const r=rs[0],f=r._field,rr=r.getBoundingClientRect();
-      info.textContent=`${S(f.label||f.key)} · ${S(f.key)} · Trang ${f.page}`;
+      info.textContent=`${S(f.label||f.key)} · ${S(f.key)} · Trang ${f.page} · RENDER TRÁI`;
       wi.textContent=`RỘNG ${Math.round(rr.width)} px`;
       hi.textContent=`CAO ${Math.round(rr.height)} px`;
     }else{
-      const aligns=[...new Set(rs.map(r=>alignOfField(r._field)))];
-      info.textContent=`ĐÃ CHỌN ${rs.length} VÙNG · ${aligns.length===1?("CĂN "+(aligns[0]==="left"?"TRÁI":aligns[0]==="center"?"GIỮA":"PHẢI")):"KIỂU CĂN KHÁC NHAU"}`;
+      info.textContent=`ĐÃ CHỌN ${rs.length} VÙNG · TẤT CẢ RENDER TRÁI`;
       wi.textContent=`RỘNG · ${rs.length} VÙNG`;
       hi.textContent=`CAO · ${rs.length} VÙNG`;
     }
-    updateAlignButtons();
   }
   function draftMap(f){draft.pages||={};const p=String(f.page);draft.pages[p]||={fields:{}};draft.pages[p].fields||={};return draft.pages[p].fields}
-  function configFromRect(rect,alignOverride=null){
+  function configFromRect(rect){
     if(!rect?._field)return null;
-    const f=rect._field,lr=$("s44layer").getBoundingClientRect(),rr=rect.getBoundingClientRect();
+    const lr=$("s44layer").getBoundingClientRect(),rr=rect.getBoundingClientRect();
     if(!lr.width||!lr.height)return null;
-    const vx=Math.max(0,Math.min(1,(rr.left-lr.left)/lr.width)),vy=Math.max(0,Math.min(1,(rr.top-lr.top)/lr.height));
-    const vw=Math.max(.004,Math.min(1-vx,rr.width/lr.width)),vh=Math.max(.004,Math.min(1-vy,rr.height/lr.height));
-    const old=draftMap(f)[S(f.key)]||{};
-    const al=["left","center","right"].includes(S(alignOverride).toLowerCase())
-      ? S(alignOverride).toLowerCase()
-      : (["left","center","right"].includes(S(old.align).toLowerCase())?S(old.align).toLowerCase():alignOfField(f));
-    return {vx:+vx.toFixed(7),vy:+vy.toFixed(7),vw:+vw.toFixed(7),vh:+vh.toFixed(7),align:al,leftValue:(al==="left"),manualInset:0};
+    const vx=Math.max(0,Math.min(1,(rr.left-lr.left)/lr.width));
+    const vy=Math.max(0,Math.min(1,(rr.top-lr.top)/lr.height));
+    const vw=Math.max(.004,Math.min(1-vx,rr.width/lr.width));
+    const vh=Math.max(.004,Math.min(1-vy,rr.height/lr.height));
+    return {vx:+vx.toFixed(7),vy:+vy.toFixed(7),vw:+vw.toFixed(7),vh:+vh.toFixed(7)};
   }
-  function commitRect(rect,alignOverride=null,doRedraw=true){
-    const c=configFromRect(rect,alignOverride);
+  function commitRect(rect,doRedraw=true){
+    const c=configFromRect(rect);
     if(!c)return false;
     const f=rect._field;
     draftMap(f)[S(f.key)]=c;
-    f.vx=c.vx;f.vy=c.vy;f.vw=c.vw;f.vh=c.vh;f.align=c.align;f.leftValue=c.leftValue;f.manualInset=0;
+    f.vx=c.vx;f.vy=c.vy;f.vw=c.vw;f.vh=c.vh;
+    forceFieldModelLeft(f);
     if(doRedraw)redraw();
     return true;
   }
-  function commitRects(rects,alignOverride=null){
+  function commitRects(rects){
     let changed=false;
-    for(const r of rects||[])changed=commitRect(r,alignOverride,false)||changed;
+    for(const r of rects||[])changed=commitRect(r,false)||changed;
     if(changed)redraw();
     updateSelectedInfo();
     return changed;
-  }
-  function applyAlignSelected(al){
-    if(testMode){$("s44status").textContent="Đang TEST. Bấm QUAY LẠI CHỈNH trước.";return}
-    const rs=selectedList();
-    if(!rs.length){$("s44status").textContent="Chọn ít nhất một vùng trước.";return}
-    commitRects(rs,al);
-    $("s44status").textContent=`Đã áp dụng CĂN ${al==="left"?"TRÁI":al==="center"?"GIỮA":"PHẢI"} cho ${rs.length} vùng.`;
   }
 
   function startPointer(e,rect){
@@ -956,7 +928,7 @@
     for(const r of rs){
       const f=r._field,b=rememberBase(f);
       delete draftMap(f)[S(f.key)];
-      f.vx=b.vx;f.vy=b.vy;f.vw=b.vw;f.vh=b.vh;f.align=b.align;f.leftValue=b.leftValue;f.manualInset=b.manualInset;
+      f.vx=b.vx;f.vy=b.vy;f.vw=b.vw;f.vh=b.vh;forceFieldModelLeft(f);
       r.style.left=(b.vx*100)+"%";r.style.top=(b.vy*100)+"%";r.style.width=(b.vw*100)+"%";r.style.height=(b.vh*100)+"%";
     }
     redraw();updateSelectedInfo();
@@ -982,7 +954,7 @@
       const clip=document.createElementNS(NS,"clipPath");clip.id="s44c"+activePage+"_"+i;
       const cr=document.createElementNS(NS,"rect");cr.setAttribute("x",x);cr.setAttribute("y",y);cr.setAttribute("width",w);cr.setAttribute("height",h);clip.appendChild(cr);
       let defs=svg.querySelector("defs");if(!defs){defs=document.createElementNS(NS,"defs");svg.appendChild(defs)}defs.appendChild(clip);
-      const al=alignOfField(f),tx=al==="center"?(x+w/2):(al==="right"?(x+w):x),ta=al==="center"?"middle":(al==="right"?"end":"start");
+      const tx=x,ta="start";
       const t=document.createElementNS(NS,"text");t.setAttribute("x",tx);t.setAttribute("y",y+h/2);t.setAttribute("dominant-baseline","middle");t.setAttribute("text-anchor",ta);t.setAttribute("font-family","Times New Roman");t.setAttribute("font-weight","700");t.setAttribute("font-size",Math.max(10,Number(f.font)||16));t.setAttribute("fill","#003B8E");t.setAttribute("clip-path",`url(#${clip.id})`);t.textContent=testValue(f);svg.appendChild(t);
       i++;
     }
@@ -998,7 +970,7 @@
 
   function openEditor(group){
     if(!isAdmin()||!FORMS[group])return;closeCenter();activeGroup=group;activePage=FORMS[group].pages[0];editing=true;testMode=false;selected=null;selectedRects=[];drag=null;
-    draft=workingBase();draft.schema=2;draft.pages||={};applyConfig(draft,{redraw:false,enforce:true});
+    draft=workingBase();draft.schema=3;draft.build="FSAGS-BBBT-DISPLAY-COORDINATES-LEFT-ONLY-V1";draft.pages||={};applyConfig(draft,{redraw:false,enforce:true});
     $("sagsCoord44Preview").hidden=false;$("sagsCoord44Panel").hidden=false;$("sagsCoord44Preview").classList.remove("s44testing");$("s44testBtn").textContent="TEST HIỂN THỊ";$("s44title").textContent="CĂN TỌA ĐỘ · "+FORMS[group].label;buildPage(activePage);
   }
   function closeEditorKeepDraft(){editing=false;testMode=false;selected=null;selectedRects=[];drag=null;$("s44layer").innerHTML="";$("s44test").innerHTML="";$("sagsCoord44Preview").classList.remove("s44testing");$("sagsCoord44Preview").hidden=true;$("sagsCoord44Panel").hidden=true;applyConfig(temp||config,{redraw:false,enforce:true})}
@@ -1011,8 +983,15 @@
   }
 
   function finalExportObject(){
-    const src=clone(temp||draft||config);
-    return {schema:2,build:"FSAGS-BBBT-DISPLAY-COORDINATES-V1",updatedAt:new Date().toISOString(),updatedBy:session().username||"AD",note:"Generated from AD > CĂN CHỈNH BIỂU MẪU. Replace this file in GitHub root.",pages:src.pages||{}};
+    const src=sanitizeCoordinates(temp||draft||config);
+    return {
+      schema:3,
+      build:"FSAGS-BBBT-DISPLAY-COORDINATES-LEFT-ONLY-V1",
+      updatedAt:new Date().toISOString(),
+      updatedBy:session().username||"AD",
+      note:"AD coordinate-only file. All managed FSAGS/BBBT text renders LEFT from vx; no center/right setting exists.",
+      pages:src.pages||{}
+    };
   }
   async function exportAll(){
     const stats=tempStats();
@@ -1033,16 +1012,60 @@
   }
 
 
-  function installPdfAuthority(){
+  function pagesForPdfKind(kind){
+    switch(S(kind||"all").toLowerCase()){
+      case "fsags":return [1,2];
+      case "bbbt":return [4];
+      case "fsags421":return [6,7];
+      case "fsags551":return [9,10];
+      case "fsags09":return [11,12];
+      case "loading208":return [13];
+      default:return [1,2,4];
+    }
+  }
+
+  function unwrapOldPdfAuthority(fn){
+    let cur=fn,guard=0;
+    while(cur&&cur.__sagsOriginal&&guard++<8){
+      if(cur.__sagsAdPdfWrapped||cur.__sagsCoordPdfScopeWrapped){
+        cur=cur.__sagsOriginal;
+        continue;
+      }
+      break;
+    }
+    return cur;
+  }
+
+  function installPdfScope(){
     try{
-      const old=root.sendReport;
-      if(typeof old!=="function"||old.__sagsAdPdfWrapped)return typeof old==="function";
-      const wrapped=async function(){
-        // One model sync only. Native sendReport() performs its own single draw.
-        applyConfig(temp||config,{redraw:false,enforce:false});
-        return await old.apply(this,arguments);
+      let current=root.sendReport;
+      if(typeof current!=="function")return false;
+      if(current.__sagsCoordPdfFastScopeWrapped)return true;
+
+      // V4.2.47–V4.2.51 wrapped sendReport just to call applyConfig again.
+      // Remove that redundant wrapper. Preserve iOS-export's own sendReport wrapper.
+      const old=unwrapOldPdfAuthority(current);
+
+      const wrapped=async function(kind="all"){
+        const prev=root.__SAGS_COORD_EXPORT_PAGES;
+        root.__SAGS_COORD_EXPORT_PAGES=pagesForPdfKind(kind);
+        const t0=(root.performance?.now?.()??Date.now());
+        try{
+          return await old.apply(this,arguments);
+        }finally{
+          const t1=(root.performance?.now?.()??Date.now());
+          lastPdfPerf={
+            kind:S(kind||"all"),
+            pages:[...root.__SAGS_COORD_EXPORT_PAGES],
+            totalMs:+(t1-t0).toFixed(1),
+            lastDraw:lastRenderPerf,
+            at:Date.now()
+          };
+          root.__SAGS_PDF_PERF_LAST=lastPdfPerf;
+          root.__SAGS_COORD_EXPORT_PAGES=prev;
+        }
       };
-      wrapped.__sagsAdPdfWrapped=true;
+      wrapped.__sagsCoordPdfFastScopeWrapped=true;
       wrapped.__sagsOriginal=old;
       root.sendReport=wrapped;
       try{sendReport=wrapped}catch(_){}
@@ -1150,11 +1173,18 @@
     selectedCount:selectedList().length,tempStats:tempStats(),
     activeFields:activeGroup?fieldCandidates(activeGroup,activePage).length:0,
     configUpdatedAt:S(config.updatedAt),
-    performanceMode:"EVENT_DRIVEN_NO_GLOBAL_DOM_OBSERVER",
-    signatureDisplay:{
-      rule:"LEFT_EDGE_SINGLE_LAYER",
-      known421:["f421_representativeName","f421_coordArrName","f421_coordDepName"],
-      known551:["f551_loadingStaffName","f551_engineerName"]
+    performanceMode:"EVENT_DRIVEN_BATCHED_RENDER_SCAN",
+    performance:{
+      lastDraw:lastRenderPerf,
+      lastPdf:lastPdfPerf,
+      lastScan:root.__SAGS_COORD_RENDER_SCAN_LAST||null
+    },
+    renderModel:{
+      rule:"LEFT_ONLY_GLOBAL",
+      textStart:"vx",
+      textAnchor:"start",
+      alignmentSettings:"REMOVED",
+      configSchema:3
     },
     adDetection:{
       sessionRole:session().role,
@@ -1177,22 +1207,20 @@
   let tries=0;
   const bootTimer=setInterval(()=>{
     tries++;
-    const a=installLegacyLayoutGuard();
     const b=installDrawAuthority();
-    const p=installPdfAuthority();
+    const p=installPdfScope();
     const q=installQuickIncidentRemoval();
     const u=installRoleUiHook();
     ensureAdminCard();
     installAdminClickWakeup();
     const c=applyConfig(temp||config,{redraw:false,enforce:false});
-    if((a&&b&&p&&q&&c)||tries>=20)clearInterval(bootTimer);
+    if((b&&p&&q&&c)||tries>=20)clearInterval(bootTimer);
   },250);
 
   refreshConfig(true).then(()=>{
     applyConfig(temp||config,{redraw:false,enforce:false});
-    installLegacyLayoutGuard();
     installDrawAuthority();
-    installPdfAuthority();
+    installPdfScope();
     installQuickIncidentRemoval();
     installRoleUiHook();
     installAdminClickWakeup();
