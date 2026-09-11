@@ -1,0 +1,52 @@
+{
+  "version": "V4.2.45",
+  "base": "V4.2.44",
+  "purpose": "STRICT LEFT EDGE RENDER FOR CONFIGURED FSAGS/BBBT DISPLAY FIELDS",
+  "fixes": [
+    "configured vx wins after native draw",
+    "configured vx wins after legacy v368ApplySavedLayout",
+    "text-anchor start",
+    "remove legacy display transform",
+    "TEST x equals vx exactly"
+  ],
+  "checks": {
+    "v2.2.18-runtime-patch.js": "OK",
+    "service-worker.js": "OK",
+    "strict_x_vx": "OK",
+    "text_anchor_start": "OK",
+    "legacy_transform_removed": "OK",
+    "legacy_layout_guard": "OK",
+    "foreignobject_exact_rect": "OK",
+    "test_zero_inset": "OK",
+    "resize_preserved": "OK",
+    "temp_test_preserved": "OK",
+    "no_firebase": "OK"
+  },
+  "files": [
+    {
+      "path": "v2.2.18-runtime-patch.js",
+      "sha256": "24cb7399e3df901c1c7b8247d37b600eb3dee62ff3097a90308af35f0e595284",
+      "size": 33984
+    },
+    {
+      "path": "fsags-display-coordinates.json",
+      "sha256": "afedb0a5e9cb277c51679a1fcd2e30933a16cf1ea3a2d37366c99df3aab8b89c",
+      "size": 220
+    },
+    {
+      "path": "service-worker.js",
+      "sha256": "722df19daa7dbba2f9564f82fbd5df12ffc8f902073d613bf1814f472fc0c977",
+      "size": 17876
+    },
+    {
+      "path": "version.json",
+      "sha256": "9f38109a6860d9be3a51e72d7641ec81b9c47927796b39b0c7e0899586894dcf",
+      "size": 655
+    },
+    {
+      "path": "HDSD-V4.2.45.md",
+      "sha256": "eddd3704cacbf8b825b402dc2f352110f81d200820d8243360439e3537a72dac",
+      "size": 1484
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-/* E-REPORT/SAGS V4.2.44 · V2.2.18-AD-FSAGS-BBBT-COORD-TEMP-TEST
+/* E-REPORT/SAGS V4.2.45 · V2.2.18-AD-FSAGS-BBBT-COORD-STRICT-LEFT
    ONLY AD -> AD Control Center -> CĂN CHỈNH BIỂU MẪU.
    Multi-form workflow:
    - drag vx/vy
@@ -10,7 +10,7 @@
    No Firebase. */
 (function(root){
   "use strict";
-  const BUILD="V2.2.18-AD-FSAGS-BBBT-COORD-TEMP-TEST";
+  const BUILD="V2.2.18-AD-FSAGS-BBBT-COORD-STRICT-LEFT";
   if(root.__SAGS_AD_FSAGS_BBBT_COORD===BUILD)return;
   root.__SAGS_AD_FSAGS_BBBT_COORD=BUILD;
 
@@ -64,6 +64,8 @@
     drawRaf=requestAnimationFrame(()=>{
       drawRaf=0;
       try{if(typeof draw==="function")draw()}catch(_){}
+      installLegacyLayoutGuard();
+      enforceConfiguredRender(coordSource());
     });
   }
   function rememberBase(f){
@@ -80,6 +82,7 @@
     const b=rememberBase(f);
     f.vx=b.vx;f.vy=b.vy;f.vw=b.vw;f.vh=b.vh;
     f.align=b.align;f.leftValue=b.leftValue;f.manualInset=b.manualInset;
+    f.__sagsCoordOverride=false;
   }
   function pageCfg(page,source){
     return source?.pages?.[String(page)]||{fields:{}};
@@ -92,6 +95,7 @@
       rememberBase(f);
       resetFieldToBase(f);
       const c=pageCfg(f.page,source)?.fields?.[S(f.key)];
+      f.__sagsCoordOverride=!!c;
       if(!c)continue;
       if(Number.isFinite(Number(c.vx)))f.vx=Number(c.vx);
       if(Number.isFinite(Number(c.vy)))f.vy=Number(c.vy);
@@ -100,6 +104,8 @@
       f.align="left";f.leftValue=true;f.manualInset=0;
     }
     redraw();
+    // If SVG already exists, correct it immediately as well.
+    requestAnimationFrame(()=>enforceConfiguredRender(source));
     return true;
   }
 
@@ -141,6 +147,124 @@
       if(n){pages++;fields+=n}
     }
     return {pages,fields};
+  }
+
+
+  function coordSource(){
+    return editing ? (draft||temp||config) : (temp||config);
+  }
+  function cssEsc(v){
+    try{return CSS.escape(String(v))}
+    catch(_){return String(v).replace(/["\\]/g,"\\$&")}
+  }
+
+  /* STRICT LEFT-EDGE RENDER GUARD
+     Native draw() may center a field, and legacy v368 layout runs after draw().
+     For every field explicitly present in our coordinate config, the configured
+     display box is authoritative:
+       - X start = vx exactly
+       - text-anchor = start
+       - legacy translate/transform is removed
+       - foreignObject starts at vx and uses exact vw/vh
+     This does NOT change touch/input x/y/w/h. */
+  function enforceConfiguredRender(source=coordSource()){
+    try{
+      const pages=source?.pages||{};
+      const all=globalFields();
+      if(!all.length)return false;
+
+      for(const [pKey,pCfg] of Object.entries(pages)){
+        const page=Number(pKey);
+        const svg=document.getElementById("svg"+page);
+        if(!svg)continue;
+
+        for(const [key,c] of Object.entries(pCfg?.fields||{})){
+          const f=all.find(x=>Number(x?.page)===page&&S(x?.key)===S(key));
+          if(!f||!c)continue;
+
+          const vx=Number.isFinite(Number(c.vx))?Number(c.vx):Number(f.vx);
+          const vy=Number.isFinite(Number(c.vy))?Number(c.vy):Number(f.vy);
+          const vw=Number.isFinite(Number(c.vw))?Number(c.vw):Number(f.vw);
+          const vh=Number.isFinite(Number(c.vh))?Number(c.vh):Number(f.vh);
+
+          // Keep the live field model authoritative too.
+          if(Number.isFinite(vx))f.vx=vx;
+          if(Number.isFinite(vy))f.vy=vy;
+          if(Number.isFinite(vw))f.vw=vw;
+          if(Number.isFinite(vh))f.vh=vh;
+          f.align="left";
+          f.leftValue=true;
+          f.manualInset=0;
+          f.__sagsCoordOverride=true;
+
+          const x=Math.max(0,vx)*1241;
+          const y=Math.max(0,vy)*1755;
+          const w=Math.max(0.001,vw)*1241;
+          const h=Math.max(0.001,vh)*1755;
+
+          const selector='[data-field-key="'+cssEsc(key)+'"]';
+          const nodes=[...svg.querySelectorAll(selector)].filter(el=>
+            !el.classList.contains("hit") &&
+            !el.classList.contains("selected-region") &&
+            !el.classList.contains("v368-layout-hit")
+          );
+
+          for(const el of nodes){
+            const tag=el.tagName.toLowerCase();
+
+            if(tag==="text"){
+              // Exact left edge. No +1px, no center, no old dx/dy translate.
+              el.setAttribute("x",String(x));
+              el.setAttribute("text-anchor","start");
+              el.classList.remove("center");
+              el.classList.add("left");
+              el.removeAttribute("transform");
+              el.style.removeProperty("transform");
+            }else if(tag==="foreignobject"){
+              // Multiline value region: exact configured rectangle.
+              el.setAttribute("x",String(x));
+              el.setAttribute("y",String(y));
+              el.setAttribute("width",String(w));
+              el.setAttribute("height",String(h));
+              el.removeAttribute("transform");
+              el.style.removeProperty("transform");
+              const d=el.querySelector("div");
+              if(d){
+                d.style.textAlign="left";
+                d.style.paddingLeft="0";
+                d.style.paddingRight="0";
+                d.style.marginLeft="0";
+                d.style.textIndent="0";
+              }
+            }
+          }
+        }
+      }
+      return true;
+    }catch(_){
+      return false;
+    }
+  }
+
+  let legacyWrapped=false;
+  function installLegacyLayoutGuard(){
+    if(legacyWrapped)return true;
+    const old=root.v368ApplySavedLayout;
+    if(typeof old!=="function")return false;
+    if(old.__sagsStrictLeftWrapped){legacyWrapped=true;return true}
+
+    const wrapped=function(){
+      const r=old.apply(this,arguments);
+      // Native v368 is allowed to do its other jobs first.
+      // Our configured FSAGS/BBBT display coordinates win last.
+      enforceConfiguredRender(coordSource());
+      return r;
+    };
+    wrapped.__sagsStrictLeftWrapped=true;
+    wrapped.__sagsOriginal=old;
+    root.v368ApplySavedLayout=wrapped;
+    legacyWrapped=true;
+    return true;
   }
 
   async function refreshConfig(force=false){
@@ -381,7 +505,7 @@
       const clip=document.createElementNS(NS,"clipPath");clip.id="s44c"+activePage+"_"+i;
       const cr=document.createElementNS(NS,"rect");cr.setAttribute("x",x);cr.setAttribute("y",y);cr.setAttribute("width",w);cr.setAttribute("height",h);clip.appendChild(cr);
       let defs=svg.querySelector("defs");if(!defs){defs=document.createElementNS(NS,"defs");svg.appendChild(defs)}defs.appendChild(clip);
-      const t=document.createElementNS(NS,"text");t.setAttribute("x",x+1);t.setAttribute("y",y+h/2);t.setAttribute("dominant-baseline","middle");t.setAttribute("text-anchor","start");t.setAttribute("font-family","Times New Roman");t.setAttribute("font-weight","700");t.setAttribute("font-size",Math.max(10,Number(f.font)||16));t.setAttribute("fill","#003B8E");t.setAttribute("clip-path",`url(#${clip.id})`);t.textContent=testValue(f);svg.appendChild(t);
+      const t=document.createElementNS(NS,"text");t.setAttribute("x",x);t.setAttribute("y",y+h/2);t.setAttribute("dominant-baseline","middle");t.setAttribute("text-anchor","start");t.setAttribute("font-family","Times New Roman");t.setAttribute("font-weight","700");t.setAttribute("font-size",Math.max(10,Number(f.font)||16));t.setAttribute("fill","#003B8E");t.setAttribute("clip-path",`url(#${clip.id})`);t.textContent=testValue(f);svg.appendChild(t);
       i++;
     }
   }
@@ -441,5 +565,19 @@
   root.sagsCoordinateInfo=()=>({build:BUILD,admin:isAdmin(),editing,testMode,group:activeGroup,page:activePage,tempStats:tempStats(),activeFields:activeGroup?fieldCandidates(activeGroup,activePage).length:0,configUpdatedAt:S(config.updatedAt)});
 
   ensureUi();loadTemp();updateTempSummary();
-  refreshConfig(true).finally(()=>{scan();let n=0;const t=setInterval(()=>{n++;if(applyConfig(temp||config)||n>=12)clearInterval(t)},500)});
+  installLegacyLayoutGuard();
+  let guardTry=0;
+  const guardTimer=setInterval(()=>{
+    guardTry++;
+    if(installLegacyLayoutGuard()||guardTry>=20)clearInterval(guardTimer);
+  },250);
+
+  refreshConfig(true).finally(()=>{
+    scan();
+    let n=0;
+    const t=setInterval(()=>{
+      n++;
+      if(applyConfig(temp||config)||n>=12)clearInterval(t);
+    },500);
+  });
 })(typeof window==="undefined"?globalThis:window);

@@ -1,7 +1,7 @@
-/* E-REPORT/SAGS V4.2.44 · FSAGS TEMP SAVE + TEST */
-const CACHE_NAME="sags-v4.2.44-fsags-temp-test";
-const BUILD="V4.2.44-FSAGS-TEMP-TEST";
-const DISPLAY_VERSION="V4.2.44";
+/* E-REPORT/SAGS V4.2.45 · STRICT LEFT EDGE RENDER FIX */
+const CACHE_NAME="sags-v4.2.45-left-edge-render-fix";
+const BUILD="V4.2.45-LEFT-EDGE-RENDER-FIX";
+const DISPLAY_VERSION="V4.2.45";
 
 const PATCH_V21="./v2.1-runtime-patch.js";
 const PATCH_V22="./v2.2-runtime-patch.js";
@@ -39,7 +39,7 @@ async function fetchNoStore(path){
 }
 async function safePut(cache,key,response){
   try{if(response&&response.ok)await cache.put(key,response.clone())}
-  catch(e){console.info("V4.2.44 cache put skipped",key,e?.name||e?.message||e)}
+  catch(e){console.info("V4.2.45 cache put skipped",key,e?.name||e?.message||e)}
 }
 function stripRetiredScripts(out){
   return String(out||"")
@@ -85,7 +85,7 @@ async function validateRelease(){
   const pr=await fetchNoStore(PATCH_V2218+"?swcheck="+Date.now());
   if(!pr.ok)throw new Error(PATCH_V2218+" HTTP "+pr.status);
   const pt=await pr.text();
-  if(!pt.includes("V2.2.18-AD-FSAGS-BBBT-COORD-TEMP-TEST"))throw new Error(PATCH_V2218+" marker mismatch");
+  if(!pt.includes("V2.2.18-AD-FSAGS-BBBT-COORD-STRICT-LEFT"))throw new Error(PATCH_V2218+" marker mismatch");
 
   const cr=await fetchNoStore("./fsags-display-coordinates.json?swcheck="+Date.now());
   if(!cr.ok)throw new Error("fsags-display-coordinates.json HTTP "+cr.status);
@@ -216,7 +216,7 @@ function patchShiftReportCoreStrict(response){
       changed++;
     }
 
-    if(changed<3)console.warn("V4.2.44: strict core patch applied partially",changed);
+    if(changed<3)console.warn("V4.2.45: strict core patch applied partially",changed);
 
     out="/* SAGS V4.2.35-STRICT-SHIFT-DEDUP · runtime patched */\n"+out;
     const headers=new Headers(response.headers);
