@@ -1,0 +1,44 @@
+{
+  "version": "V4.2.51",
+  "base": "V4.2.50",
+  "purpose": "REMOVE ALL CENTER/RIGHT MODES; ONE LEFT-ONLY RENDER RULE FOR FSAGS/BBBT",
+  "checks": {
+    "v2.2.18-runtime-patch.js": "OK",
+    "service-worker.js": "OK",
+    "left_only_render_rule": "OK",
+    "center_right_controls_removed": "OK",
+    "schema3_geometry_only_export": "OK",
+    "schema2_backward_read": "OK",
+    "legacy_alignment_values_ignored": "OK",
+    "field_specific_refer_signer_patch_removed": "OK",
+    "tspan_left_start": "OK",
+    "signature_image_untouched": "OK",
+    "touch_region_untouched": "OK",
+    "ad_coordinate_preserved": "OK",
+    "quick_incident_removal_preserved": "OK",
+    "coordinate_file_not_overwritten": "OK",
+    "no_firebase_alignment": "OK"
+  },
+  "files": [
+    {
+      "path": "v2.2.18-runtime-patch.js",
+      "sha256": "cb750226a8bc892ea7bf3283782b105895293a490d8a3b87730139b5aaa8f8d4",
+      "size": 49527
+    },
+    {
+      "path": "service-worker.js",
+      "sha256": "51cbbe56fbd86ed03c352846e11f88d32c276afdbfe976f385d50bb016d1eb08",
+      "size": 22721
+    },
+    {
+      "path": "version.json",
+      "sha256": "1119cb4860b1ec717b6713320a1b4b4c072b9908dbd4fab38a5196486328ec29",
+      "size": 904
+    },
+    {
+      "path": "HDSD-V4.2.51.md",
+      "sha256": "b7625aa26acc713c150c02747fb9b71594bbe60107b168646754adb5f9154f7c",
+      "size": 3139
+    }
+  ]
+}
