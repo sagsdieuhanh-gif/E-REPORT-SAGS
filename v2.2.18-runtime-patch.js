@@ -1,390 +1,446 @@
-/* E-REPORT/SAGS V4.2.41 · V2.2.18-FSAGS-COORD-EDITOR
-   Scope: FSAGS423 / FSAGS421 / FSAGS551 / FSAGS09 only.
-   AD drags the actual display field. The field's LEFT EDGE is the text start anchor.
-   SAVE exports fsags-display-coordinates.json for GitHub. No Firebase storage. */
+/* E-REPORT/SAGS V4.2.42 · V2.2.18-AD-FSAGS-BBBT-COORD
+   ONLY AD -> AD Control Center -> CĂN CHỈNH BIỂU MẪU.
+   Choose FSAGS/BBBT, drag DISPLAY rectangles (vx/vy), SAVE exports GitHub config.
+   No Firebase. No floating editor button in normal operation screens. */
 (function(root){
   "use strict";
-  const BUILD="V2.2.18-FSAGS-COORD-EDITOR";
-  if(root.__SAGS_FSAGS_COORD_EDITOR===BUILD)return;
-  root.__SAGS_FSAGS_COORD_EDITOR=BUILD;
+  const BUILD="V2.2.18-AD-FSAGS-BBBT-COORD";
+  if(root.__SAGS_AD_FSAGS_BBBT_COORD===BUILD)return;
+  root.__SAGS_AD_FSAGS_BBBT_COORD=BUILD;
 
   const CONFIG_URL="./fsags-display-coordinates.json";
   const $=id=>document.getElementById(id);
   const S=v=>String(v??"").trim();
   const U=v=>S(v).toUpperCase();
-  const FIELD_SELECTOR='input:not([type="hidden"]):not([type="file"]):not([type="button"]):not([type="submit"]),textarea,select,[contenteditable="true"]';
-  const FSAGS_BG={
-    "page1.png":"FSAGS423","page2.png":"FSAGS423","page4.png":"FSAGS423",
-    "page6.png":"FSAGS421","page7.png":"FSAGS421",
-    "page9.png":"FSAGS551","page10.png":"FSAGS551",
-    "page11.png":"FSAGS09","page12.png":"FSAGS09"
+  const clone=v=>{try{return JSON.parse(JSON.stringify(v||{}))}catch(_){return {}}};
+
+  const FORMS={
+    fsags:{label:"FSAGS 42.3",pages:[1,2]},
+    fsags421:{label:"FSAGS 42.1",pages:[6,7]},
+    fsags551:{label:"FSAGS 55.1",pages:[9,10]},
+    fsags09:{label:"FSAGS 09",pages:[11,12]},
+    loading208:{label:"FSAGS 208",pages:[13]},
+    bbbt:{label:"BBBT · F/SAGS-CXR/56",pages:[4,5]}
   };
 
-  let remote={schema:1,build:"FSAGS-DISPLAY-COORDINATES-V1",pages:{}};
-  let draft=null, activeStage=null, activePageKey="", editing=false, selected=null;
-  let drag=null, scanQueued=false, lastFetch=0, fetching=null, beforeEditSnapshot=new Map();
+  let config={schema:2,build:"FSAGS-BBBT-DISPLAY-COORDINATES-V1",pages:{}};
+  let draft=null, editing=false, activeGroup="", selected=null, drag=null;
+  let baseByField=new WeakMap(), layers=[], fetchAt=0, fetchJob=null, rafDraw=0;
 
   function session(){
     try{
       const s=root.__sagsGetSession?.()||{},p=s.profile||{};
-      return {role:U(s.role||p.role||p.systemRole||root.currentRole),
-              username:S(s.username||p.username||p.userName||p.login||p.account||root.currentUserProfile?.username)};
-    }catch(_){return {role:U(root.currentRole),username:S(root.currentUserProfile?.username)}}
+      return {
+        role:U(s.role||p.role||p.systemRole||root.currentRole),
+        username:S(s.username||p.username||p.userName||p.login||p.account||root.currentUserProfile?.username)
+      };
+    }catch(_){
+      return {role:U(root.currentRole),username:S(root.currentUserProfile?.username)};
+    }
   }
   const isAdmin=()=>session().role==="AD";
-  function norm(v){return U(v).normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/Đ/g,"D")}
-  function visible(el){
-    if(!el||!el.isConnected)return false;
-    const r=el.getBoundingClientRect();
-    if(r.width<5||r.height<5)return false;
-    const c=getComputedStyle(el);
-    return c.display!=="none"&&c.visibility!=="hidden"&&Number(c.opacity||1)!==0;
+
+  function globalFields(){
+    try{
+      if(typeof fields!=="undefined"&&Array.isArray(fields))return fields;
+    }catch(_){}
+    return [];
   }
-  function bgFile(el){
-    const img=[...el.querySelectorAll(":scope > img,img")].find(x=>visible(x)&&S(x.currentSrc||x.src));
-    if(img){
-      const src=S(img.currentSrc||img.src);
-      const f=decodeURIComponent(src.split("/").pop().split("?")[0]);
-      if(FSAGS_BG[f])return f;
-    }
-    let bg="";
-    try{bg=getComputedStyle(el).backgroundImage||""}catch(_){}
-    const m=bg.match(/url\(["']?([^"')]+)["']?\)/);
-    if(m){
-      const f=decodeURIComponent(m[1].split("/").pop().split("?")[0]);
-      if(FSAGS_BG[f])return f;
-    }
-    return "";
-  }
-  function fieldGroup(el){
-    const t=norm([el.id,el.name,el.dataset?.field,el.dataset?.bind,el.dataset?.key,el.getAttribute("data-field")].filter(Boolean).join(" "));
-    if(/\bF421[_-]/.test(t)||t.includes("FSAGS421"))return "FSAGS421";
-    if(/\bF551[_-]/.test(t)||t.includes("FSAGS551"))return "FSAGS551";
-    if(/\bF09[_-]/.test(t)||t.includes("FSAGS09"))return "FSAGS09";
-    if(/\bF423[_-]/.test(t)||t.includes("FSAGS423"))return "FSAGS423";
-    return "";
-  }
-  function stageGroup(stage){
-    const bg=bgFile(stage); if(bg)return FSAGS_BG[bg]||"";
-    const sig=norm([stage.id,stage.className,stage.dataset?.formId,stage.dataset?.templateId,
-      stage.getAttribute?.("data-form"),stage.getAttribute?.("data-template")].filter(Boolean).join(" "));
-    for(const g of ["FSAGS423","FSAGS421","FSAGS551","FSAGS09"])if(sig.includes(g))return g;
-    const groups=[...stage.querySelectorAll(FIELD_SELECTOR)].map(fieldGroup).filter(Boolean);
-    if(!groups.length)return "";
-    return groups.sort((a,b)=>groups.filter(x=>x===b).length-groups.filter(x=>x===a).length)[0]||"";
-  }
-  function candidateScore(stage){
-    if(!stage||stage===document.body||stage===document.documentElement)return -999;
-    const r=stage.getBoundingClientRect();
-    if(r.width<260||r.height<180)return -999;
-    const fields=[...stage.querySelectorAll(FIELD_SELECTOR)].filter(visible);
-    if(fields.length<2)return -999;
-    const g=stageGroup(stage); if(!g)return -999;
-    let score=10;
-    if(bgFile(stage))score+=12;
-    if(fields.some(x=>fieldGroup(x)===g))score+=5;
-    score+=Math.min(fields.length,16)*.15;
-    score-=Math.log10(Math.max(1,r.width*r.height))/10;
-    return score;
-  }
-  function detectStage(){
-    const map=new Map();
-    for(const f of [...document.querySelectorAll(FIELD_SELECTOR)].filter(visible)){
-      let p=f.parentElement,d=0;
-      while(p&&p!==document.body&&d++<8){
-        if(!map.has(p))map.set(p,candidateScore(p));
-        p=p.parentElement;
-      }
-    }
-    const ranked=[...map].sort((a,b)=>b[1]-a[1]);
-    return ranked[0]?.[1]>=10?ranked[0][0]:null;
-  }
-  function pageKey(stage){
-    const g=stageGroup(stage)||"FSAGS";
-    const bg=bgFile(stage);
-    const hint=S(stage.dataset?.page||stage.dataset?.pageId||stage.getAttribute?.("data-page"));
-    return [g,bg||hint||"PAGE"].join("|");
-  }
-  function fields(stage){
-    const g=stageGroup(stage);
-    return [...stage.querySelectorAll(FIELD_SELECTOR)].filter(el=>{
-      if(!visible(el))return false;
-      const fg=fieldGroup(el);
-      return !fg||fg===g;
+  function redraw(){
+    if(rafDraw)return;
+    rafDraw=requestAnimationFrame(()=>{
+      rafDraw=0;
+      try{if(typeof draw==="function")draw()}catch(_){}
     });
   }
-  function fieldKey(el,index){
-    const d=el.dataset||{};
-    for(const k of ["field","fieldKey","bind","key"])if(S(d[k]))return k+":"+S(d[k]);
-    if(S(el.id))return "id:"+S(el.id);
-    if(S(el.name))return "name:"+S(el.name);
-    const aria=S(el.getAttribute("aria-label"));if(aria)return "aria:"+aria;
-    const ph=S(el.getAttribute("placeholder"));if(ph)return "ph:"+ph;
-    return "index:"+index;
+  function rememberBase(f){
+    if(!baseByField.has(f)){
+      baseByField.set(f,{
+        vx:Number(f.vx)||0,vy:Number(f.vy)||0,
+        vw:Number(f.vw)||0,vh:Number(f.vh)||0,
+        align:f.align,leftValue:f.leftValue,manualInset:f.manualInset
+      });
+    }
+    return baseByField.get(f);
   }
-  function prepare(stage){
-    const counts=new Map();
-    return fields(stage).map((el,i)=>{
-      const base=fieldKey(el,i),n=counts.get(base)||0;counts.set(base,n+1);
-      const key=base+(n?"#"+n:"");
-      el.dataset.sagsFsagsCoordKey=key;
-      return el;
-    });
+  function resetFieldToBase(f){
+    const b=rememberBase(f);
+    f.vx=b.vx;f.vy=b.vy;f.vw=b.vw;f.vh=b.vh;
+    f.align=b.align;f.leftValue=b.leftValue;f.manualInset=b.manualInset;
   }
-  function pageCfg(key,source=remote){
-    return source?.pages?.[key]||{fields:{}};
+  function pageCfg(page,source=config){
+    return source?.pages?.[String(page)]||{fields:{}};
   }
-  function clearMove(el){
-    try{el.style.removeProperty("translate")}catch(_){}
-  }
-  function applyOne(el,cfg,stage){
-    if(!el||!stage)return;
-    const sr=stage.getBoundingClientRect();
-    if(!sr.width||!sr.height)return;
-    clearMove(el);
-    const br=el.getBoundingClientRect();
-    const baseX=br.left-sr.left,baseY=br.top-sr.top;
-    const targetX=(Number(cfg?.xPct)||0)*sr.width/100;
-    const targetY=(Number(cfg?.yPct)||0)*sr.height/100;
-    const dx=targetX-baseX,dy=targetY-baseY;
-    el.style.setProperty("translate",`${dx.toFixed(2)}px ${dy.toFixed(2)}px`,"important");
-    // User rule: text begins immediately at the LEFT EDGE of the dragged display box.
-    el.style.setProperty("text-align","left","important");
-    el.style.setProperty("padding-left","1px","important");
-    el.style.setProperty("box-sizing","border-box","important");
-  }
-  function applyStage(stage,source=remote){
-    if(!stage)return;
-    const key=pageKey(stage),cfg=pageCfg(key,source);
-    prepare(stage).forEach(el=>{
-      const c=cfg.fields?.[el.dataset.sagsFsagsCoordKey];
-      if(c)applyOne(el,c,stage);
-    });
+  function applyConfig(source=config){
+    const fs=globalFields();
+    if(!fs.length)return false;
+    for(const f of fs){
+      rememberBase(f);
+      resetFieldToBase(f);
+      const c=pageCfg(f.page,source)?.fields?.[S(f.key)];
+      if(!c)continue;
+      if(Number.isFinite(Number(c.vx)))f.vx=Number(c.vx);
+      if(Number.isFinite(Number(c.vy)))f.vy=Number(c.vy);
+      // User rule: left edge of dragged display box is the text start.
+      f.align="left";
+      f.leftValue=true;
+      f.manualInset=0;
+    }
+    redraw();
+    return true;
   }
   async function refreshConfig(force=false){
-    if(fetching)return fetching;
-    if(!force&&Date.now()-lastFetch<30000)return remote;
-    fetching=(async()=>{
+    if(fetchJob)return fetchJob;
+    if(!force&&Date.now()-fetchAt<30000)return config;
+    fetchJob=(async()=>{
       try{
         const r=await fetch(CONFIG_URL+"?t="+Date.now(),{cache:"no-store",headers:{"Cache-Control":"no-cache"}});
         if(r.ok){
           const j=await r.json();
           if(j&&typeof j==="object"&&j.pages){
-            remote={schema:1,build:"FSAGS-DISPLAY-COORDINATES-V1",...j,pages:j.pages||{}};
+            config={schema:2,build:"FSAGS-BBBT-DISPLAY-COORDINATES-V1",...j,pages:j.pages||{}};
           }
         }
       }catch(_){}
-      lastFetch=Date.now();fetching=null;
-      if(activeStage&&!editing)applyStage(activeStage,remote);
-      return remote;
+      fetchAt=Date.now();fetchJob=null;
+      if(!editing)applyConfig(config);
+      return config;
     })();
-    return fetching;
+    return fetchJob;
   }
-  function clone(v){return JSON.parse(JSON.stringify(v||{}))}
-  function ensureUi(){
-    if(!$("sagsFsagsCoordStyle")){
-      const st=document.createElement("style");st.id="sagsFsagsCoordStyle";
-      st.textContent=`
-#sagsFsagsCoordBtn[hidden],#sagsFsagsCoordPanel[hidden]{display:none!important}
-#sagsFsagsCoordBtn{position:fixed;right:14px;bottom:calc(78px + env(safe-area-inset-bottom));z-index:2147482900;min-height:48px;padding:10px 15px;border:0;border-radius:999px;background:#0b6398;color:#fff;font:900 14px Arial;box-shadow:0 6px 20px #0004}
-#sagsFsagsCoordPanel{position:fixed;left:50%;bottom:max(8px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:2147483000;width:min(590px,calc(100vw - 16px));max-height:46dvh;overflow:auto;background:#fff;color:#17364a;border:1px solid #b8cad8;border-radius:15px;padding:12px;box-shadow:0 14px 44px #0005;font:14px/1.38 Arial}
-.sfcHead{display:flex;justify-content:space-between;gap:10px;align-items:center}.sfcHead b{font-size:16px}.sfcHead small{display:block;color:#597080;margin-top:2px}.sfcHead button{width:42px;height:42px;border-radius:10px}
-#sfcSelected{margin:9px 0;padding:9px 10px;background:#eef5fa;border-radius:10px;font-weight:800}.sfcHelp{margin:7px 0;color:#4f6576}.sfcActions{display:grid;grid-template-columns:1fr 1fr 1.4fr;gap:7px}.sfcActions button{min-height:44px;border:1px solid #acc0cf;border-radius:10px;background:#f7fafc;color:#17364a;font-weight:900}.sfcActions #sfcSave{background:#0b6398;color:#fff}
-#sfcStatus{min-height:19px;margin:8px 0 0;font-weight:700}
-.sagsFsagsEditing [data-sags-fsags-coord-key]{outline:2px dashed #e38a00!important;outline-offset:2px;cursor:move!important;touch-action:none!important;user-select:none!important}
-.sagsFsagsEditing [data-sags-fsags-coord-key].sfcChosen{outline:3px solid #c52331!important;outline-offset:2px;z-index:999!important}
-@media(max-width:620px){.sfcActions{grid-template-columns:1fr}#sagsFsagsCoordPanel{max-height:52dvh}}
+
+  function ensureStyles(){
+    if($("sagsCoord42Style"))return;
+    const st=document.createElement("style");st.id="sagsCoord42Style";
+    st.textContent=`
+#sagsCoord42Modal[hidden],#sagsCoord42Editor[hidden]{display:none!important}
+#sagsCoord42Modal{position:fixed;inset:0;z-index:2147482500;background:#17364ac4;display:flex;align-items:center;justify-content:center;padding:12px;box-sizing:border-box;font:14px/1.4 Arial;color:#17364a}
+.s42box{width:min(680px,96vw);max-height:90dvh;overflow:auto;background:#fff;border-radius:16px;padding:14px;box-shadow:0 15px 50px #0005}
+.s42head{display:flex;justify-content:space-between;align-items:center;gap:10px}.s42head h3{margin:0;color:#0b5cab}.s42head button{width:44px;height:44px;border-radius:10px}
+.s42help{margin:8px 0 12px;color:#516879}.s42list{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.s42choice{min-height:64px;border:1px solid #b9cbd8;border-radius:12px;background:#fff;text-align:left;padding:10px 12px;color:#17364a;font-weight:900;font-size:15px}
+.s42choice small{display:block;font-weight:500;color:#5c7283;margin-top:3px}
+#sagsCoord42Editor{position:fixed;left:50%;bottom:max(8px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:2147483200;width:min(720px,calc(100vw - 16px));background:#fff;color:#17364a;border:1px solid #adc2d1;border-radius:16px;padding:11px;box-shadow:0 16px 48px #0006;font:14px/1.35 Arial}
+.s42editHead{display:flex;justify-content:space-between;gap:10px;align-items:center}.s42editHead b{font-size:16px}.s42editHead small{display:block;color:#5a7081}
+#s42selected{margin:8px 0;padding:8px 10px;background:#eef5fa;border-radius:9px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.s42editActions{display:grid;grid-template-columns:1fr 1fr 1.5fr;gap:7px}.s42editActions button{min-height:44px;border:1px solid #adc1cf;border-radius:10px;background:#f7fafc;color:#17364a;font-weight:900}.s42editActions #s42save{background:#0b6398;color:#fff}
+#s42status{min-height:18px;margin:7px 0 0;font-weight:700}
+.s42layer{position:absolute!important;inset:0!important;z-index:2147482000!important;pointer-events:none!important}
+.s42rect{position:absolute!important;pointer-events:auto!important;border:2px dashed #e08a00!important;background:rgba(255,193,7,.08)!important;box-sizing:border-box!important;cursor:move!important;touch-action:none!important;user-select:none!important}
+.s42rect::before{content:"";position:absolute;left:-2px;top:-2px;bottom:-2px;width:3px;background:#d82432}
+.s42rect.s42chosen{border:3px solid #c72130!important;background:rgba(199,33,48,.08)!important}
+.s42rect span{display:none;position:absolute;left:2px;top:2px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:#17364a;color:#fff;padding:1px 3px;border-radius:3px;font:700 9px Arial}
+.s42rect.s42chosen span{display:block}
+body.s42editing .toolbar{opacity:.18;pointer-events:none}
+@media(max-width:640px){.s42list{grid-template-columns:1fr}.s42editActions{grid-template-columns:1fr}#sagsCoord42Editor{max-height:48dvh;overflow:auto}}
 `;
-      document.head.appendChild(st);
-    }
-    if(!$("sagsFsagsCoordBtn")){
-      const b=document.createElement("button");
-      b.id="sagsFsagsCoordBtn";b.type="button";b.hidden=true;b.textContent="🛠 CĂN FSAGS";
-      b.onclick=enterEdit;document.body.appendChild(b);
-    }
-    if(!$("sagsFsagsCoordPanel")){
-      const p=document.createElement("section");p.id="sagsFsagsCoordPanel";p.hidden=true;
-      p.innerHTML=`<div class="sfcHead"><div><b>CĂN TỌA ĐỘ FSAGS</b><small id="sfcPage"></small></div><button id="sfcClose" type="button">✕</button></div>
-      <div id="sfcSelected">CHẠM VÀ KÉO Ô HIỂN THỊ CẦN CĂN</div>
-      <p class="sfcHelp">Kéo ô đến đúng vị trí. <b>Mép trái của ô chính là điểm bắt đầu hiển thị chữ.</b> Không chỉnh kích thước ô.</p>
-      <div class="sfcActions"><button id="sfcCancel" type="button">HỦY</button><button id="sfcReset" type="button">VỀ GỐC Ô</button><button id="sfcSave" type="button">LƯU & XUẤT FILE</button></div>
-      <p id="sfcStatus" role="status"></p>`;
-      document.body.appendChild(p);
-      $("sfcClose").onclick=$("sfcCancel").onclick=cancelEdit;
-      $("sfcReset").onclick=resetSelected;
-      $("sfcSave").onclick=saveExport;
-    }
+    document.head.appendChild(st);
   }
-  function updateButton(){
-    ensureUi();
-    const b=$("sagsFsagsCoordBtn");
-    const ok=isAdmin()&&!!activeStage&&visible(activeStage);
-    b.hidden=!ok;b.style.display=ok?"block":"none";
-  }
-  function status(t){const el=$("sfcStatus");if(el)el.textContent=S(t)}
-  function selectField(el){
-    if(!editing||!activeStage?.contains(el))return;
-    prepare(activeStage).forEach(x=>x.classList.toggle("sfcChosen",x===el));
-    selected=el;
-    const info=$("sfcSelected");
-    if(info){
-      const r=el.getBoundingClientRect(),sr=activeStage.getBoundingClientRect();
-      info.textContent=`${el.dataset.sagsFsagsCoordKey} · X ${Math.round(r.left-sr.left)} · Y ${Math.round(r.top-sr.top)}`;
-    }
-  }
-  function snapshotStyles(){
-    beforeEditSnapshot.clear();
-    for(const el of prepare(activeStage)){
-      beforeEditSnapshot.set(el,{
-        translate:el.style.getPropertyValue("translate"),
-        textAlign:el.style.getPropertyValue("text-align"),
-        paddingLeft:el.style.getPropertyValue("padding-left"),
-        boxSizing:el.style.getPropertyValue("box-sizing")
-      });
-    }
-  }
-  function restoreSnapshot(){
-    for(const [el,s] of beforeEditSnapshot){
-      if(!el?.isConnected)continue;
-      for(const [prop,val] of [["translate",s.translate],["text-align",s.textAlign],["padding-left",s.paddingLeft],["box-sizing",s.boxSizing]]){
-        if(val)el.style.setProperty(prop,val,"important");else el.style.removeProperty(prop);
+
+  function ensureUi(){
+    ensureStyles();
+    if(!$("sagsCoord42Modal")){
+      const m=document.createElement("section");m.id="sagsCoord42Modal";m.hidden=true;
+      m.innerHTML=`<div class="s42box"><div class="s42head"><h3>CĂN CHỈNH BIỂU MẪU</h3><button id="s42close" type="button">✕</button></div>
+      <p class="s42help">Chỉ dành cho AD. Chọn FSAGS hoặc BBBT cần căn tọa độ hiển thị.</p>
+      <div id="s42list" class="s42list"></div></div>`;
+      document.body.appendChild(m);
+      $("s42close").onclick=closeCenter;
+      m.addEventListener("click",e=>{if(e.target===m)closeCenter()});
+      const list=$("s42list");
+      for(const [group,meta] of Object.entries(FORMS)){
+        const b=document.createElement("button");b.type="button";b.className="s42choice";b.dataset.group=group;
+        b.innerHTML=`${meta.label}<small>${meta.pages.length>1?"Trang "+meta.pages.join(" + "):"Trang "+meta.pages[0]}</small>`;
+        b.onclick=()=>openEditor(group);
+        list.appendChild(b);
       }
-      el.classList.remove("sfcChosen");
+    }
+    if(!$("sagsCoord42Editor")){
+      const p=document.createElement("section");p.id="sagsCoord42Editor";p.hidden=true;
+      p.innerHTML=`<div class="s42editHead"><div><b id="s42title">CĂN TỌA ĐỘ</b><small>Kéo KHUNG HIỂN THỊ đến đúng vị trí</small></div></div>
+      <div id="s42selected">Chạm/kéo một khung màu cam. Mép đỏ bên trái = điểm bắt đầu chữ.</div>
+      <div class="s42editActions"><button id="s42cancel" type="button">HỦY</button><button id="s42reset" type="button">VỀ GỐC Ô</button><button id="s42save" type="button">LƯU & XUẤT FILE</button></div>
+      <p id="s42status" role="status"></p>`;
+      document.body.appendChild(p);
+      $("s42cancel").onclick=cancelEdit;
+      $("s42reset").onclick=resetSelected;
+      $("s42save").onclick=saveExport;
     }
   }
-  function enterEdit(){
-    if(!isAdmin()||!activeStage)return;
-    editing=true;selected=null;draft=clone(remote);draft.pages||={};
-    snapshotStyles();
-    document.body.classList.add("sagsFsagsEditing");
-    prepare(activeStage);
-    $("sagsFsagsCoordPanel").hidden=false;
-    $("sfcPage").textContent=pageKey(activeStage);
-    status("Kéo trực tiếp ô hiển thị đến đúng tọa độ.");
+
+  function ensureAdminCard(){
+    const center=$("v181AdminCenter");
+    let card=$("sagsCoord42AdminCard");
+    if(!isAdmin()){
+      card?.remove();
+      return;
+    }
+    if(!center||card)return;
+    const grids=center.querySelectorAll(".v181AdminGrid");
+    const grid=grids[grids.length-1];
+    if(!grid)return;
+    card=document.createElement("button");
+    card.id="sagsCoord42AdminCard";
+    card.type="button";
+    card.className="v181AdminCard";
+    card.innerHTML='<span class="v181AdminIcon">↔</span><span class="v181AdminCardText"><b>CĂN CHỈNH BIỂU MẪU</b><small>FSAGS 42.3 / 42.1 / 55.1 / 09 / 208 / BBBT</small></span><em>MỞ</em>';
+    card.onclick=openCenter;
+    grid.appendChild(card);
   }
-  function exitEdit(){
-    editing=false;selected=null;drag=null;document.body.classList.remove("sagsFsagsEditing");
-    $("sagsFsagsCoordPanel").hidden=true;
-    prepare(activeStage).forEach(x=>x.classList.remove("sfcChosen"));
+
+  function openCenter(){
+    if(!isAdmin())return;
+    ensureUi();
+    $("sagsCoord42Modal").hidden=false;
   }
-  function cancelEdit(){
-    restoreSnapshot();exitEdit();
+  function closeCenter(){
+    const m=$("sagsCoord42Modal");if(m)m.hidden=true;
   }
-  function currentCfgFor(el){
-    const pk=activePageKey||pageKey(activeStage);
-    draft.pages||={};draft.pages[pk]||={fields:{}};draft.pages[pk].fields||={};
-    return draft.pages[pk].fields;
+
+  function showGroup(group){
+    let ok=false;
+    try{
+      if(typeof showFormGroup==="function"){showFormGroup(group,false);ok=true}
+    }catch(_){}
+    if(!ok){
+      // Safe direct fallback: only display the requested pages.
+      const wanted=new Set(FORMS[group]?.pages||[]);
+      for(let p=1;p<=14;p++){
+        const el=$("page"+p);if(!el)continue;
+        const on=wanted.has(p);
+        el.classList.toggle("hide",!on);
+        el.style.display=on?"block":"none";
+      }
+    }
+    setTimeout(()=>{
+      const first=$("page"+(FORMS[group]?.pages?.[0]||1));
+      try{first?.scrollIntoView({behavior:"smooth",block:"start"})}catch(_){}
+    },80);
   }
-  function setTarget(el,left,top){
-    const sr=activeStage.getBoundingClientRect();
-    if(!sr.width||!sr.height)return;
-    const xPct=Math.max(0,Math.min(100,left/sr.width*100));
-    const yPct=Math.max(0,Math.min(100,top/sr.height*100));
-    const map=currentCfgFor(el);
-    map[el.dataset.sagsFsagsCoordKey]={xPct:+xPct.toFixed(5),yPct:+yPct.toFixed(5)};
-    applyOne(el,map[el.dataset.sagsFsagsCoordKey],activeStage);
-    selectField(el);
+
+  function fieldCandidates(group){
+    const pages=new Set(FORMS[group]?.pages||[]);
+    return globalFields().filter(f=>{
+      if(!pages.has(Number(f.page)))return false;
+      if(!S(f.key))return false;
+      // Display-coordinate editor: exclude signatures/images; checks/ticks are not text-start regions.
+      const type=U(f.type);
+      if(["SIGNATURE","CHECK"].includes(type))return false;
+      return Number.isFinite(Number(f.vx))&&Number.isFinite(Number(f.vy))
+        &&Number.isFinite(Number(f.vw))&&Number.isFinite(Number(f.vh));
+    });
   }
-  function resetSelected(){
-    if(!selected)return status("Chạm chọn ô cần đưa về gốc.");
-    const map=currentCfgFor(selected);
-    delete map[selected.dataset.sagsFsagsCoordKey];
-    clearMove(selected);
-    selected.style.setProperty("text-align","left","important");
-    selected.style.setProperty("padding-left","1px","important");
-    selectField(selected);status("Đã đưa ô về tọa độ gốc trong bản đang chỉnh.");
+
+  function removeLayers(){
+    layers.forEach(x=>x.remove());layers=[];
   }
-  function exportedConfig(){
-    const now=new Date().toISOString(),u=session().username||"AD";
-    const out={
-      schema:1,
-      build:"FSAGS-DISPLAY-COORDINATES-V1",
-      updatedAt:now,
-      updatedBy:u,
-      note:"Generated by SAGS AD FSAGS coordinate editor. Replace this file in GitHub root.",
-      pages:draft?.pages||{}
+  function pageElement(page){return $("page"+page)}
+  function createLayers(group){
+    removeLayers();
+    const byPage=new Map();
+    for(const f of fieldCandidates(group)){
+      rememberBase(f);
+      const p=Number(f.page),page=pageElement(p);
+      if(!page)continue;
+      let layer=byPage.get(p);
+      if(!layer){
+        const pos=getComputedStyle(page).position;
+        if(pos==="static")page.style.position="relative";
+        layer=document.createElement("div");layer.className="s42layer";layer.dataset.page=String(p);
+        page.appendChild(layer);byPage.set(p,layer);layers.push(layer);
+      }
+      const rect=document.createElement("div");
+      rect.className="s42rect";rect.dataset.page=String(p);rect.dataset.key=S(f.key);
+      rect.style.left=(Number(f.vx)*100)+"%";
+      rect.style.top=(Number(f.vy)*100)+"%";
+      rect.style.width=(Math.max(Number(f.vw),.008)*100)+"%";
+      rect.style.height=(Math.max(Number(f.vh),.008)*100)+"%";
+      const lab=document.createElement("span");lab.textContent=S(f.label||f.key);rect.appendChild(lab);
+      rect._field=f;
+      layer.appendChild(rect);
+    }
+  }
+
+  function selectRect(rect){
+    layers.forEach(l=>l.querySelectorAll(".s42chosen").forEach(x=>x.classList.remove("s42chosen")));
+    selected=rect||null;
+    if(rect)rect.classList.add("s42chosen");
+    const info=$("s42selected");
+    if(!info)return;
+    if(!rect){info.textContent="Chạm/kéo một khung màu cam. Mép đỏ bên trái = điểm bắt đầu chữ.";return}
+    const f=rect._field;
+    info.textContent=`${S(f.label||f.key)} · ${S(f.key)} · Trang ${f.page}`;
+  }
+
+  function draftField(f){
+    draft.pages||={};
+    const p=String(f.page);
+    draft.pages[p]||={fields:{}};
+    draft.pages[p].fields||={};
+    return draft.pages[p].fields;
+  }
+  function commitRect(rect){
+    if(!rect?._field)return;
+    const f=rect._field,layer=rect.parentElement;
+    const lr=layer.getBoundingClientRect(),rr=rect.getBoundingClientRect();
+    const vx=(rr.left-lr.left)/Math.max(1,lr.width);
+    const vy=(rr.top-lr.top)/Math.max(1,lr.height);
+    const map=draftField(f);
+    map[S(f.key)]={
+      vx:+Math.max(0,Math.min(1,vx)).toFixed(7),
+      vy:+Math.max(0,Math.min(1,vy)).toFixed(7),
+      align:"left",
+      leftValue:true,
+      manualInset:0
     };
-    // Remove empty pages.
-    for(const k of Object.keys(out.pages||{}))if(!Object.keys(out.pages[k]?.fields||{}).length)delete out.pages[k];
+    f.vx=map[S(f.key)].vx;
+    f.vy=map[S(f.key)].vy;
+    f.align="left";f.leftValue=true;f.manualInset=0;
+    redraw();
+  }
+
+  function enterDrag(e,rect){
+    if(!editing)return;
+    e.preventDefault();e.stopImmediatePropagation();selectRect(rect);
+    const rr=rect.getBoundingClientRect();
+    drag={rect,dx:e.clientX-rr.left,dy:e.clientY-rr.top};
+    try{rect.setPointerCapture?.(e.pointerId)}catch(_){}
+  }
+  function moveDrag(e){
+    if(!drag)return;
+    e.preventDefault();
+    const rect=drag.rect,layer=rect.parentElement,lr=layer.getBoundingClientRect(),rr=rect.getBoundingClientRect();
+    const maxX=Math.max(0,lr.width-rr.width),maxY=Math.max(0,lr.height-rr.height);
+    const x=Math.max(0,Math.min(maxX,e.clientX-lr.left-drag.dx));
+    const y=Math.max(0,Math.min(maxY,e.clientY-lr.top-drag.dy));
+    rect.style.left=(x/Math.max(1,lr.width)*100)+"%";
+    rect.style.top=(y/Math.max(1,lr.height)*100)+"%";
+  }
+  function endDrag(){
+    if(!drag)return;
+    commitRect(drag.rect);drag=null;
+  }
+
+  document.addEventListener("pointerdown",e=>{
+    const rect=e.target.closest?.(".s42rect");
+    if(rect)enterDrag(e,rect);
+  },true);
+  document.addEventListener("pointermove",moveDrag,true);
+  document.addEventListener("pointerup",endDrag,true);
+  document.addEventListener("pointercancel",endDrag,true);
+
+  function openEditor(group){
+    if(!isAdmin()||!FORMS[group])return;
+    closeCenter();
+    activeGroup=group;editing=true;selected=null;drag=null;
+    draft=clone(config);draft.schema=2;draft.pages||={};
+    document.body.classList.add("s42editing");
+    showGroup(group);
+    applyConfig(draft);
+    setTimeout(()=>{
+      createLayers(group);
+      $("sagsCoord42Editor").hidden=false;
+      $("s42title").textContent="CĂN TỌA ĐỘ · "+FORMS[group].label;
+      $("s42status").textContent="Kéo khung màu cam. Mép đỏ bên trái là điểm bắt đầu hiển thị chữ.";
+      if(!fieldCandidates(group).length){
+        $("s42status").textContent="Không tìm thấy vùng hiển thị của mẫu này. Hãy đợi biểu mẫu tải xong rồi mở lại.";
+      }
+    },180);
+  }
+
+  function resetSelected(){
+    if(!selected?._field){
+      $("s42status").textContent="Chọn một khung trước.";
+      return;
+    }
+    const f=selected._field,b=rememberBase(f),map=draftField(f);
+    delete map[S(f.key)];
+    f.vx=b.vx;f.vy=b.vy;f.align=b.align;f.leftValue=b.leftValue;f.manualInset=b.manualInset;
+    selected.style.left=(b.vx*100)+"%";
+    selected.style.top=(b.vy*100)+"%";
+    redraw();
+    $("s42status").textContent="Đã đưa vùng đang chọn về tọa độ gốc.";
+  }
+
+  function cancelEdit(){
+    if(!editing)return;
+    editing=false;drag=null;selected=null;
+    removeLayers();document.body.classList.remove("s42editing");
+    $("sagsCoord42Editor").hidden=true;
+    applyConfig(config);
+  }
+
+  function cleanConfigForExport(){
+    const out={
+      schema:2,
+      build:"FSAGS-BBBT-DISPLAY-COORDINATES-V1",
+      updatedAt:new Date().toISOString(),
+      updatedBy:session().username||"AD",
+      note:"Generated from AD > CĂN CHỈNH BIỂU MẪU. Replace this file in GitHub root.",
+      pages:clone(draft?.pages||{})
+    };
+    for(const p of Object.keys(out.pages)){
+      const fm=out.pages[p]?.fields||{};
+      if(!Object.keys(fm).length)delete out.pages[p];
+    }
     return out;
   }
+
   async function saveExport(){
     if(!editing)return;
+    const cfg=cleanConfigForExport();
     try{
-      const cfg=exportedConfig();
       const text=JSON.stringify(cfg,null,2)+"\n";
       const blob=new Blob([text],{type:"application/json;charset=utf-8"});
-      const fileName="fsags-display-coordinates.json";
+      const name="fsags-display-coordinates.json";
       let shared=false;
       try{
         if(typeof File!=="undefined"&&navigator.share){
-          const file=new File([blob],fileName,{type:"application/json"});
+          const file=new File([blob],name,{type:"application/json"});
           if(!navigator.canShare||navigator.canShare({files:[file]})){
-            await navigator.share({files:[file],title:fileName});
+            await navigator.share({files:[file],title:name});
             shared=true;
           }
         }
       }catch(_){}
       if(!shared){
         const url=URL.createObjectURL(blob),a=document.createElement("a");
-        a.href=url;a.download=fileName;a.rel="noopener";document.body.appendChild(a);a.click();a.remove();
+        a.href=url;a.download=name;a.rel="noopener";document.body.appendChild(a);a.click();a.remove();
         setTimeout(()=>URL.revokeObjectURL(url),1500);
       }
-      remote=clone(cfg);lastFetch=Date.now();
-      status("ĐÃ XUẤT fsags-display-coordinates.json · thay file này trên GitHub để áp dụng cho các máy.");
-      setTimeout(exitEdit,900);
-    }catch(e){status("Chưa xuất được file: "+S(e?.message||e))}
+      config=clone(cfg);fetchAt=Date.now();
+      $("s42status").textContent="ĐÃ XUẤT fsags-display-coordinates.json · thay file này trên GitHub.";
+      setTimeout(()=>{
+        editing=false;removeLayers();document.body.classList.remove("s42editing");
+        $("sagsCoord42Editor").hidden=true;applyConfig(config);
+      },800);
+    }catch(e){
+      $("s42status").textContent="Chưa xuất được file: "+S(e?.message||e);
+    }
   }
-
-  document.addEventListener("pointerdown",e=>{
-    if(!editing||!activeStage)return;
-    const el=e.target.closest?.("[data-sags-fsags-coord-key]");
-    if(!el||!activeStage.contains(el))return;
-    e.preventDefault();e.stopImmediatePropagation();selectField(el);
-    const sr=activeStage.getBoundingClientRect(),r=el.getBoundingClientRect();
-    drag={el,dx:e.clientX-r.left,dy:e.clientY-r.top,sr};
-    try{el.setPointerCapture?.(e.pointerId)}catch(_){}
-  },true);
-  document.addEventListener("pointermove",e=>{
-    if(!editing||!drag)return;
-    e.preventDefault();e.stopImmediatePropagation();
-    const sr=activeStage.getBoundingClientRect(),r=drag.el.getBoundingClientRect();
-    const left=Math.max(0,Math.min(sr.width-r.width,e.clientX-sr.left-drag.dx));
-    const top=Math.max(0,Math.min(sr.height-r.height,e.clientY-sr.top-drag.dy));
-    setTarget(drag.el,left,top);
-  },true);
-  document.addEventListener("pointerup",()=>{drag=null},true);
 
   function scan(){
     ensureUi();
-    const next=detectStage();
-    if(next!==activeStage){
-      if(editing){restoreSnapshot();exitEdit()}
-      activeStage=next;activePageKey=next?pageKey(next):"";
-      if(next){
-        refreshConfig(false).finally(()=>applyStage(next,remote));
-      }
-    }else if(next&&!editing){
-      applyStage(next,remote);
-      refreshConfig(false);
-    }
-    updateButton();
+    ensureAdminCard();
+    if(!editing)applyConfig(config);
   }
-  function scheduleScan(){
-    if(scanQueued)return;scanQueued=true;
-    requestAnimationFrame(()=>{scanQueued=false;scan()});
+  let queued=false;
+  function schedule(){
+    if(queued)return;queued=true;
+    requestAnimationFrame(()=>{queued=false;scan()});
   }
-  new MutationObserver(scheduleScan).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:["class","style","hidden","aria-hidden"]});
-  root.addEventListener("resize",scheduleScan);
+  new MutationObserver(schedule).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:["style","class","hidden"]});
+  ["sags:login","sags:rolechange","sags:profilechange","sags:ui-ready"].forEach(n=>root.addEventListener?.(n,schedule));
   root.addEventListener("focus",()=>refreshConfig(false));
   document.addEventListener("visibilitychange",()=>{if(!document.hidden)refreshConfig(false)});
-  setInterval(()=>refreshConfig(false),5*60*1000);
 
-  root.sagsFsagsCoordInfo=()=>({
-    build:BUILD,admin:isAdmin(),editing,pageKey:activePageKey,
-    fieldCount:activeStage?prepare(activeStage).length:0,
-    configUpdatedAt:remote?.updatedAt||""
+  root.sagsOpenCoordinateCenter=()=>{if(isAdmin())openCenter()};
+  root.sagsCoordinateInfo=()=>({
+    build:BUILD,admin:isAdmin(),editing,group:activeGroup,
+    fieldCount:activeGroup?fieldCandidates(activeGroup).length:globalFields().length,
+    configUpdatedAt:S(config.updatedAt)
   });
 
-  ensureUi();refreshConfig(true).finally(scan);
+  ensureUi();
+  refreshConfig(true).finally(scan);
 })(typeof window==="undefined"?globalThis:window);

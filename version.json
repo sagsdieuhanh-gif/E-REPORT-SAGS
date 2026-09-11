@@ -1,10 +1,10 @@
 {
-  "version": "V4.2.41",
-  "displayVersion": "V4.2.41",
-  "label": "V4.2.41",
-  "build": "V4.2.41-FSAGS-COORD-EDITOR",
-  "releasedAt": "2026-09-11T00:23:28Z",
-  "type": "fsags-coordinate-editor",
-  "notes": "Căn tọa độ hiển thị chỉ cho FSAGS423/421/551/09. AD kéo trực tiếp ô hiển thị; mép trái ô là điểm bắt đầu chữ. LƯU & XUẤT FILE tạo fsags-display-coordinates.json để thay trên GitHub. Không Firebase, không thư viện biểu mẫu, không tác động FINAL/KẾT SỔ/RNS.",
-  "message": "Có bản cập nhật V4.2.41 · CĂN TỌA ĐỘ HIỂN THỊ FSAGS"
+  "version": "V4.2.42",
+  "displayVersion": "V4.2.42",
+  "label": "V4.2.42",
+  "build": "V4.2.42-AD-FSAGS-BBBT-COORD",
+  "releasedAt": "2026-09-11T00:41:35Z",
+  "type": "admin-fsags-bbbt-coordinate-editor",
+  "notes": "Chỉ AD mới có CĂN CHỈNH BIỂU MẪU trong AD Control Center. Bấm mở danh sách FSAGS42.3, FSAGS42.1, FSAGS55.1, FSAGS09, FSAGS208 và BBBT. Căn trực tiếp vùng hiển thị SVG vx/vy; mép trái khung là điểm bắt đầu chữ. LƯU xuất fsags-display-coordinates.json để cập nhật GitHub. Không Firebase, không nút nổi ở màn hình nghiệp vụ.",
+  "message": "Có bản cập nhật V4.2.42 · AD CĂN FSAGS + BBBT"
 }

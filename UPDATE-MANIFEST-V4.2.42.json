@@ -1,0 +1,51 @@
+{
+  "version": "V4.2.42",
+  "base": "V4.2.41",
+  "purpose": "AD CONTROL CENTER -> CHOOSE FSAGS/BBBT -> DRAG DISPLAY COORD -> EXPORT GITHUB FILE",
+  "scope": [
+    "FSAGS42.3",
+    "FSAGS42.1",
+    "FSAGS55.1",
+    "FSAGS09",
+    "FSAGS208",
+    "BBBT"
+  ],
+  "checks": {
+    "v2.2.18-runtime-patch.js": "OK",
+    "service-worker.js": "OK",
+    "admin_only": "OK",
+    "forms_list": "OK",
+    "svg_display_coords": "OK",
+    "left_edge_rule": "OK",
+    "no_floating_normal_button": "OK",
+    "export_github_file": "OK",
+    "no_firebase": "OK"
+  },
+  "files": [
+    {
+      "path": "v2.2.18-runtime-patch.js",
+      "sha256": "f5c0bb2880b5467b224e327976f022094147cb326b32eafc90805dac0bb5993a",
+      "size": 19065
+    },
+    {
+      "path": "fsags-display-coordinates.json",
+      "sha256": "4c29555e5bbd4cc3a70f10144d72c112ee44dc1db988c9614a1a3ea0f96dce3a",
+      "size": 239
+    },
+    {
+      "path": "service-worker.js",
+      "sha256": "e24513fb8d7c748b05fdf9fc013ca751749d7588aac6ebcfe04be1f1b6d5f333",
+      "size": 17854
+    },
+    {
+      "path": "version.json",
+      "sha256": "5f9ab1c7c944521688625ac15bbe4aed161e05c4723cb6fb002687051f18fc4d",
+      "size": 681
+    },
+    {
+      "path": "HDSD-V4.2.42.md",
+      "sha256": "b4540c9ab43f9b493da62f786d76492f7b6827239d72c041ccfd397fa155ce9a",
+      "size": 1598
+    }
+  ]
+}

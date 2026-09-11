@@ -1,7 +1,7 @@
-/* E-REPORT/SAGS V4.2.41 · FSAGS COORD EDITOR */
-const CACHE_NAME="sags-v4.2.41-fsags-coord-editor";
-const BUILD="V4.2.41-FSAGS-COORD-EDITOR";
-const DISPLAY_VERSION="V4.2.41";
+/* E-REPORT/SAGS V4.2.42 · AD FSAGS BBBT COORD */
+const CACHE_NAME="sags-v4.2.42-ad-fsags-bbbt-coord";
+const BUILD="V4.2.42-AD-FSAGS-BBBT-COORD";
+const DISPLAY_VERSION="V4.2.42";
 
 const PATCH_V21="./v2.1-runtime-patch.js";
 const PATCH_V22="./v2.2-runtime-patch.js";
@@ -39,7 +39,7 @@ async function fetchNoStore(path){
 }
 async function safePut(cache,key,response){
   try{if(response&&response.ok)await cache.put(key,response.clone())}
-  catch(e){console.info("V4.2.41 cache put skipped",key,e?.name||e?.message||e)}
+  catch(e){console.info("V4.2.42 cache put skipped",key,e?.name||e?.message||e)}
 }
 function stripRetiredScripts(out){
   return String(out||"")
@@ -85,12 +85,12 @@ async function validateRelease(){
   const pr=await fetchNoStore(PATCH_V2218+"?swcheck="+Date.now());
   if(!pr.ok)throw new Error(PATCH_V2218+" HTTP "+pr.status);
   const pt=await pr.text();
-  if(!pt.includes("V2.2.18-FSAGS-COORD-EDITOR"))throw new Error(PATCH_V2218+" marker mismatch");
+  if(!pt.includes("V2.2.18-AD-FSAGS-BBBT-COORD"))throw new Error(PATCH_V2218+" marker mismatch");
 
   const cr=await fetchNoStore("./fsags-display-coordinates.json?swcheck="+Date.now());
   if(!cr.ok)throw new Error("fsags-display-coordinates.json HTTP "+cr.status);
   const cj=await cr.clone().json();
-  if(Number(cj?.schema)!==1||!cj?.pages)throw new Error("fsags-display-coordinates.json invalid");
+  if(Number(cj?.schema)!==2||!cj?.pages)throw new Error("fsags-display-coordinates.json invalid");
 
   const ir=await fetchNoStore("./index.html?swcheck="+Date.now());
   if(!ir.ok)throw new Error("index.html HTTP "+ir.status);
@@ -216,7 +216,7 @@ function patchShiftReportCoreStrict(response){
       changed++;
     }
 
-    if(changed<3)console.warn("V4.2.41: strict core patch applied partially",changed);
+    if(changed<3)console.warn("V4.2.42: strict core patch applied partially",changed);
 
     out="/* SAGS V4.2.35-STRICT-SHIFT-DEDUP · runtime patched */\n"+out;
     const headers=new Headers(response.headers);
