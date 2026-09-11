@@ -1,4 +1,4 @@
-/* E-REPORT/SAGS V4.2.46 · V2.2.18-AD-FSAGS-BBBT-MULTISELECT-ALIGN
+/* E-REPORT/SAGS V4.2.47 · V2.2.18-AD-FIELD-AUTHORITY-PERFORMANCE
    ONLY AD -> AD Control Center -> CĂN CHỈNH BIỂU MẪU.
    Multi-form workflow:
    - drag vx/vy
@@ -12,7 +12,7 @@
    No Firebase. */
 (function(root){
   "use strict";
-  const BUILD="V2.2.18-AD-FSAGS-BBBT-MULTISELECT-ALIGN";
+  const BUILD="V2.2.18-AD-FIELD-AUTHORITY-PERFORMANCE";
   if(root.__SAGS_AD_FSAGS_BBBT_COORD===BUILD)return;
   root.__SAGS_AD_FSAGS_BBBT_COORD=BUILD;
 
@@ -89,7 +89,7 @@
   function pageCfg(page,source){
     return source?.pages?.[String(page)]||{fields:{}};
   }
-  function applyConfig(source){
+  function applyConfig(source,opts){
     source=source||config;
     const fs=globalFields();
     if(!fs.length)return false;
@@ -99,16 +99,25 @@
       const c=pageCfg(f.page,source)?.fields?.[S(f.key)];
       f.__sagsCoordOverride=!!c;
       if(!c)continue;
+
       if(Number.isFinite(Number(c.vx)))f.vx=Number(c.vx);
       if(Number.isFinite(Number(c.vy)))f.vy=Number(c.vy);
       if(Number.isFinite(Number(c.vw)))f.vw=Number(c.vw);
       if(Number.isFinite(Number(c.vh)))f.vh=Number(c.vh);
-      const al=["left","center","right"].includes(S(c.align).toLowerCase())?S(c.align).toLowerCase():"left";
-      f.align=al;f.leftValue=(al==="left");f.manualInset=0;
+
+      const al=["left","center","right"].includes(S(c.align).toLowerCase())
+        ? S(c.align).toLowerCase() : "left";
+
+      // AD field geometry/alignment is the final model authority.
+      f.align=al;
+      f.leftValue=(al==="left");
+      f.manualInset=0;
     }
-    redraw();
-    // If SVG already exists, correct it immediately as well.
-    requestAnimationFrame(()=>enforceConfiguredRender(source));
+
+    // IMPORTANT: no automatic draw here.
+    // Background UI such as MY FLIGHT must not cause a full FSAGS redraw.
+    if(opts?.redraw===true)redraw();
+    else if(opts?.enforce===true)requestAnimationFrame(()=>enforceConfiguredRender(source));
     return true;
   }
 
@@ -161,21 +170,24 @@
     catch(_){return String(v).replace(/["\\]/g,"\\$&")}
   }
 
-  /* CONFIGURED DISPLAY-BOX RENDER GUARD
-     Native draw() and legacy v368 layout may apply their own alignment/translate.
-     For every field explicitly present in our coordinate config, the configured
-     display box + align are authoritative:
-       - left   => x = vx,          text-anchor=start
-       - center => x = vx + vw/2,   text-anchor=middle
-       - right  => x = vx + vw,     text-anchor=end
-       - legacy translate/transform is removed
-       - foreignObject uses exact vx/vy/vw/vh and CSS text-align
-     This does NOT change touch/input x/y/w/h. */
+  /* AD FIELD AUTHORITY
+     Any field present in fsags-display-coordinates.json / AD temporary draft
+     MUST display according to AD configuration for every source of data:
+     manual entry, N/A, quick entry, autofill, flight data, TEST and PDF.
+
+     Final rules:
+       left   -> x = vx
+       center -> x = vx + vw/2
+       right  -> x = vx + vw
+       y/width/height -> vy/vw/vh from AD field
+       no legacy translate/displayDy/writeOnLine offset may win afterwards.
+     Touch/input x/y/w/h is not changed. */
   function enforceConfiguredRender(source=coordSource()){
     try{
       const pages=source?.pages||{};
       const all=globalFields();
       if(!all.length)return false;
+      const NS="http://www.w3.org/2000/svg";
 
       for(const [pKey,pCfg] of Object.entries(pages)){
         const page=Number(pKey);
@@ -190,67 +202,118 @@
           const vy=Number.isFinite(Number(c.vy))?Number(c.vy):Number(f.vy);
           const vw=Number.isFinite(Number(c.vw))?Number(c.vw):Number(f.vw);
           const vh=Number.isFinite(Number(c.vh))?Number(c.vh):Number(f.vh);
+          const al=["left","center","right"].includes(S(c.align).toLowerCase())
+            ? S(c.align).toLowerCase() : "left";
 
-          // Keep the live field model authoritative too.
-          if(Number.isFinite(vx))f.vx=vx;
-          if(Number.isFinite(vy))f.vy=vy;
-          if(Number.isFinite(vw))f.vw=vw;
-          if(Number.isFinite(vh))f.vh=vh;
-          const al=["left","center","right"].includes(S(c.align).toLowerCase())?S(c.align).toLowerCase():"left";
-          f.align=al;
-          f.leftValue=(al==="left");
-          f.manualInset=0;
+          f.vx=vx; f.vy=vy; f.vw=vw; f.vh=vh;
+          f.align=al; f.leftValue=(al==="left"); f.manualInset=0;
           f.__sagsCoordOverride=true;
 
           const x=Math.max(0,vx)*1241;
           const y=Math.max(0,vy)*1755;
-          const w=Math.max(0.001,vw)*1241;
-          const h=Math.max(0.001,vh)*1755;
+          const w=Math.max(.001,vw)*1241;
+          const h=Math.max(.001,vh)*1755;
           const textX=al==="center"?(x+w/2):(al==="right"?(x+w):x);
           const anchor=al==="center"?"middle":(al==="right"?"end":"start");
 
-          const selector='[data-field-key="'+cssEsc(key)+'"]';
+          const keyEsc=(root.CSS&&typeof root.CSS.escape==="function")
+            ? root.CSS.escape(String(key))
+            : String(key).replace(/["\\]/g,"\\$&");
+          const selector='[data-field-key="'+keyEsc+'"]';
           const nodes=[...svg.querySelectorAll(selector)].filter(el=>
             !el.classList.contains("hit") &&
             !el.classList.contains("selected-region") &&
             !el.classList.contains("v368-layout-hit")
           );
 
+          const generated=nodes.filter(el=>el.classList.contains("v373-line-render"));
+          const generatedCount=generated.length;
+
           for(const el of nodes){
             const tag=el.tagName.toLowerCase();
 
-            if(tag==="text"){
-              // Exact configured alignment inside the configured display box.
-              el.setAttribute("x",String(textX));
-              el.setAttribute("text-anchor",anchor);
-              el.classList.remove("left","center","right");
-              el.classList.add(al);
-              el.removeAttribute("transform");
-              el.style.removeProperty("transform");
-            }else if(tag==="foreignobject"){
-              // Multiline value region: exact configured rectangle.
+            if(tag==="foreignobject"){
               el.setAttribute("x",String(x));
               el.setAttribute("y",String(y));
               el.setAttribute("width",String(w));
               el.setAttribute("height",String(h));
               el.removeAttribute("transform");
               el.style.removeProperty("transform");
+              el.style.removeProperty("translate");
               const d=el.querySelector("div");
               if(d){
+                d.style.width="100%";
+                d.style.height="100%";
+                d.style.boxSizing="border-box";
                 d.style.textAlign=al;
-                d.style.paddingLeft="0";
-                d.style.paddingRight="0";
-                d.style.marginLeft="0";
+                d.style.padding="0";
+                d.style.margin="0";
                 d.style.textIndent="0";
+                d.style.transform="none";
               }
+              continue;
             }
+
+            if(tag!=="text")continue;
+
+            // Generated multiline rows remain separate, but all lines are laid out
+            // inside the AD field rectangle. No legacy line dx/dy can move them.
+            if(el.classList.contains("v373-line-render") && generatedCount>1){
+              const rawIndex=Number(el.getAttribute("data-v373-line-index"));
+              const idx=Number.isFinite(rawIndex)?rawIndex:generated.indexOf(el);
+              const fs=Math.max(8,Number(el.getAttribute("font-size"))||Number(f.font)||16);
+              const lineH=Math.max(fs*1.12,10);
+              const lineY=Math.min(y+h-fs*.15,y+fs+(idx*lineH));
+              el.setAttribute("x",String(textX));
+              el.setAttribute("y",String(lineY));
+              el.setAttribute("text-anchor",anchor);
+              el.setAttribute("dominant-baseline","alphabetic");
+            }else{
+              el.setAttribute("x",String(textX));
+              el.setAttribute("y",String(y+h/2));
+              el.setAttribute("text-anchor",anchor);
+              el.setAttribute("dominant-baseline","middle");
+            }
+
+            el.classList.remove("left","center","right");
+            el.classList.add(al);
+            el.removeAttribute("transform");
+            el.style.removeProperty("transform");
+            el.style.removeProperty("translate");
           }
         }
       }
       return true;
-    }catch(_){
+    }catch(e){
+      console.warn("V4.2.47 AD field authority",e);
       return false;
     }
+  }
+
+
+  let drawWrapped=false;
+  function installDrawAuthority(){
+    if(drawWrapped)return true;
+    let old=null;
+    try{old=root.draw||draw}catch(_){old=root.draw}
+    if(typeof old!=="function")return false;
+    if(old.__sagsAdAuthorityWrapped){drawWrapped=true;return true}
+
+    const wrapped=function(){
+      // Apply AD model geometry BEFORE native rendering.
+      applyConfig(coordSource(),{redraw:false,enforce:false});
+      const r=old.apply(this,arguments);
+
+      // Native draw() itself calls legacy layout. AD wins once, at the very end.
+      enforceConfiguredRender(coordSource());
+      return r;
+    };
+    wrapped.__sagsAdAuthorityWrapped=true;
+    wrapped.__sagsOriginal=old;
+    root.draw=wrapped;
+    try{draw=wrapped}catch(_){}
+    drawWrapped=true;
+    return true;
   }
 
   let legacyWrapped=false;
@@ -262,8 +325,7 @@
 
     const wrapped=function(){
       const r=old.apply(this,arguments);
-      // Native v368 is allowed to do its other jobs first.
-      // Our configured FSAGS/BBBT display coordinates win last.
+      // Native layout may adjust unrelated fields; configured AD fields win last.
       enforceConfiguredRender(coordSource());
       return r;
     };
@@ -288,7 +350,7 @@
         }
       }catch(_){}
       fetchAt=Date.now();fetchJob=null;
-      if(!editing)applyConfig(temp||config);
+      if(!editing)applyConfig(temp||config,{redraw:false,enforce:false});
       updateTempSummary();
       return config;
     })();
@@ -403,7 +465,7 @@
   function clearTempConfirm(){
     if(!tempStats().fields)return;
     if(!confirm("Xóa toàn bộ bản tọa độ đang lưu tạm trên máy AD này?"))return;
-    clearTemp();applyConfig(config);
+    clearTemp();applyConfig(config,{redraw:false,enforce:true});
   }
 
   function fieldCandidates(group,page=null){
@@ -696,14 +758,14 @@
 
   function openEditor(group){
     if(!isAdmin()||!FORMS[group])return;closeCenter();activeGroup=group;activePage=FORMS[group].pages[0];editing=true;testMode=false;selected=null;selectedRects=[];drag=null;
-    draft=workingBase();draft.schema=2;draft.pages||={};applyConfig(draft);
+    draft=workingBase();draft.schema=2;draft.pages||={};applyConfig(draft,{redraw:false,enforce:true});
     $("sagsCoord44Preview").hidden=false;$("sagsCoord44Panel").hidden=false;$("sagsCoord44Preview").classList.remove("s44testing");$("s44testBtn").textContent="TEST HIỂN THỊ";$("s44title").textContent="CĂN TỌA ĐỘ · "+FORMS[group].label;buildPage(activePage);
   }
-  function closeEditorKeepDraft(){editing=false;testMode=false;selected=null;selectedRects=[];drag=null;$("s44layer").innerHTML="";$("s44test").innerHTML="";$("sagsCoord44Preview").classList.remove("s44testing");$("sagsCoord44Preview").hidden=true;$("sagsCoord44Panel").hidden=true;applyConfig(temp||config)}
+  function closeEditorKeepDraft(){editing=false;testMode=false;selected=null;selectedRects=[];drag=null;$("s44layer").innerHTML="";$("s44test").innerHTML="";$("sagsCoord44Preview").classList.remove("s44testing");$("sagsCoord44Preview").hidden=true;$("sagsCoord44Panel").hidden=true;applyConfig(temp||config,{redraw:false,enforce:true})}
   function cancelEditor(){closeEditorKeepDraft()}
   function saveTempAndBack(){
     if(!editing)return;
-    saveTempObject(draft);applyConfig(temp);
+    saveTempObject(draft);applyConfig(temp,{redraw:false,enforce:true});
     $("s44status").textContent="ĐÃ LƯU TẠM trên máy AD này.";
     setTimeout(()=>{closeEditorKeepDraft();openCenter()},350);
   }
@@ -725,35 +787,81 @@
         }
       }catch(_){}
       if(!shared){const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=name;a.rel="noopener";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500)}
-      config=clone(cfg);applyConfig(config);
+      config=clone(cfg);applyConfig(config,{redraw:false,enforce:true});
       alert("Đã xuất fsags-display-coordinates.json. Sau khi thay file trên GitHub và xác nhận hoạt động, có thể XÓA BẢN TẠM.");
     }catch(e){alert("Chưa xuất được file: "+S(e?.message||e))}
   }
 
-  function scan(){ensureUi();ensureAdminCard();if(!editing)applyConfig(temp||config)}
-  let queued=false;
-  function schedule(){if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;scan()})}
-  new MutationObserver(schedule).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:["style","class","hidden"]});
-  ["sags:login","sags:rolechange","sags:profilechange","sags:ui-ready"].forEach(n=>root.addEventListener?.(n,schedule));
-  root.addEventListener("focus",()=>refreshConfig(false));document.addEventListener("visibilitychange",()=>{if(!document.hidden)refreshConfig(false)});
+
+  function installPdfAuthority(){
+    try{
+      const old=root.sendReport;
+      if(typeof old!=="function"||old.__sagsAdPdfWrapped)return typeof old==="function";
+      const wrapped=async function(){
+        // One model sync only. Native sendReport() performs its own single draw.
+        applyConfig(temp||config,{redraw:false,enforce:false});
+        return await old.apply(this,arguments);
+      };
+      wrapped.__sagsAdPdfWrapped=true;
+      wrapped.__sagsOriginal=old;
+      root.sendReport=wrapped;
+      try{sendReport=wrapped}catch(_){}
+      return true;
+    }catch(_){return false}
+  }
+
+  function scan(){
+    // Lightweight only: create/update the AD entry point.
+    // DO NOT applyConfig()/draw() from generic DOM changes.
+    ensureUi();
+    ensureAdminCard();
+  }
+
+  // Role/session events are enough to maintain the AD menu entry.
+  ["sags:login","sags:rolechange","sags:profilechange","sags:ui-ready"].forEach(n=>
+    root.addEventListener?.(n,scan)
+  );
+
+  // Reload coordinate JSON when app regains focus, but update the model only.
+  root.addEventListener("focus",()=>{
+    refreshConfig(false).then(()=>applyConfig(temp||config,{redraw:false,enforce:false}));
+  });
+  document.addEventListener("visibilitychange",()=>{
+    if(!document.hidden){
+      refreshConfig(false).then(()=>applyConfig(temp||config,{redraw:false,enforce:false}));
+    }
+  });
 
   root.sagsOpenCoordinateCenter=()=>{if(isAdmin())openCenter()};
-  root.sagsCoordinateInfo=()=>({build:BUILD,admin:isAdmin(),editing,testMode,group:activeGroup,page:activePage,selectedCount:selectedList().length,tempStats:tempStats(),activeFields:activeGroup?fieldCandidates(activeGroup,activePage).length:0,configUpdatedAt:S(config.updatedAt)});
+  root.sagsCoordinateInfo=()=>({
+    build:BUILD,admin:isAdmin(),editing,testMode,group:activeGroup,page:activePage,
+    selectedCount:selectedList().length,tempStats:tempStats(),
+    activeFields:activeGroup?fieldCandidates(activeGroup,activePage).length:0,
+    configUpdatedAt:S(config.updatedAt),
+    performanceMode:"EVENT_DRIVEN_NO_GLOBAL_DOM_OBSERVER"
+  });
 
-  ensureUi();loadTemp();updateTempSummary();
-  installLegacyLayoutGuard();
-  let guardTry=0;
-  const guardTimer=setInterval(()=>{
-    guardTry++;
-    if(installLegacyLayoutGuard()||guardTry>=20)clearInterval(guardTimer);
+  ensureUi();
+  loadTemp();
+  updateTempSummary();
+  scan();
+
+  // Install wrappers without forcing a redraw. Retry briefly because native
+  // functions can be declared after runtime patch injection.
+  let tries=0;
+  const bootTimer=setInterval(()=>{
+    tries++;
+    const a=installLegacyLayoutGuard();
+    const b=installDrawAuthority();
+    const p=installPdfAuthority();
+    const c=applyConfig(temp||config,{redraw:false,enforce:false});
+    if((a&&b&&p&&c)||tries>=20)clearInterval(bootTimer);
   },250);
 
-  refreshConfig(true).finally(()=>{
-    scan();
-    let n=0;
-    const t=setInterval(()=>{
-      n++;
-      if(applyConfig(temp||config)||n>=12)clearInterval(t);
-    },500);
+  refreshConfig(true).then(()=>{
+    applyConfig(temp||config,{redraw:false,enforce:false});
+    installLegacyLayoutGuard();
+    installDrawAuthority();
+    installPdfAuthority();
   });
 })(typeof window==="undefined"?globalThis:window);

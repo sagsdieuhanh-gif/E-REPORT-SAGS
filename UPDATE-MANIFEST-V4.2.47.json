@@ -1,0 +1,41 @@
+{
+  "version": "V4.2.47",
+  "base": "V4.2.46",
+  "purpose": "AD FIELD AUTHORITY + REMOVE PERFORMANCE REGRESSION IN MY FLIGHT/PDF",
+  "checks": {
+    "v2.2.18-runtime-patch.js": "OK",
+    "service-worker.js": "OK",
+    "no_global_dom_observer": "OK",
+    "my_flight_no_background_draw": "OK",
+    "draw_wrapped_once": "OK",
+    "pdf_native_single_draw": "OK",
+    "ad_xywh_authority": "OK",
+    "align_authority": "OK",
+    "multiselect_preserved": "OK",
+    "temp_test_preserved": "OK",
+    "coordinate_file_not_overwritten": "OK",
+    "no_firebase": "OK"
+  },
+  "files": [
+    {
+      "path": "v2.2.18-runtime-patch.js",
+      "sha256": "d78071aceada193fb62adfca5ab4ff4f06d94bfdf08062434e37ba3526c4270e",
+      "size": 43786
+    },
+    {
+      "path": "service-worker.js",
+      "sha256": "eabe338d841dea9fb038fe19198032b7ef242290335f37729ae1e1abc3481189",
+      "size": 17888
+    },
+    {
+      "path": "version.json",
+      "sha256": "6d82dfdc347b23605135e39fea22a2ce7a7eeadb5eccd5af4aa8314d204be2e7",
+      "size": 657
+    },
+    {
+      "path": "HDSD-V4.2.47.md",
+      "sha256": "7d77af9b471caf16785f1c1c01af4752d91f5ea51c870fca2d70bf0ff90370c8",
+      "size": 1969
+    }
+  ]
+}
