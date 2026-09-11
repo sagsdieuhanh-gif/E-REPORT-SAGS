@@ -1,8 +1,537 @@
 {
   "schema": 2,
   "build": "FSAGS-BBBT-DISPLAY-COORDINATES-V1",
-  "updatedAt": "",
-  "updatedBy": "",
-  "note": "AD > CĂN CHỈNH BIỂU MẪU. Configured vx is the strict final left-edge text start.",
-  "pages": {}
+  "updatedAt": "2026-09-11T02:14:50.327Z",
+  "updatedBy": "AD",
+  "note": "Generated from AD > CĂN CHỈNH BIỂU MẪU. Replace this file in GitHub root.",
+  "pages": {
+    "1": {
+      "fields": {
+        "offloadBagStart": {
+          "vx": 0.8275584,
+          "vy": 0.5168091,
+          "vw": 0.0556003,
+          "vh": 0.0131054,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "offloadCargoStart": {
+          "vx": 0.82917,
+          "vy": 0.5321937,
+          "vw": 0.0563935,
+          "vh": 0.0131054,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "offloadBagFinish": {
+          "vx": 0.8992748,
+          "vy": 0.5168091,
+          "vw": 0.0612409,
+          "vh": 0.0131054,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "offloadCargoFinish": {
+          "vx": 0.9000806,
+          "vy": 0.5327635,
+          "vw": 0.0612409,
+          "vh": 0.0131054,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "b1ADL": {
+          "vx": 0.5656728,
+          "vy": 0.7190794,
+          "vw": 0.0435007,
+          "vh": 0.0102475,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "b1CHD": {
+          "vx": 0.5656728,
+          "vy": 0.7327635,
+          "vw": 0.0426949,
+          "vh": 0.0102475,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "b1INF": {
+          "vx": 0.5664786,
+          "vy": 0.7470085,
+          "vw": 0.0419017,
+          "vh": 0.0102475,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "b1TOTAL": {
+          "vx": 0.6132151,
+          "vy": 0.7339031,
+          "vw": 0.0499471,
+          "vh": 0.022792,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "b2ADL": {
+          "vx": 0.7091056,
+          "vy": 0.7196492,
+          "vw": 0.0386785,
+          "vh": 0.0102475,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "b2CHD": {
+          "vx": 0.7091056,
+          "vy": 0.7333333,
+          "vw": 0.0370669,
+          "vh": 0.0102475,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "b2INF": {
+          "vx": 0.7091056,
+          "vy": 0.7470085,
+          "vw": 0.0394843,
+          "vh": 0.0102475,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "b2TOTAL": {
+          "vx": 0.7574537,
+          "vy": 0.7333333,
+          "vw": 0.0491539,
+          "vh": 0.022792,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "b3ADL": {
+          "vx": 0.8525383,
+          "vy": 0.7190794,
+          "vw": 0.0370669,
+          "vh": 0.0102475,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "b3CHD": {
+          "vx": 0.8525383,
+          "vy": 0.7333333,
+          "vw": 0.0346495,
+          "vh": 0.0102475,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "b3INF": {
+          "vx": 0.8517073,
+          "vy": 0.7470085,
+          "vw": 0.0362611,
+          "vh": 0.0102475,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "b3TOTAL": {
+          "vx": 0.8968574,
+          "vy": 0.7350427,
+          "vw": 0.0580177,
+          "vh": 0.022792,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "depDelayMins": {
+          "vx": 0.3384367,
+          "vy": 0.9150997,
+          "vw": 0.0588235,
+          "vh": 0.014245,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "depDelayReason": {
+          "vx": 0.4866917,
+          "vy": 0.9133903,
+          "vw": 0.4721872,
+          "vh": 0.014245,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "depRemarks": {
+          "vx": 0.1450443,
+          "vy": 0.9282051,
+          "vw": 0.813054,
+          "vh": 0.0153757,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "bottomINAD": {
+          "vx": 0.5141015,
+          "vy": 0.8991453,
+          "vw": 0.0531829,
+          "vh": 0.0153757,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "arrDelayMins": {
+          "vx": 0.3400358,
+          "vy": 0.5794872,
+          "vw": 0.0588235,
+          "vh": 0.0159366,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "arrRemarks": {
+          "vx": 0.1490733,
+          "vy": 0.5965812,
+          "vw": 0.3142627,
+          "vh": 0.0102475,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        }
+      }
+    },
+    "4": {
+      "fields": {
+        "bbbtDuty1": {
+          "vx": 0.6844279,
+          "vy": 0.2900819,
+          "vw": 0.2018156,
+          "vh": 0.0130876,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "bbbtDuty2": {
+          "vx": 0.6843649,
+          "vy": 0.3207799,
+          "vw": 0.1975222,
+          "vh": 0.0130876,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "bbbtDuty3": {
+          "vx": 0.6843775,
+          "vy": 0.3521457,
+          "vw": 0.1998137,
+          "vh": 0.0130876,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "bbbtRoute": {
+          "vx": 0.264303,
+          "vy": 0.1948718,
+          "vw": 0.2691378,
+          "vh": 0.0250712,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "bbbtPerson1": {
+          "vx": 0.1788754,
+          "vy": 0.2905983,
+          "vw": 0.3424658,
+          "vh": 0.0131054,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "bbbtPerson2": {
+          "vx": 0.1764706,
+          "vy": 0.3213675,
+          "vw": 0.345689,
+          "vh": 0.0131054,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "bbbtPerson3": {
+          "vx": 0.1772764,
+          "vy": 0.3521368,
+          "vw": 0.3473006,
+          "vh": 0.0131054,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "bbbtReportAt": {
+          "vx": 0.7840451,
+          "vy": 0.202849,
+          "vw": 0.0741338,
+          "vh": 0.0193732,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "bbbtFoundWhileOtherText": {
+          "vx": 0.5414988,
+          "vy": 0.6592504,
+          "vw": 0.3360193,
+          "vh": 0.0136663,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "bbbtDamageOtherText": {
+          "vx": 0.5922643,
+          "vy": 0.5116809,
+          "vw": 0.284448,
+          "vh": 0.0199163,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "bbbtHandlingOtherText": {
+          "vx": 0.3094279,
+          "vy": 0.7903134,
+          "vw": 0.4915391,
+          "vh": 0.011396,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "bbbtComment": {
+          "vx": 0.2691378,
+          "vy": 0.8051282,
+          "vw": 0.6043513,
+          "vh": 0.017094,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        }
+      }
+    },
+    "6": {
+      "fields": {
+        "f421_b1TotalBags": {
+          "vx": 0.5358582,
+          "vy": 0.7230769,
+          "vw": 0.1192587,
+          "vh": 0.0256321,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "f421_b2TotalBags": {
+          "vx": 0.6800841,
+          "vy": 0.7224982,
+          "vw": 0.1192587,
+          "vh": 0.0256321,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "f421_b3TotalBags": {
+          "vx": 0.8186946,
+          "vy": 0.7224982,
+          "vw": 0.1305399,
+          "vh": 0.0256321,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "f421_b3TOTAL": {
+          "vx": 0.8992748,
+          "vy": 0.6723647,
+          "vw": 0.0612409,
+          "vh": 0.0193732,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "f421_arrDelayMins": {
+          "vx": 0.3480812,
+          "vy": 0.5054131,
+          "vw": 0.0571993,
+          "vh": 0.0125267,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "f421_arrRemarks": {
+          "vx": 0.1474617,
+          "vy": 0.5339031,
+          "vw": 0.8001612,
+          "vh": 0.0153668,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "f421_topWCHR": {
+          "vx": 0.2973409,
+          "vy": 0.2210826,
+          "vw": 0.0709106,
+          "vh": 0.0153757,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "f421_topUM": {
+          "vx": 0.4157937,
+          "vy": 0.2222222,
+          "vw": 0.0797744,
+          "vh": 0.0153757,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "f421_topINAD": {
+          "vx": 0.5600322,
+          "vy": 0.2210826,
+          "vw": 0.0612409,
+          "vh": 0.0153757,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "f421_topSTCH": {
+          "vx": 0.6865431,
+          "vy": 0.2210826,
+          "vw": 0.0749396,
+          "vh": 0.0153757,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "f421_topVIP": {
+          "vx": 0.8058018,
+          "vy": 0.2210826,
+          "vw": 0.107159,
+          "vh": 0.0153757,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "f421_othersTop": {
+          "vx": 0.1410153,
+          "vy": 0.237037,
+          "vw": 0.8227236,
+          "vh": 0.0142361,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "f421_othersTop2": {
+          "vx": 0.0741338,
+          "vy": 0.2507123,
+          "vw": 0.8847703,
+          "vh": 0.0153757,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "f421_acType": {
+          "vx": 0.5906527,
+          "vy": 0.1145299,
+          "vw": 0.0507529,
+          "vh": 0.0176638,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "f421_regn": {
+          "vx": 0.7445608,
+          "vy": 0.1150997,
+          "vw": 0.0676873,
+          "vh": 0.0176638,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        }
+      }
+    },
+    "7": {
+      "fields": {
+        "f421_representativeName": {
+          "vx": 0.1595488,
+          "vy": 0.2928775,
+          "vw": 0.2538276,
+          "vh": 0.0153668,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "f421_coordArrName": {
+          "vx": 0.1450317,
+          "vy": 0.7663818,
+          "vw": 0.2852412,
+          "vh": 0.0159188,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "f421_coordDepName": {
+          "vx": 0.6486704,
+          "vy": 0.7663818,
+          "vw": 0.2731668,
+          "vh": 0.0159188,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        }
+      }
+    },
+    "9": {
+      "fields": {
+        "f551_fltBefore": {
+          "vx": 0.2820306,
+          "vy": 0.1350427,
+          "vw": 0.0886382,
+          "vh": 0.0148148,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "f551_fltAfter": {
+          "vx": 0.3843674,
+          "vy": 0.1350427,
+          "vw": 0.089444,
+          "vh": 0.0148148,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        }
+      }
+    },
+    "10": {
+      "fields": {
+        "f551_loadingStaffName": {
+          "vx": 0.6937953,
+          "vy": 0.9190883,
+          "vw": 0.2393231,
+          "vh": 0.0153757,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        },
+        "f551_engineerName": {
+          "vx": 0.1619662,
+          "vy": 0.9190883,
+          "vw": 0.2167607,
+          "vh": 0.0153757,
+          "align": "left",
+          "leftValue": true,
+          "manualInset": 0
+        }
+      }
+    }
+  }
 }
