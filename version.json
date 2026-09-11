@@ -1,10 +1,10 @@
 {
-  "version": "V4.2.43",
-  "displayVersion": "V4.2.43",
-  "label": "V4.2.43",
-  "build": "V4.2.43-FSAGS-PREVIEW-RESIZE",
-  "releasedAt": "2026-09-11T01:26:36Z",
-  "type": "admin-fsags-bbbt-coordinate-preview-resize",
-  "notes": "AD > CĂN CHỈNH BIỂU MẪU opens a dedicated preview with the real page*.png background. Drag display rectangles for vx/vy; resize from right/bottom/corner handles or +/- buttons for vw/vh. Left edge is text start. Save exports fsags-display-coordinates.json for GitHub. No Firebase.",
-  "message": "Có bản cập nhật V4.2.43 · CĂN FSAGS/BBBT CÓ NỀN + CHỈNH RỘNG CAO"
+  "version": "V4.2.44",
+  "displayVersion": "V4.2.44",
+  "label": "V4.2.44",
+  "build": "V4.2.44-FSAGS-TEMP-TEST",
+  "releasedAt": "2026-09-11T01:40:27Z",
+  "type": "admin-fsags-bbbt-coordinate-temp-test",
+  "notes": "AD coordinate editor now supports multi-form temporary save in localStorage, real-background TEST display, width/height resize, and one final fsags-display-coordinates.json export. No Firebase.",
+  "message": "Có bản cập nhật V4.2.44 · LƯU TẠM + TEST HIỂN THỊ + XUẤT 1 FILE"
 }

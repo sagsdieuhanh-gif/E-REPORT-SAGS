@@ -1,0 +1,45 @@
+{
+  "version": "V4.2.44",
+  "base": "V4.2.43",
+  "purpose": "MULTI-FORM TEMP SAVE + LIVE TEST + ONE FINAL GITHUB FILE",
+  "tempStorage": "localStorage:sags.fsags-bbbt-coordinate-draft.v1",
+  "output": "fsags-display-coordinates.json",
+  "checks": {
+    "v2.2.18-runtime-patch.js": "OK",
+    "service-worker.js": "OK",
+    "local_temp": "OK",
+    "multi_form_export": "OK",
+    "test_mode": "OK",
+    "real_background": "OK",
+    "resize": "OK",
+    "no_firebase": "OK",
+    "single_output_file": "OK"
+  },
+  "files": [
+    {
+      "path": "v2.2.18-runtime-patch.js",
+      "sha256": "293136fae789de2f05355ee2b47ff96d9be2523b7392bbec1674f173f710d7de",
+      "size": 29237
+    },
+    {
+      "path": "fsags-display-coordinates.json",
+      "sha256": "eb967028d617c5b2e123ddfda562da672fccc6a548c2068fbd06a6f332126fb9",
+      "size": 243
+    },
+    {
+      "path": "service-worker.js",
+      "sha256": "83d4b9026c5cd3562e546dd47e495f86a7bdca1420b1fc8f9b9896d2ae992797",
+      "size": 17859
+    },
+    {
+      "path": "version.json",
+      "sha256": "8c5fc2637c18369c3d9a6e9f246669de35f041a250a01079e290c273e87550a1",
+      "size": 514
+    },
+    {
+      "path": "HDSD-V4.2.44.md",
+      "sha256": "8c4207a76ee5256eec8c42ea2576608e8384789a3be8099b63d82b09bed0cd68",
+      "size": 1737
+    }
+  ]
+}

@@ -3,6 +3,6 @@
   "build": "FSAGS-BBBT-DISPLAY-COORDINATES-V1",
   "updatedAt": "",
   "updatedBy": "",
-  "note": "AD > CĂN CHỈNH BIỂU MẪU > choose FSAGS/BBBT > drag/resize display rectangle > LƯU & XUẤT FILE. Replace this file in GitHub root.",
+  "note": "AD > CĂN CHỈNH BIỂU MẪU. Temporary drafts stay in localStorage; final export replaces this GitHub file.",
   "pages": {}
 }
