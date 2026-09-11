@@ -1,10 +1,10 @@
 {
-  "version": "V4.2.42",
-  "displayVersion": "V4.2.42",
-  "label": "V4.2.42",
-  "build": "V4.2.42-AD-FSAGS-BBBT-COORD",
-  "releasedAt": "2026-09-11T00:41:35Z",
-  "type": "admin-fsags-bbbt-coordinate-editor",
-  "notes": "Chỉ AD mới có CĂN CHỈNH BIỂU MẪU trong AD Control Center. Bấm mở danh sách FSAGS42.3, FSAGS42.1, FSAGS55.1, FSAGS09, FSAGS208 và BBBT. Căn trực tiếp vùng hiển thị SVG vx/vy; mép trái khung là điểm bắt đầu chữ. LƯU xuất fsags-display-coordinates.json để cập nhật GitHub. Không Firebase, không nút nổi ở màn hình nghiệp vụ.",
-  "message": "Có bản cập nhật V4.2.42 · AD CĂN FSAGS + BBBT"
+  "version": "V4.2.43",
+  "displayVersion": "V4.2.43",
+  "label": "V4.2.43",
+  "build": "V4.2.43-FSAGS-PREVIEW-RESIZE",
+  "releasedAt": "2026-09-11T01:26:36Z",
+  "type": "admin-fsags-bbbt-coordinate-preview-resize",
+  "notes": "AD > CĂN CHỈNH BIỂU MẪU opens a dedicated preview with the real page*.png background. Drag display rectangles for vx/vy; resize from right/bottom/corner handles or +/- buttons for vw/vh. Left edge is text start. Save exports fsags-display-coordinates.json for GitHub. No Firebase.",
+  "message": "Có bản cập nhật V4.2.43 · CĂN FSAGS/BBBT CÓ NỀN + CHỈNH RỘNG CAO"
 }

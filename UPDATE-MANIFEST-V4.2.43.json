@@ -1,0 +1,52 @@
+{
+  "version": "V4.2.43",
+  "base": "V4.2.42",
+  "purpose": "AD FSAGS/BBBT COORDINATE PREVIEW WITH BACKGROUND + WIDTH/HEIGHT RESIZE",
+  "configFile": "fsags-display-coordinates.json",
+  "coordinates": [
+    "vx",
+    "vy",
+    "vw",
+    "vh"
+  ],
+  "checks": {
+    "v2.2.18-runtime-patch.js": "OK",
+    "service-worker.js": "OK",
+    "admin_control_center": "OK",
+    "background_preview": "OK",
+    "form_list": "OK",
+    "move_xy": "OK",
+    "resize_wh": "OK",
+    "resize_handles": "OK",
+    "left_edge_rule": "OK",
+    "export_config": "OK",
+    "no_firebase": "OK"
+  },
+  "files": [
+    {
+      "path": "v2.2.18-runtime-patch.js",
+      "sha256": "a1283b0acce992657bfd7580bdc52650d2ad7e48e6bcc884fb04011ca5e5e699",
+      "size": 22629
+    },
+    {
+      "path": "fsags-display-coordinates.json",
+      "sha256": "a7cc62ad1637dd70060699e8323e1d6501c7dba0cad35fc068b1837991ff219c",
+      "size": 271
+    },
+    {
+      "path": "service-worker.js",
+      "sha256": "52c180b1a9e338b7814b339fe345b44037279fb3da551af740ba674d842c76a4",
+      "size": 17885
+    },
+    {
+      "path": "version.json",
+      "sha256": "f27a0daad0c4d6bcf9a9d313dcef7bdd7f83342a6901fdc5b7b2caa127797dbd",
+      "size": 618
+    },
+    {
+      "path": "HDSD-V4.2.43.md",
+      "sha256": "7fb41c47a2d850575ca59b45a9e99347995ed1314b8e456263afed593f023276",
+      "size": 1019
+    }
+  ]
+}
