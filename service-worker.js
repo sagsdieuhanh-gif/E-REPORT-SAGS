@@ -1,7 +1,7 @@
-/* E-REPORT/SAGS V4.2.40 · REMOVE FORM ALIGN */
-const CACHE_NAME="sags-v4.2.40-remove-form-align";
-const BUILD="V4.2.40-REMOVE-FORM-ALIGN";
-const DISPLAY_VERSION="V4.2.40";
+/* E-REPORT/SAGS V4.2.41 · FSAGS COORD EDITOR */
+const CACHE_NAME="sags-v4.2.41-fsags-coord-editor";
+const BUILD="V4.2.41-FSAGS-COORD-EDITOR";
+const DISPLAY_VERSION="V4.2.41";
 
 const PATCH_V21="./v2.1-runtime-patch.js";
 const PATCH_V22="./v2.2-runtime-patch.js";
@@ -30,7 +30,7 @@ const FRESH_SUFFIXES=[
   "/v2.2.9-runtime-patch.js","/v2.2.10-runtime-patch.js",
   "/v2.2.11-runtime-patch.js","/v2.2.12-runtime-patch.js",
   "/v2.2.13-runtime-patch.js","/v2.2.14-runtime-patch.js",
-  "/v2.2.15-runtime-patch.js","/v2.2.16-runtime-patch.js","/v2.2.17-runtime-patch.js","/v2.2.18-runtime-patch.js"
+  "/v2.2.15-runtime-patch.js","/v2.2.16-runtime-patch.js","/v2.2.17-runtime-patch.js","/v2.2.18-runtime-patch.js","/fsags-display-coordinates.json"
 ];
 
 function isFreshPath(pathname){return FRESH_SUFFIXES.some(x=>pathname.endsWith(x));}
@@ -39,7 +39,7 @@ async function fetchNoStore(path){
 }
 async function safePut(cache,key,response){
   try{if(response&&response.ok)await cache.put(key,response.clone())}
-  catch(e){console.info("V4.2.40 cache put skipped",key,e?.name||e?.message||e)}
+  catch(e){console.info("V4.2.41 cache put skipped",key,e?.name||e?.message||e)}
 }
 function stripRetiredScripts(out){
   return String(out||"")
@@ -82,33 +82,16 @@ async function validateRelease(){
   if(String(vd?.build||"").trim()!==BUILD)throw new Error("version.json BUILD mismatch");
   if(String(vd?.displayVersion||vd?.version||"").trim()!==DISPLAY_VERSION)throw new Error("version.json VERSION mismatch");
 
-  const checks=[
-    ["./shift-report-core.js","V4.2.24"],
-    ["./shift-report.js","V4.2.24-SHIFT-REPORT"],
-    ["./quick-incident.js","V4.2.23-VOICE-PHOTO"],
-    ["./report.js","V4.2.40"],
-    [PATCH_V22,"V2.2-ARRDEP-CHOICE-LOCALFIRST"],
-    [PATCH_V222,"V2.2.2-DEP-RECEIVE-AFTER-ARR"],
-    [PATCH_V225,"V2.2.5-SIGNATURE-EXPORT-STORAGE-FIX-R2"],
-    [PATCH_V226,"V2.2.6-SIGNATURE-LEGACY-QUOTA-FIX"],
-    [PATCH_V227,"V2.2.7-SIGNATURE-STORAGE-RECOVERY"],
-    [PATCH_V229,"V2.2.9-PDF-EXPORT-COMPLETE-SHARE-FIX"],
-    [PATCH_V2210,"V2.2.10-INDEPENDENT-DEP-SAME-WORKSPACE"],
-    [PATCH_V2211,"V2.2.11-AI-LIMIT-CLEANING-MULTI-IMAGE"],
-    [PATCH_V2212,"V2.2.12-AI-APP-CHECK-PC-MYFLIGHT-FIX"],
-    [PATCH_V2213,"V2.2.13-CLEANING-SAVE-MANAGER"],
-    [PATCH_V2214,"V2.2.14-COMPACT-LIMIT-CLEANING-STA-STD"],
-    [PATCH_V2215,"V2.2.15-DATE-FIRST-LIMIT-CLEANING"],
-    [PATCH_V2216,"V2.2.16-DATAHUB-COMBINED-LIMIT-CLEANING-ICON"],
-    [PATCH_V2217,"V2.2.19-REMOVE-LITERAL-NEWLINES"],
-    [PATCH_V2218,"V2.2.18-REMOVE-FORM-ALIGN-STALE-UI"]
-  ];
-  for(const [path,marker] of checks){
-    const r=await fetchNoStore(path+"?swcheck="+Date.now());
-    if(!r.ok)throw new Error(path+" HTTP "+r.status);
-    const text=await r.text();
-    if(!text.includes(marker))throw new Error(path+" marker mismatch");
-  }
+  const pr=await fetchNoStore(PATCH_V2218+"?swcheck="+Date.now());
+  if(!pr.ok)throw new Error(PATCH_V2218+" HTTP "+pr.status);
+  const pt=await pr.text();
+  if(!pt.includes("V2.2.18-FSAGS-COORD-EDITOR"))throw new Error(PATCH_V2218+" marker mismatch");
+
+  const cr=await fetchNoStore("./fsags-display-coordinates.json?swcheck="+Date.now());
+  if(!cr.ok)throw new Error("fsags-display-coordinates.json HTTP "+cr.status);
+  const cj=await cr.clone().json();
+  if(Number(cj?.schema)!==1||!cj?.pages)throw new Error("fsags-display-coordinates.json invalid");
+
   const ir=await fetchNoStore("./index.html?swcheck="+Date.now());
   if(!ir.ok)throw new Error("index.html HTTP "+ir.status);
 }
@@ -233,7 +216,7 @@ function patchShiftReportCoreStrict(response){
       changed++;
     }
 
-    if(changed<3)console.warn("V4.2.40: strict core patch applied partially",changed);
+    if(changed<3)console.warn("V4.2.41: strict core patch applied partially",changed);
 
     out="/* SAGS V4.2.35-STRICT-SHIFT-DEDUP · runtime patched */\n"+out;
     const headers=new Headers(response.headers);

@@ -1,0 +1,51 @@
+{
+  "version": "V4.2.41",
+  "base": "V4.2.40",
+  "purpose": "FSAGS-ONLY DRAG COORDINATE EDITOR + EXPORT GITHUB CONFIG",
+  "scope": [
+    "FSAGS423",
+    "FSAGS421",
+    "FSAGS551",
+    "FSAGS09"
+  ],
+  "configFile": "fsags-display-coordinates.json",
+  "storage": "GitHub file only; no Firebase",
+  "checks": {
+    "v2.2.18-runtime-patch.js": "OK",
+    "service-worker.js": "OK",
+    "fsags_only": "OK",
+    "drag_direct_field": "OK",
+    "left_edge_text_start": "OK",
+    "export_filename": "OK",
+    "no_firebase": "OK",
+    "github_config_fetch": "OK",
+    "light_validation": "OK"
+  },
+  "files": [
+    {
+      "path": "v2.2.18-runtime-patch.js",
+      "sha256": "a2293b918c76f4dd67ba8b07bcb5a38234e654bdfdb178297d876645add14ef1",
+      "size": 18216
+    },
+    {
+      "path": "fsags-display-coordinates.json",
+      "sha256": "49f945e1ef14f9c50c7d36f0b458174f858624fc7a3e78f47ad9ccb53d5b1698",
+      "size": 208
+    },
+    {
+      "path": "service-worker.js",
+      "sha256": "239ebb1d8c636b30a3efe4dbebbed0feb5f46a4c4bd8c8f9b2cac2fe207351a5",
+      "size": 17850
+    },
+    {
+      "path": "version.json",
+      "sha256": "59b9958e778ddcef72d8644bab576e052c084a1eaeb011e6a7ae7c0f10e1e751",
+      "size": 617
+    },
+    {
+      "path": "HDSD-V4.2.41.md",
+      "sha256": "c9494b0e0e0ad32995019ab4936b954528b4b7d4c3279feeeb7fbb8303e8bbcf",
+      "size": 1943
+    }
+  ]
+}

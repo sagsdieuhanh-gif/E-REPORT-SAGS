@@ -1,10 +1,10 @@
 {
-  "version": "V4.2.40",
-  "displayVersion": "V4.2.40",
-  "label": "V4.2.40",
-  "build": "V4.2.40-REMOVE-FORM-ALIGN",
-  "releasedAt": "2026-09-10T08:45:59Z",
-  "type": "rollback-form-alignment",
-  "notes": "Gỡ toàn bộ chức năng CĂN CHỈNH BIỂU MẪU đã thêm từ V4.2.36-V4.2.39: bỏ editor, thư viện biểu mẫu, tìm nhanh, nút CHỈNH NGAY và đồng bộ ui_form_alignment. Khôi phục nền chức năng V4.2.35; thêm cleanup nhỏ để xóa UI cũ nếu trang đang mở còn giữ script cũ.",
-  "message": "Có bản cập nhật V4.2.40 · GỠ TOÀN BỘ CĂN CHỈNH BIỂU MẪU"
+  "version": "V4.2.41",
+  "displayVersion": "V4.2.41",
+  "label": "V4.2.41",
+  "build": "V4.2.41-FSAGS-COORD-EDITOR",
+  "releasedAt": "2026-09-11T00:23:28Z",
+  "type": "fsags-coordinate-editor",
+  "notes": "Căn tọa độ hiển thị chỉ cho FSAGS423/421/551/09. AD kéo trực tiếp ô hiển thị; mép trái ô là điểm bắt đầu chữ. LƯU & XUẤT FILE tạo fsags-display-coordinates.json để thay trên GitHub. Không Firebase, không thư viện biểu mẫu, không tác động FINAL/KẾT SỔ/RNS.",
+  "message": "Có bản cập nhật V4.2.41 · CĂN TỌA ĐỘ HIỂN THỊ FSAGS"
 }
