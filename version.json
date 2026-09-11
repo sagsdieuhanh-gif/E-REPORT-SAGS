@@ -1,10 +1,10 @@
 {
-  "version": "V4.2.51",
-  "displayVersion": "V4.2.51",
-  "label": "V4.2.51",
-  "build": "V4.2.51-LEFT-ONLY-RENDER",
-  "releasedAt": "2026-09-11T11:00:02Z",
-  "type": "left-only-coordinate-render-cleanup",
-  "notes": "Remove all center/right display modes from the FSAGS/BBBT coordinate system. All managed text fields render from the left edge of vx with text-anchor=start, leftValue=true and manualInset=0. Existing schema-2 coordinate files are accepted but their alignment properties are ignored. New exports use schema 3 and contain geometry only (vx/vy/vw/vh). Remove field-specific Refer/signer alignment patches and use one generic render authority after native draw. Preserve signature images, touch/input regions, AD coordinate editor, report functions, Quick Incident removal and performance behavior.",
-  "message": "Có bản cập nhật V4.2.51 · CĂN BIỂU MẪU CHỈ RENDER TRÁI"
+  "version": "V4.2.50",
+  "displayVersion": "V4.2.50",
+  "label": "V4.2.50",
+  "build": "V4.2.50-SIGNATURE-LEFT-ALIGN-SYNC",
+  "releasedAt": "2026-09-11T10:32:31Z",
+  "type": "signature-display-consistency-fix",
+  "notes": "Synchronize printed signer-name display with BBBT left-edge behavior. Fix exact duplicate native SVG + v373 single-line text on 42.1/55.1. Force signer-name fields to left/start with zero inset while leaving signature images and touch regions untouched. Preserve AD coordinate editor, current coordinate JSON, report, Quick Incident removal and performance fixes.",
+  "message": "Có bản cập nhật V4.2.50 · ĐỒNG BỘ CHỮ KÝ/BBBT CĂN TRÁI"
 }
