@@ -1,7 +1,7 @@
-/* E-REPORT/SAGS V4.2.47 · AD FIELD AUTHORITY + PERFORMANCE */
-const CACHE_NAME="sags-v4.2.47-ad-authority-performance";
-const BUILD="V4.2.47-AD-AUTHORITY-PERFORMANCE";
-const DISPLAY_VERSION="V4.2.47";
+/* E-REPORT/SAGS V4.2.48 · RESTORE AD COORD + REMOVE QUICK INCIDENT */
+const CACHE_NAME="sags-v4.2.48-restore-ad-coord-remove-quick";
+const BUILD="V4.2.48-RESTORE-AD-COORD-REMOVE-QUICK";
+const DISPLAY_VERSION="V4.2.48";
 
 const PATCH_V21="./v2.1-runtime-patch.js";
 const PATCH_V22="./v2.2-runtime-patch.js";
@@ -39,13 +39,15 @@ async function fetchNoStore(path){
 }
 async function safePut(cache,key,response){
   try{if(response&&response.ok)await cache.put(key,response.clone())}
-  catch(e){console.info("V4.2.47 cache put skipped",key,e?.name||e?.message||e)}
+  catch(e){console.info("V4.2.48 cache put skipped",key,e?.name||e?.message||e)}
 }
 function stripRetiredScripts(out){
   return String(out||"")
     .replace(/<script\b[^>]*\bv2\.2\.1-runtime-patch\.js(?:\?[^"'>\s]*)?[^>]*>\s*<\/script>\s*/gi,"")
     .replace(/<script\b[^>]*\bv2\.2\.3-runtime-patch\.js(?:\?[^"'>\s]*)?[^>]*>\s*<\/script>\s*/gi,"")
-    .replace(/<script\b[^>]*\bv2\.2\.4-runtime-patch\.js(?:\?[^"'>\s]*)?[^>]*>\s*<\/script>\s*/gi,"");
+    .replace(/<script\b[^>]*\bv2\.2\.4-runtime-patch\.js(?:\?[^"'>\s]*)?[^>]*>\s*<\/script>\s*/gi,"")
+    .replace(/<script\b[^>]*\bquick-incident\.js(?:\?[^"'>\s]*)?[^>]*>\s*<\/script>\s*/gi,"")
+    .replace(/<link\b[^>]*\bquick-incident\.css(?:\?[^"'>\s]*)?[^>]*>\s*/gi,"");
 }
 function injectScript(out,file){
   if(out.includes(file))return out;
@@ -85,7 +87,7 @@ async function validateRelease(){
   const pr=await fetchNoStore(PATCH_V2218+"?swcheck="+Date.now());
   if(!pr.ok)throw new Error(PATCH_V2218+" HTTP "+pr.status);
   const pt=await pr.text();
-  if(!pt.includes("V2.2.18-AD-FIELD-AUTHORITY-PERFORMANCE"))throw new Error(PATCH_V2218+" marker mismatch");
+  if(!pt.includes("V2.2.18-RESTORE-AD-COORD-REMOVE-QUICK"))throw new Error(PATCH_V2218+" marker mismatch");
 
   const cr=await fetchNoStore("./fsags-display-coordinates.json?swcheck="+Date.now());
   if(!cr.ok)throw new Error("fsags-display-coordinates.json HTTP "+cr.status);
@@ -97,11 +99,39 @@ async function validateRelease(){
 }
 
 
+
+function patchAppRemoveQuickIncident(response){
+  if(!response||!response.ok)return response;
+  return response.text().then(text=>{
+    let out=String(text||"");
+    const re=/const quick=document\.createElement\('button'\);quick\.type='button';quick\.className='fwcBtn';quick\.textContent='GHI NHẬN NHANH · NÓI \/ ẢNH';quick\.onclick=\(\)=>root\.sagsQuickOpen\?\.\(\{[\s\S]*?\}\);body\.querySelector\('\.fwcWorkspaceHead'\)\?\.appendChild\(quick\);/;
+    out=out.replace(re,"");
+    const headers=new Headers(response.headers);
+    headers.delete("content-length");headers.delete("content-encoding");
+    headers.set("Content-Type","application/javascript; charset=utf-8");
+    headers.set("Cache-Control","no-cache");
+    return new Response(out,{status:response.status,statusText:response.statusText,headers});
+  });
+}
+
 function patchShiftReportTimeFirst(response){
   if(!response||!response.ok)return response;
   return response.text().then(text=>{
     let out=String(text||"");
     let changed=false;
+
+    // V4.2.48: retire QUICK INCIDENT completely from shift report.
+    const incidentBtn='<button type="button" id="srIncident">THÊM / CẬP NHẬT SỰ VIỆC · NÓI / ẢNH</button>';
+    if(out.includes(incidentBtn)){out=out.replace(incidentBtn,"");changed=true}
+    const incidentHandler="$('srIncident').onclick=()=>root.sagsQuickOpen?.();";
+    if(out.includes(incidentHandler)){out=out.replace(incidentHandler,"");changed=true}
+
+    // Do not read incident_index / incident records anymore.
+    const incidentRead=/status\('Đang lấy sự việc và việc cần bàn giao…'\);const incidentDays=dates\(sourceFrom,endDay\),indexes=await batch\(incidentDays,async d=>\(await db\('incident_index\/'\+d\)\.once\('value'\)\)\.val\(\)\|\|\{\}\);const pointers=\[\.\.\.new Map\(indexes\.flatMap\(v=>Object\.entries\(v\)\)\.map\(\(\[id,x\]\)=>\[id,x\]\)\)\.values\(\)\];const incidentRecords=await batch\(pointers,async x=>\(await db\(x\.path\)\.once\('value'\)\)\.val\(\)\);/;
+    if(incidentRead.test(out)){
+      out=out.replace(incidentRead,"status('Đang tổng hợp dữ liệu ca…');const incidentRecords=[];");
+      changed=true;
+    }
 
     /*
       TIME-FIRST strategy:
@@ -216,7 +246,7 @@ function patchShiftReportCoreStrict(response){
       changed++;
     }
 
-    if(changed<3)console.warn("V4.2.47: strict core patch applied partially",changed);
+    if(changed<3)console.warn("V4.2.48: strict core patch applied partially",changed);
 
     out="/* SAGS V4.2.35-STRICT-SHIFT-DEDUP · runtime patched */\n"+out;
     const headers=new Headers(response.headers);
@@ -246,6 +276,19 @@ self.addEventListener("fetch",event=>{
   if(url.origin!==self.location.origin)return;
   const nav=event.request.mode==="navigate";
   const isVersion=url.pathname.endsWith("/version.json");
+  const quickJs=url.pathname.endsWith("/quick-incident.js");
+  const quickCss=url.pathname.endsWith("/quick-incident.css");
+
+  if(quickJs||quickCss){
+    event.respondWith(Promise.resolve(new Response("",{
+      status:200,
+      headers:{
+        "Content-Type":quickJs?"application/javascript; charset=utf-8":"text/css; charset=utf-8",
+        "Cache-Control":"no-store"
+      }
+    })));
+    return;
+  }
 
   if(isVersion){
     event.respondWith((async()=>{
@@ -288,6 +331,9 @@ self.addEventListener("fetch",event=>{
       const c=await caches.open(CACHE_NAME);
       try{
         let r=await fetch(event.request,{cache:"no-store"});
+        if(url.pathname.endsWith("/app.js")){
+          r=await patchAppRemoveQuickIncident(r);
+        }
         if(url.pathname.endsWith("/shift-report.js")){
           r=await patchShiftReportTimeFirst(r);
         }

@@ -1,0 +1,42 @@
+{
+  "version": "V4.2.48",
+  "base": "V4.2.47",
+  "purpose": "RESTORE CURRENT AD COORDINATE ENTRY + RETIRE QUICK INCIDENT",
+  "checks": {
+    "v2.2.18-runtime-patch.js": "OK",
+    "service-worker.js": "OK",
+    "ad_current_slot": "OK",
+    "no_old_admin_container": "OK",
+    "slot_only_observer": "OK",
+    "quick_runtime_disabled": "OK",
+    "my_flight_quick_removed": "OK",
+    "quick_assets_stripped": "OK",
+    "shift_report_incident_read_removed": "OK",
+    "ad_authority_preserved": "OK",
+    "performance_preserved": "OK",
+    "coordinate_file_not_overwritten": "OK",
+    "no_firebase_alignment": "OK"
+  },
+  "files": [
+    {
+      "path": "v2.2.18-runtime-patch.js",
+      "sha256": "c4359d5b489b21a6773e27abaa059f363531614a817bb32a98b7f6109fd6017f",
+      "size": 47226
+    },
+    {
+      "path": "service-worker.js",
+      "sha256": "eba246b7d3ccd41825f750f0d1b41927c51407f01e2b8d32ab1b6ab7e116e9a7",
+      "size": 20578
+    },
+    {
+      "path": "version.json",
+      "sha256": "7c36cf95bf327fa785a7681848818faa2b5617027bff5be5e1c7ffd5219df848",
+      "size": 739
+    },
+    {
+      "path": "HDSD-V4.2.48.md",
+      "sha256": "93506abe906b6581aa86ac01bcd7328ef6ff9b534f1f0e4f96feb4e329afca31",
+      "size": 1580
+    }
+  ]
+}

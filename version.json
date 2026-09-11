@@ -1,10 +1,10 @@
 {
-  "version": "V4.2.47",
-  "displayVersion": "V4.2.47",
-  "label": "V4.2.47",
-  "build": "V4.2.47-AD-AUTHORITY-PERFORMANCE",
-  "releasedAt": "2026-09-11T02:39:33Z",
-  "type": "ad-field-authority-performance-fix",
-  "notes": "All configured FSAGS/BBBT fields obey AD vx/vy/vw/vh/alignment for manual input, N/A, quick input, autofill, flight data, TEST and PDF. Removes global DOM MutationObserver/repeated applyConfig draw loop that slowed MY FLIGHT and PDF. Coordinate model is event-driven; draw is wrapped once and PDF uses native single-draw batch.",
-  "message": "Có bản cập nhật V4.2.47 · FIELD AD LÀ CHUẨN + SỬA CHẬM MY FLIGHT/PDF"
+  "version": "V4.2.48",
+  "displayVersion": "V4.2.48",
+  "label": "V4.2.48",
+  "build": "V4.2.48-RESTORE-AD-COORD-REMOVE-QUICK",
+  "releasedAt": "2026-09-11T02:51:02Z",
+  "type": "restore-ad-coordinate-remove-quick-incident",
+  "notes": "Restores CĂN CHỈNH BIỂU MẪU into current AD v377AdminFormToolsRow/v377LayoutTuneSlot using a tiny slot-only observer. Retires GHI NHẬN NHANH · NÓI/ẢNH: strips quick-incident JS/CSS from served index, returns empty legacy assets, removes MY FLIGHT button from served app.js, removes shift-report quick action and incident_index reads. Keeps V4.2.47 AD field authority/performance.",
+  "message": "Có bản cập nhật V4.2.48 · KHÔI PHỤC CĂN CHỈNH AD + BỎ GHI NHẬN NHANH"
 }

@@ -1,4 +1,4 @@
-/* E-REPORT/SAGS V4.2.47 · V2.2.18-AD-FIELD-AUTHORITY-PERFORMANCE
+/* E-REPORT/SAGS V4.2.48 · V2.2.18-RESTORE-AD-COORD-REMOVE-QUICK
    ONLY AD -> AD Control Center -> CĂN CHỈNH BIỂU MẪU.
    Multi-form workflow:
    - drag vx/vy
@@ -12,7 +12,7 @@
    No Firebase. */
 (function(root){
   "use strict";
-  const BUILD="V2.2.18-AD-FIELD-AUTHORITY-PERFORMANCE";
+  const BUILD="V2.2.18-RESTORE-AD-COORD-REMOVE-QUICK";
   if(root.__SAGS_AD_FSAGS_BBBT_COORD===BUILD)return;
   root.__SAGS_AD_FSAGS_BBBT_COORD=BUILD;
 
@@ -443,14 +443,52 @@
     }
   }
 
+  let adminSlotObserver=null;
   function ensureAdminCard(){
-    const center=$("v181AdminCenter");let card=$("sagsCoord44AdminCard");
-    if(!isAdmin()){card?.remove();return}
-    if(!center||card)return;
-    const grids=center.querySelectorAll(".v181AdminGrid"),grid=grids[grids.length-1];if(!grid)return;
-    card=document.createElement("button");card.id="sagsCoord44AdminCard";card.type="button";card.className="v181AdminCard";
-    card.innerHTML='<span class="v181AdminIcon">↔</span><span class="v181AdminCardText"><b>CĂN CHỈNH BIỂU MẪU</b><small>FSAGS / BBBT · CTRL chọn nhiều + căn trái/giữa/phải</small></span><em>MỞ</em>';
-    card.onclick=openCenter;grid.appendChild(card);
+    const row=$("v377AdminFormToolsRow");
+    const slot=$("v377LayoutTuneSlot");
+    if(!row||!slot)return false;
+
+    // Old generic layout tool is retired. This slot is now reserved for
+    // the FSAGS/BBBT coordinate editor requested by AD.
+    const oldTune=$("v368LayoutTuneBtn");
+    if(oldTune)oldTune.remove();
+
+    let card=$("sagsCoord44AdminCard");
+    if(!card){
+      card=document.createElement("button");
+      card.id="sagsCoord44AdminCard";
+      card.type="button";
+      card.textContent="↔ CĂN CHỈNH BIỂU MẪU";
+      card.title="FSAGS / BBBT · CTRL chọn nhiều · vị trí + rộng/cao · căn trái/giữa/phải · TEST";
+      card.style.background="#7c3aed";
+      card.style.color="#fff";
+      card.style.fontWeight="900";
+      card.onclick=openCenter;
+    }
+
+    // Always keep the button in the CURRENT AD layout slot.
+    if(card.parentElement!==slot)slot.replaceChildren(card);
+    else{
+      [...slot.children].forEach(x=>{if(x!==card)x.remove()});
+    }
+
+    card.style.display=isAdmin()?"block":"none";
+
+    // Observe only this tiny AD slot, never the whole document.
+    // If legacy UI tries to recreate its old tune button, restore ours.
+    if(!adminSlotObserver){
+      adminSlotObserver=new MutationObserver(()=>{
+        const s=$("v377LayoutTuneSlot");
+        if(!s)return;
+        const c=$("sagsCoord44AdminCard");
+        if(!c||c.parentElement!==s||s.children.length!==1){
+          queueMicrotask(ensureAdminCard);
+        }
+      });
+      adminSlotObserver.observe(slot,{childList:true});
+    }
+    return true;
   }
 
   function updateTempSummary(){
@@ -810,11 +848,82 @@
     }catch(_){return false}
   }
 
+  function stripQuickIncidentUi(){
+    try{
+      document.querySelectorAll("button").forEach(b=>{
+        const t=S(b.textContent).toUpperCase();
+        if(t.includes("GHI NHẬN NHANH")||t.includes("NÓI / ẢNH"))b.remove();
+      });
+      $("qiModal")?.remove();
+      $("srIncident")?.remove();
+      document.querySelectorAll('link[href*="quick-incident.css"],script[src*="quick-incident.js"]').forEach(x=>x.remove());
+    }catch(_){}
+  }
+
+  function installQuickIncidentRemoval(){
+    // Hard-disable the old public entry point.
+    const disabled=function(){return false};
+    disabled.__sagsQuickIncidentRemoved=true;
+    root.sagsQuickOpen=disabled;
+
+    // MY FLIGHT can recreate its workspace HTML when another flight is opened.
+    const fw=root.flightWorkspaceOpenFlight;
+    if(typeof fw==="function"&&!fw.__sagsQuickIncidentRemoved){
+      const wrapped=function(){
+        const r=fw.apply(this,arguments);
+        stripQuickIncidentUi();
+        requestAnimationFrame(stripQuickIncidentUi);
+        return r;
+      };
+      wrapped.__sagsQuickIncidentRemoved=true;
+      wrapped.__sagsOriginal=fw;
+      root.flightWorkspaceOpenFlight=wrapped;
+    }
+
+    // Shift report creates its modal lazily. Remove the retired action if opened.
+    const sr=root.sagsShiftOpen;
+    if(typeof sr==="function"&&!sr.__sagsQuickIncidentRemoved){
+      const wrapped=function(){
+        const r=sr.apply(this,arguments);
+        stripQuickIncidentUi();
+        requestAnimationFrame(stripQuickIncidentUi);
+        return r;
+      };
+      wrapped.__sagsQuickIncidentRemoved=true;
+      wrapped.__sagsOriginal=sr;
+      root.sagsShiftOpen=wrapped;
+    }
+
+    stripQuickIncidentUi();
+    return true;
+  }
+
+  function installRoleUiHook(){
+    const old=root.applyRoleUI;
+    if(typeof old!=="function")return false;
+    if(old.__sagsCoord48Wrapped)return true;
+    const wrapped=function(){
+      const r=old.apply(this,arguments);
+      setTimeout(()=>{
+        ensureAdminCard();
+        installQuickIncidentRemoval();
+      },0);
+      return r;
+    };
+    wrapped.__sagsCoord48Wrapped=true;
+    wrapped.__sagsOriginal=old;
+    root.applyRoleUI=wrapped;
+    try{applyRoleUI=wrapped}catch(_){}
+    return true;
+  }
+
   function scan(){
     // Lightweight only: create/update the AD entry point.
     // DO NOT applyConfig()/draw() from generic DOM changes.
     ensureUi();
     ensureAdminCard();
+    installQuickIncidentRemoval();
+    installRoleUiHook();
   }
 
   // Role/session events are enough to maintain the AD menu entry.
@@ -854,8 +963,11 @@
     const a=installLegacyLayoutGuard();
     const b=installDrawAuthority();
     const p=installPdfAuthority();
+    const q=installQuickIncidentRemoval();
+    const u=installRoleUiHook();
+    const ad=ensureAdminCard();
     const c=applyConfig(temp||config,{redraw:false,enforce:false});
-    if((a&&b&&p&&c)||tries>=20)clearInterval(bootTimer);
+    if((a&&b&&p&&q&&c&&ad)||tries>=20)clearInterval(bootTimer);
   },250);
 
   refreshConfig(true).then(()=>{
@@ -863,5 +975,8 @@
     installLegacyLayoutGuard();
     installDrawAuthority();
     installPdfAuthority();
+    installQuickIncidentRemoval();
+    installRoleUiHook();
+    ensureAdminCard();
   });
 })(typeof window==="undefined"?globalThis:window);
