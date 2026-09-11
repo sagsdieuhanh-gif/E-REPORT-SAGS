@@ -1,8 +1,10 @@
-/* E-REPORT/SAGS V4.2.45 · V2.2.18-AD-FSAGS-BBBT-COORD-STRICT-LEFT
+/* E-REPORT/SAGS V4.2.46 · V2.2.18-AD-FSAGS-BBBT-MULTISELECT-ALIGN
    ONLY AD -> AD Control Center -> CĂN CHỈNH BIỂU MẪU.
    Multi-form workflow:
    - drag vx/vy
    - resize vw/vh
+   - align left / center / right
+   - CTRL/CMD multi-select and edit together
    - LƯU TẠM to localStorage (this AD device only)
    - TEST HIỂN THỊ on real page*.png background
    - continue other FSAGS/BBBT
@@ -10,7 +12,7 @@
    No Firebase. */
 (function(root){
   "use strict";
-  const BUILD="V2.2.18-AD-FSAGS-BBBT-COORD-STRICT-LEFT";
+  const BUILD="V2.2.18-AD-FSAGS-BBBT-MULTISELECT-ALIGN";
   if(root.__SAGS_AD_FSAGS_BBBT_COORD===BUILD)return;
   root.__SAGS_AD_FSAGS_BBBT_COORD=BUILD;
 
@@ -31,7 +33,7 @@
   };
 
   let config={schema:2,build:"FSAGS-BBBT-DISPLAY-COORDINATES-V1",pages:{}};
-  let temp=null,draft=null,editing=false,testMode=false,activeGroup="",activePage=0,selected=null,drag=null;
+  let temp=null,draft=null,editing=false,testMode=false,activeGroup="",activePage=0,selected=null,selectedRects=[],drag=null;
   let baseByField=new WeakMap(),fetchAt=0,fetchJob=null,drawRaf=0;
 
   function session(){
@@ -101,7 +103,8 @@
       if(Number.isFinite(Number(c.vy)))f.vy=Number(c.vy);
       if(Number.isFinite(Number(c.vw)))f.vw=Number(c.vw);
       if(Number.isFinite(Number(c.vh)))f.vh=Number(c.vh);
-      f.align="left";f.leftValue=true;f.manualInset=0;
+      const al=["left","center","right"].includes(S(c.align).toLowerCase())?S(c.align).toLowerCase():"left";
+      f.align=al;f.leftValue=(al==="left");f.manualInset=0;
     }
     redraw();
     // If SVG already exists, correct it immediately as well.
@@ -158,14 +161,15 @@
     catch(_){return String(v).replace(/["\\]/g,"\\$&")}
   }
 
-  /* STRICT LEFT-EDGE RENDER GUARD
-     Native draw() may center a field, and legacy v368 layout runs after draw().
+  /* CONFIGURED DISPLAY-BOX RENDER GUARD
+     Native draw() and legacy v368 layout may apply their own alignment/translate.
      For every field explicitly present in our coordinate config, the configured
-     display box is authoritative:
-       - X start = vx exactly
-       - text-anchor = start
+     display box + align are authoritative:
+       - left   => x = vx,          text-anchor=start
+       - center => x = vx + vw/2,   text-anchor=middle
+       - right  => x = vx + vw,     text-anchor=end
        - legacy translate/transform is removed
-       - foreignObject starts at vx and uses exact vw/vh
+       - foreignObject uses exact vx/vy/vw/vh and CSS text-align
      This does NOT change touch/input x/y/w/h. */
   function enforceConfiguredRender(source=coordSource()){
     try{
@@ -192,8 +196,9 @@
           if(Number.isFinite(vy))f.vy=vy;
           if(Number.isFinite(vw))f.vw=vw;
           if(Number.isFinite(vh))f.vh=vh;
-          f.align="left";
-          f.leftValue=true;
+          const al=["left","center","right"].includes(S(c.align).toLowerCase())?S(c.align).toLowerCase():"left";
+          f.align=al;
+          f.leftValue=(al==="left");
           f.manualInset=0;
           f.__sagsCoordOverride=true;
 
@@ -201,6 +206,8 @@
           const y=Math.max(0,vy)*1755;
           const w=Math.max(0.001,vw)*1241;
           const h=Math.max(0.001,vh)*1755;
+          const textX=al==="center"?(x+w/2):(al==="right"?(x+w):x);
+          const anchor=al==="center"?"middle":(al==="right"?"end":"start");
 
           const selector='[data-field-key="'+cssEsc(key)+'"]';
           const nodes=[...svg.querySelectorAll(selector)].filter(el=>
@@ -213,11 +220,11 @@
             const tag=el.tagName.toLowerCase();
 
             if(tag==="text"){
-              // Exact left edge. No +1px, no center, no old dx/dy translate.
-              el.setAttribute("x",String(x));
-              el.setAttribute("text-anchor","start");
-              el.classList.remove("center");
-              el.classList.add("left");
+              // Exact configured alignment inside the configured display box.
+              el.setAttribute("x",String(textX));
+              el.setAttribute("text-anchor",anchor);
+              el.classList.remove("left","center","right");
+              el.classList.add(al);
               el.removeAttribute("transform");
               el.style.removeProperty("transform");
             }else if(tag==="foreignobject"){
@@ -230,7 +237,7 @@
               el.style.removeProperty("transform");
               const d=el.querySelector("div");
               if(d){
-                d.style.textAlign="left";
+                d.style.textAlign=al;
                 d.style.paddingLeft="0";
                 d.style.paddingRight="0";
                 d.style.marginLeft="0";
@@ -251,7 +258,7 @@
     if(legacyWrapped)return true;
     const old=root.v368ApplySavedLayout;
     if(typeof old!=="function")return false;
-    if(old.__sagsStrictLeftWrapped){legacyWrapped=true;return true}
+    if(old.__sagsCoordAlignWrapped){legacyWrapped=true;return true}
 
     const wrapped=function(){
       const r=old.apply(this,arguments);
@@ -260,7 +267,7 @@
       enforceConfiguredRender(coordSource());
       return r;
     };
-    wrapped.__sagsStrictLeftWrapped=true;
+    wrapped.__sagsCoordAlignWrapped=true;
     wrapped.__sagsOriginal=old;
     root.v368ApplySavedLayout=wrapped;
     legacyWrapped=true;
@@ -307,7 +314,7 @@
 #s44tabs{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:0 auto 8px;max-width:920px}#s44tabs button{min-height:40px;border:1px solid #aabdc9;border-radius:999px;background:#fff;color:#17364a;padding:7px 14px;font-weight:900}#s44tabs button.active{background:#0b6398;color:#fff;border-color:#0b6398}
 #s44sheet{position:relative;width:min(100%,1241px);aspect-ratio:1241/1755;margin:0 auto;background:#fff;overflow:hidden;box-shadow:0 5px 20px #0004}
 #s44bg,#s44values,#s44test,#s44layer{position:absolute;inset:0;width:100%;height:100%;display:block}#s44bg{z-index:1;object-fit:fill}#s44values{z-index:2;pointer-events:none}#s44test{z-index:3;pointer-events:none}#s44layer{z-index:4;pointer-events:none}
-.s44rect{position:absolute;pointer-events:auto;border:2px dashed #e08a00;background:rgba(255,193,7,.08);box-sizing:border-box;cursor:move;touch-action:none;user-select:none;min-width:8px;min-height:8px}.s44rect::before{content:"";position:absolute;left:-2px;top:-2px;bottom:-2px;width:3px;background:#d82432}.s44rect.s44chosen{border:3px solid #c72130;background:rgba(199,33,48,.08)}
+.s44rect{position:absolute;pointer-events:auto;border:2px dashed #e08a00;background:rgba(255,193,7,.08);box-sizing:border-box;cursor:move;touch-action:none;user-select:none;min-width:8px;min-height:8px}.s44rect::before{content:"";position:absolute;left:-2px;top:-2px;bottom:-2px;width:3px;background:#d82432}.s44rect.s44chosen{border:3px solid #c72130;background:rgba(199,33,48,.08)}.s44rect.s44multi{box-shadow:0 0 0 3px rgba(11,99,152,.34) inset}
 .s44label{display:none;position:absolute;left:3px;top:3px;max-width:calc(100% - 6px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:#17364a;color:#fff;padding:1px 3px;border-radius:3px;font:700 9px Arial;pointer-events:none}.s44rect.s44chosen .s44label{display:block}
 .s44handle{position:absolute;z-index:5;background:#0b6398;border:2px solid #fff;box-shadow:0 1px 4px #0005;pointer-events:auto;touch-action:none}.s44handle.e{right:-7px;top:50%;width:14px;height:28px;transform:translateY(-50%);border-radius:7px;cursor:ew-resize}.s44handle.s{left:50%;bottom:-7px;width:28px;height:14px;transform:translateX(-50%);border-radius:7px;cursor:ns-resize}.s44handle.se{right:-8px;bottom:-8px;width:18px;height:18px;border-radius:50%;cursor:nwse-resize}
 #sagsCoord44Preview.s44testing #s44layer{display:none!important}#sagsCoord44Preview.s44testing #s44test{display:block!important}#sagsCoord44Preview:not(.s44testing) #s44test{display:none!important}
@@ -316,9 +323,10 @@
 .s44panelHead{display:flex;justify-content:space-between;gap:10px;align-items:center}.s44panelHead b{font-size:16px}.s44panelHead small{display:block;color:#5a7081}
 #s44selected{margin:8px 0;padding:8px 10px;background:#eef5fa;border-radius:9px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .s44sizeTools{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:7px 0}.s44sizeBox{display:grid;grid-template-columns:auto 1fr auto;gap:6px;align-items:center}.s44sizeBox span{text-align:center;font-weight:900}.s44sizeBox button{min-height:40px;border:1px solid #adc1cf;border-radius:9px;background:#f7fafc;font-weight:900}
+.s44alignTools{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:7px 0}.s44alignTools button{min-height:42px;border:1px solid #adc1cf;border-radius:10px;background:#f7fafc;color:#17364a;font-weight:900}.s44alignTools button.active{background:#0b6398;color:#fff;border-color:#0b6398}
 .s44actions{display:grid;grid-template-columns:1fr 1fr 1fr 1.25fr;gap:7px}.s44actions button{min-height:44px;border:1px solid #adc1cf;border-radius:10px;background:#f7fafc;color:#17364a;font-weight:900}.s44actions #s44tempSave{background:#0b6398;color:#fff}.s44actions #s44testBtn{background:#e9f5ec;color:#176438}
 #s44status{min-height:18px;margin:7px 0 0;font-weight:700}
-@media(max-width:640px){.s44list{grid-template-columns:1fr}.s44actions{grid-template-columns:1fr 1fr}.s44sizeTools{grid-template-columns:1fr}.s44temp{align-items:flex-start;flex-direction:column}#sagsCoord44Panel{max-height:52dvh}}
+@media(max-width:640px){.s44list{grid-template-columns:1fr}.s44actions{grid-template-columns:1fr 1fr}.s44sizeTools{grid-template-columns:1fr}.s44alignTools{grid-template-columns:1fr 1fr 1fr}.s44temp{align-items:flex-start;flex-direction:column}#sagsCoord44Panel{max-height:56dvh}}
 `;
     document.head.appendChild(st);
   }
@@ -360,14 +368,16 @@
 
     if(!$("sagsCoord44Panel")){
       const p=document.createElement("section");p.id="sagsCoord44Panel";p.hidden=true;
-      p.innerHTML=`<div class="s44panelHead"><div><b id="s44title">CĂN TỌA ĐỘ</b><small>Kéo khung = vị trí · tay nắm = rộng/cao</small></div></div>
+      p.innerHTML=`<div class="s44panelHead"><div><b id="s44title">CĂN TỌA ĐỘ</b><small>Kéo khung = vị trí · CTRL + bấm = chọn nhiều · tay nắm = rộng/cao</small></div></div>
       <div id="s44selected">Chạm một khung màu cam để chỉnh.</div>
+      <div class="s44alignTools"><button id="s44alignLeft" type="button">⇤ CĂN TRÁI</button><button id="s44alignCenter" type="button">↔ CĂN GIỮA</button><button id="s44alignRight" type="button">⇥ CĂN PHẢI</button></div>
       <div class="s44sizeTools"><div class="s44sizeBox"><button id="s44wMinus" type="button">−</button><span id="s44wInfo">RỘNG</span><button id="s44wPlus" type="button">+</button></div><div class="s44sizeBox"><button id="s44hMinus" type="button">−</button><span id="s44hInfo">CAO</span><button id="s44hPlus" type="button">+</button></div></div>
-      <div class="s44actions"><button id="s44cancel" type="button">HỦY</button><button id="s44reset" type="button">VỀ GỐC Ô</button><button id="s44testBtn" type="button">TEST HIỂN THỊ</button><button id="s44tempSave" type="button">LƯU TẠM</button></div>
+      <div class="s44actions"><button id="s44cancel" type="button">HỦY</button><button id="s44reset" type="button">VỀ GỐC VÙNG</button><button id="s44testBtn" type="button">TEST HIỂN THỊ</button><button id="s44tempSave" type="button">LƯU TẠM</button></div>
       <p id="s44status" role="status"></p>`;
       document.body.appendChild(p);
       $("s44cancel").onclick=cancelEditor;$("s44reset").onclick=resetSelected;$("s44testBtn").onclick=toggleTest;$("s44tempSave").onclick=saveTempAndBack;
       $("s44wMinus").onclick=()=>resizeSelected(-3,0);$("s44wPlus").onclick=()=>resizeSelected(3,0);$("s44hMinus").onclick=()=>resizeSelected(0,-3);$("s44hPlus").onclick=()=>resizeSelected(0,3);
+      $("s44alignLeft").onclick=()=>applyAlignSelected("left");$("s44alignCenter").onclick=()=>applyAlignSelected("center");$("s44alignRight").onclick=()=>applyAlignSelected("right");
     }
   }
 
@@ -377,7 +387,7 @@
     if(!center||card)return;
     const grids=center.querySelectorAll(".v181AdminGrid"),grid=grids[grids.length-1];if(!grid)return;
     card=document.createElement("button");card.id="sagsCoord44AdminCard";card.type="button";card.className="v181AdminCard";
-    card.innerHTML='<span class="v181AdminIcon">↔</span><span class="v181AdminCardText"><b>CĂN CHỈNH BIỂU MẪU</b><small>FSAGS / BBBT · vị trí + rộng/cao + test</small></span><em>MỞ</em>';
+    card.innerHTML='<span class="v181AdminIcon">↔</span><span class="v181AdminCardText"><b>CĂN CHỈNH BIỂU MẪU</b><small>FSAGS / BBBT · CTRL chọn nhiều + căn trái/giữa/phải</small></span><em>MỞ</em>';
     card.onclick=openCenter;grid.appendChild(card);
   }
 
@@ -434,56 +444,221 @@
     $("s44bg").src=getBackgroundSrc(activePage);cloneRenderedSvg(activePage);$("s44test").innerHTML="";
     const layer=$("s44layer");layer.innerHTML="";
     for(const f of fieldCandidates(activeGroup,activePage)){rememberBase(f);layer.appendChild(rectFromField(f))}
-    $("s44previewTitle").textContent=`${FORMS[activeGroup]?.label||activeGroup} · TRANG ${activePage}`;renderTabs();selectRect(null);
+    $("s44previewTitle").textContent=`${FORMS[activeGroup]?.label||activeGroup} · TRANG ${activePage}`;renderTabs();clearSelection();
     $("s44status").textContent=layer.children.length?`Có ${layer.children.length} vùng hiển thị.`:"Không tìm thấy vùng hiển thị của trang này.";
   }
 
-  function selectRect(rect){$("s44layer")?.querySelectorAll(".s44chosen").forEach(x=>x.classList.remove("s44chosen"));selected=rect||null;if(rect)rect.classList.add("s44chosen");updateSelectedInfo()}
+  function selectedList(){return selectedRects.filter(r=>r&&r.isConnected&&r._field)}
+  function alignOfField(f){
+    const c=draft?.pages?.[String(f.page)]?.fields?.[S(f.key)];
+    const a=S(c?.align||f?.align||"left").toLowerCase();
+    return ["left","center","right"].includes(a)?a:"left";
+  }
+  function paintSelection(){
+    const set=new Set(selectedList());
+    $("s44layer")?.querySelectorAll(".s44rect").forEach(r=>{
+      r.classList.toggle("s44chosen",set.has(r));
+      r.classList.toggle("s44multi",set.size>1&&set.has(r));
+    });
+  }
+  function clearSelection(){
+    selectedRects=[];
+    selected=null;
+    paintSelection();
+    updateSelectedInfo();
+  }
+  function selectRect(rect,additive=false){
+    if(!rect){
+      clearSelection();
+      return;
+    }
+    selectedRects=selectedList();
+    const i=selectedRects.indexOf(rect);
+
+    if(additive){
+      if(i>=0){
+        selectedRects.splice(i,1);
+        if(selected===rect)selected=selectedRects[selectedRects.length-1]||null;
+      }else{
+        selectedRects.push(rect);
+        selected=rect;
+      }
+    }else{
+      if(i>=0&&selectedRects.length>1){
+        // Clicking an already selected region without CTRL keeps the group,
+        // making it possible to drag/resize the whole group immediately.
+        selected=rect;
+      }else{
+        selectedRects=[rect];
+        selected=rect;
+      }
+    }
+    paintSelection();
+    updateSelectedInfo();
+  }
+  function updateAlignButtons(){
+    const rs=selectedList(),btns={
+      left:$("s44alignLeft"),center:$("s44alignCenter"),right:$("s44alignRight")
+    };
+    Object.values(btns).forEach(b=>b?.classList.remove("active"));
+    if(!rs.length)return;
+    const aligns=[...new Set(rs.map(r=>alignOfField(r._field)))];
+    if(aligns.length===1)btns[aligns[0]]?.classList.add("active");
+  }
   function updateSelectedInfo(){
-    const info=$("s44selected"),wi=$("s44wInfo"),hi=$("s44hInfo");
-    if(!selected?._field){if(info)info.textContent="Chạm một khung màu cam để chỉnh.";if(wi)wi.textContent="RỘNG";if(hi)hi.textContent="CAO";return}
-    const f=selected._field,rr=selected.getBoundingClientRect();
-    info.textContent=`${S(f.label||f.key)} · ${S(f.key)} · Trang ${f.page}`;wi.textContent=`RỘNG ${Math.round(rr.width)} px`;hi.textContent=`CAO ${Math.round(rr.height)} px`;
+    const info=$("s44selected"),wi=$("s44wInfo"),hi=$("s44hInfo"),rs=selectedList();
+    if(!rs.length){
+      if(info)info.textContent="Chạm một khung màu cam để chỉnh. Giữ CTRL để chọn nhiều.";
+      if(wi)wi.textContent="RỘNG";
+      if(hi)hi.textContent="CAO";
+      updateAlignButtons();
+      return;
+    }
+    if(rs.length===1){
+      const r=rs[0],f=r._field,rr=r.getBoundingClientRect();
+      info.textContent=`${S(f.label||f.key)} · ${S(f.key)} · Trang ${f.page}`;
+      wi.textContent=`RỘNG ${Math.round(rr.width)} px`;
+      hi.textContent=`CAO ${Math.round(rr.height)} px`;
+    }else{
+      const aligns=[...new Set(rs.map(r=>alignOfField(r._field)))];
+      info.textContent=`ĐÃ CHỌN ${rs.length} VÙNG · ${aligns.length===1?("CĂN "+(aligns[0]==="left"?"TRÁI":aligns[0]==="center"?"GIỮA":"PHẢI")):"KIỂU CĂN KHÁC NHAU"}`;
+      wi.textContent=`RỘNG · ${rs.length} VÙNG`;
+      hi.textContent=`CAO · ${rs.length} VÙNG`;
+    }
+    updateAlignButtons();
   }
   function draftMap(f){draft.pages||={};const p=String(f.page);draft.pages[p]||={fields:{}};draft.pages[p].fields||={};return draft.pages[p].fields}
-  function commitRect(rect){
-    if(!rect?._field)return;
-    const f=rect._field,lr=$("s44layer").getBoundingClientRect(),rr=rect.getBoundingClientRect();if(!lr.width||!lr.height)return;
+  function configFromRect(rect,alignOverride=null){
+    if(!rect?._field)return null;
+    const f=rect._field,lr=$("s44layer").getBoundingClientRect(),rr=rect.getBoundingClientRect();
+    if(!lr.width||!lr.height)return null;
     const vx=Math.max(0,Math.min(1,(rr.left-lr.left)/lr.width)),vy=Math.max(0,Math.min(1,(rr.top-lr.top)/lr.height));
     const vw=Math.max(.004,Math.min(1-vx,rr.width/lr.width)),vh=Math.max(.004,Math.min(1-vy,rr.height/lr.height));
-    const c={vx:+vx.toFixed(7),vy:+vy.toFixed(7),vw:+vw.toFixed(7),vh:+vh.toFixed(7),align:"left",leftValue:true,manualInset:0};
-    draftMap(f)[S(f.key)]=c;f.vx=c.vx;f.vy=c.vy;f.vw=c.vw;f.vh=c.vh;f.align="left";f.leftValue=true;f.manualInset=0;redraw();updateSelectedInfo();
+    const old=draftMap(f)[S(f.key)]||{};
+    const al=["left","center","right"].includes(S(alignOverride).toLowerCase())
+      ? S(alignOverride).toLowerCase()
+      : (["left","center","right"].includes(S(old.align).toLowerCase())?S(old.align).toLowerCase():alignOfField(f));
+    return {vx:+vx.toFixed(7),vy:+vy.toFixed(7),vw:+vw.toFixed(7),vh:+vh.toFixed(7),align:al,leftValue:(al==="left"),manualInset:0};
+  }
+  function commitRect(rect,alignOverride=null,doRedraw=true){
+    const c=configFromRect(rect,alignOverride);
+    if(!c)return false;
+    const f=rect._field;
+    draftMap(f)[S(f.key)]=c;
+    f.vx=c.vx;f.vy=c.vy;f.vw=c.vw;f.vh=c.vh;f.align=c.align;f.leftValue=c.leftValue;f.manualInset=0;
+    if(doRedraw)redraw();
+    return true;
+  }
+  function commitRects(rects,alignOverride=null){
+    let changed=false;
+    for(const r of rects||[])changed=commitRect(r,alignOverride,false)||changed;
+    if(changed)redraw();
+    updateSelectedInfo();
+    return changed;
+  }
+  function applyAlignSelected(al){
+    if(testMode){$("s44status").textContent="Đang TEST. Bấm QUAY LẠI CHỈNH trước.";return}
+    const rs=selectedList();
+    if(!rs.length){$("s44status").textContent="Chọn ít nhất một vùng trước.";return}
+    commitRects(rs,al);
+    $("s44status").textContent=`Đã áp dụng CĂN ${al==="left"?"TRÁI":al==="center"?"GIỮA":"PHẢI"} cho ${rs.length} vùng.`;
   }
 
   function startPointer(e,rect){
-    if(!editing||testMode)return;e.preventDefault();e.stopImmediatePropagation();selectRect(rect);
-    const lr=$("s44layer").getBoundingClientRect(),rr=rect.getBoundingClientRect(),handle=e.target.closest?.(".s44handle");
-    drag={rect,mode:handle?.dataset?.resize||"move",startX:e.clientX,startY:e.clientY,left:rr.left-lr.left,top:rr.top-lr.top,width:rr.width,height:rr.height,layerW:lr.width,layerH:lr.height};
+    if(!editing||testMode)return;
+    e.preventDefault();e.stopImmediatePropagation();
+
+    const handle=e.target.closest?.(".s44handle");
+    const multiKey=!!(e.ctrlKey||e.metaKey);
+
+    // CTRL/CMD + click toggles selection only. Release CTRL then drag one
+    // selected region to move/resize the whole selected group.
+    if(multiKey&&!handle){
+      selectRect(rect,true);
+      drag=null;
+      return;
+    }
+
+    const current=selectedList();
+    if(!current.includes(rect))selectRect(rect,false);
+    else{selected=rect;paintSelection();updateSelectedInfo()}
+
+    const lr=$("s44layer").getBoundingClientRect();
+    const mode=handle?.dataset?.resize||"move";
+    const group=(selectedList().length>1?selectedList():[rect]).map(r=>{
+      const rr=r.getBoundingClientRect();
+      return {rect:r,left:rr.left-lr.left,top:rr.top-lr.top,width:rr.width,height:rr.height};
+    });
+    drag={rect,mode,startX:e.clientX,startY:e.clientY,layerW:lr.width,layerH:lr.height,group};
   }
   function movePointer(e){
-    if(!drag)return;e.preventDefault();e.stopImmediatePropagation();
-    const d=drag,dx=e.clientX-d.startX,dy=e.clientY-d.startY;let left=d.left,top=d.top,width=d.width,height=d.height;
-    if(d.mode==="move"){left=Math.max(0,Math.min(d.layerW-width,d.left+dx));top=Math.max(0,Math.min(d.layerH-height,d.top+dy))}
-    else{if(d.mode.includes("e"))width=Math.max(12,Math.min(d.layerW-left,d.width+dx));if(d.mode.includes("s"))height=Math.max(10,Math.min(d.layerH-top,d.height+dy))}
-    d.rect.style.left=(left/d.layerW*100)+"%";d.rect.style.top=(top/d.layerH*100)+"%";d.rect.style.width=(width/d.layerW*100)+"%";d.rect.style.height=(height/d.layerH*100)+"%";updateSelectedInfo();
+    if(!drag)return;
+    e.preventDefault();e.stopImmediatePropagation();
+    const d=drag;
+    let dx=e.clientX-d.startX,dy=e.clientY-d.startY;
+
+    if(d.mode==="move"){
+      // Clamp once for the whole group so relative spacing is preserved.
+      const minLeft=Math.min(...d.group.map(g=>g.left));
+      const minTop=Math.min(...d.group.map(g=>g.top));
+      const maxRight=Math.max(...d.group.map(g=>g.left+g.width));
+      const maxBottom=Math.max(...d.group.map(g=>g.top+g.height));
+      dx=Math.max(-minLeft,Math.min(d.layerW-maxRight,dx));
+      dy=Math.max(-minTop,Math.min(d.layerH-maxBottom,dy));
+
+      d.group.forEach(g=>{
+        g.rect.style.left=((g.left+dx)/d.layerW*100)+"%";
+        g.rect.style.top=((g.top+dy)/d.layerH*100)+"%";
+      });
+    }else{
+      d.group.forEach(g=>{
+        let width=g.width,height=g.height;
+        if(d.mode.includes("e"))width=Math.max(12,Math.min(d.layerW-g.left,g.width+dx));
+        if(d.mode.includes("s"))height=Math.max(10,Math.min(d.layerH-g.top,g.height+dy));
+        g.rect.style.width=(width/d.layerW*100)+"%";
+        g.rect.style.height=(height/d.layerH*100)+"%";
+      });
+    }
+    updateSelectedInfo();
   }
-  function endPointer(){if(!drag)return;commitRect(drag.rect);drag=null}
-  document.addEventListener("pointerdown",e=>{const rect=e.target.closest?.(".s44rect");if(rect&&$("s44layer")?.contains(rect))startPointer(e,rect)},true);
-  document.addEventListener("pointermove",movePointer,true);document.addEventListener("pointerup",endPointer,true);document.addEventListener("pointercancel",endPointer,true);
+  function endPointer(){
+    if(!drag)return;
+    const rs=drag.group.map(g=>g.rect);
+    commitRects(rs);
+    drag=null;
+  }
+  document.addEventListener("pointerdown",e=>{
+    const rect=e.target.closest?.(".s44rect");
+    if(rect&&$("s44layer")?.contains(rect))startPointer(e,rect)
+  },true);
+  document.addEventListener("pointermove",movePointer,true);
+  document.addEventListener("pointerup",endPointer,true);
+  document.addEventListener("pointercancel",endPointer,true);
 
   function resizeSelected(dw,dh){
     if(testMode){$("s44status").textContent="Đang TEST. Bấm QUAY LẠI CHỈNH trước.";return}
-    if(!selected?._field){$("s44status").textContent="Chọn một khung trước.";return}
-    const lr=$("s44layer").getBoundingClientRect(),rr=selected.getBoundingClientRect();
-    selected.style.width=(Math.max(12,Math.min(lr.right-rr.left,rr.width+dw))/lr.width*100)+"%";
-    selected.style.height=(Math.max(10,Math.min(lr.bottom-rr.top,rr.height+dh))/lr.height*100)+"%";commitRect(selected);
+    const rs=selectedList();
+    if(!rs.length){$("s44status").textContent="Chọn ít nhất một vùng trước.";return}
+    const lr=$("s44layer").getBoundingClientRect();
+    for(const r of rs){
+      const rr=r.getBoundingClientRect();
+      r.style.width=(Math.max(12,Math.min(lr.right-rr.left,rr.width+dw))/lr.width*100)+"%";
+      r.style.height=(Math.max(10,Math.min(lr.bottom-rr.top,rr.height+dh))/lr.height*100)+"%";
+    }
+    commitRects(rs);
+    $("s44status").textContent=`Đã chỉnh kích thước ${rs.length} vùng.`;
   }
   function resetSelected(){
-    if(!selected?._field){$("s44status").textContent="Chọn một khung trước.";return}
-    const f=selected._field,b=rememberBase(f);delete draftMap(f)[S(f.key)];
-    f.vx=b.vx;f.vy=b.vy;f.vw=b.vw;f.vh=b.vh;f.align=b.align;f.leftValue=b.leftValue;f.manualInset=b.manualInset;
-    selected.style.left=(b.vx*100)+"%";selected.style.top=(b.vy*100)+"%";selected.style.width=(b.vw*100)+"%";selected.style.height=(b.vh*100)+"%";redraw();updateSelectedInfo();
-    $("s44status").textContent="Đã về vị trí/kích thước gốc.";
+    const rs=selectedList();
+    if(!rs.length){$("s44status").textContent="Chọn ít nhất một vùng trước.";return}
+    for(const r of rs){
+      const f=r._field,b=rememberBase(f);
+      delete draftMap(f)[S(f.key)];
+      f.vx=b.vx;f.vy=b.vy;f.vw=b.vw;f.vh=b.vh;f.align=b.align;f.leftValue=b.leftValue;f.manualInset=b.manualInset;
+      r.style.left=(b.vx*100)+"%";r.style.top=(b.vy*100)+"%";r.style.width=(b.vw*100)+"%";r.style.height=(b.vh*100)+"%";
+    }
+    redraw();updateSelectedInfo();
+    $("s44status").textContent=`Đã đưa ${rs.length} vùng về cấu hình gốc.`;
   }
 
   function testValue(f){
@@ -505,7 +680,8 @@
       const clip=document.createElementNS(NS,"clipPath");clip.id="s44c"+activePage+"_"+i;
       const cr=document.createElementNS(NS,"rect");cr.setAttribute("x",x);cr.setAttribute("y",y);cr.setAttribute("width",w);cr.setAttribute("height",h);clip.appendChild(cr);
       let defs=svg.querySelector("defs");if(!defs){defs=document.createElementNS(NS,"defs");svg.appendChild(defs)}defs.appendChild(clip);
-      const t=document.createElementNS(NS,"text");t.setAttribute("x",x);t.setAttribute("y",y+h/2);t.setAttribute("dominant-baseline","middle");t.setAttribute("text-anchor","start");t.setAttribute("font-family","Times New Roman");t.setAttribute("font-weight","700");t.setAttribute("font-size",Math.max(10,Number(f.font)||16));t.setAttribute("fill","#003B8E");t.setAttribute("clip-path",`url(#${clip.id})`);t.textContent=testValue(f);svg.appendChild(t);
+      const al=alignOfField(f),tx=al==="center"?(x+w/2):(al==="right"?(x+w):x),ta=al==="center"?"middle":(al==="right"?"end":"start");
+      const t=document.createElementNS(NS,"text");t.setAttribute("x",tx);t.setAttribute("y",y+h/2);t.setAttribute("dominant-baseline","middle");t.setAttribute("text-anchor",ta);t.setAttribute("font-family","Times New Roman");t.setAttribute("font-weight","700");t.setAttribute("font-size",Math.max(10,Number(f.font)||16));t.setAttribute("fill","#003B8E");t.setAttribute("clip-path",`url(#${clip.id})`);t.textContent=testValue(f);svg.appendChild(t);
       i++;
     }
   }
@@ -519,11 +695,11 @@
   }
 
   function openEditor(group){
-    if(!isAdmin()||!FORMS[group])return;closeCenter();activeGroup=group;activePage=FORMS[group].pages[0];editing=true;testMode=false;selected=null;drag=null;
+    if(!isAdmin()||!FORMS[group])return;closeCenter();activeGroup=group;activePage=FORMS[group].pages[0];editing=true;testMode=false;selected=null;selectedRects=[];drag=null;
     draft=workingBase();draft.schema=2;draft.pages||={};applyConfig(draft);
     $("sagsCoord44Preview").hidden=false;$("sagsCoord44Panel").hidden=false;$("sagsCoord44Preview").classList.remove("s44testing");$("s44testBtn").textContent="TEST HIỂN THỊ";$("s44title").textContent="CĂN TỌA ĐỘ · "+FORMS[group].label;buildPage(activePage);
   }
-  function closeEditorKeepDraft(){editing=false;testMode=false;selected=null;drag=null;$("s44layer").innerHTML="";$("s44test").innerHTML="";$("sagsCoord44Preview").classList.remove("s44testing");$("sagsCoord44Preview").hidden=true;$("sagsCoord44Panel").hidden=true;applyConfig(temp||config)}
+  function closeEditorKeepDraft(){editing=false;testMode=false;selected=null;selectedRects=[];drag=null;$("s44layer").innerHTML="";$("s44test").innerHTML="";$("sagsCoord44Preview").classList.remove("s44testing");$("sagsCoord44Preview").hidden=true;$("sagsCoord44Panel").hidden=true;applyConfig(temp||config)}
   function cancelEditor(){closeEditorKeepDraft()}
   function saveTempAndBack(){
     if(!editing)return;
@@ -562,7 +738,7 @@
   root.addEventListener("focus",()=>refreshConfig(false));document.addEventListener("visibilitychange",()=>{if(!document.hidden)refreshConfig(false)});
 
   root.sagsOpenCoordinateCenter=()=>{if(isAdmin())openCenter()};
-  root.sagsCoordinateInfo=()=>({build:BUILD,admin:isAdmin(),editing,testMode,group:activeGroup,page:activePage,tempStats:tempStats(),activeFields:activeGroup?fieldCandidates(activeGroup,activePage).length:0,configUpdatedAt:S(config.updatedAt)});
+  root.sagsCoordinateInfo=()=>({build:BUILD,admin:isAdmin(),editing,testMode,group:activeGroup,page:activePage,selectedCount:selectedList().length,tempStats:tempStats(),activeFields:activeGroup?fieldCandidates(activeGroup,activePage).length:0,configUpdatedAt:S(config.updatedAt)});
 
   ensureUi();loadTemp();updateTempSummary();
   installLegacyLayoutGuard();

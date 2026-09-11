@@ -1,10 +1,10 @@
 {
-  "version": "V4.2.45",
-  "displayVersion": "V4.2.45",
-  "label": "V4.2.45",
-  "build": "V4.2.45-LEFT-EDGE-RENDER-FIX",
-  "releasedAt": "2026-09-11T01:55:57Z",
-  "type": "fsags-bbbt-strict-left-edge-render-fix",
-  "notes": "Fix renderer so every FSAGS/BBBT field present in coordinate config starts exactly at vx (left edge). Runs after native draw and legacy v368ApplySavedLayout, removes old translation for configured fields, forces text-anchor=start and 0 inset. TEST mode also uses exact vx with no +1 px. Temp save/resize/multi-form export preserved.",
-  "message": "Có bản cập nhật V4.2.45 · SỬA HIỂN THỊ ĐÚNG MÉP TRÁI KHUNG"
+  "version": "V4.2.46",
+  "displayVersion": "V4.2.46",
+  "label": "V4.2.46",
+  "build": "V4.2.46-MULTISELECT-ALIGN",
+  "releasedAt": "2026-09-11T02:14:15Z",
+  "type": "fsags-bbbt-multiselect-display-alignment",
+  "notes": "AD form alignment adds left/center/right display alignment and CTRL/CMD multi-select. Multiple selected regions can be moved together, resized together, aligned together, or reset together. Existing temporary/export coordinate workflow remains unchanged.",
+  "message": "Có bản cập nhật V4.2.46 · CTRL CHỌN NHIỀU + CĂN TRÁI/GIỮA/PHẢI"
 }

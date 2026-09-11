@@ -1,0 +1,47 @@
+{
+  "version": "V4.2.46",
+  "base": "V4.2.45",
+  "purpose": "ADD LEFT/CENTER/RIGHT ALIGNMENT AND CTRL/CMD MULTISELECT FOR AD FORM ALIGNMENT",
+  "behavior": {
+    "multiSelect": "CTRL/CMD + click toggles regions",
+    "groupMove": "drag any selected region after releasing CTRL",
+    "groupResize": "handle or +/- applies to selected group",
+    "groupAlign": "left/center/right applies to selected group",
+    "preserveCoordinateFile": true
+  },
+  "checks": {
+    "v2.2.18-runtime-patch.js": "OK",
+    "service-worker.js": "OK",
+    "align_left_center_right": "OK",
+    "ctrl_multiselect": "OK",
+    "group_move": "OK",
+    "group_resize": "OK",
+    "group_reset": "OK",
+    "test_respects_align": "OK",
+    "temp_export_preserved": "OK",
+    "no_firebase": "OK",
+    "coordinate_file_not_overwritten": "OK"
+  },
+  "files": [
+    {
+      "path": "v2.2.18-runtime-patch.js",
+      "sha256": "7874a7aafed848c46d299a3d259b84929552fc126219f2f6e5753bc9f8d67f35",
+      "size": 40327
+    },
+    {
+      "path": "service-worker.js",
+      "sha256": "ee9c126f810a4a370e079a71d2a4d84b10442e866eccbe5288b0b32d99bc66ec",
+      "size": 17880
+    },
+    {
+      "path": "version.json",
+      "sha256": "64f6614520011ca7fa16b5000603a0c88b68073a91492ca1b44935ce1a9d9f4d",
+      "size": 580
+    },
+    {
+      "path": "HDSD-V4.2.46.md",
+      "sha256": "209bb03e6e09054db523a0b320d10321c5ca8ad625240d0d479d6b42b4b98e26",
+      "size": 2094
+    }
+  ]
+}
