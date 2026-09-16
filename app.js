@@ -11486,4 +11486,81 @@ root.SAGS_QR_MATRIX=function(text){const QRCode=req('QRCode'),Level=req('QRError
   root.v2237DeleteCleaningDay=deleteCleaningDay;
 })(typeof window!=='undefined'?window:globalThis);
 
+/* ===== V4.4.0 · WEB DATA METER + FORM MANAGER + REALTIME LITE ===== */
+(function(root){
+  'use strict';
+  if(root.__SAGS_WEB_DATA_METER_V4256)return;root.__SAGS_WEB_DATA_METER_V4256=true;
+  const BUILD='V4.4.0-FORM-MANAGER-REALTIME-LITE';
+  const STORE='sags_web_data_meter_v440';
+  const S=v=>String(v??'').trim();
+  const enc=new TextEncoder();
+  const now=()=>Date.now();
+  const blankTotals=()=>({staticRx:0,rtdbRx:0,rtdbTx:0,otherRx:0,otherTx:0});
+  const cloneTotals=t=>({staticRx:Number(t?.staticRx)||0,rtdbRx:Number(t?.rtdbRx)||0,rtdbTx:Number(t?.rtdbTx)||0,otherRx:Number(t?.otherRx)||0,otherTx:Number(t?.otherTx)||0});
+  const sumRx=t=>(Number(t?.staticRx)||0)+(Number(t?.rtdbRx)||0)+(Number(t?.otherRx)||0);
+  const sumTx=t=>(Number(t?.rtdbTx)||0)+(Number(t?.otherTx)||0);
+  const diff=(a,b)=>({staticRx:Math.max(0,(a.staticRx||0)-(b.staticRx||0)),rtdbRx:Math.max(0,(a.rtdbRx||0)-(b.rtdbRx||0)),rtdbTx:Math.max(0,(a.rtdbTx||0)-(b.rtdbTx||0)),otherRx:Math.max(0,(a.otherRx||0)-(b.otherRx||0)),otherTx:Math.max(0,(a.otherTx||0)-(b.otherTx||0))});
+  const bytes=v=>{try{return enc.encode(typeof v==='string'?v:JSON.stringify(v??null)).byteLength}catch(_){return 0}};
+  const fmt=n=>{n=Math.max(0,Number(n)||0);if(n<1024)return `${Math.round(n)} B`;if(n<1024*1024)return `${(n/1024).toFixed(n<10240?1:0)} KB`;return `${(n/1024/1024).toFixed(n<10*1024*1024?2:1)} MB`};
+  let state={build:BUILD,startedAtMs:now(),totals:blankTotals(),flightId:'',flightLabel:'',flightBaseline:blankTotals(),manualLabel:'',lastSavedAtMs:0};
+  try{const x=JSON.parse(sessionStorage.getItem(STORE)||'null');if(x&&x.build===BUILD){state={...state,...x,totals:cloneTotals(x.totals),flightBaseline:cloneTotals(x.flightBaseline)}}}catch(_){}
+  let saveTimer=0;
+  function save(){clearTimeout(saveTimer);saveTimer=setTimeout(()=>{state.lastSavedAtMs=now();try{sessionStorage.setItem(STORE,JSON.stringify(state))}catch(_){}},180)}
+  function add(kind,n){n=Math.max(0,Number(n)||0);if(!n)return;state.totals[kind]=(Number(state.totals[kind])||0)+n;save();renderButton();if(root.__sagsDataMeterOpen)renderPanel()}
+  function tripTotals(){return diff(state.totals,state.flightBaseline)}
+  function currentMeta(){try{return typeof root.currentFlightSessionMeta==='function'?root.currentFlightSessionMeta():null}catch(_){return null}}
+  function metaIdentity(){const m=currentMeta();if(!m)return {id:'',label:''};const id=S(m.id||m.rosterAssignmentId||m.flightId||m.name);const label=S(m.name||m.flightName||m.flightId||m.rosterAssignmentId||id);return {id,label}}
+  function resetTrip(label=''){state.flightBaseline=cloneTotals(state.totals);state.manualLabel=S(label)||state.flightLabel||'Chuyến hiện tại';save();renderButton();renderPanel()}
+  function detectFlight(){const x=metaIdentity();if(!x.id)return;if(!state.flightId){state.flightId=x.id;state.flightLabel=x.label;state.flightBaseline=cloneTotals(state.totals);save();return}if(x.id!==state.flightId){state.flightId=x.id;state.flightLabel=x.label;state.manualLabel='';state.flightBaseline=cloneTotals(state.totals);save();renderButton();renderPanel()}else if(x.label&&x.label!==state.flightLabel){state.flightLabel=x.label;save()}}
 
+  // V4.2.55: static RX is reported by the Service Worker ONLY when it actually performs a network fetch.
+  // Do not use ResourceTiming for SW-cached assets: some mobile browsers report body transferSize
+  // for Cache API responses, which made a simple refresh appear to consume ~15-20 MB.
+  let swMeterSeen=false;
+  try{navigator.serviceWorker?.addEventListener?.('message',ev=>{const d=ev?.data||{};if(d.type!=='SAGS_NET_RX')return;const n=Math.max(0,Number(d.bytes)||0);if(!n)return;swMeterSeen=true;add('staticRx',n)})}catch(_){}
+  // Navigation happens before this script can receive SW messages. Count it only when there is no
+  // active controller; once the SW controls the page, refresh navigation is cache-first.
+  try{if(!navigator.serviceWorker?.controller){const nav=performance.getEntriesByType('navigation')?.[0],n=Number(nav?.transferSize)||0;if(n>0)add('staticRx',n)}}catch(_){}
+
+  // RTDB payload instrumentation. It measures application payload bytes, not TCP/TLS/Firebase protocol overhead.
+  function pathKey(path){const p=S(path).replace(/^\/+|\/+$/g,'');if(!p)return '(root)';const a=p.split('/');return a.slice(0,Math.min(a.length,3)).join('/')}
+  state.rtdbPaths=state.rtdbPaths&&typeof state.rtdbPaths==='object'?state.rtdbPaths:{};
+  function addPath(dir,path,n){n=Math.max(0,Number(n)||0);if(!n)return;const k=dir+':'+pathKey(path);state.rtdbPaths[k]=(Number(state.rtdbPaths[k])||0)+n;save()}
+  function countSnapshot(snap,path=''){try{const n=bytes(snap?.val?.());add('rtdbRx',n);addPath('RX',path,n)}catch(_){}return snap}
+  function instrumentRef(ref,path=''){
+    if(!ref||typeof ref!=='object'||ref.__sagsDataMeterRef)return ref;
+    try{Object.defineProperty(ref,'__sagsDataMeterRef',{value:1,configurable:true})}catch(_){try{ref.__sagsDataMeterRef=1}catch(__){}}
+    const wrapWrite=(name,extract)=>{try{if(typeof ref[name]!=='function')return;const base=ref[name].bind(ref);ref[name]=function(...args){try{const v=extract?extract(args):args[0];if(v!==undefined){const n=bytes(v);add('rtdbTx',n);addPath('TX',path,n)}}catch(_){}return base(...args)}}catch(_){}};
+    wrapWrite('set',a=>a[0]);wrapWrite('update',a=>a[0]);wrapWrite('push',a=>a.length?a[0]:undefined);
+    try{if(typeof ref.remove==='function'){const base=ref.remove.bind(ref);ref.remove=function(...a){add('rtdbTx',16);addPath('TX',path,16);return base(...a)}}}catch(_){}
+    try{if(typeof ref.transaction==='function'){const base=ref.transaction.bind(ref);ref.transaction=function(fn,...rest){let counted=false;const wf=typeof fn==='function'?function(cur){const out=fn(cur);if(!counted&&out!==undefined){counted=true;const n=bytes(out);add('rtdbTx',n);addPath('TX',path,n)}return out}:fn;return base(wf,...rest)}}}catch(_){}
+    try{if(typeof ref.once==='function'){const base=ref.once.bind(ref);ref.once=function(event,ok,fail,ctx){if(typeof ok==='function'){const wok=function(s){countSnapshot(s,path);return ok.call(this,s)};return base(event,wok,fail,ctx)}const out=base(event,ok,fail,ctx);return out&&typeof out.then==='function'?out.then(s=>countSnapshot(s,path)):out}}}catch(_){}
+    try{if(typeof ref.on==='function'){const baseOn=ref.on.bind(ref),baseOff=typeof ref.off==='function'?ref.off.bind(ref):null,map=new Map();ref.on=function(event,cb,...rest){if(typeof cb!=='function')return baseOn(event,cb,...rest);const w=function(s){countSnapshot(s,path);return cb.apply(this,arguments)};map.set(cb,w);return baseOn(event,w,...rest)};if(baseOff)ref.off=function(event,cb,...rest){const w=map.get(cb)||cb;const out=baseOff(event,w,...rest);if(cb)map.delete(cb);return out}}}catch(_){}
+    for(const q of ['child','orderByChild','orderByKey','orderByValue','startAt','endAt','equalTo','limitToFirst','limitToLast'])try{if(typeof ref[q]==='function'){const base=ref[q].bind(ref);ref[q]=function(...a){return instrumentRef(base(...a),path)}}}catch(_){}
+    return ref;
+  }
+  let wrappedBase=null;
+  function ensureRtdbWrap(){const base=root.sagsV470Ref;if(typeof base!=='function'||base.__sagsWebDataMeterFn)return;if(base===wrappedBase)return;const fn=function(path=''){return instrumentRef(base.apply(this,arguments),S(path))};try{Object.assign(fn,base)}catch(_){};fn.__sagsWebDataMeterFn=1;fn.__sagsWebDataMeterBase=base;wrappedBase=fn;root.sagsV470Ref=fn;try{sagsV470Ref=fn}catch(_){} }
+
+  function effectiveNetwork(){const c=navigator.connection||navigator.mozConnection||navigator.webkitConnection;if(!c)return 'Không xác định';const p=[];if(c.effectiveType)p.push(String(c.effectiveType).toUpperCase());if(Number(c.downlink)>0)p.push(`${Number(c.downlink).toFixed(1)} Mbps`);if(c.saveData)p.push('Data Saver ON');return p.join(' · ')||'Không xác định'}
+  function ensureUi(){
+    if(document.getElementById('sagsWebDataMeterBtn'))return;
+    const st=document.createElement('style');st.id='sagsWebDataMeterStyle';st.textContent=`
+#sagsWebDataMeterBtn{position:fixed;right:12px;bottom:72px;z-index:2147482500;border:0;border-radius:18px;background:#123d73;color:#fff;padding:9px 12px;font:900 12px/1.1 system-ui;box-shadow:0 8px 22px #0004;min-width:82px}
+#sagsWebDataMeterBtn.warn{background:#9a6700}#sagsWebDataMeterBtn.danger{background:#b42318}
+#sagsWebDataMeterModal{position:fixed;inset:0;z-index:2147483000;background:#07182dcc;display:none;align-items:center;justify-content:center;padding:12px}
+#sagsWebDataMeterModal.open{display:flex}.sdm-card{width:min(520px,96vw);max-height:92dvh;overflow:auto;background:#fff;color:#153a66;border-radius:22px;padding:18px;box-shadow:0 24px 70px #0008;font:600 14px/1.35 system-ui}.sdm-head{display:flex;gap:10px;align-items:center;justify-content:space-between}.sdm-title{font-size:20px;font-weight:950}.sdm-close{border:0;background:#edf3fb;color:#123d73;border-radius:12px;padding:8px 11px;font-weight:900}.sdm-flight{margin:10px 0;padding:10px 12px;background:#eef5ff;border-radius:13px;font-weight:900}.sdm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.sdm-kpi{background:#f5f8fc;border:1px solid #dbe6f2;border-radius:14px;padding:11px}.sdm-kpi b{display:block;font-size:18px;margin-top:3px}.sdm-sub{margin-top:10px;padding:10px 12px;border-radius:12px;background:#f8fafc;font-size:12px}.sdm-actions{display:flex;gap:8px;margin-top:12px}.sdm-actions button{flex:1;border:0;border-radius:13px;padding:10px;font-weight:900}.sdm-reset{background:#123d73;color:#fff}.sdm-session{background:#eaf0f7;color:#123d73}.sdm-note{font-size:11px;color:#52677d;margin-top:11px}.sdm-break{display:grid;grid-template-columns:1fr auto;gap:5px 12px;margin-top:9px;font-size:12px}.sdm-break span:nth-child(even){font-weight:900}
+@media(max-width:520px){#sagsWebDataMeterBtn{right:8px;bottom:64px}.sdm-grid{grid-template-columns:1fr}.sdm-card{padding:13px}.sdm-title{font-size:17px}}`;
+    document.head.appendChild(st);
+    const b=document.createElement('button');b.id='sagsWebDataMeterBtn';b.type='button';b.textContent='DATA';b.onclick=()=>{root.__sagsDataMeterOpen=true;document.getElementById('sagsWebDataMeterModal')?.classList.add('open');renderPanel()};document.body.appendChild(b);
+    const m=document.createElement('div');m.id='sagsWebDataMeterModal';m.innerHTML=`<div class="sdm-card"><div class="sdm-head"><div><div class="sdm-title">DATA · E‑REPORT WEB</div><div style="font-size:11px;color:#6a7d91">V4.4.0 · realtime-lite · offline-first · đo traffic mạng thực</div></div><button class="sdm-close" type="button">ĐÓNG</button></div><div id="sdmBody"></div></div>`;m.querySelector('.sdm-close').onclick=()=>{root.__sagsDataMeterOpen=false;m.classList.remove('open')};m.addEventListener('click',e=>{if(e.target===m){root.__sagsDataMeterOpen=false;m.classList.remove('open')}});document.body.appendChild(m);renderButton();renderPanel();
+  }
+  function renderButton(){const b=document.getElementById('sagsWebDataMeterBtn');if(!b)return;const t=tripTotals(),total=sumRx(t)+sumTx(t),mb=total/1024/1024;b.textContent=`DATA ${mb<10?mb.toFixed(1):Math.round(mb)} MB`;b.classList.toggle('warn',mb>=50&&mb<100);b.classList.toggle('danger',mb>=100)}
+  function renderPanel(){const el=document.getElementById('sdmBody');if(!el)return;const t=tripTotals(),rx=sumRx(t),tx=sumTx(t),total=rx+tx,allRx=sumRx(state.totals),allTx=sumTx(state.totals);const label=state.manualLabel||state.flightLabel||'Chưa xác định chuyến';el.innerHTML=`<div class="sdm-flight">✈ ${label}</div><div class="sdm-grid"><div class="sdm-kpi">DOWNLOAD / RX<b>${fmt(rx)}</b></div><div class="sdm-kpi">UPLOAD / TX<b>${fmt(tx)}</b></div><div class="sdm-kpi">TỔNG<b>${fmt(total)}</b></div></div><div class="sdm-sub"><b>Mạng trình duyệt:</b> ${effectiveNetwork()}<div class="sdm-break"><span>GitHub/static tải từ mạng</span><span>${fmt(t.staticRx)}</span><span>Firebase RTDB nhận</span><span>${fmt(t.rtdbRx)}</span><span>Firebase RTDB gửi</span><span>${fmt(t.rtdbTx)}</span></div></div><div class="sdm-sub"><b>RTDB lớn nhất trong phiên:</b><div class="sdm-break">${Object.entries(state.rtdbPaths||{}).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([k,v])=>`<span>${k}</span><span>${fmt(v)}</span>`).join('')||'<span>Chưa có</span><span>0 B</span>'}</div></div><div class="sdm-sub"><b>Phiên web hiện tại:</b> RX ${fmt(allRx)} · TX ${fmt(allTx)} · Tổng ${fmt(allRx+allTx)}</div><div class="sdm-actions"><button class="sdm-reset" type="button" id="sdmResetTrip">ĐẶT LẠI CHUYẾN</button><button class="sdm-session" type="button" id="sdmResetSession">RESET PHIÊN WEB</button></div><div class="sdm-note">Số liệu E‑Report: static RX chỉ tăng khi Service Worker thực sự fetch mạng; refresh dùng cache không bị tính nhầm. Firebase RTDB được tính theo kích thước payload ứng dụng đọc/ghi và có thống kê path lớn nhất. Trình duyệt không cho biết chính xác tổng 4G của hệ điều hành; Firestore/protocol overhead có thể chưa được tính.</div>`;document.getElementById('sdmResetTrip').onclick=()=>resetTrip();document.getElementById('sdmResetSession').onclick=()=>{if(!confirm('Reset toàn bộ bộ đếm của phiên web hiện tại?'))return;state.startedAtMs=now();state.totals=blankTotals();state.flightBaseline=blankTotals();state.rtdbPaths={};save();renderButton();renderPanel()}}
+
+  function boot(){ensureUi();ensureRtdbWrap();detectFlight();renderButton()}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+  setInterval(()=>{ensureUi();ensureRtdbWrap();detectFlight();renderButton();if(root.__sagsDataMeterOpen)renderPanel()},900);
+  root.SAGSWebDataMeter={build:BUILD,get totals(){return cloneTotals(state.totals)},get trip(){return tripTotals()},resetTrip};
+})(typeof window!=='undefined'?window:globalThis);
+/* ===== END V4.4.0 WEB DATA METER ===== */

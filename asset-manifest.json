@@ -1,13 +1,13 @@
 {
   "schema": 2,
-  "version": "V4.7.6",
-  "build": "V4.7.6-AUTO-NETWORK-DIAGNOSTICS",
+  "version": "V4.7.5",
+  "build": "V4.7.5-ROSTER-ASSIGNMENT-OPEN-FIX",
   "strategy": "stable-cache-sha256-delta",
   "bootstrapChanged": [
     "./index.html",
     "./app.js",
+    "./daily-roster.js",
     "./runtime.bundle.js",
-    "./network-diagnostics.js",
     "./service-worker.js",
     "./version.json"
   ],
@@ -93,8 +93,8 @@
       "bytes": 46693
     },
     "./app.js": {
-      "sha256": "aba278742f8e86be64751047faa0e58299f2280d36cb0e7fc72c637fdcfe76da",
-      "bytes": 873392
+      "sha256": "e34d9a6ed7632119efeb10a444abd23bba829d8555eb66fc201679178587707a",
+      "bytes": 887353
     },
     "./apple-touch-icon.png": {
       "sha256": "a190c19f9a52a40f43379917b11f84f99a2ab2fb4a3cdaedd1dad936a67c8e78",
@@ -145,8 +145,8 @@
       "bytes": 104295
     },
     "./index.html": {
-      "sha256": "cb1061d26cf1314bce33eadbf659a0579385dacfcd95fd0cf27b3670e493d3de",
-      "bytes": 1768006
+      "sha256": "5c10b2604b5e5d1575d4aec1eec2c3707975a431b2800248f451bbb88dc72506",
+      "bytes": 1767948
     },
     "./ket-so.wav": {
       "sha256": "cf03e8d4021f989f61fd12249f282ae2e53588cc9d55d68393778223db8132a1",
@@ -163,10 +163,6 @@
     "./manifest.webmanifest": {
       "sha256": "cfdb07c1ef181eda219950f0204a4de7e2b2deb429b3486db7cb609708842cc5",
       "bytes": 555
-    },
-    "./network-diagnostics.js": {
-      "sha256": "0380b14a3f024d0d95e4ff90787a64c7cb0c8eeb9f2fe19a423e88efb5df5de4",
-      "bytes": 12286
     },
     "./page1.png": {
       "sha256": "94e543f3c9da5be72fb8bbf19510e4468c1c774f246781044a5613163002acfd",
@@ -233,20 +229,20 @@
       "bytes": 21617
     },
     "./runtime.bundle.js": {
-      "sha256": "7322deb451d1448cb631d0b18f45a1402d85e494cf50c5f39344d1f95c71b257",
-      "bytes": 434333
+      "sha256": "5c88c82d6c3c35c692f42c763c781d0130c917b2aee8103ed944ad51ca371c4d",
+      "bytes": 433856
     },
     "./sags-logo.png": {
       "sha256": "84bc554c3b44afe4190afcbe74f7c7aed9fad478c328d63502a7d225dd60d7ad",
       "bytes": 25408
     },
     "./service-worker.js": {
-      "sha256": "f60b8e6b1feed4323bad58a3bada9ecf7444e6b45322489ba0a341049eb8e530",
-      "bytes": 6710
+      "sha256": "e9cfc8cb256ecb48ab2c4bf308036111ef83046dbfd8218a8ceb0effe9f49f0b",
+      "bytes": 6762
     },
     "./version.json": {
-      "sha256": "0c39c5f4fc392eebbb5c11ce58138736f79b4153414faccd33298f506d88a95e",
-      "bytes": 536
+      "sha256": "349c3186e36ce31dc10539e448711ba06b827db90834009e434191065c9d6c40",
+      "bytes": 433
     }
   }
 }

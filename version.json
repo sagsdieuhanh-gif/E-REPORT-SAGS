@@ -1,10 +1,10 @@
 {
-  "version": "V4.7.6",
-  "displayVersion": "V4.7.6",
-  "label": "V4.7.6 AUTO NETWORK DIAGNOSTICS",
-  "build": "V4.7.6-AUTO-NETWORK-DIAGNOSTICS",
-  "releasedAt": "2026-09-16T11:33:10+00:00",
-  "type": "automatic-network-diagnostics",
-  "notes": "Start observing at initial document load, show browser HTTP/SW network fetch/WS application payload separately within AD; remove floating DATA meter. This cannot measure exact mobile data usage.",
-  "message": "V4.7.6 · Bộ đo mạng tự chạy từ lúc mở ứng dụng trong AD"
+  "version": "V4.7.5",
+  "displayVersion": "V4.7.5",
+  "label": "V4.7.5 ROSTER ASSIGNMENT OPEN FIX",
+  "build": "V4.7.5-ROSTER-ASSIGNMENT-OPEN-FIX",
+  "releasedAt": "2026-09-16T08:18:00Z",
+  "type": "assignment-route-safety",
+  "notes": "Open 42.3 and 55.1 by exact assignmentId and roster date; surface errors, reject stale ownership, protect local form data.",
+  "message": "V4.7.5 · Mở riêng 42.3 / 55.1 theo phân công"
 }
