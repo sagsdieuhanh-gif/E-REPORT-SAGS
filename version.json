@@ -1,10 +1,10 @@
 {
-  "version": "V4.6.3",
-  "displayVersion": "V4.6.3",
-  "label": "V4.6.3 SYSTEM FORM CUSTOM FIELDS",
-  "build": "V4.6.3-SYSTEM-FORM-CUSTOM-FIELDS",
-  "releasedAt": "2026-09-16T05:22:00Z",
-  "type": "form-manager-system-custom-fields",
-  "notes": "Bỏ chặn thêm field trên form hệ thống. Form Manager/AI có thể tạo field mới trên các form cũ; field mới được nối vào runtime, TEST và Fast PDF. Bản nháp chỉ ở máy AD cho tới khi xuất forms.registry.json để phát hành.",
-  "message": "V4.6.3 · System form custom fields · No legacy add-field blocker"
+  "version": "V4.6.4",
+  "displayVersion": "V4.6.4",
+  "label": "V4.6.4 PDF BACKGROUND IMPORT",
+  "build": "V4.6.4-PDF-BACKGROUND-IMPORT",
+  "releasedAt": "2026-09-16T05:36:00Z",
+  "type": "form-manager-pdf-import",
+  "notes": "Form Manager nhận trực tiếp PDF làm nền. PDF được tách từng trang, render thành ảnh chuẩn hệ thống 1241px cạnh chuẩn, lưu IndexedDB và dùng như ảnh nền bình thường. Multi-page tự thay các trang kế tiếp; form mới tự thêm trang, form hệ thống giữ nguyên page mapping.",
+  "message": "V4.6.4 · PDF → background images · multi-page import"
 }
