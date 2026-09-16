@@ -1,4 +1,4 @@
-window.__SAGS_RUNTIME_BUILD__="V4.7.8-PERSONAL-MAILBOX-PINNED-FLIGHT";
+window.__SAGS_RUNTIME_BUILD__="V4.7.9-HOME-NAV-RESTORED";
 /* E-REPORT/SAGS V4.6.2 · LIVE TEST EDIT · FORM MANAGER + FAST PDF */
 if(typeof window!=="undefined")window.__SAGS_V450_FORM_MANAGER_LAYOUT=true;
 
@@ -834,6 +834,8 @@ if(typeof window!=="undefined")window.__SAGS_V450_FORM_MANAGER_LAYOUT=true;
     setInterval(()=>scheduleSync(0),10000);
   }
 
+  // A single HOME command for the bottom bar and the MY FLIGHT header.
+  root.sagsV479GoHome=goHome;
   root.v157OpenMenu=openDrawer;
   root.v157CloseMenu=closeDrawer;
   root.v181OpenAdminCenter=openAdminCenter;

@@ -77,11 +77,32 @@ root.sagsV478ManifestForWorker=async function(opDate){
 };
 root.sagsV477ManifestForWorker=root.sagsV478ManifestForWorker;
 root.sagsV478MailboxStats=()=>({user:live.user,date:live.date,loaded:live.loaded,local:live.local,items:Object.keys(live.items).length,query:'opDate == selected day'});
+function ensureHomeButton(modal){
+  if(!modal)return;
+  const head=modal.querySelector('.fwcHead');if(!head)return;
+  let home=head.querySelector('#v479MyFlightHome');
+  if(!home){
+    home=document.createElement('button');home.id='v479MyFlightHome';
+    home.type='button';home.className='fwcBtn gray';home.textContent='⌂ TRANG CHỦ';
+    const close=head.querySelector('#v477Close')||Array.from(head.querySelectorAll('button')).find(b=>/ĐÓNG/i.test(b.textContent||''));
+    head.insertBefore(home,close||null);
+  }
+  home.onclick=()=>{
+    if(typeof root.sagsV479GoHome==='function')root.sagsV479GoHome();
+    else{root.flightWorkspaceClose?.();root.showRoleHomeIdle?.();}
+  };
+  if(!document.getElementById('v479MyFlightHomeStyle')){
+    const css=document.createElement('style');css.id='v479MyFlightHomeStyle';
+    css.textContent='#v479MyFlightHome{min-height:40px;white-space:nowrap;flex-shrink:0}'+
+      '@media(max-width:620px){#fwcModal .fwcHead{flex-wrap:wrap}#fwcModal .fwcHead>div:first-child{flex:1 1 100%}}';
+    document.head.appendChild(css);
+  }
+}
 function ensureModal(){
-  let modal=document.getElementById('fwcModal');if(modal)return modal;
+  let modal=document.getElementById('fwcModal');if(modal){ensureHomeButton(modal);return modal;}
   modal=document.createElement('div');modal.id='fwcModal';modal.className='';
   modal.innerHTML='<div class="fwcPanel"><div class="fwcHead"><h3>✈ MY FLIGHT</h3><button class="fwcBtn gray" type="button" id="v477Close">ĐÓNG</button></div><div id="fwcBody"></div></div>';
-  document.body.appendChild(modal);document.getElementById('v477Close').onclick=()=>root.flightWorkspaceClose?.();return modal;
+  document.body.appendChild(modal);document.getElementById('v477Close').onclick=()=>root.flightWorkspaceClose?.();ensureHomeButton(modal);return modal;
 }
 function drawShell(d){
   const modal=ensureModal();modal.classList.add('show');
@@ -94,7 +115,7 @@ function drawShell(d){
 }
 const baseOpen=root.flightWorkspaceOpenList,baseRefresh=root.flightWorkspaceRefresh;
 async function openLite(requestedDate){
-  if(role()==='AD')return baseOpen?.call(root,requestedDate);
+  if(role()==='AD'){const result=baseOpen?.call(root,requestedDate);ensureHomeButton(document.getElementById('fwcModal'));return result;}
   const d=S(requestedDate)||dateNow();if(!drawShell(d))return false;
   try{
     const man=await root.sagsV478ManifestForWorker(d);

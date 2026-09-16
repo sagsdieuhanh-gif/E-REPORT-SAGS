@@ -1,10 +1,10 @@
 {
-  "version": "V4.7.8",
-  "displayVersion": "V4.7.8",
-  "label": "V4.7.8 PERSONAL MAILBOX + PINNED FLIGHT",
-  "build": "V4.7.8-PERSONAL-MAILBOX-PINNED-FLIGHT",
-  "releasedAt": "2026-09-16T12:31:50+00:00",
-  "type": "worker-day-mailbox-pinned-local",
-  "notes": "Workers: one RTDB mailbox query for the signed-in account and selected opDate; no full-day roster reads from the core opener, no second runtime mailbox listener or automatic 3-day form prefetch. Explicit per-flight PIN stores only assignment identifiers/metadata on-device (IndexedDB, localStorage fallback). Reopen checks the exact server assignment before loading that form; existing handover data protections remain. RTDB rules should index roster_mail/$user/items by opDate.",
-  "message": "V4.7.8 · MY FLIGHT chỉ đọc phân công đúng ngày; ghim chuyến trên máy"
+  "version": "V4.7.9",
+  "displayVersion": "V4.7.9",
+  "label": "V4.7.9 HOME NAV RESTORED",
+  "build": "V4.7.9-HOME-NAV-RESTORED",
+  "releasedAt": "2026-09-16T14:47:59.638459+00:00",
+  "type": "navigation-regression-fix",
+  "notes": "Keep TRANG CHỦ visible after pinning: fixed five-column single-row operation navigation, original HOME second; add explicit TRANG CHỦ in MY FLIGHT modal. No changes to assignments, workspaces, Firebase reads, drafts or local pin storage.",
+  "message": "V4.7.9 · Khôi phục nút TRANG CHỦ trong MY FLIGHT và khi ghim chuyến"
 }

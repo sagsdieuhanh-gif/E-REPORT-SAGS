@@ -3903,7 +3903,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <button class="cancel" onclick="closeSignature();draw()">Đóng</button>
 </div>
 </div></div>
-<div class="hint" id="statusHint">V4.7.8 · DESKTOP AUTO DOWNLOAD · FORM MANAGER</div>
+<div class="hint" id="statusHint">V4.7.9 · DESKTOP AUTO DOWNLOAD · FORM MANAGER</div>
 <script src="./network-diagnostics.js?v=V4.7.6"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
@@ -11023,8 +11023,8 @@ try {
   if(h) h.textContent="Lỗi khởi tạo: "+err.message;
   alert("Lỗi JavaScript: "+err.message);
 }
-const APP_BUILD_VERSION="V4.7.8-PERSONAL-MAILBOX-PINNED-FLIGHT";
-const APP_DISPLAY_VERSION="V4.7.8";
+const APP_BUILD_VERSION="V4.7.9-HOME-NAV-RESTORED";
+const APP_DISPLAY_VERSION="V4.7.9";
 // V1.1.103: hotfix duy nhất lỗi Firebase RTDB ancestor/descendant khi đồng bộ DAILY ROSTER; không thay đổi nghiệp vụ khác.
 // V4.21 — SAFE UPDATE SAVE
 // Before switching to a newly installed app version, force-save all current
@@ -28185,16 +28185,16 @@ body.v38-clean-workflow #v1134QuickTimeBtn{background:#eef6ff!important;color:#0
 })();
 </script>
 
-<script src="./runtime.bundle.js?v=V4.7.8"></script>
+<script src="./runtime.bundle.js?v=V4.7.9"></script>
 <script id="v460RuntimeGuard">
 (()=>{
   setTimeout(()=>{
-    const ok=String(window.__SAGS_RUNTIME_BUILD__||'')==='V4.7.8-PERSONAL-MAILBOX-PINNED-FLIGHT';
+    const ok=String(window.__SAGS_RUNTIME_BUILD__||'')==='V4.7.9-HOME-NAV-RESTORED';
     if(ok)return;
     console.error('E-REPORT runtime mismatch',window.__SAGS_RUNTIME_BUILD__);
     const d=document.createElement('div');d.id='v460RuntimeMismatch';
     d.style='position:fixed;left:10px;right:10px;bottom:10px;z-index:2147483647;background:#b42318;color:#fff;padding:12px 14px;border-radius:12px;font:800 12px/1.45 Arial;box-shadow:0 8px 24px #0005';
-    d.textContent='⚠ Runtime chưa cập nhật đúng V4.7.8. Hãy upload runtime.bundle.js của gói UPDATE ONLY rồi bấm UPDATE lại.';
+    d.textContent='⚠ Runtime chưa cập nhật đúng V4.7.9. Hãy upload runtime.bundle.js của gói UPDATE ONLY rồi bấm UPDATE lại.';
     document.body.appendChild(d);
   },1800);
 })();
@@ -28222,7 +28222,7 @@ window.adminResetAccountPassword=async function(uid){
 };
 </script>
 <script src="./features.bundle.js?v=V4.7.6"></script>
-<script src="./roster-lite.js?v=V4.7.8" id="v477MailboxLite"></script>
-<script src="./pinned-flight.js?v=V4.7.8" id="v478PinnedFlight"></script>
+<script src="./roster-lite.js?v=V4.7.9" id="v477MailboxLite"></script>
+<script src="./pinned-flight.js?v=V4.7.9" id="v478PinnedFlight"></script>
 </body>
 </html>

@@ -51,7 +51,7 @@ root.sagsV478MailboxUpdated=async(day,items)=>{
 };
 function style(){if(document.getElementById('v478PinStyle'))return;const st=document.createElement('style');st.id='v478PinStyle';st.textContent=`
 #v478PinHome{display:block;width:100%;min-height:48px;margin-top:8px;padding:10px;text-align:left;border-radius:12px;border:1px solid #8db7dd;background:#e7f4ff;color:#13436b;font:800 13px/1.45 Arial;white-space:normal}
-#v478PinNav{min-height:38px;border-radius:9px;border:1px solid #96bce0;background:#eaf5ff;color:#16456f;font:800 11px Arial;padding:7px}
+#v478PinNav{min-height:31px!important;border-radius:9px;border:1px solid #96bce0;background:#eaf5ff;color:#16456f;font:800 9px/1.1 Arial!important;padding:4px 1px!important;white-space:normal;overflow-wrap:anywhere}
 #v478PinDialog{position:fixed;inset:0;z-index:2147482000;background:rgba(0,20,48,.62);display:flex;justify-content:center;align-items:center;padding:12px}
 #v478PinDialog[hidden]{display:none!important}#v478PinDialog .panel{background:#fff;color:#153b58;border-radius:16px;padding:18px;max-width:520px;width:100%;max-height:85vh;overflow:auto;box-sizing:border-box}
 #v478PinDialog button{min-height:44px;border-radius:9px;border:1px solid #9bbadb;background:#eff6ff;color:#154773;font:800 13px Arial;margin:6px 5px 0 0;padding:8px 10px}
@@ -62,7 +62,20 @@ function paint(){
   style();const u=me(),ok=!!(current&&currentUser===u&&u&&role()!=='AD'),txt=ok?`📌 ${current.flightLabel||current.flightId} · ${current.items.length} phần việc`:'📌 CHUYẾN ĐANG LÀM';
   const home=document.getElementById('v157RecentText');
   if(home){let b=document.getElementById('v478PinHome');if(!b){b=document.createElement('button');b.id='v478PinHome';b.type='button';home.appendChild(b)}b.hidden=!ok;b.textContent=txt;b.onclick=showDialog}
-  const nav=document.getElementById('v163OperationNav');if(nav){let b=document.getElementById('v478PinNav');if(!b){b=document.createElement('button');b.id='v478PinNav';b.type='button';nav.insertBefore(b,nav.querySelector('#v163HomeBtn')||null)}b.hidden=!ok;b.textContent=ok?'📌 CHUYẾN ĐANG LÀM':'';b.onclick=showDialog}
+  const nav=document.getElementById('v163OperationNav');if(nav){
+    let b=document.getElementById('v478PinNav');
+    if(!b){b=document.createElement('button');b.id='v478PinNav';b.type='button'}
+    // Keep the original order CHUYẾN / TRANG CHỦ / MULTI / KÝ and put PIN last.
+    // Exactly five equal columns on one row prevents the higher-z form toolbar
+    // from covering HOME on small screens. Restore four columns when not pinned.
+    if(b.parentElement!==nav||b!==nav.lastElementChild)nav.appendChild(b);
+    if(b.hidden===ok)b.hidden=!ok;
+    b.textContent=ok?'📌 GHIM':'';
+    b.setAttribute('aria-label','Mở chuyến đang ghim trên máy');
+    b.title='Chuyến đang làm';b.onclick=showDialog;
+    const columns=ok?'repeat(5,minmax(0,1fr))':'';
+    if(nav.style.gridTemplateColumns!==columns)nav.style.gridTemplateColumns=columns;
+  }
 }
 function dialog(){let d=document.getElementById('v478PinDialog');if(d)return d;d=document.createElement('div');d.id='v478PinDialog';d.hidden=true;d.innerHTML='<div class="panel" role="dialog" aria-modal="true" aria-label="Chuyến đã ghim"><h3 id="v478PinHeading"></h3><p style="font:12px/1.5 Arial">Lưu trên máy. Mở từng biểu mẫu theo phân công hiện tại; không tải lại danh sách MY FLIGHT.</p><div id="v478PinTasks"></div><div id="v478PinStatus" role="status"></div><button type="button" id="v478PinUnpin">BỎ GHIM</button><button type="button" id="v478PinClose">ĐÓNG</button></div>';document.body.appendChild(d);d.querySelector('#v478PinClose').onclick=()=>{d.hidden=true};d.querySelector('#v478PinUnpin').onclick=async()=>{await save(null);d.hidden=true};d.addEventListener('click',e=>{if(e.target===d)d.hidden=true});return d}
 async function check(item){

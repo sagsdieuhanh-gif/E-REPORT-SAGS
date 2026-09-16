@@ -1,12 +1,10 @@
 {
   "schema": 2,
-  "version": "V4.7.8",
-  "build": "V4.7.8-PERSONAL-MAILBOX-PINNED-FLIGHT",
+  "version": "V4.7.9",
+  "build": "V4.7.9-HOME-NAV-RESTORED",
   "strategy": "stable-cache-sha256-delta",
   "bootstrapChanged": [
     "./index.html",
-    "./app.js",
-    "./daily-roster.js",
     "./runtime.bundle.js",
     "./roster-lite.js",
     "./pinned-flight.js",
@@ -147,8 +145,8 @@
       "bytes": 104295
     },
     "./index.html": {
-      "sha256": "03d87199710bae97f7e14833d51e3f95f792ac322873c469c9890125fd462782",
-      "bytes": 1768155
+      "sha256": "a85460c0f7c059a337044db1c7e4c527ec6ec5f6b5417789416194ac85eba9fc",
+      "bytes": 1768129
     },
     "./ket-so.wav": {
       "sha256": "cf03e8d4021f989f61fd12249f282ae2e53588cc9d55d68393778223db8132a1",
@@ -235,28 +233,28 @@
       "bytes": 21617
     },
     "./roster-lite.js": {
-      "sha256": "29bda6ad196bfc686ccb7306af38f02cde16a44db3c92f61967c0df4876b9830",
-      "bytes": 9728
+      "sha256": "0300ec8191ca6fa34b7abed1463d7c421af5dbbbc078889be31d082cce8a880d",
+      "bytes": 10925
     },
     "./runtime.bundle.js": {
-      "sha256": "b5efc026bba33e8ba8f0ae668ab994e9ac27e013b2861baf1fca7f976f5dff95",
-      "bytes": 434613
+      "sha256": "c4bb68cb517e8717c6885924554b0837a6a5a29849498655bf8d69d849b415aa",
+      "bytes": 434702
     },
     "./sags-logo.png": {
       "sha256": "84bc554c3b44afe4190afcbe74f7c7aed9fad478c328d63502a7d225dd60d7ad",
       "bytes": 25408
     },
     "./service-worker.js": {
-      "sha256": "7ab7e89f61027acb413b03dad5971d85c87e6bcffc4a2d9c24950267ddca689d",
-      "bytes": 6716
+      "sha256": "ec165a522ce3c754ff7214222ddbba4d1ae9ae163e180365ed3ca9328cd447e2",
+      "bytes": 6703
     },
     "./version.json": {
-      "sha256": "0d6afcdf048b8e1b49a891cc88c2bf6cbce3c4167b382757efa1ec3218faefe4",
-      "bytes": 845
+      "sha256": "308b9d7bb6a95d057fa23385b01932687b04079b56fc820dea79215149f7c861",
+      "bytes": 575
     },
     "./pinned-flight.js": {
-      "sha256": "e4e6cbd5e05d2286e96c29736ccdc6f06556cbe3a9720042847ccb9b70c1c5e1",
-      "bytes": 11242
+      "sha256": "be209cc63a37fa762b9a95411c88d577d5ff5846ac996fe163666b4841961360",
+      "bytes": 11854
     }
   }
 }
