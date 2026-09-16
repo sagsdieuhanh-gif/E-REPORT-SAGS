@@ -1,0 +1,16 @@
+E-REPORT/SAGS V4.3.0 · CLEAN WEB DEPLOY
+
+Upload the CONTENTS of this folder to the GitHub Pages root.
+
+Runtime JS files kept:
+- app.js (phase-based core; loaded from one canonical SW cache entry)
+- ai.js (ES module; kept separate because it imports Firebase AI modules)
+- daily-roster.js (kept separate to preserve startup timing)
+- runtime.bundle.js (ui + export + report + all active v2 runtime patches)
+- features.bundle.js (shift report core + UI; old quick-incident retired)
+- service-worker.js
+
+CSS files are consolidated into app.bundle.css.
+Historical UPDATE-MANIFEST files, retired patches, Android source, Firebase deployment rules/config, backup SW, Termux updater and duplicate coordinate JSON are intentionally NOT part of this web deploy package.
+
+Large PNG/JPG/audio assets remain separate intentionally: each has its own SHA-256 so future updates download only the asset that actually changed.

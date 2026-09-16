@@ -1,0 +1,10 @@
+{
+  "version": "V4.3.0",
+  "displayVersion": "V4.3.0",
+  "label": "V4.3.0",
+  "build": "V4.3.0-CLEAN-BUNDLE-OFFLINE-FIRST",
+  "releasedAt": "2026-09-16T02:10:00Z",
+  "type": "clean-web-bundle-offline-first",
+  "notes": "Bản web hoàn chỉnh đã dọn source deploy: gom runtime JS/CSS, bỏ patch/manifest lịch sử và Android khỏi GitHub web. Cache ổn định + SHA-256 chỉ tải file mới/thay đổi; media/form assets giữ file riêng để delta update không phải tải lại cả gói.",
+  "message": "Có bản cập nhật V4.3.0 · CLEAN WEB · chỉ tải phần thay đổi"
+}
