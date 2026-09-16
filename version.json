@@ -1,10 +1,10 @@
 {
-  "version": "V4.5.2",
-  "displayVersion": "V4.5.2",
-  "label": "V4.5.2 TEST",
-  "build": "V4.5.2-DESKTOP-AUTO-DOWNLOAD",
-  "releasedAt": "2026-09-16T04:10:00Z",
-  "type": "desktop-auto-download",
-  "notes": "Trên Windows/macOS/Linux desktop, PDF tự tải xuống ngay sau khi tạo xong; không mở Share Sheet. Mobile/tablet giữ luồng Share Sheet. FINAL và READ & SIGN dùng cùng cơ chế tự tải. Nút MỞ PDF/TẢI LẠI vẫn giữ làm dự phòng.",
-  "message": "V4.5.2 TEST · Desktop PDF auto-download"
+  "version": "V4.5.3",
+  "displayVersion": "V4.5.3",
+  "label": "V4.5.3 TEST",
+  "build": "V4.5.3-CUMULATIVE-UI-FIX",
+  "releasedAt": "2026-09-16T04:22:00Z",
+  "type": "cumulative-ui-fix",
+  "notes": "Bản cumulative bắt buộc kèm runtime.bundle.js. Khôi phục và làm nổi bật ZOOM FORM trong Form Manager và card QUẢN LÝ THÔNG BÁO trong AD Control Center. Giữ Fast PDF và desktop auto-download.",
+  "message": "V4.5.3 TEST · Cumulative runtime/UI fix"
 }
