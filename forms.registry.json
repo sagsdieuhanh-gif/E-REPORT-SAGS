@@ -1,8 +1,8 @@
 {
   "schema": 2,
-  "version": "V4.6.2",
-  "build": "V4.6.2-LIVE-TEST-EDIT",
-  "updatedAt": "2026-09-16T05:17:30.664Z",
+  "version": "V4.6.3",
+  "build": "V4.6.3-SYSTEM-FORM-CUSTOM-FIELDS",
+  "updatedAt": "2026-09-16T05:25:42.255Z",
   "note": "V4.5 TEST: Form Manager is the single layout authority. Existing system fields are auto-hydrated from the canonical field model, then published by exporting this registry. PDF uses the same geometry.",
   "forms": [
     {
@@ -16252,6 +16252,44 @@
           "sourceType": "text",
           "generatedFromLegacy": true,
           "valign": "middle"
+        },
+        {
+          "key": "f208_remark",
+          "label": "REMARK",
+          "type": "textarea",
+          "bind": "f208_remark",
+          "pageId": "p1",
+          "x": 0.23742454728370221,
+          "y": 0.7298578199052133,
+          "w": 0.1153588195841717,
+          "h": 0.04549763033175355,
+          "fontSize": 20,
+          "fontWeight": 700,
+          "align": "left",
+          "valign": "middle",
+          "sourcePage": 13,
+          "sourceType": "text",
+          "generatedFromLegacy": true
+        },
+        {
+          "key": "f208_remark_copy",
+          "label": "REMARK copy",
+          "type": "textarea",
+          "bind": "f208_remark_copy",
+          "pageId": "p1",
+          "x": 0.3594902749832327,
+          "y": 0.7279620853080568,
+          "w": 0.1153588195841717,
+          "h": 0.04549763033175355,
+          "fontSize": 20,
+          "fontWeight": 700,
+          "align": "left",
+          "valign": "middle",
+          "sourcePage": 13,
+          "sourceType": "text",
+          "generatedFromLegacy": false,
+          "customFieldV463": true,
+          "createdByFormManager": true
         }
       ],
       "engine": "form-manager-v450"
