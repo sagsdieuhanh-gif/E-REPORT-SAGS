@@ -131,13 +131,32 @@ async function writeWorkspaceForActive(delay=420){
     await root.sagsV470Ref(`${WORKSPACE}/${safe(info.workspaceKey)}`).update(delta);rememberWsBaseline(info.workspaceKey,clean);
   }catch(e){console.info('V1.1.105 workspace delta sync',e?.message||e)}},delay)
 }
-async function hydrateWorkspaceForFlight(date,fid){
-  if(typeof root.sagsV470Ref!=='function')return 0;let man={};try{man=(await root.sagsV470Ref(`${MANIFEST}/${safe(date)}`).once('value')).val()||{}}catch(_){return 0}
-  const items=Object.values(man.items||{}).filter(x=>x&&x.active!==false&&S(x.flightId)===S(fid));if(!items.length)return 0;const groups=new Map();for(const x0 of items){const x={...x0},wk=S(x.workspaceKey||x.rosterWorkspaceKey)||workspaceKey(date,x);rememberWorkspace({...x,workspaceKey:wk},date);if(!groups.has(wk))groups.set(wk,[]);groups.get(wk).push(x)}let writes=0;
-  for(const [wk,rows] of groups){let ws=null;try{ws=(await root.sagsV470Ref(`${WORKSPACE}/${safe(wk)}`).once('value')).val()||null}catch(_){};if(ws?.envelope)rememberWsBaseline(wk,ws.envelope);let source=ws?.envelope&&meaningfulEnvelope(ws.envelope)?ws.envelope:null,sourceAt=Number(ws?.envelopeUpdatedAtMs||0);const sessions={};for(const r of rows){try{const st=(await root.sagsV470Ref(`${SESSION}/${safe(r.assignmentId)}`).once('value')).val()||{};sessions[r.assignmentId]=st;for(const e of [st.envelope,st.completionEnvelope,st.handoverEnvelope])if(e&&meaningfulEnvelope(e)&&Number(st.envelopeUpdatedAtMs||st.completedAtMs||st.updatedAtMs||0)>=sourceAt){source=sanitizeEnvelope(e);sourceAt=Number(st.envelopeUpdatedAtMs||st.completedAtMs||st.updatedAtMs||Date.now())}}catch(_){}}
-    if(!source)continue;const patch={};for(const r of rows){const st=sessions[r.assignmentId]||{};if(st.envelope&&meaningfulEnvelope(st.envelope))continue;patch[`${SESSION}/${safe(r.assignmentId)}/envelope`]=mergeSeedSafe(st.envelope||{state:{},mainForm:S(r.formGroup||'fsags'),activeFormGroup:S(r.formGroup||'fsags')},source);patch[`${SESSION}/${safe(r.assignmentId)}/workspaceKey`]=wk;patch[`${SESSION}/${safe(r.assignmentId)}/workspaceHydratedAtMs`]=Date.now();patch[`${SESSION}/${safe(r.assignmentId)}/workspaceHydratedByBuild`]=DISPLAY;writes++}if(Object.keys(patch).length)await root.sagsV470Ref('').update(patch);if(!ws?.envelope)try{const cleanSource=sanitizeEnvelope(source);await root.sagsV470Ref(`${WORKSPACE}/${safe(wk)}`).update({schema:2,engine:'DAILY_ROSTER_DELTA_V11105',workspaceKey:wk,opDate:date,flightId:S(fid),envelope:cleanSource,envelopeUpdatedAtMs:sourceAt||Date.now(),updatedAtMs:Date.now()});rememberWsBaseline(wk,cleanSource)}catch(_){}
-  }
-  return writes;
+// V4.7.7: NEVER scan every assignment on a flight or copy a workspace into
+// another person's session just because they have the same flight number.
+// Only the explicitly selected assignment may be hydrated, on actual open.
+async function hydrateWorkspaceForFlight(date,fid,aid){
+  aid=S(aid);date=S(date);if(!aid||!date||typeof root.sagsV470Ref!=='function')return 0;
+  // Fresh per-assignment mailbox check; stale on-device workspace mapping alone
+  // must never authorize a read or an automatic copy after reassignment.
+  let item=null;
+  try{const user=normUser(root.currentUserProfile?.username||''),snap=await root.sagsV470Ref(`${MAIL}/${safe(user)}/items/${safe(aid)}`).once('value');item=snap.val()}
+  catch(_){return 0}
+  if(!item||item.active===false||normUser(item.targetUser||item.user)!==normUser(root.currentUserProfile?.username||'')||S(item.flightId)!==S(fid)||S(item.opDate)!==date)return 0;
+  const info=rememberWorkspace(item,date);
+  const wk=S(info?.workspaceKey);if(!wk||S(info.opDate)!==date||S(info.flightId)!==S(fid))return 0;
+  let source=null;
+  try{source=(await root.sagsV470Ref(`${WORKSPACE}/${safe(wk)}/envelope`).once('value')).val()||null}catch(_){return 0}
+  if(!source||!meaningfulEnvelope(source))return 0;
+  const clean=sanitizeEnvelope(source),target=root.sagsV470Ref(`${SESSION}/${safe(aid)}/envelope`);
+  // A transaction prevents the initial hydration from overwriting another device's
+  // saved work (or a form that the receiver already started editing).
+  if(typeof target.transaction!=='function')return 0;
+  const result=await target.transaction(current=>{
+    if(current&&meaningfulEnvelope(current))return;
+    return mergeSeedSafe(current||{state:{},mainForm:S(info.formGroup||'fsags'),activeFormGroup:S(info.formGroup||'fsags')},clean);
+  },undefined,false);
+  if(result?.committed){rememberWsBaseline(wk,clean);return 1}
+  return 0;
 }
 function installWorkspaceApi(){const legacyInfo=root.rosterWorkspaceInfo,legacyRead=root.rosterWorkspaceLegacyRead;root.rosterWorkspaceInfo=function(aid){const hit=workspaceMap[S(aid)];if(hit)return clone(hit);try{return legacyInfo?.(aid)||null}catch(_){return null}};root.rosterWorkspaceLegacyRead=async function(aid){const hit=workspaceMap[S(aid)];if(hit?.workspaceKey&&typeof root.sagsV470Ref==='function')try{return (await root.sagsV470Ref(`${WORKSPACE}/${safe(hit.workspaceKey)}`).once('value')).val()||null}catch(_){}try{return await legacyRead?.(aid)||null}catch(_){return null}}}
 
@@ -159,7 +178,7 @@ function wrapAsync(name,before,after,tag){const fn=root[name];if(typeof fn!=='fu
 function installHooks(){
   const basePersist=root.persist;if(typeof basePersist==='function'&&!basePersist.__v1198){root.persist=function(){const r=basePersist.apply(this,arguments);writeWorkspaceForActive();clearTimeout(root.__v1198PbPersist);root.__v1198PbPersist=setTimeout(syncPushbackFromActive,80);return r};root.persist.__v1198=1}
   wrapAsync('dailyRosterPublish',null,async r=>{if(r===true){try{const d=S(document.getElementById('drManageDate')?.value)||opDate();await root.sagsTaskStatusSyncDate?.(d,true)}catch(_){}}},'__v1198');
-  wrapAsync('v324ReceiveOrOpen',async args=>{const fid=S(args?.[0]);if(fid)await hydrateWorkspaceForFlight(opDate(),fid)},async()=>{setTimeout(writeWorkspaceForActive,120)},'__v1198');
+  wrapAsync('v324ReceiveOrOpen',async args=>{const fid=S(args?.[0]),aid=S(args?.[1]),date=S(args?.[2])||opDate();if(fid&&aid)await hydrateWorkspaceForFlight(date,fid,aid)},async()=>{setTimeout(writeWorkspaceForActive,120)},'__v1198');
   wrapAsync('dailyRosterReassign',null,async()=>{try{await root.sagsTaskStatusSyncDate?.(S(document.getElementById('drManageDate')?.value)||opDate(),true)}catch(_){}},'__v1198');
   wrapAsync('dailyRosterResetToRoster',null,async()=>{try{await root.sagsTaskStatusSyncDate?.(S(document.getElementById('drManageDate')?.value)||opDate(),true)}catch(_){}},'__v1198');
 }
@@ -208,7 +227,7 @@ function itemWorking(item,st){
 }
 async function clearStaleClaimIfNeeded(item){
   const aid=S(item?.assignmentId);if(!aid||!ownedActive(item))return false;
-  const st=await readState(aid),t=normalizedTask(st),progress=['IN_PROGRESS','CLAIMED','ACTIVE','WORKING'].includes(t)||U(st?.claimStatus)==='CLAIMED';if(!progress)return false;
+  const st=await readState(aid,true),t=normalizedTask(st),progress=['IN_PROGRESS','CLAIMED','ACTIVE','WORKING'].includes(t)||U(st?.claimStatus)==='CLAIMED';if(!progress)return false;
   const claimant=norm(st?.claimedBy),owner=norm(st?.ownerUser),claimedAt=Number(st?.claimedAtMs||0),reassignedAt=Number(st?.reassignedAtMs||0);
   const stale=(claimant&&claimant!==me())||(!claimant&&owner&&owner!==me())||(!claimant&&reassignedAt>0&&reassignedAt>=claimedAt);
   if(!stale)return false;
@@ -216,8 +235,20 @@ async function clearStaleClaimIfNeeded(item){
   return true
 }
 function timeScore(x){const raw=S(x?.std||x?.sta),plus=/\+\s*$/.test(raw),s=raw.replace(/\D/g,'');if(s.length<3)return 99999;return (plus?1440:0)+Number(s.slice(0,-2))*60+Number(s.slice(-2))}
-async function readManifest(date){return (await db(`roster_manifests/${safe(date)}`).once('value')).val()||{}}
-async function readState(aid){try{return (await db(`roster_sessions/${safe(aid)}`).once('value')).val()||{}}catch(_){return {}}}
+async function readManifest(date){if(role()!=='AD'){if(typeof root.sagsV477ManifestForWorker!=='function')throw new Error('Hộp phân công đang khởi tạo; vui lòng đợi hoặc bấm UPDATE.');return await root.sagsV477ManifestForWorker(date)}return (await db(`roster_manifests/${safe(date)}`).once('value')).val()||{}}
+const QUEUE_STATUS_FIELDS=['claimStatus','workPartStatus','taskStatusV333','taskStatus','ownerUser','claimedBy','claimedAtMs','reassignedAtMs','skippedNoEform','autoSkippedByNextUser','pushbackEditReopened','pushbackEditMode','completedPushback'];
+const queueStatusCache=new Map();
+root.sagsV477InvalidateQueueStatus=function(){queueStatusCache.clear()};
+async function readState(aid,force=false){
+  // Only status leaves, never the entire session/envelope/signatures.
+  aid=S(aid);if(!aid)return {};
+  const k=me()+'|'+aid,old=queueStatusCache.get(k);
+  if(!force&&old&&Date.now()-old.at<30000)return old.promise;
+  const promise=(async()=>{const out={};await Promise.all(QUEUE_STATUS_FIELDS.map(async field=>{
+    try{const val=(await db(`roster_sessions/${safe(aid)}/${field}`).once('value')).val();if(val!==null&&val!==undefined)out[field]=val}catch(_){}
+  }));return out})();queueStatusCache.set(k,{at:Date.now(),promise});
+  try{return await promise}catch(e){queueStatusCache.delete(k);throw e}
+}
 function groupTasks(rows){const map=new Map();for(const r of rows){const k=flightKey(r.item);if(!map.has(k))map.set(k,{key:k,items:[],states:[],sort:timeScore(r.item)});const g=map.get(k);g.items.push(r.item);g.states.push(r.st);g.sort=Math.min(g.sort,timeScore(r.item))}return [...map.values()].map(g=>{g.completed=g.items.every((x,i)=>itemCompleted(x,g.states[i]));g.working=g.items.some((x,i)=>!itemCompleted(x,g.states[i])&&itemWorking(x,g.states[i]));const candidates=g.items.map((x,i)=>({item:x,st:g.states[i],done:itemCompleted(x,g.states[i]),working:itemWorking(x,g.states[i]),ord:Number(x?.workPartOrder||1),leg:U(x?.assignmentLeg)==='ARR'?0:U(x?.assignmentLeg)==='DEP'?2:1,rec:recency(x)})).sort((a,b)=>(a.done?1:0)-(b.done?1:0)||(b.working?1:0)-(a.working?1:0)||a.leg-b.leg||a.ord-b.ord||a.rec-b.rec);let pick=candidates[0];if(g.completed){const pb=candidates.find(c=>isPushbackSource(c.item));if(pb)pick=pb;}g.primary=pick?.item||g.items[0];g.primaryState=pick?.st||g.states[0];g.pushback=g.items.map((x,i)=>isPushbackSource(x)?pbOf(g.states[i]):'').find(Boolean)||'';return g}).sort((a,b)=>a.sort-b.sort||flightLabel(a.primary).localeCompare(flightLabel(b.primary),'vi'))}
 let activeTab='pending',renderToken=0,baseOpen=null,baseRefresh=null,currentQueueDate='';
 function queueDate(preferred=''){
@@ -268,7 +299,7 @@ const openingTasks=new Set();
 async function openTask(aid,fid,completed,cardDate='',exact=false,button=null){
   const date=syncQueueDate(queueDate(cardDate)),key=date+'|'+S(aid||fid);
   if(openingTasks.has(key))return;
-  openingTasks.add(key);if(button)button.disabled=true;
+  openingTasks.add(key);queueStatusCache.delete(me()+'|'+S(aid));if(button)button.disabled=true;
   try{
     const man=await readManifest(date);
     const item=exact?(man?.items?.[aid]||null):resolveOwnedItem(man,aid,fid,completed);

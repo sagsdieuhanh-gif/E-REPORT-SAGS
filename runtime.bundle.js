@@ -1,4 +1,4 @@
-window.__SAGS_RUNTIME_BUILD__="V4.7.5-551-CHECKLIST-IN-QUICK-ENTRY";
+window.__SAGS_RUNTIME_BUILD__="V4.7.7-MAILBOX-LITE-DATA-SAVER";
 /* E-REPORT/SAGS V4.6.2 · LIVE TEST EDIT · FORM MANAGER + FAST PDF */
 if(typeof window!=="undefined")window.__SAGS_V450_FORM_MANAGER_LAYOUT=true;
 
@@ -1948,10 +1948,10 @@ if(typeof window!=="undefined")window.__SAGS_V450_FORM_MANAGER_LAYOUT=true;
     showSyncHint();
     clearTimeout(refreshTimer);
     clearTimeout(refreshAgainTimer);
-    refreshTimer=setTimeout(()=>refreshMyFlight(recDate||d),70);
+    refreshTimer=setTimeout(()=>refreshMyFlight(recDate||d),450);
     // Second short refresh catches the rare case where the mailbox event reaches the
     // client a fraction before the master flight/manifest is visible to the list reader.
-    refreshAgainTimer=setTimeout(()=>refreshMyFlight(recDate||d),420);
+    // V4.7.7: a second full-list request for every mailbox notification is unnecessary.
   }
 
   let mailRef=null, boundPath='', mailAdded=null, mailChanged=null, mailRemoved=null;
@@ -4981,6 +4981,8 @@ if(typeof window!=="undefined")window.__SAGS_V450_FORM_MANAGER_LAYOUT=true;
     if(base.__v2210IndependentDep){receivePatched=true;return true}
 
     const wrapped=async function(fid){
+      // An explicit assignmentId is authoritative; never substitute another DEP.
+      if(S(arguments[1]))return base.apply(this,arguments);
       try{
         const cand=await independentCandidate(S(fid));
         if(cand){
@@ -6826,7 +6828,7 @@ ${files.map((f,i)=>String(i+1)+'. '+f.name).join('\n')}`;}
 (function(root){
 'use strict';
 if(root.__SAGS_V440_FORM_MANAGER_LOADED)return;root.__SAGS_V440_FORM_MANAGER_LOADED=true;
-const BUILD='V4.7.5-551-CHECKLIST-IN-QUICK-ENTRY',REG_URL='./forms.registry.json',LOCAL_KEY='sagsFormRegistryDraftV450',OLD_LOCAL_KEY='sagsFormRegistryDraftV440',DB_NAME='sags-form-assets-v440',STORE='assets';
+const BUILD='V4.7.7-MAILBOX-LITE-DATA-SAVER',REG_URL='./forms.registry.json',LOCAL_KEY='sagsFormRegistryDraftV450',OLD_LOCAL_KEY='sagsFormRegistryDraftV440',DB_NAME='sags-form-assets-v440',STORE='assets';
 const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const clone=v=>{try{return JSON.parse(JSON.stringify(v))}catch(_){return v}};
 let published={schema:2,forms:[]},draft=null,currentId='',pageIndex=0,selectedKey='',selectedMany=new Set(),history=[],future=[],objectUrls=[],testMode=false,testEditMode=true,testValuesV462={};
@@ -6860,7 +6862,7 @@ function syncLegacyToLive(redraw=false){const gs=globalFieldsV45();if(!gs.length
 function saveLocal(){try{localStorage.setItem(LOCAL_KEY,JSON.stringify(draft||{schema:2,forms:[]}))}catch(e){console.warn('V4.5 form local save',e)}try{syncLegacyToLive(false)}catch(_){}}
 function loadLocal(){try{return JSON.parse(localStorage.getItem(LOCAL_KEY)||localStorage.getItem(OLD_LOCAL_KEY)||'null')}catch(_){return null}}
 async function loadPublished(force=false){if(published.forms?.length&&!force)return published;try{const r=await fetch(REG_URL+(force?'?t='+Date.now():''),{cache:force?'no-store':'default'});if(r.ok)published=await r.json()}catch(e){console.info('V4.5 form registry offline',e?.message||e)}return published}
-function mergeRegistry(){const local=isAD()?loadLocal():null;draft=local?.forms?.length?local:clone(published);draft.schema=2;draft.version='V4.7.5';draft.build=BUILD;draft.forms=Array.isArray(draft.forms)?draft.forms:[];hydrateLegacyForms();syncLegacyToLive(false);return draft}
+function mergeRegistry(){const local=isAD()?loadLocal():null;draft=local?.forms?.length?local:clone(published);draft.schema=2;draft.version='V4.7.7';draft.build=BUILD;draft.forms=Array.isArray(draft.forms)?draft.forms:[];hydrateLegacyForms();syncLegacyToLive(false);return draft}
 function form(){return draft?.forms?.find(x=>x.id===currentId)||null}function page(){return form()?.pages?.[pageIndex]||null}
 function clearUrls(){objectUrls.forEach(x=>{try{URL.revokeObjectURL(x)}catch(_){}});objectUrls=[]}
 function dbOpen(){return new Promise((resolve,reject)=>{const q=indexedDB.open(DB_NAME,1);q.onupgradeneeded=()=>{const d=q.result;if(!d.objectStoreNames.contains(STORE))d.createObjectStore(STORE,{keyPath:'key'})};q.onsuccess=()=>resolve(q.result);q.onerror=()=>reject(q.error)})}
