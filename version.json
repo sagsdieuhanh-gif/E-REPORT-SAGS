@@ -1,10 +1,10 @@
 {
-  "version": "V4.5.3",
-  "displayVersion": "V4.5.3",
-  "label": "V4.5.3 TEST",
-  "build": "V4.5.3-CUMULATIVE-UI-FIX",
-  "releasedAt": "2026-09-16T04:22:00Z",
-  "type": "cumulative-ui-fix",
-  "notes": "Bản cumulative bắt buộc kèm runtime.bundle.js. Khôi phục và làm nổi bật ZOOM FORM trong Form Manager và card QUẢN LÝ THÔNG BÁO trong AD Control Center. Giữ Fast PDF và desktop auto-download.",
-  "message": "V4.5.3 TEST · Cumulative runtime/UI fix"
+  "version": "V4.6.0",
+  "displayVersion": "V4.6.0",
+  "label": "V4.6.0 AI FORM ASSIST",
+  "build": "V4.6.0-AI-FORM-ASSIST",
+  "releasedAt": "2026-09-16T04:38:00Z",
+  "type": "ai-form-assist",
+  "notes": "Form Manager thêm AI nhận dạng form bằng OCR chạy trong trình duyệt. Tự gợi ý field, type, bind, vị trí; preview trước khi áp dụng; confidence và Undo. AI engine/model chỉ tải khi AD bấm dùng AI.",
+  "message": "V4.6.0 · AI Form Assist · Local OCR + layout suggestions"
 }
