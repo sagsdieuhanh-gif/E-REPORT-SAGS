@@ -1,10 +1,10 @@
 {
-  "version": "V4.4.4",
-  "displayVersion": "V4.4.4",
-  "label": "V4.4.4",
-  "build": "V4.4.4-FORM-MANAGER-VISIBLE",
-  "releasedAt": "2026-09-16T03:18:00Z",
-  "type": "form-manager-ui-fix",
-  "notes": "Đưa Form Manager mới vào trực tiếp cửa sổ CĂN CHỈNH BIỂU MẪU: nút MỞ FORM MANAGER và TẠO FORM MỚI + ẢNH luôn thấy với AD; giữ căn nhanh form cũ.",
-  "message": "V4.4.4 · Form Manager hiển thị trực tiếp trong CĂN CHỈNH"
+  "version": "V4.5.0",
+  "displayVersion": "V4.5.0",
+  "label": "V4.5.0 TEST",
+  "build": "V4.5.0-FORM-MANAGER-FAST-PDF-TEST",
+  "releasedAt": "2026-09-16T03:55:00Z",
+  "type": "form-manager-fast-pdf-test",
+  "notes": "Bỏ hẳn Căn nhanh cũ. Form Manager quản lý layout form hệ thống + form mới; màn hình và PDF dùng cùng geometry. Fast PDF vẽ trực tiếp Canvas, không rasterize SVG Blob. Có TEST HIỂN THỊ, PDF PREVIEW, căn trái/phải/trên/dưới/giữa/cùng kích thước/dàn đều và PDF performance.",
+  "message": "V4.5.0 TEST · Form Manager single source + Fast PDF"
 }

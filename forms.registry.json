@@ -1,9 +1,9 @@
 {
-  "schema": 1,
-  "version": "V4.4.4",
-  "build": "V4.4.4-FORM-MANAGER-VISIBLE",
-  "updatedAt": "2026-09-16T03:18:00Z",
-  "note": "Published form registry. Legacy forms keep current coordinate engine; AD Form Manager is now launched directly from CĂN CHỈNH BIỂU MẪU for new/custom forms.",
+  "schema": 2,
+  "version": "V4.5.0",
+  "build": "V4.5.0-FORM-MANAGER-FAST-PDF-TEST",
+  "updatedAt": "2026-09-16T03:55:00Z",
+  "note": "V4.5 TEST: Form Manager is the single layout authority. Existing system fields are auto-hydrated from the canonical field model, then published by exporting this registry. PDF uses the same geometry.",
   "forms": [
     {
       "id": "fsags423",
@@ -16,16 +16,19 @@
           "id": "p1",
           "image": "./page1.png",
           "width": 1241,
-          "height": 1755
+          "height": 1755,
+          "sourcePage": 1
         },
         {
           "id": "p2",
           "image": "./page2.png",
           "width": 1241,
-          "height": 1755
+          "height": 1755,
+          "sourcePage": 2
         }
       ],
-      "fields": []
+      "fields": [],
+      "engine": "form-manager-v450"
     },
     {
       "id": "fsags421",
@@ -38,16 +41,19 @@
           "id": "p1",
           "image": "./page6.png",
           "width": 1241,
-          "height": 1755
+          "height": 1755,
+          "sourcePage": 6
         },
         {
           "id": "p2",
           "image": "./page7.png",
           "width": 1241,
-          "height": 1755
+          "height": 1755,
+          "sourcePage": 7
         }
       ],
-      "fields": []
+      "fields": [],
+      "engine": "form-manager-v450"
     },
     {
       "id": "fsags551",
@@ -60,16 +66,19 @@
           "id": "p1",
           "image": "./page9.png",
           "width": 1241,
-          "height": 1755
+          "height": 1755,
+          "sourcePage": 9
         },
         {
           "id": "p2",
           "image": "./page10.png",
           "width": 1241,
-          "height": 1755
+          "height": 1755,
+          "sourcePage": 10
         }
       ],
-      "fields": []
+      "fields": [],
+      "engine": "form-manager-v450"
     },
     {
       "id": "fsags09",
@@ -82,16 +91,19 @@
           "id": "p1",
           "image": "./page11.png",
           "width": 1241,
-          "height": 1755
+          "height": 1755,
+          "sourcePage": 11
         },
         {
           "id": "p2",
           "image": "./page12.png",
           "width": 1241,
-          "height": 1755
+          "height": 1755,
+          "sourcePage": 12
         }
       ],
-      "fields": []
+      "fields": [],
+      "engine": "form-manager-v450"
     },
     {
       "id": "fsags208",
@@ -104,10 +116,12 @@
           "id": "p1",
           "image": "./page13.png",
           "width": 1491,
-          "height": 1055
+          "height": 1055,
+          "sourcePage": 13
         }
       ],
-      "fields": []
+      "fields": [],
+      "engine": "form-manager-v450"
     },
     {
       "id": "bbbt",
@@ -120,10 +134,12 @@
           "id": "p1",
           "image": "./page4.png",
           "width": 1241,
-          "height": 1755
+          "height": 1755,
+          "sourcePage": 4
         }
       ],
-      "fields": []
+      "fields": [],
+      "engine": "form-manager-v450"
     }
   ]
 }

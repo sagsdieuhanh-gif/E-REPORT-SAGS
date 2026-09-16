@@ -1,13 +1,14 @@
 {
   "schema": 2,
-  "version": "V4.4.4",
-  "build": "V4.4.4-FORM-MANAGER-VISIBLE",
+  "version": "V4.5.0",
+  "build": "V4.5.0-FORM-MANAGER-FAST-PDF-TEST",
   "strategy": "stable-cache-sha256-delta",
   "bootstrapChanged": [
     "./index.html",
     "./service-worker.js",
     "./runtime.bundle.js",
-    "./forms.registry.json"
+    "./forms.registry.json",
+    "./version.json"
   ],
   "assets": {
     "./#U0110H.png": {
@@ -115,12 +116,8 @@
       "bytes": 42925
     },
     "./forms.registry.json": {
-      "sha256": "8792004699bddd1ceea75635454c15cfaab4c0d446ce2c09a0880984712a50f7",
-      "bytes": 2681
-    },
-    "./fsags-display-coordinates.json": {
-      "sha256": "9ba95aab8420c74b377970e082e81a43f6402c262d6d82aa2dcc13fd7834b4be",
-      "bytes": 13254
+      "sha256": "01052c58802de89ddb38fa9384455e5f2185e0e3a4fdac17b9710742480fa05a",
+      "bytes": 3219
     },
     "./fsags13-official-continuation.png": {
       "sha256": "02307b2c25abdafe779c640e8c1b584a4cade98a176e34ceecb3f9fa021bb7ed",
@@ -139,8 +136,8 @@
       "bytes": 104295
     },
     "./index.html": {
-      "sha256": "96b9b66db6006a341a9964cb2ed38dfc3df53b6a0e8769f349f1354e84d2047c",
-      "bytes": 1763670
+      "sha256": "9aecaeaf4be6391df37071d165332aaa3f7c66f310afe9a476b59c43c9fd0617",
+      "bytes": 1763803
     },
     "./ket-so.wav": {
       "sha256": "cf03e8d4021f989f61fd12249f282ae2e53588cc9d55d68393778223db8132a1",
@@ -223,20 +220,20 @@
       "bytes": 21617
     },
     "./runtime.bundle.js": {
-      "sha256": "98451b5d174e9cb7839fe08009f8d827c492b8363de2835e7722862de601d3e7",
-      "bytes": 371407
+      "sha256": "f34e2f037110219c01c5d8ee255458adc2e8aa2cfc3e9787a33218d08dd28391",
+      "bytes": 393000
     },
     "./sags-logo.png": {
       "sha256": "84bc554c3b44afe4190afcbe74f7c7aed9fad478c328d63502a7d225dd60d7ad",
       "bytes": 25408
     },
     "./service-worker.js": {
-      "sha256": "7ef9a4d54de0899321b7361d53a5b676712299c82811c9e45003f1bde9d8f824",
-      "bytes": 6563
+      "sha256": "48ef0341e2b425597c80899686f708d4723d835f24d6ead5c0faf9e06c2d6ca3",
+      "bytes": 6575
     },
     "./version.json": {
-      "sha256": "543c49132ee81e38b2d83eb02b0eb77bc8233a2ef25deefe851e880b1445109b",
-      "bytes": 475
+      "sha256": "6fa4cf8d15ede31e303397f7ed73d62466b2a4803f0ea25960718d1f766da322",
+      "bytes": 616
     }
   }
 }
