@@ -142,7 +142,7 @@ function install(){const toolbar=document.querySelector('.toolbar-row.main-actio
 })(window);
 
 
-/* ===== CARRIER SERVICE NOTEBOOK · V4.7.1 · LOCAL FIRST + AD EXCEL MANAGER ===== */
+/* ===== CARRIER SERVICE NOTEBOOK · V4.7.2 · LOCAL FIRST + AD EXCEL MANAGER ===== */
 (function(root){'use strict';
 const DATA_URL='./carrier-service-guide.json', VERSION_URL='./carrier-guide-version.json';
 const IDB_NAME='sags-carrier-guide-v1', IDB_STORE='kv', SHEETJS_URL='https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js';
@@ -176,12 +176,57 @@ async function fetchGuide(ver){const q=encodeURIComponent(S(ver?.hash||ver?.vers
 async function seedLocal(){let g=await idbGet('guide'),m=await idbGet('meta');if(g?.carriers?.length){db=g;meta=m||null;return true}try{let rm=null;try{rm=await fetchMeta()}catch(_){}let pack;if(rm)pack=await fetchGuide(rm);else{const r=await fetch(DATA_URL,{cache:'default'});const text=await r.text();pack={guide:JSON.parse(text),text,hash:await sha256Text(text)}};db=pack.guide;meta=rm||{schema:1,revision:1,version:'1',hash:pack.hash,bytes:pack.text.length,updatedAt:db.generatedAt,source:db.source,carriers:db.carriers?.length||0};await idbPut('guide',db);await idbPut('meta',meta);return true}catch(e){console.warn('Carrier service guide seed',e);db={carriers:[]};return false}}
 async function checkRemote(){if(remoteChecked)return;remoteChecked=true;try{const rm=await fetchMeta();const lm=meta||await idbGet('meta');if(!db?.carriers?.length)await seedLocal();if(rm?.hash&&lm?.hash&&U(rm.hash)===U(lm.hash))return;const pack=await fetchGuide(rm);db=pack.guide;meta=rm;await idbPut('guide',db);await idbPut('meta',meta);selected=db.carriers?.[0]?.carrier||selected;renderList();renderDetail(db.carriers?.find(x=>x.carrier===selected));refresh()}catch(e){console.info('Carrier guide dùng bản local:',e?.message||e)}}
 async function load(){if(db?.carriers?.length){if(!remoteChecked)setTimeout(checkRemote,0);return db}await seedLocal();if(!remoteChecked)setTimeout(checkRemote,0);return db}
-function activeState(){let st=(root.state&&typeof root.state==='object')?root.state:null,meta0=null,sid='';try{sid=S(root.activeFlightSessionId);meta0=root.currentFlightSessionMeta?.()||null;if((!st||!Object.keys(st).length)&&sid){const e=root.readFlightSessionEnvelope?.(sid)||{};st=e.state||{}}}catch(_){st=st||{}}return {st:st||{},meta:meta0,sid}}
+// The RAMP app declares `const state` and `let activeFlightSessionId` in a
+// classic inline script. These are global *lexical bindings*, not window
+// properties; window.state/window.activeFlightSessionId are normally absent.
+function activeState(){
+  let sid='',meta0=null,st=null;
+  try{sid=S(typeof activeFlightSessionId!=='undefined'?activeFlightSessionId:root.activeFlightSessionId)}catch(_){sid=S(root.activeFlightSessionId)}
+  try{meta0=(typeof currentFlightSessionMeta==='function'?currentFlightSessionMeta():root.currentFlightSessionMeta?.())||null}catch(_){try{meta0=root.currentFlightSessionMeta?.()||null}catch(__){}}
+  try{st=(typeof state!=='undefined'&&state&&typeof state==='object')?state:null}catch(_){}
+  // Older integrations may explicitly export the active state to window.
+  if(!st&&root.state&&typeof root.state==='object')st=root.state;
+  if(sid&&(!st||!Object.keys(st).length))try{const env=root.readFlightSessionEnvelope?.(sid)||{};st=env.state||st}catch(_){}
+  return {st:st||{},meta:meta0,sid};
+}
 function pick(st,...keys){for(const k of keys){const v=S(st?.[k]);if(v&&U(v)!=='N/A')return v}return ''}
-function currentCtx(){const {st,meta:meta0,sid}=activeState(),flights=[pick(st,'fltAfter','f421_fltAfter','f551_fltAfter','f09_fltAfter'),pick(st,'fltBefore','f421_fltBefore','f551_fltBefore','f09_fltBefore')].map(normFlight).filter(Boolean);let reg=pick(st,'regn','f421_regn','f551_regn','f09_regn','acReg');let fleetAir='';try{fleetAir=S(root.fleetInfo?.(reg)?.airline)}catch(_){}return {sid,meta:meta0,st,flights,reg,fleetAir,label:flights.join(' / ')||S(meta0?.name)||'CHƯA MỞ CHUYẾN'}}
-function matchCarrier(ctx){if(!db?.carriers)return null;const all=[];for(const c of db.carriers)for(const a of (c.aliases||[c.carrier]))all.push({a:U(a).replace(/[^A-Z0-9]/g,''),c});all.sort((x,y)=>y.a.length-x.a.length);for(const f of ctx.flights)for(const x of all)if(x.a&&f.startsWith(x.a)&&/^\d/.test(f.slice(x.a.length)))return x.c;const air=U(ctx.fleetAir).replace(/[^A-Z0-9]/g,'');if(air)for(const x of all)if(x.a===air)return x.c;return null}
+// Only parse flight-shaped tokens in the *active session's* name/metadata.
+// Example: "RAMP VU1271/VU1270" -> ["VU1271", "VU1270"].
+function flightTokens(value){
+  const text=U(value),result=[];
+  const re=/(?:^|[^A-Z0-9])([A-Z0-9]{2,3}\s*[- ]?\s*\d{1,5}[A-Z]?)(?=$|[^A-Z0-9])/g;
+  let m;while((m=re.exec(text))!==null){const f=normFlight(m[1]);if(f&&!result.includes(f))result.push(f)}
+  return result;
+}
+function currentCtx(){
+  const {st,meta:meta0,sid}=activeState();
+  if(!sid&&!meta0)return {sid:'',meta:null,st:{},flights:[],reg:'',fleetAir:'',label:'CHƯA MỞ CHUYẾN'};
+  const keys=['fltAfter','f421_fltAfter','f551_fltAfter','f09_fltAfter','fltBefore','f421_fltBefore','f551_fltBefore','f09_fltBefore'];
+  const flights=[];
+  for(const key of keys)for(const f of flightTokens(st[key]))if(!flights.includes(f))flights.push(f);
+  // Session titles and roster metadata also identify the flight before a user
+  // has entered either flight-number field; do not read other saved sessions.
+  for(const key of ['depFlight','departureFlight','arrFlight','arrivalFlight','flightRaw','flightName','name'])
+    for(const f of flightTokens(meta0?.[key]))if(!flights.includes(f))flights.push(f);
+  const reg=pick(st,'regn','f421_regn','f551_regn','f09_regn','acReg');
+  let fleetAir='';try{if(reg)fleetAir=S(root.fleetInfo?.(reg)?.airline)}catch(_){}
+  return {sid,meta:meta0,st,flights,reg,fleetAir,label:flights.join(' / ')||S(meta0?.name)||'CHƯA CÓ SỐ CHUYẾN'};
+}
+function matchCarrier(ctx){
+  if(!db?.carriers||!ctx||(!ctx.sid&&!ctx.meta))return null;
+  const all=[];
+  for(const c of db.carriers)for(const a of (c.aliases||[c.carrier]))all.push({a:U(a).replace(/[^A-Z0-9]/g,''),c});
+  all.sort((x,y)=>y.a.length-x.a.length);
+  for(const f of ctx.flights)for(const x of all)if(x.a&&f.startsWith(x.a)&&/^\d/.test(f.slice(x.a.length)))return x.c;
+  // Registration is a fallback only when flight numbers are genuinely absent.
+  // Do not show another carrier's guidance for an unrecognized flight number.
+  if(ctx.flights.length)return null;
+  const air=U(ctx.fleetAir).replace(/[^A-Z0-9]/g,'');
+  if(air)for(const x of all)if(x.a===air)return x.c;
+  return null;
+}
 function notesPresent(c){if(!c)return false;return Object.values(c.sections||{}).flat().some(x=>{const t=U(x);return t&&t!=='NIL'&&t!=='NO'})}
-function ensureUi(){ensureStyle();document.documentElement.classList.toggle('csgAdmin',isAdmin());if(!$('csgBtn')){const b=document.createElement('button');b.id='csgBtn';b.type='button';b.innerHTML='<span class="csgBang">!</span><span class="csgLabel">📓 SỔ TAY HÃNG</span>';b.onclick=()=>open();document.body.appendChild(b)}if(!$('csgModal')){const m=document.createElement('div');m.id='csgModal';m.innerHTML=`<div id="csgPanel" role="dialog" aria-modal="true" aria-label="Sổ tay phục vụ hãng"><div id="csgHead"><b>📓 SỔ TAY PHỤC VỤ HÃNG</b><button id="csgManage" class="csgHeadBtn">⚙ QUẢN LÝ DỮ LIỆU</button><button id="csgClose" class="csgHeadBtn">ĐÓNG</button></div><div id="csgTools"><input id="csgSearch" placeholder="Tìm hãng / loại tàu / nội dung lưu ý…"><button id="csgCurrent">! CHUYẾN ĐANG MỞ</button></div><div id="csgBody"><div class="csgList" id="csgList"></div><div id="csgDetail"></div></div></div>`;document.body.appendChild(m);$('csgClose').onclick=close;$('csgManage').onclick=openManager;$('csgModal').addEventListener('click',e=>{if(e.target===$('csgModal'))close()});$('csgSearch').addEventListener('input',renderList);$('csgCurrent').onclick=()=>{const c=matchCarrier(currentCtx());if(c){selected=c.carrier;renderList();renderDetail(c)}else alert('Chuyến đang mở chưa khớp hãng nào trong Sổ tay.')};document.addEventListener('keydown',e=>{if(e.key==='Escape'){$('csgMgr')?.classList.remove('open');if(!$('csgMgr')?.classList.contains('open'))close()}})}ensureManagerUi()}
+function ensureUi(){ensureStyle();document.documentElement.classList.toggle('csgAdmin',isAdmin());if(!$('csgBtn')){const b=document.createElement('button');b.id='csgBtn';b.type='button';b.innerHTML='<span class="csgBang">!</span><span class="csgLabel">📓 SỔ TAY HÃNG</span>';b.onclick=()=>open();document.body.appendChild(b)}if(!$('csgModal')){const m=document.createElement('div');m.id='csgModal';m.innerHTML=`<div id="csgPanel" role="dialog" aria-modal="true" aria-label="Sổ tay phục vụ hãng"><div id="csgHead"><b>📓 SỔ TAY PHỤC VỤ HÃNG</b><button id="csgManage" class="csgHeadBtn">⚙ QUẢN LÝ DỮ LIỆU</button><button id="csgClose" class="csgHeadBtn">ĐÓNG</button></div><div id="csgTools"><input id="csgSearch" placeholder="Tìm hãng / loại tàu / nội dung lưu ý…"><button id="csgCurrent">! CHUYẾN ĐANG MỞ</button></div><div id="csgBody"><div class="csgList" id="csgList"></div><div id="csgDetail"></div></div></div>`;document.body.appendChild(m);$('csgClose').onclick=close;$('csgManage').onclick=openManager;$('csgModal').addEventListener('click',e=>{if(e.target===$('csgModal'))close()});$('csgSearch').addEventListener('input',renderList);$('csgCurrent').onclick=()=>{const c=matchCarrier(currentCtx());if(c){selected=c.carrier;renderList();renderDetail(c)}else{const ctx=currentCtx();alert(ctx.flights.length?'Chưa tìm thấy hướng dẫn cho chuyến '+ctx.label+' trong Sổ tay. Bạn có thể tìm hãng bằng ô tra cứu.':'Chưa đọc được số hiệu chuyến đang mở. Hãy kiểm tra số hiệu chuyến trên RAMP hoặc tra cứu hãng bằng ô tìm kiếm.')}};document.addEventListener('keydown',e=>{if(e.key==='Escape'){$('csgMgr')?.classList.remove('open');if(!$('csgMgr')?.classList.contains('open'))close()}})}ensureManagerUi()}
 function ensureManagerUi(){if($('csgMgr'))return;const m=document.createElement('div');m.id='csgMgr';m.innerHTML=`<div id="csgMgrCard"><div class="csgMgrHead"><b>⚙ AD · QUẢN LÝ SỔ TAY HÃNG</b><button id="csgMgrClose">ĐÓNG</button></div><div class="csgMgrBody"><div class="csgMgrInfo"><b>LOCAL-FIRST:</b> người dùng lưu database trên máy. App chỉ kiểm tra <code>carrier-guide-version.json</code> rất nhỏ; chỉ khi hash đổi mới tải lại <code>carrier-service-guide.json</code>.</div><div class="csgMgrGrid"><div class="csgMgrBlock"><h4>1 · IMPORT EXCEL</h4><div class="csgMgrSmall">Chấp nhận bảng có header SERIAL / CARRIER / TYPE / ROUTE / NOTE và các cột Coor / Loading / Tài liệu / Flightplan như file hiện tại.</div><input id="csgExcel" type="file" accept=".xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" hidden><div class="csgMgrActions"><button id="csgPickExcel" class="csgMgrBtn primary">📥 CHỌN FILE EXCEL</button></div><div id="csgMgrStatus" class="csgMgrStatus">Chưa chọn file.</div></div><div class="csgMgrBlock"><h4>2 · SO SÁNH / XEM TRƯỚC</h4><div id="csgMgrDiff" class="csgMgrDiff"><div class="csgMgrKpi"><b id="csgKTotal">0</b>Tổng hãng</div><div class="csgMgrKpi"><b id="csgKAdd">0</b>Thêm</div><div class="csgMgrKpi"><b id="csgKChange">0</b>Thay đổi</div><div class="csgMgrKpi"><b id="csgKRemove">0</b>Xóa</div></div><div id="csgMgrPreview" class="csgMgrPreview"></div></div><div class="csgMgrBlock"><h4>3 · TEST TRÊN MÁY AD</h4><div class="csgMgrSmall">Áp dụng bản import vào IndexedDB của máy này để kiểm tra Sổ tay trước khi phát hành. Không gửi Firebase.</div><div class="csgMgrActions"><button id="csgApplyLocal" class="csgMgrBtn good" disabled>✓ DÙNG BẢN IMPORT TRÊN MÁY NÀY</button><button id="csgRestoreRemote" class="csgMgrBtn">↶ KHÔI PHỤC BẢN GITHUB</button></div></div><div class="csgMgrBlock"><h4>4 · XUẤT FILE ĐỂ UP GITHUB</h4><div class="csgMgrSmall">Xuất đúng 2 file. Upload đè chúng vào root GitHub. Không cần sửa code/app version chỉ để thay lưu ý hãng.</div><div class="csgMgrActions"><button id="csgExportPair" class="csgMgrBtn warn" disabled>⬇ XUẤT 2 FILE CẬP NHẬT</button></div><div id="csgExportInfo" class="csgMgrSmall"></div></div></div></div></div>`;document.body.appendChild(m);$('csgMgrClose').onclick=()=>m.classList.remove('open');$('csgPickExcel').onclick=()=>$('csgExcel').click();$('csgExcel').onchange=e=>importExcel(e.target.files?.[0]);$('csgApplyLocal').onclick=applyDraftLocal;$('csgRestoreRemote').onclick=restoreRemote;$('csgExportPair').onclick=exportPair;m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')})}
 function carrierHay(c){return U([c.carrier,c.aircraftTypeRaw,c.routeType,...Object.values(c.sections||{}).flat()].join(' '))}
 function renderList(){if(!db||!$('csgList'))return;const q=U($('csgSearch')?.value),arr=db.carriers.filter(c=>!q||carrierHay(c).includes(q));$('csgList').innerHTML=arr.length?arr.map(c=>`<button class="csgCarrier ${c.carrier===selected?'sel':''}" data-c="${esc(c.carrier)}"><b>${esc(c.carrier)}</b><small>${esc(c.aircraftTypeRaw||'')} · ${esc(c.routeType||'')}</small></button>`).join(''):'<div class="csgEmpty">Không tìm thấy.</div>';document.querySelectorAll('#csgList [data-c]').forEach(b=>b.onclick=()=>{selected=b.dataset.c;renderList();renderDetail(db.carriers.find(c=>c.carrier===selected))})}

@@ -1,10 +1,10 @@
 {
-  "version": "V4.7.1",
-  "displayVersion": "V4.7.1",
-  "label": "V4.7.1 LOCAL CARRIER GUIDE MANAGER",
-  "build": "V4.7.1-LOCAL-CARRIER-GUIDE-MANAGER",
-  "releasedAt": "2026-09-16T06:10:00Z",
-  "type": "carrier-guide-local-manager",
-  "notes": "AD import Excel ngay trong Sổ tay hãng, preview/so sánh, test local IndexedDB và xuất carrier-service-guide.json + carrier-guide-version.json. Người dùng lưu database trên máy; chỉ kiểm tra version nhỏ và tải lại guide khi hash đổi.",
-  "message": "V4.7.1 · AD Import Excel · Sổ tay hãng local-first"
+  "version": "V4.7.2",
+  "displayVersion": "V4.7.2",
+  "label": "V4.7.2 CURRENT FLIGHT CARRIER FIX",
+  "build": "V4.7.2-CURRENT-FLIGHT-CARRIER-FIX",
+  "releasedAt": "2026-09-16T06:29:00Z",
+  "type": "carrier-guide-context-fix",
+  "notes": "Fix Sổ tay hãng reading global lexical RAMP state/activeFlightSessionId; show current VU1271/VU1270 and follow session switches.",
+  "message": "V4.7.2 · Sửa tra cứu hãng chuyến đang mở"
 }

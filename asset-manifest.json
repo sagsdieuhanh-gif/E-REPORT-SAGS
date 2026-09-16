@@ -1,17 +1,14 @@
 {
   "schema": 2,
-  "version": "V4.7.1",
-  "build": "V4.7.1-LOCAL-CARRIER-GUIDE-MANAGER",
+  "version": "V4.7.2",
+  "build": "V4.7.2-CURRENT-FLIGHT-CARRIER-FIX",
   "strategy": "stable-cache-sha256-delta",
   "bootstrapChanged": [
     "./index.html",
-    "./service-worker.js",
-    "./version.json",
     "./runtime.bundle.js",
     "./features.bundle.js",
-    "./app.bundle.css",
-    "./carrier-service-guide.json",
-    "./carrier-guide-version.json"
+    "./service-worker.js",
+    "./version.json"
   ],
   "assets": {
     "./#U0110H.png": {
@@ -123,8 +120,8 @@
       "bytes": 1151
     },
     "./features.bundle.js": {
-      "sha256": "870a49118bb6f2a8891af28651b6d1dc752fdcc70bc2e26db12671591bd43b4a",
-      "bytes": 72039
+      "sha256": "4be58b596cf6ab0fe289a5e881d4f5d7dd0370d27bcdf3990ae83611894192bc",
+      "bytes": 74203
     },
     "./forms.registry.json": {
       "sha256": "e74e954e73f62ce07ec23f2dc76b056df2645b78599b3c7f3edd8f0fcd18a9b8",
@@ -147,8 +144,8 @@
       "bytes": 104295
     },
     "./index.html": {
-      "sha256": "e79cb9e5ce12167764e13a5fd567097f72867bbff854f82a7d316cb39e63a643",
-      "bytes": 1765211
+      "sha256": "e466500119d68f731794b3fb93ca0cda38a10e827a4902c136314f01305d9826",
+      "bytes": 1765209
     },
     "./ket-so.wav": {
       "sha256": "cf03e8d4021f989f61fd12249f282ae2e53588cc9d55d68393778223db8132a1",
@@ -231,20 +228,20 @@
       "bytes": 21617
     },
     "./runtime.bundle.js": {
-      "sha256": "f5a2f46239a9f1ce7e42ba4e09b7ac915c478044c112cfbe5fca506009627655",
-      "bytes": 433854
+      "sha256": "b63c72681bb8bd18ff006991ad2bf8273525acf8f695bf86ba7048dc0b46f189",
+      "bytes": 433852
     },
     "./sags-logo.png": {
       "sha256": "84bc554c3b44afe4190afcbe74f7c7aed9fad478c328d63502a7d225dd60d7ad",
       "bytes": 25408
     },
     "./service-worker.js": {
-      "sha256": "bbe422b6cf7a560115ad082fff1ce5237530c2102ac0165a1678fe588d096b9c",
-      "bytes": 6761
+      "sha256": "8d94aef4653b5c614b1b4ef1d4c18790dce4a097b4dd941935f3996e669eee95",
+      "bytes": 6760
     },
     "./version.json": {
-      "sha256": "a597afe6db6d3a68c060b98e5e55573a4faab1a4b1d8aaf11f859fc8afe1c6c2",
-      "bytes": 582
+      "sha256": "a05774ef384da0a503c6956018c92b2e1697c1805d432ee68ec81824e44872f6",
+      "bytes": 445
     }
   }
 }
