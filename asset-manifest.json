@@ -1,11 +1,13 @@
 {
   "schema": 2,
-  "version": "V4.4.3",
-  "build": "V4.4.3-UPDATE-FLOW-FIX",
+  "version": "V4.4.4",
+  "build": "V4.4.4-FORM-MANAGER-VISIBLE",
   "strategy": "stable-cache-sha256-delta",
   "bootstrapChanged": [
     "./index.html",
-    "./service-worker.js"
+    "./service-worker.js",
+    "./runtime.bundle.js",
+    "./forms.registry.json"
   ],
   "assets": {
     "./#U0110H.png": {
@@ -113,8 +115,8 @@
       "bytes": 42925
     },
     "./forms.registry.json": {
-      "sha256": "bdc0ca28d5ed64562134ec3e670d7ec996137e4d38b34ed0fe33b84905487a5b",
-      "bytes": 2698
+      "sha256": "8792004699bddd1ceea75635454c15cfaab4c0d446ce2c09a0880984712a50f7",
+      "bytes": 2681
     },
     "./fsags-display-coordinates.json": {
       "sha256": "9ba95aab8420c74b377970e082e81a43f6402c262d6d82aa2dcc13fd7834b4be",
@@ -137,8 +139,8 @@
       "bytes": 104295
     },
     "./index.html": {
-      "sha256": "a95090b496d0f877962fdb4c9a8d437f45c33a66fde49a0a784b1cca928ad34e",
-      "bytes": 1763665
+      "sha256": "96b9b66db6006a341a9964cb2ed38dfc3df53b6a0e8769f349f1354e84d2047c",
+      "bytes": 1763670
     },
     "./ket-so.wav": {
       "sha256": "cf03e8d4021f989f61fd12249f282ae2e53588cc9d55d68393778223db8132a1",
@@ -221,12 +223,20 @@
       "bytes": 21617
     },
     "./runtime.bundle.js": {
-      "sha256": "788ffa800cdbd6f5bd127904b39a8db206adae62b746fc4d305634f0b85094da",
-      "bytes": 369260
+      "sha256": "98451b5d174e9cb7839fe08009f8d827c492b8363de2835e7722862de601d3e7",
+      "bytes": 371407
     },
     "./sags-logo.png": {
       "sha256": "84bc554c3b44afe4190afcbe74f7c7aed9fad478c328d63502a7d225dd60d7ad",
       "bytes": 25408
+    },
+    "./service-worker.js": {
+      "sha256": "7ef9a4d54de0899321b7361d53a5b676712299c82811c9e45003f1bde9d8f824",
+      "bytes": 6563
+    },
+    "./version.json": {
+      "sha256": "543c49132ee81e38b2d83eb02b0eb77bc8233a2ef25deefe851e880b1445109b",
+      "bytes": 475
     }
   }
 }

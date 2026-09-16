@@ -1,9 +1,9 @@
 {
   "schema": 1,
-  "version": "V4.4.0",
-  "build": "V4.4.0-FORM-MANAGER-REALTIME-LITE",
-  "updatedAt": "2026-09-16T02:30:00Z",
-  "note": "Published form registry. Legacy forms keep current engine; custom forms use the generic V4.4 engine. Add forms by AD Form Manager and deploy exported assets + registry entry.",
+  "version": "V4.4.4",
+  "build": "V4.4.4-FORM-MANAGER-VISIBLE",
+  "updatedAt": "2026-09-16T03:18:00Z",
+  "note": "Published form registry. Legacy forms keep current coordinate engine; AD Form Manager is now launched directly from CĂN CHỈNH BIỂU MẪU for new/custom forms.",
   "forms": [
     {
       "id": "fsags423",

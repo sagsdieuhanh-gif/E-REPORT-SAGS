@@ -1,10 +1,10 @@
 {
-  "version": "V4.4.3",
-  "displayVersion": "V4.4.3",
-  "label": "V4.4.3",
-  "build": "V4.4.3-UPDATE-FLOW-FIX",
-  "releasedAt": "2026-09-16T03:02:00Z",
-  "type": "web-update-flow-fix",
-  "notes": "Sửa luồng UPDATE Service Worker: worker mới chờ ở waiting và chỉ kích hoạt khi người dùng bấm UPDATE; không còn báo sai là mạng lỗi khi worker đã đổi trạng thái.",
-  "message": "V4.4.3 · Sửa UPDATE Service Worker"
+  "version": "V4.4.4",
+  "displayVersion": "V4.4.4",
+  "label": "V4.4.4",
+  "build": "V4.4.4-FORM-MANAGER-VISIBLE",
+  "releasedAt": "2026-09-16T03:18:00Z",
+  "type": "form-manager-ui-fix",
+  "notes": "Đưa Form Manager mới vào trực tiếp cửa sổ CĂN CHỈNH BIỂU MẪU: nút MỞ FORM MANAGER và TẠO FORM MỚI + ẢNH luôn thấy với AD; giữ căn nhanh form cũ.",
+  "message": "V4.4.4 · Form Manager hiển thị trực tiếp trong CĂN CHỈNH"
 }
