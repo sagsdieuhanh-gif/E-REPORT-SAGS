@@ -1,10 +1,10 @@
 {
-  "version": "V4.7.7",
-  "displayVersion": "V4.7.7",
-  "label": "V4.7.7 MAILBOX LITE DATA SAVER",
-  "build": "V4.7.7-MAILBOX-LITE-DATA-SAVER",
-  "releasedAt": "2026-09-16T12:00:30+00:00",
-  "type": "worker-mailbox-lite",
-  "notes": "Worker MY FLIGHT and MULTITASK use only the signed-in user mailbox and lightweight session status leaves, never load full day-wide records for their list. Exact-assignment opening and blank-only conditional handover preserve pre-existing form edits. The AD network meter is unchanged; other app features can still use network.",
-  "message": "V4.7.7 · MY FLIGHT chỉ tải phân công của bạn"
+  "version": "V4.7.8",
+  "displayVersion": "V4.7.8",
+  "label": "V4.7.8 PERSONAL MAILBOX + PINNED FLIGHT",
+  "build": "V4.7.8-PERSONAL-MAILBOX-PINNED-FLIGHT",
+  "releasedAt": "2026-09-16T12:31:50+00:00",
+  "type": "worker-day-mailbox-pinned-local",
+  "notes": "Workers: one RTDB mailbox query for the signed-in account and selected opDate; no full-day roster reads from the core opener, no second runtime mailbox listener or automatic 3-day form prefetch. Explicit per-flight PIN stores only assignment identifiers/metadata on-device (IndexedDB, localStorage fallback). Reopen checks the exact server assignment before loading that form; existing handover data protections remain. RTDB rules should index roster_mail/$user/items by opDate.",
+  "message": "V4.7.8 · MY FLIGHT chỉ đọc phân công đúng ngày; ghim chuyến trên máy"
 }

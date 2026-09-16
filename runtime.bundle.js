@@ -1,4 +1,4 @@
-window.__SAGS_RUNTIME_BUILD__="V4.7.7-MAILBOX-LITE-DATA-SAVER";
+window.__SAGS_RUNTIME_BUILD__="V4.7.8-PERSONAL-MAILBOX-PINNED-FLIGHT";
 /* E-REPORT/SAGS V4.6.2 · LIVE TEST EDIT · FORM MANAGER + FAST PDF */
 if(typeof window!=="undefined")window.__SAGS_V450_FORM_MANAGER_LAYOUT=true;
 
@@ -1966,6 +1966,7 @@ if(typeof window!=="undefined")window.__SAGS_V450_FORM_MANAGER_LAYOUT=true;
   function bindMailbox(){
     const u=me();
     if(!u||typeof root.sagsV470Ref!=='function')return false;
+    if(role()!=='AD'){unbindMailbox();return true;} // V4.7.8: worker uses one date-filtered subscription in roster-lite.
     const path=`roster_mail/${safe(u)}/items`;
     if(path===boundPath&&mailRef)return true;
     unbindMailbox();

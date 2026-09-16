@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V4.7.7",
-  "build": "V4.7.7-MAILBOX-LITE-DATA-SAVER",
+  "version": "V4.7.8",
+  "build": "V4.7.8-PERSONAL-MAILBOX-PINNED-FLIGHT",
   "strategy": "stable-cache-sha256-delta",
   "bootstrapChanged": [
     "./index.html",
@@ -9,6 +9,7 @@
     "./daily-roster.js",
     "./runtime.bundle.js",
     "./roster-lite.js",
+    "./pinned-flight.js",
     "./service-worker.js",
     "./version.json"
   ],
@@ -94,8 +95,8 @@
       "bytes": 46693
     },
     "./app.js": {
-      "sha256": "69ae9ff38f76cb9132eacb36f3c37f80166d72c69b23fd5897ca9c3e4a86dfbe",
-      "bytes": 875049
+      "sha256": "275dfb9f79d1e330ef9df19d78ffd6cf64b09d1fed2eecec469a218468622d36",
+      "bytes": 877799
     },
     "./apple-touch-icon.png": {
       "sha256": "a190c19f9a52a40f43379917b11f84f99a2ab2fb4a3cdaedd1dad936a67c8e78",
@@ -110,8 +111,8 @@
       "bytes": 30731
     },
     "./daily-roster.js": {
-      "sha256": "5d9bde5630bf9a450d63953973765f25a7e336430a5a8ef7789734855aeb93d9",
-      "bytes": 55748
+      "sha256": "ad2b034ad4f1d00cb00ffe3baa748ab800606d1d0b526933f14bf2c91677fdcd",
+      "bytes": 56444
     },
     "./favicon-16.png": {
       "sha256": "bb74deb45be89aca360f6b6f9b7d6293c14b1d7efa5f1e4fe21f4804fb05ce58",
@@ -146,8 +147,8 @@
       "bytes": 104295
     },
     "./index.html": {
-      "sha256": "d0c455e4f4a83c82eda08c21e74a4c5373c57abfef6f1394daa59f15a4e1fde0",
-      "bytes": 1768067
+      "sha256": "03d87199710bae97f7e14833d51e3f95f792ac322873c469c9890125fd462782",
+      "bytes": 1768155
     },
     "./ket-so.wav": {
       "sha256": "cf03e8d4021f989f61fd12249f282ae2e53588cc9d55d68393778223db8132a1",
@@ -234,24 +235,28 @@
       "bytes": 21617
     },
     "./roster-lite.js": {
-      "sha256": "6ac1d1c30bb1d844849e4d4af96b82f93ee61441b8ef504a478952e4ed004f58",
-      "bytes": 9270
+      "sha256": "29bda6ad196bfc686ccb7306af38f02cde16a44db3c92f61967c0df4876b9830",
+      "bytes": 9728
     },
     "./runtime.bundle.js": {
-      "sha256": "4d4f172b9c062586ff79c9ba762e281cbe6810f858df1f8973f4f075decf3550",
-      "bytes": 434484
+      "sha256": "b5efc026bba33e8ba8f0ae668ab994e9ac27e013b2861baf1fca7f976f5dff95",
+      "bytes": 434613
     },
     "./sags-logo.png": {
       "sha256": "84bc554c3b44afe4190afcbe74f7c7aed9fad478c328d63502a7d225dd60d7ad",
       "bytes": 25408
     },
     "./service-worker.js": {
-      "sha256": "31582c05e1ec882a60428aaf476b0b63b6a42652d2c9c5ec2d8ed77b8a9e89d0",
-      "bytes": 6709
+      "sha256": "7ab7e89f61027acb413b03dad5971d85c87e6bcffc4a2d9c24950267ddca689d",
+      "bytes": 6716
     },
     "./version.json": {
-      "sha256": "68398c8be294afa90e53134ccf2ba092638d12fa3c613d8fdb8d7827b9f89965",
-      "bytes": 637
+      "sha256": "0d6afcdf048b8e1b49a891cc88c2bf6cbce3c4167b382757efa1ec3218faefe4",
+      "bytes": 845
+    },
+    "./pinned-flight.js": {
+      "sha256": "e4e6cbd5e05d2286e96c29736ccdc6f06556cbe3a9720042847ccb9b70c1c5e1",
+      "bytes": 11242
     }
   }
 }

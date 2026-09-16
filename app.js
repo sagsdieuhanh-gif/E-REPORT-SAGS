@@ -2913,6 +2913,9 @@ Không ghi đè working envelope của nhân viên đang thao tác.`);
   }
   function startMailbox(){
     stopMailbox();const me=normUser(currentUserProfile?.username||"");if(!me)return;
+    // V4.7.8: Worker forms are created ON DEMAND from the selected assignment.
+    // Never subscribe to a 3-day mailbox on every login/return to home.
+    if(upper(currentRole||currentUserProfile?.role||'')!=='AD')return;
     try{
       const td=localRosterDate(),from=addIsoDays(td,-1),to=addIsoDays(td,1);
       // Keep only yesterday/today/tomorrow in the live mailbox window. Historical
@@ -5230,7 +5233,36 @@ body.v38-clean-workflow #v38NavRS,body.v38-clean-workflow #readSignQuickBtn,body
   function multiSave(set,d=opDate()){try{sessionStorage.setItem(multiKey(d),JSON.stringify([...set].filter(Boolean)))}catch(_){}}
   function multiAdd(fid,d=opDate()){const x=multiSet(d);x.add(S(fid));multiSave(x,d)}
   function multiRemove(fid,d=opDate()){const x=multiSet(d);x.delete(S(fid));multiSave(x,d)}
-  async function manifest(d=opDate()){return (await db(`roster_manifests/${safe(d)}`).once('value')).val()||{}}
+  async function manifest(d=opDate(),fid=''){
+    // MY FLIGHT uses only this user's one-day mailbox. Opening/handover also
+    // needs peer assignment METADATA (not their forms) to preserve ARR->DEP
+    // sequence, co-assignee locks, and A->B completion/handover history.
+    if(role()==='AD')return (await db(`roster_manifests/${safe(d)}`).once('value')).val()||{};
+    if(typeof root.sagsV478ManifestForWorker!=='function')throw new Error('Hộp công việc cá nhân chưa sẵn sàng; hãy bấm UPDATE.');
+    const personal=await root.sagsV478ManifestForWorker(d);
+    fid=S(fid);if(!fid)return personal;
+    const mine=Object.values(personal.items||{}).filter(x=>x&&x.active!==false&&S(x.flightId)===fid&&norm(x.user||x.targetUser)===me());
+    if(!mine.length)throw new Error('Không còn phân công hợp lệ cho chuyến này.');
+    // One small, existing per-flight assignment index; no flight_records/<date>
+    // and never roster_sessions/<id> or another flight's form envelope.
+    const scoped=(await db(`flight_records/${safe(d)}/${safe(fid)}/assignments`).once('value')).val()||{};
+    const ids=Object.entries(scoped).filter(([,v])=>v&&v.active!==false).map(([id])=>id);
+    const maxParts=Math.max(1,...mine.map(x=>Number(x.workPartTotal||1)||1));
+    if(!ids.length||ids.length<maxParts){
+      // Legacy records without a complete per-flight index: ONLY on explicit
+      // open/handover, use the master roster rather than guess predecessors.
+      // Never use this fallback to populate MY FLIGHT or the PIN button.
+      return (await db(`roster_manifests/${safe(d)}`).once('value')).val()||{};
+    }
+    const pairs=await Promise.all(ids.map(async id=>{
+      const item=(await db(`roster_manifests/${safe(d)}/items/${safe(id)}`).once('value')).val();
+      if(!item||item.active===false||S(item.flightId)!==fid)throw new Error('Thứ tự phân công chuyến chưa đồng bộ; không mở biểu mẫu khi thiếu thông tin bàn giao.');
+      return [id,item];
+    }));
+    const items=Object.fromEntries(pairs);
+    for(const item of mine)if(!items[S(item.assignmentId)])throw new Error('Phân công vừa thay đổi; tải lại MY FLIGHT.');
+    return {...personal,items,peerMetadataForFlight:fid};
+  }
   async function sessionState(aid){
     try{
       const direct=(await db(`roster_sessions/${safe(aid)}`).once('value')).val()||{};
@@ -5510,6 +5542,11 @@ body.v38-clean-workflow #v38NavRS,body.v38-clean-workflow #readSignQuickBtn,body
   if(U(item?.formGroup)==='UNIT_TASK'){root.flightWorkspaceOpenFlight?.(S(item.flightId));return;}
 
   let meta=localMeta(item.assignmentId);
+  if(!meta&&role()!=='AD'&&typeof root.sagsV340EnsureLocalSession==='function'){
+    // Make only THIS assignment's local shell immediately; the existing
+    // syncSharedIntoLocal/restore barrier below must run before it is displayed.
+    try{meta=await root.sagsV340EnsureLocalSession(item)}catch(e){console.info('V4.7.8 local shell',e?.message||e)}
+  }
   if(!meta){
     // V1.0.29: Do not force user to understand local form cache.
     // Automatically refresh the assignment mailbox and wait for device sync.
@@ -5572,7 +5609,7 @@ body.v38-clean-workflow #v38NavRS,body.v38-clean-workflow #readSignQuickBtn,body
   async function markClaim(d,fid,item,man){
     const t=Date.now(),u=me(),p=profile(),aid=S(item.assignmentId),pre=await sessionState(aid);
     if(pre.skippedNoEform===true||pre.autoSkippedByNextUser===true||U(pre.claimStatus)==='SKIPPED')throw new Error('Phần công việc này đã được người phía sau NHẬN THAY vì chưa thực hiện E-FORM.');
-    const co=await acquireCoGroupClaim(d,item,man||await manifest(d)),patch={};
+    const co=await acquireCoGroupClaim(d,item,man||await manifest(d,fid)),patch={};
     patch[`roster_sessions/${safe(aid)}/claimStatus`]='CLAIMED';patch[`roster_sessions/${safe(aid)}/taskStatusV333`]='IN_PROGRESS';patch[`roster_sessions/${safe(aid)}/taskAvailabilityV333`]='ACTIVE';patch[`roster_sessions/${safe(aid)}/taskStatusUpdatedAtMs`]=t;patch[`roster_sessions/${safe(aid)}/claimedAtMs`]=t;patch[`roster_sessions/${safe(aid)}/claimedBy`]=u;patch[`roster_sessions/${safe(aid)}/handoverReady`]=false;patch[`roster_sessions/${safe(aid)}/coClaimedBy`]=co.gid?u:null;patch[`roster_sessions/${safe(aid)}/coClaimedAssignmentId`]=co.gid?aid:null;patch[`roster_sessions/${safe(aid)}/updatedAtMs`]=t;
     for(const peer of co.peers||[]){const pid=S(peer.assignmentId);if(!pid)continue;patch[`roster_sessions/${safe(pid)}/claimStatus`]='STANDBY';patch[`roster_sessions/${safe(pid)}/taskStatusV333`]='UNCLAIMED';patch[`roster_sessions/${safe(pid)}/taskAvailabilityV333`]='STANDBY';patch[`roster_sessions/${safe(pid)}/taskStatusUpdatedAtMs`]=t;patch[`roster_sessions/${safe(pid)}/coClaimedBy`]=u;patch[`roster_sessions/${safe(pid)}/coClaimedAssignmentId`]=aid;patch[`roster_sessions/${safe(pid)}/coClaimedAtMs`]=t;patch[`roster_sessions/${safe(pid)}/updatedAtMs`]=t;}
     patch[`flight_records/${safe(d)}/${safe(fid)}/taskClaims/${safe(u)}/${safe(aid)}`]={assignmentId:aid,username:u,name:S(p.name||p.fullName||u),formGroup:S(item.formGroup),sourceColumn:S(item.sourceColumn),workPartOrder:Number(item.workPartOrder||1),workPartTotal:Number(item.workPartTotal||1),coAssigneeGroupId:co.gid||null,coAssigneeUsers:co.gid?[item,...(co.peers||[])].map(x=>norm(x.user||x.targetUser)).filter(Boolean):[],status:'CLAIMED',taskStatus:'IN_PROGRESS',claimedAtMs:t,updatedAtMs:t};
@@ -5600,7 +5637,7 @@ body.v38-clean-workflow #v38NavRS,body.v38-clean-workflow #readSignQuickBtn,body
     }
     return {env,source:pick.source,meta};
   }
-  root.v324TakeoverWaiting=async function(fid){fid=S(fid);if(!fid)return;const d=opDate();try{const man=await manifest(d),mine=myItems(man,fid);if(!mine.length)throw new Error('Chuyến này không thuộc MY FLIGHT của tài khoản hiện tại.');const picked=await preferredMyAssignment(man,mine);if(!picked)throw new Error('Không xác định được phần công việc cần nhận thay.');const item=picked.item,cs=picked.cs;if(cs.state!=='WAIT')return root.v324ReceiveOrOpen?.(fid);const rows=await assertPreviousUntouched(man,item),users=[...new Set(rows.map(r=>norm(r.item.user||r.item.targetUser)).filter(Boolean))],who=users.join(', ')||'người trước';if(!confirm(`NHẬN THAY / BỎ QUA NGƯỜI TRƯỚC
+  root.v324TakeoverWaiting=async function(fid){fid=S(fid);if(!fid)return;const d=opDate();try{const man=await manifest(d,fid),mine=myItems(man,fid);if(!mine.length)throw new Error('Chuyến này không thuộc MY FLIGHT của tài khoản hiện tại.');const picked=await preferredMyAssignment(man,mine);if(!picked)throw new Error('Không xác định được phần công việc cần nhận thay.');const item=picked.item,cs=picked.cs;if(cs.state!=='WAIT')return root.v324ReceiveOrOpen?.(fid);const rows=await assertPreviousUntouched(man,item),users=[...new Set(rows.map(r=>norm(r.item.user||r.item.targetUser)).filter(Boolean))],who=users.join(', ')||'người trước';if(!confirm(`NHẬN THAY / BỎ QUA NGƯỜI TRƯỚC
 
 ${rosterLabel(item)} · ${formLabel(item.formGroup)}
 
@@ -5616,7 +5653,7 @@ Phần của ${who} được ghi “BỎ QUA · KHÔNG E-FORM”, không ghi HO�
     if(!fid)return false;
     const d=/^\d{4}-\d{2}-\d{2}$/.test(S(requestedDate))?S(requestedDate):opDate();
     try{
-      const man=await manifest(d),mine=myItems(man,fid);
+      const man=await manifest(d,fid),mine=myItems(man,fid);
       if(!mine.length)throw new Error('Không tìm thấy phần việc của bạn trong roster ngày '+d+'. Kiểm tra ngày khai thác và tải lại roster.');
       // A flight may have several independent assignments (42.3 + 55.1).
       // Never silently substitute a different assignment when an exact one was clicked.
@@ -5625,7 +5662,7 @@ Phần của ${who} được ghi “BỎ QUA · KHÔNG E-FORM”, không ghi HO�
       const picked=exact?{item:exact,cs:await claimStateFor(exact,man)}:await preferredMyAssignment(man,mine);
       if(!picked)throw new Error('Không xác định được phần công việc cần mở.');let item=picked.item,cs=picked.cs;if(cs.state==='STANDBY'){root.flightWorkspaceOpenFlight?.(fid);return}if(cs.state==='CO_DONE'){root.flightWorkspaceOpenFlight?.(fid);return}if(cs.state==='SKIPPED')throw new Error('Phần công việc này đã được người phía sau NHẬN THAY và được ghi BỎ QUA · KHÔNG E-FORM.');if(cs.state==='DONE'){if(!confirm(`MỞ LẠI CHỈNH SỬA\n\n${rosterLabel(item)} · ${formLabel(item.formGroup)}\n\nPhần công việc này đã HOÀN TẤT. Bạn có chắc muốn mở lại để chỉnh sửa?`))return;const t=Date.now(),u=me(),aid=S(item.assignmentId),patch={},co=await acquireCoGroupClaim(d,item,man,{allowCompleted:true});const restored=await restoreOwnCompletedEnvelopeForReopen(item,man,cs);if(restored?.env){patch[`roster_sessions/${safe(aid)}/envelope`]=sanitizeEnvelope(restored.env);patch[`roster_sessions/${safe(aid)}/reopenRestoreSource`]=S(restored.source);patch[`roster_sessions/${safe(aid)}/reopenRestoreAtMs`]=t;}patch[`roster_sessions/${safe(aid)}/claimStatus`]='CLAIMED';patch[`roster_sessions/${safe(aid)}/workPartStatus`]='IN_PROGRESS';patch[`roster_sessions/${safe(aid)}/taskStatusV333`]='IN_PROGRESS';patch[`roster_sessions/${safe(aid)}/taskStatusUpdatedAtMs`]=t;patch[`roster_sessions/${safe(aid)}/reopenedAtMs`]=t;patch[`roster_sessions/${safe(aid)}/reopenedBy`]=u;patch[`roster_sessions/${safe(aid)}/completedAtMs`]=null;patch[`roster_sessions/${safe(aid)}/completedBy`]=null;patch[`roster_sessions/${safe(aid)}/updatedAtMs`]=t;patch[`flight_records/${safe(d)}/${safe(fid)}/taskClaims/${safe(u)}/${safe(aid)}/status`]='CLAIMED';patch[`flight_records/${safe(d)}/${safe(fid)}/taskClaims/${safe(u)}/${safe(aid)}/taskStatus`]='IN_PROGRESS';patch[`flight_records/${safe(d)}/${safe(fid)}/taskClaims/${safe(u)}/${safe(aid)}/reopenedAtMs`]=t;patch[`flight_records/${safe(d)}/${safe(fid)}/taskClaims/${safe(u)}/${safe(aid)}/completedAtMs`]=null;patch[`roster_sessions/${safe(aid)}/coClaimedBy`]=co.gid?u:null;patch[`roster_sessions/${safe(aid)}/coClaimedAssignmentId`]=co.gid?aid:null;for(const peer of (co.peers||[])){const pid=S(peer.assignmentId);if(!pid)continue;patch[`roster_sessions/${safe(pid)}/claimStatus`]='STANDBY';patch[`roster_sessions/${safe(pid)}/workPartStatus`]='STANDBY';patch[`roster_sessions/${safe(pid)}/taskStatusV333`]='UNCLAIMED';patch[`roster_sessions/${safe(pid)}/taskAvailabilityV333`]='STANDBY';patch[`roster_sessions/${safe(pid)}/completedAtMs`]=null;patch[`roster_sessions/${safe(pid)}/completedBy`]=null;patch[`roster_sessions/${safe(pid)}/autoSkippedCoAssignee`]=false;patch[`roster_sessions/${safe(pid)}/coClaimedBy`]=u;patch[`roster_sessions/${safe(pid)}/coClaimedAssignmentId`]=aid;patch[`roster_sessions/${safe(pid)}/updatedAtMs`]=t;}const ev=`WORK_PART_REOPEN_${t}_${safe(aid)}`;patch[`flight_records/${safe(d)}/${safe(fid)}/workPartHistory/${safe(ev)}`]={eventId:ev,assignmentId:aid,fromUser:u,atMs:t,type:'WORK_PART_REOPENED',status:'IN_PROGRESS',formGroup:S(item.formGroup),sourceColumn:S(item.sourceColumn),restoreSource:S(restored?.source||'')};await db('').update(patch);await addAudit('WORK_PART_REOPENED',{flightId:fid,flightLabel:rosterLabel(item),assignmentId:aid,fromUser:u,formGroup:S(item.formGroup),sourceColumn:S(item.sourceColumn),restoreSource:S(restored?.source||'')});cs={state:'CLAIMED',st:{...(cs.st||{}),claimStatus:'CLAIMED',taskStatusV333:'IN_PROGRESS',envelope:restored?.env||cs.st?.envelope},taskStatus:'IN_PROGRESS'};}if(cs.state==='WAIT'){const prev=previousItem(man,item);throw new Error(`Phần công việc trước của ${norm(prev?.user||prev?.targetUser)||'chưa xác định'} chưa hoàn tất.`)}if(cs.state!=='CLAIMED'){await markClaim(d,fid,item,man);multiAdd(fid,d)}else multiAdd(fid,d);await openAssignment(item,man);setTimeout(()=>decorateList(d),300)}catch(e){alert('Không mở được MY FLIGHT: '+S(e?.message||e))}};
 
-  async function currentRosterWorkContext(){const meta=activeMeta(),aid=S(meta?.rosterAssignmentId);if(!aid)return null;const d=S(meta.rosterOpDate)||opDate(),man=await manifest(d),item=itemsOf(man).find(x=>S(x.assignmentId)===aid);if(!item||norm(item.user||item.targetUser)!==me())return null;const st=await sessionState(aid),pending=st?.pendingRosterSuccessor&&typeof st.pendingRosterSuccessor==='object'?clone(st.pendingRosterSuccessor):null,sel=pending?{next:{...pending,pendingRoster:true,pendingAfterAssignmentId:aid},skipped:[],coPeers:coPeers(man,item)}:handoverSelection(man,item);return {d,man,item,next:sel.next||null,skippedSameUser:Array.isArray(sel.skipped)?sel.skipped:[],coAssigneePeers:Array.isArray(sel.coPeers)?sel.coPeers:[],meta,st}}
+  async function currentRosterWorkContext(){const meta=activeMeta(),aid=S(meta?.rosterAssignmentId);if(!aid)return null;const d=S(meta.rosterOpDate)||opDate(),man=await manifest(d,S(meta.rosterFlightId)),item=itemsOf(man).find(x=>S(x.assignmentId)===aid);if(!item||norm(item.user||item.targetUser)!==me())return null;const st=await sessionState(aid),pending=st?.pendingRosterSuccessor&&typeof st.pendingRosterSuccessor==='object'?clone(st.pendingRosterSuccessor):null,sel=pending?{next:{...pending,pendingRoster:true,pendingAfterAssignmentId:aid},skipped:[],coPeers:coPeers(man,item)}:handoverSelection(man,item);return {d,man,item,next:sel.next||null,skippedSameUser:Array.isArray(sel.skipped)?sel.skipped:[],coAssigneePeers:Array.isArray(sel.coPeers)?sel.coPeers:[],meta,st}}
   async function currentHandoverContext(){const ctx=await currentRosterWorkContext();return ctx&&U(ctx.st?.claimStatus)==='CLAIMED'?ctx:null}
   async function currentCompletedContext(){const ctx=await currentRosterWorkContext();if(!ctx)return null;const a=U(ctx.st?.claimStatus),w=U(ctx.st?.workPartStatus),t=U(ctx.st?.taskStatusV333||ctx.st?.taskStatus);return (['PART_COMPLETED','COMPLETED','HANDED_OVER'].includes(a)||w==='COMPLETED'||t==='COMPLETED')?ctx:null}
   async function exportCurrentRosterQr(){
