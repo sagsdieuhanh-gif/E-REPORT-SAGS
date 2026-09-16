@@ -1,10 +1,10 @@
 {
-  "version": "V4.7.0",
-  "displayVersion": "V4.7.0",
-  "label": "V4.7.0 CARRIER SERVICE NOTEBOOK",
-  "build": "V4.7.0-CARRIER-SERVICE-NOTEBOOK",
-  "releasedAt": "2026-09-16T05:58:00Z",
-  "type": "carrier-service-guide",
-  "notes": "Sổ tay phục vụ 26 hãng từ bảng Excel. Nút notebook tra cứu offline; khi chuyến đang mở khớp mã hãng, nút đổi thành ! LƯU Ý PHỤC VỤ. Nội dung theo nhóm Coor, Loading, Tài liệu, Flightplan.",
-  "message": "V4.7.0 · Sổ tay hãng · ! lưu ý theo chuyến đang mở"
+  "version": "V4.7.1",
+  "displayVersion": "V4.7.1",
+  "label": "V4.7.1 LOCAL CARRIER GUIDE MANAGER",
+  "build": "V4.7.1-LOCAL-CARRIER-GUIDE-MANAGER",
+  "releasedAt": "2026-09-16T06:10:00Z",
+  "type": "carrier-guide-local-manager",
+  "notes": "AD import Excel ngay trong Sổ tay hãng, preview/so sánh, test local IndexedDB và xuất carrier-service-guide.json + carrier-guide-version.json. Người dùng lưu database trên máy; chỉ kiểm tra version nhỏ và tải lại guide khi hash đổi.",
+  "message": "V4.7.1 · AD Import Excel · Sổ tay hãng local-first"
 }

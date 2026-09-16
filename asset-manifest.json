@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V4.7.0",
-  "build": "V4.7.0-CARRIER-SERVICE-NOTEBOOK",
+  "version": "V4.7.1",
+  "build": "V4.7.1-LOCAL-CARRIER-GUIDE-MANAGER",
   "strategy": "stable-cache-sha256-delta",
   "bootstrapChanged": [
     "./index.html",
@@ -10,7 +10,8 @@
     "./runtime.bundle.js",
     "./features.bundle.js",
     "./app.bundle.css",
-    "./carrier-service-guide.json"
+    "./carrier-service-guide.json",
+    "./carrier-guide-version.json"
   ],
   "assets": {
     "./#U0110H.png": {
@@ -101,6 +102,10 @@
       "sha256": "a190c19f9a52a40f43379917b11f84f99a2ab2fb4a3cdaedd1dad936a67c8e78",
       "bytes": 17275
     },
+    "./carrier-guide-version.json": {
+      "sha256": "a1f779d1086af8904b7ee6dd983e99df309d179552aa2c6b521298ceb28c6b23",
+      "bytes": 290
+    },
     "./carrier-service-guide.json": {
       "sha256": "518ef49eb35b3db4885e8e751e59939b396fdc93a747c3a320e075264a6ecf5b",
       "bytes": 30731
@@ -118,8 +123,8 @@
       "bytes": 1151
     },
     "./features.bundle.js": {
-      "sha256": "3273168120ca10edc2eac83df71dfdcdfc25ac807c45ee023bde3abbeeb74589",
-      "bytes": 53632
+      "sha256": "870a49118bb6f2a8891af28651b6d1dc752fdcc70bc2e26db12671591bd43b4a",
+      "bytes": 72039
     },
     "./forms.registry.json": {
       "sha256": "e74e954e73f62ce07ec23f2dc76b056df2645b78599b3c7f3edd8f0fcd18a9b8",
@@ -142,8 +147,8 @@
       "bytes": 104295
     },
     "./index.html": {
-      "sha256": "7ef54e9f15876e34c192870751d39dcb6b7807ab9533aa52934dfa6478612da9",
-      "bytes": 1765205
+      "sha256": "e79cb9e5ce12167764e13a5fd567097f72867bbff854f82a7d316cb39e63a643",
+      "bytes": 1765211
     },
     "./ket-so.wav": {
       "sha256": "cf03e8d4021f989f61fd12249f282ae2e53588cc9d55d68393778223db8132a1",
@@ -226,20 +231,20 @@
       "bytes": 21617
     },
     "./runtime.bundle.js": {
-      "sha256": "91f475157144d9d17f88445ddec32712bbe88104579cadb769205de9e082202e",
-      "bytes": 433848
+      "sha256": "f5a2f46239a9f1ce7e42ba4e09b7ac915c478044c112cfbe5fca506009627655",
+      "bytes": 433854
     },
     "./sags-logo.png": {
       "sha256": "84bc554c3b44afe4190afcbe74f7c7aed9fad478c328d63502a7d225dd60d7ad",
       "bytes": 25408
     },
     "./service-worker.js": {
-      "sha256": "d36d097c22d2579ce5b27b9eedb920dc25dc9ccf6908c6c13660b1a7e5c2a296",
-      "bytes": 6566
+      "sha256": "bbe422b6cf7a560115ad082fff1ce5237530c2102ac0165a1678fe588d096b9c",
+      "bytes": 6761
     },
     "./version.json": {
-      "sha256": "6b6ab4502646be8b2a6089a327e7f3b1ba9879e3ef434703a194eefe9ef34a72",
-      "bytes": 544
+      "sha256": "a597afe6db6d3a68c060b98e5e55573a4faab1a4b1d8aaf11f859fc8afe1c6c2",
+      "bytes": 582
     }
   }
 }
