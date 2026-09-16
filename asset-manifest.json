@@ -1,11 +1,12 @@
 {
   "schema": 2,
-  "version": "V4.7.4",
-  "build": "V4.7.4-551-CHECKLIST-IN-QUICK-ENTRY",
+  "version": "V4.7.5",
+  "build": "V4.7.5-ROSTER-ASSIGNMENT-OPEN-FIX",
   "strategy": "stable-cache-sha256-delta",
   "bootstrapChanged": [
     "./index.html",
     "./app.js",
+    "./daily-roster.js",
     "./runtime.bundle.js",
     "./service-worker.js",
     "./version.json"
@@ -92,8 +93,8 @@
       "bytes": 46693
     },
     "./app.js": {
-      "sha256": "b93415cd93f2e0d0f6b8987f31a22aa728eaaae6ce4ab8a62e64429a456197fe",
-      "bytes": 886227
+      "sha256": "e34d9a6ed7632119efeb10a444abd23bba829d8555eb66fc201679178587707a",
+      "bytes": 887353
     },
     "./apple-touch-icon.png": {
       "sha256": "a190c19f9a52a40f43379917b11f84f99a2ab2fb4a3cdaedd1dad936a67c8e78",
@@ -108,8 +109,8 @@
       "bytes": 30731
     },
     "./daily-roster.js": {
-      "sha256": "3038159edd4d4e325bfe89011e50e5f670b279e7d74fc206ae8f9828b09b74c0",
-      "bytes": 53076
+      "sha256": "7a87f984b3232d28d0cba1b11d8cdde767f327e7364b9ca36982cf695b479210",
+      "bytes": 55032
     },
     "./favicon-16.png": {
       "sha256": "bb74deb45be89aca360f6b6f9b7d6293c14b1d7efa5f1e4fe21f4804fb05ce58",
@@ -144,7 +145,7 @@
       "bytes": 104295
     },
     "./index.html": {
-      "sha256": "21ff67adffc6fa19eec739883c79c033c94916a83aaf0f7b97b87db48e126bf9",
+      "sha256": "5c10b2604b5e5d1575d4aec1eec2c3707975a431b2800248f451bbb88dc72506",
       "bytes": 1767948
     },
     "./ket-so.wav": {
@@ -228,7 +229,7 @@
       "bytes": 21617
     },
     "./runtime.bundle.js": {
-      "sha256": "e289eb3f76a194a2a0d51ec7baa8ead35f89846aca821d87b6ba07561d7c99bf",
+      "sha256": "5c88c82d6c3c35c692f42c763c781d0130c917b2aee8103ed944ad51ca371c4d",
       "bytes": 433856
     },
     "./sags-logo.png": {
@@ -236,12 +237,12 @@
       "bytes": 25408
     },
     "./service-worker.js": {
-      "sha256": "8f9c0d61e5f521e2ba5f53d319c2e65f652b6d9c7a8da40bf7e40fed40470c2b",
+      "sha256": "e9cfc8cb256ecb48ab2c4bf308036111ef83046dbfd8218a8ceb0effe9f49f0b",
       "bytes": 6762
     },
     "./version.json": {
-      "sha256": "9a850d98fef3d86cd1c85a9d40a30646e0970279cc525ac91ad906db3bd840aa",
-      "bytes": 537
+      "sha256": "349c3186e36ce31dc10539e448711ba06b827db90834009e434191065c9d6c40",
+      "bytes": 433
     }
   }
 }
