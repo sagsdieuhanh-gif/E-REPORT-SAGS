@@ -304,6 +304,12 @@ if(typeof window!=="undefined")window.__SAGS_V450_FORM_MANAGER_LAYOUT=true;
               </span>
               <em>THEO DÕI</em>
             </button>
+            <button id="v476NetworkCard" class="v181AdminCard" type="button">
+              <span class="v181AdminIcon">⇅</span>
+              <span class="v181AdminCardText"><b>⇅ BỘ ĐO DỮ LIỆU MẠNG</b>
+                <small>Tự đo từ khi mở app · xem HTTP, Firebase WebSocket và lần bấm MY FLIGHT</small></span>
+              <em>XEM</em>
+            </button>
             <button id="v451NoticeAdminCard" class="v181AdminCard" type="button">
               <span class="v181AdminIcon">🔔</span>
               <span class="v181AdminCardText">
@@ -409,6 +415,7 @@ if(typeof window!=="undefined")window.__SAGS_V450_FORM_MANAGER_LAYOUT=true;
     $("v181ApprovalCard").onclick=()=>openAdminModule("sagsV339OpenApprovalQueue","roleBtnApprovalQueue");
     $("v181AuditCard").onclick=()=>openAdminModule("openAuditManager","roleBtnAudit");
     $("v181FirebaseCard").onclick=()=>openAdminModule("openFirebaseUsageMonitor","roleBtnFirebaseUsage");
+    $("v476NetworkCard").onclick=()=>{if(isAdmin())root.SAGSNetworkDiagnostics?.open()};
     $("v451NoticeAdminCard").onclick=openAdminNoticeManager;
 
     $("v157PasswordBtn").onclick=()=>{
