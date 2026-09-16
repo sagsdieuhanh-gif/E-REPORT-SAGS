@@ -1,17 +1,11 @@
 {
   "schema": 2,
-  "version": "V4.4.0",
-  "build": "V4.4.0-FORM-MANAGER-REALTIME-LITE",
-  "strategy": "stable-cache-sha256-delta-form-manager-realtime-lite",
+  "version": "V4.4.1",
+  "build": "V4.4.1-ADMIN-CLEANUP-VISIBLE",
+  "strategy": "stable-cache-sha256-delta-admin-cleanup-visible",
   "bootstrapChanged": [
     "./index.html",
-    "./app.js",
-    "./app.bundle.css",
-    "./runtime.bundle.js",
-    "./features.bundle.js",
-    "./daily-roster.js",
-    "./ai.js",
-    "./forms.registry.json"
+    "./app.js"
   ],
   "assets": {
     "./#U0110H.png": {
@@ -95,8 +89,8 @@
       "bytes": 46693
     },
     "./app.js": {
-      "sha256": "b35673dfdc80a28cfccb2a90b86db2804ff2a43a7d9b234d806150cef1f0561c",
-      "bytes": 886045
+      "sha256": "b8b718a68b6933b82af99bdbf4c25014c5f09c6950b362e12b9da5ed5b9b970c",
+      "bytes": 886195
     },
     "./apple-touch-icon.png": {
       "sha256": "a190c19f9a52a40f43379917b11f84f99a2ab2fb4a3cdaedd1dad936a67c8e78",
@@ -143,8 +137,8 @@
       "bytes": 104295
     },
     "./index.html": {
-      "sha256": "3498b8f2219e4dd7d7bd7769f0debe2cde93f207ec9042dbc2fc8a6a26c73cb5",
-      "bytes": 1761428
+      "sha256": "8a82f050b56cfbc8492f6a115adcc349e4173d944c770f523606bcf8ae16626b",
+      "bytes": 1761415
     },
     "./ket-so.wav": {
       "sha256": "cf03e8d4021f989f61fd12249f282ae2e53588cc9d55d68393778223db8132a1",

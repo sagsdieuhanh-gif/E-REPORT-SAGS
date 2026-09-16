@@ -4191,6 +4191,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     ['roleBtnAudit','🧾 NHẬT KÝ / AUDIT','Các mốc FINAL, KẾT SỔ và UPDATE quan trọng'],
     ['roleBtnFirebaseUsage','🔥 FIREBASE USAGE','Theo dõi mức sử dụng Firebase'],
     ['roleBtnArchive','🗄 HỒ SƠ','Tra cứu hồ sơ lưu trữ'],
+    ['v379ClearCloseoutBtn','🗑 DỌN LỊCH SỬ PHÁT KẾT SỔ','Xóa broadcast/event KẾT SỔ cũ; KHÔNG xóa hồ sơ KẾT SỔ chính'],
   ]}
  ];
  const hideIds=['roleBtnDailyRoster','roleBtnRosterFlights','roleBtnActivity','roleBtnAcLimits','roleBtnFleet','roleBtnAccounts','roleBtnAudit','roleBtnFirebaseUsage','roleBtnArchive'];

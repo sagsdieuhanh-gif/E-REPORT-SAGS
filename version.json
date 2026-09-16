@@ -1,10 +1,10 @@
 {
-  "version": "V4.4.0",
-  "displayVersion": "V4.4.0",
-  "label": "V4.4.0",
-  "build": "V4.4.0-FORM-MANAGER-REALTIME-LITE",
-  "releasedAt": "2026-09-16T02:45:00Z",
-  "type": "clean-web-form-manager-realtime-lite",
-  "notes": "Form Manager/Designer dùng chung + generic custom-form runtime; KẾT SỔ realtime pointer-only, không replay lịch sử 72h/80 events khi F5, TTL/ACK cleanup và AD manual cleanup. Offline-first SHA-256 delta giữ nguyên.",
-  "message": "Có bản cập nhật V4.4.0 · FORM MANAGER · REALTIME LITE · giảm mạnh data khi F5"
+  "version": "V4.4.1",
+  "displayVersion": "V4.4.1",
+  "label": "V4.4.1",
+  "build": "V4.4.1-ADMIN-CLEANUP-VISIBLE",
+  "releasedAt": "2026-09-16T02:22:00Z",
+  "type": "web-admin-cleanup-visible",
+  "notes": "Đưa DỌN LỊCH SỬ PHÁT KẾT SỔ vào menu AD đang hiển thị: ⚙ QUẢN LÝ → 🛡 GIÁM SÁT & HỒ SƠ. Không thay đổi hồ sơ KẾT SỔ chính.",
+  "message": "V4.4.1 · AD thấy trực tiếp nút DỌN LỊCH SỬ PHÁT KẾT SỔ trong QUẢN LÝ"
 }
