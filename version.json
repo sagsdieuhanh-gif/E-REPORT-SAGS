@@ -1,10 +1,10 @@
 {
-  "version": "V4.4.2",
-  "displayVersion": "V4.4.2",
-  "label": "V4.4.2",
-  "build": "V4.4.2-FLOATING-ADMIN-CLEANUP",
-  "releasedAt": "2026-09-16T02:34:00Z",
-  "type": "web-floating-admin-cleanup",
-  "notes": "Đưa nút DỌN LỊCH SỬ KẾT SỔ thành nút nổi độc lập ngoài mọi menu/toolbar, tự hiện khi role AD.",
-  "message": "V4.4.2 · AD thấy nút DỌN LỊCH SỬ KẾT SỔ nổi trực tiếp trên màn hình"
+  "version": "V4.4.3",
+  "displayVersion": "V4.4.3",
+  "label": "V4.4.3",
+  "build": "V4.4.3-UPDATE-FLOW-FIX",
+  "releasedAt": "2026-09-16T03:02:00Z",
+  "type": "web-update-flow-fix",
+  "notes": "Sửa luồng UPDATE Service Worker: worker mới chờ ở waiting và chỉ kích hoạt khi người dùng bấm UPDATE; không còn báo sai là mạng lỗi khi worker đã đổi trạng thái.",
+  "message": "V4.4.3 · Sửa UPDATE Service Worker"
 }

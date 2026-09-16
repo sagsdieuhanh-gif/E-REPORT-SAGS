@@ -1,8 +1,8 @@
 {
   "schema": 2,
-  "version": "V4.4.2",
-  "build": "V4.4.2-FLOATING-ADMIN-CLEANUP",
-  "strategy": "stable-cache-sha256-delta-floating-admin-cleanup",
+  "version": "V4.4.3",
+  "build": "V4.4.3-UPDATE-FLOW-FIX",
+  "strategy": "stable-cache-sha256-delta",
   "bootstrapChanged": [
     "./index.html",
     "./service-worker.js"
@@ -137,8 +137,8 @@
       "bytes": 104295
     },
     "./index.html": {
-      "sha256": "909298e53abb9740fd6474de7e8a2baa86ad54a5f1583c7c8cc1f4eed0b04cdc",
-      "bytes": 1763472
+      "sha256": "a95090b496d0f877962fdb4c9a8d437f45c33a66fde49a0a784b1cca928ad34e",
+      "bytes": 1763665
     },
     "./ket-so.wav": {
       "sha256": "cf03e8d4021f989f61fd12249f282ae2e53588cc9d55d68393778223db8132a1",
