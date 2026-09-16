@@ -2706,7 +2706,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <style id="sags-v115-clean-ui">
 #roleLoginHint,#v1014UsernameLoginNote,.templateNote,.fs09qUsageNote,.v377CreateFormNote,.v1019Hint{display:none!important}
 </style>
-<link rel="stylesheet" href="./app.bundle.css?v=V4.6.0">
+<link rel="stylesheet" href="./app.bundle.css?v=V4.6.2">
 </head>
 <body>
 <div aria-hidden="true" id="roleHomeIdle"></div>
@@ -3908,7 +3908,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <button class="cancel" onclick="closeSignature();draw()">Đóng</button>
 </div>
 </div></div>
-<div class="hint" id="statusHint">V4.6.0 · DESKTOP AUTO DOWNLOAD · FORM MANAGER</div>
+<div class="hint" id="statusHint">V4.6.2 · DESKTOP AUTO DOWNLOAD · FORM MANAGER</div>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
@@ -3917,7 +3917,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <script>
 window.SAGS_FIREBASE_AUTH_SDK_READY = !!(window.firebase && typeof window.firebase.auth === "function");
 </script>
-<script src="./app.js?v=V4.6.0" data-phase="config"></script>
+<script src="./app.js?v=V4.6.2" data-phase="config"></script>
 <script>
 let suppressModalClickUntil=0;
 function armModalGhostClickBlock(ms=650){
@@ -4078,6 +4078,7 @@ function add(page,key,x,y,w,h,type,label,opts={}){
    tickY:nr(opts.tickY??(y+h/2),BASE_H),
    font:((type==="text"||type==="number") ? Math.max(opts.font??20,20) : (opts.font??15)),
    align:opts.align??"center",
+   valign:opts.valign??"middle",
    multiline:opts.multiline??false, inputMode:opts.inputMode??"text",
    filter:opts.filter??null, manualInset:opts.manualInset??0,
    leftValue:opts.leftValue??false,
@@ -7006,17 +7007,18 @@ function draw(){
       }
     }
     const lineH=chosen*1.02;
-    const totalH=Math.min(drect.h,lines.length*lineH);
-    const startY=drect.y+(drect.h-totalH)/2+chosen*0.82;
-    const x=drect.x+4;
+    const totalH=Math.min(drect.h,lines.length*lineH),av=String(f.valign||"middle").toLowerCase(),aa=String(f.align||"left").toLowerCase();
+    const topOffset=av==="top"?0:av==="bottom"?Math.max(0,drect.h-totalH):Math.max(0,(drect.h-totalH)/2);
+    const startY=drect.y+topOffset+chosen*0.82;
+    const x=aa==="center"?drect.x+drect.w/2:aa==="right"?drect.x+drect.w-4:drect.x+4;
     lines.slice(0,maxLines).forEach((line,i)=>{
       const t=E("text",{
         x:x,
         y:startY+i*lineH,
-        class:"value manual-value left",
+        class:`value manual-value ${aa==="center"?"center":aa==="right"?"right":"left"}`,
         "font-size":chosen,
         "font-weight":"700",
-        "text-anchor":"start",
+        "text-anchor":aa==="center"?"middle":aa==="right"?"end":"start",
         "dominant-baseline":"alphabetic",
         "data-field-key":f.key
       });
@@ -7079,7 +7081,8 @@ function draw(){
    const baseMultiLift=f.lmcFirstRow || f.lmcAboveDots || f.aboveDots ? -3 : 0;
    const form423Lift=(f.page===1 || f.page===2) ? -2 : 0;
    const totalMultiLift=baseMultiLift+form423Lift;
-   d.style.cssText=`box-sizing:border-box;width:100%;height:100%;font-family:'Times New Roman';font-size:${multiFont}px;line-height:${multiLine};font-weight:700;white-space:pre-wrap;overflow:hidden;overflow-wrap:anywhere;word-break:break-word;color:${ENTRY_COLOR};text-align:${f.align==="center"?"center":"left"};padding:${multiPad};margin:0;vertical-align:top;${f.lmcFieldStyle?"padding-top:0;":""}${totalMultiLift?`transform:translateY(${totalMultiLift}px);`:""}${f.autoFit2Lines?"display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;":""}`;
+   const vAlign=String(f.valign||"middle").toLowerCase(),vJust=vAlign==="top"?"flex-start":vAlign==="bottom"?"flex-end":"center",hAlign=f.align==="right"?"right":f.align==="center"?"center":"left";
+   d.style.cssText=`box-sizing:border-box;width:100%;height:100%;font-family:'Times New Roman';font-size:${multiFont}px;line-height:${multiLine};font-weight:700;white-space:pre-wrap;overflow:hidden;overflow-wrap:anywhere;word-break:break-word;color:${ENTRY_COLOR};text-align:${hAlign};padding:${multiPad};margin:0;vertical-align:top;${f.autoFit2Lines?"display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;":`display:flex;flex-direction:column;justify-content:${vJust};`}${f.lmcFieldStyle?"padding-top:0;":""}${totalMultiLift?`transform:translateY(${totalMultiLift}px);`:""}`;
    d.textContent=val;fo.appendChild(d);svg.appendChild(fo);continue;
   }
   const isManual=(f.type==="text"||f.type==="number"||f.type==="display");
@@ -7088,9 +7091,11 @@ function draw(){
   const drawX=a.vx, drawY=a.vy, drawW=a.vw, drawH=a.vh;
   const tx=f.align==="right" ? drawX+drawW-(f.manualInset??0) : (forceManualCenter ? drawX+drawW/2 : (f.align==="left"?drawX+(f.manualInset??0):drawX+drawW/2));
   const writeOnLine=!!(isManual && f.writeOnLine);
+  const vAlignSingle=String(f.valign||"middle").toLowerCase();
+  const vInset=Math.min(drawH/2,Math.max(2,(Number(f.font)||16)*0.56));
   const baseTy=writeOnLine
     ? drawY+drawH*(Number.isFinite(Number(f.lineRatio))?Number(f.lineRatio):0.66)+(f.displayDy||0)
-    : drawY+drawH/2+(f.displayDy||0);
+    : (vAlignSingle==="top"?drawY+vInset:vAlignSingle==="bottom"?drawY+drawH-vInset:drawY+drawH/2)+(f.displayDy||0);
   const maxFont=Math.max(11,drect.h*0.76);
   const signatureNameField=/(?:coordArrName|coordDepName|representativeName|engineerName|loadingStaffName|bbbtPerson[123]|bbbtDuty[123])$/i.test(String(f.key||""));
   const renderFont=signatureNameField?v1101AutoFitSingleLineFont(val,drawW,drawH,Math.min(Number(f.font)||18,20),11):(String(f.key||"").startsWith("f09_") ? 18 : (V1101_FONT23_PAGES.has(f.page) ? v1101AutoFitSingleLineFont(val,drawW,drawH,23,9) : Math.min(f.font,maxFont)));
@@ -11125,8 +11130,8 @@ try {
   if(h) h.textContent="Lỗi khởi tạo: "+err.message;
   alert("Lỗi JavaScript: "+err.message);
 }
-const APP_BUILD_VERSION="V4.6.0-AI-FORM-ASSIST";
-const APP_DISPLAY_VERSION="V4.6.0";
+const APP_BUILD_VERSION="V4.6.2-LIVE-TEST-EDIT";
+const APP_DISPLAY_VERSION="V4.6.2";
 // V1.1.103: hotfix duy nhất lỗi Firebase RTDB ancestor/descendant khi đồng bộ DAILY ROSTER; không thay đổi nghiệp vụ khác.
 // V4.21 — SAFE UPDATE SAVE
 // Before switching to a newly installed app version, force-save all current
@@ -22565,8 +22570,8 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
   setTimeout(()=>{try{if(window.currentRole)window.v114ApplyRoleHomeBackground();}catch(_){}},500);
 })();
 </script>
-<script type="module" src="./ai.js?v=V4.6.0"></script>
-<script src="./app.js?v=V4.6.0" data-phase="archive"></script>
+<script type="module" src="./ai.js?v=V4.6.2"></script>
+<script src="./app.js?v=V4.6.2" data-phase="archive"></script>
 <script id="v120-build02-fixes">
 /* V1.20 BUILD 02 — background persistence, VHTTB, per-account usage detail, progress dedupe. */
 (function(){
@@ -23008,7 +23013,7 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
   setTimeout(()=>{ensureUi();startCloseoutListener();refreshValidation();try{window.sagsV440CleanupExpiredCloseoutEvents?.()}catch(_){}},500);
 })();
 </script>
-<script src="./app.js?v=V4.6.0" data-phase="tools"></script>
+<script src="./app.js?v=V4.6.2" data-phase="tools"></script>
 <script id="v173-quick-time">
 (function(){
   "use strict";
@@ -24944,7 +24949,7 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
   }
 }
 </style>
-<script src="./app.js?v=V4.6.0" data-phase="flight"></script>
+<script src="./app.js?v=V4.6.2" data-phase="flight"></script>
 <script id="v191IOSInteractionFix">
 (()=>{
   'use strict';
@@ -25194,7 +25199,7 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
   window.addEventListener('pageshow',()=>setTimeout(refresh,120),{passive:true});
 })();
 </script>
-<script src="./app.js?v=V4.6.0" data-phase="control"></script>
+<script src="./app.js?v=V4.6.2" data-phase="control"></script>
 <style id="v330-group-permission-style">
 #v330GroupPermPanel{margin:12px 0 8px;padding:11px;border:1px solid #cbd9e6;border-radius:12px;background:#f7fbff;box-sizing:border-box}
 .v330GpHead{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;color:#173b5d;font:900 13px Arial}.v330GpSub{margin-top:4px;color:#61778b;font:700 11px/1.35 Arial}
@@ -25421,7 +25426,7 @@ function install(){addPermissions();ensureUi();ensureButton();refreshCount();lis
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install,350),{once:true});else setTimeout(install,350);root.addEventListener('pageshow',()=>setTimeout(install,250),{passive:true});
 })(window);
 </script>
-<script src="./app.js?v=V4.6.0" data-phase="postcontrol"></script>
+<script src="./app.js?v=V4.6.2" data-phase="postcontrol"></script>
 <script id="v377AdminFormToolsScript">
 /* V3.80 — AD form tools row + create all forms + closeout notice cleanup. */
 (function(){
@@ -25472,7 +25477,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   setInterval(refresh,5000);
 })();
 </script>
-<script src="./app.js?v=V4.6.0" data-phase="layout"></script>
+<script src="./app.js?v=V4.6.2" data-phase="layout"></script>
 <script id="v1020-fs208-geometry-migration">
 (function(){
   const REV='V1020-EXACT-PAGE13';
@@ -26593,8 +26598,8 @@ root.v378ResetAllOldRecords=async function(){
   };
 })();
 </script>
-<script src="./app.js?v=V4.6.0" data-phase="performance"></script>
-<script src="./daily-roster.js?v=V4.6.0" id="dailyRosterCleanV11102"></script>
+<script src="./app.js?v=V4.6.2" data-phase="performance"></script>
+<script src="./daily-roster.js?v=V4.6.2" id="dailyRosterCleanV11102"></script>
 <script id="v1016-delete-profile-fix">
 /* V1.0.16 · XÓA tài khoản phải xóa đúng profile E-Report, không chỉ Auth/users. */
 (function(){
@@ -27435,7 +27440,7 @@ root.v378ResetAllOldRecords=async function(){
       document.body.appendChild(a);a.click();a.remove();
       showStatus('✓ PDF đã tự tải về máy tính: '+preparedName()+' · Có thể bấm TẢI LẠI PDF nếu cần.');
       return true;
-    }catch(e){console.warn('V4.6.0 desktop auto download',e);return false;}
+    }catch(e){console.warn('V4.6.2 desktop auto download',e);return false;}
   }
   window.v452IsDesktopExportDevice=isDesktopExportDevice;
   window.v452DesktopDownloadPrepared=desktopDownloadPrepared;
@@ -28211,16 +28216,16 @@ body.v38-clean-workflow #v1134QuickTimeBtn{background:#eef6ff!important;color:#0
 })();
 </script>
 
-<script src="./runtime.bundle.js?v=V4.6.0"></script>
+<script src="./runtime.bundle.js?v=V4.6.2"></script>
 <script id="v460RuntimeGuard">
 (()=>{
   setTimeout(()=>{
-    const ok=String(window.__SAGS_RUNTIME_BUILD__||'')==='V4.6.0-AI-FORM-ASSIST';
+    const ok=String(window.__SAGS_RUNTIME_BUILD__||'')==='V4.6.2-LIVE-TEST-EDIT';
     if(ok)return;
     console.error('E-REPORT runtime mismatch',window.__SAGS_RUNTIME_BUILD__);
     const d=document.createElement('div');d.id='v460RuntimeMismatch';
     d.style='position:fixed;left:10px;right:10px;bottom:10px;z-index:2147483647;background:#b42318;color:#fff;padding:12px 14px;border-radius:12px;font:800 12px/1.45 Arial;box-shadow:0 8px 24px #0005';
-    d.textContent='⚠ Runtime chưa cập nhật đúng V4.6.0. Hãy upload runtime.bundle.js của gói UPDATE ONLY rồi bấm UPDATE lại.';
+    d.textContent='⚠ Runtime chưa cập nhật đúng V4.6.2. Hãy upload runtime.bundle.js của gói UPDATE ONLY rồi bấm UPDATE lại.';
     document.body.appendChild(d);
   },1800);
 })();
@@ -28247,6 +28252,6 @@ window.adminResetAccountPassword=async function(uid){
   }
 };
 </script>
-<script src="./features.bundle.js?v=V4.6.0"></script>
+<script src="./features.bundle.js?v=V4.6.2"></script>
 </body>
 </html>

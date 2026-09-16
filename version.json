@@ -1,10 +1,10 @@
 {
-  "version": "V4.6.0",
-  "displayVersion": "V4.6.0",
-  "label": "V4.6.0 AI FORM ASSIST",
-  "build": "V4.6.0-AI-FORM-ASSIST",
-  "releasedAt": "2026-09-16T04:38:00Z",
-  "type": "ai-form-assist",
-  "notes": "Form Manager thêm AI nhận dạng form bằng OCR chạy trong trình duyệt. Tự gợi ý field, type, bind, vị trí; preview trước khi áp dụng; confidence và Undo. AI engine/model chỉ tải khi AD bấm dùng AI.",
-  "message": "V4.6.0 · AI Form Assist · Local OCR + layout suggestions"
+  "version": "V4.6.2",
+  "displayVersion": "V4.6.2",
+  "label": "V4.6.2 LIVE TEST EDIT",
+  "build": "V4.6.2-LIVE-TEST-EDIT",
+  "releasedAt": "2026-09-16T04:48:00Z",
+  "type": "form-manager-live-test-edit",
+  "notes": "TEST HIỂN THỊ trở thành Live Test/Edit. Trong TEST có thể kéo, resize, chọn nhiều field, căn chữ và nudge bằng phím mũi tên. Có chế độ khóa vị trí để tương tác nhập/check/select bằng dữ liệu test riêng, không ghi vào dữ liệu chuyến.",
+  "message": "V4.6.2 · Live Test/Edit · Drag/resize in TEST · Interaction lock · Keyboard nudge"
 }
