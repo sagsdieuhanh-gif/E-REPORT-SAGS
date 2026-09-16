@@ -1,10 +1,10 @@
 {
-  "version": "V4.6.4",
-  "displayVersion": "V4.6.4",
-  "label": "V4.6.4 PDF BACKGROUND IMPORT",
-  "build": "V4.6.4-PDF-BACKGROUND-IMPORT",
-  "releasedAt": "2026-09-16T05:36:00Z",
-  "type": "form-manager-pdf-import",
-  "notes": "Form Manager nhận trực tiếp PDF làm nền. PDF được tách từng trang, render thành ảnh chuẩn hệ thống 1241px cạnh chuẩn, lưu IndexedDB và dùng như ảnh nền bình thường. Multi-page tự thay các trang kế tiếp; form mới tự thêm trang, form hệ thống giữ nguyên page mapping.",
-  "message": "V4.6.4 · PDF → background images · multi-page import"
+  "version": "V4.7.0",
+  "displayVersion": "V4.7.0",
+  "label": "V4.7.0 CARRIER SERVICE NOTEBOOK",
+  "build": "V4.7.0-CARRIER-SERVICE-NOTEBOOK",
+  "releasedAt": "2026-09-16T05:58:00Z",
+  "type": "carrier-service-guide",
+  "notes": "Sổ tay phục vụ 26 hãng từ bảng Excel. Nút notebook tra cứu offline; khi chuyến đang mở khớp mã hãng, nút đổi thành ! LƯU Ý PHỤC VỤ. Nội dung theo nhóm Coor, Loading, Tài liệu, Flightplan.",
+  "message": "V4.7.0 · Sổ tay hãng · ! lưu ý theo chuyến đang mở"
 }
