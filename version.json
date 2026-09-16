@@ -1,10 +1,10 @@
 {
-  "version": "V4.5.0",
-  "displayVersion": "V4.5.0",
-  "label": "V4.5.0 TEST",
-  "build": "V4.5.0-FORM-MANAGER-FAST-PDF-TEST",
-  "releasedAt": "2026-09-16T03:55:00Z",
-  "type": "form-manager-fast-pdf-test",
-  "notes": "Bỏ hẳn Căn nhanh cũ. Form Manager quản lý layout form hệ thống + form mới; màn hình và PDF dùng cùng geometry. Fast PDF vẽ trực tiếp Canvas, không rasterize SVG Blob. Có TEST HIỂN THỊ, PDF PREVIEW, căn trái/phải/trên/dưới/giữa/cùng kích thước/dàn đều và PDF performance.",
-  "message": "V4.5.0 TEST · Form Manager single source + Fast PDF"
+  "version": "V4.5.2",
+  "displayVersion": "V4.5.2",
+  "label": "V4.5.2 TEST",
+  "build": "V4.5.2-DESKTOP-AUTO-DOWNLOAD",
+  "releasedAt": "2026-09-16T04:10:00Z",
+  "type": "desktop-auto-download",
+  "notes": "Trên Windows/macOS/Linux desktop, PDF tự tải xuống ngay sau khi tạo xong; không mở Share Sheet. Mobile/tablet giữ luồng Share Sheet. FINAL và READ & SIGN dùng cùng cơ chế tự tải. Nút MỞ PDF/TẢI LẠI vẫn giữ làm dự phòng.",
+  "message": "V4.5.2 TEST · Desktop PDF auto-download"
 }

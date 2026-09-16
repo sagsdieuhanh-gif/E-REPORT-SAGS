@@ -2706,26 +2706,9 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <style id="sags-v115-clean-ui">
 #roleLoginHint,#v1014UsernameLoginNote,.templateNote,.fs09qUsageNote,.v377CreateFormNote,.v1019Hint{display:none!important}
 </style>
-<link rel="stylesheet" href="./app.bundle.css?v=V4.5.0">
+<link rel="stylesheet" href="./app.bundle.css?v=V4.5.2">
 </head>
 <body>
-<style id="v442-floating-admin-cleanup-style">
-#v442FloatingCleanupBtn{position:fixed;left:max(10px,env(safe-area-inset-left));top:max(10px,env(safe-area-inset-top));z-index:2147483200;display:none;align-items:center;justify-content:center;gap:6px;min-height:44px;max-width:min(76vw,340px);padding:9px 12px;border:2px solid #fff0b3;border-radius:12px;background:#b54708;color:#fff;box-shadow:0 8px 24px rgba(0,0,0,.34);font:900 11.5px/1.15 Arial,sans-serif;letter-spacing:.05px;text-align:center;cursor:pointer;touch-action:manipulation}
-#v442FloatingCleanupBtn.show{display:inline-flex!important}
-#v442FloatingCleanupBtn:disabled{opacity:.68;cursor:wait}
-@media(max-width:600px){#v442FloatingCleanupBtn{top:max(6px,env(safe-area-inset-top));left:max(6px,env(safe-area-inset-left));min-height:40px;max-width:68vw;padding:7px 9px;font-size:10.5px;border-radius:10px}}
-@media print{#v442FloatingCleanupBtn{display:none!important}}
-</style>
-<button id="v442FloatingCleanupBtn" type="button" title="AD · Dọn tín hiệu/popup KẾT SỔ cũ, không xóa hồ sơ Firestore" onclick="v379ClearOldCloseoutNotices()">🗑 AD · DỌN LỊCH SỬ KẾT SỔ</button>
-<script id="v442-floating-admin-cleanup-controller">
-(function(root){
- function isAD(){try{const r=String(root.currentRole||root.currentUserProfile?.role||'').toUpperCase();return r==='AD'||r==='ADMIN'||document.body?.classList.contains('role-admin')}catch(e){return false}}
- function refresh(){const b=document.getElementById('v442FloatingCleanupBtn');if(!b)return;const ok=isAD();b.classList.toggle('show',ok);b.setAttribute('aria-hidden',ok?'false':'true')}
- root.v442RefreshFloatingCleanupButton=refresh;
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{refresh();setTimeout(refresh,250);setTimeout(refresh,1000)});else{refresh();setTimeout(refresh,250);setTimeout(refresh,1000)}
- setInterval(refresh,1200);
-})(window);
-</script>
 <div aria-hidden="true" id="roleHomeIdle"></div>
 <div id="roleLoginModal">
 <div class="roleLoginCard">
@@ -3003,7 +2986,6 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
   <button id="v377CreateFormBtn" type="button" onclick="v377OpenCreateFormMenu()">➕ TẠO BIỂU MẪU</button>
   <button id="v440FormManagerBtn" type="button" onclick="sagsV440OpenFormManager()">🧩 QUẢN LÝ / THÊM BIỂU MẪU</button>
   <div id="v377LayoutTuneSlot" class="v377LayoutTuneSlot"></div>
-  <button id="v379ClearCloseoutBtn" type="button" onclick="v379ClearOldCloseoutNotices()">🗑 DỌN LỊCH SỬ PHÁT KẾT SỔ</button>
   <button id="v378ResetRecordsBtn" type="button" onclick="v378ResetAllOldRecords()">🧹 XÓA TOÀN BỘ HỒ SƠ CŨ · BẮT ĐẦU MỚI</button>
   <div id="v378ResetStatus"></div>
 </div>
@@ -3926,7 +3908,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <button class="cancel" onclick="closeSignature();draw()">Đóng</button>
 </div>
 </div></div>
-<div class="hint" id="statusHint">V4.5.0 · ADMIN CLEANUP VISIBLE</div>
+<div class="hint" id="statusHint">V4.5.2 · DESKTOP AUTO DOWNLOAD · FORM MANAGER</div>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
@@ -3935,7 +3917,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <script>
 window.SAGS_FIREBASE_AUTH_SDK_READY = !!(window.firebase && typeof window.firebase.auth === "function");
 </script>
-<script src="./app.js?v=V4.5.0" data-phase="config"></script>
+<script src="./app.js?v=V4.5.2" data-phase="config"></script>
 <script>
 let suppressModalClickUntil=0;
 function armModalGhostClickBlock(ms=650){
@@ -8617,11 +8599,16 @@ async function sendReport(kind="all"){
     // is much more sensitive to keeping multiple 1241x1755 canvases alive.
     for(const c of pages){try{c.width=1;c.height=1;}catch(_e){}}
     v479ShowPreparedButtons();
+    if(typeof window.v452IsDesktopExportDevice==='function'&&window.v452IsDesktopExportDevice()){
+      if(status)status.textContent='PDF đã tạo xong. Đang tự tải file về máy tính...';
+      const ok=typeof window.v452DesktopDownloadPrepared==='function'&&window.v452DesktopDownloadPrepared();
+      if(status&&!ok)status.textContent='Không tự tải được PDF. Bấm TẢI LẠI PDF để tải thủ công.';
+      return;
+    }
     if(status) status.textContent=v479CanSharePdf()
       ? "PDF đã sẵn sàng. Bấm GỬI PDF để mở Share Sheet và chọn ứng dụng trên thiết bị; nếu không chia sẻ trực tiếp được, dùng MỞ PDF hoặc TẢI PDF."
       : "PDF đã tạo xong. Máy này không hỗ trợ chia sẻ file trực tiếp; bấm MỞ PDF để chia sẻ từ trình xem hoặc TẢI PDF.";
-    // Chỉ auto-share khi trình duyệt vẫn còn user activation; probe canShare được bọc an toàn,
-    // không để lỗi canShare của một số Safari làm cả quá trình bị báo nhầm là lỗi tạo PDF.
+    // Mobile/tablet keeps the Share Sheet flow. Desktop is handled above by direct download.
     if(!v1147IsIOS() && navigator.userActivation && navigator.userActivation.isActive && v479CanSharePdf()){
       try{
         await navigator.share({title:fileName.replace(/\.pdf$/i,""),files:[v1147PreparedShareFile()]});
@@ -11138,8 +11125,8 @@ try {
   if(h) h.textContent="Lỗi khởi tạo: "+err.message;
   alert("Lỗi JavaScript: "+err.message);
 }
-const APP_BUILD_VERSION="V4.5.0-FORM-MANAGER-FAST-PDF-TEST";
-const APP_DISPLAY_VERSION="V4.5.0";
+const APP_BUILD_VERSION="V4.5.2-DESKTOP-AUTO-DOWNLOAD";
+const APP_DISPLAY_VERSION="V4.5.2";
 // V1.1.103: hotfix duy nhất lỗi Firebase RTDB ancestor/descendant khi đồng bộ DAILY ROSTER; không thay đổi nghiệp vụ khác.
 // V4.21 — SAFE UPDATE SAVE
 // Before switching to a newly installed app version, force-save all current
@@ -22578,8 +22565,8 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
   setTimeout(()=>{try{if(window.currentRole)window.v114ApplyRoleHomeBackground();}catch(_){}},500);
 })();
 </script>
-<script type="module" src="./ai.js?v=V4.5.0"></script>
-<script src="./app.js?v=V4.5.0" data-phase="archive"></script>
+<script type="module" src="./ai.js?v=V4.5.2"></script>
+<script src="./app.js?v=V4.5.2" data-phase="archive"></script>
 <script id="v120-build02-fixes">
 /* V1.20 BUILD 02 — background persistence, VHTTB, per-account usage detail, progress dedupe. */
 (function(){
@@ -23021,7 +23008,7 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
   setTimeout(()=>{ensureUi();startCloseoutListener();refreshValidation();try{window.sagsV440CleanupExpiredCloseoutEvents?.()}catch(_){}},500);
 })();
 </script>
-<script src="./app.js?v=V4.5.0" data-phase="tools"></script>
+<script src="./app.js?v=V4.5.2" data-phase="tools"></script>
 <script id="v173-quick-time">
 (function(){
   "use strict";
@@ -24957,7 +24944,7 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
   }
 }
 </style>
-<script src="./app.js?v=V4.5.0" data-phase="flight"></script>
+<script src="./app.js?v=V4.5.2" data-phase="flight"></script>
 <script id="v191IOSInteractionFix">
 (()=>{
   'use strict';
@@ -25207,7 +25194,7 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
   window.addEventListener('pageshow',()=>setTimeout(refresh,120),{passive:true});
 })();
 </script>
-<script src="./app.js?v=V4.5.0" data-phase="control"></script>
+<script src="./app.js?v=V4.5.2" data-phase="control"></script>
 <style id="v330-group-permission-style">
 #v330GroupPermPanel{margin:12px 0 8px;padding:11px;border:1px solid #cbd9e6;border-radius:12px;background:#f7fbff;box-sizing:border-box}
 .v330GpHead{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;color:#173b5d;font:900 13px Arial}.v330GpSub{margin-top:4px;color:#61778b;font:700 11px/1.35 Arial}
@@ -25434,7 +25421,7 @@ function install(){addPermissions();ensureUi();ensureButton();refreshCount();lis
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install,350),{once:true});else setTimeout(install,350);root.addEventListener('pageshow',()=>setTimeout(install,250),{passive:true});
 })(window);
 </script>
-<script src="./app.js?v=V4.5.0" data-phase="postcontrol"></script>
+<script src="./app.js?v=V4.5.2" data-phase="postcontrol"></script>
 <script id="v377AdminFormToolsScript">
 /* V3.80 — AD form tools row + create all forms + closeout notice cleanup. */
 (function(){
@@ -25485,7 +25472,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   setInterval(refresh,5000);
 })();
 </script>
-<script src="./app.js?v=V4.5.0" data-phase="layout"></script>
+<script src="./app.js?v=V4.5.2" data-phase="layout"></script>
 <script id="v1020-fs208-geometry-migration">
 (function(){
   const REV='V1020-EXACT-PAGE13';
@@ -26354,7 +26341,7 @@ function clearLocal(){try{return Number(root.sagsV379ClearLocalCloseoutNotices?.
 root.v379ClearOldCloseoutNotices=async function(){
   if(!isAD())return alert('Chỉ AD được phép dọn thông báo KẾT SỔ cũ.');
   if(!confirm('XÓA TOÀN BỘ THÔNG BÁO KẾT SỔ CŨ?\n\nThao tác này chỉ dọn tín hiệu/popup KẾT SỔ cũ trên RTDB và cache thông báo trên thiết bị. KHÔNG xóa hồ sơ KẾT SỔ đã lưu trong Firestore.\n\nCác tài khoản đang online cũng sẽ nhận tín hiệu dọn popup cũ. Tiếp tục?'))return;
-  const btns=[...document.querySelectorAll('#v379ClearCloseoutBtn,#v442FloatingCleanupBtn')];btns.forEach(btn=>{btn.disabled=true;btn.textContent='ĐANG DỌN KẾT SỔ…';});
+  const btns=[...document.querySelectorAll('#v451ClearCloseoutBtn,#v379ClearCloseoutBtn,#v442FloatingCleanupBtn')];btns.forEach(btn=>{btn.disabled=true;btn.textContent='ĐANG DỌN KẾT SỔ…';});
   try{
     if(typeof root.sagsV470Ref!=='function')throw new Error('RTDB chưa sẵn sàng.');
     const now=Date.now();setStatus('Đang dọn tín hiệu KẾT SỔ cũ…');
@@ -26372,7 +26359,7 @@ root.v379ClearOldCloseoutNotices=async function(){
     try{root.showAutoUpdateToast?.('✓ Đã xóa thông báo KẾT SỔ cũ');}catch(e){}
     alert('✓ ĐÃ XÓA THÔNG BÁO KẾT SỔ CŨ\n\nHồ sơ KẾT SỔ trong Firestore KHÔNG bị xóa. Popup/tín hiệu test cũ đã được dọn và các máy online sẽ nhận mốc dọn mới.');
   }catch(e){console.error('V3.80 closeout cleanup',e);setStatus('Không dọn được thông báo KẾT SỔ: '+String(e?.message||e),true);alert('Không dọn được thông báo KẾT SỔ: '+String(e?.message||e));}
-  finally{btns.forEach(btn=>{btn.disabled=false;btn.textContent=btn.id==='v442FloatingCleanupBtn'?'🗑 AD · DỌN LỊCH SỬ KẾT SỔ':'🗑 DỌN LỊCH SỬ PHÁT KẾT SỔ';});}
+  finally{btns.forEach(btn=>{btn.disabled=false;btn.textContent=btn.id==='v451ClearCloseoutBtn'?'🗑 DỌN LỊCH SỬ PHÁT KẾT SỔ':(btn.id==='v442FloatingCleanupBtn'?'🗑 AD · DỌN LỊCH SỬ KẾT SỔ':'🗑 DỌN LỊCH SỬ PHÁT KẾT SỔ');});}
 };
 })(window);
 </script>
@@ -26606,8 +26593,8 @@ root.v378ResetAllOldRecords=async function(){
   };
 })();
 </script>
-<script src="./app.js?v=V4.5.0" data-phase="performance"></script>
-<script src="./daily-roster.js?v=V4.5.0" id="dailyRosterCleanV11102"></script>
+<script src="./app.js?v=V4.5.2" data-phase="performance"></script>
+<script src="./daily-roster.js?v=V4.5.2" id="dailyRosterCleanV11102"></script>
 <script id="v1016-delete-profile-fix">
 /* V1.0.16 · XÓA tài khoản phải xóa đúng profile E-Report, không chỉ Auth/users. */
 (function(){
@@ -27432,6 +27419,26 @@ root.v378ResetAllOldRecords=async function(){
     const ua=String(navigator.userAgent||''),platform=String(navigator.platform||'');
     return /iPad|iPhone|iPod/i.test(ua)||(platform==='MacIntel'&&Number(navigator.maxTouchPoints||0)>1);
   }
+  function isMobileOrTablet(){
+    try{if(navigator.userAgentData&&navigator.userAgentData.mobile===true)return true}catch(_){}
+    const ua=String(navigator.userAgent||''),platform=String(navigator.platform||'');
+    if(/Android|iPhone|iPad|iPod|IEMobile|Opera Mini|Mobile|Tablet/i.test(ua))return true;
+    if(platform==='MacIntel'&&Number(navigator.maxTouchPoints||0)>1)return true; // iPadOS desktop UA
+    return false;
+  }
+  function isDesktopExportDevice(){return !isMobileOrTablet();}
+  function desktopDownloadPrepared(){
+    if(!isDesktopExportDevice()||!preparedPdfFile)return false;
+    try{
+      const url=v479PreparedUrl(),a=document.createElement('a');
+      a.href=url;a.download=preparedName();a.rel='noopener';a.style.display='none';
+      document.body.appendChild(a);a.click();a.remove();
+      showStatus('✓ PDF đã tự tải về máy tính: '+preparedName()+' · Có thể bấm TẢI LẠI PDF nếu cần.');
+      return true;
+    }catch(e){console.warn('V4.5.2 desktop auto download',e);return false;}
+  }
+  window.v452IsDesktopExportDevice=isDesktopExportDevice;
+  window.v452DesktopDownloadPrepared=desktopDownloadPrepared;
   function showStatus(text){const el=document.getElementById('exportStatus');if(el)el.textContent=text||'';}
   function preparedName(){try{return typeof v479PreparedName==='function'?v479PreparedName():String(preparedPdfName||preparedPdfFile?.name||'E-REPORT.pdf')}catch(_){return 'E-REPORT.pdf'}}
   function safeIOSName(name){
@@ -27461,9 +27468,14 @@ root.v378ResetAllOldRecords=async function(){
     preparedPdfFile=ensureFile(value,name);preparedPdfName=String(preparedPdfFile?.name||name||'E-REPORT.pdf');
     openExportModal(message||'PDF đã tạo xong.');
     v479ShowPreparedButtons?.();
-    showStatus(isIOS()
-      ? 'PDF đã sẵn sàng. Cách 1: LƯU / CHIA SẺ QUA ỨNG DỤNG. Nếu iOS không mở Share Sheet, bấm MỞ PDF TRỰC TIẾP để mở file trong trình xem iPhone/iPad.'
-      : 'PDF đã sẵn sàng. Chọn CHIA SẺ, MỞ PDF hoặc TẢI PDF.');
+    if(isDesktopExportDevice()){
+      showStatus('PDF đã tạo xong. Đang tự tải file về máy tính...');
+      setTimeout(()=>{if(!desktopDownloadPrepared())showStatus('Không tự tải được PDF. Bấm TẢI PDF để tải thủ công.');},0);
+    }else{
+      showStatus(isIOS()
+        ? 'PDF đã sẵn sàng. Cách 1: LƯU / CHIA SẺ QUA ỨNG DỤNG. Nếu iOS không mở Share Sheet, bấm MỞ PDF TRỰC TIẾP để mở file trong trình xem iPhone/iPad.'
+        : 'PDF đã sẵn sàng. Chọn CHIA SẺ, MỞ PDF hoặc TẢI PDF.');
+    }
   }
   function iosPdfFile(){
     if(!preparedPdfFile)return null;
@@ -27534,10 +27546,10 @@ root.v378ResetAllOldRecords=async function(){
     try{return typeof navigator.canShare!=='function'||navigator.canShare({files:[file]})}catch(_){return false}
   };
   window.v479ShowPreparedButtons=v479ShowPreparedButtons=function(){
-    const file=preparedPdfFile,share=document.getElementById('exportShareBtn'),open=document.getElementById('exportOpenBtn'),down=document.getElementById('exportDownloadBtn'),ios=isIOS();
-    if(share){share.style.display=(file&&typeof navigator.share==='function')?'block':'none';share.textContent=ios?'LƯU / CHIA SẺ QUA ỨNG DỤNG':'CHIA SẺ QUA ỨNG DỤNG';}
+    const file=preparedPdfFile,share=document.getElementById('exportShareBtn'),open=document.getElementById('exportOpenBtn'),down=document.getElementById('exportDownloadBtn'),ios=isIOS(),desktop=isDesktopExportDevice();
+    if(share){share.style.display=(!desktop&&file&&typeof navigator.share==='function')?'block':'none';share.textContent=ios?'LƯU / CHIA SẺ QUA ỨNG DỤNG':'CHIA SẺ QUA ỨNG DỤNG';}
     if(open){open.style.display=file?'block':'none';open.textContent=ios?'MỞ PDF TRỰC TIẾP':'MỞ PDF';}
-    if(down){down.style.display=file?'block':'none';down.textContent=ios?'THỬ LƯU FILE PDF':'TẢI PDF';}
+    if(down){down.style.display=file?'block':'none';down.textContent=ios?'THỬ LƯU FILE PDF':(desktop?'TẢI LẠI PDF':'TẢI PDF');}
   };
 
   async function openSameViewIOS(){
@@ -28199,7 +28211,7 @@ body.v38-clean-workflow #v1134QuickTimeBtn{background:#eef6ff!important;color:#0
 })();
 </script>
 
-<script src="./runtime.bundle.js?v=V4.5.0"></script>
+<script src="./runtime.bundle.js?v=V4.5.2"></script>
 <script>
 /* V2.2.20 — AD reset existing Firebase Authentication account via callable backend. */
 window.adminResetAccountPassword=async function(uid){
@@ -28222,6 +28234,6 @@ window.adminResetAccountPassword=async function(uid){
   }
 };
 </script>
-<script src="./features.bundle.js?v=V4.5.0"></script>
+<script src="./features.bundle.js?v=V4.5.2"></script>
 </body>
 </html>

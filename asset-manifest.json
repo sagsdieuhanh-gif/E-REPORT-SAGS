@@ -1,13 +1,11 @@
 {
   "schema": 2,
-  "version": "V4.5.0",
-  "build": "V4.5.0-FORM-MANAGER-FAST-PDF-TEST",
+  "version": "V4.5.2",
+  "build": "V4.5.2-DESKTOP-AUTO-DOWNLOAD",
   "strategy": "stable-cache-sha256-delta",
   "bootstrapChanged": [
     "./index.html",
     "./service-worker.js",
-    "./runtime.bundle.js",
-    "./forms.registry.json",
     "./version.json"
   ],
   "assets": {
@@ -136,8 +134,8 @@
       "bytes": 104295
     },
     "./index.html": {
-      "sha256": "9aecaeaf4be6391df37071d165332aaa3f7c66f310afe9a476b59c43c9fd0617",
-      "bytes": 1763803
+      "sha256": "2ffa7d9e40d1f8d6df4ee33215125915d3c44241a7a13786ced561ac620df8ed",
+      "bytes": 1763665
     },
     "./ket-so.wav": {
       "sha256": "cf03e8d4021f989f61fd12249f282ae2e53588cc9d55d68393778223db8132a1",
@@ -220,20 +218,20 @@
       "bytes": 21617
     },
     "./runtime.bundle.js": {
-      "sha256": "f34e2f037110219c01c5d8ee255458adc2e8aa2cfc3e9787a33218d08dd28391",
-      "bytes": 393000
+      "sha256": "c30e0c6d51eb59ef5defcaf0e3e637dcf0c2e57d0c88b294a0a54710fa68c04b",
+      "bytes": 400044
     },
     "./sags-logo.png": {
       "sha256": "84bc554c3b44afe4190afcbe74f7c7aed9fad478c328d63502a7d225dd60d7ad",
       "bytes": 25408
     },
     "./service-worker.js": {
-      "sha256": "48ef0341e2b425597c80899686f708d4723d835f24d6ead5c0faf9e06c2d6ca3",
-      "bytes": 6575
+      "sha256": "4bfac7869a5f647bf357bb0bc5f865748d348705ba1cc1f082d575469261dc44",
+      "bytes": 6563
     },
     "./version.json": {
-      "sha256": "6fa4cf8d15ede31e303397f7ed73d62466b2a4803f0ea25960718d1f766da322",
-      "bytes": 616
+      "sha256": "04b36f62210078c9eedebbb886776d7eee4e41a85601da1a217ead580453847a",
+      "bytes": 532
     }
   }
 }
