@@ -1,0 +1,129 @@
+{
+  "schema": 1,
+  "version": "V4.4.0",
+  "build": "V4.4.0-FORM-MANAGER-REALTIME-LITE",
+  "updatedAt": "2026-09-16T02:30:00Z",
+  "note": "Published form registry. Legacy forms keep current engine; custom forms use the generic V4.4 engine. Add forms by AD Form Manager and deploy exported assets + registry entry.",
+  "forms": [
+    {
+      "id": "fsags423",
+      "code": "FSAGS42.3",
+      "name": "FSAGS 42.3",
+      "legacy": true,
+      "group": "fsags",
+      "pages": [
+        {
+          "id": "p1",
+          "image": "./page1.png",
+          "width": 1241,
+          "height": 1755
+        },
+        {
+          "id": "p2",
+          "image": "./page2.png",
+          "width": 1241,
+          "height": 1755
+        }
+      ],
+      "fields": []
+    },
+    {
+      "id": "fsags421",
+      "code": "FSAGS42.1",
+      "name": "FSAGS 42.1",
+      "legacy": true,
+      "group": "fsags421",
+      "pages": [
+        {
+          "id": "p1",
+          "image": "./page6.png",
+          "width": 1241,
+          "height": 1755
+        },
+        {
+          "id": "p2",
+          "image": "./page7.png",
+          "width": 1241,
+          "height": 1755
+        }
+      ],
+      "fields": []
+    },
+    {
+      "id": "fsags551",
+      "code": "FSAGS55.1",
+      "name": "FSAGS 55.1",
+      "legacy": true,
+      "group": "fsags551",
+      "pages": [
+        {
+          "id": "p1",
+          "image": "./page9.png",
+          "width": 1241,
+          "height": 1755
+        },
+        {
+          "id": "p2",
+          "image": "./page10.png",
+          "width": 1241,
+          "height": 1755
+        }
+      ],
+      "fields": []
+    },
+    {
+      "id": "fsags09",
+      "code": "FSAGS09",
+      "name": "FSAGS 09",
+      "legacy": true,
+      "group": "fsags09",
+      "pages": [
+        {
+          "id": "p1",
+          "image": "./page11.png",
+          "width": 1241,
+          "height": 1755
+        },
+        {
+          "id": "p2",
+          "image": "./page12.png",
+          "width": 1241,
+          "height": 1755
+        }
+      ],
+      "fields": []
+    },
+    {
+      "id": "fsags208",
+      "code": "FSAGS208",
+      "name": "FSAGS 208",
+      "legacy": true,
+      "group": "loading208",
+      "pages": [
+        {
+          "id": "p1",
+          "image": "./page13.png",
+          "width": 1491,
+          "height": 1055
+        }
+      ],
+      "fields": []
+    },
+    {
+      "id": "bbbt",
+      "code": "F/SAGS-CXR/56",
+      "name": "BBBT",
+      "legacy": true,
+      "group": "bbbt",
+      "pages": [
+        {
+          "id": "p1",
+          "image": "./page4.png",
+          "width": 1241,
+          "height": 1755
+        }
+      ],
+      "fields": []
+    }
+  ]
+}

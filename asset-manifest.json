@@ -1,8 +1,8 @@
 {
   "schema": 2,
-  "version": "V4.3.0",
-  "build": "V4.3.0-CLEAN-BUNDLE-OFFLINE-FIRST",
-  "strategy": "stable-cache-sha256-delta-clean-bundles",
+  "version": "V4.4.0",
+  "build": "V4.4.0-FORM-MANAGER-REALTIME-LITE",
+  "strategy": "stable-cache-sha256-delta-form-manager-realtime-lite",
   "bootstrapChanged": [
     "./index.html",
     "./app.js",
@@ -10,7 +10,8 @@
     "./runtime.bundle.js",
     "./features.bundle.js",
     "./daily-roster.js",
-    "./ai.js"
+    "./ai.js",
+    "./forms.registry.json"
   ],
   "assets": {
     "./#U0110H.png": {
@@ -20,6 +21,42 @@
     "./9Gfinal.png": {
       "sha256": "8e8a65b7370ef2ec7a733e28e6df369e27a5c59fdaef44009d0b34251c87f75a",
       "bytes": 321831
+    },
+    "./CBTT.png": {
+      "sha256": "6f4ecb67fb17e99942beba7637b8f22e3da2a9f0980a332f12a229b66f894f52",
+      "bytes": 665330
+    },
+    "./KTTB.png": {
+      "sha256": "1aff444605a5f09675859166d5199fb7fc1007932160df38a078a93bdf249c0a",
+      "bytes": 669434
+    },
+    "./LNF.png": {
+      "sha256": "10500d3fc534f069ffc71a326d573158f78a4ac448bf088e1535afc59c112e48",
+      "bytes": 550828
+    },
+    "./PVHK.png": {
+      "sha256": "1bed8bfc684a7c01156aae4ffc4f181db42624439b330d282171c4c395fa7b45",
+      "bytes": 537459
+    },
+    "./PVHLNG.png": {
+      "sha256": "4948609a3882882da2cc8bc52ca83aca2232051a736e18b155ff49c10a6b08df",
+      "bytes": 675403
+    },
+    "./VHTTB.png": {
+      "sha256": "72169c9ba51973b5139ee56e0ecba0a549f6d768758277624f56b69021973ee9",
+      "bytes": 554081
+    },
+    "./VJfinal.png": {
+      "sha256": "18a95d129c7408636db13d4e0ea238861aa184c6b171e6833b56545083193cc1",
+      "bytes": 549866
+    },
+    "./VJfinal2.png": {
+      "sha256": "f638512c1e977ba2b9da8e5bdc4f633b7ed77b03fea90769285eb554fc6bbaa6",
+      "bytes": 542237
+    },
+    "./VUfinal.png": {
+      "sha256": "1a7372356daf61f8d25416315189ca4291b82c64407456ffe87412da9d7427ad",
+      "bytes": 284127
     },
     "./ai.js": {
       "sha256": "3942d7bb6021a981b121ec3bbac852d312d2945be0b8bace0872d9ba6f3aa098",
@@ -58,16 +95,12 @@
       "bytes": 46693
     },
     "./app.js": {
-      "sha256": "5e918839f3ece2e86c598331d436642f79ec2cf1ab9c20befcadc14441c10c7b",
-      "bytes": 883158
+      "sha256": "b35673dfdc80a28cfccb2a90b86db2804ff2a43a7d9b234d806150cef1f0561c",
+      "bytes": 886045
     },
     "./apple-touch-icon.png": {
       "sha256": "a190c19f9a52a40f43379917b11f84f99a2ab2fb4a3cdaedd1dad936a67c8e78",
       "bytes": 17275
-    },
-    "./CBTT.png": {
-      "sha256": "6f4ecb67fb17e99942beba7637b8f22e3da2a9f0980a332f12a229b66f894f52",
-      "bytes": 665330
     },
     "./daily-roster.js": {
       "sha256": "3038159edd4d4e325bfe89011e50e5f670b279e7d74fc206ae8f9828b09b74c0",
@@ -84,6 +117,10 @@
     "./features.bundle.js": {
       "sha256": "ac9c4d58ed176ab7ba315de2437ac85e91a6867bd710244ea8582f54db5b589f",
       "bytes": 42925
+    },
+    "./forms.registry.json": {
+      "sha256": "bdc0ca28d5ed64562134ec3e670d7ec996137e4d38b34ed0fe33b84905487a5b",
+      "bytes": 2698
     },
     "./fsags-display-coordinates.json": {
       "sha256": "9ba95aab8420c74b377970e082e81a43f6402c262d6d82aa2dcc13fd7834b4be",
@@ -106,20 +143,12 @@
       "bytes": 104295
     },
     "./index.html": {
-      "sha256": "83a629cb1e4c924f56ab2cdd6cda207645d16b711089647114b6b193d52be2f2",
-      "bytes": 1758466
+      "sha256": "3498b8f2219e4dd7d7bd7769f0debe2cde93f207ec9042dbc2fc8a6a26c73cb5",
+      "bytes": 1761428
     },
     "./ket-so.wav": {
       "sha256": "cf03e8d4021f989f61fd12249f282ae2e53588cc9d55d68393778223db8132a1",
       "bytes": 72368
-    },
-    "./KTTB.png": {
-      "sha256": "1aff444605a5f09675859166d5199fb7fc1007932160df38a078a93bdf249c0a",
-      "bytes": 669434
-    },
-    "./LNF.png": {
-      "sha256": "10500d3fc534f069ffc71a326d573158f78a4ac448bf088e1535afc59c112e48",
-      "bytes": 550828
     },
     "./login-bg.jpg": {
       "sha256": "315a1925733e609cc5a08df6bb0fbfd0693fe137a3b25ac3f9876d4e0166e489",
@@ -173,14 +202,6 @@
       "sha256": "7957780d4edd7c4f6b73f5b999843de36f3c6a03cefa7a6c0161bfc5be16a1a3",
       "bytes": 585020
     },
-    "./PVHK.png": {
-      "sha256": "1bed8bfc684a7c01156aae4ffc4f181db42624439b330d282171c4c395fa7b45",
-      "bytes": 537459
-    },
-    "./PVHLNG.png": {
-      "sha256": "4948609a3882882da2cc8bc52ca83aca2232051a736e18b155ff49c10a6b08df",
-      "bytes": 675403
-    },
     "./rns-ke-continuation.png": {
       "sha256": "c3aec7394542048bb4afa6aac3f15c53795d06cbbd677dca737f28849138d1c7",
       "bytes": 29174
@@ -206,28 +227,12 @@
       "bytes": 21617
     },
     "./runtime.bundle.js": {
-      "sha256": "b63d0e5f0d34ff6a3f5500d43f86486cb84d09214eccf377911e4247860a1b7d",
-      "bytes": 333106
+      "sha256": "788ffa800cdbd6f5bd127904b39a8db206adae62b746fc4d305634f0b85094da",
+      "bytes": 369260
     },
     "./sags-logo.png": {
       "sha256": "84bc554c3b44afe4190afcbe74f7c7aed9fad478c328d63502a7d225dd60d7ad",
       "bytes": 25408
-    },
-    "./VHTTB.png": {
-      "sha256": "72169c9ba51973b5139ee56e0ecba0a549f6d768758277624f56b69021973ee9",
-      "bytes": 554081
-    },
-    "./VJfinal.png": {
-      "sha256": "18a95d129c7408636db13d4e0ea238861aa184c6b171e6833b56545083193cc1",
-      "bytes": 549866
-    },
-    "./VJfinal2.png": {
-      "sha256": "f638512c1e977ba2b9da8e5bdc4f633b7ed77b03fea90769285eb554fc6bbaa6",
-      "bytes": 542237
-    },
-    "./VUfinal.png": {
-      "sha256": "1a7372356daf61f8d25416315189ca4291b82c64407456ffe87412da9d7427ad",
-      "bytes": 284127
     }
   }
 }

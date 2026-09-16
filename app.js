@@ -149,10 +149,9 @@ function v488StartCloseoutSignals(){
   if(!v488CloseoutSignalEligible()){v488StopCloseoutSignals();return;}
   try{
     v488StopCloseoutSignals();
-    const since=Date.now()-72*60*60*1000;
-    // Handler already ignores signals older than 72 h; apply the same condition on
-    // the server query so non-relevant historical signals are never downloaded.
-    v488CloseoutRef=sagsV470Ref("closeouts").orderByChild("eventAtMs").startAt(since).limitToLast(80);
+    const since=Date.now()-5000;
+    // V4.4 REALTIME LITE: only signals created around this live page session; no 72h history replay on F5.
+    v488CloseoutRef=sagsV470Ref("closeouts").orderByChild("eventAtMs").startAt(since).limitToLast(5);
     v488CloseoutAddedCb=v488HandleCloseoutSignal;v488CloseoutChangedCb=v488HandleCloseoutSignal;
     v488CloseoutRef.on("child_added",v488CloseoutAddedCb);v488CloseoutRef.on("child_changed",v488CloseoutChangedCb);
   }catch(e){console.info("V4.88 closeout listener",e?.message||e);}
@@ -6311,7 +6310,7 @@ root.__SAGS_V344_CLOSEOUT_FINAL_LOADED=true;
 const BUILD="V3.59-20260822-01";
 const INDEX_ROOT="closeout_by_flight_v344";
 const IDENTITY_ROOT="closeout_by_identity_v355";
-const EVENTS_ROOT="closeout_events_v348";
+const EVENTS_ROOT="closeout_events_v440";
 const INBOX_KEY="sagsCloseoutInboxV121";
 const S=v=>String(v??"").trim();
 const U=v=>S(v).toUpperCase();
@@ -6389,47 +6388,47 @@ function applyAll(p,{notify=true,createMissing=true}={}){if(!p||!["CBTT","AD"].i
   try{root.__SAGS_V355_LAST_AUTOFILL={atMs:Date.now(),dateToken:payloadDate(p),flightToken:targetFlights(p)[0]||"",acRegToken:payloadReg(p),revisionNo:payloadRevision(p),...result}}catch(_){}return result}
 
 function cachedForRecord(rec){const {data}=readRecordData(rec),id=recordIdentity(rec,data);if(!id.reg)return null;const box=readInbox();for(const dt of id.dateTokens)for(const flt of id.flights){const exact=box?.[dt+"|"+flt+"|"+id.reg]?.latest;if(exact&&payloadReg(exact)===id.reg)return exact;const legacy=box?.[dt+"|"+flt]?.latest;if(legacy&&payloadReg(legacy)===id.reg)return legacy}return null}
-async function durableForRecord(rec){if(typeof root.sagsV470Ref!=="function")return null;const {data}=readRecordData(rec),id=recordIdentity(rec,data);if(!id.reg)return null;for(const dt of id.dateTokens)for(const flt of id.flights){let snap=await root.sagsV470Ref(`${IDENTITY_ROOT}/${safe(dt)}/${safe(flt)}/${safe(id.reg)}`).once("value"),v=snap.val?.()||null,p=v?.payload||v||null;if(p&&payloadReg(p)===id.reg)return p;snap=await root.sagsV470Ref(`${INDEX_ROOT}/${safe(dt)}/${safe(flt)}`).once("value");v=snap.val?.()||null;p=v?.payload||v||null;if(p&&payloadReg(p)===id.reg)return p}return null}
+const v440CloseoutDocCache=new Map();
+async function v440FetchCloseoutDoc(docId){docId=S(docId);if(!docId||typeof root.initHandoverFirebase!=="function")return null;const hit=v440CloseoutDocCache.get(docId);if(hit&&Date.now()-hit.at<5*60*1000)return clone(hit.payload);const db=root.initHandoverFirebase(),ss=await db.collection(collectionName()).doc(docId).get();if(!ss.exists)return null;const p=ss.data()||null;if(p)v440CloseoutDocCache.set(docId,{at:Date.now(),payload:clone(p)});return p}
+async function v440PayloadFromPointer(v){if(!v)return null;if(v.payload)return v.payload;if(v.docId)return await v440FetchCloseoutDoc(v.docId);return null}
+root.sagsV440FetchCloseoutPayload=async signal=>await v440PayloadFromPointer(signal);
+async function durableForRecord(rec){if(typeof root.sagsV470Ref!=="function")return null;const {data}=readRecordData(rec),id=recordIdentity(rec,data);if(!id.reg)return null;for(const dt of id.dateTokens)for(const flt of id.flights){let snap=await root.sagsV470Ref(`${IDENTITY_ROOT}/${safe(dt)}/${safe(flt)}/${safe(id.reg)}`).once("value"),v=snap.val?.()||null,p=await v440PayloadFromPointer(v);if(p&&payloadReg(p)===id.reg)return p;snap=await root.sagsV470Ref(`${INDEX_ROOT}/${safe(dt)}/${safe(flt)}`).once("value");v=snap.val?.()||null;p=await v440PayloadFromPointer(v);if(p&&payloadReg(p)===id.reg)return p}return null}
 async function firestoreForRecord(rec){const {data}=readRecordData(rec),id=recordIdentity(rec,data);if(!id.dateToken||!id.flight||!id.reg||typeof root.initHandoverFirebase!=="function")return null;const db=root.initHandoverFirebase(),arr=[];if(typeof root.fs09MakeMatchKey==="function"){const key=root.fs09MakeMatchKey(id.dateToken,id.flight,id.reg,"CXR");if(key){const snap=await db.collection(collectionName()).where("matchKeys","array-contains",key).limit(12).get();snap.forEach(doc=>{const d=doc.data()||{};if(U(d.kind)==="FSAGS09_CLOSEOUT"&&payloadReg(d)===id.reg)arr.push(d)})}}
   if(!arr.length){const snap=await db.collection(collectionName()).where("kind","==","fsags09_closeout").limit(80).get();snap.forEach(doc=>{const d=doc.data()||{};if(payloadDate(d)===id.dateToken&&targetFlights(d).includes(id.flight)&&payloadReg(d)===id.reg)arr.push(d)})}return arr.sort((a,b)=>payloadRevision(b)-payloadRevision(a)||Number(b?.submittedAtMs||0)-Number(a?.submittedAtMs||0))[0]||null}
 async function syncRecord(id,{notify=true}={}){const rec=(root.readFinalSheetList?.()||[]).find(x=>S(x.id)===S(id));if(!rec)return false;let found=false;const cached=cachedForRecord(rec);if(cached){applyAll(cached,{notify,createMissing:false});found=true}try{const d=await durableForRecord(rec);if(d){applyAll(d,{notify,createMissing:false});found=true;return true}}catch(e){console.info("V3.59 durable closeout RTDB",e?.message||e)}/* V3.59 READ FIX: tuyệt đối không fallback Firestore query tự động. Trước đây mỗi sync FINAL có thể đọc 12 + 80 docs; khi bootstrap/sửa identity sẽ nhân lên rất lớn. Firestore canonical chỉ dùng khi thao tác nghiệp vụ thực sự cần, không dùng để tự đồng bộ nền. */return found}
 async function syncAll({notify=false}={}){if(!["CBTT","AD"].includes(role()))return 0;const list=root.readFinalSheetList?.()||[],seen=new Set();let n=0;for(const rec of list){const {data}=readRecordData(rec),id=recordIdentity(rec,data),k=id.dateToken+"|"+id.flight+"|"+id.reg;if(!id.dateToken||!id.flight||!id.reg||seen.has(k))continue;seen.add(k);if(await syncRecord(rec.id,{notify}))n++}return n}
 function rosterDepartureFlight(x){return lastFlight(x?.depFlight||x?.flightToken)||lastFlight(x?.flightRaw||x?.flightName)||lastFlight(x?.arrFlight)}
-async function syncAssignedCloseouts({notify=false}={}){if(role()!=="CBTT"||!me()||typeof root.sagsV470Ref!=="function")return 0;let items={};try{items=(await root.sagsV470Ref(`roster_mail/${safe(me())}/items`).once("value")).val?.()||{}}catch(e){console.info("V3.55 assigned FINAL mailbox",e?.message||e);return 0}const wanted=new Map();for(const x of Object.values(items)){if(!x||x.active===false||U(x.formGroup)!=="FINAL")continue;const dt=dateToken(x.depFlightDate||x.opDate||x.date),flt=rosterDepartureFlight(x),rg=reg(x.acReg||x.acRegToken||x.regn);if(dt&&flt&&rg)wanted.set(dt+"|"+flt+"|"+rg,{dt,flt,rg})}let n=0;for(const {dt,flt,rg} of wanted.values())try{let snap=await root.sagsV470Ref(`${IDENTITY_ROOT}/${safe(dt)}/${safe(flt)}/${safe(rg)}`).once("value"),v=snap.val?.()||null,p=v?.payload||v||null;if(!p){snap=await root.sagsV470Ref(`${INDEX_ROOT}/${safe(dt)}/${safe(flt)}`).once("value");v=snap.val?.()||null;p=v?.payload||v||null}if(p&&payloadReg(p)===rg){applyAll(p,{notify,createMissing:true});n++}}catch(e){console.info("V3.55 assigned closeout",dt,flt,rg,e?.message||e)}return n}
+async function syncAssignedCloseouts({notify=false}={}){if(role()!=="CBTT"||!me()||typeof root.sagsV470Ref!=="function")return 0;let items={};try{items=(await root.sagsV470Ref(`roster_mail/${safe(me())}/items`).once("value")).val?.()||{}}catch(e){console.info("V3.55 assigned FINAL mailbox",e?.message||e);return 0}const wanted=new Map();for(const x of Object.values(items)){if(!x||x.active===false||U(x.formGroup)!=="FINAL")continue;const dt=dateToken(x.depFlightDate||x.opDate||x.date),flt=rosterDepartureFlight(x),rg=reg(x.acReg||x.acRegToken||x.regn);if(dt&&flt&&rg)wanted.set(dt+"|"+flt+"|"+rg,{dt,flt,rg})}let n=0;for(const {dt,flt,rg} of wanted.values())try{let snap=await root.sagsV470Ref(`${IDENTITY_ROOT}/${safe(dt)}/${safe(flt)}/${safe(rg)}`).once("value"),v=snap.val?.()||null,p=await v440PayloadFromPointer(v);if(!p){snap=await root.sagsV470Ref(`${INDEX_ROOT}/${safe(dt)}/${safe(flt)}`).once("value");v=snap.val?.()||null;p=await v440PayloadFromPointer(v)}if(p&&payloadReg(p)===rg){applyAll(p,{notify,createMissing:true});n++}}catch(e){console.info("V3.55 assigned closeout",dt,flt,rg,e?.message||e)}return n}
 async function bootstrapSync({notify=false}={}){await syncAssignedCloseouts({notify});return await syncAll({notify})}
 
-root.sagsV344PersistApprovedCloseout=async function(p,docId=""){if(!p||typeof root.sagsV470Ref!=="function")return false;const dt=payloadDate(p),fs=targetFlights(p),rg=payloadReg(p);if(!dt||!fs.length||!rg)return false;const patch={},at=Date.now();for(const f of fs){const node={schema:3,docId:S(docId),dateToken:dt,flightToken:f,acRegToken:rg,revisionNo:payloadRevision(p),approvedAtMs:Number(p?.internalApprovedAtMs||at),updatedAtMs:at,payload:clone(p)};patch[`${IDENTITY_ROOT}/${safe(dt)}/${safe(f)}/${safe(rg)}`]=node;patch[`${INDEX_ROOT}/${safe(dt)}/${safe(f)}`]=node}await root.sagsV470Ref("").update(patch);return true};
+const V440_EVENT_TTL_MS=30*60*1000,V440_ACK_DELETE_MS=3*60*1000,V440_ACK_ROOT="closeout_event_acks_v440";
+function v440CloseoutPointer(p,docId,extra={}){const dt=payloadDate(p),fs=targetFlights(p),rg=payloadReg(p),revision=payloadRevision(p),at=Number(extra.eventAtMs||Date.now());return {schema:4,kind:"sags_closeout_pointer_v440",docId:S(docId),payloadRef:`${collectionName()}/${S(docId)}`,dateToken:dt,flights:fs,flightToken:fs[0]||"",acRegToken:rg,closeoutNo:revision,revisionNo:revision,eventAtMs:at,approvedAtMs:Number(p?.internalApprovedAtMs||at),submittedAtMs:Number(p?.submittedAtMs||at),updatedAtMs:at}}
+root.sagsV344PersistApprovedCloseout=async function(p,docId=""){if(!p||typeof root.sagsV470Ref!=="function")return false;const dt=payloadDate(p),fs=targetFlights(p),rg=payloadReg(p);if(!dt||!fs.length||!rg||!S(docId))return false;const patch={},node=v440CloseoutPointer(p,docId);for(const f of fs){const n={...node,flightToken:f,flights:[f]};patch[`${IDENTITY_ROOT}/${safe(dt)}/${safe(f)}/${safe(rg)}`]=n;patch[`${INDEX_ROOT}/${safe(dt)}/${safe(f)}`]=n}await root.sagsV470Ref("").update(patch);return true};
 root.sagsV348PublishApprovedCloseout=async function(p,docId="",meta={}){
   if(!p||typeof root.sagsV470Ref!=="function")return false;
   const dt=payloadDate(p),fs=targetFlights(p),rg=payloadReg(p),revision=payloadRevision(p);
   if(!dt||!fs.length||!rg||!S(docId))return false;
-  const at=Number(meta?.eventAtMs||Date.now()),eventId=S(meta?.eventId||`${docId}|R${revision}|${at}`);
-  const signal={
-    kind:"sags_closeout_signal_v348",schema:1,eventId,eventAtMs:at,docId:S(docId),
-    closeoutNo:revision,revisionNo:revision,dateToken:dt,flights:fs,
+  const at=Number(meta?.eventAtMs||Date.now()),eventId=S(meta?.eventId||`${docId}|R${revision}|${at}`),expiresAtMs=at+V440_EVENT_TTL_MS;
+  const pointer=v440CloseoutPointer(p,docId,{eventAtMs:at});
+  const signal={...pointer,kind:"sags_closeout_signal_v440",schema:2,eventId,expiresAtMs,
     matchKeys:Array.isArray(p?.matchKeys)?p.matchKeys.slice():(Array.isArray(p?.identity?.matchKeys)?p.identity.matchKeys.slice():[]),
-    acRegToken:rg,
-    sourceDeviceId:S(meta?.sourceDeviceId||p?.sourceDeviceId),
-    sourceSessionId:S(p?.sourceSessionId),
-    sourceUser:S(meta?.sourceUser||p?.submittedBy?.username),
-    sourceRole:U(meta?.sourceRole||p?.submittedBy?.role||"PVHK"),
-    approvedBy:clone(p?.internalApprovedBy||null),approvedAtMs:Number(p?.internalApprovedAtMs||at),
-    targetRoles:["DH","CBTT","AD"],payload:clone(p),build:BUILD
-  };
+    sourceDeviceId:S(meta?.sourceDeviceId||p?.sourceDeviceId),sourceSessionId:S(p?.sourceSessionId),
+    sourceUser:S(meta?.sourceUser||p?.submittedBy?.username),sourceRole:U(meta?.sourceRole||p?.submittedBy?.role||"PVHK"),
+    approvedByUsername:S(p?.internalApprovedBy?.username),targetRoles:["DH","CBTT","AD"],build:BUILD};
   const patch={},eventNode=safe(`${docId}_R${String(revision).padStart(3,"0")}`);
   patch[`${EVENTS_ROOT}/${eventNode}`]=signal;
-  patch[`closeouts/${safe(docId)}`]={
-    kind:"sags_closeout_pointer_v348",docId:S(docId),eventId,eventAtMs:at,
-    submittedAtMs:Number(p?.submittedAtMs||at),closeoutNo:revision,
-    matchKeys:signal.matchKeys,dateToken:dt,flights:fs,acRegToken:signal.acRegToken,
-    sourceDeviceId:signal.sourceDeviceId,sourceSessionId:signal.sourceSessionId,build:BUILD
-  };
+  patch[`closeouts/${safe(docId)}`]=signal;
   if(meta?.includeLatest!==false)patch["closeout/latest"]=signal;
-  for(const f of fs){const node={schema:3,docId:S(docId),dateToken:dt,flightToken:f,acRegToken:rg,revisionNo:revision,approvedAtMs:signal.approvedAtMs,updatedAtMs:at,payload:clone(p)};patch[`${IDENTITY_ROOT}/${safe(dt)}/${safe(f)}/${safe(rg)}`]=node;patch[`${INDEX_ROOT}/${safe(dt)}/${safe(f)}`]=node}
+  for(const f of fs){const n={...pointer,flightToken:f,flights:[f]};patch[`${IDENTITY_ROOT}/${safe(dt)}/${safe(f)}/${safe(rg)}`]=n;patch[`${INDEX_ROOT}/${safe(dt)}/${safe(f)}`]=n}
   await root.sagsV470Ref("").update(patch);
   try{applyAll(p,{notify:true,createMissing:true})}catch(_){}
+  // Opportunistic TTL cleanup while publisher remains online. The tiny pointer also carries expiresAtMs,
+  // so receivers ignore stale events even when no browser is online to physically delete it.
+  setTimeout(()=>{try{root.sagsV470Ref(`${EVENTS_ROOT}/${eventNode}`).remove();root.sagsV470Ref(`${V440_ACK_ROOT}/${eventNode}`).remove()}catch(_){}},V440_EVENT_TTL_MS+5000);
   return true;
 };
+root.sagsV440AckCloseoutEvent=async function(signal){try{if(!signal?.eventId||typeof root.sagsV470Ref!=="function")return false;const eventNode=safe(`${S(signal.docId)}_R${String(Number(signal.revisionNo||signal.closeoutNo||1)).padStart(3,"0")}`),who=safe(me()||role()||"client"),at=Date.now();await root.sagsV470Ref(`${V440_ACK_ROOT}/${eventNode}/${who}`).set({eventId:S(signal.eventId),processedAtMs:at,role:role(),expiresAtMs:at+V440_ACK_DELETE_MS});setTimeout(()=>{try{root.sagsV470Ref(`${EVENTS_ROOT}/${eventNode}`).remove();root.sagsV470Ref(`${V440_ACK_ROOT}/${eventNode}`).remove()}catch(_){}},V440_ACK_DELETE_MS);return true}catch(e){console.info("V4.4 ACK closeout",e?.message||e);return false}};
+root.sagsV440CleanupExpiredCloseoutEvents=async function({force=false}={}){try{if(typeof root.sagsV470Ref!=="function")return 0;const rr=role();if(!force&&rr!=="AD"&&rr!=="PVHK")return 0;const now=Date.now(),ref=root.sagsV470Ref(EVENTS_ROOT).orderByChild("expiresAtMs").endAt(now).limitToFirst(50),snap=await ref.once("value"),v=snap.val?.()||{},patch={},keys=[];for(const [k,x] of Object.entries(v)){if(k==="_SYSTEM_CLEAR_")continue;if(!x||Number(x.expiresAtMs||0)<=0||Number(x.expiresAtMs)>now)continue;patch[`${EVENTS_ROOT}/${k}`]=null;patch[`${V440_ACK_ROOT}/${k}`]=null;keys.push(k)}if(keys.length)await root.sagsV470Ref("").update(patch);return keys.length}catch(e){console.info("V4.4 cleanup expired closeout",e?.message||e);return 0}};
 root.sagsV344ApplyCloseoutToFinals=(p,o)=>Promise.resolve(applyAll(p,o));
 root.sagsV343ApplyCloseoutToFinals=root.sagsV344ApplyCloseoutToFinals;
 root.sagsV344SyncFinalRecord=(id,o)=>syncRecord(id,o);
@@ -6449,15 +6448,17 @@ function installSignalMirrorHook(){
     if(S(path)===`${INDEX_ROOT}`||S(path).startsWith(`${INDEX_ROOT}/`)||S(path)===IDENTITY_ROOT||S(path).startsWith(`${IDENTITY_ROOT}/`)||S(path)===EVENTS_ROOT||S(path).startsWith(`${EVENTS_ROOT}/`))return ref;
     if(S(path)==="closeout/latest"&&ref&&typeof ref.set==="function"&&!ref.set.__v344CloseoutMirror){
       const set=ref.set.bind(ref),setWrap=async function(value){
-        const out=await set(value),p=value?.payload||null;
+        const p=value?.payload||null;
         if(p)try{
-          await root.sagsV348PublishApprovedCloseout(p,S(value?.docId),{
+          // V4.4: legacy callers may still pass a full payload. Convert it to a tiny pointer atomically;
+          // never write the full payload into RTDB broadcast paths.
+          return await root.sagsV348PublishApprovedCloseout(p,S(value?.docId),{
             eventAtMs:Number(value?.eventAtMs||Date.now()),eventId:S(value?.eventId),
             sourceDeviceId:S(value?.sourceDeviceId),sourceUser:S(value?.sourceUser),
-            sourceRole:S(value?.sourceRole),includeLatest:false
+            sourceRole:S(value?.sourceRole),includeLatest:true
           });
-        }catch(e){console.info("V3.55 publish approved closeout",e?.message||e)}
-        return out;
+        }catch(e){console.info("V4.4 publish approved closeout",e?.message||e);throw e}
+        return await set(value);
       };
       setWrap.__v344CloseoutMirror=true;ref.set=setWrap;
     }
@@ -6467,7 +6468,7 @@ function installSignalMirrorHook(){
 }
 function install(){installSignalMirrorHook();installHooks();/* V4.2.55 DATA SAVER: không đọc toàn bộ roster_mail để dò FINAL ở startup. FINAL đang mở/được mở sẽ sync qua installHooks; đồng bộ danh sách chỉ chạy theo thao tác người dùng. */}
 install();
-if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>setTimeout(install,80),{once:true});else setTimeout(install,80);root.addEventListener("pageshow",()=>setTimeout(install,180),{passive:true});root.addEventListener("online",()=>setTimeout(()=>bootstrapSync({notify:false}),300),{passive:true});
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>setTimeout(install,80),{once:true});else setTimeout(install,80);root.addEventListener("pageshow",()=>setTimeout(install,180),{passive:true});root.addEventListener("online",()=>setTimeout(()=>{bootstrapSync({notify:false});root.sagsV440CleanupExpiredCloseoutEvents?.()},300),{passive:true});setTimeout(()=>root.sagsV440CleanupExpiredCloseoutEvents?.(),1800);setInterval(()=>root.sagsV440CleanupExpiredCloseoutEvents?.(),15*60*1000);
 root.__SAGS_V344_BUILD=BUILD;
 root.__SAGS_V344_TEST__={payloadDate,payloadReg,allPayloadFlights,targetFlights,flightTokens,lastFlight,payloadValues,fieldMap,formForPayload,tripMatches,matches,recordIdentity,applyRecord,ensureFinalRecord,payloadKey,hasSentFinal,rosterDepartureFlight};
 })(typeof window!=="undefined"?window:globalThis);
@@ -11468,12 +11469,12 @@ root.SAGS_QR_MATRIX=function(text){const QRCode=req('QRCode'),Level=req('QRError
   root.v2237DeleteCleaningDay=deleteCleaningDay;
 })(typeof window!=='undefined'?window:globalThis);
 
-/* ===== V4.3.0 · WEB DATA METER + CLEAN OFFLINE-FIRST BUNDLE ===== */
+/* ===== V4.4.0 · WEB DATA METER + FORM MANAGER + REALTIME LITE ===== */
 (function(root){
   'use strict';
   if(root.__SAGS_WEB_DATA_METER_V4256)return;root.__SAGS_WEB_DATA_METER_V4256=true;
-  const BUILD='V4.3.0-CLEAN-BUNDLE-OFFLINE-FIRST';
-  const STORE='sags_web_data_meter_v430';
+  const BUILD='V4.4.0-FORM-MANAGER-REALTIME-LITE';
+  const STORE='sags_web_data_meter_v440';
   const S=v=>String(v??'').trim();
   const enc=new TextEncoder();
   const now=()=>Date.now();
@@ -11535,7 +11536,7 @@ root.SAGS_QR_MATRIX=function(text){const QRCode=req('QRCode'),Level=req('QRError
 @media(max-width:520px){#sagsWebDataMeterBtn{right:8px;bottom:64px}.sdm-grid{grid-template-columns:1fr}.sdm-card{padding:13px}.sdm-title{font-size:17px}}`;
     document.head.appendChild(st);
     const b=document.createElement('button');b.id='sagsWebDataMeterBtn';b.type='button';b.textContent='DATA';b.onclick=()=>{root.__sagsDataMeterOpen=true;document.getElementById('sagsWebDataMeterModal')?.classList.add('open');renderPanel()};document.body.appendChild(b);
-    const m=document.createElement('div');m.id='sagsWebDataMeterModal';m.innerHTML=`<div class="sdm-card"><div class="sdm-head"><div><div class="sdm-title">DATA · E‑REPORT WEB</div><div style="font-size:11px;color:#6a7d91">V4.3.0 · clean bundle · offline-first · đo traffic mạng thực</div></div><button class="sdm-close" type="button">ĐÓNG</button></div><div id="sdmBody"></div></div>`;m.querySelector('.sdm-close').onclick=()=>{root.__sagsDataMeterOpen=false;m.classList.remove('open')};m.addEventListener('click',e=>{if(e.target===m){root.__sagsDataMeterOpen=false;m.classList.remove('open')}});document.body.appendChild(m);renderButton();renderPanel();
+    const m=document.createElement('div');m.id='sagsWebDataMeterModal';m.innerHTML=`<div class="sdm-card"><div class="sdm-head"><div><div class="sdm-title">DATA · E‑REPORT WEB</div><div style="font-size:11px;color:#6a7d91">V4.4.0 · realtime-lite · offline-first · đo traffic mạng thực</div></div><button class="sdm-close" type="button">ĐÓNG</button></div><div id="sdmBody"></div></div>`;m.querySelector('.sdm-close').onclick=()=>{root.__sagsDataMeterOpen=false;m.classList.remove('open')};m.addEventListener('click',e=>{if(e.target===m){root.__sagsDataMeterOpen=false;m.classList.remove('open')}});document.body.appendChild(m);renderButton();renderPanel();
   }
   function renderButton(){const b=document.getElementById('sagsWebDataMeterBtn');if(!b)return;const t=tripTotals(),total=sumRx(t)+sumTx(t),mb=total/1024/1024;b.textContent=`DATA ${mb<10?mb.toFixed(1):Math.round(mb)} MB`;b.classList.toggle('warn',mb>=50&&mb<100);b.classList.toggle('danger',mb>=100)}
   function renderPanel(){const el=document.getElementById('sdmBody');if(!el)return;const t=tripTotals(),rx=sumRx(t),tx=sumTx(t),total=rx+tx,allRx=sumRx(state.totals),allTx=sumTx(state.totals);const label=state.manualLabel||state.flightLabel||'Chưa xác định chuyến';el.innerHTML=`<div class="sdm-flight">✈ ${label}</div><div class="sdm-grid"><div class="sdm-kpi">DOWNLOAD / RX<b>${fmt(rx)}</b></div><div class="sdm-kpi">UPLOAD / TX<b>${fmt(tx)}</b></div><div class="sdm-kpi">TỔNG<b>${fmt(total)}</b></div></div><div class="sdm-sub"><b>Mạng trình duyệt:</b> ${effectiveNetwork()}<div class="sdm-break"><span>GitHub/static tải từ mạng</span><span>${fmt(t.staticRx)}</span><span>Firebase RTDB nhận</span><span>${fmt(t.rtdbRx)}</span><span>Firebase RTDB gửi</span><span>${fmt(t.rtdbTx)}</span></div></div><div class="sdm-sub"><b>RTDB lớn nhất trong phiên:</b><div class="sdm-break">${Object.entries(state.rtdbPaths||{}).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([k,v])=>`<span>${k}</span><span>${fmt(v)}</span>`).join('')||'<span>Chưa có</span><span>0 B</span>'}</div></div><div class="sdm-sub"><b>Phiên web hiện tại:</b> RX ${fmt(allRx)} · TX ${fmt(allTx)} · Tổng ${fmt(allRx+allTx)}</div><div class="sdm-actions"><button class="sdm-reset" type="button" id="sdmResetTrip">ĐẶT LẠI CHUYẾN</button><button class="sdm-session" type="button" id="sdmResetSession">RESET PHIÊN WEB</button></div><div class="sdm-note">Số liệu E‑Report: static RX chỉ tăng khi Service Worker thực sự fetch mạng; refresh dùng cache không bị tính nhầm. Firebase RTDB được tính theo kích thước payload ứng dụng đọc/ghi và có thống kê path lớn nhất. Trình duyệt không cho biết chính xác tổng 4G của hệ điều hành; Firestore/protocol overhead có thể chưa được tính.</div>`;document.getElementById('sdmResetTrip').onclick=()=>resetTrip();document.getElementById('sdmResetSession').onclick=()=>{if(!confirm('Reset toàn bộ bộ đếm của phiên web hiện tại?'))return;state.startedAtMs=now();state.totals=blankTotals();state.flightBaseline=blankTotals();state.rtdbPaths={};save();renderButton();renderPanel()}}
@@ -11545,4 +11546,4 @@ root.SAGS_QR_MATRIX=function(text){const QRCode=req('QRCode'),Level=req('QRError
   setInterval(()=>{ensureUi();ensureRtdbWrap();detectFlight();renderButton();if(root.__sagsDataMeterOpen)renderPanel()},900);
   root.SAGSWebDataMeter={build:BUILD,get totals(){return cloneTotals(state.totals)},get trip(){return tripTotals()},resetTrip};
 })(typeof window!=='undefined'?window:globalThis);
-/* ===== END V4.3.0 WEB DATA METER ===== */
+/* ===== END V4.4.0 WEB DATA METER ===== */
