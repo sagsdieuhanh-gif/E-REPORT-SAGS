@@ -1,10 +1,10 @@
 {
-  "version": "V4.7.2",
-  "displayVersion": "V4.7.2",
-  "label": "V4.7.2 CURRENT FLIGHT CARRIER FIX",
-  "build": "V4.7.2-CURRENT-FLIGHT-CARRIER-FIX",
-  "releasedAt": "2026-09-16T06:29:00Z",
-  "type": "carrier-guide-context-fix",
-  "notes": "Fix Sổ tay hãng reading global lexical RAMP state/activeFlightSessionId; show current VU1271/VU1270 and follow session switches.",
-  "message": "V4.7.2 · Sửa tra cứu hãng chuyến đang mở"
+  "version": "V4.7.3",
+  "displayVersion": "V4.7.3",
+  "label": "V4.7.3 MOVABLE NOTEBOOK + FSAGS 55.1 CHECK ALL",
+  "build": "V4.7.3-MOVABLE-NOTEBOOK-551-CHECKALL",
+  "releasedAt": "2026-09-16T07:05:00Z",
+  "type": "ui-overlap-fix",
+  "notes": "Move and locally remember Carrier Notebook button, avoid overlapping FSAGS 55.1 check-all on mobile/desktop; verify page-1 check-all behavior.",
+  "message": "V4.7.3 · Kéo Sổ tay hãng; giữ nút Tích tất cả 55.1 thông thoáng"
 }

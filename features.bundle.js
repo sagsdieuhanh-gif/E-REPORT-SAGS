@@ -142,7 +142,7 @@ function install(){const toolbar=document.querySelector('.toolbar-row.main-actio
 })(window);
 
 
-/* ===== CARRIER SERVICE NOTEBOOK · V4.7.2 · LOCAL FIRST + AD EXCEL MANAGER ===== */
+/* ===== CARRIER SERVICE NOTEBOOK · V4.7.3 · LOCAL FIRST + AD EXCEL MANAGER ===== */
 (function(root){'use strict';
 const DATA_URL='./carrier-service-guide.json', VERSION_URL='./carrier-guide-version.json';
 const IDB_NAME='sags-carrier-guide-v1', IDB_STORE='kv', SHEETJS_URL='https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js';
@@ -154,7 +154,7 @@ function role(){try{const x=root.__sagsGetSession?.()||{},p=x.profile||root.curr
 function isAdmin(){return ['AD','ADMIN','ROLEADMIN'].includes(role())}
 function popup(type,title,message){try{if(typeof root.sagsActionPopup==='function')return root.sagsActionPopup({type,title,message})}catch(_){}alert(title+'\n\n'+message)}
 function ensureStyle(){if($('csgStyle'))return;const st=document.createElement('style');st.id='csgStyle';st.textContent=`
-#csgBtn{position:fixed;right:14px;bottom:94px;z-index:2147481200;border:1px solid #0f4c81;background:#fff;color:#123b5d;border-radius:999px;padding:8px 11px;font:700 12px Arial;box-shadow:0 5px 18px #0f2d4a38;cursor:pointer;max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#csgBtn{position:fixed;left:12px;bottom:94px;right:auto;z-index:9988;border:1px solid #0f4c81;background:#fff;color:#123b5d;border-radius:999px;padding:8px 11px;font:700 12px Arial;box-shadow:0 5px 18px #0f2d4a38;cursor:grab;max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;touch-action:none;user-select:none;-webkit-user-select:none}#csgBtn.csgDragging{cursor:grabbing;box-shadow:0 8px 20px #0f2d4a55}#csgBtn .csgGrip{display:inline-block;margin-right:4px;color:#64748b;font-weight:900}
 #csgBtn.has-guide{background:#fff7ed;color:#9a3412;border-color:#f97316;box-shadow:0 0 0 3px #fed7aa88,0 5px 18px #0f2d4a38}#csgBtn .csgBang{display:none;background:#dc2626;color:#fff;border-radius:999px;min-width:18px;height:18px;line-height:18px;text-align:center;margin-right:5px;font-weight:900}#csgBtn.has-guide .csgBang{display:inline-block}
 #csgModal,#csgMgr{position:fixed;inset:0;z-index:2147482500;background:#0f172ab8;display:none;align-items:center;justify-content:center;padding:14px;font-family:Arial,sans-serif}#csgModal.open,#csgMgr.open{display:flex}
 #csgPanel{width:min(980px,96vw);height:min(790px,92vh);background:#f8fafc;border-radius:18px;box-shadow:0 22px 70px #0007;display:flex;flex-direction:column;overflow:hidden}
@@ -164,7 +164,7 @@ function ensureStyle(){if($('csgStyle'))return;const st=document.createElement('
 #csgDetail{overflow:auto;padding:13px}.csgHero{border:1px solid #bae6fd;background:#f0f9ff;border-radius:13px;padding:11px 12px;margin-bottom:10px}.csgHero h3{margin:0 0 5px;color:#0c4a6e}.csgMeta{color:#475569;font-size:12px;line-height:1.45}.csgActive{display:inline-block;background:#dc2626;color:white;border-radius:999px;padding:2px 7px;font-size:11px;font-weight:900;margin-left:5px}.csgLocal{display:inline-block;background:#0f766e;color:#fff;border-radius:999px;padding:2px 7px;font-size:10px;font-weight:900;margin-left:5px}
 .csgSection{background:#fff;border:1px solid #dbe5ee;border-radius:13px;margin:9px 0;overflow:hidden}.csgSection h4{margin:0;padding:8px 10px;background:#f1f5f9;color:#334155;font-size:13px}.csgNote{padding:9px 11px;border-top:1px dashed #e2e8f0;white-space:pre-wrap;line-height:1.42;color:#1f2937;font-size:13px}.csgNote:first-of-type{border-top:0}.csgNil{color:#94a3b8;font-style:italic}.csgFoot{font-size:11px;color:#64748b;padding:9px 2px 18px}.csgEmpty{padding:18px;color:#64748b;text-align:center}
 #csgMgrCard{width:min(920px,96vw);max-height:92vh;overflow:auto;background:#f8fafc;border-radius:18px;box-shadow:0 22px 70px #0007;padding:0 0 18px}.csgMgrHead{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:8px;background:#7c2d12;color:#fff;padding:12px 14px}.csgMgrHead b{flex:1}.csgMgrHead button{border:0;border-radius:8px;padding:7px 10px;font-weight:800;cursor:pointer}.csgMgrBody{padding:13px}.csgMgrInfo{border:1px solid #fdba74;background:#fff7ed;border-radius:12px;padding:10px 12px;line-height:1.45;color:#7c2d12;font-size:13px;margin-bottom:10px}.csgMgrGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.csgMgrBlock{background:#fff;border:1px solid #dbe5ee;border-radius:12px;padding:11px}.csgMgrBlock h4{margin:0 0 7px;color:#334155}.csgMgrActions{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}.csgMgrBtn{border:1px solid #94a3b8;background:#fff;color:#334155;border-radius:9px;padding:8px 10px;font-weight:800;cursor:pointer}.csgMgrBtn.primary{background:#0f4c81;color:#fff;border-color:#0f4c81}.csgMgrBtn.good{background:#047857;color:#fff;border-color:#047857}.csgMgrBtn.warn{background:#b45309;color:#fff;border-color:#b45309}.csgMgrBtn:disabled{opacity:.45;cursor:not-allowed}.csgMgrStatus{white-space:pre-wrap;background:#0f172a;color:#e2e8f0;border-radius:9px;padding:9px;min-height:46px;font:12px/1.45 ui-monospace,SFMono-Regular,Consolas,monospace}.csgMgrDiff{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}.csgMgrKpi{text-align:center;background:#f8fafc;border:1px solid #e2e8f0;border-radius:9px;padding:7px}.csgMgrKpi b{display:block;font-size:18px;color:#0f4c81}.csgMgrSmall{font-size:11px;color:#64748b;line-height:1.4}.csgMgrPreview{max-height:240px;overflow:auto;border:1px solid #e2e8f0;border-radius:9px;margin-top:8px}.csgMgrPreview table{width:100%;border-collapse:collapse;font-size:11px}.csgMgrPreview th,.csgMgrPreview td{border-bottom:1px solid #e2e8f0;padding:5px 6px;vertical-align:top;text-align:left}.csgMgrPreview th{position:sticky;top:0;background:#f1f5f9}
-@media(max-width:720px){#csgBtn{right:9px;bottom:82px;padding:7px 9px;font-size:11px}#csgBody{grid-template-columns:1fr;grid-template-rows:145px 1fr}.csgList{border-right:0;border-bottom:1px solid #dbe5ee;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}.csgCarrier{margin:0;padding:6px}.csgCarrier small{display:none}#csgTools{grid-template-columns:1fr}#csgPanel{height:94vh}.csgMgrGrid{grid-template-columns:1fr}.csgMgrDiff{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:720px){#csgBtn{left:9px;right:auto;bottom:92px;padding:7px 9px;font-size:11px}#csgBody{grid-template-columns:1fr;grid-template-rows:145px 1fr}.csgList{border-right:0;border-bottom:1px solid #dbe5ee;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}.csgCarrier{margin:0;padding:6px}.csgCarrier small{display:none}#csgTools{grid-template-columns:1fr}#csgPanel{height:94vh}.csgMgrGrid{grid-template-columns:1fr}.csgMgrDiff{grid-template-columns:repeat(2,1fr)}}
 `;document.head.appendChild(st)}
 function idbOpen(){return new Promise((res,rej)=>{const q=indexedDB.open(IDB_NAME,1);q.onupgradeneeded=()=>{if(!q.result.objectStoreNames.contains(IDB_STORE))q.result.createObjectStore(IDB_STORE)};q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)})}
 async function idbGet(k){try{const d=await idbOpen();return await new Promise((res,rej)=>{const t=d.transaction(IDB_STORE,'readonly'),q=t.objectStore(IDB_STORE).get(k);q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)})}catch(_){return null}}
@@ -226,7 +226,94 @@ function matchCarrier(ctx){
   return null;
 }
 function notesPresent(c){if(!c)return false;return Object.values(c.sections||{}).flat().some(x=>{const t=U(x);return t&&t!=='NIL'&&t!=='NO'})}
-function ensureUi(){ensureStyle();document.documentElement.classList.toggle('csgAdmin',isAdmin());if(!$('csgBtn')){const b=document.createElement('button');b.id='csgBtn';b.type='button';b.innerHTML='<span class="csgBang">!</span><span class="csgLabel">📓 SỔ TAY HÃNG</span>';b.onclick=()=>open();document.body.appendChild(b)}if(!$('csgModal')){const m=document.createElement('div');m.id='csgModal';m.innerHTML=`<div id="csgPanel" role="dialog" aria-modal="true" aria-label="Sổ tay phục vụ hãng"><div id="csgHead"><b>📓 SỔ TAY PHỤC VỤ HÃNG</b><button id="csgManage" class="csgHeadBtn">⚙ QUẢN LÝ DỮ LIỆU</button><button id="csgClose" class="csgHeadBtn">ĐÓNG</button></div><div id="csgTools"><input id="csgSearch" placeholder="Tìm hãng / loại tàu / nội dung lưu ý…"><button id="csgCurrent">! CHUYẾN ĐANG MỞ</button></div><div id="csgBody"><div class="csgList" id="csgList"></div><div id="csgDetail"></div></div></div>`;document.body.appendChild(m);$('csgClose').onclick=close;$('csgManage').onclick=openManager;$('csgModal').addEventListener('click',e=>{if(e.target===$('csgModal'))close()});$('csgSearch').addEventListener('input',renderList);$('csgCurrent').onclick=()=>{const c=matchCarrier(currentCtx());if(c){selected=c.carrier;renderList();renderDetail(c)}else{const ctx=currentCtx();alert(ctx.flights.length?'Chưa tìm thấy hướng dẫn cho chuyến '+ctx.label+' trong Sổ tay. Bạn có thể tìm hãng bằng ô tra cứu.':'Chưa đọc được số hiệu chuyến đang mở. Hãy kiểm tra số hiệu chuyến trên RAMP hoặc tra cứu hãng bằng ô tìm kiếm.')}};document.addEventListener('keydown',e=>{if(e.key==='Escape'){$('csgMgr')?.classList.remove('open');if(!$('csgMgr')?.classList.contains('open'))close()}})}ensureManagerUi()}
+/* Notebook launcher: user-positioned locally; never mask the FSAGS 55.1 check-all control. */
+const CSG_BUTTON_POS_KEY='sags_carrier_guide_btn_pos_v1';
+let csgDrag=null,csgPreferred=null,csgBackdropArmed=false;
+function csgClamp(left,top,b){
+  const margin=6,w=b.offsetWidth||1,h=b.offsetHeight||1;
+  return {left:Math.min(Math.max(margin,left),Math.max(margin,innerWidth-w-margin)),
+          top:Math.min(Math.max(margin,top),Math.max(margin,innerHeight-h-margin))};
+}
+function csgPlace(left,top,remember=false){
+  const b=$('csgBtn');if(!b)return;
+  const p=csgClamp(left,top,b);
+  b.style.left=p.left+'px';b.style.top=p.top+'px';b.style.right='auto';b.style.bottom='auto';
+  if(remember){csgPreferred=p;try{localStorage.setItem(CSG_BUTTON_POS_KEY,JSON.stringify(p))}catch(_){}}
+}
+function csgOverlap(a,b,gap=8){return a.left<b.right+gap&&a.right>b.left-gap&&a.top<b.bottom+gap&&a.bottom>b.top-gap}
+function csgAvoidCheckAll(){
+  const b=$('csgBtn'),other=$('checkAll551Page1Btn');
+  if(!b||!other||getComputedStyle(other).display==='none'||!other.getClientRects().length)return;
+  const a=b.getBoundingClientRect(),r=other.getBoundingClientRect();
+  if(!csgOverlap(a,r))return;
+  const w=a.width,h=a.height,gap=10;
+  // Try positions adjacent to the fixed/dragged check-all button. On narrow
+  // screens, above/below are more likely to fit than left/right.
+  const candidates=[
+    {left:a.left,top:r.top-h-gap}, {left:a.left,top:r.bottom+gap},
+    {left:r.left-w-gap,top:a.top}, {left:r.right+gap,top:a.top},
+    {left:6,top:r.top-h-gap}, {left:6,top:r.bottom+gap},
+    {left:innerWidth-w-6,top:r.top-h-gap}
+  ];
+  let best=null;
+  for(const q of candidates){
+    const p=csgClamp(q.left,q.top,b),box={left:p.left,top:p.top,right:p.left+w,bottom:p.top+h};
+    if(csgOverlap(box,r))continue;
+    const cost=Math.abs(p.left-a.left)+Math.abs(p.top-a.top);
+    if(!best||cost<best.cost)best={...p,cost};
+  }
+  if(best)csgPlace(best.left,best.top,false);
+  // check-all always has the higher z-index even on very small screens.
+}
+function csgRestore(){
+  const b=$('csgBtn');if(!b)return;
+  let p=null;try{p=JSON.parse(localStorage.getItem(CSG_BUTTON_POS_KEY)||'null')}catch(_){}
+  if(p&&Number.isFinite(Number(p.left))&&Number.isFinite(Number(p.top)))csgPreferred={left:Number(p.left),top:Number(p.top)};
+  if(csgPreferred)csgPlace(csgPreferred.left,csgPreferred.top,false);
+  requestAnimationFrame(csgAvoidCheckAll);
+}
+function csgInitDrag(){
+  const b=$('csgBtn');if(!b||b.dataset.dragReady==='1')return;
+  b.dataset.dragReady='1';
+  b.title='Bấm để mở Sổ tay; kéo để đổi vị trí trên máy này';
+  b.setAttribute('aria-label','Mở Sổ tay hãng. Kéo để chuyển vị trí nút.');
+  csgRestore();
+  b.addEventListener('pointerdown',e=>{
+    if(e.button!==undefined&&e.button!==0)return;
+    const r=b.getBoundingClientRect();
+    csgDrag={id:e.pointerId,x:e.clientX,y:e.clientY,left:r.left,top:r.top,moved:false};
+    try{b.setPointerCapture(e.pointerId)}catch(_){}
+    e.preventDefault();
+  },{passive:false});
+  b.addEventListener('pointermove',e=>{
+    const d=csgDrag;if(!d||d.id!==e.pointerId)return;
+    const dx=e.clientX-d.x,dy=e.clientY-d.y;
+    if(!d.moved&&Math.hypot(dx,dy)>=6)d.moved=true;
+    if(d.moved){b.classList.add('csgDragging');csgPlace(d.left+dx,d.top+dy,false)}
+    e.preventDefault();
+  },{passive:false});
+  b.addEventListener('pointerup',e=>{
+    const d=csgDrag;if(!d||d.id!==e.pointerId)return;
+    try{b.releasePointerCapture(e.pointerId)}catch(_){}
+    b.classList.remove('csgDragging');csgDrag=null;
+    if(d.moved){const r=b.getBoundingClientRect();csgPlace(r.left,r.top,true);csgAvoidCheckAll()}
+    else open();
+    e.preventDefault();
+  },{passive:false});
+  b.addEventListener('pointercancel',e=>{
+    if(csgDrag?.id!==e.pointerId)return;
+    b.classList.remove('csgDragging');csgDrag=null;
+    if(csgPreferred)csgPlace(csgPreferred.left,csgPreferred.top,false);
+    csgAvoidCheckAll();
+  });
+  // Pointer clicks are handled on pointerup; synthesized keyboard clicks have detail=0.
+  b.addEventListener('click',e=>{if(e.detail===0)open();e.preventDefault()});
+  window.addEventListener('resize',()=>{
+    const r=b.getBoundingClientRect();csgPlace(r.left,r.top,false);requestAnimationFrame(csgAvoidCheckAll);
+  });
+}
+root.sagsCarrierGuideAvoidControls=csgAvoidCheckAll;
+function ensureUi(){ensureStyle();document.documentElement.classList.toggle('csgAdmin',isAdmin());if(!$('csgBtn')){const b=document.createElement('button');b.id='csgBtn';b.type='button';b.innerHTML='<span class="csgGrip" aria-hidden="true">⠿</span><span class="csgBang">!</span><span class="csgLabel">📓 SỔ TAY HÃNG</span>';document.body.appendChild(b);csgInitDrag()}if(!$('csgModal')){const m=document.createElement('div');m.id='csgModal';m.innerHTML=`<div id="csgPanel" role="dialog" aria-modal="true" aria-label="Sổ tay phục vụ hãng"><div id="csgHead"><b>📓 SỔ TAY PHỤC VỤ HÃNG</b><button id="csgManage" class="csgHeadBtn">⚙ QUẢN LÝ DỮ LIỆU</button><button id="csgClose" class="csgHeadBtn">ĐÓNG</button></div><div id="csgTools"><input id="csgSearch" placeholder="Tìm hãng / loại tàu / nội dung lưu ý…"><button id="csgCurrent">! CHUYẾN ĐANG MỞ</button></div><div id="csgBody"><div class="csgList" id="csgList"></div><div id="csgDetail"></div></div></div>`;document.body.appendChild(m);$('csgClose').onclick=close;$('csgManage').onclick=openManager;$('csgModal').addEventListener('pointerdown',e=>{csgBackdropArmed=e.target===$('csgModal')});$('csgModal').addEventListener('click',e=>{if(e.target===$('csgModal')&&csgBackdropArmed)close();csgBackdropArmed=false});$('csgSearch').addEventListener('input',renderList);$('csgCurrent').onclick=()=>{const c=matchCarrier(currentCtx());if(c){selected=c.carrier;renderList();renderDetail(c)}else{const ctx=currentCtx();alert(ctx.flights.length?'Chưa tìm thấy hướng dẫn cho chuyến '+ctx.label+' trong Sổ tay. Bạn có thể tìm hãng bằng ô tra cứu.':'Chưa đọc được số hiệu chuyến đang mở. Hãy kiểm tra số hiệu chuyến trên RAMP hoặc tra cứu hãng bằng ô tìm kiếm.')}};document.addEventListener('keydown',e=>{if(e.key==='Escape'){$('csgMgr')?.classList.remove('open');if(!$('csgMgr')?.classList.contains('open'))close()}})}ensureManagerUi()}
 function ensureManagerUi(){if($('csgMgr'))return;const m=document.createElement('div');m.id='csgMgr';m.innerHTML=`<div id="csgMgrCard"><div class="csgMgrHead"><b>⚙ AD · QUẢN LÝ SỔ TAY HÃNG</b><button id="csgMgrClose">ĐÓNG</button></div><div class="csgMgrBody"><div class="csgMgrInfo"><b>LOCAL-FIRST:</b> người dùng lưu database trên máy. App chỉ kiểm tra <code>carrier-guide-version.json</code> rất nhỏ; chỉ khi hash đổi mới tải lại <code>carrier-service-guide.json</code>.</div><div class="csgMgrGrid"><div class="csgMgrBlock"><h4>1 · IMPORT EXCEL</h4><div class="csgMgrSmall">Chấp nhận bảng có header SERIAL / CARRIER / TYPE / ROUTE / NOTE và các cột Coor / Loading / Tài liệu / Flightplan như file hiện tại.</div><input id="csgExcel" type="file" accept=".xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" hidden><div class="csgMgrActions"><button id="csgPickExcel" class="csgMgrBtn primary">📥 CHỌN FILE EXCEL</button></div><div id="csgMgrStatus" class="csgMgrStatus">Chưa chọn file.</div></div><div class="csgMgrBlock"><h4>2 · SO SÁNH / XEM TRƯỚC</h4><div id="csgMgrDiff" class="csgMgrDiff"><div class="csgMgrKpi"><b id="csgKTotal">0</b>Tổng hãng</div><div class="csgMgrKpi"><b id="csgKAdd">0</b>Thêm</div><div class="csgMgrKpi"><b id="csgKChange">0</b>Thay đổi</div><div class="csgMgrKpi"><b id="csgKRemove">0</b>Xóa</div></div><div id="csgMgrPreview" class="csgMgrPreview"></div></div><div class="csgMgrBlock"><h4>3 · TEST TRÊN MÁY AD</h4><div class="csgMgrSmall">Áp dụng bản import vào IndexedDB của máy này để kiểm tra Sổ tay trước khi phát hành. Không gửi Firebase.</div><div class="csgMgrActions"><button id="csgApplyLocal" class="csgMgrBtn good" disabled>✓ DÙNG BẢN IMPORT TRÊN MÁY NÀY</button><button id="csgRestoreRemote" class="csgMgrBtn">↶ KHÔI PHỤC BẢN GITHUB</button></div></div><div class="csgMgrBlock"><h4>4 · XUẤT FILE ĐỂ UP GITHUB</h4><div class="csgMgrSmall">Xuất đúng 2 file. Upload đè chúng vào root GitHub. Không cần sửa code/app version chỉ để thay lưu ý hãng.</div><div class="csgMgrActions"><button id="csgExportPair" class="csgMgrBtn warn" disabled>⬇ XUẤT 2 FILE CẬP NHẬT</button></div><div id="csgExportInfo" class="csgMgrSmall"></div></div></div></div></div>`;document.body.appendChild(m);$('csgMgrClose').onclick=()=>m.classList.remove('open');$('csgPickExcel').onclick=()=>$('csgExcel').click();$('csgExcel').onchange=e=>importExcel(e.target.files?.[0]);$('csgApplyLocal').onclick=applyDraftLocal;$('csgRestoreRemote').onclick=restoreRemote;$('csgExportPair').onclick=exportPair;m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')})}
 function carrierHay(c){return U([c.carrier,c.aircraftTypeRaw,c.routeType,...Object.values(c.sections||{}).flat()].join(' '))}
 function renderList(){if(!db||!$('csgList'))return;const q=U($('csgSearch')?.value),arr=db.carriers.filter(c=>!q||carrierHay(c).includes(q));$('csgList').innerHTML=arr.length?arr.map(c=>`<button class="csgCarrier ${c.carrier===selected?'sel':''}" data-c="${esc(c.carrier)}"><b>${esc(c.carrier)}</b><small>${esc(c.aircraftTypeRaw||'')} · ${esc(c.routeType||'')}</small></button>`).join(''):'<div class="csgEmpty">Không tìm thấy.</div>';document.querySelectorAll('#csgList [data-c]').forEach(b=>b.onclick=()=>{selected=b.dataset.c;renderList();renderDetail(db.carriers.find(c=>c.carrier===selected))})}
@@ -234,7 +321,7 @@ function section(title,arr){arr=(arr||[]).filter(x=>S(x));if(!arr.length)return 
 function renderDetail(c){if(!$('csgDetail'))return;if(!c){$('csgDetail').innerHTML='<div class="csgEmpty">Chọn một hãng để xem lưu ý phục vụ.</div>';return}const active=matchCarrier(currentCtx()),isActive=active?.carrier===c.carrier;$('csgDetail').innerHTML=`<div class="csgHero"><h3>${esc(c.carrier)}${isActive?'<span class="csgActive">CHUYẾN ĐANG MỞ</span>':''}<span class="csgLocal">LOCAL</span></h3><div class="csgMeta"><b>Loại tàu:</b> ${esc(c.aircraftTypeRaw||'—')} &nbsp; · &nbsp; <b>Phạm vi:</b> ${esc(c.routeType||'—')} &nbsp; · &nbsp; <b>DB:</b> r${esc(meta?.revision||db?.version||'—')}</div></div>${section('COOR · PHỐI HỢP PHỤC VỤ',c.sections?.coor)}${section('LOADING · CHẤT XẾP / HÀNH LÝ',c.sections?.loading)}${section('TÀI LIỆU / LOAD CONTROL',c.sections?.documents)}${section('FLIGHTPLAN',c.sections?.flightplan)}<div class="csgFoot">Nguồn: ${esc(db.source||'Bảng lưu ý phục vụ hãng')} · ${db.carriers.length} hãng · dữ liệu đọc từ bộ nhớ máy. GitHub chỉ được tải lại khi version/hash thay đổi.</div>`}
 async function open(){ensureUi();await load();const c=matchCarrier(currentCtx());if(c)selected=c.carrier;else if(!selected)selected=db.carriers?.[0]?.carrier||'';$('csgModal').classList.add('open');$('csgSearch').value='';renderList();renderDetail(db.carriers.find(x=>x.carrier===selected))}
 function close(){$('csgModal')?.classList.remove('open')}
-async function refresh(){ensureUi();document.documentElement.classList.toggle('csgAdmin',isAdmin());await load();const ctx=currentCtx(),c=matchCarrier(ctx),b=$('csgBtn'),lab=b?.querySelector('.csgLabel');if(!b||!lab)return;const has=notesPresent(c);b.classList.toggle('has-guide',!!has);lab.textContent=has?`${c.carrier} · LƯU Ý PHỤC VỤ`:'📓 SỔ TAY HÃNG';b.title=has?`Chuyến ${ctx.label} có lưu ý phục vụ ${c.carrier}. Bấm để xem.`:'Tra cứu lưu ý phục vụ theo hãng';const key=ctx.sid+'|'+(c?.carrier||'');if(has&&key!==lastActive){lastActive=key;b.animate?.([{transform:'scale(1)'},{transform:'scale(1.06)'},{transform:'scale(1)'}],{duration:700,iterations:2})}}
+async function refresh(){ensureUi();document.documentElement.classList.toggle('csgAdmin',isAdmin());await load();const ctx=currentCtx(),c=matchCarrier(ctx),b=$('csgBtn'),lab=b?.querySelector('.csgLabel');if(!b||!lab)return;const has=notesPresent(c);b.classList.toggle('has-guide',!!has);lab.textContent=has?`${c.carrier} · LƯU Ý PHỤC VỤ`:'📓 SỔ TAY HÃNG';b.title=has?`Chuyến ${ctx.label} có lưu ý phục vụ ${c.carrier}. Bấm để xem; kéo để đổi vị trí.`:'Tra cứu hãng; kéo để đổi vị trí.';csgAvoidCheckAll();const key=ctx.sid+'|'+(c?.carrier||'');if(has&&key!==lastActive){lastActive=key;b.animate?.([{transform:'scale(1)'},{transform:'scale(1.06)'},{transform:'scale(1)'}],{duration:700,iterations:2})}}
 function openManager(){if(!isAdmin())return popup('warning','KHÔNG CÓ QUYỀN','Chỉ tài khoản AD được import/phát hành dữ liệu Sổ tay hãng.');ensureManagerUi();managerDraft=null;managerDraftMeta=null;$('csgExcel').value='';$('csgMgrStatus').textContent=`Bản đang dùng trên máy: ${db?.carriers?.length||0} hãng · revision ${meta?.revision||'—'}\nNguồn: ${db?.source||'—'}`;$('csgApplyLocal').disabled=true;$('csgExportPair').disabled=true;$('csgMgrPreview').innerHTML='';['csgKTotal','csgKAdd','csgKChange','csgKRemove'].forEach(x=>$(x).textContent='0');$('csgMgr').classList.add('open')}
 function loadSheetJs(){if(root.XLSX)return Promise.resolve(root.XLSX);return new Promise((res,rej)=>{const old=document.querySelector('script[data-csg-xlsx]');if(old){old.addEventListener('load',()=>res(root.XLSX),{once:true});old.addEventListener('error',()=>rej(Error('Không tải được Excel engine')),{once:true});return}const sc=document.createElement('script');sc.src=SHEETJS_URL;sc.async=true;sc.dataset.csgXlsx='1';sc.onload=()=>root.XLSX?res(root.XLSX):rej(Error('Excel engine không khởi tạo'));sc.onerror=()=>rej(Error('Không tải được Excel engine. Kiểm tra Internet của máy AD.'));document.head.appendChild(sc)})}
 function findHeader(rows){for(let i=0;i<Math.min(rows.length,20);i++){const r=(rows[i]||[]).map(U);if(r.includes('SERIAL')&&r.includes('CARRIER')&&r.includes('TYPE')&&r.includes('ROUTE'))return i}return -1}
