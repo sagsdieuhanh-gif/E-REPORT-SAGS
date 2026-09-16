@@ -2706,9 +2706,26 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <style id="sags-v115-clean-ui">
 #roleLoginHint,#v1014UsernameLoginNote,.templateNote,.fs09qUsageNote,.v377CreateFormNote,.v1019Hint{display:none!important}
 </style>
-<link rel="stylesheet" href="./app.bundle.css?v=V4.4.1">
+<link rel="stylesheet" href="./app.bundle.css?v=V4.4.2">
 </head>
 <body>
+<style id="v442-floating-admin-cleanup-style">
+#v442FloatingCleanupBtn{position:fixed;left:max(10px,env(safe-area-inset-left));top:max(10px,env(safe-area-inset-top));z-index:2147483200;display:none;align-items:center;justify-content:center;gap:6px;min-height:44px;max-width:min(76vw,340px);padding:9px 12px;border:2px solid #fff0b3;border-radius:12px;background:#b54708;color:#fff;box-shadow:0 8px 24px rgba(0,0,0,.34);font:900 11.5px/1.15 Arial,sans-serif;letter-spacing:.05px;text-align:center;cursor:pointer;touch-action:manipulation}
+#v442FloatingCleanupBtn.show{display:inline-flex!important}
+#v442FloatingCleanupBtn:disabled{opacity:.68;cursor:wait}
+@media(max-width:600px){#v442FloatingCleanupBtn{top:max(6px,env(safe-area-inset-top));left:max(6px,env(safe-area-inset-left));min-height:40px;max-width:68vw;padding:7px 9px;font-size:10.5px;border-radius:10px}}
+@media print{#v442FloatingCleanupBtn{display:none!important}}
+</style>
+<button id="v442FloatingCleanupBtn" type="button" title="AD · Dọn tín hiệu/popup KẾT SỔ cũ, không xóa hồ sơ Firestore" onclick="v379ClearOldCloseoutNotices()">🗑 AD · DỌN LỊCH SỬ KẾT SỔ</button>
+<script id="v442-floating-admin-cleanup-controller">
+(function(root){
+ function isAD(){try{const r=String(root.currentRole||root.currentUserProfile?.role||'').toUpperCase();return r==='AD'||r==='ADMIN'||document.body?.classList.contains('role-admin')}catch(e){return false}}
+ function refresh(){const b=document.getElementById('v442FloatingCleanupBtn');if(!b)return;const ok=isAD();b.classList.toggle('show',ok);b.setAttribute('aria-hidden',ok?'false':'true')}
+ root.v442RefreshFloatingCleanupButton=refresh;
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{refresh();setTimeout(refresh,250);setTimeout(refresh,1000)});else{refresh();setTimeout(refresh,250);setTimeout(refresh,1000)}
+ setInterval(refresh,1200);
+})(window);
+</script>
 <div aria-hidden="true" id="roleHomeIdle"></div>
 <div id="roleLoginModal">
 <div class="roleLoginCard">
@@ -3909,7 +3926,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <button class="cancel" onclick="closeSignature();draw()">Đóng</button>
 </div>
 </div></div>
-<div class="hint" id="statusHint">V4.4.1 · ADMIN CLEANUP VISIBLE</div>
+<div class="hint" id="statusHint">V4.4.2 · ADMIN CLEANUP VISIBLE</div>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
@@ -3918,7 +3935,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <script>
 window.SAGS_FIREBASE_AUTH_SDK_READY = !!(window.firebase && typeof window.firebase.auth === "function");
 </script>
-<script src="./app.js?v=V4.4.1" data-phase="config"></script>
+<script src="./app.js?v=V4.4.2" data-phase="config"></script>
 <script>
 let suppressModalClickUntil=0;
 function armModalGhostClickBlock(ms=650){
@@ -11121,8 +11138,8 @@ try {
   if(h) h.textContent="Lỗi khởi tạo: "+err.message;
   alert("Lỗi JavaScript: "+err.message);
 }
-const APP_BUILD_VERSION="V4.4.1-ADMIN-CLEANUP-VISIBLE";
-const APP_DISPLAY_VERSION="V4.4.1";
+const APP_BUILD_VERSION="V4.4.2-FLOATING-ADMIN-CLEANUP";
+const APP_DISPLAY_VERSION="V4.4.2";
 // V1.1.103: hotfix duy nhất lỗi Firebase RTDB ancestor/descendant khi đồng bộ DAILY ROSTER; không thay đổi nghiệp vụ khác.
 // V4.21 — SAFE UPDATE SAVE
 // Before switching to a newly installed app version, force-save all current
@@ -22561,8 +22578,8 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
   setTimeout(()=>{try{if(window.currentRole)window.v114ApplyRoleHomeBackground();}catch(_){}},500);
 })();
 </script>
-<script type="module" src="./ai.js?v=V4.4.1"></script>
-<script src="./app.js?v=V4.4.1" data-phase="archive"></script>
+<script type="module" src="./ai.js?v=V4.4.2"></script>
+<script src="./app.js?v=V4.4.2" data-phase="archive"></script>
 <script id="v120-build02-fixes">
 /* V1.20 BUILD 02 — background persistence, VHTTB, per-account usage detail, progress dedupe. */
 (function(){
@@ -23004,7 +23021,7 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
   setTimeout(()=>{ensureUi();startCloseoutListener();refreshValidation();try{window.sagsV440CleanupExpiredCloseoutEvents?.()}catch(_){}},500);
 })();
 </script>
-<script src="./app.js?v=V4.4.1" data-phase="tools"></script>
+<script src="./app.js?v=V4.4.2" data-phase="tools"></script>
 <script id="v173-quick-time">
 (function(){
   "use strict";
@@ -24940,7 +24957,7 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
   }
 }
 </style>
-<script src="./app.js?v=V4.4.1" data-phase="flight"></script>
+<script src="./app.js?v=V4.4.2" data-phase="flight"></script>
 <script id="v191IOSInteractionFix">
 (()=>{
   'use strict';
@@ -25190,7 +25207,7 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
   window.addEventListener('pageshow',()=>setTimeout(refresh,120),{passive:true});
 })();
 </script>
-<script src="./app.js?v=V4.4.1" data-phase="control"></script>
+<script src="./app.js?v=V4.4.2" data-phase="control"></script>
 <style id="v330-group-permission-style">
 #v330GroupPermPanel{margin:12px 0 8px;padding:11px;border:1px solid #cbd9e6;border-radius:12px;background:#f7fbff;box-sizing:border-box}
 .v330GpHead{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;color:#173b5d;font:900 13px Arial}.v330GpSub{margin-top:4px;color:#61778b;font:700 11px/1.35 Arial}
@@ -25417,7 +25434,7 @@ function install(){addPermissions();ensureUi();ensureButton();refreshCount();lis
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install,350),{once:true});else setTimeout(install,350);root.addEventListener('pageshow',()=>setTimeout(install,250),{passive:true});
 })(window);
 </script>
-<script src="./app.js?v=V4.4.1" data-phase="postcontrol"></script>
+<script src="./app.js?v=V4.4.2" data-phase="postcontrol"></script>
 <script id="v377AdminFormToolsScript">
 /* V3.80 — AD form tools row + create all forms + closeout notice cleanup. */
 (function(){
@@ -25468,7 +25485,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   setInterval(refresh,5000);
 })();
 </script>
-<script src="./app.js?v=V4.4.1" data-phase="layout"></script>
+<script src="./app.js?v=V4.4.2" data-phase="layout"></script>
 <script id="v1020-fs208-geometry-migration">
 (function(){
   const REV='V1020-EXACT-PAGE13';
@@ -26337,7 +26354,7 @@ function clearLocal(){try{return Number(root.sagsV379ClearLocalCloseoutNotices?.
 root.v379ClearOldCloseoutNotices=async function(){
   if(!isAD())return alert('Chỉ AD được phép dọn thông báo KẾT SỔ cũ.');
   if(!confirm('XÓA TOÀN BỘ THÔNG BÁO KẾT SỔ CŨ?\n\nThao tác này chỉ dọn tín hiệu/popup KẾT SỔ cũ trên RTDB và cache thông báo trên thiết bị. KHÔNG xóa hồ sơ KẾT SỔ đã lưu trong Firestore.\n\nCác tài khoản đang online cũng sẽ nhận tín hiệu dọn popup cũ. Tiếp tục?'))return;
-  const btn=document.getElementById('v379ClearCloseoutBtn');if(btn){btn.disabled=true;btn.textContent='ĐANG DỌN THÔNG BÁO KẾT SỔ…';}
+  const btns=[...document.querySelectorAll('#v379ClearCloseoutBtn,#v442FloatingCleanupBtn')];btns.forEach(btn=>{btn.disabled=true;btn.textContent='ĐANG DỌN KẾT SỔ…';});
   try{
     if(typeof root.sagsV470Ref!=='function')throw new Error('RTDB chưa sẵn sàng.');
     const now=Date.now();setStatus('Đang dọn tín hiệu KẾT SỔ cũ…');
@@ -26355,7 +26372,7 @@ root.v379ClearOldCloseoutNotices=async function(){
     try{root.showAutoUpdateToast?.('✓ Đã xóa thông báo KẾT SỔ cũ');}catch(e){}
     alert('✓ ĐÃ XÓA THÔNG BÁO KẾT SỔ CŨ\n\nHồ sơ KẾT SỔ trong Firestore KHÔNG bị xóa. Popup/tín hiệu test cũ đã được dọn và các máy online sẽ nhận mốc dọn mới.');
   }catch(e){console.error('V3.80 closeout cleanup',e);setStatus('Không dọn được thông báo KẾT SỔ: '+String(e?.message||e),true);alert('Không dọn được thông báo KẾT SỔ: '+String(e?.message||e));}
-  finally{if(btn){btn.disabled=false;btn.textContent='🗑 DỌN LỊCH SỬ PHÁT KẾT SỔ';}}
+  finally{btns.forEach(btn=>{btn.disabled=false;btn.textContent=btn.id==='v442FloatingCleanupBtn'?'🗑 AD · DỌN LỊCH SỬ KẾT SỔ':'🗑 DỌN LỊCH SỬ PHÁT KẾT SỔ';});}
 };
 })(window);
 </script>
@@ -26589,8 +26606,8 @@ root.v378ResetAllOldRecords=async function(){
   };
 })();
 </script>
-<script src="./app.js?v=V4.4.1" data-phase="performance"></script>
-<script src="./daily-roster.js?v=V4.4.1" id="dailyRosterCleanV11102"></script>
+<script src="./app.js?v=V4.4.2" data-phase="performance"></script>
+<script src="./daily-roster.js?v=V4.4.2" id="dailyRosterCleanV11102"></script>
 <script id="v1016-delete-profile-fix">
 /* V1.0.16 · XÓA tài khoản phải xóa đúng profile E-Report, không chỉ Auth/users. */
 (function(){
@@ -28177,7 +28194,7 @@ body.v38-clean-workflow #v1134QuickTimeBtn{background:#eef6ff!important;color:#0
 })();
 </script>
 
-<script src="./runtime.bundle.js?v=V4.4.1"></script>
+<script src="./runtime.bundle.js?v=V4.4.2"></script>
 <script>
 /* V2.2.20 — AD reset existing Firebase Authentication account via callable backend. */
 window.adminResetAccountPassword=async function(uid){
@@ -28200,6 +28217,6 @@ window.adminResetAccountPassword=async function(uid){
   }
 };
 </script>
-<script src="./features.bundle.js?v=V4.4.1"></script>
+<script src="./features.bundle.js?v=V4.4.2"></script>
 </body>
 </html>

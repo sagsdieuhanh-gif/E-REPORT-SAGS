@@ -1,11 +1,11 @@
 {
   "schema": 2,
-  "version": "V4.4.1",
-  "build": "V4.4.1-ADMIN-CLEANUP-VISIBLE",
-  "strategy": "stable-cache-sha256-delta-admin-cleanup-visible",
+  "version": "V4.4.2",
+  "build": "V4.4.2-FLOATING-ADMIN-CLEANUP",
+  "strategy": "stable-cache-sha256-delta-floating-admin-cleanup",
   "bootstrapChanged": [
     "./index.html",
-    "./app.js"
+    "./service-worker.js"
   ],
   "assets": {
     "./#U0110H.png": {
@@ -137,8 +137,8 @@
       "bytes": 104295
     },
     "./index.html": {
-      "sha256": "8a82f050b56cfbc8492f6a115adcc349e4173d944c770f523606bcf8ae16626b",
-      "bytes": 1761415
+      "sha256": "909298e53abb9740fd6474de7e8a2baa86ad54a5f1583c7c8cc1f4eed0b04cdc",
+      "bytes": 1763472
     },
     "./ket-so.wav": {
       "sha256": "cf03e8d4021f989f61fd12249f282ae2e53588cc9d55d68393778223db8132a1",

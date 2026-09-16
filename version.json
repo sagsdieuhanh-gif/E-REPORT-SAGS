@@ -1,10 +1,10 @@
 {
-  "version": "V4.4.1",
-  "displayVersion": "V4.4.1",
-  "label": "V4.4.1",
-  "build": "V4.4.1-ADMIN-CLEANUP-VISIBLE",
-  "releasedAt": "2026-09-16T02:22:00Z",
-  "type": "web-admin-cleanup-visible",
-  "notes": "Đưa DỌN LỊCH SỬ PHÁT KẾT SỔ vào menu AD đang hiển thị: ⚙ QUẢN LÝ → 🛡 GIÁM SÁT & HỒ SƠ. Không thay đổi hồ sơ KẾT SỔ chính.",
-  "message": "V4.4.1 · AD thấy trực tiếp nút DỌN LỊCH SỬ PHÁT KẾT SỔ trong QUẢN LÝ"
+  "version": "V4.4.2",
+  "displayVersion": "V4.4.2",
+  "label": "V4.4.2",
+  "build": "V4.4.2-FLOATING-ADMIN-CLEANUP",
+  "releasedAt": "2026-09-16T02:34:00Z",
+  "type": "web-floating-admin-cleanup",
+  "notes": "Đưa nút DỌN LỊCH SỬ KẾT SỔ thành nút nổi độc lập ngoài mọi menu/toolbar, tự hiện khi role AD.",
+  "message": "V4.4.2 · AD thấy nút DỌN LỊCH SỬ KẾT SỔ nổi trực tiếp trên màn hình"
 }
