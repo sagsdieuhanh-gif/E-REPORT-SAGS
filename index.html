@@ -511,29 +511,6 @@ body{margin:0;width:100%;max-width:100%;min-height:100vh;min-height:100dvh;paddi
 #svg9 .hit,#svg10 .hit{fill:rgba(255,255,255,.005)}
 #svg9 .hit:active,#svg10 .hit:active{fill:rgba(255,220,0,.10)}
 #svg9 image,#svg10 image{pointer-events:none}
-/* V8.3 — FSAGS 55.1 page 1: check all checkboxes */
-#checkAll551Page1Btn{
- position:fixed;
- right:12px;
- bottom:76px;
-  z-index:9992; /* Above movable Sổ tay button: never occluded. */
-  display:none;
- border:0;
- border-radius:999px;
- padding:11px 16px;
- background:#003B8E;
- color:#fff;
- font-weight:800;
- font-size:13px;
- box-shadow:0 4px 14px rgba(0,0,0,.28);
- touch-action:none;
- user-select:none;
- -webkit-user-select:none;
- cursor:grab;
- will-change:left,top;
-}
-#checkAll551Page1Btn.dragging{cursor:grabbing;box-shadow:0 7px 20px rgba(0,0,0,.34);opacity:.96}
-#checkAll551Page1Btn:active{filter:brightness(.96)}
 /* PĐH SAGS CXR — Biểu Mẫu menu fixed 4 buttons */
 #formMenuModal .formMenuGrid{
   display:grid!important;
@@ -2706,7 +2683,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <style id="sags-v115-clean-ui">
 #roleLoginHint,#v1014UsernameLoginNote,.templateNote,.fs09qUsageNote,.v377CreateFormNote,.v1019Hint{display:none!important}
 </style>
-<link rel="stylesheet" href="./app.bundle.css?v=V4.7.3">
+<link rel="stylesheet" href="./app.bundle.css?v=V4.7.4">
 </head>
 <body>
 <div aria-hidden="true" id="roleHomeIdle"></div>
@@ -3817,6 +3794,24 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 #v178-premium-polish .quickTimeRows,
 #v178-premium-polish .fs09qRows{box-shadow:none!important}
 </style>
+<style id="v474Quick551Style">
+#quickTimeModal .qte551Summary{font:700 12px/1.4 Arial;color:#dce8ff;margin:3px 0 10px}
+#quickTimeModal .qte551Bulk{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:9px 0 12px}
+#quickTimeModal .qte551Bulk button{min-width:0;min-height:44px;border-radius:10px;padding:8px 6px;border:1px solid #6c8fc3;background:#124b91;color:#fff;font:800 12px Arial;white-space:normal;cursor:pointer}
+#quickTimeModal .qte551Bulk button.danger{background:#552c34;border-color:#c67c84}
+#quickTimeModal .qte551Bulk button:disabled{opacity:.42;cursor:not-allowed}
+#quickTimeModal .qte551CheckRow{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid #536c86;border-radius:8px;background:#192e42;color:#fff;margin:5px 0;min-height:44px;font:600 13px/1.35 Arial;cursor:pointer}
+#quickTimeModal .qte551CheckRow input{width:21px;height:21px;flex:0 0 21px;accent-color:#1fa477;cursor:pointer}
+#quickTimeModal .qte551SectionTitle{font:800 13px Arial;color:#e0edff;margin:16px 0 8px;padding-top:9px;border-top:1px solid #4e6780}
+#quickTimeModal .qte551TimeRow{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 9px;margin:4px 0;background:#182b3e;border:1px solid #536c86;border-radius:8px;color:#fff;font:600 12px Arial}
+#quickTimeModal .qte551TimeRow .quickTimeSingleCell{flex:0 0 135px;max-width:46%}
+#quickTimeModal .qte551TimeRow .quickTimeSingleCell input{min-width:0}
+#quickTimeModal .quickTimeTab[hidden]{display:none!important}
+#quickTimeModal.qte551-mode .quickTimeTabs{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+#quickTimeModal.qte551-mode #qteDot2{display:none!important}
+#quickTimeModal.qte551-mode .quickTimeFooterActions{grid-template-columns:minmax(0,1fr) 96px!important}
+@media(max-width:375px){#quickTimeModal .qte551Bulk button{font-size:11px;padding:6px 4px}}
+</style>
 <div id="quickTimeModal" onclick="if(event.target===this)closeQuickTimePanel()">
   <div class="quickTimePanel">
     <div class="quickTimeHead">
@@ -3908,7 +3903,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <button class="cancel" onclick="closeSignature();draw()">Đóng</button>
 </div>
 </div></div>
-<div class="hint" id="statusHint">V4.7.3 · DESKTOP AUTO DOWNLOAD · FORM MANAGER</div>
+<div class="hint" id="statusHint">V4.7.4 · DESKTOP AUTO DOWNLOAD · FORM MANAGER</div>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
@@ -3917,7 +3912,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <script>
 window.SAGS_FIREBASE_AUTH_SDK_READY = !!(window.firebase && typeof window.firebase.auth === "function");
 </script>
-<script src="./app.js?v=V4.7.3" data-phase="config"></script>
+<script src="./app.js?v=V4.7.4" data-phase="config"></script>
 <script>
 let suppressModalClickUntil=0;
 function armModalGhostClickBlock(ms=650){
@@ -10912,134 +10907,27 @@ function get551Page1CheckboxFields(){
        !exclusive.has(f.key)
   );
 }
+// V4.7.4: One entry point: FSAGS 55.1 checklist lives in NHẬP NHANH.
 function update551CheckAllButton(){
-  const btn=document.getElementById("checkAll551Page1Btn");
-  if(!btn)return;
-  init551CheckAllDrag?.();
-  const show=(activeFormGroup==="fsags551");
-  btn.style.display=show?"block":"none";
-  if(show)requestAnimationFrame(()=>window.sagsCarrierGuideAvoidControls?.());
-  if(!show)return;
-  const checks=get551Page1CheckboxFields();
-  const allOn=checks.length>0 && checks.every(f=>state[f.key]===true);
-  btn.textContent=allOn ? "Bỏ tích tất cả (trang 1)" : "Tích tất cả (trang 1)";
-  btn.title='Chỉ các ô kiểm tra trang 1 của FSAGS 55.1; không đổi loại chuyến hoặc trang 2. Kéo để đổi vị trí.';
+  if(activeFormGroup==="fsags551")window.qte551RefreshChecks?.();
 }
-function toggleAll551Page1Checks(){
+function setAll551Page1Checks(next){
+  if(activeFormGroup!=="fsags551")return false;
   const checks=get551Page1CheckboxFields();
-  if(!checks.length)return;
-  const allOn=checks.every(f=>state[f.key]===true);
-  const next=!allOn;
-  checks.forEach(f=>{
-    state[f.key]=next;
-  });
+  if(!checks.length)return false;
+  const checked=next===true;
+  if(!checks.some(f=>(state[f.key]===true)!==checked))return true;
+  checks.forEach(f=>{state[f.key]=checked;});
   persist();
   activeKey=null;
   draw();
   update551CheckAllButton();
+  return true;
 }
-/* V4.32 — FSAGS 55.1 check-all button: drag anywhere and remember its position. */
-const CHECK_ALL_551_POS_KEY="sags_f551_checkall_pos_v1";
-let checkAll551DragState=null;
-function clamp551CheckAllPosition(left,top){
-  const btn=document.getElementById("checkAll551Page1Btn");
-  if(!btn)return {left,top};
-  const margin=6;
-  const maxLeft=Math.max(margin,window.innerWidth-btn.offsetWidth-margin);
-  const maxTop=Math.max(margin,window.innerHeight-btn.offsetHeight-margin);
-  return {
-    left:Math.min(Math.max(margin,left),maxLeft),
-    top:Math.min(Math.max(margin,top),maxTop)
-  };
+function toggleAll551Page1Checks(){
+  const checks=get551Page1CheckboxFields();
+  return setAll551Page1Checks(!(checks.length>0&&checks.every(f=>state[f.key]===true)));
 }
-function set551CheckAllPosition(left,top,save=true){
-  const btn=document.getElementById("checkAll551Page1Btn");
-  if(!btn)return;
-  const p=clamp551CheckAllPosition(left,top);
-  btn.style.left=p.left+"px";
-  btn.style.top=p.top+"px";
-  btn.style.right="auto";
-  btn.style.bottom="auto";
-  if(save){
-    try{localStorage.setItem(CHECK_ALL_551_POS_KEY,JSON.stringify(p));}catch(_e){}
-  }
-}
-function restore551CheckAllPosition(){
-  const btn=document.getElementById("checkAll551Page1Btn");
-  if(!btn)return;
-  try{
-    const raw=localStorage.getItem(CHECK_ALL_551_POS_KEY);
-    if(!raw)return;
-    const p=JSON.parse(raw);
-    if(Number.isFinite(Number(p?.left))&&Number.isFinite(Number(p?.top))){
-      set551CheckAllPosition(Number(p.left),Number(p.top),false);
-    }
-  }catch(_e){}
-}
-function init551CheckAllDrag(){
-  const btn=document.getElementById("checkAll551Page1Btn");
-  if(!btn||btn.dataset.dragReady==="1")return;
-  btn.dataset.dragReady="1";
-  restore551CheckAllPosition();
-  btn.addEventListener("pointerdown",e=>{
-    if(e.button!==undefined&&e.button!==0)return;
-    const r=btn.getBoundingClientRect();
-    checkAll551DragState={
-      pointerId:e.pointerId,
-      startX:e.clientX,startY:e.clientY,
-      startLeft:r.left,startTop:r.top,
-      moved:false
-    };
-    btn.setPointerCapture?.(e.pointerId);
-    btn.classList.add("dragging");
-    e.preventDefault();
-  });
-  btn.addEventListener("pointermove",e=>{
-    const d=checkAll551DragState;
-    if(!d||d.pointerId!==e.pointerId)return;
-    const dx=e.clientX-d.startX,dy=e.clientY-d.startY;
-    if(!d.moved&&Math.hypot(dx,dy)>=5)d.moved=true;
-    if(d.moved)set551CheckAllPosition(d.startLeft+dx,d.startTop+dy,false);
-    e.preventDefault();
-  });
-  const finish=e=>{
-    const d=checkAll551DragState;
-    if(!d||d.pointerId!==e.pointerId)return;
-    btn.releasePointerCapture?.(e.pointerId);
-    btn.classList.remove("dragging");
-    checkAll551DragState=null;
-    if(d.moved){
-      const r=btn.getBoundingClientRect();
-      set551CheckAllPosition(r.left,r.top,true);
-      requestAnimationFrame(()=>window.sagsCarrierGuideAvoidControls?.());
-    }else{
-      toggleAll551Page1Checks();
-    }
-    e.preventDefault();
-  };
-  btn.addEventListener("pointerup",finish);
-  btn.addEventListener("pointercancel",e=>{
-    const d=checkAll551DragState;
-    if(!d||d.pointerId!==e.pointerId)return;
-    btn.classList.remove("dragging");
-    checkAll551DragState=null;
-  });
-  // Keyboard accessibility remains available.
-  btn.addEventListener("keydown",e=>{
-    if(e.key==="Enter"||e.key===" "){
-      e.preventDefault();
-      toggleAll551Page1Checks();
-    }
-  });
-  window.addEventListener("resize",()=>{
-    if(btn.style.left&&btn.style.top){
-      const r=btn.getBoundingClientRect();
-      set551CheckAllPosition(r.left,r.top,false);
-    }
-    requestAnimationFrame(()=>window.sagsCarrierGuideAvoidControls?.());
-  });
-}
-setTimeout(init551CheckAllDrag,0);
 /* =========================================================
    PĐH SAGS-CXR — FSAGS 55.1 SIGNATURE FINAL ENABLE
    ========================================================= */
@@ -11134,8 +11022,8 @@ try {
   if(h) h.textContent="Lỗi khởi tạo: "+err.message;
   alert("Lỗi JavaScript: "+err.message);
 }
-const APP_BUILD_VERSION="V4.7.3-MOVABLE-NOTEBOOK-551-CHECKALL";
-const APP_DISPLAY_VERSION="V4.7.3";
+const APP_BUILD_VERSION="V4.7.4-551-CHECKLIST-IN-QUICK-ENTRY";
+const APP_DISPLAY_VERSION="V4.7.4";
 // V1.1.103: hotfix duy nhất lỗi Firebase RTDB ancestor/descendant khi đồng bộ DAILY ROSTER; không thay đổi nghiệp vụ khác.
 // V4.21 — SAFE UPDATE SAVE
 // Before switching to a newly installed app version, force-save all current
@@ -11530,7 +11418,6 @@ document.addEventListener("click",(event)=>{
   }
 });
 </script>
-<button id="checkAll551Page1Btn" type="button" aria-label="Tích hoặc bỏ tích tất cả ô vuông FSAGS 55.1">Tích tất cả ô vuông</button>
 <script>/* ===== FINAL MODAL CLOSE / ESCAPE ===== */
 function closeFinalForms(){
   const m=document.getElementById("finalFormsModal");
@@ -22574,8 +22461,8 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
   setTimeout(()=>{try{if(window.currentRole)window.v114ApplyRoleHomeBackground();}catch(_){}},500);
 })();
 </script>
-<script type="module" src="./ai.js?v=V4.7.3"></script>
-<script src="./app.js?v=V4.7.3" data-phase="archive"></script>
+<script type="module" src="./ai.js?v=V4.7.4"></script>
+<script src="./app.js?v=V4.7.4" data-phase="archive"></script>
 <script id="v120-build02-fixes">
 /* V1.20 BUILD 02 — background persistence, VHTTB, per-account usage detail, progress dedupe. */
 (function(){
@@ -23017,7 +22904,7 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
   setTimeout(()=>{ensureUi();startCloseoutListener();refreshValidation();try{window.sagsV440CleanupExpiredCloseoutEvents?.()}catch(_){}},500);
 })();
 </script>
-<script src="./app.js?v=V4.7.3" data-phase="tools"></script>
+<script src="./app.js?v=V4.7.4" data-phase="tools"></script>
 <script id="v173-quick-time">
 (function(){
   "use strict";
@@ -23077,7 +22964,7 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
     return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   }
   function S(v){return String(v??"").trim();}
-  function canon(raw){return S(raw).replace(/^f421_/i,"");}
+  function canon(raw){return S(raw).replace(/^f(?:421|551)_/i,"");}
   function baseCanon(raw){
     return canon(raw).replace(/(Start|Finish)$/i,"").replace(/_(arr|dep)$/i,"");
   }
@@ -23115,11 +23002,14 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
       if(["f421_sta","f421_eta","f421_std","f421_etd"].includes(key)||!qteKeepKey(key))return false;
       return typeOk||filterOk;
     }
+    if(group==="fsags551"){
+      return [9,10].includes(Number(f.page||0)) && key.startsWith("f551_") && (typeOk||filterOk);
+    }
     return false;
   }
   function allFields(){
     const group=S(activeFormGroup);
-    return fields.filter(f=>isTimeField(f,group) && !qteHiddenByLabel(f));
+    return fields.filter(f=>isTimeField(f,group) && (group==="fsags551" || !qteHiddenByLabel(f)));
   }
   function rawValue(key){return S(state?.[key]);}
   function inputValue(v){
@@ -23140,7 +23030,7 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
     return String(H).padStart(2,"0")+":"+String(M).padStart(2,"0");
   }
   function flightHeader(){
-    const p=S(activeFormGroup)==="fsags421"?"f421_":"";
+    const p=S(activeFormGroup)==="fsags421"?"f421_":(S(activeFormGroup)==="fsags551"?"f551_":"");
     const arr=S(state?.[p+"fltBefore"]),dep=S(state?.[p+"fltAfter"]);
     const date=S(state?.[p+"date"]||state?.date);
     const flight=[arr,dep].filter(Boolean).join(" / ")||"CHUYẾN";
@@ -23238,14 +23128,88 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
       document.getElementById("qteDot"+i)?.classList.toggle("active",i===qtePage);
     }
   }
+  // 55.1 uses the same quick-entry modal. Page 9 is the only bulk-check page;
+  // page 10's checkboxes and turnaround/arrival/departure are never bulk-edited.
+  const QTE551_NAMES={
+    fodArr:"FOD · chuyến đến",fodDep:"FOD · chuyến đi",walk:"WALK AROUND",
+    safetyArr:"Safety · chuyến đến",safetyDep:"Safety · chuyến đi",
+    comptCheck:"Kiểm tra công tác phục vụ",sequenceArr:"Trình tự · chuyến đến",
+    sequenceDep:"Trình tự · chuyến đi",uldArr:"ULD · chuyến đến",uldDep:"ULD · chuyến đi",
+    aCabinDoors:"Cabin doors",aPanels:"Panels",aFuselage:"Fuselage",
+    bDoorSeal:"Door seal",bFloor:"Floor",bBallMats:"Ball mats",bNets:"Nets"
+  };
+  function qte551Name(f){
+    const key=S(f?.key).replace(/^f551_/,"");
+    return QTE551_NAMES[key]||S(f?.label)||key;
+  }
+  function qte551Render(){
+    const body=document.getElementById("quickTimeBody");if(!body)return;
+    const page=qtePage===1?10:9;
+    const checks=page===9?get551Page1CheckboxFields():[];
+    const allOn=checks.length&&checks.every(f=>state[f.key]===true);
+    const count=checks.filter(f=>state[f.key]===true).length;
+    let html=`<div class="quickTimePageTitle">FSAGS 55.1 · TRANG ${page===9?"1":"2"}</div>`;
+    if(page===9){
+      html+=`<div class="qte551Summary" id="qte551Count">Đã tích ${count}/${checks.length} mục · Chỉ checklist trang 1</div>`;
+      html+=`<div class="qte551Bulk"><button id="qte551CheckAllBtn" type="button" onclick="qte551SetAll(true)" ${allOn?'disabled':''}>✓ TÍCH TẤT CẢ</button><button class="danger" id="qte551UncheckAllBtn" type="button" onclick="qte551SetAll(false)" ${count===0?'disabled':''}>✕ BỎ TÍCH TẤT CẢ</button></div>`;
+      html+=`<div class="qte551SectionTitle">CHECKLIST CÔNG VIỆC · TRANG 1</div>`;
+      for(const f of checks){
+        const key=E(f.key),label=E(qte551Name(f));
+        html+=`<label class="qte551CheckRow"><input type="checkbox" data-qte551-key="${key}" onchange="qte551SetOne(this.dataset.qte551Key,this.checked)" ${state[f.key]===true?'checked':''}><span>${label}</span></label>`;
+      }
+    }else{
+      html+=`<div class="qte551Summary">Không đổi ô loại chuyến hoặc checklist trang 2 bằng nút Tích tất cả.</div>`;
+    }
+    const times=allFields().filter(f=>Number(f.page)===page).sort((a,b)=>(Number(a.y)||0)-(Number(b.y)||0));
+    if(times.length){
+      html+=`<div class="qte551SectionTitle">NHẬP GIỜ NHANH · TRANG ${page===9?"1":"2"}</div>`;
+      for(const f of times)html+=`<div class="qte551TimeRow"><span>${E(qte551Name(f))}</span>${singleCell(f)}</div>`;
+    }
+    body.innerHTML=html;
+  }
+  function qte551RefreshChecks(){
+    if(S(activeFormGroup)!=="fsags551"||qtePage!==0)return;
+    const checks=get551Page1CheckboxFields(),count=checks.filter(f=>state[f.key]===true).length;
+    const total=checks.length;
+    const n=document.getElementById('qte551Count');if(n)n.textContent=`Đã tích ${count}/${total} mục · Chỉ checklist trang 1`;
+    const on=document.getElementById('qte551CheckAllBtn');if(on)on.disabled=!total||count===total;
+    const off=document.getElementById('qte551UncheckAllBtn');if(off)off.disabled=count===0;
+    for(const input of document.querySelectorAll('#quickTimeBody input[data-qte551-key]')){
+      const f=checks.find(x=>x.key===input.dataset.qte551Key);
+      if(f)input.checked=state[f.key]===true;
+    }
+  }
+  window.qte551RefreshChecks=qte551RefreshChecks;
+  window.qte551SetAll=function(checked){
+    if(S(activeFormGroup)!=="fsags551"||qtePage!==0||!canShow())return;
+    setAll551Page1Checks(checked===true);
+    qte551RefreshChecks();
+  };
+  window.qte551SetOne=function(key,checked){
+    if(S(activeFormGroup)!=="fsags551"||qtePage!==0||!canShow())return;
+    const f=get551Page1CheckboxFields().find(x=>x.key===key);
+    if(!f)return;
+    if((state[f.key]===true)!==(checked===true)){
+      state[f.key]=checked===true;persist();activeKey=null;draw();
+    }
+    qte551RefreshChecks();
+  };
   function render(){
     const body=document.getElementById("quickTimeBody");
     if(!body)return;
     const title=document.getElementById("quickTimeTitle");
     const flight=document.getElementById("quickTimeFlight");
-    if(title)title.textContent="NHẬP GIỜ NHANH";
+    const is551=S(activeFormGroup)==="fsags551";
+    document.getElementById("quickTimeModal")?.classList.toggle("qte551-mode",is551);
+    if(title)title.textContent=is551?"NHẬP NHANH · 55.1":"NHẬP GIỜ NHANH";
     if(flight)flight.textContent=flightHeader();
+    const na=document.getElementById("quickTimeNaBtn");if(na)na.style.display=is551?"none":"";
+    const tab0=document.getElementById("qteTab0"),tab1=document.getElementById("qteTab1"),tab2=document.getElementById("qteTab2");
+    if(tab0)tab0.textContent=is551?"TRANG 1":"ĐẾN";
+    if(tab1)tab1.textContent=is551?"TRANG 2":"ĐI";
+    if(tab2)tab2.hidden=is551;
     updateTabs();
+    if(is551){qte551Render();updateDirtyStatus();return;}
     const rows=buildRows(qtePage);
     let out=`<div class="quickTimePageTitle">${E(PAGE_META[qtePage].title)}</div>`;
     if(rows.length){
@@ -23298,7 +23262,7 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
     const isAd=roleNorm==="AD";
     const rampAllowed=typeof ov.QUICK_TIME==='boolean'?ov.QUICK_TIME:(isAd||roleNorm==="DH"||(typeof v485Can==="function"&&v485Can("QUICK_TIME",profile,sess.role)));
     const fs09Allowed=typeof ov.FSAGS09==='boolean'?ov.FSAGS09:(isAd||roleNorm==="PVHK"||(typeof v485Can==="function"&&v485Can("FSAGS09",profile,sess.role)));
-    const groupAllowed=(["fsags","fsags421"].includes(group)&&rampAllowed)||(group==="fsags09"&&fs09Allowed);
+    const groupAllowed=(["fsags","fsags421","fsags551"].includes(group)&&rampAllowed)||(group==="fsags09"&&fs09Allowed);
     return groupAllowed&&!idleVisible;
   }
   function refreshVisibility(){
@@ -23388,7 +23352,7 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
     updateDirtyStatus();
   };
   window.qteGoPage=function(page){
-    const n=Math.max(0,Math.min(2,Number(page)||0));
+    const n=Math.max(0,Math.min(S(activeFormGroup)==="fsags551"?1:2,Number(page)||0));
     if(n===qtePage)return;
     qtePage=n;
     render();
@@ -23408,7 +23372,7 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
     const dy=t.clientY-qteTouchY;
     qteTouchX=qteTouchY=null;
     if(Math.abs(dx)<48||Math.abs(dx)<Math.abs(dy)*1.25)return;
-    if(dx<0&&qtePage<2)qteGoPage(qtePage+1);
+    if(dx<0&&qtePage<(S(activeFormGroup)==="fsags551"?1:2))qteGoPage(qtePage+1);
     else if(dx>0&&qtePage>0)qteGoPage(qtePage-1);
   }
   function bindSwipe(){
@@ -23476,16 +23440,16 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
     if(st)st.textContent="ĐÃ CẬP NHẬT";
   };
   window.openQuickTimePanel=function(){
-    if(!canShow())return roleDenied?.("Tài khoản chưa được phép NHẬP GIỜ NHANH cho chuyến này.");
+    if(!canShow())return roleDenied?.("Tài khoản chưa được phép NHẬP NHANH cho chuyến này.");
     if(S(activeFormGroup)==="fsags09"){
       if(typeof window.openFS09QuickPanel==="function")return window.openFS09QuickPanel();
       return;
     }
     // ARR-only mở ĐẾN; DEP-only mở ĐI; cặp ARR+DEP mặc định mở ĐẾN.
-    const p=S(activeFormGroup)==="fsags421"?"f421_":"";
+    const p=S(activeFormGroup)==="fsags421"?"f421_":(S(activeFormGroup)==="fsags551"?"f551_":"");
     const hasArr=!!S(state?.[p+"fltBefore"]);
     const hasDep=!!S(state?.[p+"fltAfter"]);
-    qtePage=!hasArr&&hasDep?1:0;
+    qtePage=S(activeFormGroup)==="fsags551"?0:(!hasArr&&hasDep?1:0);
     qteActiveKey="";
     initDraft();
     render();
@@ -24953,7 +24917,7 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
   }
 }
 </style>
-<script src="./app.js?v=V4.7.3" data-phase="flight"></script>
+<script src="./app.js?v=V4.7.4" data-phase="flight"></script>
 <script id="v191IOSInteractionFix">
 (()=>{
   'use strict';
@@ -25203,7 +25167,7 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
   window.addEventListener('pageshow',()=>setTimeout(refresh,120),{passive:true});
 })();
 </script>
-<script src="./app.js?v=V4.7.3" data-phase="control"></script>
+<script src="./app.js?v=V4.7.4" data-phase="control"></script>
 <style id="v330-group-permission-style">
 #v330GroupPermPanel{margin:12px 0 8px;padding:11px;border:1px solid #cbd9e6;border-radius:12px;background:#f7fbff;box-sizing:border-box}
 .v330GpHead{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;color:#173b5d;font:900 13px Arial}.v330GpSub{margin-top:4px;color:#61778b;font:700 11px/1.35 Arial}
@@ -25430,7 +25394,7 @@ function install(){addPermissions();ensureUi();ensureButton();refreshCount();lis
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install,350),{once:true});else setTimeout(install,350);root.addEventListener('pageshow',()=>setTimeout(install,250),{passive:true});
 })(window);
 </script>
-<script src="./app.js?v=V4.7.3" data-phase="postcontrol"></script>
+<script src="./app.js?v=V4.7.4" data-phase="postcontrol"></script>
 <script id="v377AdminFormToolsScript">
 /* V3.80 — AD form tools row + create all forms + closeout notice cleanup. */
 (function(){
@@ -25481,7 +25445,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   setInterval(refresh,5000);
 })();
 </script>
-<script src="./app.js?v=V4.7.3" data-phase="layout"></script>
+<script src="./app.js?v=V4.7.4" data-phase="layout"></script>
 <script id="v1020-fs208-geometry-migration">
 (function(){
   const REV='V1020-EXACT-PAGE13';
@@ -26602,8 +26566,8 @@ root.v378ResetAllOldRecords=async function(){
   };
 })();
 </script>
-<script src="./app.js?v=V4.7.3" data-phase="performance"></script>
-<script src="./daily-roster.js?v=V4.7.3" id="dailyRosterCleanV11102"></script>
+<script src="./app.js?v=V4.7.4" data-phase="performance"></script>
+<script src="./daily-roster.js?v=V4.7.4" id="dailyRosterCleanV11102"></script>
 <script id="v1016-delete-profile-fix">
 /* V1.0.16 · XÓA tài khoản phải xóa đúng profile E-Report, không chỉ Auth/users. */
 (function(){
@@ -27444,7 +27408,7 @@ root.v378ResetAllOldRecords=async function(){
       document.body.appendChild(a);a.click();a.remove();
       showStatus('✓ PDF đã tự tải về máy tính: '+preparedName()+' · Có thể bấm TẢI LẠI PDF nếu cần.');
       return true;
-    }catch(e){console.warn('V4.7.3 desktop auto download',e);return false;}
+    }catch(e){console.warn('V4.7.4 desktop auto download',e);return false;}
   }
   window.v452IsDesktopExportDevice=isDesktopExportDevice;
   window.v452DesktopDownloadPrepared=desktopDownloadPrepared;
@@ -28220,16 +28184,16 @@ body.v38-clean-workflow #v1134QuickTimeBtn{background:#eef6ff!important;color:#0
 })();
 </script>
 
-<script src="./runtime.bundle.js?v=V4.7.3"></script>
+<script src="./runtime.bundle.js?v=V4.7.4"></script>
 <script id="v460RuntimeGuard">
 (()=>{
   setTimeout(()=>{
-    const ok=String(window.__SAGS_RUNTIME_BUILD__||'')==='V4.7.3-MOVABLE-NOTEBOOK-551-CHECKALL';
+    const ok=String(window.__SAGS_RUNTIME_BUILD__||'')==='V4.7.4-551-CHECKLIST-IN-QUICK-ENTRY';
     if(ok)return;
     console.error('E-REPORT runtime mismatch',window.__SAGS_RUNTIME_BUILD__);
     const d=document.createElement('div');d.id='v460RuntimeMismatch';
     d.style='position:fixed;left:10px;right:10px;bottom:10px;z-index:2147483647;background:#b42318;color:#fff;padding:12px 14px;border-radius:12px;font:800 12px/1.45 Arial;box-shadow:0 8px 24px #0005';
-    d.textContent='⚠ Runtime chưa cập nhật đúng V4.7.3. Hãy upload runtime.bundle.js của gói UPDATE ONLY rồi bấm UPDATE lại.';
+    d.textContent='⚠ Runtime chưa cập nhật đúng V4.7.4. Hãy upload runtime.bundle.js của gói UPDATE ONLY rồi bấm UPDATE lại.';
     document.body.appendChild(d);
   },1800);
 })();
@@ -28256,6 +28220,6 @@ window.adminResetAccountPassword=async function(uid){
   }
 };
 </script>
-<script src="./features.bundle.js?v=V4.7.3"></script>
+<script src="./features.bundle.js?v=V4.7.4"></script>
 </body>
 </html>

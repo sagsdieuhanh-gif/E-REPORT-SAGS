@@ -1,10 +1,10 @@
 {
-  "version": "V4.7.3",
-  "displayVersion": "V4.7.3",
-  "label": "V4.7.3 MOVABLE NOTEBOOK + FSAGS 55.1 CHECK ALL",
-  "build": "V4.7.3-MOVABLE-NOTEBOOK-551-CHECKALL",
-  "releasedAt": "2026-09-16T07:05:00Z",
-  "type": "ui-overlap-fix",
-  "notes": "Move and locally remember Carrier Notebook button, avoid overlapping FSAGS 55.1 check-all on mobile/desktop; verify page-1 check-all behavior.",
-  "message": "V4.7.3 · Kéo Sổ tay hãng; giữ nút Tích tất cả 55.1 thông thoáng"
+  "version": "V4.7.4",
+  "displayVersion": "V4.7.4",
+  "label": "V4.7.4 FSAGS 55.1 CHECKLIST IN QUICK ENTRY",
+  "build": "V4.7.4-551-CHECKLIST-IN-QUICK-ENTRY",
+  "releasedAt": "2026-09-16T07:34:00Z",
+  "type": "quick-entry-unification",
+  "notes": "Remove floating 55.1 check-all; add both bulk actions and individual page-1 checks to the existing Quick Entry panel. Show Quick Entry on 55.1, include page-1/2 time inputs; do not bulk-change page 2 or flight type.",
+  "message": "V4.7.4 · Tích/bỏ tích 55.1 trong Nhập nhanh"
 }

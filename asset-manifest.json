@@ -1,12 +1,12 @@
 {
   "schema": 2,
-  "version": "V4.7.3",
-  "build": "V4.7.3-MOVABLE-NOTEBOOK-551-CHECKALL",
+  "version": "V4.7.4",
+  "build": "V4.7.4-551-CHECKLIST-IN-QUICK-ENTRY",
   "strategy": "stable-cache-sha256-delta",
   "bootstrapChanged": [
     "./index.html",
+    "./app.js",
     "./runtime.bundle.js",
-    "./features.bundle.js",
     "./service-worker.js",
     "./version.json"
   ],
@@ -92,8 +92,8 @@
       "bytes": 46693
     },
     "./app.js": {
-      "sha256": "b8b718a68b6933b82af99bdbf4c25014c5f09c6950b362e12b9da5ed5b9b970c",
-      "bytes": 886195
+      "sha256": "b93415cd93f2e0d0f6b8987f31a22aa728eaaae6ce4ab8a62e64429a456197fe",
+      "bytes": 886227
     },
     "./apple-touch-icon.png": {
       "sha256": "a190c19f9a52a40f43379917b11f84f99a2ab2fb4a3cdaedd1dad936a67c8e78",
@@ -144,8 +144,8 @@
       "bytes": 104295
     },
     "./index.html": {
-      "sha256": "2d178f8833718768b8794870bfdda74993881b72ff5a4762eeb02672f5060614",
-      "bytes": 1765648
+      "sha256": "21ff67adffc6fa19eec739883c79c033c94916a83aaf0f7b97b87db48e126bf9",
+      "bytes": 1767948
     },
     "./ket-so.wav": {
       "sha256": "cf03e8d4021f989f61fd12249f282ae2e53588cc9d55d68393778223db8132a1",
@@ -228,20 +228,20 @@
       "bytes": 21617
     },
     "./runtime.bundle.js": {
-      "sha256": "443d63a01f6d258918a06c31db7d2677f2037fbf50f759c1a1b06cae232bd23d",
-      "bytes": 433858
+      "sha256": "e289eb3f76a194a2a0d51ec7baa8ead35f89846aca821d87b6ba07561d7c99bf",
+      "bytes": 433856
     },
     "./sags-logo.png": {
       "sha256": "84bc554c3b44afe4190afcbe74f7c7aed9fad478c328d63502a7d225dd60d7ad",
       "bytes": 25408
     },
     "./service-worker.js": {
-      "sha256": "19aa0ed0a7c9fb7f940ac84589e0fe052589cf027839214bfdc3536b89894940",
-      "bytes": 6763
+      "sha256": "8f9c0d61e5f521e2ba5f53d319c2e65f652b6d9c7a8da40bf7e40fed40470c2b",
+      "bytes": 6762
     },
     "./version.json": {
-      "sha256": "c72c62bca5ccf190a3e6b5ce323c3cbf1298ab54242e6eda95905e01ef4a4fd9",
-      "bytes": 488
+      "sha256": "9a850d98fef3d86cd1c85a9d40a30646e0970279cc525ac91ad906db3bd840aa",
+      "bytes": 537
     }
   }
 }

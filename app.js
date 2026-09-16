@@ -4976,7 +4976,7 @@ body.v38-clean-workflow #v38NavRS,body.v38-clean-workflow #readSignQuickBtn,body
   function eligible(){
     const g=group(),r=normalizedRole();
     if(idleVisible())return false;
-    if(g==='fsags'||g==='fsags421')return feature('QUICK_TIME')||r==='DH';
+    if(g==='fsags'||g==='fsags421'||g==='fsags551')return feature('QUICK_TIME')||r==='DH';
     if(g==='fsags09')return feature('FSAGS09')||r==='PVHK'||r==='AD';
     return false;
   }
@@ -5629,7 +5629,7 @@ Phần của ${who} được ghi “BỎ QUA · KHÔNG E-FORM”, không ghi HO�
   function v1134QuickAllowed(){
     const g=v1134ActiveGroup(),sess=v1134Session(),profile=sess.profile||{},r=v1134NormRole(sess.role||profile.role||'');
     const ov=profile.featureOverridesV485&&typeof profile.featureOverridesV485==='object'?profile.featureOverridesV485:{};
-    if(g==='fsags'||g==='fsags421'){
+    if(g==='fsags'||g==='fsags421'||g==='fsags551'){
       if(typeof ov.QUICK_TIME==='boolean')return ov.QUICK_TIME;
       if(r==='AD'||r==='DH')return true;
       try{return typeof root.v485Can==='function'&&root.v485Can('QUICK_TIME',profile,sess.role)}catch(_){return false}
