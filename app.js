@@ -5529,6 +5529,36 @@ body.v38-clean-workflow #v38NavRS,body.v38-clean-workflow #readSignQuickBtn,body
     pool.sort((a,b)=>Number(b.priority||0)-Number(a.priority||0)||Number(b.at||0)-Number(a.at||0));
     return pool[0]||null;
   }
+  function mergeRosterSeedDefaults(item,env,previousEnv=null){
+    env=env&&typeof env==='object'?env:{};
+    env.state=env.state&&typeof env.state==='object'?env.state:{};
+    let seed={};
+    try{seed=manualSeed(item,canonicalFormGroup(item?.formGroup||env.mainForm||previousEnv?.mainForm||''))||{}}catch(_){seed={}}
+    const oldSeed=(previousEnv?.rosterSeed&&typeof previousEnv.rosterSeed==='object')?previousEnv.rosterSeed:((env.rosterSeed&&typeof env.rosterSeed==='object')?env.rosterSeed:{});
+    let changed=false;
+    for(const [k,v] of Object.entries(seed)){
+      const cur=S(env.state[k]),old=S(oldSeed[k]),next=S(v);
+      // Roster values are defaults only: fill blanks, or refresh values that still
+      // equal the previous roster seed. Never overwrite an operator-edited value.
+      if((!cur||(old&&cur===old))&&cur!==next){env.state[k]=v;changed=true}
+    }
+    const oldKeys=Object.keys(env.rosterSeed&&typeof env.rosterSeed==='object'?env.rosterSeed:{}),newKeys=Object.keys(seed);
+    if(newKeys.length&&(oldKeys.length!==newKeys.length||newKeys.some(k=>S(env.rosterSeed?.[k])!==S(seed[k])))){env.rosterSeed=seed;changed=true}
+    const od=S(item?.opDate||item?.date),fid=S(item?.flightId),aid=S(item?.assignmentId);
+    if(od&&S(env.rosterOpDate)!==od){env.rosterOpDate=od;changed=true}
+    if(fid&&S(env.rosterFlightId)!==fid){env.rosterFlightId=fid;changed=true}
+    if(aid&&S(env.rosterAssignmentId)!==aid){env.rosterAssignmentId=aid;changed=true}
+    return {env,changed};
+  }
+  function ensureRosterSeedInLocal(item,meta){
+    if(!meta||typeof root.flightSessionStorageKey!=='function')return false;
+    try{
+      const current=root.readFlightSessionEnvelope?.(meta.id)||{};
+      const merged=mergeRosterSeedDefaults(item,current,current);
+      if(merged.changed)localStorage.setItem(root.flightSessionStorageKey(meta.id),JSON.stringify(merged.env));
+      return merged.changed;
+    }catch(e){console.warn('V4.8.5 roster seed repair',e);return false}
+  }
   async function syncSharedIntoLocal(item,meta,man){
     if(!meta)return false;
     try{
@@ -5547,7 +5577,8 @@ body.v38-clean-workflow #v38NavRS,body.v38-clean-workflow #readSignQuickBtn,body
       // B's newer local work instead of restoring A's snapshot again.
       if(isImmutable&&appliedAt>=incomingAt&&envelopeHasData(local))return false;
       if(!isImmutable&&appliedAt&&incomingAt<=appliedAt)return false;
-      const env=clone(resolved.env);
+      let env=clone(resolved.env);
+      env=mergeRosterSeedDefaults(item,env,local).env;
       env.rosterAssignmentId=S(item.assignmentId);
       env.mainForm=S(item.formGroup||env.mainForm||local.mainForm||'fsags');
       env.activeFormGroup=env.mainForm;
@@ -5563,6 +5594,11 @@ body.v38-clean-workflow #v38NavRS,body.v38-clean-workflow #readSignQuickBtn,body
     }catch(e){console.warn('V1.1.20 shared handover load',e);return false}
   }
   async function openAssignment(item,man){
+  // V4.8.6: the selected MY FLIGHT manifest already knows its operating day.
+  // Older/light mailbox rows may omit opDate, so carry the manifest day into the
+  // assignment before seeding the form header. This prevents NGÀY from staying blank.
+  const assignmentDate=S(item?.opDate||item?.date||man?.opDate||man?.date);
+  if(assignmentDate&&!S(item?.opDate))item={...item,opDate:assignmentDate,date:S(item?.date||assignmentDate)};
   if(U(item?.formGroup)==='FINAL'){try{root.flightWorkspaceClose?.()}catch(_){}if(typeof root.sagsV338OpenFinalForRoster!=='function')throw new Error('Biểu mẫu FINAL chưa sẵn sàng.');await root.sagsV338OpenFinalForRoster(item);return;}
   if(U(item?.formGroup)==='UNIT_TASK'){root.flightWorkspaceOpenFlight?.(S(item.flightId));return;}
 
@@ -5595,6 +5631,10 @@ body.v38-clean-workflow #v38NavRS,body.v38-clean-workflow #readSignQuickBtn,body
     }catch(e){console.warn('V1.0.30 ensure local fallback',e)}
   }
   if(!meta)throw new Error('Chưa khởi tạo được biểu mẫu chuyến. Vui lòng thử lại sau khi đồng bộ roster.');
+  // Mailbox sync may have created the local session shell before the form was opened.
+  // Re-apply roster defaults now so NGÀY and other assignment headers are present even
+  // when the shared/handover envelope is empty or came from an older client.
+  ensureRosterSeedInLocal(item,meta);
   const sharedLoaded=await syncSharedIntoLocal(item,meta,man);
   // V1.1.31 hydration barrier: if local cache is empty but Firebase has a real snapshot,
   // restore it once more before rendering. This is finite (no timer/heartbeat) and avoids
@@ -5604,7 +5644,7 @@ body.v38-clean-workflow #v38NavRS,body.v38-clean-workflow #readSignQuickBtn,body
     if(!envelopeHasData(localNow)){
       const retry=await resolveHandoverEnvelope(item,man);
       if(retry?.env&&envelopeHasData(retry.env)&&typeof root.flightSessionStorageKey==='function'){
-        const env=clone(retry.env);env.rosterAssignmentId=S(item.assignmentId);env.mainForm=S(item.formGroup||env.mainForm||meta.initialGroup||'fsags');env.activeFormGroup=env.mainForm;env.currentPage=Number(env.currentPage)||1;env.scrollY=0;env.rosterSharedAtMs=Number(retry.at||Date.now());env.rosterHandoverAppliedAtMs=Math.max(Number(env.rosterHandoverAppliedAtMs||0),Number(retry.at||0));env.rosterHandoverSource=retry.source;
+        let env=clone(retry.env);env=mergeRosterSeedDefaults(item,env,localNow).env;env.rosterAssignmentId=S(item.assignmentId);env.mainForm=S(item.formGroup||env.mainForm||meta.initialGroup||'fsags');env.activeFormGroup=env.mainForm;env.currentPage=Number(env.currentPage)||1;env.scrollY=0;env.rosterSharedAtMs=Number(retry.at||Date.now());env.rosterHandoverAppliedAtMs=Math.max(Number(env.rosterHandoverAppliedAtMs||0),Number(retry.at||0));env.rosterHandoverSource=retry.source;
         localStorage.setItem(root.flightSessionStorageKey(meta.id),JSON.stringify(env));
       }
     }

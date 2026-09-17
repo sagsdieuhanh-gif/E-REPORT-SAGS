@@ -2683,7 +2683,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <style id="sags-v115-clean-ui">
 #roleLoginHint,#v1014UsernameLoginNote,.templateNote,.fs09qUsageNote,.v377CreateFormNote,.v1019Hint{display:none!important}
 </style>
-<link rel="stylesheet" href="./app.bundle.css?v=V4.8.3A">
+<link rel="stylesheet" href="./app.bundle.css?v=V4.8.6B">
 </head>
 <body>
 <div aria-hidden="true" id="roleHomeIdle"></div>
@@ -3903,7 +3903,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <button class="cancel" onclick="closeSignature();draw()">Đóng</button>
 </div>
 </div></div>
-<div class="hint" id="statusHint">V4.8.3A · DESKTOP AUTO DOWNLOAD · FORM MANAGER</div>
+<div class="hint" id="statusHint">V4.8.6B · DESKTOP AUTO DOWNLOAD · FORM MANAGER</div>
 <script src="./network-diagnostics.js?v=V4.7.6"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
@@ -3913,7 +3913,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <script>
 window.SAGS_FIREBASE_AUTH_SDK_READY = !!(window.firebase && typeof window.firebase.auth === "function");
 </script>
-<script src="./app.js?v=V4.8.3A" data-phase="config"></script>
+<script src="./app.js?v=V4.8.6B" data-phase="config"></script>
 <script>
 let suppressModalClickUntil=0;
 function armModalGhostClickBlock(ms=650){
@@ -8225,7 +8225,7 @@ function concatBytes(parts){
   return out;
 }
 async function canvasesToPdfFile(canvases,fileName){
-  // V4.8.3A FAST PDF: JPEG compression is the slowest CPU stage on most phones.
+  // V4.8.6B FAST PDF: JPEG compression is the slowest CPU stage on most phones.
   // Encode at most two pages concurrently: faster for 2-page FSAGS documents while
   // avoiding the memory spike of encoding every page at once. iOS keeps its separate
   // low-memory sequential encoder below.
@@ -8484,11 +8484,11 @@ function v481PaintBbbtCxrNo(canvas,n){
   ctx.fillText("CXR No: "+formatBBBTCxrNo(n),(bw-42)*sx,30*sy);ctx.restore();
 }
 function v481DeferredPersistAfterPdf(){
-  const job=()=>{try{persist()}catch(e){console.warn("V4.8.3A deferred PDF persist",e)}};
+  const job=()=>{try{persist()}catch(e){console.warn("V4.8.6B deferred PDF persist",e)}};
   try{if(typeof requestIdleCallback==="function")requestIdleCallback(job,{timeout:5000});else setTimeout(job,3500)}catch(_){setTimeout(job,3500)}
 }
 async function sendReport(kind="all"){
-  // V4.8.3A FAST PDF: exporting must not re-save the whole flight state or rebuild
+  // V4.8.6B FAST PDF: exporting must not re-save the whole flight state or rebuild
   // every SVG page. Normal edit flows already keep the live SVG in sync. Falling
   // back to draw() is retained for builds where the direct fast renderer is absent.
   // This is especially important when state contains photos/signatures: persist()
@@ -8543,7 +8543,7 @@ async function sendReport(kind="all"){
   window.__SAGS_EXPORT_BATCH_DRAWN=true;
   try{
     const pages=[];
-    // V4.8.3A: start the globally unique BBBT number transaction immediately and
+    // V4.8.6B: start the globally unique BBBT number transaction immediately and
     // let page rendering run at the same time. The number is painted once after the
     // transaction resolves, so network latency and canvas work overlap safely.
     let bbbtNoJob=null;
@@ -11056,8 +11056,8 @@ try {
   if(h) h.textContent="Lỗi khởi tạo: "+err.message;
   alert("Lỗi JavaScript: "+err.message);
 }
-const APP_BUILD_VERSION="V4.8.3A-TURBO-CACHE-FLEX-WORKFLOW";
-const APP_DISPLAY_VERSION="V4.8.3A";
+const APP_BUILD_VERSION="V4.8.6B-LAYERED-PDF-FLEX-WORKFLOW-AUTH-DATE-PDF-EXACT";
+const APP_DISPLAY_VERSION="V4.8.6B";
 // V1.1.103: hotfix duy nhất lỗi Firebase RTDB ancestor/descendant khi đồng bộ DAILY ROSTER; không thay đổi nghiệp vụ khác.
 // V4.21 — SAFE UPDATE SAVE
 // Before switching to a newly installed app version, force-save all current
@@ -11114,6 +11114,29 @@ let appUpdateApplyRequested=false;
 let appUpdateCheckBusy=false;
 let appUpdatePendingServerBuild="";
 let appUpdatePendingDisplay="";
+window.sagsRepairMixedBuild=async function(reason="mixed-build"){
+  const onceKey="sags-build-repair:"+APP_BUILD_VERSION;
+  try{if(sessionStorage.getItem(onceKey))return false;}catch(_e){}
+  try{
+    const res=await fetch(APP_VERSION_URL+"?repair="+Date.now(),{cache:"no-store",headers:{"Cache-Control":"no-cache","Pragma":"no-cache"}});
+    if(!res.ok)return false;
+    const live=await res.json();
+    if(String(live?.build||"").trim()!==APP_BUILD_VERSION)return false;
+    try{sessionStorage.setItem(onceKey,String(Date.now()));}catch(_e){}
+    if("caches" in window){
+      const names=await caches.keys();
+      await Promise.all(names.filter(n=>n.startsWith("sags-app-shell-")||n.startsWith("sags-app-meta-")||n.startsWith("sags-v")||n.startsWith("sags-cache")).map(n=>caches.delete(n).catch(()=>false)));
+    }
+    try{
+      const reg=await navigator.serviceWorker?.getRegistration?.();
+      if(reg){await reg.update().catch(()=>{});if(reg.waiting)reg.waiting.postMessage({type:"SKIP_WAITING"});}
+    }catch(_e){}
+    const u=new URL(location.href);u.searchParams.set("_repair",APP_DISPLAY_VERSION+"-"+Date.now());
+    setTimeout(()=>location.replace(u.toString()),220);
+    console.warn("E-REPORT repaired mixed executable cache",reason);
+    return true;
+  }catch(e){console.warn("E-REPORT cache self-heal skipped",reason,e?.message||e);return false;}
+};
 function getDismissedUpdate(){
   try{
     const raw=sessionStorage.getItem(APP_UPDATE_DISMISS_KEY)||"";
@@ -16598,7 +16621,7 @@ async function allocateGlobalBBBTCxrNo(){
     return next;
   });
     state.bbbtCxrNo=assigned;
-    // V4.8.3A: do not synchronously serialize the entire flight envelope here.
+    // V4.8.6B: do not synchronously serialize the entire flight envelope here.
     // The number is already committed atomically in Firestore and is painted into
     // the PDF from live state. A lightweight deferred local save is scheduled after
     // PDF creation so export latency is not dominated by large localStorage writes.
@@ -18974,10 +18997,12 @@ async function firebaseAuthHardRecheck(authUser){
   const auth=adFirebaseGetAuth(),live=auth?.currentUser;
   if(!live||String(live.uid)!==String(authUser.uid))throw new Error("firebase-session-missing");
   try{
-    await live.reload();
-    const refreshed=auth.currentUser;
+    // Let Firebase reuse a still-valid persisted token. The SDK refreshes it only
+    // when needed; forcing reload()+getIdToken(true) on every page open made login
+    // depend unnecessarily on a perfect network round-trip.
+    await live.getIdToken(false);
+    const refreshed=auth.currentUser||live;
     if(!refreshed||String(refreshed.uid)!==String(authUser.uid))throw new Error("firebase-user-deleted");
-    await refreshed.getIdToken(true);
     return refreshed;
   }catch(e){
     const code=String(e?.code||"");
@@ -19016,13 +19041,15 @@ async function firebasePersonalBuildProfile(authUser){
 }
 async function firebasePersonalAccountLogin(email,pass){
   const err=document.getElementById("roleLoginError");
+  let signedInUser=null;
   try{
     if(!adFirebaseAuthAvailable()){if(err)err.textContent="Firebase Authentication chưa sẵn sàng. Hãy tải lại ứng dụng.";return false;}
     if(err)err.textContent="Đang xác thực tài khoản Firebase...";
     const auth=adFirebaseGetAuth();if(!auth)throw new Error("auth-not-ready");
     try{await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);}catch(e){}
     const cred=await auth.signInWithEmailAndPassword(String(email||"").trim(),pass);
-    const profile=await firebasePersonalBuildProfile(cred?.user);
+    signedInUser=cred?.user||null;
+    const profile=await firebasePersonalBuildProfile(signedInUser);
     currentUserProfile=profile;currentRole=profile.role;
     localStorage.setItem(PERSONAL_SESSION_KEY,JSON.stringify(profile));
     localStorage.removeItem(ROLE_SESSION_KEY);
@@ -19030,8 +19057,10 @@ async function firebasePersonalAccountLogin(email,pass){
     setTimeout(()=>location.reload(),60);return true;
   }catch(e){
     const code=String(e?.code||"");
-    try{const a=adFirebaseGetAuth();if(a)await a.signOut();}catch(_){}
     const detail=String(e?.message||e||"");
+    const fatalAfterSignIn=!!signedInUser && (code.includes("user-disabled")||code.includes("user-not-found")||code.includes("invalid-user-token")||code.includes("user-token-expired")||/firebase-profile-(missing|disabled)|firebase-role-invalid|firebase-username-missing|firebase-auth-account-gone/.test(detail));
+    if(fatalAfterSignIn){try{const a=adFirebaseGetAuth();if(a)await a.signOut();}catch(_){}}
+
     let msg="Không đăng nhập được.";
     if(code.includes("invalid-credential")||code.includes("invalid-login-credentials")||code.includes("wrong-password")||code.includes("user-not-found"))msg="Sai tài khoản hoặc mật khẩu.";
     else if(code.includes("user-disabled"))msg="Tài khoản đã bị khóa.";
@@ -19337,15 +19366,24 @@ function adFirebaseEnsureApp(){
 function adFirebaseGetAuth(){
   try{if(!adFirebaseEnsureApp())return null;return firebase.auth();}catch(e){console.warn("AD Firebase Auth init",e?.message||e);return null;}
 }
-async function adFirebaseWaitForUser(timeoutMs=6500){
+async function adFirebaseWaitForUser(timeoutMs=12000){
   const auth=adFirebaseGetAuth();
   if(!auth)return null;
   if(auth.currentUser)return auth.currentUser;
+  try{
+    if(typeof auth.authStateReady==="function"){
+      await Promise.race([
+        auth.authStateReady(),
+        new Promise(resolve=>setTimeout(resolve,Math.max(1500,Number(timeoutMs)||12000)))
+      ]);
+      if(auth.currentUser)return auth.currentUser;
+    }
+  }catch(_e){}
   return await new Promise(resolve=>{
     let done=false,unsub=null;
     const finish=v=>{if(done)return;done=true;try{unsub?.();}catch(e){}resolve(v||null);};
     try{unsub=auth.onAuthStateChanged(u=>finish(u),()=>finish(null));}catch(e){return finish(null);}
-    setTimeout(()=>finish(auth.currentUser||null),timeoutMs);
+    setTimeout(()=>finish(auth.currentUser||null),Math.max(1500,Number(timeoutMs)||12000));
   });
 }
 async function roleLogin(){
@@ -19581,9 +19619,9 @@ async function initRoleLogin(){
     const __sagsCachedProfile=JSON.parse(localStorage.getItem(PERSONAL_SESSION_KEY)||"null");
     __sagsHasCachedFirebaseSession=!!String(__sagsCachedProfile?.firebaseUid||"").trim();
   }catch(_e){}
-  if(modal)modal.style.display=__sagsHasCachedFirebaseSession?"none":"flex";
+  if(modal)modal.style.display="flex";
   try{
-    if(err)err.textContent=__sagsHasCachedFirebaseSession?"":"Đang kiểm tra phiên Firebase...";
+    if(err)err.textContent=__sagsHasCachedFirebaseSession?"Đang khôi phục phiên Firebase...":"Đang kiểm tra phiên Firebase...";
     const authUser=await adFirebaseWaitForUser();
     if(!authUser){
       localStorage.removeItem(PERSONAL_SESSION_KEY);localStorage.removeItem(ROLE_SESSION_KEY);
@@ -19602,15 +19640,32 @@ async function initRoleLogin(){
     setTimeout(()=>verifyPersonalSession(true),500);
   }catch(e){
     console.warn("Firebase restore failed",e?.message||e);
+    const raw=String(e?.message||e||"");
+    const code=String(e?.code||"");
+    const transient=raw==="firebase-auth-transient"||code.includes("network-request-failed")||code.includes("unavailable")||code.includes("deadline-exceeded")||code.includes("failed-precondition");
+    currentUserProfile=null;currentRole="";
+    if(modal)modal.style.display="flex";
+    if(transient){
+      // Keep Firebase LOCAL persistence and the cached profile intact. They are
+      // not treated as authenticated, but they allow a clean retry when network
+      // returns instead of forcing the user to clear browser storage/sign in again.
+      if(err)err.textContent="Kết nối Firebase chưa ổn định. E-REPORT đang tự thử lại…";
+      clearTimeout(window.__sagsLoginRetryTimer||0);
+      window.__sagsLoginRetryTimer=setTimeout(()=>{if(!currentUserProfile)initRoleLogin();},2200);
+      return;
+    }
     localStorage.removeItem(PERSONAL_SESSION_KEY);localStorage.removeItem(ROLE_SESSION_KEY);
     try{const a=adFirebaseGetAuth();if(a)await a.signOut();}catch(_){}
     v1153ClearRefreshView();
-    if(modal)modal.style.display="flex";
     if(err)err.textContent="Tài khoản Firebase không còn tồn tại, đã bị khóa hoặc phiên không hợp lệ. Vui lòng đăng nhập lại.";
   }
 }
 document.getElementById("roleLoginPass")?.addEventListener("keydown",e=>{if(e.key==="Enter")roleLogin();});
 document.getElementById("personalLoginUser")?.addEventListener("keydown",e=>{if(e.key==="Enter")document.getElementById("roleLoginPass")?.focus();});
+if(!window.__sagsAuthOnlineRetryBound){
+  window.__sagsAuthOnlineRetryBound=true;
+  window.addEventListener("online",()=>{if(!currentUserProfile){clearTimeout(window.__sagsLoginRetryTimer||0);window.__sagsLoginRetryTimer=setTimeout(()=>initRoleLogin(),250);}});
+}
 try{
   const __auth=adFirebaseGetAuth();
   __auth?.onAuthStateChanged?.(u=>{
@@ -22499,7 +22554,7 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
 })();
 </script>
 <script type="module" src="./ai.js?v=V4.7.6"></script>
-<script src="./app.js?v=V4.8.3A" data-phase="archive"></script>
+<script src="./app.js?v=V4.8.6B" data-phase="archive"></script>
 <script id="v120-build02-fixes">
 /* V1.20 BUILD 02 — background persistence, VHTTB, per-account usage detail, progress dedupe. */
 (function(){
@@ -22941,7 +22996,7 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
   setTimeout(()=>{ensureUi();startCloseoutListener();refreshValidation();try{window.sagsV440CleanupExpiredCloseoutEvents?.()}catch(_){}},500);
 })();
 </script>
-<script src="./app.js?v=V4.8.3A" data-phase="tools"></script>
+<script src="./app.js?v=V4.8.6B" data-phase="tools"></script>
 <script id="v173-quick-time">
 (function(){
   "use strict";
@@ -24954,7 +25009,7 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
   }
 }
 </style>
-<script src="./app.js?v=V4.8.3A" data-phase="flight"></script>
+<script src="./app.js?v=V4.8.6B" data-phase="flight"></script>
 <script id="v191IOSInteractionFix">
 (()=>{
   'use strict';
@@ -25204,7 +25259,7 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
   window.addEventListener('pageshow',()=>setTimeout(refresh,120),{passive:true});
 })();
 </script>
-<script src="./app.js?v=V4.8.3A" data-phase="control"></script>
+<script src="./app.js?v=V4.8.6B" data-phase="control"></script>
 <style id="v330-group-permission-style">
 #v330GroupPermPanel{margin:12px 0 8px;padding:11px;border:1px solid #cbd9e6;border-radius:12px;background:#f7fbff;box-sizing:border-box}
 .v330GpHead{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;color:#173b5d;font:900 13px Arial}.v330GpSub{margin-top:4px;color:#61778b;font:700 11px/1.35 Arial}
@@ -25431,7 +25486,7 @@ function install(){addPermissions();ensureUi();ensureButton();refreshCount();lis
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install,350),{once:true});else setTimeout(install,350);root.addEventListener('pageshow',()=>setTimeout(install,250),{passive:true});
 })(window);
 </script>
-<script src="./app.js?v=V4.8.3A" data-phase="postcontrol"></script>
+<script src="./app.js?v=V4.8.6B" data-phase="postcontrol"></script>
 <script id="v377AdminFormToolsScript">
 /* V3.80 — AD form tools row + create all forms + closeout notice cleanup. */
 (function(){
@@ -25482,7 +25537,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   setInterval(refresh,5000);
 })();
 </script>
-<script src="./app.js?v=V4.8.3A" data-phase="layout"></script>
+<script src="./app.js?v=V4.8.6B" data-phase="layout"></script>
 <script id="v1020-fs208-geometry-migration">
 (function(){
   const REV='V1020-EXACT-PAGE13';
@@ -26603,8 +26658,8 @@ root.v378ResetAllOldRecords=async function(){
   };
 })();
 </script>
-<script src="./app.js?v=V4.8.3A" data-phase="performance"></script>
-<script src="./daily-roster.js?v=V4.8.3A" id="dailyRosterCleanV11102"></script>
+<script src="./app.js?v=V4.8.6B" data-phase="performance"></script>
+<script src="./daily-roster.js?v=V4.8.6B" id="dailyRosterCleanV11102"></script>
 <script id="v1016-delete-profile-fix">
 /* V1.0.16 · XÓA tài khoản phải xóa đúng profile E-Report, không chỉ Auth/users. */
 (function(){
@@ -28221,16 +28276,17 @@ body.v38-clean-workflow #v1134QuickTimeBtn{background:#eef6ff!important;color:#0
 })();
 </script>
 
-<script src="./runtime.bundle.js?v=V4.8.3A"></script>
+<script src="./runtime.bundle.js?v=V4.8.6B"></script>
 <script id="v460RuntimeGuard">
 (()=>{
-  setTimeout(()=>{
-    const ok=String(window.__SAGS_RUNTIME_BUILD__||'')==='V4.8.3A-TURBO-CACHE-FLEX-WORKFLOW';
+  setTimeout(async()=>{
+    const ok=String(window.__SAGS_RUNTIME_BUILD__||'')==='V4.8.6B-LAYERED-PDF-FLEX-WORKFLOW-AUTH-DATE-PDF-EXACT';
     if(ok)return;
     console.error('E-REPORT runtime mismatch',window.__SAGS_RUNTIME_BUILD__);
+    try{if(await window.sagsRepairMixedBuild?.('runtime-mismatch'))return;}catch(_e){}
     const d=document.createElement('div');d.id='v460RuntimeMismatch';
     d.style='position:fixed;left:10px;right:10px;bottom:10px;z-index:2147483647;background:#b42318;color:#fff;padding:12px 14px;border-radius:12px;font:800 12px/1.45 Arial;box-shadow:0 8px 24px #0005';
-    d.textContent='⚠ Runtime chưa cập nhật đúng V4.8.3A. Hãy upload runtime.bundle.js của gói UPDATE ONLY rồi bấm UPDATE lại.';
+    d.textContent='⚠ Runtime và trang chính chưa cùng phiên bản. E-REPORT đã thử tự sửa cache ứng dụng; hãy bấm UPDATE nếu thông báo cập nhật xuất hiện.';
     document.body.appendChild(d);
   },1800);
 })();
@@ -28258,7 +28314,7 @@ window.adminResetAccountPassword=async function(uid){
 };
 </script>
 <script src="./features.bundle.js?v=V4.7.6"></script>
-<script src="./roster-lite.js?v=V4.8.3A" id="v477MailboxLite"></script>
-<script src="./pinned-flight.js?v=V4.8.3A" id="v478PinnedFlight"></script>
+<script src="./roster-lite.js?v=V4.8.6B" id="v477MailboxLite"></script>
+<script src="./pinned-flight.js?v=V4.8.6B" id="v478PinnedFlight"></script>
 </body>
 </html>

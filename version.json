@@ -1,10 +1,10 @@
 {
-  "version": "V4.8.3A",
-  "displayVersion": "V4.8.3A",
-  "label": "V4.8.3A TURBO CACHE + FLEX WORKFLOW",
-  "build": "V4.8.3A-TURBO-CACHE-FLEX-WORKFLOW",
-  "releasedAt": "2026-09-17T03:55:00Z",
-  "type": "pdf-performance-and-workflow-fix-a",
-  "notes": "Remove hard previous-worker completion gate. Each current roster assignment can be opened independently; shared workspace edits are reused when available. Exact DEP assignment clicks no longer bypass independent-DEP handling. PDF experiment behavior is otherwise unchanged.",
-  "message": "V4.8.3A · Không khóa B theo nút Hoàn tất của A"
+  "version": "V4.8.6B",
+  "displayVersion": "V4.8.6B",
+  "label": "V4.8.6B LAYERED PDF + AUTH/DATE + EXACT PDF LAYOUT",
+  "build": "V4.8.6B-LAYERED-PDF-FLEX-WORKFLOW-AUTH-DATE-PDF-EXACT",
+  "releasedAt": "2026-09-17T04:18:00Z",
+  "type": "auth-cache-roster-date-pdf-exact-b",
+  "notes": "Cumulative update from V4.8.3: browser login/cache self-heal, roster NGÀY/header seed repair after receiving a flight (including light mailbox rows that omit opDate, using the selected manifest day), and exact PDF display-layer rendering. The accelerated PDF engine now rasterizes the live SVG through the browser SVG engine, preserving AD display transforms, opacity/hidden states, textLength, multiline layout and typography before JPEG/PDF encoding. PDF branch strategy remains A=Turbo Cache, B=Layered Background.",
+  "message": "V4.8.6B · Sửa login/cache + ngày nhận chuyến + PDF đúng vị trí hiển thị"
 }

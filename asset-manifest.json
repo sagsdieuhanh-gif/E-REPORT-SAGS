@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V4.8.3A",
-  "build": "V4.8.3A-TURBO-CACHE-FLEX-WORKFLOW",
+  "version": "V4.8.6B",
+  "build": "V4.8.6B-LAYERED-PDF-FLEX-WORKFLOW-AUTH-DATE-PDF-EXACT",
   "strategy": "stable-cache-sha256-delta",
   "bootstrapChanged": [
     "./index.html",
@@ -12,7 +12,17 @@
     "./roster-lite.js",
     "./pinned-flight.js",
     "./service-worker.js",
-    "./version.json"
+    "./version.json",
+    "./pdf-bg-page1.jpg",
+    "./pdf-bg-page2.jpg",
+    "./pdf-bg-page4.jpg",
+    "./pdf-bg-page6.jpg",
+    "./pdf-bg-page7.jpg",
+    "./pdf-bg-page9.jpg",
+    "./pdf-bg-page10.jpg",
+    "./pdf-bg-page11.jpg",
+    "./pdf-bg-page12.jpg",
+    "./pdf-bg-page13.jpg"
   ],
   "assets": {
     "./#U0110H.png": {
@@ -96,8 +106,8 @@
       "bytes": 46981
     },
     "./app.js": {
-      "sha256": "9a3f47247840b8bedf9aefc8b609923dc99c87dea438bafbc50b9f3056fc0006",
-      "bytes": 878947
+      "sha256": "913afadcd2796fc025ffd1d8cbb814af12acd0a180e9c7381249a85feaa1e5ea",
+      "bytes": 881764
     },
     "./apple-touch-icon.png": {
       "sha256": "a190c19f9a52a40f43379917b11f84f99a2ab2fb4a3cdaedd1dad936a67c8e78",
@@ -152,8 +162,8 @@
       "bytes": 104295
     },
     "./index.html": {
-      "sha256": "9d88a8424707ee0a6505e353c507e3240e16d369c3418c3a9eb77c634eb602a4",
-      "bytes": 1771683
+      "sha256": "ded9ca0f9a8960cc8d03f6b3d83b9e27092410015f4d57342989505837f34d20",
+      "bytes": 1775273
     },
     "./ket-so.wav": {
       "sha256": "cf03e8d4021f989f61fd12249f282ae2e53588cc9d55d68393778223db8132a1",
@@ -215,6 +225,46 @@
       "sha256": "7957780d4edd7c4f6b73f5b999843de36f3c6a03cefa7a6c0161bfc5be16a1a3",
       "bytes": 585020
     },
+    "./pdf-bg-page1.jpg": {
+      "sha256": "84a73b5f34dcd42dc85420bf9b5eda97b5c6d869152128f63c9c8238c670013d",
+      "bytes": 427011
+    },
+    "./pdf-bg-page10.jpg": {
+      "sha256": "78abf3a5c78e596491d4d4464fe20fb193d936858bf9a472bd2f4b46d1ad63ea",
+      "bytes": 321293
+    },
+    "./pdf-bg-page11.jpg": {
+      "sha256": "3f96b9412ac2348e294fa77f064f1ce5a2482dd3481702e755ea50f51534d319",
+      "bytes": 300065
+    },
+    "./pdf-bg-page12.jpg": {
+      "sha256": "a962775106d807fe7ae9f7629b8648001a199f173f9dfad7512d03aa097e6279",
+      "bytes": 228532
+    },
+    "./pdf-bg-page13.jpg": {
+      "sha256": "eaebb04987d4f9635593d076a28bd046ccfdee2501907de2c3e74b208bd690e3",
+      "bytes": 210077
+    },
+    "./pdf-bg-page2.jpg": {
+      "sha256": "31d95fc2845c9a6daa615125cff3142f57bff0591792cf24961f2eaa7cb53d7e",
+      "bytes": 303004
+    },
+    "./pdf-bg-page4.jpg": {
+      "sha256": "f2ef716f014c951f011937972544677d97c82d2ab649769d2676f2c8b43c33e0",
+      "bytes": 284651
+    },
+    "./pdf-bg-page6.jpg": {
+      "sha256": "630e7f0a6f1450034f1346c94cee7d0f2d39f4d6ec1c9873cece21bd8b7998a6",
+      "bytes": 402867
+    },
+    "./pdf-bg-page7.jpg": {
+      "sha256": "68c46169bd1a5b6fb06d205a0ea29240667e30da6dfa3daed044fdc218e7c9f6",
+      "bytes": 212081
+    },
+    "./pdf-bg-page9.jpg": {
+      "sha256": "a4ff6c60ec4d1e65140332561c936c7b3999d160a8dc2f148569fe4670676260",
+      "bytes": 341751
+    },
     "./pinned-flight.js": {
       "sha256": "71646fbe1b03846f4a8ca08061be0fa364948f67df1e7001abf8b52c5ca15f07",
       "bytes": 12395
@@ -248,20 +298,21 @@
       "bytes": 10925
     },
     "./runtime.bundle.js": {
-      "sha256": "2b9da32e94f3df9772dc8806676d9a21bace32ddd05bafb40383c8c54549e49a",
-      "bytes": 442594
+      "sha256": "b132dc58c27dfb0e83efda0d5b14dcce6c4fe0f7b06bf9cd58a2f64aee053d28",
+      "bytes": 447820
     },
     "./sags-logo.png": {
       "sha256": "84bc554c3b44afe4190afcbe74f7c7aed9fad478c328d63502a7d225dd60d7ad",
       "bytes": 25408
     },
     "./service-worker.js": {
-      "sha256": "b638f6ce01342f1024bafc183b897b0ed3176be0ceb0bbc414445c7a1a008c20",
-      "bytes": 7641
+      "sha256": "db56782d073a917ed44beb0bc9580cd0e8e61729f1b7ca850adccc65ec69893d",
+      "bytes": 7307
     },
     "./version.json": {
-      "sha256": "a7ae66bceae23809d6880896a453501bc730d88d5f78fdc067047f5700cc07aa",
-      "bytes": 604
+      "sha256": "9ba98939a762ca5c3ffed67a9a4cc0aee84377c811aa0ab1f344d4c33244acc6",
+      "bytes": 917
     }
-  }
+  },
+  "displayVersion": "V4.8.6B"
 }
