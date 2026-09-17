@@ -1,10 +1,10 @@
 {
-  "version": "V4.8.15B",
-  "displayVersion": "V4.8.15B",
-  "label": "V4.8.15B AD CONTROL CENTER ACTUAL MODAL FIX",
-  "build": "V4.8.15B-ADCC-ACTUAL-MODAL",
-  "releasedAt": "2026-09-17T11:17:00Z",
-  "type": "adcc-actual-modal-b",
-  "notes": "Fix the actual visible v181AdminCenter in runtime.bundle.js, not just the separate hidden activityMonitorModal. Adds accessible Overview and System Management tabs with operational forms/layout/handbook/maintenance buttons. Resets the B service-worker cache namespace and aligns all five build identifiers.",
-  "message": "V4.8.15B · AD Control Center có tab Quản lý hệ thống thật"
+  "version": "V4.8.10B",
+  "displayVersion": "V4.8.10B",
+  "label": "V4.8.10B FORM MANAGER ROW FIT + MOBILE HANDBOOK",
+  "build": "V4.8.10B-FORM-MANAGER-ROW-FIT-HANDBOOK",
+  "releasedAt": "2026-09-17T07:55:00Z",
+  "type": "form-manager-row-fit-handbook-b",
+  "notes": "Form Manager multi-line fields now support template-row fitting: set the number of printed rows and the line spacing is derived from field height, so wrapped text follows dotted/ruled template lines instead of bunching at the top. Canvas PDF preview uses the same baseline model. Includes the full Form Manager UI cleanup and compact mobile Carrier Service Notebook layout from V4.8.9.",
+  "message": "V4.8.10B · Textarea khớp dòng mẫu + Form Manager/Sổ tay mobile"
 }

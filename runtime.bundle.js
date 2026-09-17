@@ -4,7 +4,7 @@ function sagsObserveCompletionV480(result, callback){
   void Promise.resolve(result).then(callback,callback)
     .catch(error=>console.warn('E-REPORT UI completion hook',error));
 }
-window.__SAGS_RUNTIME_BUILD__="V4.8.15B-ADCC-ACTUAL-MODAL";
+window.__SAGS_RUNTIME_BUILD__="V4.8.10B-FORM-MANAGER-ROW-FIT-HANDBOOK";
 /* E-REPORT/SAGS V4.6.2 · LIVE TEST EDIT · FORM MANAGER + FAST PDF */
 if(typeof window!=="undefined")window.__SAGS_V450_FORM_MANAGER_LAYOUT=true;
 
@@ -188,19 +188,6 @@ if(typeof window!=="undefined")window.__SAGS_V450_FORM_MANAGER_LAYOUT=true;
 
   function install(){
     if($("v157UiRoot"))return;
-    if(!$("v181AdminTabsStyle")){
-      const st=document.createElement("style");st.id="v181AdminTabsStyle";
-      st.textContent=`
-        #v181AdminCenter .v181AdminPanel{max-height:min(94dvh,960px);overflow-y:auto;overscroll-behavior:contain}
-        #v181AdminCenter .v181CenterTabs{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;margin:12px 0 8px}
-        #v181AdminCenter .v181CenterTab{min-width:0;min-height:45px;padding:10px 6px;border:1px solid #bdcee0;border-radius:11px;background:#fff;color:#244966;font:900 12px/1.3 Arial;cursor:pointer}
-        #v181AdminCenter button.v181CenterTab.active{background:#064995!important;border-color:#064995!important;color:#fff!important;box-shadow:0 3px 12px rgba(6,73,149,.18)}
-        #v181AdminCenter .v181CenterTab:focus-visible,#v181AdminCenter .v181AdminCard:focus-visible{outline:3px solid #e1a800;outline-offset:2px}
-        #v181AdminCenter .v181AdminPane{display:none}
-        #v181AdminCenter .v181AdminPane.is-active{display:block}
-        @media(max-width:430px){#v181AdminCenter .v181CenterTabs{gap:6px}#v181AdminCenter .v181CenterTab{font-size:10.5px;padding:9px 3px}}
-      `;document.head.appendChild(st);
-    }
     const host=document.createElement("div");
     host.id="v157UiRoot";
     host.innerHTML=`
@@ -276,11 +263,6 @@ if(typeof window!=="undefined")window.__SAGS_V450_FORM_MANAGER_LAYOUT=true;
             <button id="v181AdminClose" type="button">✕</button>
           </div>
 
-          <div class="v181CenterTabs" role="tablist" aria-label="AD Control Center">
-            <button id="v181TabOverview" class="v181CenterTab active" type="button" role="tab" aria-selected="true" aria-controls="v181AdminOverviewPane">📊 TỔNG QUAN & GIÁM SÁT</button>
-            <button id="v181TabManage" class="v181CenterTab" type="button" role="tab" aria-selected="false" aria-controls="v181AdminManagePane">⚙ QUẢN LÝ HỆ THỐNG</button>
-          </div>
-          <div id="v181AdminOverviewPane" class="v181AdminPane is-active" role="tabpanel" aria-labelledby="v181TabOverview">
           <div class="v181AdminIntro">
             <b>QUẢN TRỊ HỆ THỐNG</b>
             <span>Chỉ chứa các chức năng dành riêng cho AD. Daily Roster, A/C Limits và Fleet không đặt tại đây.</span>
@@ -355,22 +337,6 @@ if(typeof window!=="undefined")window.__SAGS_V450_FORM_MANAGER_LAYOUT=true;
           <div class="v181AdminFootNote">
             DỮ LIỆU KHAI THÁC được tách riêng theo phân quyền để tránh trùng chức năng giữa AD và các tài khoản thường.
           </div>
-          </div><!-- /v181AdminOverviewPane -->
-          <div id="v181AdminManagePane" class="v181AdminPane" role="tabpanel" aria-labelledby="v181TabManage">
-            <div class="v181AdminIntro"><b>⚙ QUẢN LÝ HỆ THỐNG</b><span>Quản lý biểu mẫu và công cụ quản trị dành riêng cho AD. Daily Roster, A/C Limits, Fleet vẫn nằm tại DỮ LIỆU KHAI THÁC theo phân quyền.</span></div>
-            <div class="v181AdminSectionTitle">BIỂU MẪU & NGHIỆP VỤ</div>
-            <div class="v181AdminGrid">
-              <button id="v181ManageForms" class="v181AdminCard" type="button"><span class="v181AdminIcon">🧩</span><span class="v181AdminCardText"><b>QUẢN LÝ BIỂU MẪU</b><small>Field · cấu trúc · kiểm tra · PDF</small></span><em>MỞ</em></button>
-              <button id="v181ManageNewForm" class="v181AdminCard" type="button"><span class="v181AdminIcon">➕</span><span class="v181AdminCardText"><b>TẠO BIỂU MẪU</b><small>Tạo hoặc thêm biểu mẫu nghiệp vụ</small></span><em>MỞ</em></button>
-              <button id="v181ManageLayout" class="v181AdminCard" type="button"><span class="v181AdminIcon">📐</span><span class="v181AdminCardText"><b>CĂN CHỈNH BIỂU MẪU</b><small>Vị trí · kích thước · font · vùng chạm</small></span><em>MỞ</em></button>
-              <button id="v181ManageHandbook" class="v181AdminCard" type="button"><span class="v181AdminIcon">📓</span><span class="v181AdminCardText"><b>QUẢN LÝ SỔ TAY HÃNG</b><small>Import · kiểm tra · phát hành</small></span><em>MỞ</em></button>
-            </div>
-            <div class="v181AdminSectionTitle">BẢO TRÌ</div>
-            <div class="v181AdminGrid">
-              <button id="v181ManageReset" class="v181AdminCard" type="button"><span class="v181AdminIcon">🧹</span><span class="v181AdminCardText"><b>BẢO TRÌ DỮ LIỆU</b><small>Dọn hồ sơ cũ · yêu cầu xác nhận trước khi xóa</small></span><em>MỞ</em></button>
-            </div>
-            <div class="v181AdminFootNote">Tài khoản & phân quyền, Nhật ký và Firebase Usage có sẵn trong tab Tổng quan. Fleet được quản lý ở DỮ LIỆU KHAI THÁC.</div>
-          </div><!-- /v181AdminManagePane -->
         </div>
       </div>
 
@@ -458,13 +424,6 @@ if(typeof window!=="undefined")window.__SAGS_V450_FORM_MANAGER_LAYOUT=true;
     $("v181AdminClose").onclick=closeAdminCenter;
     $("v181AdminCenter").onclick=e=>{if(e.target===$("v181AdminCenter"))closeAdminCenter()};
     $("v181AdminHomeBtn").onclick=openAdminCenter;
-    $("v181TabOverview").onclick=()=>setAdminPane("overview");
-    $("v181TabManage").onclick=()=>setAdminPane("manage");
-    $("v181ManageForms").onclick=()=>openAdminModule("sagsV440OpenFormManager","v440FormManagerBtn");
-    $("v181ManageNewForm").onclick=()=>openAdminModule("v377OpenCreateFormMenu","v377CreateFormBtn");
-    $("v181ManageLayout").onclick=()=>openAdminModule("v368OpenLayoutTune","v368LayoutTuneBtn");
-    $("v181ManageHandbook").onclick=()=>openAdminModule("sagsCarrierGuideManager");
-    $("v181ManageReset").onclick=()=>openAdminModule("v378ResetAllOldRecords","v378ResetRecordsBtn");
     $("v181AccountsCard").onclick=()=>openAdminModule("openAccountManager","roleBtnAccounts");
     $("v181MonitorCard").onclick=()=>openAdminModule("openActivityMonitor","roleBtnActivity");
     $("v181ApprovalCard").onclick=()=>openAdminModule("sagsV339OpenApprovalQueue","roleBtnApprovalQueue");
@@ -625,16 +584,6 @@ if(typeof window!=="undefined")window.__SAGS_V450_FORM_MANAGER_LAYOUT=true;
       $("v181ApprovalMeta").classList.toggle("hasCount",n>0);
     }
   }
-  let activeAdminPane="overview";
-  function setAdminPane(pane){
-    activeAdminPane=pane==="manage"?"manage":"overview";
-    for(const [name,buttonId,paneId] of [["overview","v181TabOverview","v181AdminOverviewPane"],["manage","v181TabManage","v181AdminManagePane"]]){
-      const active=name===activeAdminPane,button=$(buttonId),content=$(paneId);
-      button?.classList.toggle("active",active);
-      button?.setAttribute("aria-selected",String(active));
-      content?.classList.toggle("is-active",active);
-    }
-  }
   function closeAdminCenter(){
     const h=$("v181AdminCenter");
     if(!h)return;
@@ -652,7 +601,6 @@ if(typeof window!=="undefined")window.__SAGS_V450_FORM_MANAGER_LAYOUT=true;
     const h=$("v181AdminCenter");
     if(!h)return;
     syncAdminCenter();
-    setAdminPane(activeAdminPane);
     h.classList.add("show");
     h.setAttribute("aria-hidden","false");
     rememberWorkspace("admin");
@@ -666,7 +614,6 @@ if(typeof window!=="undefined")window.__SAGS_V450_FORM_MANAGER_LAYOUT=true;
       if(!clickExisting(fallbackId))popUiBack();
     }else if(!ok){
       popUiBack();
-      alert("Công cụ quản lý chưa tải xong. Vui lòng tải lại trang và thử lại.");
     }
   }
   function ensureAdminNoticeManager(){
@@ -6948,7 +6895,7 @@ ${files.map((f,i)=>String(i+1)+'. '+f.name).join('\n')}`;}
 (function(root){
 'use strict';
 if(root.__SAGS_V440_FORM_MANAGER_LOADED)return;root.__SAGS_V440_FORM_MANAGER_LOADED=true;
-const BUILD='V4.8.15B-ADCC-ACTUAL-MODAL',REG_URL='./forms.registry.json',LOCAL_KEY='sagsFormRegistryDraftV450',OLD_LOCAL_KEY='sagsFormRegistryDraftV440',DB_NAME='sags-form-assets-v440',STORE='assets';
+const BUILD='V4.8.10B-FORM-MANAGER-ROW-FIT-HANDBOOK',REG_URL='./forms.registry.json',LOCAL_KEY='sagsFormRegistryDraftV450',OLD_LOCAL_KEY='sagsFormRegistryDraftV440',DB_NAME='sags-form-assets-v440',STORE='assets';
 const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const clone=v=>{try{return JSON.parse(JSON.stringify(v))}catch(_){return v}};
 let published={schema:2,forms:[]},draft=null,currentId='',pageIndex=0,selectedKey='',selectedMany=new Set(),history=[],future=[],objectUrls=[],testMode=false,testEditMode=true,testValuesV462={};
@@ -7150,7 +7097,7 @@ async function bootV45Layout(){await loadPublished();mergeRegistry();syncLegacyT
    Direct canvas field renderer retained; the export strategy below is variant-specific. */
 (function(root){
 'use strict';
-const BUILD='V4.8.15B-ADCC-ACTUAL-MODAL';if(root.__SAGS_V450_FAST_PDF===BUILD)return;root.__SAGS_V450_FAST_PDF=BUILD;
+const BUILD='V4.8.10B-FORM-MANAGER-ROW-FIT-HANDBOOK';if(root.__SAGS_V450_FAST_PDF===BUILD)return;root.__SAGS_V450_FAST_PDF=BUILD;
 const perf=()=>root.performance?.now?.()??Date.now(),sigCache=new Map();
 function S(v){return String(v??'')}
 function num(v,d=0){const n=Number(v);return Number.isFinite(n)?n:d}
@@ -7234,5 +7181,5 @@ const fastPortrait=pageNo=>fastPage(pageNo,false),fastLandscape=()=>fastPage(13,
 root.canvasesToPdfFile=canvasesToPdfFile=async function(canvases,fileName){return layeredPdf(canvases,fileName,false)};root.canvasesToLandscapePdfFile=canvasesToLandscapePdfFile=async function(canvases,fileName){return layeredPdf(canvases,fileName,true)};
 const baseSend=root.sendReport;if(typeof baseSend==='function'&&!baseSend.__sagsV482Layer){const send=async function(kind='all'){const P={build:BUILD,mode:'LAYERED_BACKGROUND_OVERLAY',kind:S(kind),startedAt:Date.now(),pages:[],renderMs:0,encodeCoreMs:0,totalMs:0};root.__SAGS_V450_PDF_RUN=P;const t=perf();try{return await baseSend.apply(this,arguments)}finally{P.totalMs=perf()-t;P.finishedAt=Date.now();root.__SAGS_V450_PDF_PERF=P;try{localStorage.setItem('sags.v450.pdfPerf',JSON.stringify(P))}catch(_){}root.__SAGS_V450_PDF_RUN=null;try{const st=document.getElementById('exportStatus');if(st&&P.totalMs)st.textContent+=` · LAYER PDF ${(P.totalMs/1000).toFixed(2)}s`}catch(_){}}};send.__sagsV482Layer=true;send.__sagsOriginal=baseSend;root.sendReport=send;try{sendReport=send}catch(_){}}
 root.sagsV450PdfPerformance=()=>root.__SAGS_V450_PDF_PERF||(()=>{try{return JSON.parse(localStorage.getItem('sags.v450.pdfPerf')||'null')}catch(_){return null}})();
-console.info('E-REPORT/SAGS V4.8.15B Layered PDF active');
+console.info('E-REPORT/SAGS V4.8.10B Layered PDF active');
 })(typeof window!=='undefined'?window:globalThis);
