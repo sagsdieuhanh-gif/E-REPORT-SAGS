@@ -1,10 +1,10 @@
 {
-  "version": "V4.8.7B",
-  "displayVersion": "V4.8.7B",
-  "label": "V4.8.7B FORM MANAGER PRO",
-  "build": "V4.8.7B-LAYERED-PDF-FLEX-WORKFLOW-FORM-MANAGER-PRO",
-  "releasedAt": "2026-09-17T06:58:00Z",
-  "type": "form-manager-pro-b",
-  "notes": "Form Manager foundation hardening: exact typography cloning for copied fields/extra zones; global font sync now includes extra zones; field schema normalization; multi-select typography; font family/weight/italic/underline/line-height/letter-spacing/color controls; copy/paste/sync style; select/static-text editors; structural validation before export; normalize command; preview and generic runtime use the same typography model. Existing geometry, binds, flight data and PDF strategy are preserved.",
-  "message": "V4.8.7B · Chuẩn hóa Form Manager để thêm mẫu lâu dài"
+  "version": "V4.8.10B",
+  "displayVersion": "V4.8.10B",
+  "label": "V4.8.10B FORM MANAGER ROW FIT + MOBILE HANDBOOK",
+  "build": "V4.8.10B-FORM-MANAGER-ROW-FIT-HANDBOOK",
+  "releasedAt": "2026-09-17T07:55:00Z",
+  "type": "form-manager-row-fit-handbook-b",
+  "notes": "Form Manager multi-line fields now support template-row fitting: set the number of printed rows and the line spacing is derived from field height, so wrapped text follows dotted/ruled template lines instead of bunching at the top. Canvas PDF preview uses the same baseline model. Includes the full Form Manager UI cleanup and compact mobile Carrier Service Notebook layout from V4.8.9.",
+  "message": "V4.8.10B · Textarea khớp dòng mẫu + Form Manager/Sổ tay mobile"
 }
