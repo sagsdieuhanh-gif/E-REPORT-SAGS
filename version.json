@@ -1,10 +1,10 @@
 {
-  "version": "V4.8.12B",
-  "displayVersion": "V4.8.12B",
-  "label": "V4.8.12B ADMIN CENTER VISIBILITY FIX · CORRECTED",
-  "build": "V4.8.12B-ADMIN-CENTER-VISIBILITY-FIX",
-  "releasedAt": "2026-09-17T09:02:00Z",
-  "type": "admin-center-visibility-fix-b",
-  "notes": "Corrected release metadata/bootstrap: index APP_BUILD_VERSION and runtime build now match version.json/service-worker, allowing the in-app updater to detect and apply V4.8.12. Also preserves the AD Management Center visibility fix.",
-  "message": "V4.8.12B · Sửa updater + hiển thị Trung tâm quản lý AD"
+  "version": "V4.8.13B",
+  "displayVersion": "V4.8.13B",
+  "label": "V4.8.13B ADMIN CENTER STATIC ENTRY",
+  "build": "V4.8.13B-ADMIN-CENTER-STATIC-ENTRY",
+  "releasedAt": "2026-09-17T09:08:00Z",
+  "type": "admin-center-static-entry-b",
+  "notes": "Admin Center entry is now a real static first button in the main toolbar, shown directly by the same role-admin state used by the existing AD interface. No dependency on late DOM injection or toolbar refresh order.",
+  "message": "V4.8.13B · Trung tâm quản lý nằm cố định đầu thanh công cụ AD"
 }
