@@ -1,9 +1,9 @@
-/* E-REPORT/SAGS V4.8.11B · FORM MANAGER ROW FIT + MOBILE HANDBOOK · SHA-256 DELTA CACHE */
-const CACHE_NAME="sags-app-shell-v4.8.11b";
-const META_CACHE_NAME="sags-app-meta-v4.8.11b";
+/* E-REPORT/SAGS V4.8.12B · ADMIN CENTER VISIBILITY FIX · SHA-256 DELTA CACHE */
+const CACHE_NAME="sags-app-shell-v4.8.12b";
+const META_CACHE_NAME="sags-app-meta-v4.8.12b";
 const ASSET_MANIFEST_URL="./asset-manifest.json";
-const BUILD="V4.8.11B-ADMIN-MANAGEMENT-CENTER";
-const DISPLAY_VERSION="V4.8.11B";
+const BUILD="V4.8.12B-ADMIN-CENTER-VISIBILITY-FIX";
+const DISPLAY_VERSION="V4.8.12B";
 
 function canonicalUrl(input){try{const u=input instanceof URL?new URL(input.href):new URL(typeof input==="string"?input:input.url,self.location.href);u.search="";u.hash="";return u.href}catch(_){return input?.url||String(input||"")}}
 function scopeUrl(path){try{return new URL(path,self.registration.scope).href}catch(_){return String(path||"")}}

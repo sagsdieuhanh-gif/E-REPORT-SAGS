@@ -28337,74 +28337,37 @@ window.adminResetAccountPassword=async function(uid){
 <script src="./roster-lite.js?v=V4.8.11B" id="v477MailboxLite"></script>
 <script src="./pinned-flight.js?v=V4.8.11B" id="v478PinnedFlight"></script>
 
-<style id="v4811AdminCenterStyle">
-:root{
-  --v4811-accent:#075ea8;--v4811-accent2:#0b4a7b;--v4811-bg:#f6f8fb;--v4811-card:#fff;
-  --v4811-border:#d7e0ea;--v4811-text:#17324d;--v4811-muted:#667085;--v4811-danger:#b42318;
-}
-html.v4811-admin-center #v377AdminFormToolsRow{display:grid!important;grid-template-columns:1fr!important;gap:0!important;padding-top:5px!important}
-html.v4811-admin-center #v377AdminFormToolsRow>*:not(#v4811AdminCenterBtn){display:none!important}
-html.v4811-admin-center #roleBtnAccounts,
-html.v4811-admin-center #roleBtnAudit,
-html.v4811-admin-center #roleBtnFirebaseUsage,
-html.v4811-admin-center #roleBtnFleet{display:none!important}
-#v4811AdminCenterBtn{width:100%;min-height:38px;border:1px solid #9ec4e5;border-radius:10px;background:#075ea8;color:#fff;font:900 12px/1.1 Arial,sans-serif;letter-spacing:.15px;padding:8px 12px;box-shadow:none;cursor:pointer}
-#v4811AdminCenterBtn:active{transform:scale(.99)}
-#v4811AdminCenterModal{position:fixed;inset:0;z-index:20120;display:none;align-items:flex-start;justify-content:center;padding:max(14px,env(safe-area-inset-top)) 10px max(14px,env(safe-area-inset-bottom));background:rgba(10,22,36,.58);overflow:auto;box-sizing:border-box}
-#v4811AdminCenterModal.open{display:flex}
-.v4811CenterCard{width:min(96vw,940px);background:var(--v4811-bg);border:1px solid #cbd7e4;border-radius:18px;box-shadow:0 22px 64px rgba(0,0,0,.34);overflow:hidden;font-family:Arial,sans-serif;color:var(--v4811-text)}
-.v4811CenterHead{position:sticky;top:0;z-index:3;display:flex;align-items:center;gap:10px;padding:12px 14px;background:#0b4a7b;color:#fff;border-bottom:1px solid #164f79}
-.v4811CenterHeadText{min-width:0;flex:1}.v4811CenterHeadText b{display:block;font-size:17px;line-height:1.2}.v4811CenterHeadText small{display:block;margin-top:3px;font-size:10.5px;line-height:1.3;color:#dbeafe;font-weight:700}
-.v4811CenterClose{flex:0 0 auto;min-width:42px;min-height:38px;border:1px solid #ffffff55;border-radius:10px;background:#ffffff18;color:#fff;font:900 18px Arial;cursor:pointer}
-.v4811CenterBody{padding:12px}.v4811CenterSection{margin:0 0 14px}.v4811CenterSection:last-child{margin-bottom:0}
-.v4811CenterSectionTitle{display:flex;align-items:center;gap:7px;margin:0 0 7px;padding:0 2px;color:#334155;font:900 11px/1.2 Arial;letter-spacing:.45px;text-transform:uppercase}
-.v4811CenterGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-.v4811CenterItem{min-width:0;display:grid;grid-template-columns:40px minmax(0,1fr);gap:9px;align-items:center;text-align:left;border:1px solid var(--v4811-border);border-radius:13px;background:#fff;padding:10px;min-height:76px;color:var(--v4811-text);cursor:pointer;box-shadow:0 1px 2px rgba(16,24,40,.04)}
-.v4811CenterItem:hover{border-color:#8bb8dc;background:#fafdff}.v4811CenterItem:active{transform:scale(.99)}
-.v4811CenterIcon{width:40px;height:40px;border-radius:11px;background:#edf6ff;display:flex;align-items:center;justify-content:center;font-size:20px}
-.v4811CenterItem b{display:block;font-size:12px;line-height:1.25;color:#17324d}.v4811CenterItem span{display:block;margin-top:3px;color:var(--v4811-muted);font-size:10.5px;line-height:1.3;font-weight:700}
-.v4811CenterItem.danger{border-color:#f3b2ad;background:#fffafa}.v4811CenterItem.danger .v4811CenterIcon{background:#fff0ef}.v4811CenterItem.danger b{color:var(--v4811-danger)}
-/* Common management skin */
-#accountManagerModal .sagsAdminPanel,#auditManagerModal .sagsAdminPanel,#firebaseUsageModal .sagsAdminPanel,
-#fleetManagerModal .fleetManagerPanel,#v377CreateFormModal .v377CreateFormCard,#csgMgrCard,#v440FmCard{
-  border:1px solid var(--v4811-border)!important;border-radius:18px!important;background:var(--v4811-bg)!important;box-shadow:0 20px 60px rgba(0,0,0,.30)!important
-}
-#accountManagerModal .sagsAdminPanel h3,#auditManagerModal .sagsAdminPanel h3,#firebaseUsageModal .sagsAdminPanel h3,
-#fleetManagerModal .fleetManagerTop h3,.v377CreateFormHead b,#csgMgrCard .csgMgrHead b{color:var(--v4811-accent2)!important;font-weight:900!important;letter-spacing:.1px}
-#accountManagerModal .sagsAdminGrid,#fleetManagerModal .fleetManagerCard,#auditManagerModal .sagsAuditRow,
-#firebaseUsageModal #fbUsageCards>*,#csgMgrCard .csgMgrBlock{border-color:var(--v4811-border)!important}
-#accountManagerModal .sagsAdminBtn,#auditManagerModal .sagsAdminBtn,#firebaseUsageModal .sagsAdminBtn,
-#fleetManagerModal .fleetMiniBtn,#v377CreateFormModal button,#csgMgrCard .csgMgrBtn{border-radius:10px!important;min-height:38px}
-#accountManagerModal input,#accountManagerModal select,#fleetManagerModal input,#fleetManagerModal select,
-#v377CreateFormModal input,#v377CreateFormModal select,#csgMgrCard input,#csgMgrCard select{border-radius:10px!important}
-#fleetManagerModal .fleetManagerTop{background:var(--v4811-bg)!important;border-bottom:1px solid #e3e9ef;padding:8px 0!important}
-#fleetManagerModal .fleetManagerCard,#csgMgrCard .csgMgrBlock{background:#fff!important;border-radius:13px!important}
-#csgMgrCard .csgMgrHead{background:#0b4a7b!important;color:#fff!important}.csgMgrHead b{color:#fff!important}
-#v440FmCard{overflow:hidden!important}.v440FmHead{background:#0b4a7b!important}.v440Pane{border-color:var(--v4811-border)!important}
-@media(max-width:720px){
-  html.v4811-admin-center body.v377-ad-form-tools{padding-bottom:92px!important}
-  #v4811AdminCenterModal{padding:0;align-items:stretch;overflow:hidden}
-  .v4811CenterCard{width:100%;min-height:100dvh;border:0;border-radius:0;box-shadow:none;overflow:auto}
-  .v4811CenterHead{padding:10px 11px}.v4811CenterHeadText b{font-size:14px}.v4811CenterHeadText small{font-size:9.5px}
-  .v4811CenterBody{padding:9px}.v4811CenterGrid{grid-template-columns:1fr 1fr;gap:7px}.v4811CenterItem{min-height:72px;padding:9px;grid-template-columns:36px minmax(0,1fr);gap:8px}.v4811CenterIcon{width:36px;height:36px;font-size:18px}.v4811CenterItem b{font-size:11.5px}.v4811CenterItem span{font-size:9.8px}
-  #accountManagerModal,#auditManagerModal,#firebaseUsageModal,#fleetManagerModal,#v377CreateFormModal,#csgMgr{padding:0!important;align-items:stretch!important;overflow:hidden!important}
-  #accountManagerModal .sagsAdminPanel,#auditManagerModal .sagsAdminPanel,#firebaseUsageModal .sagsAdminPanel,
-  #fleetManagerModal .fleetManagerPanel,#v377CreateFormModal .v377CreateFormCard,#csgMgrCard{
-    width:100%!important;max-width:none!important;min-height:100dvh!important;height:100dvh!important;max-height:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;overflow:auto!important;padding:10px!important
-  }
-  #csgMgrCard{padding:0 0 8px!important}.csgMgrBody{padding:8px!important}
-  #accountManagerModal .sagsAdminTopActions,#auditManagerModal .sagsAdminTopActions,#firebaseUsageModal .sagsAdminTopActions{position:sticky;top:-10px;z-index:4;background:var(--v4811-bg);padding:8px 0 7px;margin:0 0 7px;border-bottom:1px solid #e3e9ef}
-  #fleetManagerModal .fleetManagerTop{top:-10px!important}
-}
-@media(max-width:390px){.v4811CenterGrid{grid-template-columns:1fr}.v4811CenterItem{min-height:66px}}
+<style id="v4812AdminCenterStyle">
+:root{--v4812-accent:#075ea8;--v4812-accent2:#0b4a7b;--v4812-bg:#f6f8fb;--v4812-card:#fff;--v4812-border:#d7e0ea;--v4812-text:#17324d;--v4812-muted:#667085;--v4812-danger:#b42318}
+#v4812AdminCenterBtn{min-height:38px!important;border:1px solid #9ec4e5!important;border-radius:10px!important;background:#075ea8!important;color:#fff!important;font:900 12px/1.1 Arial,sans-serif!important;letter-spacing:.15px!important;padding:8px 12px!important;box-shadow:none!important;cursor:pointer!important;white-space:nowrap!important}
+#v4812AdminCenterBtn:active{transform:scale(.99)}
+html.v4812-admin-center #roleBtnAccounts,html.v4812-admin-center #roleBtnAudit,html.v4812-admin-center #roleBtnFirebaseUsage,html.v4812-admin-center #roleBtnFleet{display:none!important}
+html.v4812-admin-center #v377AdminFormToolsRow{display:none!important}
+#v4812AdminCenterModal{position:fixed;inset:0;z-index:20120;display:none;align-items:flex-start;justify-content:center;padding:max(14px,env(safe-area-inset-top)) 10px max(14px,env(safe-area-inset-bottom));background:rgba(10,22,36,.58);overflow:auto;box-sizing:border-box}
+#v4812AdminCenterModal.open{display:flex}
+.v4812CenterCard{width:min(96vw,940px);background:var(--v4812-bg);border:1px solid #cbd7e4;border-radius:18px;box-shadow:0 22px 64px rgba(0,0,0,.34);overflow:hidden;font-family:Arial,sans-serif;color:var(--v4812-text)}
+.v4812CenterHead{position:sticky;top:0;z-index:3;display:flex;align-items:center;gap:10px;padding:12px 14px;background:#0b4a7b;color:#fff;border-bottom:1px solid #164f79}
+.v4812CenterHeadText{min-width:0;flex:1}.v4812CenterHeadText b{display:block;font-size:17px;line-height:1.2}.v4812CenterHeadText small{display:block;margin-top:3px;font-size:10.5px;line-height:1.3;color:#dbeafe;font-weight:700}
+.v4812CenterClose{flex:0 0 auto;min-width:42px;min-height:38px;border:1px solid #ffffff55;border-radius:10px;background:#ffffff18;color:#fff;font:900 18px Arial;cursor:pointer}
+.v4812CenterBody{padding:12px}.v4812CenterSection{margin:0 0 14px}.v4812CenterSection:last-child{margin-bottom:0}
+.v4812CenterSectionTitle{display:flex;align-items:center;gap:7px;margin:0 0 7px;padding:0 2px;color:#334155;font:900 11px/1.2 Arial;letter-spacing:.45px;text-transform:uppercase}
+.v4812CenterGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.v4812CenterItem{min-width:0;display:grid;grid-template-columns:40px minmax(0,1fr);gap:9px;align-items:center;text-align:left;border:1px solid var(--v4812-border);border-radius:13px;background:#fff;padding:10px;min-height:76px;color:var(--v4812-text);cursor:pointer;box-shadow:0 1px 2px rgba(16,24,40,.04)}
+.v4812CenterItem:hover{border-color:#8bb8dc;background:#fafdff}.v4812CenterItem:active{transform:scale(.99)}
+.v4812CenterIcon{width:40px;height:40px;border-radius:11px;background:#edf6ff;display:flex;align-items:center;justify-content:center;font-size:20px}
+.v4812CenterItem b{display:block;font-size:12px;line-height:1.25;color:#17324d}.v4812CenterItem span{display:block;margin-top:3px;color:var(--v4812-muted);font-size:10.5px;line-height:1.3;font-weight:700}
+.v4812CenterItem.danger{border-color:#f3b2ad;background:#fffafa}.v4812CenterItem.danger .v4812CenterIcon{background:#fff0ef}.v4812CenterItem.danger b{color:var(--v4812-danger)}
+@media(max-width:700px){#v4812AdminCenterModal{padding:0;align-items:stretch;overflow:hidden}.v4812CenterCard{width:100%;min-height:100dvh;border:0;border-radius:0;box-shadow:none;overflow:auto}.v4812CenterHead{padding:10px 11px}.v4812CenterHeadText b{font-size:14px}.v4812CenterHeadText small{font-size:9.5px}.v4812CenterBody{padding:9px}.v4812CenterGrid{grid-template-columns:1fr 1fr;gap:7px}.v4812CenterItem{min-height:72px;padding:9px;grid-template-columns:36px minmax(0,1fr);gap:8px}.v4812CenterIcon{width:36px;height:36px;font-size:18px}.v4812CenterItem b{font-size:11.5px}.v4812CenterItem span{font-size:9.8px}}
+@media(max-width:390px){.v4812CenterGrid{grid-template-columns:1fr}.v4812CenterItem{min-height:66px}}
 </style>
-<script id="v4811AdminCenterScript">
+<script id="v4812AdminCenterScript">
 (function(root){
 'use strict';
-if(root.__SAGS_V4811_ADMIN_CENTER)return;root.__SAGS_V4811_ADMIN_CENTER=true;
+if(root.__SAGS_V4812_ADMIN_CENTER)return;root.__SAGS_V4812_ADMIN_CENTER=true;
 const $=id=>document.getElementById(id);
-function isAD(){try{return String(root.currentRole||root.currentUserProfile?.role||'').trim().toUpperCase()==='AD'||document.body?.classList.contains('role-admin')}catch(_){return false}}
-function closeCenter(){ $('v4811AdminCenterModal')?.classList.remove('open') }
+function roleText(){try{return String(root.currentRole||root.currentUserProfile?.role||document.body?.dataset?.role||'').trim().toUpperCase()}catch(_){return ''}}
+function isAD(){const r=roleText();return r==='AD'||r==='ADMIN'||r==='ADMINISTRATOR'||document.body?.classList.contains('role-admin')||document.documentElement?.classList.contains('role-admin')}
+function closeCenter(){$('v4812AdminCenterModal')?.classList.remove('open')}
 function run(fn){closeCenter();setTimeout(()=>{try{fn()}catch(e){console.error('Admin Center',e);alert('Không mở được mục quản lý: '+(e?.message||e))}},40)}
 function call(name,...args){const fn=root[name];if(typeof fn!=='function')throw new Error(name+' chưa sẵn sàng.');return fn(...args)}
 function action(key){
@@ -28419,22 +28382,27 @@ function action(key){
   if(key==='firebase')return run(()=>call('openFirebaseUsageMonitor'));
   if(key==='reset')return run(()=>call('v378ResetAllOldRecords'));
 }
-function item(key,icon,title,note,danger=false){return `<button type="button" class="v4811CenterItem${danger?' danger':''}" data-v4811-action="${key}"><span class="v4811CenterIcon" aria-hidden="true">${icon}</span><span><b>${title}</b><span>${note}</span></span></button>`}
-function ensure(){
-  let btn=$('v4811AdminCenterBtn');
-  if(!btn){btn=document.createElement('button');btn.id='v4811AdminCenterBtn';btn.type='button';btn.textContent='⚙ TRUNG TÂM QUẢN LÝ';btn.onclick=openCenter;const row=$('v377AdminFormToolsRow');if(row)row.prepend(btn)}
-  if(!$('v4811AdminCenterModal')){
-    const m=document.createElement('div');m.id='v4811AdminCenterModal';m.setAttribute('role','dialog');m.setAttribute('aria-modal','true');m.setAttribute('aria-label','Trung tâm quản lý');
-    m.innerHTML=`<div class="v4811CenterCard"><div class="v4811CenterHead"><div class="v4811CenterHeadText"><b>⚙ TRUNG TÂM QUẢN LÝ</b><small>AD · các công cụ quản lý dùng chung một giao diện và một điểm truy cập</small></div><button class="v4811CenterClose" type="button" aria-label="Đóng">×</button></div><div class="v4811CenterBody"><section class="v4811CenterSection"><div class="v4811CenterSectionTitle">BIỂU MẪU & DỮ LIỆU NGHIỆP VỤ</div><div class="v4811CenterGrid">${item('forms','🧩','Quản lý biểu mẫu','Thêm field, chỉnh cấu trúc, preview/PDF')}${item('newform','➕','Tạo biểu mẫu','Mở hoặc tạo tờ nghiệp vụ mới')}${item('layout','📐','Căn chỉnh biểu mẫu','Vị trí, vùng chạm, typography')}${item('handbook','📓','Quản lý Sổ tay hãng','Import, test và phát hành dữ liệu hãng')}${item('fleet','✈️','Quản lý Fleet tàu bay','Hãng, đăng bạ, loại tàu, ZONE/MAX PAX')}</div></section><section class="v4811CenterSection"><div class="v4811CenterSectionTitle">TÀI KHOẢN & HỆ THỐNG</div><div class="v4811CenterGrid">${item('accounts','👤','Quản lý tài khoản','Tạo tài khoản, hồ sơ và phân quyền')}${item('audit','🧾','Nhật ký hệ thống','Theo dõi thao tác và lịch sử quản trị')}${item('firebase','📊','Firebase Usage','Theo dõi dung lượng và kết nối')}${item('reset','🧹','Bảo trì dữ liệu','Xóa hồ sơ nghiệp vụ cũ · có xác nhận',true)}</div></section></div></div>`;
-    document.body.appendChild(m);m.querySelector('.v4811CenterClose').onclick=closeCenter;m.addEventListener('click',e=>{if(e.target===m)closeCenter()});m.querySelectorAll('[data-v4811-action]').forEach(b=>b.onclick=()=>action(b.dataset.v4811Action));
-  }
+function item(key,icon,title,note,danger=false){return `<button type="button" class="v4812CenterItem${danger?' danger':''}" data-v4812-action="${key}"><span class="v4812CenterIcon" aria-hidden="true">${icon}</span><span><b>${title}</b><span>${note}</span></span></button>`}
+function ensureModal(){
+  if($('v4812AdminCenterModal'))return;
+  const m=document.createElement('div');m.id='v4812AdminCenterModal';m.setAttribute('role','dialog');m.setAttribute('aria-modal','true');m.setAttribute('aria-label','Trung tâm quản lý');
+  m.innerHTML=`<div class="v4812CenterCard"><div class="v4812CenterHead"><div class="v4812CenterHeadText"><b>⚙ TRUNG TÂM QUẢN LÝ</b><small>AD · một điểm truy cập cho toàn bộ công cụ quản lý</small></div><button class="v4812CenterClose" type="button" aria-label="Đóng">×</button></div><div class="v4812CenterBody"><section class="v4812CenterSection"><div class="v4812CenterSectionTitle">BIỂU MẪU & DỮ LIỆU NGHIỆP VỤ</div><div class="v4812CenterGrid">${item('forms','🧩','Quản lý biểu mẫu','Thêm field, chỉnh cấu trúc, preview/PDF')}${item('newform','➕','Tạo biểu mẫu','Mở hoặc tạo tờ nghiệp vụ mới')}${item('layout','📐','Căn chỉnh biểu mẫu','Vị trí, vùng chạm, typography')}${item('handbook','📓','Quản lý Sổ tay hãng','Import, test và phát hành dữ liệu hãng')}${item('fleet','✈️','Quản lý Fleet tàu bay','Hãng, đăng bạ, loại tàu, ZONE/MAX PAX')}</div></section><section class="v4812CenterSection"><div class="v4812CenterSectionTitle">TÀI KHOẢN & HỆ THỐNG</div><div class="v4812CenterGrid">${item('accounts','👤','Quản lý tài khoản','Tạo tài khoản, hồ sơ và phân quyền')}${item('audit','🧾','Nhật ký hệ thống','Theo dõi thao tác và lịch sử quản trị')}${item('firebase','📊','Firebase Usage','Theo dõi dung lượng và kết nối')}${item('reset','🧹','Bảo trì dữ liệu','Xóa hồ sơ nghiệp vụ cũ · có xác nhận',true)}</div></section></div></div>`;
+  document.body.appendChild(m);m.querySelector('.v4812CenterClose').addEventListener('click',closeCenter);m.addEventListener('click',e=>{if(e.target===m)closeCenter()});m.querySelectorAll('[data-v4812-action]').forEach(b=>b.addEventListener('click',()=>action(b.dataset.v4812Action)));
 }
-function openCenter(){ensure();if(!isAD())return alert('Chỉ tài khoản AD được mở TRUNG TÂM QUẢN LÝ.');$('v4811AdminCenterModal')?.classList.add('open')}
-function refresh(){ensure();const ad=isAD();document.documentElement.classList.toggle('v4811-admin-center',ad);const b=$('v4811AdminCenterBtn');if(b)b.style.display=ad?'block':'none';if(!ad)closeCenter()}
-root.v4811OpenAdminCenter=openCenter;root.v4811CloseAdminCenter=closeCenter;root.v4811RefreshAdminCenter=refresh;
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('v4811AdminCenterModal')?.classList.contains('open'))closeCenter()});
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{refresh();setTimeout(refresh,350);setTimeout(refresh,1300)},{once:true});else{refresh();setTimeout(refresh,350)}
-setInterval(refresh,5000);
+function ensureButton(){
+  let btn=$('v4812AdminCenterBtn');
+  if(!btn){btn=document.createElement('button');btn.id='v4812AdminCenterBtn';btn.type='button';btn.textContent='⚙ TRUNG TÂM QUẢN LÝ';btn.addEventListener('click',openCenter)}
+  const main=document.querySelector('.toolbar-row.main-actions')||$('roleAccountCluster')?.parentElement||document.querySelector('.toolbar');
+  if(main&&btn.parentElement!==main){const before=$('roleBtnNA')||$('roleBtnNew')||null;try{main.insertBefore(btn,before)}catch(_){main.appendChild(btn)}}
+  return btn;
+}
+function ensure(){ensureModal();return ensureButton()}
+function openCenter(){ensure();if(!isAD())return alert('Chỉ tài khoản AD được mở TRUNG TÂM QUẢN LÝ.');$('v4812AdminCenterModal')?.classList.add('open')}
+function refresh(){const b=ensure();const ad=isAD();document.documentElement.classList.toggle('v4812-admin-center',ad);if(b)b.style.display=ad?'inline-flex':'none';if(!ad)closeCenter()}
+root.v4812OpenAdminCenter=openCenter;root.v4812CloseAdminCenter=closeCenter;root.v4812RefreshAdminCenter=refresh;
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('v4812AdminCenterModal')?.classList.contains('open'))closeCenter()});
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{refresh();setTimeout(refresh,250);setTimeout(refresh,900);setTimeout(refresh,2200)},{once:true});else{refresh();setTimeout(refresh,250);setTimeout(refresh,900)}
+setInterval(refresh,2500);
 })(window);
 </script>
 

@@ -1,12 +1,10 @@
 {
   "schema": 2,
-  "version": "V4.8.11B",
-  "build": "V4.8.11B-ADMIN-MANAGEMENT-CENTER",
+  "version": "V4.8.12B",
+  "build": "V4.8.12B-ADMIN-CENTER-VISIBILITY-FIX",
   "strategy": "stable-cache-sha256-delta",
   "bootstrapChanged": [
     "./index.html",
-    "./runtime.bundle.js",
-    "./features.bundle.js",
     "./service-worker.js",
     "./version.json"
   ],
@@ -148,8 +146,8 @@
       "bytes": 104295
     },
     "./index.html": {
-      "sha256": "439939d3d3695dc491c0971637850872ca0926364abc878e7d3c2b39b5dfcebd",
-      "bytes": 1789552
+      "sha256": "a7053904a844b81cfd862955c4faca09e5b0b2a4fdeb0439c1d5c93b7ff11e48",
+      "bytes": 1787055
     },
     "./ket-so.wav": {
       "sha256": "cf03e8d4021f989f61fd12249f282ae2e53588cc9d55d68393778223db8132a1",
@@ -292,12 +290,12 @@
       "bytes": 25408
     },
     "./service-worker.js": {
-      "sha256": "938e2aa5f93d5c41523ec6161774d3f7fb345f1b09b3699081c3ac760d4ab149",
-      "bytes": 7307
+      "sha256": "fe863a7adc39bd4c4a6558911a6ab832f456acba12e46998ce657ce1443aeadc",
+      "bytes": 7300
     },
     "./version.json": {
-      "sha256": "950896a77fe4235b24dfa59a8e9a809712dd55fda07eab29eee7457709fb44bc",
-      "bytes": 745
+      "sha256": "4fa77d42853c50b8368bf8d550574a08b02224b5cb20737e1af05680f802e298",
+      "bytes": 648
     }
   }
 }
