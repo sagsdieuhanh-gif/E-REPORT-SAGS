@@ -1,10 +1,10 @@
 {
-  "version": "V4.8.1",
-  "displayVersion": "V4.8.1",
-  "label": "V4.8.1 FAST PDF UPDATE",
-  "build": "V4.8.1-FAST-PDF",
-  "releasedAt": "2026-09-17T03:12:00Z",
-  "type": "pdf-performance-release",
-  "notes": "Faster BBBT/FSAGS PDF export: skip redundant full-state persist/full multi-page redraw, render paired FSAGS pages concurrently, encode JPEG pages with bounded concurrency off iOS, overlap BBBT global CXR number transaction with page rendering, and defer the large local save until after PDF readiness. No Firebase schema migration and no business-field changes.",
-  "message": "V4.8.1 · Tăng tốc xuất PDF BBBT và FSAGS"
+  "version": "V4.8.2B",
+  "displayVersion": "V4.8.2B",
+  "label": "V4.8.2B LAYERED PDF",
+  "build": "V4.8.2B-LAYERED-PDF",
+  "releasedAt": "2026-09-17T03:45:00Z",
+  "type": "pdf-performance-experiment-b",
+  "notes": "Experimental two-layer PDF: ship pre-encoded static form backgrounds, rasterize only the live field/signature overlay at reduced resolution, and compose background + overlay in PDF with Multiply blend. Attachment-only pages use the normal image route. No Firebase schema/business logic changes.",
+  "message": "V4.8.2B · Thử nghiệm PDF nền + lớp dữ liệu"
 }

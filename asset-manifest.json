@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V4.8.1",
-  "build": "V4.8.1-FAST-PDF",
+  "version": "V4.8.2B",
+  "build": "V4.8.2B-LAYERED-PDF",
   "strategy": "stable-cache-sha256-delta",
   "bootstrapChanged": [
     "./index.html",
@@ -12,7 +12,17 @@
     "./roster-lite.js",
     "./pinned-flight.js",
     "./service-worker.js",
-    "./version.json"
+    "./version.json",
+    "./pdf-bg-page1.jpg",
+    "./pdf-bg-page2.jpg",
+    "./pdf-bg-page4.jpg",
+    "./pdf-bg-page6.jpg",
+    "./pdf-bg-page7.jpg",
+    "./pdf-bg-page9.jpg",
+    "./pdf-bg-page10.jpg",
+    "./pdf-bg-page11.jpg",
+    "./pdf-bg-page12.jpg",
+    "./pdf-bg-page13.jpg"
   ],
   "assets": {
     "./#U0110H.png": {
@@ -152,8 +162,8 @@
       "bytes": 104295
     },
     "./index.html": {
-      "sha256": "1a66435107558c64446008379d38c427e7f84b4fa5e714c90cc7eca298befbbf",
-      "bytes": 1771037
+      "sha256": "0de5347fcfb4dc1c3d5a84ccdf605b3e6abfafb3970ac19915ad912aa7c17de6",
+      "bytes": 1771655
     },
     "./ket-so.wav": {
       "sha256": "cf03e8d4021f989f61fd12249f282ae2e53588cc9d55d68393778223db8132a1",
@@ -215,6 +225,46 @@
       "sha256": "7957780d4edd7c4f6b73f5b999843de36f3c6a03cefa7a6c0161bfc5be16a1a3",
       "bytes": 585020
     },
+    "./pdf-bg-page1.jpg": {
+      "sha256": "84a73b5f34dcd42dc85420bf9b5eda97b5c6d869152128f63c9c8238c670013d",
+      "bytes": 427011
+    },
+    "./pdf-bg-page10.jpg": {
+      "sha256": "78abf3a5c78e596491d4d4464fe20fb193d936858bf9a472bd2f4b46d1ad63ea",
+      "bytes": 321293
+    },
+    "./pdf-bg-page11.jpg": {
+      "sha256": "3f96b9412ac2348e294fa77f064f1ce5a2482dd3481702e755ea50f51534d319",
+      "bytes": 300065
+    },
+    "./pdf-bg-page12.jpg": {
+      "sha256": "a962775106d807fe7ae9f7629b8648001a199f173f9dfad7512d03aa097e6279",
+      "bytes": 228532
+    },
+    "./pdf-bg-page13.jpg": {
+      "sha256": "eaebb04987d4f9635593d076a28bd046ccfdee2501907de2c3e74b208bd690e3",
+      "bytes": 210077
+    },
+    "./pdf-bg-page2.jpg": {
+      "sha256": "31d95fc2845c9a6daa615125cff3142f57bff0591792cf24961f2eaa7cb53d7e",
+      "bytes": 303004
+    },
+    "./pdf-bg-page4.jpg": {
+      "sha256": "f2ef716f014c951f011937972544677d97c82d2ab649769d2676f2c8b43c33e0",
+      "bytes": 284651
+    },
+    "./pdf-bg-page6.jpg": {
+      "sha256": "630e7f0a6f1450034f1346c94cee7d0f2d39f4d6ec1c9873cece21bd8b7998a6",
+      "bytes": 402867
+    },
+    "./pdf-bg-page7.jpg": {
+      "sha256": "68c46169bd1a5b6fb06d205a0ea29240667e30da6dfa3daed044fdc218e7c9f6",
+      "bytes": 212081
+    },
+    "./pdf-bg-page9.jpg": {
+      "sha256": "a4ff6c60ec4d1e65140332561c936c7b3999d160a8dc2f148569fe4670676260",
+      "bytes": 341751
+    },
     "./pinned-flight.js": {
       "sha256": "71646fbe1b03846f4a8ca08061be0fa364948f67df1e7001abf8b52c5ca15f07",
       "bytes": 12395
@@ -248,20 +298,20 @@
       "bytes": 10925
     },
     "./runtime.bundle.js": {
-      "sha256": "1b560b0bdbc34fec9d56d47a1f088d7714220e8445361bbbebd16ecfa224b983",
-      "bytes": 435466
+      "sha256": "20b7f0ca6a2b7840e2ff550b9eedaec6c420dba9c0e5c06231ff6836c34d2c8d",
+      "bytes": 441107
     },
     "./sags-logo.png": {
       "sha256": "84bc554c3b44afe4190afcbe74f7c7aed9fad478c328d63502a7d225dd60d7ad",
       "bytes": 25408
     },
     "./service-worker.js": {
-      "sha256": "e93f5ab648c1b430e4199418ab23099faa84bc86c32b536b734efb621f74af32",
-      "bytes": 7620
+      "sha256": "4f5751b42386b645390d6640b629cf5febb7fe9074e770cc2bd740775456c026",
+      "bytes": 7627
     },
     "./version.json": {
-      "sha256": "4933984f6dcb29d214427590d9e1f7ed3a583db57c890a89ccf48cdb2dc9d2b7",
-      "bytes": 640
+      "sha256": "29a8b40a3887651f41ef19c1a34f773a007c07229097f094c52dad4e62cc18c6",
+      "bytes": 589
     }
   }
 }

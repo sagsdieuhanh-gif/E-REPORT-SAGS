@@ -1,3 +1,13 @@
+E-REPORT/SAGS V4.8.2B · FAST PDF UPDATE (2026-09-17)
+
+This ZIP contains the complete static project, not a live deployment.
+Extract it and upload the CONTENTS of E-REPORT-SAGS-main/ to the GitHub Pages root.
+Before deployment, run: node tests/smoke.mjs && node tools/check-release.mjs --check
+See docs/RELEASE-V4.8.2B.md for changes, limitations and validation steps.
+No Firebase production data or security rules are changed by this ZIP.
+
+PREVIOUS RELEASE NOTES
+----------------------
 E-REPORT/SAGS V4.4.0 · FORM MANAGER + REALTIME LITE
 
 Upload the CONTENTS of this folder to the GitHub Pages root.
