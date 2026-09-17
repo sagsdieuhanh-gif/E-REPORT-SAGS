@@ -165,18 +165,48 @@ function pushbackValue(st){return S(st?.h24Start||st?.f421_h24Start||st?.h24||st
 function rampSummary(st={}){return {chockOn:S(st.h5Start||st.f421_h5Start||st.h5||st.f421_h5),boardingCall:S(st.h14Start||st.f421_h14Start),boardingFinish:S(st.f421_h17Finish||st.h17Finish),doorClose:S(st.h21Start||st.f421_h21Start||st.h21||st.f421_h21),chockOff:S(st.h22Start||st.f421_h22Start||st.h22||st.f421_h22),pushback:pushbackValue(st)}}
 function sourceGroup(meta,env){const g=U(meta?.initialGroup||env?.mainForm||env?.activeFormGroup||'');return ['FSAGS','FSAGS423','FSAGS421'].includes(g)}
 function flightSignature(meta,env){const st=env?.state&&typeof env.state==='object'?env.state:{},parts=[S(st.fltBefore||st.f421_fltBefore),S(st.fltAfter||st.f421_fltAfter)].map(x=>U(x).replace(/[^A-Z0-9]/g,'')).filter(Boolean);if(parts.length)return parts.join('_');const a=U(meta?.name||'').match(/[A-Z0-9]{2,3}\s*\d{1,5}/g)||[];return a.length?a.map(x=>x.replace(/\s+/g,'')).join('_'):U(meta?.name||meta?.id||'').replace(/[^A-Z0-9]+/g,'_').replace(/^_+|_+$/g,'')}
-let lastPbSig='',pbTimer=0;
-async function syncPushbackFromActive(){try{const meta=root.currentFlightSessionMeta?.();if(!meta?.rosterAssignmentId)return;const env=root.readFlightSessionEnvelope?.(meta.id)||{};if(!sourceGroup(meta,env))return;const st=env.state&&typeof env.state==='object'?env.state:{},date=S(meta.rosterOpDate||env.rosterOpDate||opDate()),sig=flightSignature(meta,env);if(!date||!sig)return;const pb=pushbackValue(st),key='RF_'+hash(date+'|'+sig),payload={engine:'DAILY_ROSTER_V1',schema:2,cleanBuild:DISPLAY,opDate:date,tripKey:key,flightLabel:S(meta.name||sig.replace(/_/g,' / ')),flightSignature:sig,completed:!!pb,pushback:pb||null,completedAtMs:pb?Date.now():null,updatedAtMs:Date.now(),updatedBy:normUser(root.currentUserProfile?.username||'')},ps=JSON.stringify([date,key,!!pb,pb]);if(ps!==lastPbSig&&typeof root.sagsV470Ref==='function'){lastPbSig=ps;await root.sagsV470Ref(`${STATUS}/${safe(date)}/${safe(key)}`).set(payload)}
-    const aid=S(meta.rosterAssignmentId),fid=S(meta.rosterFlightId||workspaceMap[aid]?.flightId);if(typeof root.sagsV470Ref==='function'){const sp={completedPushback:pb||null,pushbackSourceField:st.h24Start?'h24Start':st.f421_h24Start?'f421_h24Start':st.h24?'h24':'f421_h24',pushbackSyncedAtMs:Date.now()};if(pb){sp.pushbackEditReopened=false;sp.pushbackEditReopenedAtMs=null;}root.sagsV470Ref(`${SESSION}/${safe(aid)}`).update(sp).catch?.(()=>{});}
-    if(typeof root.sagsFlightHubLink==='function')await root.sagsFlightHubLink('RAMP',{state:clone(st)},{opDate:date,sessionId:S(meta.id),assignmentId:aid,workspaceKey:S(workspaceMap[aid]?.workspaceKey),sourcePath:workspaceMap[aid]?.workspaceKey?`${WORKSPACE}/${safe(workspaceMap[aid].workspaceKey)}`:'',chockOn:S(st.h5Start||st.f421_h5Start||st.h5||st.f421_h5),doorClose:S(st.h21Start||st.f421_h21Start||st.h21||st.f421_h21),chockOff:S(st.h22Start||st.f421_h22Start||st.h22||st.f421_h22),pushback:pb,cargoOffload:S(st.offloadCargoFinish||st.f421_offloadCargoFinish),cargoOnload:S(st.onloadCargoFinish||st.f421_onloadCargoFinish),status:pb?'PUSHBACK':(S(st.h21Start||st.f421_h21Start||st.h21||st.f421_h21)?'DOOR CLOSE':'ĐANG KHAI THÁC')});
-    if(fid&&typeof root.sagsV470Ref==='function'){const base=`${FLIGHTS}/${safe(date)}/${safe(fid)}`,rs=rampSummary(st);await root.sagsV470Ref(`${base}/modules/RAMP`).update({kind:'RAMP',status:pb?'PUSHBACK':(rs.doorClose?'DOOR CLOSE':'ĐANG KHAI THÁC'),chockOn:rs.chockOn||null,boardingCall:rs.boardingCall||null,boardingFinish:rs.boardingFinish||null,doorClose:rs.doorClose||null,chockOff:rs.chockOff||null,pushback:rs.pushback||null,assignmentId:aid,sessionId:S(meta.id),updatedAtMs:Date.now(),updatedBy:normUser(root.currentUserProfile?.username||''),cleanBuild:'V1.1.105'}) .catch?.(()=>{})}
-  }catch(e){console.info('V1.1.99 pushback sync',e?.message||e)}}
+let lastPbSig='',pbTimer=0,lastRampSyncSig='',rampSyncInFlight=false;
+async function syncPushbackFromActive(){
+  try{
+    const meta=root.currentFlightSessionMeta?.();if(!meta?.rosterAssignmentId)return;
+    const env=root.readFlightSessionEnvelope?.(meta.id)||{};if(!sourceGroup(meta,env))return;
+    const st=env.state&&typeof env.state==='object'?env.state:{},date=S(meta.rosterOpDate||env.rosterOpDate||opDate()),sig=flightSignature(meta,env);
+    if(!date||!sig)return;
+    if(typeof root.sagsV470Ref!=='function')return; // Do not mark an offline attempt as synced.
+    const aid=S(meta.rosterAssignmentId),fid=S(meta.rosterFlightId||workspaceMap[aid]?.flightId);
+    // Hub consumers still receive the complete state when it CHANGES. Avoid
+    // redundant writes after no-op persist, page switches and repeated hooks.
+    const syncSig=JSON.stringify([date,sig,aid,fid,S(meta.id),S(meta.name),normUser(root.currentUserProfile?.username||''),S(workspaceMap[aid]?.workspaceKey),st]);
+    if(syncSig===lastRampSyncSig)return;
+    if(rampSyncInFlight){clearTimeout(pbTimer);pbTimer=setTimeout(syncPushbackFromActive,350);return;}
+    rampSyncInFlight=true;
+    try{
+      const pb=pushbackValue(st),key='RF_'+hash(date+'|'+sig),ps=JSON.stringify([date,key,!!pb,pb]);
+      const payload={engine:'DAILY_ROSTER_V1',schema:2,cleanBuild:DISPLAY,opDate:date,tripKey:key,flightLabel:S(meta.name||sig.replace(/_/g,' / ')),flightSignature:sig,completed:!!pb,pushback:pb||null,completedAtMs:pb?Date.now():null,updatedAtMs:Date.now(),updatedBy:normUser(root.currentUserProfile?.username||'')};
+      if(ps!==lastPbSig&&typeof root.sagsV470Ref==='function'){
+        await root.sagsV470Ref(`${STATUS}/${safe(date)}/${safe(key)}`).set(payload);
+        lastPbSig=ps; // Never suppress a retry after a failed write.
+      }
+      if(typeof root.sagsV470Ref==='function'){
+        const sp={completedPushback:pb||null,pushbackSourceField:st.h24Start?'h24Start':st.f421_h24Start?'f421_h24Start':st.h24?'h24':'f421_h24',pushbackSyncedAtMs:Date.now()};
+        if(pb){sp.pushbackEditReopened=false;sp.pushbackEditReopenedAtMs=null;}
+        await root.sagsV470Ref(`${SESSION}/${safe(aid)}`).update(sp);
+      }
+      if(typeof root.sagsFlightHubLink==='function')await root.sagsFlightHubLink('RAMP',{state:clone(st)},{opDate:date,sessionId:S(meta.id),assignmentId:aid,workspaceKey:S(workspaceMap[aid]?.workspaceKey),sourcePath:workspaceMap[aid]?.workspaceKey?`${WORKSPACE}/${safe(workspaceMap[aid].workspaceKey)}`:'',chockOn:S(st.h5Start||st.f421_h5Start||st.h5||st.f421_h5),doorClose:S(st.h21Start||st.f421_h21Start||st.h21||st.f421_h21),chockOff:S(st.h22Start||st.f421_h22Start||st.h22||st.f421_h22),pushback:pb,cargoOffload:S(st.offloadCargoFinish||st.f421_offloadCargoFinish),cargoOnload:S(st.onloadCargoFinish||st.f421_onloadCargoFinish),status:pb?'PUSHBACK':(S(st.h21Start||st.f421_h21Start||st.h21||st.f421_h21)?'DOOR CLOSE':'ĐANG KHAI THÁC')});
+      if(fid&&typeof root.sagsV470Ref==='function'){
+        const base=`${FLIGHTS}/${safe(date)}/${safe(fid)}`,rs=rampSummary(st);
+        await root.sagsV470Ref(`${base}/modules/RAMP`).update({kind:'RAMP',status:pb?'PUSHBACK':(rs.doorClose?'DOOR CLOSE':'ĐANG KHAI THÁC'),chockOn:rs.chockOn||null,boardingCall:rs.boardingCall||null,boardingFinish:rs.boardingFinish||null,doorClose:rs.doorClose||null,chockOff:rs.chockOff||null,pushback:rs.pushback||null,assignmentId:aid,sessionId:S(meta.id),updatedAtMs:Date.now(),updatedBy:normUser(root.currentUserProfile?.username||''),cleanBuild:'V1.1.105'});
+      }
+      lastRampSyncSig=syncSig;
+    }finally{rampSyncInFlight=false;}
+  }catch(e){console.info('V1.1.99 pushback sync',e?.message||e)}
+}
 function installRampSync(){root.sagsFlightHubSyncCurrentRamp=function(){clearTimeout(pbTimer);pbTimer=setTimeout(()=>syncPushbackFromActive(),260)}}
 
 /* ---------- Entry-point hooks ---------- */
 function wrapAsync(name,before,after,tag){const fn=root[name];if(typeof fn!=='function'||fn[tag])return false;const w=async function(){try{if(before)await before(arguments)}catch(e){console.info('V1.1.99 before',name,e?.message||e)}const r=await fn.apply(this,arguments);try{if(after)await after(r,arguments)}catch(e){console.info('V1.1.99 after',name,e?.message||e)}return r};w[tag]=1;w[tag+'Base']=fn;root[name]=w;try{if(name==='dailyRosterPublish')dailyRosterPublish=w;else if(name==='v324ReceiveOrOpen')v324ReceiveOrOpen=w}catch(_){}return true}
 function installHooks(){
-  const basePersist=root.persist;if(typeof basePersist==='function'&&!basePersist.__v1198){root.persist=function(){const r=basePersist.apply(this,arguments);writeWorkspaceForActive();clearTimeout(root.__v1198PbPersist);root.__v1198PbPersist=setTimeout(syncPushbackFromActive,80);return r};root.persist.__v1198=1}
+  const basePersist=root.persist;if(typeof basePersist==='function'&&!basePersist.__v1198){root.persist=function(){const r=basePersist.apply(this,arguments);writeWorkspaceForActive();clearTimeout(root.__v1198PbPersist);root.__v1198PbPersist=setTimeout(syncPushbackFromActive,260);return r};root.persist.__v1198=1}
   wrapAsync('dailyRosterPublish',null,async r=>{if(r===true){try{const d=S(document.getElementById('drManageDate')?.value)||opDate();await root.sagsTaskStatusSyncDate?.(d,true)}catch(_){}}},'__v1198');
   wrapAsync('v324ReceiveOrOpen',async args=>{const fid=S(args?.[0]),aid=S(args?.[1]),date=S(args?.[2])||opDate();if(fid&&aid)await hydrateWorkspaceForFlight(date,fid,aid)},async()=>{setTimeout(writeWorkspaceForActive,120)},'__v1198');
   wrapAsync('dailyRosterReassign',null,async()=>{try{await root.sagsTaskStatusSyncDate?.(S(document.getElementById('drManageDate')?.value)||opDate(),true)}catch(_){}},'__v1198');

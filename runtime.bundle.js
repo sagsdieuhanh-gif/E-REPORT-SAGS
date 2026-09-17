@@ -1,4 +1,10 @@
-window.__SAGS_RUNTIME_BUILD__="V4.7.9-HOME-NAV-RESTORED";
+// Observe UI completion without producing an unhandled rejected promise.
+// The caller's original return value/rejection is preserved.
+function sagsObserveCompletionV480(result, callback){
+  void Promise.resolve(result).then(callback,callback)
+    .catch(error=>console.warn('E-REPORT UI completion hook',error));
+}
+window.__SAGS_RUNTIME_BUILD__="V4.8.0-QUALITY-UPDATE";
 /* E-REPORT/SAGS V4.6.2 · LIVE TEST EDIT · FORM MANAGER + FAST PDF */
 if(typeof window!=="undefined")window.__SAGS_V450_FORM_MANAGER_LAYOUT=true;
 
@@ -41,6 +47,14 @@ if(typeof window!=="undefined")window.__SAGS_V450_FORM_MANAGER_LAYOUT=true;
   async function v200RefreshWeather(){
     const title=$("v200WeatherMain"),sub=$("v200WeatherSub");
     if(!title||!sub)return;
+    // Preserve the last successful forecast across short reloads. Home never
+    // needs to block on an identical weather request made moments earlier.
+    try{
+      const cached=JSON.parse(sessionStorage.getItem(V200_WEATHER_KEY)||"{}");
+      if(cached.title&&Number(cached.at)>0&&Date.now()-Number(cached.at)<15*60*1000){
+        title.textContent=cached.title;sub.textContent=cached.sub||"CXR";return;
+      }
+    }catch(_){}
     title.textContent="Đang cập nhật…";sub.textContent="Dự báo thời tiết CXR";
     try{
       const url="https://api.open-meteo.com/v1/forecast?latitude=11.9982&longitude=109.2194&current_weather=true&timezone=Asia%2FHo_Chi_Minh";
@@ -737,7 +751,7 @@ if(typeof window!=="undefined")window.__SAGS_V450_FORM_MANAGER_LAYOUT=true;
         if(typeof base!=="function"||base.__v1159UiSync)continue;
         const wrapped=function(){
           const r=base.apply(this,arguments);
-          Promise.resolve(r).finally(()=>scheduleSync(40));
+          sagsObserveCompletionV480(r,()=>scheduleSync(40));
           return r;
         };
         wrapped.__v1159UiSync=true;
@@ -2004,7 +2018,7 @@ if(typeof window!=="undefined")window.__SAGS_V450_FORM_MANAGER_LAYOUT=true;
   if(typeof baseApply==='function'&&!baseApply.__v21Mailbox){
     const wrapped=function(){
       const r=baseApply.apply(this,arguments);
-      Promise.resolve(r).finally(()=>setTimeout(bindMailbox,0));
+      sagsObserveCompletionV480(r,()=>setTimeout(bindMailbox,0));
       return r;
     };
     wrapped.__v21Mailbox=1;

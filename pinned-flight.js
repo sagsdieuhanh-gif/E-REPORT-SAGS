@@ -12,7 +12,7 @@ const me=()=>norm(session().profile?.username||root.currentUserProfile?.username
 const label=v=>({FSAGS:'42.3',FSAGS423:'42.3',FSAGS421:'42.1',FSAGS551:'55.1',FSAGS09:'09',FINAL:'FINAL'}[S(v).toUpperCase()]||S(v)||'Biểu mẫu');
 const esc=v=>S(v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const dbName='sags-pinned-flight-v478',storeName='pin',fallback=u=>'sags:pinned-flight:v478:'+safe(u);
-let dbPromise=null,currentUser='',current=null,openBusy=false;
+let dbPromise=null,currentUser='',current=null,openBusy=false,pinReturnFocus=null;
 function idb(){
   if(!root.indexedDB)return Promise.reject(new Error('IndexedDB unavailable'));
   if(!dbPromise)dbPromise=new Promise((resolve,reject)=>{const req=indexedDB.open(dbName,1);req.onupgradeneeded=()=>{if(!req.result.objectStoreNames.contains(storeName))req.result.createObjectStore(storeName,{keyPath:'user'})};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)}).catch(e=>{dbPromise=null;throw e});
@@ -51,7 +51,8 @@ root.sagsV478MailboxUpdated=async(day,items)=>{
 };
 function style(){if(document.getElementById('v478PinStyle'))return;const st=document.createElement('style');st.id='v478PinStyle';st.textContent=`
 #v478PinHome{display:block;width:100%;min-height:48px;margin-top:8px;padding:10px;text-align:left;border-radius:12px;border:1px solid #8db7dd;background:#e7f4ff;color:#13436b;font:800 13px/1.45 Arial;white-space:normal}
-#v478PinNav{min-height:31px!important;border-radius:9px;border:1px solid #96bce0;background:#eaf5ff;color:#16456f;font:800 9px/1.1 Arial!important;padding:4px 1px!important;white-space:normal;overflow-wrap:anywhere}
+#v478PinNav{grid-column:1/-1;grid-row:1;min-height:28px!important;border-radius:8px;border:1px solid #96bce0;background:#eaf5ff;color:#16456f;font:800 12px/1.2 Arial!important;padding:4px 8px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#v478PinNav[hidden]{display:none!important}
 #v478PinDialog{position:fixed;inset:0;z-index:2147482000;background:rgba(0,20,48,.62);display:flex;justify-content:center;align-items:center;padding:12px}
 #v478PinDialog[hidden]{display:none!important}#v478PinDialog .panel{background:#fff;color:#153b58;border-radius:16px;padding:18px;max-width:520px;width:100%;max-height:85vh;overflow:auto;box-sizing:border-box}
 #v478PinDialog button{min-height:44px;border-radius:9px;border:1px solid #9bbadb;background:#eff6ff;color:#154773;font:800 13px Arial;margin:6px 5px 0 0;padding:8px 10px}
@@ -65,19 +66,21 @@ function paint(){
   const nav=document.getElementById('v163OperationNav');if(nav){
     let b=document.getElementById('v478PinNav');
     if(!b){b=document.createElement('button');b.id='v478PinNav';b.type='button'}
-    // Keep the original order CHUYẾN / TRANG CHỦ / MULTI / KÝ and put PIN last.
-    // Exactly five equal columns on one row prevents the higher-z form toolbar
-    // from covering HOME on small screens. Restore four columns when not pinned.
+    // Four original buttons retain their full width. The pin takes a short,
+    // separate row; never shrink or hide TRANG CHỦ to make room for a new button.
     if(b.parentElement!==nav||b!==nav.lastElementChild)nav.appendChild(b);
     if(b.hidden===ok)b.hidden=!ok;
-    b.textContent=ok?'📌 GHIM':'';
+    b.textContent=ok?'📌 '+S(current.flightLabel||current.flightId).slice(0,48):'';
     b.setAttribute('aria-label','Mở chuyến đang ghim trên máy');
     b.title='Chuyến đang làm';b.onclick=showDialog;
-    const columns=ok?'repeat(5,minmax(0,1fr))':'';
-    if(nav.style.gridTemplateColumns!==columns)nav.style.gridTemplateColumns=columns;
+    nav.classList.toggle('v478-has-pin',ok);
+    document.body.classList.toggle('v478-has-pin',ok);
+    // Remove the previous release's five-column inline style on restored DOM.
+    if(nav.style.gridTemplateColumns)nav.style.removeProperty('grid-template-columns');
   }
 }
-function dialog(){let d=document.getElementById('v478PinDialog');if(d)return d;d=document.createElement('div');d.id='v478PinDialog';d.hidden=true;d.innerHTML='<div class="panel" role="dialog" aria-modal="true" aria-label="Chuyến đã ghim"><h3 id="v478PinHeading"></h3><p style="font:12px/1.5 Arial">Lưu trên máy. Mở từng biểu mẫu theo phân công hiện tại; không tải lại danh sách MY FLIGHT.</p><div id="v478PinTasks"></div><div id="v478PinStatus" role="status"></div><button type="button" id="v478PinUnpin">BỎ GHIM</button><button type="button" id="v478PinClose">ĐÓNG</button></div>';document.body.appendChild(d);d.querySelector('#v478PinClose').onclick=()=>{d.hidden=true};d.querySelector('#v478PinUnpin').onclick=async()=>{await save(null);d.hidden=true};d.addEventListener('click',e=>{if(e.target===d)d.hidden=true});return d}
+function closePinDialog(){const d=document.getElementById('v478PinDialog');if(d)d.hidden=true;try{pinReturnFocus?.focus?.()}catch(_){}pinReturnFocus=null}
+function dialog(){let d=document.getElementById('v478PinDialog');if(d)return d;d=document.createElement('div');d.id='v478PinDialog';d.hidden=true;d.innerHTML='<div class="panel" tabindex="-1" role="dialog" aria-modal="true" aria-label="Chuyến đã ghim"><h3 id="v478PinHeading"></h3><p style="font:12px/1.5 Arial">Lưu trên máy. Mở từng biểu mẫu theo phân công hiện tại; không tải lại danh sách MY FLIGHT.</p><div id="v478PinTasks"></div><div id="v478PinStatus" role="status"></div><button type="button" id="v478PinUnpin">BỎ GHIM</button><button type="button" id="v478PinClose">ĐÓNG</button></div>';document.body.appendChild(d);d.querySelector('#v478PinClose').onclick=closePinDialog;d.querySelector('#v478PinUnpin').onclick=async()=>{await save(null);closePinDialog()};d.addEventListener('click',e=>{if(e.target===d)closePinDialog()});d.addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();closePinDialog()}});return d}
 async function check(item){
   // Never authorize work with stale local metadata or a different login.
   if(!current||currentUser!==me()||role()==='AD')throw new Error('Bạn cần đăng nhập đúng tài khoản đã ghim.');
@@ -98,7 +101,7 @@ async function openOne(item,button){if(openBusy)return;openBusy=true;button.disa
   const d=document.getElementById('v478PinDialog');if(d)d.hidden=true;
   await root.sagsV478OpenExactAssignment(S(latest.assignmentId||item.assignmentId),S(latest.flightId),S(latest.opDate));
 }catch(e){const d=document.getElementById('v478PinDialog');if(d)d.hidden=false;if(out)out.textContent=S(e?.message||e)}finally{openBusy=false;button.disabled=false}}
-async function showDialog(){if(currentUser!==me())await load();if(!current)return;const d=dialog();d.hidden=false;d.querySelector('#v478PinHeading').textContent='📌 '+S(current.flightLabel||current.flightId)+' · '+S(current.date);const list=d.querySelector('#v478PinTasks');list.textContent='';for(const item of current.items){const b=document.createElement('button');b.type='button';b.className='v478Task';b.textContent='MỞ '+label(item.formGroup);b.onclick=()=>openOne(item,b);list.appendChild(b)}d.querySelector('#v478PinStatus').textContent=''}
+async function showDialog(){if(currentUser!==me())await load();if(!current)return;pinReturnFocus=document.activeElement;const d=dialog();d.hidden=false;d.querySelector('#v478PinHeading').textContent='📌 '+S(current.flightLabel||current.flightId)+' · '+S(current.date);const list=d.querySelector('#v478PinTasks');list.textContent='';for(const item of current.items){const b=document.createElement('button');b.type='button';b.className='v478Task';b.textContent='MỞ '+label(item.formGroup);b.onclick=()=>openOne(item,b);list.appendChild(b)}d.querySelector('#v478PinStatus').textContent='';d.querySelector('.panel')?.focus?.()}
 root.sagsV478PinnedStats=()=>({user:currentUser,hasPinned:!!current,date:current?.date||null,assignmentCount:current?.items?.length||0});
 function boot(){void load();paint()}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();

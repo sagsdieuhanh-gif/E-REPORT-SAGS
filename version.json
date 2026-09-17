@@ -1,10 +1,10 @@
 {
-  "version": "V4.7.9",
-  "displayVersion": "V4.7.9",
-  "label": "V4.7.9 HOME NAV RESTORED",
-  "build": "V4.7.9-HOME-NAV-RESTORED",
-  "releasedAt": "2026-09-16T14:47:59.638459+00:00",
-  "type": "navigation-regression-fix",
-  "notes": "Keep TRANG CHỦ visible after pinning: fixed five-column single-row operation navigation, original HOME second; add explicit TRANG CHỦ in MY FLIGHT modal. No changes to assignments, workspaces, Firebase reads, drafts or local pin storage.",
-  "message": "V4.7.9 · Khôi phục nút TRANG CHỦ trong MY FLIGHT và khi ghim chuyến"
+  "version": "V4.8.0",
+  "displayVersion": "V4.8.0",
+  "label": "V4.8.0 QUALITY UPDATE",
+  "build": "V4.8.0-QUALITY-UPDATE",
+  "releasedAt": "2026-09-17T02:48:44.870357+00:00",
+  "type": "quality-performance-release",
+  "notes": "Responsive operational toolbar preserving four core actions; pinned flight is a separate compact row. No-op Ramp sync deduplication with retry-safe status write; archive chunk reads bounded to four concurrent requests; prevent detached UI promise rejections; verified SHA-256/size cache updates with retry-safe manifest and release checker. No migration or Firebase schema changes.",
+  "message": "V4.8.0 · Cải thiện giao diện, độ ổn định, tải hồ sơ và kiểm soát cập nhật"
 }

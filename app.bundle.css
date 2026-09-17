@@ -310,9 +310,12 @@ body.v157-home #v324FormActions{display:none!important}
 }
 body.v163-operational #v163OperationNav{display:grid}
 #v163OperationNav button{
-  min-width:0;min-height:31px;border:0;border-radius:8px;background:#fff;color:#174b83;
-  font:900 9px Arial;line-height:1.02;padding:4px 3px;
+  min-width:0;min-height:38px;border:0;border-radius:8px;background:#fff;color:#174b83;
+  font:800 clamp(10px,2.6vw,12px)/1.15 Arial;padding:5px 3px;
 }
+#v163OperationNav.v478-has-pin>button:not(#v478PinNav){grid-row:2}
+body.v478-has-pin.v163-operational #v324FormActions{bottom:calc(85px + env(safe-area-inset-bottom))!important}
+body.v478-has-pin.v163-operational{padding-bottom:calc(155px + env(safe-area-inset-bottom))!important}
 #v163HomeBtn{
   background:#eaf2ff!important;color:#114b96!important;border:1px solid #cdddff!important;
 }

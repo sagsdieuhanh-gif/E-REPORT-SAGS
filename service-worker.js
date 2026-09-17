@@ -1,24 +1,49 @@
-/* E-REPORT/SAGS V4.7.9 · DESKTOP AUTO DOWNLOAD · SHA-256 DELTA CACHE */
+/* E-REPORT/SAGS V4.8.0 · DESKTOP AUTO DOWNLOAD · SHA-256 DELTA CACHE */
 const CACHE_NAME="sags-app-shell-v1";
 const META_CACHE_NAME="sags-app-meta-v1";
 const ASSET_MANIFEST_URL="./asset-manifest.json";
-const BUILD="V4.7.9-HOME-NAV-RESTORED";
-const DISPLAY_VERSION="V4.7.9";
+const BUILD="V4.8.0-QUALITY-UPDATE";
+const DISPLAY_VERSION="V4.8.0";
 
 function canonicalUrl(input){try{const u=input instanceof URL?new URL(input.href):new URL(typeof input==="string"?input:input.url,self.location.href);u.search="";u.hash="";return u.href}catch(_){return input?.url||String(input||"")}}
 function scopeUrl(path){try{return new URL(path,self.registration.scope).href}catch(_){return String(path||"")}}
-async function safePut(cache,key,response){try{if(response&&response.ok)await cache.put(key,response.clone())}catch(e){console.info("V4.7.9 cache put skipped",e?.name||e?.message||e)}}
+async function safePut(cache,key,response){try{if(response&&response.ok){await cache.put(key,response.clone());return true}}catch(e){console.info("E-REPORT cache put skipped",e?.name||e?.message||e)}return false}
 async function reportNetworkRx(clientId,url,response){try{if(!response||!response.ok)return;let n=Number(response.headers.get("content-length"))||0;if(!n)try{n=(await response.clone().blob()).size||0}catch(_){}if(!n)return;const msg={type:"SAGS_NET_RX",bytes:n,url:String(url||""),atMs:Date.now()};if(clientId){const c=await self.clients.get(clientId);if(c){c.postMessage(msg);return}}/* No requesting client: never attribute an update download to every open tab. */}catch(_){}}
 async function fetchJson(path){const r=await fetch(path+(path.includes("?")?"&":"?")+"t="+Date.now(),{cache:"no-store",headers:{"Cache-Control":"no-cache"}});if(!r.ok)throw new Error(path+" HTTP "+r.status);return {response:r,data:await r.clone().json()}}
 async function validateRelease(){const v=await fetchJson("./version.json");if(String(v.data?.build||"")!==BUILD)throw new Error("version BUILD mismatch");const m=await fetchJson(ASSET_MANIFEST_URL);if(String(m.data?.build||"")!==BUILD||!m.data?.assets)throw new Error("asset-manifest mismatch");}
 async function readStoredManifest(){try{const c=await caches.open(META_CACHE_NAME),r=await c.match(scopeUrl(ASSET_MANIFEST_URL));return r?await r.json():null}catch(_){return null}}
 async function storeManifest(man){const c=await caches.open(META_CACHE_NAME);await c.put(scopeUrl(ASSET_MANIFEST_URL),new Response(JSON.stringify(man),{headers:{"Content-Type":"application/json; charset=utf-8","Cache-Control":"no-store"}}))}
 async function fetchCurrentManifest(){const x=await fetchJson(ASSET_MANIFEST_URL);if(String(x.data?.build||"")!==BUILD)throw new Error("asset-manifest BUILD mismatch");return x.data}
-async function migrateLegacyCaches(){const keys=await caches.keys(),legacy=keys.filter(k=>k!==CACHE_NAME&&k!==META_CACHE_NAME&&(k.startsWith("sags-v")||k.startsWith("sags-cache")||k.startsWith("sags-")));if(!legacy.length)return;const dst=await caches.open(CACHE_NAME);for(const name of legacy){try{const src=await caches.open(name);for(const req of await src.keys()){const key=canonicalUrl(req);if(await dst.match(key))continue;const r=await src.match(req);if(r)await safePut(dst,key,r)}}catch(e){console.info("V4.7.9 legacy migrate skipped",name,e?.message||e)}}}
-async function updateChangedAssets(oldMan,newMan){const c=await caches.open(CACHE_NAME),oldA=oldMan?.assets||{},newA=newMan?.assets||{},bootstrap=new Set(newMan?.bootstrapChanged||[]),updated=[];for(const [path,meta] of Object.entries(newA)){const old=oldA[path],key=canonicalUrl(scopeUrl(path)),cached=await c.match(key),changed=!old||String(old.sha256||"")!==String(meta?.sha256||"");if(!changed)continue;if(!cached&&!bootstrap.has(path))continue;try{const u=scopeUrl(path),r=await fetch(u+(u.includes("?")?"&":"?")+"v="+encodeURIComponent(DISPLAY_VERSION),{cache:"no-store"});if(!r.ok)throw new Error("HTTP "+r.status);await safePut(c,key,r);updated.push(path);await reportNetworkRx(null,u,r)}catch(e){console.warn("V4.7.9 delta update failed",path,e?.message||e)}}if(oldMan)for(const path of Object.keys(oldA)){if(!(path in newA))try{await c.delete(canonicalUrl(scopeUrl(path)))}catch(_){}}return updated}
+async function migrateLegacyCaches(){const keys=await caches.keys(),legacy=keys.filter(k=>k!==CACHE_NAME&&k!==META_CACHE_NAME&&(k.startsWith("sags-v")||k.startsWith("sags-cache")||k.startsWith("sags-")));if(!legacy.length)return;const dst=await caches.open(CACHE_NAME);for(const name of legacy){try{const src=await caches.open(name);for(const req of await src.keys()){const key=canonicalUrl(req);if(await dst.match(key))continue;const r=await src.match(req);if(r)await safePut(dst,key,r)}}catch(e){console.info("V4.8.0 legacy migrate skipped",name,e?.message||e)}}}
+async function verifyAsset(response,meta,path){
+  if(!meta?.sha256||!Number.isSafeInteger(meta.bytes))throw new Error("Missing release checksum: "+path);
+  const bytes=await response.clone().arrayBuffer();
+  if(bytes.byteLength!==meta.bytes)throw new Error("Asset size mismatch: "+path);
+  const hash=await crypto.subtle.digest("SHA-256",bytes);
+  const sha=[...new Uint8Array(hash)].map(x=>x.toString(16).padStart(2,"0")).join("");
+  if(sha!==meta.sha256)throw new Error("Asset hash mismatch: "+path);
+}
+async function updateChangedAssets(oldMan,newMan){
+  const c=await caches.open(CACHE_NAME),oldA=oldMan?.assets||{},newA=newMan?.assets||{},bootstrap=new Set(newMan?.bootstrapChanged||[]),updated=[],failed=[];
+  for(const [path,meta] of Object.entries(newA)){
+    const old=oldA[path],key=canonicalUrl(scopeUrl(path)),cached=await c.match(key);
+    const changed=!old||String(old.sha256||"")!==String(meta?.sha256||"")||(!cached&&bootstrap.has(path));
+    if(!changed||(!cached&&!bootstrap.has(path)))continue;
+    try{
+      const u=scopeUrl(path),r=await fetch(u+(u.includes("?")?"&":"?")+"v="+encodeURIComponent(DISPLAY_VERSION),{cache:"no-store"});
+      if(!r.ok)throw new Error("HTTP "+r.status);
+      await verifyAsset(r,meta,path);
+      if(!await safePut(c,key,r))throw new Error("Cache write failed: "+path);
+      updated.push(path);await reportNetworkRx(null,u,r);
+    }catch(e){failed.push(path);console.warn("E-REPORT delta update failed",path,e?.message||e)}
+  }
+  // A partial update must never be marked as complete: retry on next check.
+  if(!failed.length&&oldMan)for(const path of Object.keys(oldA)){if(!(path in newA))try{await c.delete(canonicalUrl(scopeUrl(path)))}catch(_){}}
+  return {updated,failed};
+}
 async function cleanupLegacyCaches(){const keys=await caches.keys(),legacy=keys.filter(k=>k!==CACHE_NAME&&k!==META_CACHE_NAME&&(k.startsWith("sags-v")||k.startsWith("sags-cache")||k.startsWith("sags-")));await Promise.all(legacy.map(k=>caches.delete(k).catch(()=>false)))}
 
 self.addEventListener("install",event=>{event.waitUntil((async()=>{await validateRelease();/* wait for explicit UPDATE -> SKIP_WAITING */})())});
-self.addEventListener("activate",event=>{event.waitUntil((async()=>{await migrateLegacyCaches();const oldMan=await readStoredManifest();let newMan=null;try{newMan=await fetchCurrentManifest()}catch(e){console.warn("V4.7.9 manifest fetch failed",e?.message||e)}if(newMan){await updateChangedAssets(oldMan,newMan);await storeManifest(newMan)}await cleanupLegacyCaches();await caches.open(CACHE_NAME);await self.clients.claim()})())});
-self.addEventListener("message",event=>{if(event.data?.type==="SKIP_WAITING")self.skipWaiting();if(event.data?.type==="SAGS_CHECK_ASSETS")event.waitUntil((async()=>{try{const o=await readStoredManifest(),n=await fetchCurrentManifest();await updateChangedAssets(o,n);await storeManifest(n)}catch(e){console.warn("V4.7.9 asset check",e?.message||e)}})())});
+self.addEventListener("activate",event=>{event.waitUntil((async()=>{await migrateLegacyCaches();const oldMan=await readStoredManifest();let newMan=null;try{newMan=await fetchCurrentManifest()}catch(e){console.warn("E-REPORT manifest fetch failed",e?.message||e)}if(newMan){const result=await updateChangedAssets(oldMan,newMan);if(!result.failed.length)await storeManifest(newMan)}await cleanupLegacyCaches();await caches.open(CACHE_NAME);await self.clients.claim()})())});
+self.addEventListener("message",event=>{if(event.data?.type==="SKIP_WAITING")self.skipWaiting();if(event.data?.type==="SAGS_CHECK_ASSETS")event.waitUntil((async()=>{try{const o=await readStoredManifest(),n=await fetchCurrentManifest(),result=await updateChangedAssets(o,n);if(!result.failed.length)await storeManifest(n)}catch(e){console.warn("E-REPORT asset check",e?.message||e)}})())});
 self.addEventListener("fetch",event=>{if(event.request.method!=="GET")return;const url=new URL(event.request.url);if(url.origin!==self.location.origin)return;const nav=event.request.mode==="navigate",meta=url.pathname.endsWith("/version.json")||url.pathname.endsWith("/asset-manifest.json"),carrierMeta=url.pathname.endsWith("/carrier-guide-version.json"),carrierRefresh=url.pathname.endsWith("/carrier-service-guide.json")&&url.searchParams.has("csgv");if(meta||carrierMeta||carrierRefresh){event.respondWith((async()=>{const c=await caches.open(CACHE_NAME);try{const r=await fetch(event.request,{cache:"no-store"});event.waitUntil(reportNetworkRx(event.clientId,url.href,r));await safePut(c,canonicalUrl(url),r);return r}catch(_){return await c.match(canonicalUrl(url))||new Response("OFFLINE",{status:503})}})());return}if(nav){event.respondWith((async()=>{const c=await caches.open(CACHE_NAME),key=canonicalUrl(scopeUrl("./index.html")),hit=await c.match(key);if(hit)return hit;try{const r=await fetch(event.request,{cache:"no-store"});event.waitUntil(reportNetworkRx(event.clientId,url.href,r));await safePut(c,key,r);return r}catch(_){return new Response("OFFLINE",{status:503})}})());return}event.respondWith((async()=>{const c=await caches.open(CACHE_NAME),key=canonicalUrl(url),hit=await c.match(key)||await c.match(event.request);if(hit)return hit;try{const r=await fetch(event.request,{cache:"no-store"});event.waitUntil(reportNetworkRx(event.clientId,url.href,r));await safePut(c,key,r);return r}catch(_){return new Response("OFFLINE",{status:503})}})())});

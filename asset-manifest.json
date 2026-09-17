@@ -1,10 +1,13 @@
 {
   "schema": 2,
-  "version": "V4.7.9",
-  "build": "V4.7.9-HOME-NAV-RESTORED",
+  "version": "V4.8.0",
+  "build": "V4.8.0-QUALITY-UPDATE",
   "strategy": "stable-cache-sha256-delta",
   "bootstrapChanged": [
     "./index.html",
+    "./app.bundle.css",
+    "./app.js",
+    "./daily-roster.js",
     "./runtime.bundle.js",
     "./roster-lite.js",
     "./pinned-flight.js",
@@ -89,12 +92,12 @@
       "bytes": 72351
     },
     "./app.bundle.css": {
-      "sha256": "6606fbc9050c92cfe161bb71cc9f4fe8ec6acdaa089299897230dc8fe49b5412",
-      "bytes": 46693
+      "sha256": "51b4cd6eb43e5f6a1fd35baca1af8475405866d349de9893653d46b6a1721e14",
+      "bytes": 46981
     },
     "./app.js": {
-      "sha256": "275dfb9f79d1e330ef9df19d78ffd6cf64b09d1fed2eecec469a218468622d36",
-      "bytes": 877799
+      "sha256": "05e89ea7ae2c56b08f4e8ab7077b1d6a140bd682a888f287a309186ba9622e14",
+      "bytes": 878909
     },
     "./apple-touch-icon.png": {
       "sha256": "a190c19f9a52a40f43379917b11f84f99a2ab2fb4a3cdaedd1dad936a67c8e78",
@@ -109,8 +112,8 @@
       "bytes": 30731
     },
     "./daily-roster.js": {
-      "sha256": "ad2b034ad4f1d00cb00ffe3baa748ab800606d1d0b526933f14bf2c91677fdcd",
-      "bytes": 56444
+      "sha256": "ed89a8f7961af7889400e4ca455c98cc47487d3fb704d11b8ae5caf08b4be960",
+      "bytes": 57322
     },
     "./favicon-16.png": {
       "sha256": "bb74deb45be89aca360f6b6f9b7d6293c14b1d7efa5f1e4fe21f4804fb05ce58",
@@ -125,8 +128,12 @@
       "bytes": 78996
     },
     "./forms.registry.json": {
-      "sha256": "e74e954e73f62ce07ec23f2dc76b056df2645b78599b3c7f3edd8f0fcd18a9b8",
-      "bytes": 3217
+      "sha256": "d45b503f862197d04518181d68c167758dc960fc55bfa77bcad27350e6af5e0c",
+      "bytes": 523607
+    },
+    "./fsags-display-coordinates.json": {
+      "sha256": "9ba95aab8420c74b377970e082e81a43f6402c262d6d82aa2dcc13fd7834b4be",
+      "bytes": 13254
     },
     "./fsags13-official-continuation.png": {
       "sha256": "02307b2c25abdafe779c640e8c1b584a4cade98a176e34ceecb3f9fa021bb7ed",
@@ -145,8 +152,8 @@
       "bytes": 104295
     },
     "./index.html": {
-      "sha256": "a85460c0f7c059a337044db1c7e4c527ec6ec5f6b5417789416194ac85eba9fc",
-      "bytes": 1768129
+      "sha256": "8c996b18a0f8a2b7e7f9bc629823afca807fff7db928845d16b97cdcbe0fb83c",
+      "bytes": 1768123
     },
     "./ket-so.wav": {
       "sha256": "cf03e8d4021f989f61fd12249f282ae2e53588cc9d55d68393778223db8132a1",
@@ -208,6 +215,10 @@
       "sha256": "7957780d4edd7c4f6b73f5b999843de36f3c6a03cefa7a6c0161bfc5be16a1a3",
       "bytes": 585020
     },
+    "./pinned-flight.js": {
+      "sha256": "71646fbe1b03846f4a8ca08061be0fa364948f67df1e7001abf8b52c5ca15f07",
+      "bytes": 12395
+    },
     "./rns-ke-continuation.png": {
       "sha256": "c3aec7394542048bb4afa6aac3f15c53795d06cbbd677dca737f28849138d1c7",
       "bytes": 29174
@@ -237,24 +248,20 @@
       "bytes": 10925
     },
     "./runtime.bundle.js": {
-      "sha256": "c4bb68cb517e8717c6885924554b0837a6a5a29849498655bf8d69d849b415aa",
-      "bytes": 434702
+      "sha256": "ee9de474fba073e7588a0152ac80275164b046127d145b233d104b0b3b77b202",
+      "bytes": 435451
     },
     "./sags-logo.png": {
       "sha256": "84bc554c3b44afe4190afcbe74f7c7aed9fad478c328d63502a7d225dd60d7ad",
       "bytes": 25408
     },
     "./service-worker.js": {
-      "sha256": "ec165a522ce3c754ff7214222ddbba4d1ae9ae163e180365ed3ca9328cd447e2",
-      "bytes": 6703
+      "sha256": "2ab29f10d7eb1fb5ae48fec54d0c26b36e7ca5e305f0a7f0ea26c09caf0fe669",
+      "bytes": 7626
     },
     "./version.json": {
-      "sha256": "308b9d7bb6a95d057fa23385b01932687b04079b56fc820dea79215149f7c861",
-      "bytes": 575
-    },
-    "./pinned-flight.js": {
-      "sha256": "be209cc63a37fa762b9a95411c88d577d5ff5846ac996fe163666b4841961360",
-      "bytes": 11854
+      "sha256": "82e56ee199b0c95a16d5c03a36e25d5b8b0ebddd861164ca0625b2783aa76d0a",
+      "bytes": 735
     }
   }
 }
