@@ -1,9 +1,9 @@
-/* E-REPORT/SAGS V4.8.6B · DESKTOP AUTO DOWNLOAD · SHA-256 DELTA CACHE */
-const CACHE_NAME="sags-app-shell-v4.8.4b";
-const META_CACHE_NAME="sags-app-meta-v4.8.4b";
+/* E-REPORT/SAGS V4.8.7B · DESKTOP AUTO DOWNLOAD · SHA-256 DELTA CACHE */
+const CACHE_NAME="sags-app-shell-v4.8.7b";
+const META_CACHE_NAME="sags-app-meta-v4.8.7b";
 const ASSET_MANIFEST_URL="./asset-manifest.json";
-const BUILD="V4.8.6B-LAYERED-PDF-FLEX-WORKFLOW-AUTH-DATE-PDF-EXACT";
-const DISPLAY_VERSION="V4.8.6B";
+const BUILD="V4.8.7B-LAYERED-PDF-FLEX-WORKFLOW-FORM-MANAGER-PRO";
+const DISPLAY_VERSION="V4.8.7B";
 
 function canonicalUrl(input){try{const u=input instanceof URL?new URL(input.href):new URL(typeof input==="string"?input:input.url,self.location.href);u.search="";u.hash="";return u.href}catch(_){return input?.url||String(input||"")}}
 function scopeUrl(path){try{return new URL(path,self.registration.scope).href}catch(_){return String(path||"")}}

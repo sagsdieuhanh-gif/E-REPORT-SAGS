@@ -2683,7 +2683,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <style id="sags-v115-clean-ui">
 #roleLoginHint,#v1014UsernameLoginNote,.templateNote,.fs09qUsageNote,.v377CreateFormNote,.v1019Hint{display:none!important}
 </style>
-<link rel="stylesheet" href="./app.bundle.css?v=V4.8.6B">
+<link rel="stylesheet" href="./app.bundle.css?v=V4.8.7B">
 </head>
 <body>
 <div aria-hidden="true" id="roleHomeIdle"></div>
@@ -3903,7 +3903,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <button class="cancel" onclick="closeSignature();draw()">Đóng</button>
 </div>
 </div></div>
-<div class="hint" id="statusHint">V4.8.6B · DESKTOP AUTO DOWNLOAD · FORM MANAGER</div>
+<div class="hint" id="statusHint">V4.8.7B · DESKTOP AUTO DOWNLOAD · FORM MANAGER</div>
 <script src="./network-diagnostics.js?v=V4.7.6"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
@@ -3913,7 +3913,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <script>
 window.SAGS_FIREBASE_AUTH_SDK_READY = !!(window.firebase && typeof window.firebase.auth === "function");
 </script>
-<script src="./app.js?v=V4.8.6B" data-phase="config"></script>
+<script src="./app.js?v=V4.8.7B" data-phase="config"></script>
 <script>
 let suppressModalClickUntil=0;
 function armModalGhostClickBlock(ms=650){
@@ -8225,7 +8225,7 @@ function concatBytes(parts){
   return out;
 }
 async function canvasesToPdfFile(canvases,fileName){
-  // V4.8.6B FAST PDF: JPEG compression is the slowest CPU stage on most phones.
+  // V4.8.7B FAST PDF: JPEG compression is the slowest CPU stage on most phones.
   // Encode at most two pages concurrently: faster for 2-page FSAGS documents while
   // avoiding the memory spike of encoding every page at once. iOS keeps its separate
   // low-memory sequential encoder below.
@@ -8484,11 +8484,11 @@ function v481PaintBbbtCxrNo(canvas,n){
   ctx.fillText("CXR No: "+formatBBBTCxrNo(n),(bw-42)*sx,30*sy);ctx.restore();
 }
 function v481DeferredPersistAfterPdf(){
-  const job=()=>{try{persist()}catch(e){console.warn("V4.8.6B deferred PDF persist",e)}};
+  const job=()=>{try{persist()}catch(e){console.warn("V4.8.7B deferred PDF persist",e)}};
   try{if(typeof requestIdleCallback==="function")requestIdleCallback(job,{timeout:5000});else setTimeout(job,3500)}catch(_){setTimeout(job,3500)}
 }
 async function sendReport(kind="all"){
-  // V4.8.6B FAST PDF: exporting must not re-save the whole flight state or rebuild
+  // V4.8.7B FAST PDF: exporting must not re-save the whole flight state or rebuild
   // every SVG page. Normal edit flows already keep the live SVG in sync. Falling
   // back to draw() is retained for builds where the direct fast renderer is absent.
   // This is especially important when state contains photos/signatures: persist()
@@ -8543,7 +8543,7 @@ async function sendReport(kind="all"){
   window.__SAGS_EXPORT_BATCH_DRAWN=true;
   try{
     const pages=[];
-    // V4.8.6B: start the globally unique BBBT number transaction immediately and
+    // V4.8.7B: start the globally unique BBBT number transaction immediately and
     // let page rendering run at the same time. The number is painted once after the
     // transaction resolves, so network latency and canvas work overlap safely.
     let bbbtNoJob=null;
@@ -11056,8 +11056,8 @@ try {
   if(h) h.textContent="Lỗi khởi tạo: "+err.message;
   alert("Lỗi JavaScript: "+err.message);
 }
-const APP_BUILD_VERSION="V4.8.6B-LAYERED-PDF-FLEX-WORKFLOW-AUTH-DATE-PDF-EXACT";
-const APP_DISPLAY_VERSION="V4.8.6B";
+const APP_BUILD_VERSION="V4.8.7B-LAYERED-PDF-FLEX-WORKFLOW-FORM-MANAGER-PRO";
+const APP_DISPLAY_VERSION="V4.8.7B";
 // V1.1.103: hotfix duy nhất lỗi Firebase RTDB ancestor/descendant khi đồng bộ DAILY ROSTER; không thay đổi nghiệp vụ khác.
 // V4.21 — SAFE UPDATE SAVE
 // Before switching to a newly installed app version, force-save all current
@@ -16621,7 +16621,7 @@ async function allocateGlobalBBBTCxrNo(){
     return next;
   });
     state.bbbtCxrNo=assigned;
-    // V4.8.6B: do not synchronously serialize the entire flight envelope here.
+    // V4.8.7B: do not synchronously serialize the entire flight envelope here.
     // The number is already committed atomically in Firestore and is painted into
     // the PDF from live state. A lightweight deferred local save is scheduled after
     // PDF creation so export latency is not dominated by large localStorage writes.
@@ -22554,7 +22554,7 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
 })();
 </script>
 <script type="module" src="./ai.js?v=V4.7.6"></script>
-<script src="./app.js?v=V4.8.6B" data-phase="archive"></script>
+<script src="./app.js?v=V4.8.7B" data-phase="archive"></script>
 <script id="v120-build02-fixes">
 /* V1.20 BUILD 02 — background persistence, VHTTB, per-account usage detail, progress dedupe. */
 (function(){
@@ -22996,7 +22996,7 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
   setTimeout(()=>{ensureUi();startCloseoutListener();refreshValidation();try{window.sagsV440CleanupExpiredCloseoutEvents?.()}catch(_){}},500);
 })();
 </script>
-<script src="./app.js?v=V4.8.6B" data-phase="tools"></script>
+<script src="./app.js?v=V4.8.7B" data-phase="tools"></script>
 <script id="v173-quick-time">
 (function(){
   "use strict";
@@ -25009,7 +25009,7 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
   }
 }
 </style>
-<script src="./app.js?v=V4.8.6B" data-phase="flight"></script>
+<script src="./app.js?v=V4.8.7B" data-phase="flight"></script>
 <script id="v191IOSInteractionFix">
 (()=>{
   'use strict';
@@ -25259,7 +25259,7 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
   window.addEventListener('pageshow',()=>setTimeout(refresh,120),{passive:true});
 })();
 </script>
-<script src="./app.js?v=V4.8.6B" data-phase="control"></script>
+<script src="./app.js?v=V4.8.7B" data-phase="control"></script>
 <style id="v330-group-permission-style">
 #v330GroupPermPanel{margin:12px 0 8px;padding:11px;border:1px solid #cbd9e6;border-radius:12px;background:#f7fbff;box-sizing:border-box}
 .v330GpHead{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;color:#173b5d;font:900 13px Arial}.v330GpSub{margin-top:4px;color:#61778b;font:700 11px/1.35 Arial}
@@ -25486,7 +25486,7 @@ function install(){addPermissions();ensureUi();ensureButton();refreshCount();lis
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install,350),{once:true});else setTimeout(install,350);root.addEventListener('pageshow',()=>setTimeout(install,250),{passive:true});
 })(window);
 </script>
-<script src="./app.js?v=V4.8.6B" data-phase="postcontrol"></script>
+<script src="./app.js?v=V4.8.7B" data-phase="postcontrol"></script>
 <script id="v377AdminFormToolsScript">
 /* V3.80 — AD form tools row + create all forms + closeout notice cleanup. */
 (function(){
@@ -25537,7 +25537,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   setInterval(refresh,5000);
 })();
 </script>
-<script src="./app.js?v=V4.8.6B" data-phase="layout"></script>
+<script src="./app.js?v=V4.8.7B" data-phase="layout"></script>
 <script id="v1020-fs208-geometry-migration">
 (function(){
   const REV='V1020-EXACT-PAGE13';
@@ -26118,11 +26118,20 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   function v1011AddExtraZone(){
     if(!canTune()||!selected)return status('Hãy chọn một ô trên biểu mẫu trước.');
     const f=fieldFor(selected.page,selected.key),c=cfg(selected.page,selected.key,true),list=extraZones(c,true);v1017EnsureExtraIds(f,list);
-    const source=(selected?.extra!==null&&selected?.extra!==undefined)?{...(extraCfg(c,selected.extra,false)||{})}:{hx:0,hy:0,hw:0,hh:0,dx:0,dy:0,dw:0,dh:0,fs:Number(selectedDisplayCfg(false)?.fs||c.fs)||0,align:String(selectedDisplayCfg(false)?.align||c.align||'left'),weight:String(selectedDisplayCfg(false)?.weight||c.weight||'700'),italic:!!(selectedDisplayCfg(false)?.italic??c.italic),underline:!!(selectedDisplayCfg(false)?.underline??c.underline),hidden:false};
+    const fromExtra=selected?.extra!==null&&selected?.extra!==undefined,src=fromExtra?(extraCfg(c,selected.extra,false)||{}):null,lineIdx=fromExtra?null:selected?.line;
+    const source=fromExtra?{...src}:{hx:0,hy:0,hw:0,hh:0,dx:0,dy:0,dw:0,dh:0};
+    // V4.8.7: COPY must freeze the EFFECTIVE typography, not raw overrides/fallbacks.
+    // This prevents newly copied rows from silently inheriting a different base font later.
+    source.fs=Math.max(7,Math.min(40,Number(src?.fs)||fontOf(f,c,lineIdx)||Number(f.font)||16));
+    source.align=String(src?.align||alignOf(f,c,lineIdx)||'left');
+    source.weight=String(src?.weight||weightOf(c,lineIdx)||'700');
+    source.italic=src?.italic!==undefined?!!src.italic:italicOf(c,lineIdx);
+    source.underline=src?.underline!==undefined?!!src.underline:underlineOf(c,lineIdx);
+    source.hidden=false;source.touchDisabled=false;
     delete source.dataId;source.dataId=v1017NewExtraId();list.push(source);
     selected={page:selected.page,key:selected.key,line:null,extra:list.length-1};
     selectedMany.clear();multiMode=false;
-    redraw();status('✓ Đã thêm VÙNG PHỤ '+list.length+' ĐỘC LẬP. Vùng này có dữ liệu riêng, không dùng chung với vùng gốc/vùng phụ khác.');
+    redraw();status('✓ Đã COPY VÙNG PHỤ '+list.length+' với đúng font/style hiện tại. Vùng mới có dữ liệu riêng.');
   }
   function v1011RemoveExtraZone(){
     if(!canTune()||!selected||selected.extra===null||selected.extra===undefined)return status('Hãy chọn một VÙNG PHỤ để xóa.');
@@ -26186,10 +26195,19 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   }
   function v1005SetFieldFont(f,size){
     const c=cfg(f.page,f.key,true);c.fs=size;
-    // Existing per-line font overrides would otherwise defeat synchronization.
-    if(c.lines&&typeof c.lines==='object'){
-      for(const lc of Object.values(c.lines)){if(lc&&typeof lc==='object')lc.fs=size}
+    // Existing per-line / extra-zone overrides would otherwise defeat synchronization.
+    if(c.lines&&typeof c.lines==='object')for(const lc of Object.values(c.lines)){if(lc&&typeof lc==='object')lc.fs=size}
+    if(Array.isArray(c.extraZones))for(const ext of c.extraZones){if(ext&&typeof ext==='object')ext.fs=size}
+  }
+  function v1021SyncExtraTypography(){
+    if(!canTune())return alert('Chỉ AD được phép đồng bộ typography.');
+    let fields=0,zones=0;
+    for(const f of allFields().filter(x=>pages().includes(Number(x.page))&&eligibleField(x))){
+      const c=cfg(f.page,f.key,false)||{},list=extraZones(c,false)||[];if(!list.length)continue;fields++;
+      const fs=Number(c.fs)||baseFont(f.page,f.key)||Number(f.font)||16,al=String(c.align||f.align||'left'),wt=String(c.weight||'700'),it=!!c.italic,un=!!c.underline;
+      for(const ext of list){if(!ext)continue;ext.fs=fs;ext.align=al;ext.weight=wt;ext.italic=it;ext.underline=un;zones++}
     }
+    redraw();status(`✓ Đã đồng bộ typography ${zones} VÙNG PHỤ thuộc ${fields} field theo VÙNG GỐC. Hình học/vị trí và dữ liệu riêng không đổi.`);
   }
   function v1005ApplyFontSizes(){
     if(!canTune())return alert('Chỉ AD được phép chỉnh size biểu mẫu.');
@@ -26369,7 +26387,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
         </div>
         <div class="v1005FontSyncActions">
           <button type="button" class="v1005Read" onclick="v1005ReadCurrentFontSizes()">↻ LẤY SIZE HIỆN TẠI</button>
-          <button type="button" class="v1005Apply" onclick="v1005ApplyFontSizes()">✓ ÁP DỤNG TOÀN FORM</button>
+          <button type="button" class="v1005Apply" onclick="v1005ApplyFontSizes()">✓ ÁP DỤNG TOÀN FORM</button><button type="button" class="v1005Apply" onclick="v1021SyncExtraTypography()">= ĐỒNG BỘ VÙNG PHỤ</button>
         </div>
       </div>
       <div class="v368Rows three"><button id="v380MultiBtn" onclick="v380ToggleMulti()">☑ CHỌN NHIỀU</button><button onclick="v380SelectSimilar('row')">↔ CÙNG HÀNG</button><button onclick="v380SelectSimilar('col')">↕ CÙNG CỘT</button></div>
@@ -26391,7 +26409,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     document.body.appendChild(p);v1009InstallPanelDrag();v1009RestorePanelPosition();window.v368RefreshTuneButton();renderPanel();
   }
   window.v368RefreshTuneButton=function(){const b=q('#v368LayoutTuneBtn');if(!b)return;const slot=q('#v377LayoutTuneSlot');if(slot&&b.parentNode!==slot)slot.appendChild(b);const ad=canTune(),def=inferredFormDef(),hasForm=!!def&&Array.isArray(def.pages)&&def.pages.length>0;b.style.display=ad?'block':'none';b.title=hasForm?'Căn chỉnh biểu mẫu đang mở':'Mở một biểu mẫu rồi bấm CĂN CHỈNH';if(!ad&&mode)close(true)};
-  window.v371LayoutZone=setZone;window.v371LayoutResize=resizeTouch;window.v380DisplayResize=resizeDisplay;window.v380ToggleMulti=toggleMulti;window.v380SelectSimilar=selectSimilar;window.v380GroupGeom=groupGeom;window.v371LayoutResetZone=resetZone;window.v368LayoutMove=move;window.v368LayoutFont=font;window.v368LayoutLine=line;window.v368LayoutResetField=resetField;window.v368LayoutResetForm=resetForm;window.v368LayoutSave=save;window.v372LayoutExport=exportLayoutFile;window.v368LayoutClose=()=>close(false);window.v373LayoutAlign=setAlign;window.v373LineAll=lineAll;window.v373LineStep=lineStep;window.v376LayoutToggleTouch=toggleTouch;window.v376LayoutToggleDisplay=toggleDisplay;window.v376LayoutWeight=setWeight;window.v376LayoutItalic=toggleItalic;window.v376LayoutUnderline=toggleUnderline;window.v1005ApplyFontSizes=v1005ApplyFontSizes;window.v1005ReadCurrentFontSizes=v1005ReadCurrentFontSizes;window.v1009ApplyZoneGeometry=v1009ApplyZoneGeometry;window.v1009ResetZoneGeometry=v1009ResetZoneGeometry;window.v1009ResetPanelPosition=v1009ResetPanelPosition;window.v1011AddExtraZone=v1011AddExtraZone;window.v1011RemoveExtraZone=v1011RemoveExtraZone;window.v1020DeleteSelectedZone=v1020DeleteSelectedZone;
+  window.v371LayoutZone=setZone;window.v371LayoutResize=resizeTouch;window.v380DisplayResize=resizeDisplay;window.v380ToggleMulti=toggleMulti;window.v380SelectSimilar=selectSimilar;window.v380GroupGeom=groupGeom;window.v371LayoutResetZone=resetZone;window.v368LayoutMove=move;window.v368LayoutFont=font;window.v368LayoutLine=line;window.v368LayoutResetField=resetField;window.v368LayoutResetForm=resetForm;window.v368LayoutSave=save;window.v372LayoutExport=exportLayoutFile;window.v368LayoutClose=()=>close(false);window.v373LayoutAlign=setAlign;window.v373LineAll=lineAll;window.v373LineStep=lineStep;window.v376LayoutToggleTouch=toggleTouch;window.v376LayoutToggleDisplay=toggleDisplay;window.v376LayoutWeight=setWeight;window.v376LayoutItalic=toggleItalic;window.v376LayoutUnderline=toggleUnderline;window.v1005ApplyFontSizes=v1005ApplyFontSizes;window.v1005ReadCurrentFontSizes=v1005ReadCurrentFontSizes;window.v1021SyncExtraTypography=v1021SyncExtraTypography;window.v1009ApplyZoneGeometry=v1009ApplyZoneGeometry;window.v1009ResetZoneGeometry=v1009ResetZoneGeometry;window.v1009ResetPanelPosition=v1009ResetPanelPosition;window.v1011AddExtraZone=v1011AddExtraZone;window.v1011RemoveExtraZone=v1011RemoveExtraZone;window.v1020DeleteSelectedZone=v1020DeleteSelectedZone;
   let lastObservedGroup='';function autoRefreshForm(){const g=group();if(g!==lastObservedGroup){lastObservedGroup=g;try{window.v368RefreshTuneButton?.();if(mode){selected=null;redraw();v1005RefreshFontInputs(true)}}catch(e){}}}
   setInterval(autoRefreshForm,3000);
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{makeUI();setTimeout(()=>{try{draw()}catch(e){};autoRefreshForm()},50)});else{makeUI();setTimeout(()=>{try{draw()}catch(e){};autoRefreshForm()},50)}
@@ -26658,8 +26676,8 @@ root.v378ResetAllOldRecords=async function(){
   };
 })();
 </script>
-<script src="./app.js?v=V4.8.6B" data-phase="performance"></script>
-<script src="./daily-roster.js?v=V4.8.6B" id="dailyRosterCleanV11102"></script>
+<script src="./app.js?v=V4.8.7B" data-phase="performance"></script>
+<script src="./daily-roster.js?v=V4.8.7B" id="dailyRosterCleanV11102"></script>
 <script id="v1016-delete-profile-fix">
 /* V1.0.16 · XÓA tài khoản phải xóa đúng profile E-Report, không chỉ Auth/users. */
 (function(){
@@ -28276,11 +28294,11 @@ body.v38-clean-workflow #v1134QuickTimeBtn{background:#eef6ff!important;color:#0
 })();
 </script>
 
-<script src="./runtime.bundle.js?v=V4.8.6B"></script>
+<script src="./runtime.bundle.js?v=V4.8.7B"></script>
 <script id="v460RuntimeGuard">
 (()=>{
   setTimeout(async()=>{
-    const ok=String(window.__SAGS_RUNTIME_BUILD__||'')==='V4.8.6B-LAYERED-PDF-FLEX-WORKFLOW-AUTH-DATE-PDF-EXACT';
+    const ok=String(window.__SAGS_RUNTIME_BUILD__||'')==='V4.8.7B-LAYERED-PDF-FLEX-WORKFLOW-FORM-MANAGER-PRO';
     if(ok)return;
     console.error('E-REPORT runtime mismatch',window.__SAGS_RUNTIME_BUILD__);
     try{if(await window.sagsRepairMixedBuild?.('runtime-mismatch'))return;}catch(_e){}
@@ -28314,7 +28332,7 @@ window.adminResetAccountPassword=async function(uid){
 };
 </script>
 <script src="./features.bundle.js?v=V4.7.6"></script>
-<script src="./roster-lite.js?v=V4.8.6B" id="v477MailboxLite"></script>
-<script src="./pinned-flight.js?v=V4.8.6B" id="v478PinnedFlight"></script>
+<script src="./roster-lite.js?v=V4.8.7B" id="v477MailboxLite"></script>
+<script src="./pinned-flight.js?v=V4.8.7B" id="v478PinnedFlight"></script>
 </body>
 </html>

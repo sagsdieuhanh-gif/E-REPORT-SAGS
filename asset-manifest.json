@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V4.8.6B",
-  "build": "V4.8.6B-LAYERED-PDF-FLEX-WORKFLOW-AUTH-DATE-PDF-EXACT",
+  "version": "V4.8.7B",
+  "build": "V4.8.7B-LAYERED-PDF-FLEX-WORKFLOW-FORM-MANAGER-PRO",
   "strategy": "stable-cache-sha256-delta",
   "bootstrapChanged": [
     "./index.html",
@@ -162,8 +162,8 @@
       "bytes": 104295
     },
     "./index.html": {
-      "sha256": "ded9ca0f9a8960cc8d03f6b3d83b9e27092410015f4d57342989505837f34d20",
-      "bytes": 1775273
+      "sha256": "91fa3b40a48a3394bb9c914db955ef0b6b2ab83a6fa8173b89e4bc1847c84d18",
+      "bytes": 1776743
     },
     "./ket-so.wav": {
       "sha256": "cf03e8d4021f989f61fd12249f282ae2e53588cc9d55d68393778223db8132a1",
@@ -298,21 +298,20 @@
       "bytes": 10925
     },
     "./runtime.bundle.js": {
-      "sha256": "b132dc58c27dfb0e83efda0d5b14dcce6c4fe0f7b06bf9cd58a2f64aee053d28",
-      "bytes": 447820
+      "sha256": "b43770b133259382d11e6cc9c9afb5b4771e47342cf2d99d07204b2285d0eda6",
+      "bytes": 458053
     },
     "./sags-logo.png": {
       "sha256": "84bc554c3b44afe4190afcbe74f7c7aed9fad478c328d63502a7d225dd60d7ad",
       "bytes": 25408
     },
     "./service-worker.js": {
-      "sha256": "db56782d073a917ed44beb0bc9580cd0e8e61729f1b7ca850adccc65ec69893d",
-      "bytes": 7307
+      "sha256": "49ccd743fc0d7356f2131dd3f2a1f76ba3ecacbc89a0ca55e83d660217096340",
+      "bytes": 7304
     },
     "./version.json": {
-      "sha256": "9ba98939a762ca5c3ffed67a9a4cc0aee84377c811aa0ab1f344d4c33244acc6",
-      "bytes": 917
+      "sha256": "33513b4f70b1f05d1d57236900c75eedf814ca7b3f48f6acafaa0ed247c4581a",
+      "bytes": 831
     }
-  },
-  "displayVersion": "V4.8.6B"
+  }
 }
