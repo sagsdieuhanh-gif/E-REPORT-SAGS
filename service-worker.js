@@ -1,9 +1,9 @@
-/* E-REPORT/SAGS V4.8.3B · DESKTOP AUTO DOWNLOAD · SHA-256 DELTA CACHE */
+/* E-REPORT/SAGS V4.8.3A · DESKTOP AUTO DOWNLOAD · SHA-256 DELTA CACHE */
 const CACHE_NAME="sags-app-shell-v1";
 const META_CACHE_NAME="sags-app-meta-v1";
 const ASSET_MANIFEST_URL="./asset-manifest.json";
-const BUILD="V4.8.3B-LAYERED-PDF-FLEX-WORKFLOW";
-const DISPLAY_VERSION="V4.8.3B";
+const BUILD="V4.8.3A-TURBO-CACHE-FLEX-WORKFLOW";
+const DISPLAY_VERSION="V4.8.3A";
 
 function canonicalUrl(input){try{const u=input instanceof URL?new URL(input.href):new URL(typeof input==="string"?input:input.url,self.location.href);u.search="";u.hash="";return u.href}catch(_){return input?.url||String(input||"")}}
 function scopeUrl(path){try{return new URL(path,self.registration.scope).href}catch(_){return String(path||"")}}
@@ -14,7 +14,7 @@ async function validateRelease(){const v=await fetchJson("./version.json");if(St
 async function readStoredManifest(){try{const c=await caches.open(META_CACHE_NAME),r=await c.match(scopeUrl(ASSET_MANIFEST_URL));return r?await r.json():null}catch(_){return null}}
 async function storeManifest(man){const c=await caches.open(META_CACHE_NAME);await c.put(scopeUrl(ASSET_MANIFEST_URL),new Response(JSON.stringify(man),{headers:{"Content-Type":"application/json; charset=utf-8","Cache-Control":"no-store"}}))}
 async function fetchCurrentManifest(){const x=await fetchJson(ASSET_MANIFEST_URL);if(String(x.data?.build||"")!==BUILD)throw new Error("asset-manifest BUILD mismatch");return x.data}
-async function migrateLegacyCaches(){const keys=await caches.keys(),legacy=keys.filter(k=>k!==CACHE_NAME&&k!==META_CACHE_NAME&&(k.startsWith("sags-v")||k.startsWith("sags-cache")||k.startsWith("sags-")));if(!legacy.length)return;const dst=await caches.open(CACHE_NAME);for(const name of legacy){try{const src=await caches.open(name);for(const req of await src.keys()){const key=canonicalUrl(req);if(await dst.match(key))continue;const r=await src.match(req);if(r)await safePut(dst,key,r)}}catch(e){console.info("V4.8.3B legacy migrate skipped",name,e?.message||e)}}}
+async function migrateLegacyCaches(){const keys=await caches.keys(),legacy=keys.filter(k=>k!==CACHE_NAME&&k!==META_CACHE_NAME&&(k.startsWith("sags-v")||k.startsWith("sags-cache")||k.startsWith("sags-")));if(!legacy.length)return;const dst=await caches.open(CACHE_NAME);for(const name of legacy){try{const src=await caches.open(name);for(const req of await src.keys()){const key=canonicalUrl(req);if(await dst.match(key))continue;const r=await src.match(req);if(r)await safePut(dst,key,r)}}catch(e){console.info("V4.8.3A legacy migrate skipped",name,e?.message||e)}}}
 async function verifyAsset(response,meta,path){
   if(!meta?.sha256||!Number.isSafeInteger(meta.bytes))throw new Error("Missing release checksum: "+path);
   const bytes=await response.clone().arrayBuffer();

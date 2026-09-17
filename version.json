@@ -1,10 +1,10 @@
 {
-  "version": "V4.8.3B",
-  "displayVersion": "V4.8.3B",
-  "label": "V4.8.3B LAYERED PDF + FLEX WORKFLOW",
-  "build": "V4.8.3B-LAYERED-PDF-FLEX-WORKFLOW",
+  "version": "V4.8.3A",
+  "displayVersion": "V4.8.3A",
+  "label": "V4.8.3A TURBO CACHE + FLEX WORKFLOW",
+  "build": "V4.8.3A-TURBO-CACHE-FLEX-WORKFLOW",
   "releasedAt": "2026-09-17T03:55:00Z",
-  "type": "pdf-performance-and-workflow-fix-b",
+  "type": "pdf-performance-and-workflow-fix-a",
   "notes": "Remove hard previous-worker completion gate. Each current roster assignment can be opened independently; shared workspace edits are reused when available. Exact DEP assignment clicks no longer bypass independent-DEP handling. PDF experiment behavior is otherwise unchanged.",
-  "message": "V4.8.3B · Không khóa B theo nút Hoàn tất của A"
+  "message": "V4.8.3A · Không khóa B theo nút Hoàn tất của A"
 }
