@@ -4,7 +4,7 @@ function sagsObserveCompletionV480(result, callback){
   void Promise.resolve(result).then(callback,callback)
     .catch(error=>console.warn('E-REPORT UI completion hook',error));
 }
-window.__SAGS_RUNTIME_BUILD__="V4.8.2B-LAYERED-PDF";
+window.__SAGS_RUNTIME_BUILD__="V4.8.3B-LAYERED-PDF-FLEX-WORKFLOW";
 /* E-REPORT/SAGS V4.6.2 · LIVE TEST EDIT · FORM MANAGER + FAST PDF */
 if(typeof window!=="undefined")window.__SAGS_V450_FORM_MANAGER_LAYOUT=true;
 
@@ -4767,6 +4767,50 @@ if(typeof window!=="undefined")window.__SAGS_V450_FORM_MANAGER_LAYOUT=true;
     return rows[0]||null;
   }
 
+  async function independentCandidateExact(fid,aid){
+    const date=opDate(),man=await manifest(date),u=me();
+    const dep=items(man).find(x=>S(x.assignmentId)===S(aid)&&isDep(x)&&fidOf(man,x,date)===S(fid)&&norm(x.user||x.targetUser)===u)||null;
+    if(!dep)return null;
+    const st=await sessionState(dep.assignmentId);
+    if(completed(st))return null;
+    if(st?.v2210IndependentDep===true){
+      return {date,man,dep,st,pred:{exists:true,done:false,item:null,st:null,reason:S(st.v2210IndependentReason)||'INDEPENDENT_ALREADY_ACTIVE'},existing:true};
+    }
+    const pred=await predecessorInfo(date,man,dep);
+    return pred.done?null:{date,man,dep,st,pred,existing:false};
+  }
+
+  function envelopeHasWork(env){
+    const st=env?.state&&typeof env.state==='object'?env.state:{};
+    return Object.values(st).some(v=>{if(v===true)return true;if(v===false||v===null||v===undefined)return false;if(Array.isArray(v))return v.length>0;if(typeof v==='object')return Object.keys(v).length>0;return S(v)!==''});
+  }
+  async function continuationEnvelopeFor(dep,fid,st,pred){
+    // Keep an already-active B session first. Otherwise prefer the shared flight workspace:
+    // if A entered data but did not press HOÀN TẤT, B continues from the latest shared snapshot.
+    if(st?.v2210IndependentDep===true&&envelopeHasWork(st?.envelope)){
+      return {env:clone(st.envelope),source:'OWN_ACTIVE',departureOnly:st?.v2210DepartureOnly===true};
+    }
+    const wk=S(dep?.workspaceKey||dep?.rosterWorkspaceKey);
+    if(wk){
+      try{
+        const w=await once(`roster_flight_workspaces/${safe(wk)}/envelope`);
+        if(w&&typeof w==='object'&&envelopeHasWork(w)){
+          const env=clone(w);
+          env.rosterAssignmentId=S(dep.assignmentId);
+          env.mainForm=localGroup(dep);env.activeFormGroup=env.mainForm;env.scrollY=0;
+          env.v2210ContinuedSharedWorkspace=true;env.v2210IndependentReason=S(pred?.reason);env.v2210ContinuedAtMs=Date.now();
+          return {env,source:'SHARED_WORKSPACE',departureOnly:false};
+        }
+      }catch(e){console.info('V4.8.3 shared workspace continuation',e?.message||e)}
+    }
+    if(st?.envelope&&typeof st.envelope==='object'&&envelopeHasWork(st.envelope)){
+      const env=clone(st.envelope);env.rosterAssignmentId=S(dep.assignmentId);env.mainForm=localGroup(dep);env.activeFormGroup=env.mainForm;env.scrollY=0;
+      env.v2210ContinuedOwnSession=true;env.v2210IndependentReason=S(pred?.reason);env.v2210ContinuedAtMs=Date.now();
+      return {env,source:'OWN_SESSION',departureOnly:false};
+    }
+    return {env:independentEnvelope(dep,fid,S(pred?.reason)),source:'DEPARTURE_ONLY',departureOnly:true};
+  }
+
   async function ensureLocalAndOpen(dep,env){
     let meta=null;
     try{
@@ -4812,9 +4856,10 @@ if(typeof window!=="undefined")window.__SAGS_V450_FORM_MANAGER_LAYOUT=true;
 
     const instance=await acquireDepInstance(date,man,dep,fid,pred.reason);
     const co=await acquireCoClaim(date,man,dep,fid);
-    const env=independentEnvelope(dep,fid,pred.reason);
+    const prepared=await continuationEnvelopeFor(dep,fid,st,pred);
+    const env=prepared.env;
     env.v22FormInstanceId=instance.instanceId;
-    env.v22FormInstanceMode='INDEPENDENT_DEP';
+    env.v22FormInstanceMode=prepared.source==='SHARED_WORKSPACE'?'CONTINUE_SHARED':'INDEPENDENT_DEP';
 
     const ref=db(`roster_sessions/${safe(aid)}`);
     const tx=await ref.transaction(cur=>{
@@ -4849,7 +4894,9 @@ if(typeof window!=="undefined")window.__SAGS_V450_FORM_MANAGER_LAYOUT=true;
         v2210IndependentEligible:true,
         v2210IndependentDep:true,
         v2210IndependentReason:pred.reason,
-        v2210DepartureOnly:true,
+        v2210ContinuationSource:prepared.source,
+        v2210ContinuedSharedWorkspace:prepared.source==='SHARED_WORKSPACE',
+        v2210DepartureOnly:prepared.departureOnly===true,
         v2210IndependentClaimAtMs:now,
         v2210IndependentClaimBy:u,
         updatedAtMs:now
@@ -4998,18 +5045,21 @@ if(typeof window!=="undefined")window.__SAGS_V450_FORM_MANAGER_LAYOUT=true;
     if(base.__v2210IndependentDep){receivePatched=true;return true}
 
     const wrapped=async function(fid){
-      // An explicit assignmentId is authoritative; never substitute another DEP.
-      if(S(arguments[1]))return base.apply(this,arguments);
+      // V4.8.3: an explicit assignmentId stays authoritative, but it must NOT bypass
+      // independent DEP handling. This was the remaining path that still blocked B
+      // when A had not pressed HOÀN TẤT.
+      const requestedAid=S(arguments[1]);
       try{
-        const cand=await independentCandidate(S(fid));
+        const cand=requestedAid
+          ?await independentCandidateExact(S(fid),requestedAid)
+          :await independentCandidate(S(fid));
         if(cand){
           const result=await claimIndependent(cand);
           await ensureLocalAndOpen(cand.dep,result.env);
-          independentClaims+=result.existing?0:0;
           return true;
         }
       }catch(e){
-        alert('Không nhận được DEP độc lập: '+S(e?.message||e));
+        alert('Không nhận được phần việc được phân: '+S(e?.message||e));
         return false;
       }
       return base.apply(this,arguments);
@@ -7005,7 +7055,7 @@ async function bootV45Layout(){await loadPublished();mergeRegistry();syncLegacyT
    Direct canvas field renderer retained; the export strategy below is variant-specific. */
 (function(root){
 'use strict';
-const BUILD='V4.8.2B-LAYERED-PDF';if(root.__SAGS_V450_FAST_PDF===BUILD)return;root.__SAGS_V450_FAST_PDF=BUILD;
+const BUILD='V4.8.3B-LAYERED-PDF-FLEX-WORKFLOW';if(root.__SAGS_V450_FAST_PDF===BUILD)return;root.__SAGS_V450_FAST_PDF=BUILD;
 const perf=()=>root.performance?.now?.()??Date.now(),sigCache=new Map();
 function S(v){return String(v??'')}
 function num(v,d=0){const n=Number(v);return Number.isFinite(n)?n:d}
@@ -7048,5 +7098,5 @@ const fastPortrait=pageNo=>fastPage(pageNo,false),fastLandscape=()=>fastPage(13,
 root.canvasesToPdfFile=canvasesToPdfFile=async function(canvases,fileName){return layeredPdf(canvases,fileName,false)};root.canvasesToLandscapePdfFile=canvasesToLandscapePdfFile=async function(canvases,fileName){return layeredPdf(canvases,fileName,true)};
 const baseSend=root.sendReport;if(typeof baseSend==='function'&&!baseSend.__sagsV482Layer){const send=async function(kind='all'){const P={build:BUILD,mode:'LAYERED_BACKGROUND_OVERLAY',kind:S(kind),startedAt:Date.now(),pages:[],renderMs:0,encodeCoreMs:0,totalMs:0};root.__SAGS_V450_PDF_RUN=P;const t=perf();try{return await baseSend.apply(this,arguments)}finally{P.totalMs=perf()-t;P.finishedAt=Date.now();root.__SAGS_V450_PDF_PERF=P;try{localStorage.setItem('sags.v450.pdfPerf',JSON.stringify(P))}catch(_){}root.__SAGS_V450_PDF_RUN=null;try{const st=document.getElementById('exportStatus');if(st&&P.totalMs)st.textContent+=` · LAYER PDF ${(P.totalMs/1000).toFixed(2)}s`}catch(_){}}};send.__sagsV482Layer=true;send.__sagsOriginal=baseSend;root.sendReport=send;try{sendReport=send}catch(_){}}
 root.sagsV450PdfPerformance=()=>root.__SAGS_V450_PDF_PERF||(()=>{try{return JSON.parse(localStorage.getItem('sags.v450.pdfPerf')||'null')}catch(_){return null}})();
-console.info('E-REPORT/SAGS V4.8.2B Layered PDF active');
+console.info('E-REPORT/SAGS V4.8.3B Layered PDF active');
 })(typeof window!=='undefined'?window:globalThis);
