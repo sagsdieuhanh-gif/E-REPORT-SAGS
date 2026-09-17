@@ -4,7 +4,7 @@ function sagsObserveCompletionV480(result, callback){
   void Promise.resolve(result).then(callback,callback)
     .catch(error=>console.warn('E-REPORT UI completion hook',error));
 }
-window.__SAGS_RUNTIME_BUILD__="V4.8.11B-ADMIN-MANAGEMENT-CENTER";
+window.__SAGS_RUNTIME_BUILD__="V4.8.12B-ADMIN-CENTER-VISIBILITY-FIX";
 /* E-REPORT/SAGS V4.6.2 · LIVE TEST EDIT · FORM MANAGER + FAST PDF */
 if(typeof window!=="undefined")window.__SAGS_V450_FORM_MANAGER_LAYOUT=true;
 
@@ -6895,7 +6895,7 @@ ${files.map((f,i)=>String(i+1)+'. '+f.name).join('\n')}`;}
 (function(root){
 'use strict';
 if(root.__SAGS_V440_FORM_MANAGER_LOADED)return;root.__SAGS_V440_FORM_MANAGER_LOADED=true;
-const BUILD='V4.8.11B-ADMIN-MANAGEMENT-CENTER',REG_URL='./forms.registry.json',LOCAL_KEY='sagsFormRegistryDraftV450',OLD_LOCAL_KEY='sagsFormRegistryDraftV440',DB_NAME='sags-form-assets-v440',STORE='assets';
+const BUILD='V4.8.12B-ADMIN-CENTER-VISIBILITY-FIX',REG_URL='./forms.registry.json',LOCAL_KEY='sagsFormRegistryDraftV450',OLD_LOCAL_KEY='sagsFormRegistryDraftV440',DB_NAME='sags-form-assets-v440',STORE='assets';
 const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const clone=v=>{try{return JSON.parse(JSON.stringify(v))}catch(_){return v}};
 let published={schema:2,forms:[]},draft=null,currentId='',pageIndex=0,selectedKey='',selectedMany=new Set(),history=[],future=[],objectUrls=[],testMode=false,testEditMode=true,testValuesV462={};
@@ -7097,7 +7097,7 @@ async function bootV45Layout(){await loadPublished();mergeRegistry();syncLegacyT
    Direct canvas field renderer retained; the export strategy below is variant-specific. */
 (function(root){
 'use strict';
-const BUILD='V4.8.11B-ADMIN-MANAGEMENT-CENTER';if(root.__SAGS_V450_FAST_PDF===BUILD)return;root.__SAGS_V450_FAST_PDF=BUILD;
+const BUILD='V4.8.12B-ADMIN-CENTER-VISIBILITY-FIX';if(root.__SAGS_V450_FAST_PDF===BUILD)return;root.__SAGS_V450_FAST_PDF=BUILD;
 const perf=()=>root.performance?.now?.()??Date.now(),sigCache=new Map();
 function S(v){return String(v??'')}
 function num(v,d=0){const n=Number(v);return Number.isFinite(n)?n:d}
@@ -7181,5 +7181,5 @@ const fastPortrait=pageNo=>fastPage(pageNo,false),fastLandscape=()=>fastPage(13,
 root.canvasesToPdfFile=canvasesToPdfFile=async function(canvases,fileName){return layeredPdf(canvases,fileName,false)};root.canvasesToLandscapePdfFile=canvasesToLandscapePdfFile=async function(canvases,fileName){return layeredPdf(canvases,fileName,true)};
 const baseSend=root.sendReport;if(typeof baseSend==='function'&&!baseSend.__sagsV482Layer){const send=async function(kind='all'){const P={build:BUILD,mode:'LAYERED_BACKGROUND_OVERLAY',kind:S(kind),startedAt:Date.now(),pages:[],renderMs:0,encodeCoreMs:0,totalMs:0};root.__SAGS_V450_PDF_RUN=P;const t=perf();try{return await baseSend.apply(this,arguments)}finally{P.totalMs=perf()-t;P.finishedAt=Date.now();root.__SAGS_V450_PDF_PERF=P;try{localStorage.setItem('sags.v450.pdfPerf',JSON.stringify(P))}catch(_){}root.__SAGS_V450_PDF_RUN=null;try{const st=document.getElementById('exportStatus');if(st&&P.totalMs)st.textContent+=` · LAYER PDF ${(P.totalMs/1000).toFixed(2)}s`}catch(_){}}};send.__sagsV482Layer=true;send.__sagsOriginal=baseSend;root.sendReport=send;try{sendReport=send}catch(_){}}
 root.sagsV450PdfPerformance=()=>root.__SAGS_V450_PDF_PERF||(()=>{try{return JSON.parse(localStorage.getItem('sags.v450.pdfPerf')||'null')}catch(_){return null}})();
-console.info('E-REPORT/SAGS V4.8.11B Layered PDF active');
+console.info('E-REPORT/SAGS V4.8.12B Layered PDF active');
 })(typeof window!=='undefined'?window:globalThis);

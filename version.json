@@ -1,10 +1,10 @@
 {
   "version": "V4.8.12B",
   "displayVersion": "V4.8.12B",
-  "label": "V4.8.12B ADMIN CENTER VISIBILITY FIX",
+  "label": "V4.8.12B ADMIN CENTER VISIBILITY FIX · CORRECTED",
   "build": "V4.8.12B-ADMIN-CENTER-VISIBILITY-FIX",
-  "releasedAt": "2026-09-17T08:55:00Z",
+  "releasedAt": "2026-09-17T09:02:00Z",
   "type": "admin-center-visibility-fix-b",
-  "notes": "Fixes AD Management Center visibility: the button is now mounted directly into the main toolbar, reattached automatically if toolbar UI refreshes, recognizes AD/ADMIN/ADMINISTRATOR roles, and hides the old scattered admin tools only after the center is confirmed active. Existing management actions are preserved.",
-  "message": "V4.8.12B · Sửa hiển thị Trung tâm quản lý cho AD"
+  "notes": "Corrected release metadata/bootstrap: index APP_BUILD_VERSION and runtime build now match version.json/service-worker, allowing the in-app updater to detect and apply V4.8.12. Also preserves the AD Management Center visibility fix.",
+  "message": "V4.8.12B · Sửa updater + hiển thị Trung tâm quản lý AD"
 }
