@@ -1,13 +1,29 @@
 {
   "schema": 2,
-  "version": "V4.8.14B",
-  "build": "V4.8.14B-ADCC-INTEGRATED-MANAGEMENT",
+  "version": "V4.8.10B",
+  "build": "V4.8.10B-FORM-MANAGER-ROW-FIT-HANDBOOK",
   "strategy": "stable-cache-sha256-delta",
   "bootstrapChanged": [
     "./index.html",
+    "./app.bundle.css",
+    "./app.js",
+    "./daily-roster.js",
     "./runtime.bundle.js",
+    "./roster-lite.js",
+    "./pinned-flight.js",
     "./service-worker.js",
-    "./version.json"
+    "./version.json",
+    "./pdf-bg-page1.jpg",
+    "./pdf-bg-page2.jpg",
+    "./pdf-bg-page4.jpg",
+    "./pdf-bg-page6.jpg",
+    "./pdf-bg-page7.jpg",
+    "./pdf-bg-page9.jpg",
+    "./pdf-bg-page10.jpg",
+    "./pdf-bg-page11.jpg",
+    "./pdf-bg-page12.jpg",
+    "./pdf-bg-page13.jpg",
+    "./features.bundle.js"
   ],
   "assets": {
     "./#U0110H.png": {
@@ -119,7 +135,7 @@
       "bytes": 1151
     },
     "./features.bundle.js": {
-      "sha256": "38c212dd8aeee4b67f42af1ad534c10e5d53c3b85c1231de939545b6705f46fb",
+      "sha256": "f30b536aeffbb13a7ab0202ca19a4a4dbe8c01fcc6ff32ad345efa5e9b214bd2",
       "bytes": 82851
     },
     "./forms.registry.json": {
@@ -147,8 +163,8 @@
       "bytes": 104295
     },
     "./index.html": {
-      "sha256": "f7383c6dd29e5b95b2c39fdf6f7be59faf1e1ffba63484148d6e3312d6e65580",
-      "bytes": 1794470
+      "sha256": "b151d209dd0ee1d7cc1c662a86fa69decf1637504296c7af54050ba218309405",
+      "bytes": 1777425
     },
     "./ket-so.wav": {
       "sha256": "cf03e8d4021f989f61fd12249f282ae2e53588cc9d55d68393778223db8132a1",
@@ -283,20 +299,20 @@
       "bytes": 10925
     },
     "./runtime.bundle.js": {
-      "sha256": "f7a878e3f00b57951a79ed604194d519e47281fb323bb685f41515f23b9e09e0",
-      "bytes": 473158
+      "sha256": "adf03f7b3e9992e8bf9bdce4ea87dd25031d270b04179a7cce3c28c397609bc5",
+      "bytes": 473170
     },
     "./sags-logo.png": {
       "sha256": "84bc554c3b44afe4190afcbe74f7c7aed9fad478c328d63502a7d225dd60d7ad",
       "bytes": 25408
     },
     "./service-worker.js": {
-      "sha256": "48894a5b6ae0442ebf5212a192ab32ea5558e613fdfe1954f03b850f0569e0fd",
-      "bytes": 7298
+      "sha256": "824e3f1d4f80e58670bccf47d7d21c95aae3e06922d2dc59547c9f55bb5350d0",
+      "bytes": 7311
     },
     "./version.json": {
-      "sha256": "9dea3cc832e0b73e704fa8b9a8369259fb2947de5781942e1189af8d8ad66c1d",
-      "bytes": 610
+      "sha256": "7648f148c42d81929f2aa3c6165c62f1dfd053011d201bfa48f267ce6a8d9709",
+      "bytes": 747
     }
   }
 }

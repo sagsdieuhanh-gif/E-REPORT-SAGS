@@ -1,10 +1,10 @@
 {
-  "version": "V4.8.14B",
-  "displayVersion": "V4.8.14B",
-  "label": "V4.8.14B AD CONTROL CENTER INTEGRATED MANAGEMENT",
-  "build": "V4.8.14B-ADCC-INTEGRATED-MANAGEMENT",
-  "releasedAt": "2026-09-17T09:20:00Z",
-  "type": "adcc-integrated-management-b",
-  "notes": "Management Center is now a real second primary tab inside the existing AD CONTROL CENTER. The standalone toolbar entry is hidden. Management cards are static in the AD Control Center HTML and work on mobile without relying on late DOM injection.",
-  "message": "V4.8.14B · Quản lý hệ thống nằm trực tiếp trong AD CONTROL CENTER"
+  "version": "V4.8.10B",
+  "displayVersion": "V4.8.10B",
+  "label": "V4.8.10B FORM MANAGER ROW FIT + MOBILE HANDBOOK",
+  "build": "V4.8.10B-FORM-MANAGER-ROW-FIT-HANDBOOK",
+  "releasedAt": "2026-09-17T07:55:00Z",
+  "type": "form-manager-row-fit-handbook-b",
+  "notes": "Form Manager multi-line fields now support template-row fitting: set the number of printed rows and the line spacing is derived from field height, so wrapped text follows dotted/ruled template lines instead of bunching at the top. Canvas PDF preview uses the same baseline model. Includes the full Form Manager UI cleanup and compact mobile Carrier Service Notebook layout from V4.8.9.",
+  "message": "V4.8.10B · Textarea khớp dòng mẫu + Form Manager/Sổ tay mobile"
 }
