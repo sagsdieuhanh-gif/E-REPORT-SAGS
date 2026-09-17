@@ -2,7 +2,7 @@
   "schema": 2,
   "version": "V4.8.7",
   "build": "V4.8.7B-LAYERED-PDF-FLEX-WORKFLOW-FORM-MANAGER-PRO",
-  "updatedAt": "2026-09-17T07:18:10.304Z",
+  "updatedAt": "2026-09-17T07:22:11.730Z",
   "note": "V4.5 TEST: Form Manager is the single layout authority. Existing system fields are auto-hydrated from the canonical field model, then published by exporting this registry. PDF uses the same geometry.",
   "forms": [
     {
@@ -4927,7 +4927,7 @@
         {
           "key": "field205",
           "label": "LMC Details",
-          "type": "text",
+          "type": "textarea",
           "bind": "field205",
           "pageId": "p1",
           "sourcePage": 1,
@@ -4951,7 +4951,7 @@
         }
       ],
       "engine": "form-manager-v450",
-      "updatedAtMs": 1789629283992
+      "updatedAtMs": 1789629723013
     },
     {
       "id": "fsags421",
@@ -12804,7 +12804,7 @@
         }
       ],
       "engine": "form-manager-v450",
-      "updatedAtMs": 1789629462709
+      "updatedAtMs": 1789629705891
     },
     {
       "id": "fsags09",
