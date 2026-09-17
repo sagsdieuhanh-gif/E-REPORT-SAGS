@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V4.8.13B",
-  "build": "V4.8.13B-ADMIN-CENTER-STATIC-ENTRY",
+  "version": "V4.8.14B",
+  "build": "V4.8.14B-ADCC-INTEGRATED-MANAGEMENT",
   "strategy": "stable-cache-sha256-delta",
   "bootstrapChanged": [
     "./index.html",
@@ -147,8 +147,8 @@
       "bytes": 104295
     },
     "./index.html": {
-      "sha256": "508cfb6bc7162a2905776616418e44e42750571251fbcdc7e2b1fe7d094228b7",
-      "bytes": 1787416
+      "sha256": "f7383c6dd29e5b95b2c39fdf6f7be59faf1e1ffba63484148d6e3312d6e65580",
+      "bytes": 1794470
     },
     "./ket-so.wav": {
       "sha256": "cf03e8d4021f989f61fd12249f282ae2e53588cc9d55d68393778223db8132a1",
@@ -283,7 +283,7 @@
       "bytes": 10925
     },
     "./runtime.bundle.js": {
-      "sha256": "a6bed5a61bee263c33475e71b76549f2a1c3e774c4af4370b2f8873038233600",
+      "sha256": "f7a878e3f00b57951a79ed604194d519e47281fb323bb685f41515f23b9e09e0",
       "bytes": 473158
     },
     "./sags-logo.png": {
@@ -291,12 +291,12 @@
       "bytes": 25408
     },
     "./service-worker.js": {
-      "sha256": "4c8588a895f4361b98269a86d2731f08c34477864c0e4697a8a1b8efd1c14ed0",
+      "sha256": "48894a5b6ae0442ebf5212a192ab32ea5558e613fdfe1954f03b850f0569e0fd",
       "bytes": 7298
     },
     "./version.json": {
-      "sha256": "ae9b58185fa2f0f3f2cd96c7eb1e2d6cee5166d3896c7ad6773a737707caf240",
-      "bytes": 563
+      "sha256": "9dea3cc832e0b73e704fa8b9a8369259fb2947de5781942e1189af8d8ad66c1d",
+      "bytes": 610
     }
   }
 }

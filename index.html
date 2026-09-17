@@ -2336,6 +2336,23 @@ body.login-mode {
   .adccInfo{grid-template-columns:1fr}
   .adccHistoryRow{grid-template-columns:88px 105px 1fr;gap:5px;font-size:9.5px}
 }
+
+/* V4.8.14 — Management tools live INSIDE AD CONTROL CENTER. */
+.adccMainTabs{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:8px 0 10px}
+.adccMainTab{min-height:42px;border:1px solid #b8c9d9;border-radius:10px;background:#f5f9fc;color:#24445f;font:900 11px/1.2 Arial;cursor:pointer;padding:8px 10px}
+.adccMainTab.active{background:#003B8E;color:#fff;border-color:#003B8E;box-shadow:0 2px 8px rgba(0,59,142,.18)}
+.adccMainPane{display:none}.adccMainPane.active{display:block}
+.adccManageIntro{padding:9px 10px;margin:4px 0 10px;border-radius:10px;background:#eef6ff;color:#31536f;font:800 10.5px/1.45 Arial}
+.adccManageSectionTitle{margin:12px 0 7px;color:#334155;font:900 10.5px/1.2 Arial;letter-spacing:.4px}
+.adccManageGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.adccManageItem{min-width:0;display:grid;grid-template-columns:40px minmax(0,1fr);gap:9px;align-items:center;text-align:left;border:1px solid #d7e0ea;border-radius:13px;background:#fff;padding:10px;min-height:76px;color:#17324d;cursor:pointer;box-shadow:0 1px 2px rgba(16,24,40,.04)}
+.adccManageItem:active{transform:scale(.99)}
+.adccManageIcon{width:40px;height:40px;border-radius:11px;background:#edf6ff;display:flex;align-items:center;justify-content:center;font-size:20px}
+.adccManageItem b{display:block;font:900 12px/1.25 Arial;color:#17324d}.adccManageItem small{display:block;margin-top:3px;font:700 10px/1.3 Arial;color:#667085}
+.adccManageItem.danger{border-color:#f3b2ad;background:#fffafa}.adccManageItem.danger .adccManageIcon{background:#fff0ef}.adccManageItem.danger b{color:#b42318}
+@media(max-width:700px){.adccManageGrid{grid-template-columns:1fr 1fr;gap:7px}.adccManageItem{min-height:72px;padding:9px;grid-template-columns:36px minmax(0,1fr);gap:8px}.adccManageIcon{width:36px;height:36px;font-size:18px}.adccManageItem b{font-size:11.5px}.adccManageItem small{font-size:9.6px}}
+@media(max-width:390px){.adccManageGrid{grid-template-columns:1fr}.adccMainTab{font-size:10px;padding:7px 6px}}
+
 </style>
 <style id="v412-kh208-style">
 #kh208SendBtn,#kh208ChooserBtn{
@@ -2683,7 +2700,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <style id="sags-v115-clean-ui">
 #roleLoginHint,#v1014UsernameLoginNote,.templateNote,.fs09qUsageNote,.v377CreateFormNote,.v1019Hint{display:none!important}
 </style>
-<link rel="stylesheet" href="./app.bundle.css?v=V4.8.13B">
+<link rel="stylesheet" href="./app.bundle.css?v=V4.8.14B">
 </head>
 <body>
 <div aria-hidden="true" id="roleHomeIdle"></div>
@@ -2814,13 +2831,37 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <div class="sagsAdminModal" id="activityMonitorModal">
   <div class="sagsAdminPanel">
     <div class="sagsAdminTopActions">
-      <button class="sagsAdminBtn secondary" onclick="refreshActivityMonitor()">LÀM MỚI</button>
+      <button class="sagsAdminBtn secondary" id="adccRefreshBtn" onclick="refreshActivityMonitor()">LÀM MỚI</button>
       <button class="sagsAdminBtn secondary" onclick="closeActivityMonitor()">ĐÓNG</button>
     </div>
-    <h3>TIẾN ĐỘ CHUYẾN</h3>
+    <h3>AD CONTROL CENTER</h3>
+    <div class="adccMainTabs" role="tablist" aria-label="AD Control Center">
+      <button type="button" id="adccMainProgressBtn" class="adccMainTab active" onclick="adccMainView('progress')">📊 TIẾN ĐỘ CHUYẾN</button>
+      <button type="button" id="adccMainManageBtn" class="adccMainTab" onclick="adccMainView('manage')">⚙ QUẢN LÝ HỆ THỐNG</button>
+    </div>
     <div id="activityMonitorStatus"></div>
-    <div id="adccPaneProgress" class="adccPane active">
-      <div id="adccProgressList"></div>
+    <div id="adccMainProgress" class="adccMainPane active">
+      <div id="adccPaneProgress" class="adccPane active">
+        <div id="adccProgressList"></div>
+      </div>
+    </div>
+    <div id="adccMainManage" class="adccMainPane">
+      <div class="adccManageIntro">Các công cụ quản lý của AD được gom tại đây. Chọn mục cần quản lý.</div>
+      <div class="adccManageSectionTitle">BIỂU MẪU & DỮ LIỆU NGHIỆP VỤ</div>
+      <div class="adccManageGrid">
+        <button type="button" class="adccManageItem" onclick="adccOpenManagerTool('forms')"><span class="adccManageIcon">🧩</span><span><b>Quản lý biểu mẫu</b><small>Field, cấu trúc, preview/PDF</small></span></button>
+        <button type="button" class="adccManageItem" onclick="adccOpenManagerTool('newform')"><span class="adccManageIcon">➕</span><span><b>Tạo biểu mẫu</b><small>Tạo hoặc mở tờ nghiệp vụ</small></span></button>
+        <button type="button" class="adccManageItem" onclick="adccOpenManagerTool('layout')"><span class="adccManageIcon">📐</span><span><b>Căn chỉnh biểu mẫu</b><small>Vị trí, vùng chạm, typography</small></span></button>
+        <button type="button" class="adccManageItem" onclick="adccOpenManagerTool('handbook')"><span class="adccManageIcon">📓</span><span><b>Quản lý Sổ tay hãng</b><small>Import, test và phát hành</small></span></button>
+        <button type="button" class="adccManageItem" onclick="adccOpenManagerTool('fleet')"><span class="adccManageIcon">✈️</span><span><b>Quản lý Fleet tàu bay</b><small>Hãng, REG, loại tàu, ZONE/MAX PAX</small></span></button>
+      </div>
+      <div class="adccManageSectionTitle">TÀI KHOẢN & HỆ THỐNG</div>
+      <div class="adccManageGrid">
+        <button type="button" class="adccManageItem" onclick="adccOpenManagerTool('accounts')"><span class="adccManageIcon">👤</span><span><b>Quản lý tài khoản</b><small>Tài khoản, hồ sơ và phân quyền</small></span></button>
+        <button type="button" class="adccManageItem" onclick="adccOpenManagerTool('audit')"><span class="adccManageIcon">🧾</span><span><b>Nhật ký hệ thống</b><small>Lịch sử thao tác và quản trị</small></span></button>
+        <button type="button" class="adccManageItem" onclick="adccOpenManagerTool('firebase')"><span class="adccManageIcon">📊</span><span><b>Firebase Usage</b><small>Dung lượng và kết nối</small></span></button>
+        <button type="button" class="adccManageItem danger" onclick="adccOpenManagerTool('reset')"><span class="adccManageIcon">🧹</span><span><b>Bảo trì dữ liệu</b><small>Xóa hồ sơ nghiệp vụ cũ · có xác nhận</small></span></button>
+      </div>
     </div>
   </div>
 </div>
@@ -3904,7 +3945,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <button class="cancel" onclick="closeSignature();draw()">Đóng</button>
 </div>
 </div></div>
-<div class="hint" id="statusHint">V4.8.13B · DESKTOP AUTO DOWNLOAD · FORM MANAGER</div>
+<div class="hint" id="statusHint">V4.8.14B · DESKTOP AUTO DOWNLOAD · FORM MANAGER</div>
 <script src="./network-diagnostics.js?v=V4.7.6"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
@@ -3914,7 +3955,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <script>
 window.SAGS_FIREBASE_AUTH_SDK_READY = !!(window.firebase && typeof window.firebase.auth === "function");
 </script>
-<script src="./app.js?v=V4.8.13B" data-phase="config"></script>
+<script src="./app.js?v=V4.8.14B" data-phase="config"></script>
 <script>
 let suppressModalClickUntil=0;
 function armModalGhostClickBlock(ms=650){
@@ -8228,7 +8269,7 @@ function concatBytes(parts){
   return out;
 }
 async function canvasesToPdfFile(canvases,fileName){
-  // V4.8.13B FAST PDF: JPEG compression is the slowest CPU stage on most phones.
+  // V4.8.14B FAST PDF: JPEG compression is the slowest CPU stage on most phones.
   // Encode at most two pages concurrently: faster for 2-page FSAGS documents while
   // avoiding the memory spike of encoding every page at once. iOS keeps its separate
   // low-memory sequential encoder below.
@@ -8487,11 +8528,11 @@ function v481PaintBbbtCxrNo(canvas,n){
   ctx.fillText("CXR No: "+formatBBBTCxrNo(n),(bw-42)*sx,30*sy);ctx.restore();
 }
 function v481DeferredPersistAfterPdf(){
-  const job=()=>{try{persist()}catch(e){console.warn("V4.8.13B deferred PDF persist",e)}};
+  const job=()=>{try{persist()}catch(e){console.warn("V4.8.14B deferred PDF persist",e)}};
   try{if(typeof requestIdleCallback==="function")requestIdleCallback(job,{timeout:5000});else setTimeout(job,3500)}catch(_){setTimeout(job,3500)}
 }
 async function sendReport(kind="all"){
-  // V4.8.13B FAST PDF: exporting must not re-save the whole flight state or rebuild
+  // V4.8.14B FAST PDF: exporting must not re-save the whole flight state or rebuild
   // every SVG page. Normal edit flows already keep the live SVG in sync. Falling
   // back to draw() is retained for builds where the direct fast renderer is absent.
   // This is especially important when state contains photos/signatures: persist()
@@ -8546,7 +8587,7 @@ async function sendReport(kind="all"){
   window.__SAGS_EXPORT_BATCH_DRAWN=true;
   try{
     const pages=[];
-    // V4.8.13B: start the globally unique BBBT number transaction immediately and
+    // V4.8.14B: start the globally unique BBBT number transaction immediately and
     // let page rendering run at the same time. The number is painted once after the
     // transaction resolves, so network latency and canvas work overlap safely.
     let bbbtNoJob=null;
@@ -11059,8 +11100,8 @@ try {
   if(h) h.textContent="Lỗi khởi tạo: "+err.message;
   alert("Lỗi JavaScript: "+err.message);
 }
-const APP_BUILD_VERSION="V4.8.13B-ADMIN-CENTER-STATIC-ENTRY";
-const APP_DISPLAY_VERSION="V4.8.13B";
+const APP_BUILD_VERSION="V4.8.14B-ADMIN-CENTER-STATIC-ENTRY";
+const APP_DISPLAY_VERSION="V4.8.14B";
 // V1.1.103: hotfix duy nhất lỗi Firebase RTDB ancestor/descendant khi đồng bộ DAILY ROSTER; không thay đổi nghiệp vụ khác.
 // V4.21 — SAFE UPDATE SAVE
 // Before switching to a newly installed app version, force-save all current
@@ -16624,7 +16665,7 @@ async function allocateGlobalBBBTCxrNo(){
     return next;
   });
     state.bbbtCxrNo=assigned;
-    // V4.8.13B: do not synchronously serialize the entire flight envelope here.
+    // V4.8.14B: do not synchronously serialize the entire flight envelope here.
     // The number is already committed atomically in Firestore and is painted into
     // the PDF from live state. A lightweight deferred local save is scheduled after
     // PDF creation so export latency is not dominated by large localStorage writes.
@@ -18642,6 +18683,38 @@ function openActivityMonitor(){
   // V4.66: dùng snapshot đầu tiên làm initial load, tránh đọc đôi toàn bộ Activity/Crosscheck/Audit.
   startAdminActivityListener();
 }
+
+/* V4.8.14 — AD CONTROL CENTER primary view + integrated management actions. */
+function adccMainView(view){
+  const v=view==='manage'?'manage':'progress';
+  document.getElementById('adccMainProgress')?.classList.toggle('active',v==='progress');
+  document.getElementById('adccMainManage')?.classList.toggle('active',v==='manage');
+  document.getElementById('adccMainProgressBtn')?.classList.toggle('active',v==='progress');
+  document.getElementById('adccMainManageBtn')?.classList.toggle('active',v==='manage');
+  const rb=document.getElementById('adccRefreshBtn');if(rb)rb.style.display=v==='progress'?'inline-flex':'none';
+  const st=document.getElementById('activityMonitorStatus');if(st&&v==='manage')st.textContent='QUẢN LÝ HỆ THỐNG · chọn một mục bên dưới.';
+  if(v==='progress')applyActivityMonitorFilters?.();
+}
+function adccOpenManagerTool(key){
+  const r=String(window.currentRole||window.currentUserProfile?.role||'').toUpperCase();
+  if(!['AD','ADMIN','ADMINISTRATOR'].includes(r)&&!document.body?.classList.contains('role-admin'))return roleDenied?.('Chỉ AD được mở công cụ quản lý.');
+  closeActivityMonitor?.();
+  setTimeout(()=>{
+    try{
+      if(key==='accounts')return openAccountManager();
+      if(key==='fleet')return openFleetManager();
+      if(key==='forms')return sagsV440OpenFormManager();
+      if(key==='newform')return v377OpenCreateFormMenu();
+      if(key==='layout'){const b=document.getElementById('v368LayoutTuneBtn');if(!b)throw new Error('Công cụ CĂN CHỈNH chưa sẵn sàng.');return b.click();}
+      if(key==='handbook')return sagsCarrierGuideManager();
+      if(key==='audit')return openAuditManager();
+      if(key==='firebase')return openFirebaseUsageMonitor();
+      if(key==='reset')return v378ResetAllOldRecords();
+      throw new Error('Mục quản lý không tồn tại: '+key);
+    }catch(e){console.error('AD Control Center management',e);alert('Không mở được mục quản lý: '+String(e?.message||e));}
+  },60);
+}
+window.adccMainView=adccMainView;window.adccOpenManagerTool=adccOpenManagerTool;
 /* =========================================================
    V1.39 — FLEET TÀU BAY
    Chỉ giữ code đang phục vụ Fleet.
@@ -22558,7 +22631,7 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
 })();
 </script>
 <script type="module" src="./ai.js?v=V4.7.6"></script>
-<script src="./app.js?v=V4.8.13B" data-phase="archive"></script>
+<script src="./app.js?v=V4.8.14B" data-phase="archive"></script>
 <script id="v120-build02-fixes">
 /* V1.20 BUILD 02 — background persistence, VHTTB, per-account usage detail, progress dedupe. */
 (function(){
@@ -23000,7 +23073,7 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
   setTimeout(()=>{ensureUi();startCloseoutListener();refreshValidation();try{window.sagsV440CleanupExpiredCloseoutEvents?.()}catch(_){}},500);
 })();
 </script>
-<script src="./app.js?v=V4.8.13B" data-phase="tools"></script>
+<script src="./app.js?v=V4.8.14B" data-phase="tools"></script>
 <script id="v173-quick-time">
 (function(){
   "use strict";
@@ -25013,7 +25086,7 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
   }
 }
 </style>
-<script src="./app.js?v=V4.8.13B" data-phase="flight"></script>
+<script src="./app.js?v=V4.8.14B" data-phase="flight"></script>
 <script id="v191IOSInteractionFix">
 (()=>{
   'use strict';
@@ -25263,7 +25336,7 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
   window.addEventListener('pageshow',()=>setTimeout(refresh,120),{passive:true});
 })();
 </script>
-<script src="./app.js?v=V4.8.13B" data-phase="control"></script>
+<script src="./app.js?v=V4.8.14B" data-phase="control"></script>
 <style id="v330-group-permission-style">
 #v330GroupPermPanel{margin:12px 0 8px;padding:11px;border:1px solid #cbd9e6;border-radius:12px;background:#f7fbff;box-sizing:border-box}
 .v330GpHead{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;color:#173b5d;font:900 13px Arial}.v330GpSub{margin-top:4px;color:#61778b;font:700 11px/1.35 Arial}
@@ -25490,7 +25563,7 @@ function install(){addPermissions();ensureUi();ensureButton();refreshCount();lis
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install,350),{once:true});else setTimeout(install,350);root.addEventListener('pageshow',()=>setTimeout(install,250),{passive:true});
 })(window);
 </script>
-<script src="./app.js?v=V4.8.13B" data-phase="postcontrol"></script>
+<script src="./app.js?v=V4.8.14B" data-phase="postcontrol"></script>
 <script id="v377AdminFormToolsScript">
 /* V3.80 — AD form tools row + create all forms + closeout notice cleanup. */
 (function(){
@@ -25541,7 +25614,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   setInterval(refresh,5000);
 })();
 </script>
-<script src="./app.js?v=V4.8.13B" data-phase="layout"></script>
+<script src="./app.js?v=V4.8.14B" data-phase="layout"></script>
 <script id="v1020-fs208-geometry-migration">
 (function(){
   const REV='V1020-EXACT-PAGE13';
@@ -26680,8 +26753,8 @@ root.v378ResetAllOldRecords=async function(){
   };
 })();
 </script>
-<script src="./app.js?v=V4.8.13B" data-phase="performance"></script>
-<script src="./daily-roster.js?v=V4.8.13B" id="dailyRosterCleanV11102"></script>
+<script src="./app.js?v=V4.8.14B" data-phase="performance"></script>
+<script src="./daily-roster.js?v=V4.8.14B" id="dailyRosterCleanV11102"></script>
 <script id="v1016-delete-profile-fix">
 /* V1.0.16 · XÓA tài khoản phải xóa đúng profile E-Report, không chỉ Auth/users. */
 (function(){
@@ -28298,11 +28371,11 @@ body.v38-clean-workflow #v1134QuickTimeBtn{background:#eef6ff!important;color:#0
 })();
 </script>
 
-<script src="./runtime.bundle.js?v=V4.8.13B"></script>
+<script src="./runtime.bundle.js?v=V4.8.14B"></script>
 <script id="v460RuntimeGuard">
 (()=>{
   setTimeout(async()=>{
-    const ok=String(window.__SAGS_RUNTIME_BUILD__||'')==='V4.8.13B-ADMIN-CENTER-STATIC-ENTRY';
+    const ok=String(window.__SAGS_RUNTIME_BUILD__||'')==='V4.8.14B-ADMIN-CENTER-STATIC-ENTRY';
     if(ok)return;
     console.error('E-REPORT runtime mismatch',window.__SAGS_RUNTIME_BUILD__);
     try{if(await window.sagsRepairMixedBuild?.('runtime-mismatch'))return;}catch(_e){}
@@ -28335,14 +28408,13 @@ window.adminResetAccountPassword=async function(uid){
   }
 };
 </script>
-<script src="./features.bundle.js?v=V4.8.13B"></script>
-<script src="./roster-lite.js?v=V4.8.13B" id="v477MailboxLite"></script>
-<script src="./pinned-flight.js?v=V4.8.13B" id="v478PinnedFlight"></script>
+<script src="./features.bundle.js?v=V4.8.14B"></script>
+<script src="./roster-lite.js?v=V4.8.14B" id="v477MailboxLite"></script>
+<script src="./pinned-flight.js?v=V4.8.14B" id="v478PinnedFlight"></script>
 
 <style id="v4812AdminCenterStyle">
 :root{--v4812-accent:#075ea8;--v4812-accent2:#0b4a7b;--v4812-bg:#f6f8fb;--v4812-card:#fff;--v4812-border:#d7e0ea;--v4812-text:#17324d;--v4812-muted:#667085;--v4812-danger:#b42318}
 #v4812AdminCenterBtn{display:none!important}
-body.role-admin #v4812AdminCenterBtn{display:inline-flex!important;align-items:center!important;justify-content:center!important}
 #v4812AdminCenterBtn{min-height:38px!important;border:1px solid #9ec4e5!important;border-radius:10px!important;background:#075ea8!important;color:#fff!important;font:900 12px/1.1 Arial,sans-serif!important;letter-spacing:.15px!important;padding:8px 12px!important;box-shadow:none!important;cursor:pointer!important;white-space:nowrap!important}
 #v4812AdminCenterBtn:active{transform:scale(.99)}
 html.v4812-admin-center #roleBtnAccounts,html.v4812-admin-center #roleBtnAudit,html.v4812-admin-center #roleBtnFirebaseUsage,html.v4812-admin-center #roleBtnFleet{display:none!important}

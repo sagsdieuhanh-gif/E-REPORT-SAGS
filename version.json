@@ -1,10 +1,10 @@
 {
-  "version": "V4.8.13B",
-  "displayVersion": "V4.8.13B",
-  "label": "V4.8.13B ADMIN CENTER STATIC ENTRY",
-  "build": "V4.8.13B-ADMIN-CENTER-STATIC-ENTRY",
-  "releasedAt": "2026-09-17T09:08:00Z",
-  "type": "admin-center-static-entry-b",
-  "notes": "Admin Center entry is now a real static first button in the main toolbar, shown directly by the same role-admin state used by the existing AD interface. No dependency on late DOM injection or toolbar refresh order.",
-  "message": "V4.8.13B · Trung tâm quản lý nằm cố định đầu thanh công cụ AD"
+  "version": "V4.8.14B",
+  "displayVersion": "V4.8.14B",
+  "label": "V4.8.14B AD CONTROL CENTER INTEGRATED MANAGEMENT",
+  "build": "V4.8.14B-ADCC-INTEGRATED-MANAGEMENT",
+  "releasedAt": "2026-09-17T09:20:00Z",
+  "type": "adcc-integrated-management-b",
+  "notes": "Management Center is now a real second primary tab inside the existing AD CONTROL CENTER. The standalone toolbar entry is hidden. Management cards are static in the AD Control Center HTML and work on mobile without relying on late DOM injection.",
+  "message": "V4.8.14B · Quản lý hệ thống nằm trực tiếp trong AD CONTROL CENTER"
 }
