@@ -1,10 +1,10 @@
 {
-  "version": "V4.8.10B",
-  "displayVersion": "V4.8.10B",
-  "label": "V4.8.10B FORM MANAGER ROW FIT + MOBILE HANDBOOK",
-  "build": "V4.8.10B-FORM-MANAGER-ROW-FIT-HANDBOOK",
-  "releasedAt": "2026-09-17T07:55:00Z",
-  "type": "form-manager-row-fit-handbook-b",
-  "notes": "Form Manager multi-line fields now support template-row fitting: set the number of printed rows and the line spacing is derived from field height, so wrapped text follows dotted/ruled template lines instead of bunching at the top. Canvas PDF preview uses the same baseline model. Includes the full Form Manager UI cleanup and compact mobile Carrier Service Notebook layout from V4.8.9.",
-  "message": "V4.8.10B · Textarea khớp dòng mẫu + Form Manager/Sổ tay mobile"
+  "version": "V4.8.11B",
+  "displayVersion": "V4.8.11B",
+  "label": "V4.8.11B ADMIN MANAGEMENT CENTER",
+  "build": "V4.8.11B-ADMIN-MANAGEMENT-CENTER",
+  "releasedAt": "2026-09-17T08:40:00Z",
+  "type": "admin-management-center-b",
+  "notes": "Adds a unified AD Trung tâm quản lý and applies one common management UI pattern to existing Accounts, Fleet, Form Manager/Create Form, Carrier Handbook, Audit and Firebase Usage tools. Existing business logic and data are preserved; scattered AD management buttons are consolidated into the center. Mobile management screens use full-width/full-height layouts with consistent spacing and sticky actions.",
+  "message": "V4.8.11B · Trung tâm quản lý + giao diện quản lý thống nhất"
 }

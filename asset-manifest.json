@@ -1,29 +1,14 @@
 {
   "schema": 2,
-  "version": "V4.8.10B",
-  "build": "V4.8.10B-FORM-MANAGER-ROW-FIT-HANDBOOK",
+  "version": "V4.8.11B",
+  "build": "V4.8.11B-ADMIN-MANAGEMENT-CENTER",
   "strategy": "stable-cache-sha256-delta",
   "bootstrapChanged": [
     "./index.html",
-    "./app.bundle.css",
-    "./app.js",
-    "./daily-roster.js",
     "./runtime.bundle.js",
-    "./roster-lite.js",
-    "./pinned-flight.js",
+    "./features.bundle.js",
     "./service-worker.js",
-    "./version.json",
-    "./pdf-bg-page1.jpg",
-    "./pdf-bg-page2.jpg",
-    "./pdf-bg-page4.jpg",
-    "./pdf-bg-page6.jpg",
-    "./pdf-bg-page7.jpg",
-    "./pdf-bg-page9.jpg",
-    "./pdf-bg-page10.jpg",
-    "./pdf-bg-page11.jpg",
-    "./pdf-bg-page12.jpg",
-    "./pdf-bg-page13.jpg",
-    "./features.bundle.js"
+    "./version.json"
   ],
   "assets": {
     "./#U0110H.png": {
@@ -135,7 +120,7 @@
       "bytes": 1151
     },
     "./features.bundle.js": {
-      "sha256": "f30b536aeffbb13a7ab0202ca19a4a4dbe8c01fcc6ff32ad345efa5e9b214bd2",
+      "sha256": "38c212dd8aeee4b67f42af1ad534c10e5d53c3b85c1231de939545b6705f46fb",
       "bytes": 82851
     },
     "./forms.registry.json": {
@@ -163,8 +148,8 @@
       "bytes": 104295
     },
     "./index.html": {
-      "sha256": "b151d209dd0ee1d7cc1c662a86fa69decf1637504296c7af54050ba218309405",
-      "bytes": 1777425
+      "sha256": "439939d3d3695dc491c0971637850872ca0926364abc878e7d3c2b39b5dfcebd",
+      "bytes": 1789552
     },
     "./ket-so.wav": {
       "sha256": "cf03e8d4021f989f61fd12249f282ae2e53588cc9d55d68393778223db8132a1",
@@ -299,20 +284,20 @@
       "bytes": 10925
     },
     "./runtime.bundle.js": {
-      "sha256": "adf03f7b3e9992e8bf9bdce4ea87dd25031d270b04179a7cce3c28c397609bc5",
-      "bytes": 473170
+      "sha256": "05dcf493b8f72a1554f64559bfe314ec2de92742fc0345fe026d0334a9fabf1f",
+      "bytes": 473152
     },
     "./sags-logo.png": {
       "sha256": "84bc554c3b44afe4190afcbe74f7c7aed9fad478c328d63502a7d225dd60d7ad",
       "bytes": 25408
     },
     "./service-worker.js": {
-      "sha256": "824e3f1d4f80e58670bccf47d7d21c95aae3e06922d2dc59547c9f55bb5350d0",
-      "bytes": 7311
+      "sha256": "938e2aa5f93d5c41523ec6161774d3f7fb345f1b09b3699081c3ac760d4ab149",
+      "bytes": 7307
     },
     "./version.json": {
-      "sha256": "7648f148c42d81929f2aa3c6165c62f1dfd053011d201bfa48f267ce6a8d9709",
-      "bytes": 747
+      "sha256": "950896a77fe4235b24dfa59a8e9a809712dd55fda07eab29eee7457709fb44bc",
+      "bytes": 745
     }
   }
 }

@@ -2683,7 +2683,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <style id="sags-v115-clean-ui">
 #roleLoginHint,#v1014UsernameLoginNote,.templateNote,.fs09qUsageNote,.v377CreateFormNote,.v1019Hint{display:none!important}
 </style>
-<link rel="stylesheet" href="./app.bundle.css?v=V4.8.10B">
+<link rel="stylesheet" href="./app.bundle.css?v=V4.8.11B">
 </head>
 <body>
 <div aria-hidden="true" id="roleHomeIdle"></div>
@@ -2827,7 +2827,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <div id="fleetManagerModal">
   <div class="fleetManagerPanel">
     <div class="fleetManagerTop">
-      <h3>FLEET TÀU BAY</h3>
+      <h3>QUẢN LÝ FLEET TÀU BAY</h3>
       <button class="fleetManagerClose" onclick="closeFleetManager()">ĐÓNG</button>
     </div>
     <div class="fleetManagerHint">
@@ -2893,7 +2893,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <div class="sagsAdminModal" id="auditManagerModal">
   <div class="sagsAdminPanel">
     <div class="sagsAdminTopActions"><button class="sagsAdminBtn secondary" onclick="refreshAuditManager()">LÀM MỚI</button><button class="sagsAdminBtn secondary" onclick="closeAuditManager()">ĐÓNG</button></div>
-    <h3>NHẬT KÝ THAO TÁC · TEST</h3>
+    <h3>QUẢN LÝ NHẬT KÝ HỆ THỐNG</h3>
     <div id="auditManagerStatus"></div>
     <div class="sagsAuditList" id="auditManagerList"></div>
   </div>
@@ -2901,7 +2901,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <div class="sagsAdminModal" id="firebaseUsageModal">
   <div class="sagsAdminPanel" style="width:min(96vw,900px)">
     <div class="sagsAdminTopActions"><button class="sagsAdminBtn secondary" onclick="refreshFirebaseUsageMonitor()">LÀM MỚI</button><button class="sagsAdminBtn secondary" onclick="closeFirebaseUsageMonitor()">ĐÓNG</button></div>
-    <h3>FIREBASE USAGE · THEO DÕI 24 GIỜ</h3>
+    <h3>QUẢN LÝ FIREBASE USAGE · 24 GIỜ</h3>
     <div id="fbUsageStatus" style="margin:8px 0 12px;font-weight:700"></div>
     <div id="fbUsageCards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:10px;margin:10px 0"></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0">
@@ -3903,7 +3903,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <button class="cancel" onclick="closeSignature();draw()">Đóng</button>
 </div>
 </div></div>
-<div class="hint" id="statusHint">V4.8.10B · DESKTOP AUTO DOWNLOAD · FORM MANAGER</div>
+<div class="hint" id="statusHint">V4.8.11B · DESKTOP AUTO DOWNLOAD · FORM MANAGER</div>
 <script src="./network-diagnostics.js?v=V4.7.6"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
@@ -3913,7 +3913,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <script>
 window.SAGS_FIREBASE_AUTH_SDK_READY = !!(window.firebase && typeof window.firebase.auth === "function");
 </script>
-<script src="./app.js?v=V4.8.10B" data-phase="config"></script>
+<script src="./app.js?v=V4.8.11B" data-phase="config"></script>
 <script>
 let suppressModalClickUntil=0;
 function armModalGhostClickBlock(ms=650){
@@ -8227,7 +8227,7 @@ function concatBytes(parts){
   return out;
 }
 async function canvasesToPdfFile(canvases,fileName){
-  // V4.8.10B FAST PDF: JPEG compression is the slowest CPU stage on most phones.
+  // V4.8.11B FAST PDF: JPEG compression is the slowest CPU stage on most phones.
   // Encode at most two pages concurrently: faster for 2-page FSAGS documents while
   // avoiding the memory spike of encoding every page at once. iOS keeps its separate
   // low-memory sequential encoder below.
@@ -8486,11 +8486,11 @@ function v481PaintBbbtCxrNo(canvas,n){
   ctx.fillText("CXR No: "+formatBBBTCxrNo(n),(bw-42)*sx,30*sy);ctx.restore();
 }
 function v481DeferredPersistAfterPdf(){
-  const job=()=>{try{persist()}catch(e){console.warn("V4.8.10B deferred PDF persist",e)}};
+  const job=()=>{try{persist()}catch(e){console.warn("V4.8.11B deferred PDF persist",e)}};
   try{if(typeof requestIdleCallback==="function")requestIdleCallback(job,{timeout:5000});else setTimeout(job,3500)}catch(_){setTimeout(job,3500)}
 }
 async function sendReport(kind="all"){
-  // V4.8.10B FAST PDF: exporting must not re-save the whole flight state or rebuild
+  // V4.8.11B FAST PDF: exporting must not re-save the whole flight state or rebuild
   // every SVG page. Normal edit flows already keep the live SVG in sync. Falling
   // back to draw() is retained for builds where the direct fast renderer is absent.
   // This is especially important when state contains photos/signatures: persist()
@@ -8545,7 +8545,7 @@ async function sendReport(kind="all"){
   window.__SAGS_EXPORT_BATCH_DRAWN=true;
   try{
     const pages=[];
-    // V4.8.10B: start the globally unique BBBT number transaction immediately and
+    // V4.8.11B: start the globally unique BBBT number transaction immediately and
     // let page rendering run at the same time. The number is painted once after the
     // transaction resolves, so network latency and canvas work overlap safely.
     let bbbtNoJob=null;
@@ -11058,8 +11058,8 @@ try {
   if(h) h.textContent="Lỗi khởi tạo: "+err.message;
   alert("Lỗi JavaScript: "+err.message);
 }
-const APP_BUILD_VERSION="V4.8.10B-FORM-MANAGER-ROW-FIT-HANDBOOK";
-const APP_DISPLAY_VERSION="V4.8.10B";
+const APP_BUILD_VERSION="V4.8.11B-ADMIN-MANAGEMENT-CENTER";
+const APP_DISPLAY_VERSION="V4.8.11B";
 // V1.1.103: hotfix duy nhất lỗi Firebase RTDB ancestor/descendant khi đồng bộ DAILY ROSTER; không thay đổi nghiệp vụ khác.
 // V4.21 — SAFE UPDATE SAVE
 // Before switching to a newly installed app version, force-save all current
@@ -16623,7 +16623,7 @@ async function allocateGlobalBBBTCxrNo(){
     return next;
   });
     state.bbbtCxrNo=assigned;
-    // V4.8.10B: do not synchronously serialize the entire flight envelope here.
+    // V4.8.11B: do not synchronously serialize the entire flight envelope here.
     // The number is already committed atomically in Firestore and is painted into
     // the PDF from live state. A lightweight deferred local save is scheduled after
     // PDF creation so export latency is not dominated by large localStorage writes.
@@ -22556,7 +22556,7 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
 })();
 </script>
 <script type="module" src="./ai.js?v=V4.7.6"></script>
-<script src="./app.js?v=V4.8.10B" data-phase="archive"></script>
+<script src="./app.js?v=V4.8.11B" data-phase="archive"></script>
 <script id="v120-build02-fixes">
 /* V1.20 BUILD 02 — background persistence, VHTTB, per-account usage detail, progress dedupe. */
 (function(){
@@ -22998,7 +22998,7 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
   setTimeout(()=>{ensureUi();startCloseoutListener();refreshValidation();try{window.sagsV440CleanupExpiredCloseoutEvents?.()}catch(_){}},500);
 })();
 </script>
-<script src="./app.js?v=V4.8.10B" data-phase="tools"></script>
+<script src="./app.js?v=V4.8.11B" data-phase="tools"></script>
 <script id="v173-quick-time">
 (function(){
   "use strict";
@@ -25011,7 +25011,7 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
   }
 }
 </style>
-<script src="./app.js?v=V4.8.10B" data-phase="flight"></script>
+<script src="./app.js?v=V4.8.11B" data-phase="flight"></script>
 <script id="v191IOSInteractionFix">
 (()=>{
   'use strict';
@@ -25261,7 +25261,7 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
   window.addEventListener('pageshow',()=>setTimeout(refresh,120),{passive:true});
 })();
 </script>
-<script src="./app.js?v=V4.8.10B" data-phase="control"></script>
+<script src="./app.js?v=V4.8.11B" data-phase="control"></script>
 <style id="v330-group-permission-style">
 #v330GroupPermPanel{margin:12px 0 8px;padding:11px;border:1px solid #cbd9e6;border-radius:12px;background:#f7fbff;box-sizing:border-box}
 .v330GpHead{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;color:#173b5d;font:900 13px Arial}.v330GpSub{margin-top:4px;color:#61778b;font:700 11px/1.35 Arial}
@@ -25488,7 +25488,7 @@ function install(){addPermissions();ensureUi();ensureButton();refreshCount();lis
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install,350),{once:true});else setTimeout(install,350);root.addEventListener('pageshow',()=>setTimeout(install,250),{passive:true});
 })(window);
 </script>
-<script src="./app.js?v=V4.8.10B" data-phase="postcontrol"></script>
+<script src="./app.js?v=V4.8.11B" data-phase="postcontrol"></script>
 <script id="v377AdminFormToolsScript">
 /* V3.80 — AD form tools row + create all forms + closeout notice cleanup. */
 (function(){
@@ -25539,7 +25539,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   setInterval(refresh,5000);
 })();
 </script>
-<script src="./app.js?v=V4.8.10B" data-phase="layout"></script>
+<script src="./app.js?v=V4.8.11B" data-phase="layout"></script>
 <script id="v1020-fs208-geometry-migration">
 (function(){
   const REV='V1020-EXACT-PAGE13';
@@ -26678,8 +26678,8 @@ root.v378ResetAllOldRecords=async function(){
   };
 })();
 </script>
-<script src="./app.js?v=V4.8.10B" data-phase="performance"></script>
-<script src="./daily-roster.js?v=V4.8.10B" id="dailyRosterCleanV11102"></script>
+<script src="./app.js?v=V4.8.11B" data-phase="performance"></script>
+<script src="./daily-roster.js?v=V4.8.11B" id="dailyRosterCleanV11102"></script>
 <script id="v1016-delete-profile-fix">
 /* V1.0.16 · XÓA tài khoản phải xóa đúng profile E-Report, không chỉ Auth/users. */
 (function(){
@@ -28296,11 +28296,11 @@ body.v38-clean-workflow #v1134QuickTimeBtn{background:#eef6ff!important;color:#0
 })();
 </script>
 
-<script src="./runtime.bundle.js?v=V4.8.10B"></script>
+<script src="./runtime.bundle.js?v=V4.8.11B"></script>
 <script id="v460RuntimeGuard">
 (()=>{
   setTimeout(async()=>{
-    const ok=String(window.__SAGS_RUNTIME_BUILD__||'')==='V4.8.10B-FORM-MANAGER-ROW-FIT-HANDBOOK';
+    const ok=String(window.__SAGS_RUNTIME_BUILD__||'')==='V4.8.11B-ADMIN-MANAGEMENT-CENTER';
     if(ok)return;
     console.error('E-REPORT runtime mismatch',window.__SAGS_RUNTIME_BUILD__);
     try{if(await window.sagsRepairMixedBuild?.('runtime-mismatch'))return;}catch(_e){}
@@ -28333,8 +28333,110 @@ window.adminResetAccountPassword=async function(uid){
   }
 };
 </script>
-<script src="./features.bundle.js?v=V4.8.10B"></script>
-<script src="./roster-lite.js?v=V4.8.10B" id="v477MailboxLite"></script>
-<script src="./pinned-flight.js?v=V4.8.10B" id="v478PinnedFlight"></script>
+<script src="./features.bundle.js?v=V4.8.11B"></script>
+<script src="./roster-lite.js?v=V4.8.11B" id="v477MailboxLite"></script>
+<script src="./pinned-flight.js?v=V4.8.11B" id="v478PinnedFlight"></script>
+
+<style id="v4811AdminCenterStyle">
+:root{
+  --v4811-accent:#075ea8;--v4811-accent2:#0b4a7b;--v4811-bg:#f6f8fb;--v4811-card:#fff;
+  --v4811-border:#d7e0ea;--v4811-text:#17324d;--v4811-muted:#667085;--v4811-danger:#b42318;
+}
+html.v4811-admin-center #v377AdminFormToolsRow{display:grid!important;grid-template-columns:1fr!important;gap:0!important;padding-top:5px!important}
+html.v4811-admin-center #v377AdminFormToolsRow>*:not(#v4811AdminCenterBtn){display:none!important}
+html.v4811-admin-center #roleBtnAccounts,
+html.v4811-admin-center #roleBtnAudit,
+html.v4811-admin-center #roleBtnFirebaseUsage,
+html.v4811-admin-center #roleBtnFleet{display:none!important}
+#v4811AdminCenterBtn{width:100%;min-height:38px;border:1px solid #9ec4e5;border-radius:10px;background:#075ea8;color:#fff;font:900 12px/1.1 Arial,sans-serif;letter-spacing:.15px;padding:8px 12px;box-shadow:none;cursor:pointer}
+#v4811AdminCenterBtn:active{transform:scale(.99)}
+#v4811AdminCenterModal{position:fixed;inset:0;z-index:20120;display:none;align-items:flex-start;justify-content:center;padding:max(14px,env(safe-area-inset-top)) 10px max(14px,env(safe-area-inset-bottom));background:rgba(10,22,36,.58);overflow:auto;box-sizing:border-box}
+#v4811AdminCenterModal.open{display:flex}
+.v4811CenterCard{width:min(96vw,940px);background:var(--v4811-bg);border:1px solid #cbd7e4;border-radius:18px;box-shadow:0 22px 64px rgba(0,0,0,.34);overflow:hidden;font-family:Arial,sans-serif;color:var(--v4811-text)}
+.v4811CenterHead{position:sticky;top:0;z-index:3;display:flex;align-items:center;gap:10px;padding:12px 14px;background:#0b4a7b;color:#fff;border-bottom:1px solid #164f79}
+.v4811CenterHeadText{min-width:0;flex:1}.v4811CenterHeadText b{display:block;font-size:17px;line-height:1.2}.v4811CenterHeadText small{display:block;margin-top:3px;font-size:10.5px;line-height:1.3;color:#dbeafe;font-weight:700}
+.v4811CenterClose{flex:0 0 auto;min-width:42px;min-height:38px;border:1px solid #ffffff55;border-radius:10px;background:#ffffff18;color:#fff;font:900 18px Arial;cursor:pointer}
+.v4811CenterBody{padding:12px}.v4811CenterSection{margin:0 0 14px}.v4811CenterSection:last-child{margin-bottom:0}
+.v4811CenterSectionTitle{display:flex;align-items:center;gap:7px;margin:0 0 7px;padding:0 2px;color:#334155;font:900 11px/1.2 Arial;letter-spacing:.45px;text-transform:uppercase}
+.v4811CenterGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.v4811CenterItem{min-width:0;display:grid;grid-template-columns:40px minmax(0,1fr);gap:9px;align-items:center;text-align:left;border:1px solid var(--v4811-border);border-radius:13px;background:#fff;padding:10px;min-height:76px;color:var(--v4811-text);cursor:pointer;box-shadow:0 1px 2px rgba(16,24,40,.04)}
+.v4811CenterItem:hover{border-color:#8bb8dc;background:#fafdff}.v4811CenterItem:active{transform:scale(.99)}
+.v4811CenterIcon{width:40px;height:40px;border-radius:11px;background:#edf6ff;display:flex;align-items:center;justify-content:center;font-size:20px}
+.v4811CenterItem b{display:block;font-size:12px;line-height:1.25;color:#17324d}.v4811CenterItem span{display:block;margin-top:3px;color:var(--v4811-muted);font-size:10.5px;line-height:1.3;font-weight:700}
+.v4811CenterItem.danger{border-color:#f3b2ad;background:#fffafa}.v4811CenterItem.danger .v4811CenterIcon{background:#fff0ef}.v4811CenterItem.danger b{color:var(--v4811-danger)}
+/* Common management skin */
+#accountManagerModal .sagsAdminPanel,#auditManagerModal .sagsAdminPanel,#firebaseUsageModal .sagsAdminPanel,
+#fleetManagerModal .fleetManagerPanel,#v377CreateFormModal .v377CreateFormCard,#csgMgrCard,#v440FmCard{
+  border:1px solid var(--v4811-border)!important;border-radius:18px!important;background:var(--v4811-bg)!important;box-shadow:0 20px 60px rgba(0,0,0,.30)!important
+}
+#accountManagerModal .sagsAdminPanel h3,#auditManagerModal .sagsAdminPanel h3,#firebaseUsageModal .sagsAdminPanel h3,
+#fleetManagerModal .fleetManagerTop h3,.v377CreateFormHead b,#csgMgrCard .csgMgrHead b{color:var(--v4811-accent2)!important;font-weight:900!important;letter-spacing:.1px}
+#accountManagerModal .sagsAdminGrid,#fleetManagerModal .fleetManagerCard,#auditManagerModal .sagsAuditRow,
+#firebaseUsageModal #fbUsageCards>*,#csgMgrCard .csgMgrBlock{border-color:var(--v4811-border)!important}
+#accountManagerModal .sagsAdminBtn,#auditManagerModal .sagsAdminBtn,#firebaseUsageModal .sagsAdminBtn,
+#fleetManagerModal .fleetMiniBtn,#v377CreateFormModal button,#csgMgrCard .csgMgrBtn{border-radius:10px!important;min-height:38px}
+#accountManagerModal input,#accountManagerModal select,#fleetManagerModal input,#fleetManagerModal select,
+#v377CreateFormModal input,#v377CreateFormModal select,#csgMgrCard input,#csgMgrCard select{border-radius:10px!important}
+#fleetManagerModal .fleetManagerTop{background:var(--v4811-bg)!important;border-bottom:1px solid #e3e9ef;padding:8px 0!important}
+#fleetManagerModal .fleetManagerCard,#csgMgrCard .csgMgrBlock{background:#fff!important;border-radius:13px!important}
+#csgMgrCard .csgMgrHead{background:#0b4a7b!important;color:#fff!important}.csgMgrHead b{color:#fff!important}
+#v440FmCard{overflow:hidden!important}.v440FmHead{background:#0b4a7b!important}.v440Pane{border-color:var(--v4811-border)!important}
+@media(max-width:720px){
+  html.v4811-admin-center body.v377-ad-form-tools{padding-bottom:92px!important}
+  #v4811AdminCenterModal{padding:0;align-items:stretch;overflow:hidden}
+  .v4811CenterCard{width:100%;min-height:100dvh;border:0;border-radius:0;box-shadow:none;overflow:auto}
+  .v4811CenterHead{padding:10px 11px}.v4811CenterHeadText b{font-size:14px}.v4811CenterHeadText small{font-size:9.5px}
+  .v4811CenterBody{padding:9px}.v4811CenterGrid{grid-template-columns:1fr 1fr;gap:7px}.v4811CenterItem{min-height:72px;padding:9px;grid-template-columns:36px minmax(0,1fr);gap:8px}.v4811CenterIcon{width:36px;height:36px;font-size:18px}.v4811CenterItem b{font-size:11.5px}.v4811CenterItem span{font-size:9.8px}
+  #accountManagerModal,#auditManagerModal,#firebaseUsageModal,#fleetManagerModal,#v377CreateFormModal,#csgMgr{padding:0!important;align-items:stretch!important;overflow:hidden!important}
+  #accountManagerModal .sagsAdminPanel,#auditManagerModal .sagsAdminPanel,#firebaseUsageModal .sagsAdminPanel,
+  #fleetManagerModal .fleetManagerPanel,#v377CreateFormModal .v377CreateFormCard,#csgMgrCard{
+    width:100%!important;max-width:none!important;min-height:100dvh!important;height:100dvh!important;max-height:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;overflow:auto!important;padding:10px!important
+  }
+  #csgMgrCard{padding:0 0 8px!important}.csgMgrBody{padding:8px!important}
+  #accountManagerModal .sagsAdminTopActions,#auditManagerModal .sagsAdminTopActions,#firebaseUsageModal .sagsAdminTopActions{position:sticky;top:-10px;z-index:4;background:var(--v4811-bg);padding:8px 0 7px;margin:0 0 7px;border-bottom:1px solid #e3e9ef}
+  #fleetManagerModal .fleetManagerTop{top:-10px!important}
+}
+@media(max-width:390px){.v4811CenterGrid{grid-template-columns:1fr}.v4811CenterItem{min-height:66px}}
+</style>
+<script id="v4811AdminCenterScript">
+(function(root){
+'use strict';
+if(root.__SAGS_V4811_ADMIN_CENTER)return;root.__SAGS_V4811_ADMIN_CENTER=true;
+const $=id=>document.getElementById(id);
+function isAD(){try{return String(root.currentRole||root.currentUserProfile?.role||'').trim().toUpperCase()==='AD'||document.body?.classList.contains('role-admin')}catch(_){return false}}
+function closeCenter(){ $('v4811AdminCenterModal')?.classList.remove('open') }
+function run(fn){closeCenter();setTimeout(()=>{try{fn()}catch(e){console.error('Admin Center',e);alert('Không mở được mục quản lý: '+(e?.message||e))}},40)}
+function call(name,...args){const fn=root[name];if(typeof fn!=='function')throw new Error(name+' chưa sẵn sàng.');return fn(...args)}
+function action(key){
+  if(!isAD())return alert('Chỉ tài khoản AD được mở TRUNG TÂM QUẢN LÝ.');
+  if(key==='accounts')return run(()=>call('openAccountManager'));
+  if(key==='fleet')return run(()=>call('openFleetManager'));
+  if(key==='forms')return run(()=>call('sagsV440OpenFormManager'));
+  if(key==='newform')return run(()=>call('v377OpenCreateFormMenu'));
+  if(key==='layout')return run(()=>{const b=$('v368LayoutTuneBtn');if(!b)throw new Error('Công cụ CĂN CHỈNH chưa sẵn sàng.');b.click()});
+  if(key==='handbook')return run(()=>call('sagsCarrierGuideManager'));
+  if(key==='audit')return run(()=>call('openAuditManager'));
+  if(key==='firebase')return run(()=>call('openFirebaseUsageMonitor'));
+  if(key==='reset')return run(()=>call('v378ResetAllOldRecords'));
+}
+function item(key,icon,title,note,danger=false){return `<button type="button" class="v4811CenterItem${danger?' danger':''}" data-v4811-action="${key}"><span class="v4811CenterIcon" aria-hidden="true">${icon}</span><span><b>${title}</b><span>${note}</span></span></button>`}
+function ensure(){
+  let btn=$('v4811AdminCenterBtn');
+  if(!btn){btn=document.createElement('button');btn.id='v4811AdminCenterBtn';btn.type='button';btn.textContent='⚙ TRUNG TÂM QUẢN LÝ';btn.onclick=openCenter;const row=$('v377AdminFormToolsRow');if(row)row.prepend(btn)}
+  if(!$('v4811AdminCenterModal')){
+    const m=document.createElement('div');m.id='v4811AdminCenterModal';m.setAttribute('role','dialog');m.setAttribute('aria-modal','true');m.setAttribute('aria-label','Trung tâm quản lý');
+    m.innerHTML=`<div class="v4811CenterCard"><div class="v4811CenterHead"><div class="v4811CenterHeadText"><b>⚙ TRUNG TÂM QUẢN LÝ</b><small>AD · các công cụ quản lý dùng chung một giao diện và một điểm truy cập</small></div><button class="v4811CenterClose" type="button" aria-label="Đóng">×</button></div><div class="v4811CenterBody"><section class="v4811CenterSection"><div class="v4811CenterSectionTitle">BIỂU MẪU & DỮ LIỆU NGHIỆP VỤ</div><div class="v4811CenterGrid">${item('forms','🧩','Quản lý biểu mẫu','Thêm field, chỉnh cấu trúc, preview/PDF')}${item('newform','➕','Tạo biểu mẫu','Mở hoặc tạo tờ nghiệp vụ mới')}${item('layout','📐','Căn chỉnh biểu mẫu','Vị trí, vùng chạm, typography')}${item('handbook','📓','Quản lý Sổ tay hãng','Import, test và phát hành dữ liệu hãng')}${item('fleet','✈️','Quản lý Fleet tàu bay','Hãng, đăng bạ, loại tàu, ZONE/MAX PAX')}</div></section><section class="v4811CenterSection"><div class="v4811CenterSectionTitle">TÀI KHOẢN & HỆ THỐNG</div><div class="v4811CenterGrid">${item('accounts','👤','Quản lý tài khoản','Tạo tài khoản, hồ sơ và phân quyền')}${item('audit','🧾','Nhật ký hệ thống','Theo dõi thao tác và lịch sử quản trị')}${item('firebase','📊','Firebase Usage','Theo dõi dung lượng và kết nối')}${item('reset','🧹','Bảo trì dữ liệu','Xóa hồ sơ nghiệp vụ cũ · có xác nhận',true)}</div></section></div></div>`;
+    document.body.appendChild(m);m.querySelector('.v4811CenterClose').onclick=closeCenter;m.addEventListener('click',e=>{if(e.target===m)closeCenter()});m.querySelectorAll('[data-v4811-action]').forEach(b=>b.onclick=()=>action(b.dataset.v4811Action));
+  }
+}
+function openCenter(){ensure();if(!isAD())return alert('Chỉ tài khoản AD được mở TRUNG TÂM QUẢN LÝ.');$('v4811AdminCenterModal')?.classList.add('open')}
+function refresh(){ensure();const ad=isAD();document.documentElement.classList.toggle('v4811-admin-center',ad);const b=$('v4811AdminCenterBtn');if(b)b.style.display=ad?'block':'none';if(!ad)closeCenter()}
+root.v4811OpenAdminCenter=openCenter;root.v4811CloseAdminCenter=closeCenter;root.v4811RefreshAdminCenter=refresh;
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('v4811AdminCenterModal')?.classList.contains('open'))closeCenter()});
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{refresh();setTimeout(refresh,350);setTimeout(refresh,1300)},{once:true});else{refresh();setTimeout(refresh,350)}
+setInterval(refresh,5000);
+})(window);
+</script>
+
 </body>
 </html>
