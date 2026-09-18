@@ -2964,8 +2964,12 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
   <button id="v377CreateFormBtn" type="button" onclick="v377OpenCreateFormMenu()">➕ TẠO BIỂU MẪU</button>
   <button id="v440FormManagerBtn" type="button" onclick="sagsV440OpenFormManager()">🧩 QUẢN LÝ / THÊM BIỂU MẪU</button>
   <div id="v377LayoutTuneSlot" class="v377LayoutTuneSlot"></div>
-  <button id="v378ResetRecordsBtn" type="button" onclick="v378ResetAllOldRecords()">🧹 XÓA TOÀN BỘ HỒ SƠ CŨ · BẮT ĐẦU MỚI</button>
-  <div id="v378ResetStatus"></div>
+  <button id="v378ResetRecordsBtn" type="button" onclick="sagsV503Backup()">⬇️ 1. SAO LƯU TRƯỚC KHI XÓA</button>
+  <label for="v503BackupVerifyFile" style="font-size:12px;font-weight:750">2. CHỌN LẠI FILE ĐÃ TẢI ĐỂ KIỂM TRA SHA-256</label>
+  <input id="v503BackupVerifyFile" type="file" accept=".json,application/json" style="display:none;max-width:100%" aria-label="Chọn file sao lưu vừa tải để xác thực" />
+  <button id="v503ResetExecuteBtn" type="button" disabled>🧹 3. XÓA SAU KHI SAO LƯU</button>
+  <div class="sub" style="margin:6px 0;font-size:12px;color:#a12121"><b>LƯU Ý:</b> Chỉ xóa dữ liệu máy chủ ở 2 vùng RTDB và Firestore E-REPORT; không sao lưu dữ liệu chưa đồng bộ trên máy khác, tệp ngoài hệ thống hoặc Firebase Auth. Phải dừng các thiết bị cũ trước khi xóa.</div>
+  <div id="v378ResetStatus" role="status" aria-live="polite"></div>
 </div>
 </div>
 <div id="v377CreateFormModal" class="v377CreateFormModal" style="display:none" role="dialog" aria-modal="true" aria-label="Tạo biểu mẫu">
@@ -3914,7 +3918,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <script>
 window.SAGS_FIREBASE_AUTH_SDK_READY = !!(window.firebase && typeof window.firebase.auth === "function");
 </script>
-<script src="./app.v502.js?v=V5.0.2B" data-phase="config"></script>
+<script src="./app.v503.js?v=V5.0.3B" data-phase="config"></script>
 <script>
 let suppressModalClickUntil=0;
 function armModalGhostClickBlock(ms=650){
@@ -11059,8 +11063,8 @@ try {
   if(h) h.textContent="Lỗi khởi tạo: "+err.message;
   alert("Lỗi JavaScript: "+err.message);
 }
-const APP_BUILD_VERSION="V5.0.2B-LAYERED-PDF-DIRECT-ROSTER";
-const APP_DISPLAY_VERSION="V5.0.2B";
+const APP_BUILD_VERSION="V5.0.3B-LAYERED-PDF-SAFE-RESET-ALERTS";
+const APP_DISPLAY_VERSION="V5.0.3B";
 // V1.1.103: hotfix duy nhất lỗi Firebase RTDB ancestor/descendant khi đồng bộ DAILY ROSTER; không thay đổi nghiệp vụ khác.
 // V4.21 — SAFE UPDATE SAVE
 // Before switching to a newly installed app version, force-save all current
@@ -11124,10 +11128,10 @@ window.sagsRepairMixedBuild=async function(reason="mixed-build"){
     const [vr,mr,rr]=await Promise.all([
       fetch(APP_VERSION_URL+"?repair="+Date.now(),{cache:"no-store"}),
       fetch("./asset-manifest.json?repair="+Date.now(),{cache:"no-store"}),
-      fetch("./runtime.v502.bundle.js?repair="+Date.now(),{cache:"no-store"})
+      fetch("./runtime.v503.bundle.js?repair="+Date.now(),{cache:"no-store"})
     ]);
     if(!vr.ok||!mr.ok||!rr.ok)return false;
-    const version=await vr.json(),manifest=await mr.json(),bytes=await rr.arrayBuffer(),meta=manifest?.assets?.["./runtime.v502.bundle.js"];
+    const version=await vr.json(),manifest=await mr.json(),bytes=await rr.arrayBuffer(),meta=manifest?.assets?.["./runtime.v503.bundle.js"];
     if(version?.build!==APP_BUILD_VERSION||manifest?.build!==APP_BUILD_VERSION||!meta||bytes.byteLength!==meta.bytes)return false;
     const digest=await crypto.subtle.digest("SHA-256",bytes);
     const hash=[...new Uint8Array(digest)].map(n=>n.toString(16).padStart(2,"0")).join("");
@@ -11141,7 +11145,7 @@ window.sagsRepairMixedBuild=async function(reason="mixed-build"){
       for(const name of await caches.keys()){
         if(!name.startsWith("sags-app-shell-"))continue;
         const c=await caches.open(name);
-        await c.delete(new URL("./runtime.v502.bundle.js",location.href).href).catch(()=>false);
+        await c.delete(new URL("./runtime.v503.bundle.js",location.href).href).catch(()=>false);
       }
     }
     try{const reg=await navigator.serviceWorker?.getRegistration?.();await reg?.update?.()}catch(_e){}
@@ -17603,12 +17607,17 @@ const opsPushbackTimers=new Map();
 let opsPersistentAlertTimer=null;
 let opsVoiceRotationIndex=0;
 let opsVoiceAudio=null;
+let opsLastSoundAtMs=0;
 const OPS_ALERT_AUDIO_URLS={
   MVA:"./alert-mva.mp3",
   MVT:"./alert-mvt.mp3",
   PUSHBACK_MISSING:"./alert-pushback-missing.mp3"
 };
 const opsFieldCache={};
+function opsAckStorageKey(){return 'sagsOpsAlertAcksV503::'+String(currentUserProfile?.username||currentRole||'').toUpperCase();}
+function opsAckMap(){try{return JSON.parse(localStorage.getItem(opsAckStorageKey())||'{}')||{}}catch(_){return {}}}
+function opsAckId(alert){return [String(alert?.replaceKey||alert?.key||''),Number(alert?.sourceEventAtMs||0)].join('|')}
+
 function opsNorm(v){return String(v??"").trim();}
 function opsValidClock(v){
   const s=opsNorm(v);
@@ -17622,7 +17631,14 @@ function opsTripKey(identity,sid=""){
   const date=String(identity?.dateToken||"");
   const reg=String(identity?.acRegToken||"");
   const flights=Array.isArray(identity?.flights)?identity.flights:[];
-  return [date,flights.join("+"),reg,"CXR",sid||""].join("|");
+  // One physical flight across sessions/forms. Legacy keys with a session suffix normalize below.
+  return [date,flights.join("+"),reg,"CXR"].join("|");
+}
+function opsCanonicalTripKey(raw){return String(raw||'').split('|').slice(0,4).join('|');}
+function opsFlightDay(identity){
+  const s=String(identity?.dateToken||'').replace(/\D/g,'');
+  if(s.length!==8)return '';
+  return `${s.slice(0,4)}-${s.slice(4,6)}-${s.slice(6,8)}`;
 }
 function opsFlightLabel(identity,meta){
   const flights=Array.isArray(identity?.flights)&&identity.flights.length?identity.flights.join("/"):String(meta?.name||"CHUYẾN");
@@ -17881,15 +17897,15 @@ function opsAlertPulsePersistent(){
   if(!alerts.length)return;
   if(opsVoiceRotationIndex>=alerts.length)opsVoiceRotationIndex=0;
   const a=alerts[opsVoiceRotationIndex++];
-  opsPlayApprovedVoiceForAlert(a);
+  opsLastSoundAtMs=Date.now();opsPlayApprovedVoiceForAlert(a);
 }
 function opsEnsurePersistentAlert(){
   if(!opsVisibleAlerts.size){opsStopPersistentAlert();return;}
   if(opsPersistentAlertTimer)return;
   opsVoiceRotationIndex=0;
+  // Sound once for a newly shown actionable alert; do not siren every 4.5 seconds.
   opsAlertPulsePersistent();
-  // File dài nhất ~3.2s; để 4.5s tránh chồng tiếng nhưng vẫn lặp liên tục tới khi ĐÃ BIẾT.
-  opsPersistentAlertTimer=setInterval(opsAlertPulsePersistent,4500);
+  opsPersistentAlertTimer=-1;
 }
 function opsRenderTray(){
   const tray=document.getElementById("opsAlertTray"),host=document.getElementById("opsAlertTrayScroller");
@@ -17972,35 +17988,67 @@ function opsQueueAlert(title,message,eventKey="",data={}){
   }else if(opsVisibleAlerts.has(key)){
     return;
   }
-  opsVisibleAlerts.set(key,{key,title:alertTitle,message:String(message||""),type:opsAlertTypeFromTitle(alertTitle),createdAtMs:Date.now(),sourceEventAtMs:incomingAt,replaceKey,...payload});
+  const wasShowing=opsVisibleAlerts.size>0;
+  const entry={key,title:alertTitle,message:String(message||""),type:opsAlertTypeFromTitle(alertTitle),createdAtMs:Date.now(),sourceEventAtMs:incomingAt,replaceKey,...payload};
+  if(opsAckMap()[opsAckId(entry)])return;
+  opsVisibleAlerts.set(key,entry);
   opsRenderTray();
+  // Existing unacknowledged alert must not suppress a genuinely NEW event forever.
+  if(wasShowing&&Date.now()-opsLastSoundAtMs>=12000){opsLastSoundAtMs=Date.now();opsPlayApprovedVoiceForAlert(opsVisibleAlerts.get(key));}
 }
 function ackOpsAlert(key){
-  const k=String(key||"");
+  const k=String(key||''),item=opsVisibleAlerts.get(k);
+  if(item){
+    const map=opsAckMap();map[opsAckId(item)]=Date.now();
+    const entries=Object.entries(map).sort((a,b)=>Number(b[1]||0)-Number(a[1]||0)).slice(0,200);
+    try{localStorage.setItem(opsAckStorageKey(),JSON.stringify(Object.fromEntries(entries)))}catch(_){}
+  }
   if(k)opsVisibleAlerts.delete(k);
   opsRenderTray();
 }
 function opsClearPushbackTimer(tripKey){
-  const k=String(tripKey||"");
+  const k=opsCanonicalTripKey(tripKey);
   const t=opsPushbackTimers.get(k);
   if(t){clearTimeout(t);opsPushbackTimers.delete(k);}
 }
+async function opsServerAllowsMissingPushback(tripKey,due){
+  // Do not trust old localStorage or a stale timer. Confirm current server events.
+  // On permission / network errors fail closed (no false warning).
+  try{
+    const connected=(await sagsV470Db().ref('.info/connected').once('value')).val();
+    if(connected!==true)return false;
+    const q=sagsV470Ref('ops/events').orderByChild('eventAtMs').startAt(due-24*3600000).limitToLast(600);
+    const snap=await q.once('value'),events=[];
+    snap.forEach(s=>{const ev=s.val()||{};if(opsCanonicalTripKey(ev.tripKey)===tripKey)events.push(ev)});
+    events.sort((a,b)=>Number(a.eventAtMs||0)-Number(b.eventAtMs||0));
+    let door=null,closed=false,pushback=false;
+    for(const ev of events){
+      if(ev.eventType==='DOOR_CLOSE'){door=ev;closed=true;pushback=false;}
+      else if(ev.eventType==='DOOR_CLOSE_CLEARED'){closed=false;door=null;}
+      else if(ev.eventType==='PUSHBACK_SET'){pushback=true;}
+    }
+    return !!(closed&&!pushback&&door&&Math.abs(Number(door.dueAtMs||0)-due)<=90000);
+  }catch(e){console.warn('V503 pushback server check unavailable; no alert',e?.message||e);return false}
+}
 function opsSchedulePushbackAlert({tripKey,flightLabel,dueAtMs,eventKey,forDh=false}={}){
-  const k=String(tripKey||"");if(!k)return;
+  const k=opsCanonicalTripKey(tripKey);if(!k||k.split('|').length!==4)return;
   opsClearPushbackTimer(k);
-  const replaceKey="PUSHBACK_MISSING|"+k;
-  // Nếu Door Close vừa được sửa, cảnh báo thiếu PUSHBACK tính theo giờ cũ phải biến mất ngay.
+  const replaceKey='PUSHBACK_MISSING|'+k;
   if(opsRemoveAlertsByReplaceKey(replaceKey))opsRenderTray();
-  const due=Number(dueAtMs||Date.now()+600000);
-  const fire=()=>{
+  const due=Number(dueAtMs);
+  const keyParts=k.split('|');if(!keyParts[0]||!keyParts[1])return;
+  if(!Number.isFinite(due)||due<Date.now()-30*60000||due>Date.now()+18*3600000)return;
+  const fire=async()=>{
     opsPushbackTimers.delete(k);
-    opsQueueAlert("⚠️ THIẾU GIỜ PUSHBACK",`${flightLabel||"CHUYẾN"} đã DOOR CLOSE 10 phút nhưng chưa có giờ PUSHBACK.\nVui lòng kiểm tra và bổ sung giờ.`,eventKey||("PUSHBACK_MISSING|"+k+"|"+due),{replaceKey,tripKey:k,sourceEventAtMs:due});
-    if(forDh)writeUserActivity?.("THIẾU GIỜ PUSHBACK",`${flightLabel||"CHUYẾN"} · Door Close quá 10 phút`,{tripKey:k});
+    if(!(await opsServerAllowsMissingPushback(k,due)))return;
+    opsQueueAlert('⚠️ THIẾU GIỜ PUSHBACK',`${flightLabel||'CHUYẾN'} đã DOOR CLOSE 10 phút nhưng chưa có giờ PUSHBACK.\nVui lòng kiểm tra và bổ sung giờ.`,eventKey||('PUSHBACK_MISSING|'+k+'|'+due),{replaceKey,tripKey:k,sourceEventAtMs:due});
+    if(forDh)writeUserActivity?.('THIẾU GIỜ PUSHBACK',`${flightLabel||'CHUYẾN'} · Door Close quá 10 phút`,{tripKey:k});
   };
   const delay=due-Date.now();
-  if(delay<=0)fire();
+  if(delay<=0)void fire();
   else opsPushbackTimers.set(k,setTimeout(fire,Math.min(delay,2147483647)));
 }
+
 async function opsBroadcast(eventType,payload={}){
   if(!["DH","AD"].includes(String(currentRole||"")))return false;
   try{
@@ -18030,7 +18078,7 @@ function opsHandleBroadcastEvent(d){
   while(opsSeenEventKeys.size>240){
     const first=opsSeenEventKeys.values().next().value;opsSeenEventKeys.delete(first);
   }
-  const type=String(d?.eventType||""),flight=String(d?.flightLabel||"CHUYẾN"),tripKey=String(d?.tripKey||"");
+  const type=String(d?.eventType||""),flight=String(d?.flightLabel||"CHUYẾN"),tripKey=opsCanonicalTripKey(d?.tripKey||"");
   if(type==="CHOCK_ON"){
     opsQueueAlert("🔔 NHẮC GỬI MVA",`${flight} đã CHOCK ON lúc ${d.time||""}.\nCBTT kiểm tra và gửi MVA.`,eventKey,{eventType:type,flightLabel:flight,time:d.time||"",identity:d.identity||{},tripKey,replaceKey:"MVA|"+tripKey,sourceEventAtMs:eventAt});
   }else if(type==="DOOR_CLOSE"){
@@ -18111,13 +18159,20 @@ function opsHandleRampPersist(sid,beforeTimes,afterTimes){
 function opsRestoreDhPushbackTimers(){
   if(!["DH","AD"].includes(String(currentRole||"")))return;
   try{
+    const flights=new Set();
     for(const meta of readFlightSessionList()){
       const env=readFlightSessionEnvelope(meta.id),st=env?.state||{};
       if(env?.mainForm==="fsags09")continue;
       const t=opsReadTimes(st);
       if(!opsValidClock(t.doorClose)||opsValidClock(t.pushback))continue;
       const identity=opsRampIdentity(st,meta),tripKey=opsTripKey(identity,meta.id),flightLabel=opsFlightLabel(identity,meta);
-      opsSchedulePushbackAlert({tripKey,flightLabel,dueAtMs:opsClockDueMs(t.doorClose),eventKey:`DH_RESTORE|${tripKey}|${t.doorClose}`,forDh:true});
+      if(flights.has(tripKey))continue;
+      const day=opsFlightDay(identity),nowDate=new Date(),today=[nowDate.getFullYear(),String(nowDate.getMonth()+1).padStart(2,'0'),String(nowDate.getDate()).padStart(2,'0')].join('-');
+      if(day&&day!==today)continue;
+      const dueAtMs=opsClockDueMs(t.doorClose);
+      if(dueAtMs<Date.now()-30*60000||dueAtMs>Date.now()+18*3600000)continue;
+      flights.add(tripKey);
+      opsSchedulePushbackAlert({tripKey,flightLabel,dueAtMs,eventKey:`DH_RESTORE|${tripKey}|${t.doorClose}`,forDh:true});
     }
   }catch(e){console.warn("restore pushback timers",e);}
 }
@@ -22569,7 +22624,7 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
 })();
 </script>
 <script type="module" src="./ai.js?v=V4.7.6"></script>
-<script src="./app.v502.js?v=V5.0.2B" data-phase="archive"></script>
+<script src="./app.v503.js?v=V5.0.3B" data-phase="archive"></script>
 <script id="v120-build02-fixes">
 /* V1.20 BUILD 02 — background persistence, VHTTB, per-account usage detail, progress dedupe. */
 (function(){
@@ -23011,7 +23066,7 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
   setTimeout(()=>{ensureUi();startCloseoutListener();refreshValidation();try{window.sagsV440CleanupExpiredCloseoutEvents?.()}catch(_){}},500);
 })();
 </script>
-<script src="./app.v502.js?v=V5.0.2B" data-phase="tools"></script>
+<script src="./app.v503.js?v=V5.0.3B" data-phase="tools"></script>
 <script id="v173-quick-time">
 (function(){
   "use strict";
@@ -25024,7 +25079,7 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
   }
 }
 </style>
-<script src="./app.v502.js?v=V5.0.2B" data-phase="flight"></script>
+<script src="./app.v503.js?v=V5.0.3B" data-phase="flight"></script>
 <script id="v191IOSInteractionFix">
 (()=>{
   'use strict';
@@ -25274,7 +25329,7 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
   window.addEventListener('pageshow',()=>setTimeout(refresh,120),{passive:true});
 })();
 </script>
-<script src="./app.v502.js?v=V5.0.2B" data-phase="control"></script>
+<script src="./app.v503.js?v=V5.0.3B" data-phase="control"></script>
 <style id="v330-group-permission-style">
 #v330GroupPermPanel{margin:12px 0 8px;padding:11px;border:1px solid #cbd9e6;border-radius:12px;background:#f7fbff;box-sizing:border-box}
 .v330GpHead{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;color:#173b5d;font:900 13px Arial}.v330GpSub{margin-top:4px;color:#61778b;font:700 11px/1.35 Arial}
@@ -25501,7 +25556,7 @@ function install(){addPermissions();ensureUi();ensureButton();refreshCount();lis
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install,350),{once:true});else setTimeout(install,350);root.addEventListener('pageshow',()=>setTimeout(install,250),{passive:true});
 })(window);
 </script>
-<script src="./app.v502.js?v=V5.0.2B" data-phase="postcontrol"></script>
+<script src="./app.v503.js?v=V5.0.3B" data-phase="postcontrol"></script>
 <script id="v377AdminFormToolsScript">
 /* V3.80 — AD form tools row + create all forms + closeout notice cleanup. */
 (function(){
@@ -25552,7 +25607,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   setInterval(refresh,5000);
 })();
 </script>
-<script src="./app.v502.js?v=V5.0.2B" data-phase="layout"></script>
+<script src="./app.v503.js?v=V5.0.3B" data-phase="layout"></script>
 <script id="v1020-fs208-geometry-migration">
 (function(){
   const REV='V1020-EXACT-PAGE13';
@@ -26548,6 +26603,7 @@ async function removeFirestoreOperational(){
   return total;
 }
 root.v378ResetAllOldRecords=async function(){
+  alert('Chức năng xóa cũ đã ngừng dùng. Hãy sử dụng SAO LƯU → CHỌN LẠI FILE KIỂM TRA → XÓA trong AD CONTROL CENTER.');return;
   if(!isAD())return alert('Chỉ AD được phép xóa toàn bộ hồ sơ cũ.');
   const msg='THAO TÁC NÀY SẼ XÓA HỒ SƠ NGHIỆP VỤ CŨ TRÊN MÁY CHỦ\n\nBao gồm Roster/Flight, FINAL/CROSSCHECK, KẾT SỔ, FSAGS208, BBBT liên kết, R&S, archive và dữ liệu công việc.\n\nKHÔNG xóa: tài khoản, phân quyền, Fleet, A/C Limits, cấu hình hệ thống, chữ ký, form-layout.js và bộ đếm BBBT.\n\nSau khi xóa không thể khôi phục từ hệ thống. Tiếp tục?';
   if(!confirm(msg))return;
@@ -26571,6 +26627,7 @@ root.v378ResetAllOldRecords=async function(){
 };
 })(window);
 </script>
+<script src="./admin-reset.v503.js?v=V5.0.3B" id="v503AdminBackupReset"></script>
 <script id="v388-firebase-bulk-migration">
 /* V3.89 — AD bulk Firebase Authentication migration using a secondary Firebase app.
    The default app remains signed in as ADMIN so Firestore profile writes stay authorized. */
@@ -26691,10 +26748,10 @@ root.v378ResetAllOldRecords=async function(){
   };
 })();
 </script>
-<script src="./app.v502.js?v=V5.0.2B" data-phase="performance"></script>
-<script src="./daily-roster.v502.js?v=V5.0.2B" id="dailyRosterCleanV11102"></script>
+<script src="./app.v503.js?v=V5.0.3B" data-phase="performance"></script>
+<script src="./daily-roster.v502.js?v=V5.0.3B" id="dailyRosterCleanV11102"></script>
 <!-- V5.0.2: removed automatic/named-person handover. Roster independently controls access. -->
-<script src="./self-accept.v502.js?v=V5.0.2B" id="sagsHF4SelfHandover"></script>
+<script src="./self-accept.v502.js?v=V5.0.3B" id="sagsHF4SelfHandover"></script>
 <script id="v1016-delete-profile-fix">
 /* V1.0.16 · XÓA tài khoản phải xóa đúng profile E-Report, không chỉ Auth/users. */
 (function(){
@@ -28322,11 +28379,11 @@ body.v38-clean-workflow #v1134QuickTimeBtn{background:#eef6ff!important;color:#0
 })();
 </script>
 
-<script src="./runtime.v502.bundle.js?v=V5.0.2B"></script>
+<script src="./runtime.v503.bundle.js?v=V5.0.3B"></script>
 <script id="v460RuntimeGuard">
 (()=>{
   setTimeout(async()=>{
-    const ok=String(window.__SAGS_RUNTIME_BUILD__||'')==='V5.0.2B-LAYERED-PDF-DIRECT-ROSTER';
+    const ok=String(window.__SAGS_RUNTIME_BUILD__||'')==='V5.0.3B-LAYERED-PDF-SAFE-RESET-ALERTS';
     if(ok)return;
     console.error('E-REPORT runtime mismatch',window.__SAGS_RUNTIME_BUILD__);
     try{if(await window.sagsRepairMixedBuild?.('runtime-mismatch'))return;}catch(_e){}
@@ -28359,8 +28416,8 @@ window.adminResetAccountPassword=async function(uid){
   }
 };
 </script>
-<script src="./features.v5.bundle.js?v=V5.0.2B"></script>
-<script src="./roster-lite.v5.js?v=V5.0.2B" id="v477MailboxLite"></script>
+<script src="./features.v5.bundle.js?v=V5.0.3B"></script>
+<script src="./roster-lite.v5.js?v=V5.0.3B" id="v477MailboxLite"></script>
 <script src="./pinned-flight.js?v=V4.8.10B" id="v478PinnedFlight"></script>
 </body>
 </html>
