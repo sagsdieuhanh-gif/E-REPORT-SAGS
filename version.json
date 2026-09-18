@@ -1,11 +1,10 @@
 {
-  "version": "V4.8.10B-HF1",
-  "displayVersion": "V4.8.10B-HF1",
-  "label": "V4.8.10B-HF1 ARR→DEP MY FLIGHT READY FIX",
-  "build": "V4.8.10B-HF1-ARR-DEP-MYFLIGHT-READY",
-  "releasedAt": "2026-09-18T01:40:00Z",
-  "type": "hotfix-arr-dep-myflight-ready-b",
-  "base": "V4.8.10B-FORM-MANAGER-ROW-FIT-HANDBOOK",
-  "notes": "Giữ nguyên V4.8.10B làm gốc. Sửa luồng A hoàn tất ARR nhưng B không thấy DEP trong MY FLIGHT: trạng thái READY giờ được mirror đầy đủ vào roster_mail lite fields để thiết bị/tài khoản B nhận child/value change và render lại ngay.",
-  "message": "V4.8.10B-HF1 · Sửa A HOÀN TẤT → B thấy DEP trong MY FLIGHT"
+  "version": "V4.8.10B",
+  "displayVersion": "V4.8.10B",
+  "label": "V4.8.10B FORM MANAGER ROW FIT + MOBILE HANDBOOK",
+  "build": "V4.8.10B-FORM-MANAGER-ROW-FIT-HANDBOOK",
+  "releasedAt": "2026-09-17T07:55:00Z",
+  "type": "form-manager-row-fit-handbook-b",
+  "notes": "Form Manager multi-line fields now support template-row fitting: set the number of printed rows and the line spacing is derived from field height, so wrapped text follows dotted/ruled template lines instead of bunching at the top. Canvas PDF preview uses the same baseline model. Includes the full Form Manager UI cleanup and compact mobile Carrier Service Notebook layout from V4.8.9.",
+  "message": "V4.8.10B · Textarea khớp dòng mẫu + Form Manager/Sổ tay mobile"
 }
