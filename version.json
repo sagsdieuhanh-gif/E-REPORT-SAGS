@@ -1,10 +1,11 @@
 {
-  "version": "V4.8.10B",
-  "displayVersion": "V4.8.10B",
-  "label": "V4.8.10B FORM MANAGER ROW FIT + MOBILE HANDBOOK",
-  "build": "V4.8.10B-FORM-MANAGER-ROW-FIT-HANDBOOK",
-  "releasedAt": "2026-09-17T07:55:00Z",
-  "type": "form-manager-row-fit-handbook-b",
-  "notes": "Form Manager multi-line fields now support template-row fitting: set the number of printed rows and the line spacing is derived from field height, so wrapped text follows dotted/ruled template lines instead of bunching at the top. Canvas PDF preview uses the same baseline model. Includes the full Form Manager UI cleanup and compact mobile Carrier Service Notebook layout from V4.8.9.",
-  "message": "V4.8.10B · Textarea khớp dòng mẫu + Form Manager/Sổ tay mobile"
+  "version": "V4.8.10B-HF4",
+  "displayVersion": "V4.8.10B-HF4",
+  "label": "V4.8.10B-HF4 · C tự nhận giao ca 42.1 + 55.1",
+  "build": "V4.8.10B-HF4-SELF-ACCEPT-SHIFT",
+  "releasedAt": "2026-09-18T02:50:00Z",
+  "type": "hotfix-self-handover-b",
+  "base": "V4.8.10B-FORM-MANAGER-ROW-FIT-HANDBOOK",
+  "notes": "C (DH) can independently self-accept completed/released 42.1 and 55.1 of the same flight, in one RTDB multi-location update; no AD or REASSIGN_FLIGHT permission. A/B can release unfinished work from MY FLIGHT. Preserves both envelopes and workspaces. Retains HF1-HF3 and verified staged update.",
+  "message": "V4.8.10B-HF3 · Một mẫu mỗi chuyến, giao ca nhiều phần việc và cập nhật an toàn."
 }

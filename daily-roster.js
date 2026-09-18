@@ -120,10 +120,20 @@ function workspaceDelta(prev,next){
   for(const k of ['mainForm','activeFormGroup','currentPage','scrollY','arrivalOp','departureOp','rosterSeed'])if(!jsonSame(prev[k],next[k]))patch[`envelope/${k}`]=clone(next[k]);
   return patch;
 }
+// HF4: an old tab must not overwrite the shared workspace after another
+// employee self-accepts its assignment. Check fresh personal mailbox ownership.
+async function hf4StillOwns(aid,date='',fid=''){
+  const u=normUser(root.currentUserProfile?.username||'');
+  if(!u||!aid||typeof root.sagsV470Ref!=='function')return false;
+  try{const snap=await root.sagsV470Ref(`${MAIL}/${safe(u)}/items/${safe(aid)}`).once('value'),item=snap.val();
+    return !!(item&&item.active!==false&&normUser(item.targetUser||item.user)===u&&(!date||S(item.opDate)===S(date))&&(!fid||S(item.flightId)===S(fid)));
+  }catch(_){return false}
+}
 async function writeWorkspaceForActive(delay=420){
   clearTimeout(writeWorkspaceForActive._t);writeWorkspaceForActive._t=setTimeout(async()=>{try{
     const meta=root.currentFlightSessionMeta?.();if(!meta?.rosterAssignmentId||typeof root.sagsV470Ref!=='function')return;
     const aid=S(meta.rosterAssignmentId),info=workspaceMap[aid]||null;if(!info?.workspaceKey)return;
+    if(!await hf4StillOwns(aid,S(info.opDate||meta.rosterOpDate),S(info.flightId||meta.rosterFlightId)))return;
     const env=root.readFlightSessionEnvelope?.(meta.id);if(!env||!meaningfulEnvelope(env))return;
     const clean=sanitizeEnvelope(env),sig=JSON.stringify(clean);if(wsTimers.get(info.workspaceKey)===sig)return;
     const prev=await loadWsBaseline(info.workspaceKey),delta=workspaceDelta(prev,clean);if(!Object.keys(delta).length){rememberWsBaseline(info.workspaceKey,clean);return}
@@ -174,6 +184,7 @@ async function syncPushbackFromActive(){
     if(!date||!sig)return;
     if(typeof root.sagsV470Ref!=='function')return; // Do not mark an offline attempt as synced.
     const aid=S(meta.rosterAssignmentId),fid=S(meta.rosterFlightId||workspaceMap[aid]?.flightId);
+    if(!await hf4StillOwns(aid,date,fid))return;
     // Hub consumers still receive the complete state when it CHANGES. Avoid
     // redundant writes after no-op persist, page switches and repeated hooks.
     const syncSig=JSON.stringify([date,sig,aid,fid,S(meta.id),S(meta.name),normUser(root.currentUserProfile?.username||''),S(workspaceMap[aid]?.workspaceKey),st]);
@@ -308,8 +319,36 @@ function installStyle(){if(document.getElementById('v1199PersonalQueueStyle'))re
 #fwcList.v1199Queue{display:block!important}.v1199Tabs{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:8px 0 11px}.v1199Tab{min-height:44px;border:0;border-radius:10px;background:#e9eef3;color:#29445d;font:900 12px Arial}.v1199Tab.active{background:#0b5cab;color:#fff}.v1199Count{display:inline-flex;min-width:23px;height:23px;align-items:center;justify-content:center;margin-left:5px;padding:0 5px;border-radius:99px;background:#fff;color:#0b5cab}.v1199Card{border:1px solid #d4dee8;border-radius:12px;background:#fff;padding:11px;margin:8px 0;box-shadow:0 2px 7px rgba(0,0,0,.04)}.v1199Title{font:900 17px Arial;color:#0b4f91}.v1199Meta{font:12px/1.45 Arial;color:#5d6f80;margin-top:4px}.v1199Tasks{display:flex;gap:5px;flex-wrap:wrap;margin:8px 0}.v1199Task{padding:4px 7px;border-radius:999px;background:#eef4f9;color:#314a61;font:800 10px Arial}.v1199Task.done{background:#e8f6ee;color:#14713d}.v1199TaskBtn{flex:1 1 115px;min-height:44px;border:1px solid #8eb7df;border-radius:9px;background:#e9f3ff;color:#064b85;font:900 12px Arial;cursor:pointer}.v1199TaskBtn.done{background:#e8f6ee;color:#14713d;border-color:#a4d7b8}.v1199TaskBtn:disabled,.v1199Action:disabled{opacity:.55;cursor:wait}.v1199Action{width:100%;min-height:42px;border:0;border-radius:9px;background:#0b67b2;color:#fff;font:900 12px Arial}.v1199Action.reopen{background:#0b5cab}.v1199Empty{padding:22px 12px;border:1px dashed #c7d1db;border-radius:11px;background:#fafcfe;text-align:center;color:#607080;font:800 12px/1.5 Arial}.v1199OwnerNote{font:800 11px Arial;color:#52677b;margin:3px 0 8px}
 `;document.head.appendChild(st)}
 function setHeader(date){const h=document.querySelector('#fwcModal .fwcHead h3');if(h)h.textContent='✓ CÔNG VIỆC HÔM NAY';const sub=document.querySelector('#fwcModal .fwcHead .fwcSub');if(sub)sub.textContent=`Chỉ hiển thị công việc DAILY ROSTER được phân cho ${me()||'tài khoản hiện tại'} · ${date}`;const b=document.getElementById('roleBtnRosterFlights');if(b&&role()!=='AD')b.textContent='✓ CÔNG VIỆC HÔM NAY'}
-function taskPills(g,date){return g.items.map((x,i)=>{
-  const done=itemCompleted(x,g.states[i]),label=formLabel(x),aid=S(x.assignmentId);
+// One physical form per flight and signed-in user: several roster entries may
+// reference that SAME form (for example DUYTK / DUYTK, PHUONGDD in Grnd_Cor).
+// Keep every assignment intact for ARR/DEP handover, co-claims and audit. Collapse
+// only the displayed form buttons, not Firebase records or workflow states.
+function visibleFormTasks(g){
+  const buckets=new Map();
+  g.items.forEach((item,i)=>{
+    const form=canonicalForm(item);
+    if(!buckets.has(form))buckets.set(form,[]);
+    buckets.get(form).push({item,st:g.states[i]||{},index:i});
+  });
+  return [...buckets.values()].map(entries=>{
+    const unfinished=entries.filter(e=>!itemCompleted(e.item,e.st));
+    // Continue a task already being worked on; otherwise open the earliest
+    // pending work part. When all are complete, reopen the actual pushback form.
+    const pool=unfinished.length?unfinished:entries;
+    const ordered=pool.slice().sort((a,b)=>{
+      const aWorking=itemWorking(a.item,a.st),bWorking=itemWorking(b.item,b.st);
+      if(aWorking!==bWorking)return aWorking?-1:1;
+      if(!unfinished.length){const ap=!!pbOf(a.st),bp=!!pbOf(b.st);if(ap!==bp)return ap?-1:1;}
+      const aOrder=Number(a.item?.workPartOrder||1),bOrder=Number(b.item?.workPartOrder||1);
+      const aLeg=U(a.item?.assignmentLeg),bLeg=U(b.item?.assignmentLeg);
+      const legRank=x=>x==='ARR'?0:x==='DEP'?2:1;
+      return aOrder-bOrder||legRank(aLeg)-legRank(bLeg)||recency(b.item)-recency(a.item)||S(a.item?.assignmentId).localeCompare(S(b.item?.assignmentId));
+    });
+    return {item:ordered[0].item,done:unfinished.length===0,assignmentCount:entries.length};
+  });
+}
+function taskPills(g,date){return visibleFormTasks(g).map(({item:x,done})=>{
+  const label=formLabel(x),aid=S(x.assignmentId);
   return `<button type="button" class="v1199TaskBtn ${done?'done':''}" data-task-aid="${esc(aid)}" data-task-fid="${esc(S(x.flightId))}" data-task-date="${esc(S(date))}" data-task-completed="${done?'1':'0'}" aria-label="${esc(done?'Mở lại':'Mở')} FSAGS ${esc(label)}">${done?'↺ MỞ LẠI':'➜ MỞ'} ${esc(label)}${done?' ✓':''}</button>`;
 }).join('')}
 function cardHtml(g,date){
@@ -362,7 +401,7 @@ function wrapWorkspace(){if(!baseOpen&&typeof root.flightWorkspaceOpenList==='fu
 function install(){wrapPublish();wrapWorkspace();installStyle();if(role()==='AD')setTimeout(()=>cleanupDuplicates(opDate()).catch(()=>{}),800);const b=document.getElementById('roleBtnRosterFlights');if(b&&role()!=='AD')b.textContent='✓ CÔNG VIỆC HÔM NAY'}
 install();setTimeout(install,350);setTimeout(install,1100);window.addEventListener('pageshow',()=>setTimeout(install,100),{passive:true});document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(install,100)},{passive:true});
 root.sagsV478OpenExactAssignment=(aid,fid,date)=>openTask(aid,fid,false,date,true);
-root.__SAGS_DAILY_ROSTER_FINAL_V1199={build:BUILD,dedupeItems,slotKey,flightKey,itemCompleted,itemWorking,clearStaleClaimIfNeeded,groupTasks,cleanupDuplicates,renderPersonal,queueDate,syncQueueDate,resolveOwnedItem};
+root.__SAGS_DAILY_ROSTER_FINAL_V1199={build:BUILD,dedupeItems,slotKey,flightKey,itemCompleted,itemWorking,visibleFormTasks,clearStaleClaimIfNeeded,groupTasks,cleanupDuplicates,renderPersonal,queueDate,syncQueueDate,resolveOwnedItem};
 })(typeof window!=='undefined'?window:globalThis);
 /* === IT PUBLIC 6-TIME SYNC · FREE RTDB REST · IT GET 120s === */
 (function(root){

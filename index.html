@@ -2683,7 +2683,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <style id="sags-v115-clean-ui">
 #roleLoginHint,#v1014UsernameLoginNote,.templateNote,.fs09qUsageNote,.v377CreateFormNote,.v1019Hint{display:none!important}
 </style>
-<link rel="stylesheet" href="./app.bundle.css?v=V4.8.10B">
+<link rel="stylesheet" href="./app.bundle.css?v=V4.8.10B-HF4">
 </head>
 <body>
 <div aria-hidden="true" id="roleHomeIdle"></div>
@@ -3903,7 +3903,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <button class="cancel" onclick="closeSignature();draw()">Đóng</button>
 </div>
 </div></div>
-<div class="hint" id="statusHint">V4.8.10B · DESKTOP AUTO DOWNLOAD · FORM MANAGER</div>
+<div class="hint" id="statusHint">V4.8.10B-HF4 · MY FLIGHT: 1 MẪU/CHUYẾN · FORM MANAGER</div>
 <script src="./network-diagnostics.js?v=V4.7.6"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
@@ -3913,7 +3913,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <script>
 window.SAGS_FIREBASE_AUTH_SDK_READY = !!(window.firebase && typeof window.firebase.auth === "function");
 </script>
-<script src="./app.js?v=V4.8.10B" data-phase="config"></script>
+<script src="./app.js?v=V4.8.10B-HF4" data-phase="config"></script>
 <script>
 let suppressModalClickUntil=0;
 function armModalGhostClickBlock(ms=650){
@@ -11058,8 +11058,8 @@ try {
   if(h) h.textContent="Lỗi khởi tạo: "+err.message;
   alert("Lỗi JavaScript: "+err.message);
 }
-const APP_BUILD_VERSION="V4.8.10B-FORM-MANAGER-ROW-FIT-HANDBOOK";
-const APP_DISPLAY_VERSION="V4.8.10B";
+const APP_BUILD_VERSION="V4.8.10B-HF4-SELF-ACCEPT-SHIFT";
+const APP_DISPLAY_VERSION="V4.8.10B-HF4";
 // V1.1.103: hotfix duy nhất lỗi Firebase RTDB ancestor/descendant khi đồng bộ DAILY ROSTER; không thay đổi nghiệp vụ khác.
 // V4.21 — SAFE UPDATE SAVE
 // Before switching to a newly installed app version, force-save all current
@@ -11120,25 +11120,37 @@ window.sagsRepairMixedBuild=async function(reason="mixed-build"){
   const onceKey="sags-build-repair:"+APP_BUILD_VERSION;
   try{if(sessionStorage.getItem(onceKey))return false;}catch(_e){}
   try{
-    const res=await fetch(APP_VERSION_URL+"?repair="+Date.now(),{cache:"no-store",headers:{"Cache-Control":"no-cache","Pragma":"no-cache"}});
-    if(!res.ok)return false;
-    const live=await res.json();
-    if(String(live?.build||"").trim()!==APP_BUILD_VERSION)return false;
+    const [vr,mr,rr]=await Promise.all([
+      fetch(APP_VERSION_URL+"?repair="+Date.now(),{cache:"no-store"}),
+      fetch("./asset-manifest.json?repair="+Date.now(),{cache:"no-store"}),
+      fetch("./runtime.bundle.js?repair="+Date.now(),{cache:"no-store"})
+    ]);
+    if(!vr.ok||!mr.ok||!rr.ok)return false;
+    const version=await vr.json(),manifest=await mr.json(),bytes=await rr.arrayBuffer(),meta=manifest?.assets?.["./runtime.bundle.js"];
+    if(version?.build!==APP_BUILD_VERSION||manifest?.build!==APP_BUILD_VERSION||!meta||bytes.byteLength!==meta.bytes)return false;
+    const digest=await crypto.subtle.digest("SHA-256",bytes);
+    const hash=[...new Uint8Array(digest)].map(n=>n.toString(16).padStart(2,"0")).join("");
+    if(hash!==meta.sha256)return false;
+    const runtimeText=new TextDecoder().decode(bytes);
+    if(!runtimeText.includes('window.__SAGS_RUNTIME_BUILD__="'+APP_BUILD_VERSION+'"'))return false;
     try{sessionStorage.setItem(onceKey,String(Date.now()));}catch(_e){}
+    // Evict ONLY the inconsistent executable asset. Never erase all app-shell
+    // caches while a previous worker still controls the current page.
     if("caches" in window){
-      const names=await caches.keys();
-      await Promise.all(names.filter(n=>n.startsWith("sags-app-shell-")||n.startsWith("sags-app-meta-")||n.startsWith("sags-v")||n.startsWith("sags-cache")).map(n=>caches.delete(n).catch(()=>false)));
+      for(const name of await caches.keys()){
+        if(!name.startsWith("sags-app-shell-"))continue;
+        const c=await caches.open(name);
+        await c.delete(new URL("./runtime.bundle.js",location.href).href).catch(()=>false);
+      }
     }
-    try{
-      const reg=await navigator.serviceWorker?.getRegistration?.();
-      if(reg){await reg.update().catch(()=>{});if(reg.waiting)reg.waiting.postMessage({type:"SKIP_WAITING"});}
-    }catch(_e){}
-    const u=new URL(location.href);u.searchParams.set("_repair",APP_DISPLAY_VERSION+"-"+Date.now());
-    setTimeout(()=>location.replace(u.toString()),220);
-    console.warn("E-REPORT repaired mixed executable cache",reason);
+    try{const reg=await navigator.serviceWorker?.getRegistration?.();await reg?.update?.()}catch(_e){}
+    const url=new URL(location.href);url.searchParams.set("_repair",APP_DISPLAY_VERSION+"-"+Date.now());
+    setTimeout(()=>location.replace(url.toString()),220);
+    console.warn("E-REPORT repaired mismatched runtime asset",reason);
     return true;
   }catch(e){console.warn("E-REPORT cache self-heal skipped",reason,e?.message||e);return false;}
 };
+
 function getDismissedUpdate(){
   try{
     const raw=sessionStorage.getItem(APP_UPDATE_DISMISS_KEY)||"";
@@ -22556,7 +22568,7 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
 })();
 </script>
 <script type="module" src="./ai.js?v=V4.7.6"></script>
-<script src="./app.js?v=V4.8.10B" data-phase="archive"></script>
+<script src="./app.js?v=V4.8.10B-HF4" data-phase="archive"></script>
 <script id="v120-build02-fixes">
 /* V1.20 BUILD 02 — background persistence, VHTTB, per-account usage detail, progress dedupe. */
 (function(){
@@ -22998,7 +23010,7 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
   setTimeout(()=>{ensureUi();startCloseoutListener();refreshValidation();try{window.sagsV440CleanupExpiredCloseoutEvents?.()}catch(_){}},500);
 })();
 </script>
-<script src="./app.js?v=V4.8.10B" data-phase="tools"></script>
+<script src="./app.js?v=V4.8.10B-HF4" data-phase="tools"></script>
 <script id="v173-quick-time">
 (function(){
   "use strict";
@@ -25011,7 +25023,7 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
   }
 }
 </style>
-<script src="./app.js?v=V4.8.10B" data-phase="flight"></script>
+<script src="./app.js?v=V4.8.10B-HF4" data-phase="flight"></script>
 <script id="v191IOSInteractionFix">
 (()=>{
   'use strict';
@@ -25261,7 +25273,7 @@ setTimeout(()=>{try{if(currentRole)v114ApplyRoleHomeBackground();}catch(e){}},70
   window.addEventListener('pageshow',()=>setTimeout(refresh,120),{passive:true});
 })();
 </script>
-<script src="./app.js?v=V4.8.10B" data-phase="control"></script>
+<script src="./app.js?v=V4.8.10B-HF4" data-phase="control"></script>
 <style id="v330-group-permission-style">
 #v330GroupPermPanel{margin:12px 0 8px;padding:11px;border:1px solid #cbd9e6;border-radius:12px;background:#f7fbff;box-sizing:border-box}
 .v330GpHead{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;color:#173b5d;font:900 13px Arial}.v330GpSub{margin-top:4px;color:#61778b;font:700 11px/1.35 Arial}
@@ -25488,7 +25500,7 @@ function install(){addPermissions();ensureUi();ensureButton();refreshCount();lis
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install,350),{once:true});else setTimeout(install,350);root.addEventListener('pageshow',()=>setTimeout(install,250),{passive:true});
 })(window);
 </script>
-<script src="./app.js?v=V4.8.10B" data-phase="postcontrol"></script>
+<script src="./app.js?v=V4.8.10B-HF4" data-phase="postcontrol"></script>
 <script id="v377AdminFormToolsScript">
 /* V3.80 — AD form tools row + create all forms + closeout notice cleanup. */
 (function(){
@@ -25539,7 +25551,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   setInterval(refresh,5000);
 })();
 </script>
-<script src="./app.js?v=V4.8.10B" data-phase="layout"></script>
+<script src="./app.js?v=V4.8.10B-HF4" data-phase="layout"></script>
 <script id="v1020-fs208-geometry-migration">
 (function(){
   const REV='V1020-EXACT-PAGE13';
@@ -26678,8 +26690,10 @@ root.v378ResetAllOldRecords=async function(){
   };
 })();
 </script>
-<script src="./app.js?v=V4.8.10B" data-phase="performance"></script>
-<script src="./daily-roster.js?v=V4.8.10B" id="dailyRosterCleanV11102"></script>
+<script src="./app.js?v=V4.8.10B-HF4" data-phase="performance"></script>
+<script src="./daily-roster.js?v=V4.8.10B-HF4" id="dailyRosterCleanV11102"></script>
+<script src="./handover-multi.js?v=V4.8.10B-HF4" id="sagsHF3MultiHandover"></script>
+<script src="./self-handover.js?v=V4.8.10B-HF4" id="sagsHF4SelfHandover"></script>
 <script id="v1016-delete-profile-fix">
 /* V1.0.16 · XÓA tài khoản phải xóa đúng profile E-Report, không chỉ Auth/users. */
 (function(){
@@ -28203,6 +28217,17 @@ body.v38-clean-workflow #v1134QuickTimeBtn{background:#eef6ff!important;color:#0
     }
   };
 
+  async function sagsVerifiedWaiting(worker,expectedBuild){
+    if(!worker||!expectedBuild)return false;
+    return await new Promise(resolve=>{
+      const channel=new MessageChannel();let done=false;
+      const finish=value=>{if(done)return;done=true;clearTimeout(timer);channel.port1.close();resolve(value)};
+      const timer=setTimeout(()=>finish(false),3500);
+      channel.port1.onmessage=e=>finish(e?.data?.ready===true&&e?.data?.build===expectedBuild);
+      try{worker.postMessage({type:"SAGS_QUERY_BUILD"},[channel.port2])}catch(_e){finish(false)}
+    });
+  }
+
   checkForNewestBuild=async function(reg){
     if(appUpdateCheckBusy)return;
     appUpdateCheckBusy=true;
@@ -28229,7 +28254,7 @@ body.v38-clean-workflow #v1134QuickTimeBtn{background:#eef6ff!important;color:#0
       // Only show UPDATE when the new worker is genuinely installed/waiting.
       // If GitHub/CDN propagation is incomplete, retries on focus/pageshow/timer
       // will show it later without a false prompt.
-      if(worker)openAppUpdatePrompt(serverVersion);
+      if(worker&&await sagsVerifiedWaiting(worker,serverVersion))openAppUpdatePrompt(serverVersion);
     }catch(e){
       console.info("Không kiểm tra được bản mới:",e?.message||e);
     }finally{
@@ -28269,6 +28294,7 @@ body.v38-clean-workflow #v1134QuickTimeBtn{background:#eef6ff!important;color:#0
       try{await reg.update();}catch(_e){}
       const worker=reg.waiting||await waitForWaitingWorker(reg,15000);
       if(worker){
+        if(!await sagsVerifiedWaiting(worker,target))throw new Error("Service Worker chưa chứa đúng bản đã kiểm chứng; chưa kích hoạt để tránh trộn phiên bản.");
         worker.postMessage({type:"SKIP_WAITING"});
         // controllerchange performs the explicit reload. Keep a guarded fallback
         // for iOS where controllerchange can occasionally be delayed.
@@ -28296,11 +28322,11 @@ body.v38-clean-workflow #v1134QuickTimeBtn{background:#eef6ff!important;color:#0
 })();
 </script>
 
-<script src="./runtime.bundle.js?v=V4.8.10B"></script>
+<script src="./runtime.bundle.js?v=V4.8.10B-HF4"></script>
 <script id="v460RuntimeGuard">
 (()=>{
   setTimeout(async()=>{
-    const ok=String(window.__SAGS_RUNTIME_BUILD__||'')==='V4.8.10B-FORM-MANAGER-ROW-FIT-HANDBOOK';
+    const ok=String(window.__SAGS_RUNTIME_BUILD__||'')==='V4.8.10B-HF4-SELF-ACCEPT-SHIFT';
     if(ok)return;
     console.error('E-REPORT runtime mismatch',window.__SAGS_RUNTIME_BUILD__);
     try{if(await window.sagsRepairMixedBuild?.('runtime-mismatch'))return;}catch(_e){}
