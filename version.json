@@ -1,11 +1,11 @@
 {
-  "version": "V5.0.3B-HF1",
-  "displayVersion": "V5.0.3B-HF1",
-  "label": "V5.0.3B-HF1 · Hiển thị đúng sao lưu/xóa trong AD CONTROL CENTER",
-  "build": "V5.0.3B-HF1-LAYERED-PDF-AD-RESET-VISIBLE",
-  "releasedAt": "2026-09-18T09:11:42Z",
-  "type": "v503b-ad-control-center-ui-hotfix",
+  "version": "V5.0.3B-HF2",
+  "displayVersion": "V5.0.3B-HF2",
+  "label": "V5.0.3B-HF2 · Khắc phục xác thực AD khi sao lưu",
+  "build": "V5.0.3B-HF2-LAYERED-PDF-AD-AUTH-FIX",
+  "releasedAt": "2026-09-18T09:23:13Z",
+  "type": "v503b-ad-backup-auth-hotfix",
   "base": "V4.8.10B-FORM-MANAGER-ROW-FIT-HANDBOOK",
-  "notes": "Chuyển nguyên cụm thao tác sao lưu/kiểm tra file/xóa từ thanh công cụ chính vào bên trong cửa sổ AD CONTROL CENTER. Không thay đổi thuật toán xóa hay vùng dữ liệu.",
-  "message": "V5.0.3B-HF1 · Sửa vị trí nút AD sao lưu/xóa"
+  "notes": "Sao lưu/xóa đọc vai trò AD từ phiên đăng nhập thật (__sagsGetSession) thay vì window.currentRole không tồn tại; chờ Firebase Auth khôi phục và đối chiếu UID. Không mở quyền xóa cho người không phải AD; kiểm tra Firestore users/{UID} role ADMIN vẫn bắt buộc.",
+  "message": "V5.0.3B-HF2 · Sửa lỗi AD không sao lưu được"
 }

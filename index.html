@@ -11075,8 +11075,8 @@ try {
   if(h) h.textContent="Lỗi khởi tạo: "+err.message;
   alert("Lỗi JavaScript: "+err.message);
 }
-const APP_BUILD_VERSION="V5.0.3B-HF1-LAYERED-PDF-AD-RESET-VISIBLE";
-const APP_DISPLAY_VERSION="V5.0.3B-HF1";
+const APP_BUILD_VERSION="V5.0.3B-HF2-LAYERED-PDF-AD-AUTH-FIX";
+const APP_DISPLAY_VERSION="V5.0.3B-HF2";
 // V1.1.103: hotfix duy nhất lỗi Firebase RTDB ancestor/descendant khi đồng bộ DAILY ROSTER; không thay đổi nghiệp vụ khác.
 // V4.21 — SAFE UPDATE SAVE
 // Before switching to a newly installed app version, force-save all current
@@ -11140,10 +11140,10 @@ window.sagsRepairMixedBuild=async function(reason="mixed-build"){
     const [vr,mr,rr]=await Promise.all([
       fetch(APP_VERSION_URL+"?repair="+Date.now(),{cache:"no-store"}),
       fetch("./asset-manifest.json?repair="+Date.now(),{cache:"no-store"}),
-      fetch("./runtime.v503hf1.bundle.js?repair="+Date.now(),{cache:"no-store"})
+      fetch("./runtime.v503hf2.bundle.js?repair="+Date.now(),{cache:"no-store"})
     ]);
     if(!vr.ok||!mr.ok||!rr.ok)return false;
-    const version=await vr.json(),manifest=await mr.json(),bytes=await rr.arrayBuffer(),meta=manifest?.assets?.["./runtime.v503hf1.bundle.js"];
+    const version=await vr.json(),manifest=await mr.json(),bytes=await rr.arrayBuffer(),meta=manifest?.assets?.["./runtime.v503hf2.bundle.js"];
     if(version?.build!==APP_BUILD_VERSION||manifest?.build!==APP_BUILD_VERSION||!meta||bytes.byteLength!==meta.bytes)return false;
     const digest=await crypto.subtle.digest("SHA-256",bytes);
     const hash=[...new Uint8Array(digest)].map(n=>n.toString(16).padStart(2,"0")).join("");
@@ -11157,7 +11157,7 @@ window.sagsRepairMixedBuild=async function(reason="mixed-build"){
       for(const name of await caches.keys()){
         if(!name.startsWith("sags-app-shell-"))continue;
         const c=await caches.open(name);
-        await c.delete(new URL("./runtime.v503hf1.bundle.js",location.href).href).catch(()=>false);
+        await c.delete(new URL("./runtime.v503hf2.bundle.js",location.href).href).catch(()=>false);
       }
     }
     try{const reg=await navigator.serviceWorker?.getRegistration?.();await reg?.update?.()}catch(_e){}
@@ -26639,7 +26639,7 @@ root.v378ResetAllOldRecords=async function(){
 };
 })(window);
 </script>
-<script src="./admin-reset.v503hf1.js?v=V5.0.3B-HF1" id="v503AdminBackupReset"></script>
+<script src="./admin-reset.v503hf2.js?v=V5.0.3B-HF2" id="v503AdminBackupReset"></script>
 <script id="v388-firebase-bulk-migration">
 /* V3.89 — AD bulk Firebase Authentication migration using a secondary Firebase app.
    The default app remains signed in as ADMIN so Firestore profile writes stay authorized. */
@@ -28391,11 +28391,11 @@ body.v38-clean-workflow #v1134QuickTimeBtn{background:#eef6ff!important;color:#0
 })();
 </script>
 
-<script src="./runtime.v503hf1.bundle.js?v=V5.0.3B"></script>
+<script src="./runtime.v503hf2.bundle.js?v=V5.0.3B"></script>
 <script id="v460RuntimeGuard">
 (()=>{
   setTimeout(async()=>{
-    const ok=String(window.__SAGS_RUNTIME_BUILD__||'')==='V5.0.3B-HF1-LAYERED-PDF-AD-RESET-VISIBLE';
+    const ok=String(window.__SAGS_RUNTIME_BUILD__||'')==='V5.0.3B-HF2-LAYERED-PDF-AD-AUTH-FIX';
     if(ok)return;
     console.error('E-REPORT runtime mismatch',window.__SAGS_RUNTIME_BUILD__);
     try{if(await window.sagsRepairMixedBuild?.('runtime-mismatch'))return;}catch(_e){}
