@@ -1,13 +1,13 @@
-/* E-REPORT SAGS V5.0B · IMMUTABLE EXECUTABLE PATHS / PINNED VERIFIED SHELL
+/* E-REPORT SAGS V5.0.1B · IMMUTABLE EXECUTABLE PATHS / PINNED VERIFIED SHELL
    Base: V4.8.10B Layered PDF + HF1–HF4. Never mix navigation HTML with a different runtime.
 */
 'use strict';
-const BUILD='V5.0B-LAYERED-PDF-ATOMIC-SHELL';
-const DISPLAY_VERSION='V5.0B';
-const CACHE_NAME='sags-app-shell-v5.0b-atomic';
-const META_CACHE_NAME='sags-app-meta-v5.0b-atomic';
+const BUILD='V5.0.1B-LAYERED-PDF-REOPEN-SAFE';
+const DISPLAY_VERSION='V5.0.1B';
+const CACHE_NAME='sags-app-shell-v5.0.1b-reopen';
+const META_CACHE_NAME='sags-app-meta-v5.0.1b-reopen';
 const ASSET_MANIFEST_URL='./asset-manifest.json';
-const SAGS_BOOTSTRAP=['./index.html','./app.v5.js','./app.bundle.css','./runtime.v5.bundle.js','./daily-roster.v5.js','./handover-multi.v5.js','./self-handover.v5.js','./roster-lite.v5.js','./features.v5.bundle.js','./pinned-flight.js','./service-worker.js','./version.json'];
+const SAGS_BOOTSTRAP=['./index.html','./app.v501.js','./app.bundle.css','./runtime.v501.bundle.js','./daily-roster.v5.js','./handover-multi.v5.js','./self-handover.v5.js','./roster-lite.v5.js','./features.v5.bundle.js','./pinned-flight.js','./service-worker.js','./version.json'];
 const HOME= new URL('./index.html',self.registration.scope).href;
 const SCOPE_PATH=new URL(self.registration.scope).pathname;
 function scopeUrl(path){return new URL(path,self.registration.scope).href}

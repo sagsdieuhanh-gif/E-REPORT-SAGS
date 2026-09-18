@@ -1,19 +1,12 @@
 {
   "schema": 2,
-  "version": "V5.0B",
-  "build": "V5.0B-LAYERED-PDF-ATOMIC-SHELL",
+  "version": "V5.0.1B",
+  "build": "V5.0.1B-LAYERED-PDF-REOPEN-SAFE",
   "strategy": "immutable-entrypaths-verified-build-shell",
   "bootstrapChanged": [
     "./index.html",
-    "./app.v5.js",
-    "./app.bundle.css",
-    "./runtime.v5.bundle.js",
-    "./daily-roster.v5.js",
-    "./handover-multi.v5.js",
-    "./self-handover.v5.js",
-    "./roster-lite.v5.js",
-    "./features.v5.bundle.js",
-    "./pinned-flight.js",
+    "./app.v501.js",
+    "./runtime.v501.bundle.js",
     "./service-worker.js",
     "./version.json"
   ],
@@ -155,8 +148,8 @@
       "bytes": 104295
     },
     "./index.html": {
-      "sha256": "d260d88e3bc9f74f779540b72971d00756978d4cfc61bafbd05cb16095786751",
-      "bytes": 1779088
+      "sha256": "68f9f1db49e23c334f608cd7c11684c2eadb5482de7e3e7a6d7d229361ff6de3",
+      "bytes": 1779144
     },
     "./ket-so.wav": {
       "sha256": "cf03e8d4021f989f61fd12249f282ae2e53588cc9d55d68393778223db8132a1",
@@ -299,12 +292,12 @@
       "bytes": 25408
     },
     "./service-worker.js": {
-      "sha256": "f40b5b5a1c1f38c69493a32271150de0b1dc138511c71c4b5cad44645d517687",
-      "bytes": 7748
+      "sha256": "2a612a720fcea3f927bf0afaa413c707064a05321ba16a26a2123dc457b6be00",
+      "bytes": 7761
     },
     "./version.json": {
-      "sha256": "5e006377828d49298931b62c3ad22d6b0116c3be6d11a75c3514fc0adfbc2b10",
-      "bytes": 749
+      "sha256": "b0e27594f78922d95dffe5d3de958db32f8f8b8c40bf0de415f0295d1c501ee2",
+      "bytes": 727
     },
     "./handover-multi.js": {
       "sha256": "237bb94e22e8b48a3e8e9c05e8f7bc279f8869583acae6e78ebbbe746049bd58",
@@ -313,14 +306,6 @@
     "./self-handover.js": {
       "sha256": "3d6f435d6672d5c13266e1682766ec27c50998434e06f1b56a6fbce441d7ef8c",
       "bytes": 20668
-    },
-    "./app.v5.js": {
-      "sha256": "2c2677e0b16f3912666a900d33da159eae4edebff3da7c6ea5843b56ef17e339",
-      "bytes": 881767
-    },
-    "./runtime.v5.bundle.js": {
-      "sha256": "5877ecc5ebc2bc4d0599bc5bd6ab96ba41e26f839a798599ce09ccf3a5bc0eea",
-      "bytes": 473725
     },
     "./daily-roster.v5.js": {
       "sha256": "11d7f67af5c1de6fb1165e9fe8315188a13c28acc93a4140b916490ad83d6964",
@@ -341,6 +326,14 @@
     "./roster-lite.v5.js": {
       "sha256": "0300ec8191ca6fa34b7abed1463d7c421af5dbbbc078889be31d082cce8a880d",
       "bytes": 10925
+    },
+    "./app.v501.js": {
+      "sha256": "bec8a24240cb0d6348e17e508e60fe24a5f6a68d1c97b40cf6d2174300488370",
+      "bytes": 888974
+    },
+    "./runtime.v501.bundle.js": {
+      "sha256": "efd7ec858d1a766b998b39bbdba25a16b79694799fc7f866e6cc6458b1100255",
+      "bytes": 473726
     }
   }
 }

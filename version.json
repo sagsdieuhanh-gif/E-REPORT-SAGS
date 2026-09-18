@@ -1,11 +1,11 @@
 {
-  "version": "V5.0B",
-  "displayVersion": "V5.0B",
-  "label": "V5.0B · Layered PDF · đồng bộ runtime/HTML theo một bản phát hành",
-  "build": "V5.0B-LAYERED-PDF-ATOMIC-SHELL",
-  "releasedAt": "2026-09-18T03:05:00Z",
-  "type": "major-stable-shell-b",
+  "version": "V5.0.1B",
+  "displayVersion": "V5.0.1B",
+  "label": "V5.0.1B · Layered PDF · mở lại A/B không khóa sai, đồng bộ bản sửa",
+  "build": "V5.0.1B-LAYERED-PDF-REOPEN-SAFE",
+  "releasedAt": "2026-09-18T05:17:48Z",
+  "type": "hotfix-reopen-safe-handover-b",
   "base": "V4.8.10B-FORM-MANAGER-ROW-FIT-HANDBOOK",
-  "notes": "Giữ HF1–HF4 (gom 42.3, C tự nhận 42.1 + 55.1). Runtime/daily roster/handover dùng đường dẫn V5 riêng để không bị Service Worker cũ lấy nhầm file. SW mới stage đủ, SHA-256 kiểm tra, cache-first index và executable theo build; không kích hoạt khi file chưa đầy đủ.",
-  "message": "V5.0B · Layered PDF · sửa triệt để đường dẫn cache gây runtime lệch build"
+  "notes": "Giữ nền V5.0B và HF1–HF4. A sửa rồi hoàn tất lần hai không đặt B về READY/không ghi đè hồ sơ B. Lưu bản sửa upstream, B mở lại ghép theo ô với dữ liệu hoàn tất của B và cảnh báo ô trùng. Giữ lock cho người đang thực sự chỉnh sửa.",
+  "message": "V5.0.1B · Sửa chuỗi A/B mở lại sau khi hoàn tất"
 }
