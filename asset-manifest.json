@@ -1,31 +1,21 @@
 {
   "schema": 2,
-  "version": "V4.8.10B-HF4",
-  "build": "V4.8.10B-HF4-SELF-ACCEPT-SHIFT",
-  "strategy": "stable-cache-sha256-delta",
+  "version": "V5.0B",
+  "build": "V5.0B-LAYERED-PDF-ATOMIC-SHELL",
+  "strategy": "immutable-entrypaths-verified-build-shell",
   "bootstrapChanged": [
     "./index.html",
+    "./app.v5.js",
     "./app.bundle.css",
-    "./app.js",
-    "./daily-roster.js",
-    "./runtime.bundle.js",
-    "./roster-lite.js",
+    "./runtime.v5.bundle.js",
+    "./daily-roster.v5.js",
+    "./handover-multi.v5.js",
+    "./self-handover.v5.js",
+    "./roster-lite.v5.js",
+    "./features.v5.bundle.js",
     "./pinned-flight.js",
     "./service-worker.js",
-    "./version.json",
-    "./pdf-bg-page1.jpg",
-    "./pdf-bg-page2.jpg",
-    "./pdf-bg-page4.jpg",
-    "./pdf-bg-page6.jpg",
-    "./pdf-bg-page7.jpg",
-    "./pdf-bg-page9.jpg",
-    "./pdf-bg-page10.jpg",
-    "./pdf-bg-page11.jpg",
-    "./pdf-bg-page12.jpg",
-    "./pdf-bg-page13.jpg",
-    "./features.bundle.js",
-    "./handover-multi.js",
-    "./self-handover.js"
+    "./version.json"
   ],
   "assets": {
     "./#U0110H.png": {
@@ -165,8 +155,8 @@
       "bytes": 104295
     },
     "./index.html": {
-      "sha256": "70840606c5bba7489324c53a285f4535c6fda79234d667314f5d65139baac5a9",
-      "bytes": 1779159
+      "sha256": "d260d88e3bc9f74f779540b72971d00756978d4cfc61bafbd05cb16095786751",
+      "bytes": 1779088
     },
     "./ket-so.wav": {
       "sha256": "cf03e8d4021f989f61fd12249f282ae2e53588cc9d55d68393778223db8132a1",
@@ -309,12 +299,12 @@
       "bytes": 25408
     },
     "./service-worker.js": {
-      "sha256": "360e20eb1d5b6df6da004d3d5735a7e12957d4b8f22e66d5e52cc9b7748dbb42",
-      "bytes": 7016
+      "sha256": "f40b5b5a1c1f38c69493a32271150de0b1dc138511c71c4b5cad44645d517687",
+      "bytes": 7748
     },
     "./version.json": {
-      "sha256": "47b3f3e2de796753339867a067c2628ec3b727e550c17c93eff2cd31fa804884",
-      "bytes": 731
+      "sha256": "5e006377828d49298931b62c3ad22d6b0116c3be6d11a75c3514fc0adfbc2b10",
+      "bytes": 749
     },
     "./handover-multi.js": {
       "sha256": "237bb94e22e8b48a3e8e9c05e8f7bc279f8869583acae6e78ebbbe746049bd58",
@@ -323,6 +313,34 @@
     "./self-handover.js": {
       "sha256": "3d6f435d6672d5c13266e1682766ec27c50998434e06f1b56a6fbce441d7ef8c",
       "bytes": 20668
+    },
+    "./app.v5.js": {
+      "sha256": "2c2677e0b16f3912666a900d33da159eae4edebff3da7c6ea5843b56ef17e339",
+      "bytes": 881767
+    },
+    "./runtime.v5.bundle.js": {
+      "sha256": "5877ecc5ebc2bc4d0599bc5bd6ab96ba41e26f839a798599ce09ccf3a5bc0eea",
+      "bytes": 473725
+    },
+    "./daily-roster.v5.js": {
+      "sha256": "11d7f67af5c1de6fb1165e9fe8315188a13c28acc93a4140b916490ad83d6964",
+      "bytes": 59746
+    },
+    "./handover-multi.v5.js": {
+      "sha256": "237bb94e22e8b48a3e8e9c05e8f7bc279f8869583acae6e78ebbbe746049bd58",
+      "bytes": 12366
+    },
+    "./self-handover.v5.js": {
+      "sha256": "3d6f435d6672d5c13266e1682766ec27c50998434e06f1b56a6fbce441d7ef8c",
+      "bytes": 20668
+    },
+    "./features.v5.bundle.js": {
+      "sha256": "f30b536aeffbb13a7ab0202ca19a4a4dbe8c01fcc6ff32ad345efa5e9b214bd2",
+      "bytes": 82851
+    },
+    "./roster-lite.v5.js": {
+      "sha256": "0300ec8191ca6fa34b7abed1463d7c421af5dbbbc078889be31d082cce8a880d",
+      "bytes": 10925
     }
   }
 }

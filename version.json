@@ -1,11 +1,11 @@
 {
-  "version": "V4.8.10B-HF4",
-  "displayVersion": "V4.8.10B-HF4",
-  "label": "V4.8.10B-HF4 · C tự nhận giao ca 42.1 + 55.1",
-  "build": "V4.8.10B-HF4-SELF-ACCEPT-SHIFT",
-  "releasedAt": "2026-09-18T02:50:00Z",
-  "type": "hotfix-self-handover-b",
+  "version": "V5.0B",
+  "displayVersion": "V5.0B",
+  "label": "V5.0B · Layered PDF · đồng bộ runtime/HTML theo một bản phát hành",
+  "build": "V5.0B-LAYERED-PDF-ATOMIC-SHELL",
+  "releasedAt": "2026-09-18T03:05:00Z",
+  "type": "major-stable-shell-b",
   "base": "V4.8.10B-FORM-MANAGER-ROW-FIT-HANDBOOK",
-  "notes": "C (DH) can independently self-accept completed/released 42.1 and 55.1 of the same flight, in one RTDB multi-location update; no AD or REASSIGN_FLIGHT permission. A/B can release unfinished work from MY FLIGHT. Preserves both envelopes and workspaces. Retains HF1-HF3 and verified staged update.",
-  "message": "V4.8.10B-HF3 · Một mẫu mỗi chuyến, giao ca nhiều phần việc và cập nhật an toàn."
+  "notes": "Giữ HF1–HF4 (gom 42.3, C tự nhận 42.1 + 55.1). Runtime/daily roster/handover dùng đường dẫn V5 riêng để không bị Service Worker cũ lấy nhầm file. SW mới stage đủ, SHA-256 kiểm tra, cache-first index và executable theo build; không kích hoạt khi file chưa đầy đủ.",
+  "message": "V5.0B · Layered PDF · sửa triệt để đường dẫn cache gây runtime lệch build"
 }

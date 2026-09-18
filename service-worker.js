@@ -1,76 +1,110 @@
-/* E-REPORT SAGS · V4.8.10B-HF4 · verified, staged updates; keep previous cache until safe. */
+/* E-REPORT SAGS V5.0B · IMMUTABLE EXECUTABLE PATHS / PINNED VERIFIED SHELL
+   Base: V4.8.10B Layered PDF + HF1–HF4. Never mix navigation HTML with a different runtime.
+*/
 'use strict';
-const BUILD='V4.8.10B-HF4-SELF-ACCEPT-SHIFT';
-const DISPLAY_VERSION='V4.8.10B-HF4';
-const CACHE_NAME='sags-app-shell-v4.8.10b-hf4';
-const META_CACHE_NAME='sags-app-meta-v4.8.10b-hf4';
+const BUILD='V5.0B-LAYERED-PDF-ATOMIC-SHELL';
+const DISPLAY_VERSION='V5.0B';
+const CACHE_NAME='sags-app-shell-v5.0b-atomic';
+const META_CACHE_NAME='sags-app-meta-v5.0b-atomic';
 const ASSET_MANIFEST_URL='./asset-manifest.json';
-const SAGS_BOOTSTRAP=['./index.html','./app.js','./runtime.bundle.js','./daily-roster.js','./roster-lite.js','./handover-multi.js','./self-handover.js','./features.bundle.js','./service-worker.js'];
+const SAGS_BOOTSTRAP=['./index.html','./app.v5.js','./app.bundle.css','./runtime.v5.bundle.js','./daily-roster.v5.js','./handover-multi.v5.js','./self-handover.v5.js','./roster-lite.v5.js','./features.v5.bundle.js','./pinned-flight.js','./service-worker.js','./version.json'];
+const HOME= new URL('./index.html',self.registration.scope).href;
+const SCOPE_PATH=new URL(self.registration.scope).pathname;
 function scopeUrl(path){return new URL(path,self.registration.scope).href}
-function canonicalUrl(input){const url=new URL(typeof input==='string'?input:input.url,self.location.href);url.search='';url.hash='';return url.href}
-async function fetchFresh(path){const u=scopeUrl(path),sep=u.includes('?')?'&':'?';const r=await fetch(u+sep+'__sags_build='+encodeURIComponent(DISPLAY_VERSION)+'&t='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error(path+' HTTP '+r.status);return r}
-async function fetchJson(path){return (await fetchFresh(path)).json()}
+function canonicalUrl(input){const source=typeof input==='string'?input:(input?.href||input?.url);const u=new URL(source,self.location.href);u.search='';u.hash='';return u.href}
+async function fetchFresh(path){const u=scopeUrl(path);const r=await fetch(u+'?__sags_release='+encodeURIComponent(BUILD)+'&t='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error(path+' HTTP '+r.status);return r}
 async function checksum(response,meta,path){
-  if(!meta||!meta.sha256||!Number.isSafeInteger(meta.bytes))throw new Error('Manifest thiếu checksum: '+path);
-  const b=await response.clone().arrayBuffer();if(b.byteLength!==meta.bytes)throw new Error('Sai kích thước '+path);
-  const h=await crypto.subtle.digest('SHA-256',b);const sha=[...new Uint8Array(h)].map(x=>x.toString(16).padStart(2,'0')).join('');
-  if(sha!==meta.sha256)throw new Error('Sai SHA-256 '+path);
+ if(!meta||!meta.sha256||!Number.isSafeInteger(meta.bytes))throw new Error('Missing manifest checksum '+path);
+ const b=await response.clone().arrayBuffer();if(b.byteLength!==meta.bytes)throw new Error('Size mismatch '+path);
+ const digest=await crypto.subtle.digest('SHA-256',b);const hash=[...new Uint8Array(digest)].map(n=>n.toString(16).padStart(2,'0')).join('');
+ if(hash!==meta.sha256)throw new Error('SHA-256 mismatch '+path);
 }
 async function readManifest(){try{const c=await caches.open(META_CACHE_NAME),r=await c.match(scopeUrl(ASSET_MANIFEST_URL));return r?await r.json():null}catch(_){return null}}
-async function storeManifest(m){const c=await caches.open(META_CACHE_NAME);await c.put(scopeUrl(ASSET_MANIFEST_URL),new Response(JSON.stringify(m),{headers:{'Content-Type':'application/json','Cache-Control':'no-store'}}))}
-async function readyManifest(){const [v,m]=await Promise.all([fetchJson('./version.json'),fetchJson(ASSET_MANIFEST_URL)]);if(v?.build!==BUILD||m?.build!==BUILD||!m.assets)throw new Error('Bản phát hành chưa đồng bộ index/runtime/version/manifest');return m}
-async function verifyStaged(m){const c=await caches.open(CACHE_NAME);for(const path of SAGS_BOOTSTRAP){const hit=await c.match(scopeUrl(path));if(!hit)throw new Error('Thiếu file đã kiểm chứng '+path);await checksum(hit,m.assets[path],path)}}
+async function getReleaseManifest(){
+ const [vr,mr]=await Promise.all([fetchFresh('./version.json'),fetchFresh(ASSET_MANIFEST_URL)]);
+ const [v,m]=await Promise.all([vr.json(),mr.json()]);
+ if(v?.build!==BUILD||m?.build!==BUILD||m?.version!==DISPLAY_VERSION||!m.assets)throw new Error('Version/manifest not synchronized');
+ for(const p of SAGS_BOOTSTRAP)if(!m.assets[p])throw new Error('Missing bootstrap metadata '+p);
+ return m;
+}
+async function verifyStaged(manifest){
+ const c=await caches.open(CACHE_NAME);
+ for(const path of SAGS_BOOTSTRAP){const r=await c.match(scopeUrl(path));if(!r)throw new Error('Missing staged bootstrap '+path);await checksum(r,manifest.assets[path],path)}
+}
 async function stageRelease(){
-  let m;
-  try{
-    m=await readyManifest();const cache=await caches.open(CACHE_NAME);
-    // Do not replace the running worker until all executable files are on the
-    // server, independently verified, and available in this build's cache.
-    for(const path of SAGS_BOOTSTRAP){const response=await fetchFresh(path);await checksum(response,m.assets[path],path);await cache.put(scopeUrl(path),response.clone())}
-    await verifyStaged(m);await storeManifest(m);
-  }catch(e){console.error('E-REPORT: chưa thể cài bản chưa đồng bộ',e);await Promise.all([caches.delete(CACHE_NAME),caches.delete(META_CACHE_NAME)]);throw e}
+ try{
+  const m=await getReleaseManifest();const c=await caches.open(CACHE_NAME);
+  // Only put a file into the next build cache AFTER verifying the exact bytes.
+  for(const path of SAGS_BOOTSTRAP){const r=await fetchFresh(path);await checksum(r,m.assets[path],path);await c.put(scopeUrl(path),r.clone())}
+  await verifyStaged(m);
+  const mc=await caches.open(META_CACHE_NAME);
+  await mc.put(scopeUrl(ASSET_MANIFEST_URL),new Response(JSON.stringify(m),{headers:{'Content-Type':'application/json','Cache-Control':'no-store'}}));
+ }catch(e){
+  console.error('E-REPORT V5 stage aborted; previous release retained',e);
+  await Promise.all([caches.delete(CACHE_NAME),caches.delete(META_CACHE_NAME)]);
+  throw e;
+ }
 }
-async function cleanupOldCaches(){const keys=await caches.keys();await Promise.all(keys.filter(k=>k!==CACHE_NAME&&k!==META_CACHE_NAME&&(/^(sags-app-shell-|sags-app-meta-|sags-v|sags-cache)/.test(k))).map(k=>caches.delete(k).catch(()=>false)))}
-async function syncChangedAssets(){
-  const m=await readyManifest(),cache=await caches.open(CACHE_NAME),failed=[];
-  for(const [path,meta] of Object.entries(m.assets)){
-    if(!SAGS_BOOTSTRAP.includes(path))continue;
-    try{const old=await cache.match(scopeUrl(path));if(old){await checksum(old,meta,path);continue}const r=await fetchFresh(path);await checksum(r,meta,path);await cache.put(scopeUrl(path),r.clone())}catch(e){failed.push(path);console.warn('E-REPORT cache validation failed',path,e?.message||e)}
+async function reportNetworkRx(id,url,r){try{if(!id||!r?.ok)return;let n=Number(r.headers.get('content-length'))||0;if(!n)n=(await r.clone().blob()).size||0;const c=await self.clients.get(id);if(c&&n)c.postMessage({type:'SAGS_NET_RX',bytes:n,url:String(url||''),atMs:Date.now()})}catch(_){}}
+async function verifiedAsset(request,event,path,key){
+ const c=await caches.open(CACHE_NAME),hit=await c.match(key);
+ if(hit)return hit;
+ try{
+  const r=await fetch(request,{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);
+  const m=await readManifest();if(!m||m.build!==BUILD)throw new Error('No verified release manifest');
+  if(m.assets[path])await checksum(r,m.assets[path],path);
+  event.waitUntil((async()=>{try{await c.put(key,r.clone());await reportNetworkRx(event.clientId,request.url,r)}catch(_){}})());
+  return r;
+ }catch(e){console.warn('E-REPORT V5 asset unavailable',path,e?.message||e);return new Response('RELEASE ASSET NOT READY',{status:503})}
+}
+async function networkMetadata(request,event,immutable=false){
+ const c=await caches.open(CACHE_NAME),key=canonicalUrl(request);
+ try{const r=await fetch(request,{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);
+  // Version/manifest are fresh metadata, NOT executable-cache content. Caching a
+  // future version.json into the current build's pinned cache would break its checksum.
+  event.waitUntil((async()=>{try{if(!immutable)await c.put(key,r.clone());await reportNetworkRx(event.clientId,request.url,r)}catch(_){}})());return r;
+ }catch(_){
+  if(immutable&&key===scopeUrl(ASSET_MANIFEST_URL)){
+   const pinned=await readManifest();if(pinned)return new Response(JSON.stringify(pinned),{headers:{'Content-Type':'application/json'}});
   }
-  if(!failed.length)await storeManifest(m);return failed;
+  return await c.match(key)||new Response('OFFLINE',{status:503});
+ }
 }
-async function reportNetworkRx(clientId,url,response){try{if(!response?.ok||!clientId)return;let bytes=Number(response.headers.get('content-length'))||0;if(!bytes)bytes=(await response.clone().blob()).size||0;const client=await self.clients.get(clientId);if(client&&bytes)client.postMessage({type:'SAGS_NET_RX',bytes,url:String(url||''),atMs:Date.now()})}catch(_){}}
-async function networkOrCached(request,event,cacheKey,verifyPath=null){
-  const c=await caches.open(CACHE_NAME);
-  try{
-    const r=await fetch(request,{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);
-    if(verifyPath){const m=await readManifest();if(!m||m.build!==BUILD)throw Error('manifest chưa sẵn sàng');await checksum(r,m.assets[verifyPath],verifyPath)}
-    event.waitUntil((async()=>{try{await c.put(cacheKey,r.clone());await reportNetworkRx(event.clientId,request.url,r)}catch(_){}})());
-    return r;
-  }catch(_){return await c.match(cacheKey)||new Response('OFFLINE / RELEASE NOT READY',{status:503})}
+async function verifyCurrentAssets(){
+ const m=await readManifest();if(!m||m.build!==BUILD)throw new Error('No staged V5 manifest');
+ const c=await caches.open(CACHE_NAME);
+ for(const p of SAGS_BOOTSTRAP){let r=await c.match(scopeUrl(p));try{if(!r)throw Error('Not cached');await checksum(r,m.assets[p],p)}catch(_){r=await fetchFresh(p);await checksum(r,m.assets[p],p);await c.put(scopeUrl(p),r.clone())}}
+ await verifyStaged(m);
 }
-self.addEventListener('install',event=>{event.waitUntil(stageRelease())});
-self.addEventListener('activate',event=>{event.waitUntil((async()=>{const m=await readManifest();if(!m||m.build!==BUILD)return;try{await verifyStaged(m)}catch(e){console.error('E-REPORT staged cache invalid',e);return}await cleanupOldCaches();await self.clients.claim()})())});
+self.addEventListener('install',event=>event.waitUntil(stageRelease()));
+self.addEventListener('activate',event=>event.waitUntil((async()=>{
+ const m=await readManifest();if(!m||m.build!==BUILD)throw new Error('Missing verified V5 release');
+ await verifyStaged(m);
+ // Do not delete older build caches while older tabs may still be using them.
+ await self.clients.claim();
+})()));
 self.addEventListener('message',event=>{
-  if(event.data?.type==='SAGS_QUERY_BUILD'){try{event.ports?.[0]?.postMessage({build:BUILD,ready:true})}catch(_){}return}
-  if(event.data?.type==='SKIP_WAITING'){event.waitUntil((async()=>{const m=await readManifest();if(!m||m.build!==BUILD)throw Error('Build chưa được xác minh');await verifyStaged(m);await self.skipWaiting()})());return}
-  if(event.data?.type==='SAGS_CHECK_ASSETS')event.waitUntil(syncChangedAssets().catch(e=>console.warn('E-REPORT asset check',e)));
+ if(event.data?.type==='SAGS_QUERY_BUILD'){
+  event.waitUntil((async()=>{let ready=false;try{const m=await readManifest();if(m?.build===BUILD){await verifyStaged(m);ready=true}}catch(e){console.warn('E-REPORT V5 readiness check failed',e?.message||e)}
+   try{event.ports?.[0]?.postMessage({build:BUILD,ready})}catch(_){}})());return;
+ }
+ if(event.data?.type==='SKIP_WAITING'){
+  event.waitUntil((async()=>{const m=await readManifest();if(m?.build!==BUILD)throw new Error('Unverified V5 build');await verifyStaged(m);await self.skipWaiting()})());return;
+ }
+ if(event.data?.type==='SAGS_CHECK_ASSETS')event.waitUntil(verifyCurrentAssets().catch(e=>console.warn('E-REPORT V5 asset check failed',e)));
 });
 self.addEventListener('fetch',event=>{
-  const req=event.request;if(req.method!=='GET')return;const u=new URL(req.url);if(u.origin!==self.location.origin)return;
-  const meta=u.pathname.endsWith('/version.json')||u.pathname.endsWith('/asset-manifest.json');
-  const carrierMeta=u.pathname.endsWith('/carrier-guide-version.json');
-  const carrierRefresh=u.pathname.endsWith('/carrier-service-guide.json')&&u.searchParams.has('csgv');
-  if(meta||carrierMeta||carrierRefresh){event.respondWith(networkOrCached(req,event,canonicalUrl(u)));return}
-  if(req.mode==='navigate'){
-    // Never deliver a partly-deployed older index with this worker's newer JS.
-    // A verified previous index in this build cache is safer until CDN settles.
-    event.respondWith(networkOrCached(req,event,scopeUrl('./index.html'),'./index.html'));return;
-  }
-  event.respondWith((async()=>{
-    const cache=await caches.open(CACHE_NAME),key=canonicalUrl(u),hit=await cache.match(key);
-    if(hit)return hit;
-    const path='./'+u.pathname.slice(new URL(self.registration.scope).pathname.length);
-    return networkOrCached(req,event,key,SAGS_BOOTSTRAP.includes(path)?path:null);
-  })());
+ const req=event.request;if(req.method!=='GET')return;const url=new URL(req.url);
+ if(url.origin!==self.location.origin||!url.pathname.startsWith(SCOPE_PATH))return;
+ const path='./'+url.pathname.slice(SCOPE_PATH.length);
+ const meta=path==='./version.json'||path===ASSET_MANIFEST_URL;
+ const carrierMeta=path==='./carrier-guide-version.json';
+ const carrierRefresh=path==='./carrier-service-guide.json'&&url.searchParams.has('csgv');
+ if(meta||carrierMeta||carrierRefresh){event.respondWith(networkMetadata(req,event,meta));return}
+ if(req.mode==='navigate'&&(url.pathname===SCOPE_PATH||path==='./index.html')){
+  // PINNING IS KEY: NEVER fetch a newer index while this older worker serves old scripts.
+  event.respondWith((async()=>{const c=await caches.open(CACHE_NAME),r=await c.match(HOME);return r||new Response('APP SHELL NOT READY',{status:503})})());return;
+ }
+ if(req.mode==='navigate')return;
+ event.respondWith(verifiedAsset(req,event,path,canonicalUrl(url)));
 });
