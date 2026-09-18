@@ -2815,10 +2815,21 @@ if(typeof window!=="undefined")window.__SAGS_V450_FORM_MANAGER_LAYOUT=true;
     // Important: touch the DEP owner's mailbox so a logged-in second device/account
     // receives child_changed and refreshes MY FLIGHT immediately.
     if(depUser){
-      patch[`roster_mail/${safe(depUser)}/items/${safe(aid)}/handoverReady`]=true;
-      patch[`roster_mail/${safe(depUser)}/items/${safe(aid)}/previousPartCompletedAtMs`]=Number(arrSt.completedAtMs||arrSt.completionEnvelopeAtMs||now);
-      patch[`roster_mail/${safe(depUser)}/items/${safe(aid)}/readyAtMs`]=now;
-      patch[`roster_mail/${safe(depUser)}/items/${safe(aid)}/v222ArrReadyFromAssignmentId`]=S(arrItem.assignmentId);
+      // V4.8.10B-HF1: MY FLIGHT for normal users is rendered from the lite mailbox.
+      // Mirror the READY state into fields that roster-lite keeps, otherwise A can
+      // complete ARR successfully while B receives only handoverReady/readyAtMs
+      // (discarded by the lite projection) and the B card never changes/repaints.
+      const mailBase=`roster_mail/${safe(depUser)}/items/${safe(aid)}`;
+      patch[`${mailBase}/handoverReady`]=true;
+      patch[`${mailBase}/workPartReady`]=true;
+      patch[`${mailBase}/claimStatus`]='READY';
+      patch[`${mailBase}/workPartStatus`]='READY';
+      patch[`${mailBase}/taskStatusV333`]='UNCLAIMED';
+      patch[`${mailBase}/taskAvailabilityV333`]='READY';
+      patch[`${mailBase}/previousPartCompletedAtMs`]=Number(arrSt.completedAtMs||arrSt.completionEnvelopeAtMs||now);
+      patch[`${mailBase}/readyAtMs`]=now;
+      patch[`${mailBase}/v222ArrReadyFromAssignmentId`]=S(arrItem.assignmentId);
+      patch[`${mailBase}/updatedAtMs`]=now;
     }
 
     patch[`flight_records/${safe(date)}/${safe(fid)}/taskStatus/${safe(aid)}/status`]='UNCLAIMED';
