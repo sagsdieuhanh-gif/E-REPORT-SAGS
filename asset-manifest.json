@@ -1,13 +1,12 @@
 {
   "schema": 2,
-  "version": "V5.0.3B",
-  "build": "V5.0.3B-LAYERED-PDF-SAFE-RESET-ALERTS",
+  "version": "V5.0.3B-HF1",
+  "build": "V5.0.3B-HF1-LAYERED-PDF-AD-RESET-VISIBLE",
   "strategy": "immutable-entrypaths-verified-build-shell",
   "bootstrapChanged": [
+    "./runtime.v503hf1.bundle.js",
+    "./admin-reset.v503hf1.js",
     "./index.html",
-    "./app.v503.js",
-    "./runtime.v503.bundle.js",
-    "./admin-reset.v503.js",
     "./service-worker.js",
     "./version.json"
   ],
@@ -149,8 +148,8 @@
       "bytes": 104295
     },
     "./index.html": {
-      "sha256": "456794eccc4289490e0e2d1b4cda18b3095d763c36a74a32007b3df1aeaeb341",
-      "bytes": 1783346
+      "sha256": "ca16517cd7e226d087903b6baec19e2277d4ae107e4d1f4ff4f0b05e95c0952b",
+      "bytes": 1784935
     },
     "./ket-so.wav": {
       "sha256": "cf03e8d4021f989f61fd12249f282ae2e53588cc9d55d68393778223db8132a1",
@@ -293,12 +292,12 @@
       "bytes": 25408
     },
     "./service-worker.js": {
-      "sha256": "9d634cdc4630f9e19f7c33af59cc9dcbb02991e0c43c6b682daa9fff92b2e21b",
-      "bytes": 7780
+      "sha256": "ec74b9d253a45065f22fc008255df10e5ec17b004deb3475de4d32ab0b9cc229",
+      "bytes": 7807
     },
     "./version.json": {
-      "sha256": "7f1e148bc5f43ab05c1b59137a527f6ec880bbbc7c3645c161b1edfff7aedf42",
-      "bytes": 793
+      "sha256": "d09d566c97dbea294c427cdec10d84e74df968a7c793427ef7376d0e4f681b03",
+      "bytes": 629
     },
     "./handover-multi.js": {
       "sha256": "237bb94e22e8b48a3e8e9c05e8f7bc279f8869583acae6e78ebbbe746049bd58",
@@ -356,13 +355,13 @@
       "sha256": "56620756428bbc1e8e01b697cd8aaf98218e05ff1eb7d71b2b12eef5339132b8",
       "bytes": 883584
     },
-    "./runtime.v503.bundle.js": {
-      "sha256": "1ffbb486d23eb62aa44f810abb45fcf10cb09853c5361fc988b01c353e2b58bb",
-      "bytes": 474941
+    "./runtime.v503hf1.bundle.js": {
+      "sha256": "4e16aff7533131fc0887b3096d369174208eab7adb11dcb820e4e9f9765cf211",
+      "bytes": 474944
     },
-    "./admin-reset.v503.js": {
-      "sha256": "1f794f302a086ec45361e778164606e754b8040c30f96616aeb1e3b4e2f28aa2",
-      "bytes": 13779
+    "./admin-reset.v503hf1.js": {
+      "sha256": "79bb71e1996668037efec7fa8c43eba60821424dbf02b6ef1acf6684ae2ad0f9",
+      "bytes": 13782
     }
   }
 }

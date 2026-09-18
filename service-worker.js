@@ -1,13 +1,13 @@
-/* E-REPORT SAGS V5.0.3B · IMMUTABLE EXECUTABLE PATHS / PINNED VERIFIED SHELL
+/* E-REPORT SAGS V5.0.3B-HF1 · IMMUTABLE EXECUTABLE PATHS / PINNED VERIFIED SHELL
    Base: V4.8.10B Layered PDF + HF1–HF4. Never mix navigation HTML with a different runtime.
 */
 'use strict';
-const BUILD='V5.0.3B-LAYERED-PDF-SAFE-RESET-ALERTS';
-const DISPLAY_VERSION='V5.0.3B';
-const CACHE_NAME='sags-app-shell-v5.0.3b-reset-alerts';
-const META_CACHE_NAME='sags-app-meta-v5.0.3b-reset-alerts';
+const BUILD='V5.0.3B-HF1-LAYERED-PDF-AD-RESET-VISIBLE';
+const DISPLAY_VERSION='V5.0.3B-HF1';
+const CACHE_NAME='sags-app-shell-v5.0.3b-hf1-reset-visible';
+const META_CACHE_NAME='sags-app-meta-v5.0.3b-hf1-reset-visible';
 const ASSET_MANIFEST_URL='./asset-manifest.json';
-const SAGS_BOOTSTRAP=['./index.html','./app.v503.js','./app.bundle.css','./runtime.v503.bundle.js','./daily-roster.v502.js','./self-accept.v502.js','./admin-reset.v503.js','./roster-lite.v5.js','./features.v5.bundle.js','./pinned-flight.js','./service-worker.js','./version.json'];
+const SAGS_BOOTSTRAP=['./index.html','./app.v503.js','./app.bundle.css','./runtime.v503hf1.bundle.js','./daily-roster.v502.js','./self-accept.v502.js','./admin-reset.v503hf1.js','./roster-lite.v5.js','./features.v5.bundle.js','./pinned-flight.js','./service-worker.js','./version.json'];
 const HOME= new URL('./index.html',self.registration.scope).href;
 const SCOPE_PATH=new URL(self.registration.scope).pathname;
 function scopeUrl(path){return new URL(path,self.registration.scope).href}

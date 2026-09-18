@@ -1,11 +1,11 @@
 {
-  "version": "V5.0.3B",
-  "displayVersion": "V5.0.3B",
-  "label": "V5.0.3B · Sao lưu xác minh trước khi xóa + chống cảnh báo sai",
-  "build": "V5.0.3B-LAYERED-PDF-SAFE-RESET-ALERTS",
-  "releasedAt": "2026-09-18T08:48:21Z",
-  "type": "safe-ad-reset-and-alert-dedup-b",
+  "version": "V5.0.3B-HF1",
+  "displayVersion": "V5.0.3B-HF1",
+  "label": "V5.0.3B-HF1 · Hiển thị đúng sao lưu/xóa trong AD CONTROL CENTER",
+  "build": "V5.0.3B-HF1-LAYERED-PDF-AD-RESET-VISIBLE",
+  "releasedAt": "2026-09-18T09:11:42Z",
+  "type": "v503b-ad-control-center-ui-hotfix",
   "base": "V4.8.10B-FORM-MANAGER-ROW-FIT-HANDBOOK",
-  "notes": "AD tải bản sao lưu RTDB + Firestore, chọn lại file SHA-256 trước khi cho phép xóa; chỉ giữ tài khoản. Cảnh báo vệ sinh khớp chuyến/ngày, giới hạn thời gian; PUSHBACK tra lại RTDB trước khi báo và không lặp âm 4,5 giây. Không thay đổi dữ liệu trên website cho đến khi AD tự xác nhận.",
-  "message": "V5.0.3B · Nút AD sao lưu và xóa; sửa thông báo vệ sinh và pushback"
+  "notes": "Chuyển nguyên cụm thao tác sao lưu/kiểm tra file/xóa từ thanh công cụ chính vào bên trong cửa sổ AD CONTROL CENTER. Không thay đổi thuật toán xóa hay vùng dữ liệu.",
+  "message": "V5.0.3B-HF1 · Sửa vị trí nút AD sao lưu/xóa"
 }

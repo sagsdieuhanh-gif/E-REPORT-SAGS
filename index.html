@@ -2685,6 +2685,13 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 </style>
 <link rel="stylesheet" href="./app.bundle.css?v=V4.8.10B-HF4">
 <style id="v502RosterDirectStyle">#v310ShiftNav,#v1113QrFormBtn,.hf4Release{display:none!important}</style>
+<style id="v503hf1AdControlResetStyle">
+#activityMonitorModal #v503AdminResetPanel #v378ResetRecordsBtn{background:#075fb0!important;color:#fff!important;border-color:#075fb0!important;grid-column:auto!important;min-height:44px;white-space:normal!important}
+#activityMonitorModal #v503AdminResetPanel #v503ResetExecuteBtn{min-height:44px;white-space:normal!important;opacity:1}
+#activityMonitorModal #v503AdminResetPanel #v503ResetExecuteBtn:disabled{opacity:.5;cursor:not-allowed}
+#activityMonitorModal #v503AdminResetPanel #v378ResetStatus{grid-column:auto!important;max-width:100%;overflow-wrap:anywhere;box-sizing:border-box;}
+@media(max-width:600px){#activityMonitorModal #v503AdminResetPanel{padding:10px!important;margin:9px 0 12px!important;}}
+</style>
 </head>
 <body>
 <div aria-hidden="true" id="roleHomeIdle"></div>
@@ -2819,6 +2826,16 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
       <button class="sagsAdminBtn secondary" onclick="closeActivityMonitor()">ĐÓNG</button>
     </div>
     <h3>TIẾN ĐỘ CHUYẾN</h3>
+    <section id="v503AdminResetPanel" aria-label="AD CONTROL CENTER · Sao lưu và khởi tạo dự án mới" style="padding:13px;margin:10px 0 14px;border:2px solid #b8c8d8;border-radius:12px;background:#f8fbff;color:#173b5f;display:grid;gap:9px;">
+      <div style="font:900 16px/1.4 Arial,sans-serif;">AD CONTROL CENTER · SAO LƯU &amp; KHỞI TẠO DỰ ÁN MỚI</div>
+      <div style="font:700 12px/1.45 Arial,sans-serif;">Chỉ AD thực hiện. Mọi chuyến bay và biểu mẫu thuộc phạm vi xóa sẽ mất khỏi máy chủ sau khi xác nhận; tài khoản được giữ lại.</div>
+      <button class="sagsAdminBtn" id="v378ResetRecordsBtn" type="button" onclick="sagsV503Backup()">⬇️ 1. TẢI BẢN SAO LƯU</button>
+      <label for="v503BackupVerifyFile" style="font:800 12px/1.4 Arial,sans-serif;">2. CHỌN LẠI FILE ĐÃ TẢI ĐỂ KIỂM TRA SHA-256</label>
+      <input id="v503BackupVerifyFile" type="file" accept=".json,application/json" style="display:none;max-width:100%;width:100%;box-sizing:border-box;" aria-label="Chọn file sao lưu vừa tải để xác thực" />
+      <button class="sagsAdminBtn" id="v503ResetExecuteBtn" type="button" disabled style="background:#b42318;color:#fff;">🧹 3. XÓA SAU KHI SAO LƯU</button>
+      <div style="font:700 12px/1.45 Arial,sans-serif;color:#93370d;"><b>LƯU Ý:</b> Sao lưu chỉ gồm 2 vùng RTDB và các collection Firestore hiện hỗ trợ, KHÔNG gồm dữ liệu chưa đồng bộ trên máy khác, tệp ngoài hệ thống hoặc Firebase Authentication. Dừng các thiết bị cũ trước khi xóa.</div>
+      <div id="v378ResetStatus" role="status" aria-live="polite" style="overflow-wrap:anywhere;"></div>
+    </section>
     <div id="activityMonitorStatus"></div>
     <div id="adccPaneProgress" class="adccPane active">
       <div id="adccProgressList"></div>
@@ -2964,12 +2981,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
   <button id="v377CreateFormBtn" type="button" onclick="v377OpenCreateFormMenu()">➕ TẠO BIỂU MẪU</button>
   <button id="v440FormManagerBtn" type="button" onclick="sagsV440OpenFormManager()">🧩 QUẢN LÝ / THÊM BIỂU MẪU</button>
   <div id="v377LayoutTuneSlot" class="v377LayoutTuneSlot"></div>
-  <button id="v378ResetRecordsBtn" type="button" onclick="sagsV503Backup()">⬇️ 1. SAO LƯU TRƯỚC KHI XÓA</button>
-  <label for="v503BackupVerifyFile" style="font-size:12px;font-weight:750">2. CHỌN LẠI FILE ĐÃ TẢI ĐỂ KIỂM TRA SHA-256</label>
-  <input id="v503BackupVerifyFile" type="file" accept=".json,application/json" style="display:none;max-width:100%" aria-label="Chọn file sao lưu vừa tải để xác thực" />
-  <button id="v503ResetExecuteBtn" type="button" disabled>🧹 3. XÓA SAU KHI SAO LƯU</button>
-  <div class="sub" style="margin:6px 0;font-size:12px;color:#a12121"><b>LƯU Ý:</b> Chỉ xóa dữ liệu máy chủ ở 2 vùng RTDB và Firestore E-REPORT; không sao lưu dữ liệu chưa đồng bộ trên máy khác, tệp ngoài hệ thống hoặc Firebase Auth. Phải dừng các thiết bị cũ trước khi xóa.</div>
-  <div id="v378ResetStatus" role="status" aria-live="polite"></div>
+
 </div>
 </div>
 <div id="v377CreateFormModal" class="v377CreateFormModal" style="display:none" role="dialog" aria-modal="true" aria-label="Tạo biểu mẫu">
@@ -11063,8 +11075,8 @@ try {
   if(h) h.textContent="Lỗi khởi tạo: "+err.message;
   alert("Lỗi JavaScript: "+err.message);
 }
-const APP_BUILD_VERSION="V5.0.3B-LAYERED-PDF-SAFE-RESET-ALERTS";
-const APP_DISPLAY_VERSION="V5.0.3B";
+const APP_BUILD_VERSION="V5.0.3B-HF1-LAYERED-PDF-AD-RESET-VISIBLE";
+const APP_DISPLAY_VERSION="V5.0.3B-HF1";
 // V1.1.103: hotfix duy nhất lỗi Firebase RTDB ancestor/descendant khi đồng bộ DAILY ROSTER; không thay đổi nghiệp vụ khác.
 // V4.21 — SAFE UPDATE SAVE
 // Before switching to a newly installed app version, force-save all current
@@ -11128,10 +11140,10 @@ window.sagsRepairMixedBuild=async function(reason="mixed-build"){
     const [vr,mr,rr]=await Promise.all([
       fetch(APP_VERSION_URL+"?repair="+Date.now(),{cache:"no-store"}),
       fetch("./asset-manifest.json?repair="+Date.now(),{cache:"no-store"}),
-      fetch("./runtime.v503.bundle.js?repair="+Date.now(),{cache:"no-store"})
+      fetch("./runtime.v503hf1.bundle.js?repair="+Date.now(),{cache:"no-store"})
     ]);
     if(!vr.ok||!mr.ok||!rr.ok)return false;
-    const version=await vr.json(),manifest=await mr.json(),bytes=await rr.arrayBuffer(),meta=manifest?.assets?.["./runtime.v503.bundle.js"];
+    const version=await vr.json(),manifest=await mr.json(),bytes=await rr.arrayBuffer(),meta=manifest?.assets?.["./runtime.v503hf1.bundle.js"];
     if(version?.build!==APP_BUILD_VERSION||manifest?.build!==APP_BUILD_VERSION||!meta||bytes.byteLength!==meta.bytes)return false;
     const digest=await crypto.subtle.digest("SHA-256",bytes);
     const hash=[...new Uint8Array(digest)].map(n=>n.toString(16).padStart(2,"0")).join("");
@@ -11145,7 +11157,7 @@ window.sagsRepairMixedBuild=async function(reason="mixed-build"){
       for(const name of await caches.keys()){
         if(!name.startsWith("sags-app-shell-"))continue;
         const c=await caches.open(name);
-        await c.delete(new URL("./runtime.v503.bundle.js",location.href).href).catch(()=>false);
+        await c.delete(new URL("./runtime.v503hf1.bundle.js",location.href).href).catch(()=>false);
       }
     }
     try{const reg=await navigator.serviceWorker?.getRegistration?.();await reg?.update?.()}catch(_e){}
@@ -26627,7 +26639,7 @@ root.v378ResetAllOldRecords=async function(){
 };
 })(window);
 </script>
-<script src="./admin-reset.v503.js?v=V5.0.3B" id="v503AdminBackupReset"></script>
+<script src="./admin-reset.v503hf1.js?v=V5.0.3B-HF1" id="v503AdminBackupReset"></script>
 <script id="v388-firebase-bulk-migration">
 /* V3.89 — AD bulk Firebase Authentication migration using a secondary Firebase app.
    The default app remains signed in as ADMIN so Firestore profile writes stay authorized. */
@@ -28379,11 +28391,11 @@ body.v38-clean-workflow #v1134QuickTimeBtn{background:#eef6ff!important;color:#0
 })();
 </script>
 
-<script src="./runtime.v503.bundle.js?v=V5.0.3B"></script>
+<script src="./runtime.v503hf1.bundle.js?v=V5.0.3B"></script>
 <script id="v460RuntimeGuard">
 (()=>{
   setTimeout(async()=>{
-    const ok=String(window.__SAGS_RUNTIME_BUILD__||'')==='V5.0.3B-LAYERED-PDF-SAFE-RESET-ALERTS';
+    const ok=String(window.__SAGS_RUNTIME_BUILD__||'')==='V5.0.3B-HF1-LAYERED-PDF-AD-RESET-VISIBLE';
     if(ok)return;
     console.error('E-REPORT runtime mismatch',window.__SAGS_RUNTIME_BUILD__);
     try{if(await window.sagsRepairMixedBuild?.('runtime-mismatch'))return;}catch(_e){}
