@@ -1,11 +1,11 @@
 {
-  "version": "V5.0.1B",
-  "displayVersion": "V5.0.1B",
-  "label": "V5.0.1B · Layered PDF · mở lại A/B không khóa sai, đồng bộ bản sửa",
-  "build": "V5.0.1B-LAYERED-PDF-REOPEN-SAFE",
-  "releasedAt": "2026-09-18T05:17:48Z",
-  "type": "hotfix-reopen-safe-handover-b",
+  "version": "V5.0.2B",
+  "displayVersion": "V5.0.2B",
+  "label": "V5.0.2B · Layered PDF · Nhận theo Daily Roster, không bàn giao chỉ định",
+  "build": "V5.0.2B-LAYERED-PDF-DIRECT-ROSTER",
+  "releasedAt": "2026-09-18T08:03:43Z",
+  "type": "direct-roster-form-per-flight-b",
   "base": "V4.8.10B-FORM-MANAGER-ROW-FIT-HANDBOOK",
-  "notes": "Giữ nền V5.0B và HF1–HF4. A sửa rồi hoàn tất lần hai không đặt B về READY/không ghi đè hồ sơ B. Lưu bản sửa upstream, B mở lại ghép theo ô với dữ liệu hoàn tất của B và cảnh báo ô trùng. Giữ lock cho người đang thực sự chỉnh sửa.",
-  "message": "V5.0.1B · Sửa chuỗi A/B mở lại sau khi hoàn tất"
+  "notes": "Nhận biểu mẫu đúng Daily Roster, không tự bàn giao sang người kế tiếp; trạng thái riêng cho mỗi nhân viên cùng nhóm, phục hồi dữ liệu người trước từ Firebase; mỗi loại biểu mẫu một nút NHẬN, không có nút TIẾP TỤC riêng. Không triển khai lên website, cần kiểm thử Firebase thật.",
+  "message": "V5.0.2B · Nhận trực tiếp theo Daily Roster, bỏ bàn giao đích danh và nút Tiếp tục"
 }
