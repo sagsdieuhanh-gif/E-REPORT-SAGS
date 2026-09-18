@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V4.8.10B",
-  "build": "V4.8.10B-FORM-MANAGER-ROW-FIT-HANDBOOK",
+  "version": "V4.8.10B-HF4",
+  "build": "V4.8.10B-HF4-SELF-ACCEPT-SHIFT",
   "strategy": "stable-cache-sha256-delta",
   "bootstrapChanged": [
     "./index.html",
@@ -23,7 +23,9 @@
     "./pdf-bg-page11.jpg",
     "./pdf-bg-page12.jpg",
     "./pdf-bg-page13.jpg",
-    "./features.bundle.js"
+    "./features.bundle.js",
+    "./handover-multi.js",
+    "./self-handover.js"
   ],
   "assets": {
     "./#U0110H.png": {
@@ -123,8 +125,8 @@
       "bytes": 30731
     },
     "./daily-roster.js": {
-      "sha256": "ed89a8f7961af7889400e4ca455c98cc47487d3fb704d11b8ae5caf08b4be960",
-      "bytes": 57322
+      "sha256": "11d7f67af5c1de6fb1165e9fe8315188a13c28acc93a4140b916490ad83d6964",
+      "bytes": 59746
     },
     "./favicon-16.png": {
       "sha256": "bb74deb45be89aca360f6b6f9b7d6293c14b1d7efa5f1e4fe21f4804fb05ce58",
@@ -163,8 +165,8 @@
       "bytes": 104295
     },
     "./index.html": {
-      "sha256": "b151d209dd0ee1d7cc1c662a86fa69decf1637504296c7af54050ba218309405",
-      "bytes": 1777425
+      "sha256": "70840606c5bba7489324c53a285f4535c6fda79234d667314f5d65139baac5a9",
+      "bytes": 1779159
     },
     "./ket-so.wav": {
       "sha256": "cf03e8d4021f989f61fd12249f282ae2e53588cc9d55d68393778223db8132a1",
@@ -299,20 +301,28 @@
       "bytes": 10925
     },
     "./runtime.bundle.js": {
-      "sha256": "adf03f7b3e9992e8bf9bdce4ea87dd25031d270b04179a7cce3c28c397609bc5",
-      "bytes": 473170
+      "sha256": "cc821c7e26d9a45ac8c3e40a04f296ad15b74a4fc7bb76bdd44ce209f0e62905",
+      "bytes": 473725
     },
     "./sags-logo.png": {
       "sha256": "84bc554c3b44afe4190afcbe74f7c7aed9fad478c328d63502a7d225dd60d7ad",
       "bytes": 25408
     },
     "./service-worker.js": {
-      "sha256": "824e3f1d4f80e58670bccf47d7d21c95aae3e06922d2dc59547c9f55bb5350d0",
-      "bytes": 7311
+      "sha256": "360e20eb1d5b6df6da004d3d5735a7e12957d4b8f22e66d5e52cc9b7748dbb42",
+      "bytes": 7016
     },
     "./version.json": {
-      "sha256": "7648f148c42d81929f2aa3c6165c62f1dfd053011d201bfa48f267ce6a8d9709",
-      "bytes": 747
+      "sha256": "47b3f3e2de796753339867a067c2628ec3b727e550c17c93eff2cd31fa804884",
+      "bytes": 731
+    },
+    "./handover-multi.js": {
+      "sha256": "237bb94e22e8b48a3e8e9c05e8f7bc279f8869583acae6e78ebbbe746049bd58",
+      "bytes": 12366
+    },
+    "./self-handover.js": {
+      "sha256": "3d6f435d6672d5c13266e1682766ec27c50998434e06f1b56a6fbce441d7ef8c",
+      "bytes": 20668
     }
   }
 }
