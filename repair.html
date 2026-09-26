@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>E-REPORT SAGS · Khôi phục cập nhật</title>
+<style>
+:root{font-family:system-ui,-apple-system,Arial,sans-serif;color:#18374f;background:#f1f6fa}
+*{box-sizing:border-box}body{margin:0;min-height:100svh;display:grid;place-items:center;padding:20px}
+main{width:min(100%,520px);background:#fff;border:1px solid #cfdee8;border-radius:18px;padding:25px;box-shadow:0 12px 30px #173b5f16}
+h1{font-size:23px;line-height:1.28;margin:0 0 12px}p{line-height:1.55}#status{padding:13px 14px;border-radius:10px;background:#eff6ff;border:1px solid #bfdbfe;overflow-wrap:anywhere;white-space:pre-wrap}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}button,a.button{border:0;border-radius:10px;padding:12px 16px;background:#176b83;color:white;font:700 15px system-ui;cursor:pointer;text-decoration:none}
+button:disabled{opacity:.6;cursor:wait}a.button{background:#e8eff7;color:#18374f}small{display:block;margin-top:16px;color:#53687a;line-height:1.5}
+</style>
+</head>
+<body>
+<main>
+<h1>Khôi phục cập nhật E-REPORT</h1>
+<p>Trang này chỉ cài lại bộ tệp ứng dụng đã xác minh. Không xóa dữ liệu, bộ nhớ trình duyệt hoặc tài khoản của bạn. Hãy giữ kết nối mạng.</p>
+<div id="status" role="status" aria-live="polite">Nhấn “Kiểm tra và khôi phục” để bắt đầu.</div>
+<div class="actions"><button id="start" type="button">KIỂM TRA VÀ KHÔI PHỤC</button><a id="home" class="button" href="./index.html" hidden>VÀO ỨNG DỤNG</a></div>
+<small>Nếu máy đang có biểu mẫu chưa đồng bộ, đừng gỡ ứng dụng hoặc xóa dữ liệu website. Hãy hoàn thành đồng bộ khi ứng dụng mở lại.</small>
+</main>
+<script>
+(()=>{'use strict';
+const btn=document.getElementById('start'), status=document.getElementById('status'), home=document.getElementById('home');
+const show=message=>{status.textContent=message};
+const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+async function verified(worker,build){
+ if(!worker||worker.state==='redundant')return false;
+ return new Promise(resolve=>{
+  const ch=new MessageChannel();let done=false;
+  const finish=v=>{if(done)return;done=true;clearTimeout(timer);ch.port1.close();resolve(v)};
+  const timer=setTimeout(()=>finish(false),1800);
+  ch.port1.onmessage=e=>finish(e.data?.ready===true&&e.data?.build===build);
+  try{worker.postMessage({type:'SAGS_QUERY_BUILD'},[ch.port2])}catch(_){finish(false)}
+ });
+}
+btn.addEventListener('click',async()=>{
+ if(!('serviceWorker' in navigator)){show('Trình duyệt không hỗ trợ Service Worker. Vui lòng dùng Chrome hoặc Safari phiên bản mới.');return}
+ btn.disabled=true;home.hidden=true;
+ try{
+  show('Đang tải thông tin phiên bản trên máy chủ…');
+  const r=await fetch('./version.json?__sags_strict=1&repair='+Date.now(),{cache:'no-store'});
+  if(!r.ok)throw Error('Không tải được phiên bản: HTTP '+r.status);
+  const build=String((await r.json()).build||'');
+  if(!build)throw Error('Máy chủ chưa trả về mã phiên bản hợp lệ.');
+  show('Đang cài đặt lại bộ nhớ ứng dụng và kiểm tra từng tệp…');
+  // Same scope; no unregister(), caches.delete(), localStorage or IndexedDB writes.
+  await navigator.serviceWorker.register('./service-worker.js?repair='+Date.now(),{scope:'./',updateViaCache:'none'});
+  const end=Date.now()+120000;
+  while(Date.now()<end){
+   const reg=await navigator.serviceWorker.getRegistration('./');
+   const active=reg?.active||navigator.serviceWorker.controller;
+   if(await verified(active,build)){
+    show('Đã xác minh đầy đủ phiên bản mới. Bạn có thể vào lại ứng dụng.');
+    const u=new URL('./index.html',location.href);u.searchParams.set('_sags_force',build);u.searchParams.set('repair',Date.now());
+    home.href=u.href;home.hidden=false;return;
+   }
+   const waiting=reg?.waiting;
+   if(waiting&&waiting.state==='installed'&&await verified(waiting,build)){
+    waiting.postMessage({type:'SKIP_WAITING'});
+    show('Đã tải đủ tệp; đang kích hoạt bản ứng dụng đã xác minh…');
+   }else if(reg?.installing?.state==='redundant'){
+    throw Error('Bản cập nhật không cài đặt được. Hãy kiểm tra các tệp trên GitHub Pages và thử lại.');
+   }
+   await sleep(1200);
+  }
+  throw Error('Quá thời gian xác minh. Vui lòng kiểm tra mạng và thử lại.');
+ }catch(e){show('Chưa khôi phục được: '+(e?.message||e)+'\nKhông xóa dữ liệu trình duyệt. Hãy thử lại khi mạng ổn định.');}
+ finally{btn.disabled=false}
+});
+})();
+</script>
+</body>
+</html>
