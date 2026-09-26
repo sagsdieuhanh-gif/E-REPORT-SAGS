@@ -1,0 +1,2069 @@
+/* NEW UI V1 | Mobile-first Dispatch visual layer. All operational behavior stays in the original app. */
+html.new-ui-v1{--v157-navy:#103c52;--v157-navy2:#0d3549;--v157-blue:#0b7293;--v157-blue-soft:#eaf6fb;--v157-bg:#f5f8fa;--v157-text:#172d3b;--v157-muted:#617c8b;--v157-line:#dfe9ee;--v157-card:#fff;accent-color:#0b7293}
+html.new-ui-v1 body{color:#172d3b}
+html.new-ui-v1 #v157HomeDashboard{background:#f5f8fa;color:#172d3b;padding-top:calc(20px + env(safe-area-inset-top))}
+html.new-ui-v1 .v157Welcome{padding:7px 3px 19px}
+html.new-ui-v1 .v157Welcome strong{font:800 clamp(21px,5vw,29px)/1.2 system-ui,-apple-system,Segoe UI,sans-serif;letter-spacing:-.035em;color:#172d3b}
+html.new-ui-v1 .v157Welcome span{font:500 13px/1.45 system-ui,-apple-system,Segoe UI,sans-serif;color:#687f8e}
+html.new-ui-v1 .v157MetricGrid{gap:10px}
+html.new-ui-v1 .v157Metric{min-height:122px;padding:15px 12px;background:#fff;border:1px solid #e2eaee;border-radius:17px;box-shadow:0 4px 16px #1b40500a}
+html.new-ui-v1 .v157Metric:after{background:#e9f5f8}
+html.new-ui-v1 .v157Metric.warn:after{background:#fff2df}
+html.new-ui-v1 .v157MetricHead{font:750 12px/1.3 system-ui,-apple-system,Segoe UI,sans-serif;color:#526f7d}
+html.new-ui-v1 .v157MetricIco{width:39px;height:39px;border-radius:12px;background:#eaf6fb;color:#116c88}
+html.new-ui-v1 .v157MetricNum{margin:11px 0 3px 49px;font:800 clamp(27px,6vw,34px)/1 system-ui,-apple-system,Segoe UI,sans-serif;letter-spacing:-.05em;color:#173b50}
+html.new-ui-v1 .v157MetricSub{margin-left:49px;font:550 11px/1.35 system-ui,-apple-system,Segoe UI,sans-serif;color:#69838f}
+html.new-ui-v1 .v157Panel,html.new-ui-v1 .v200WeatherCard{background:#fff;border:1px solid #e2eaee;border-radius:17px;box-shadow:0 4px 16px #1b40500a}
+html.new-ui-v1 .v157Panel{padding:16px}
+html.new-ui-v1 .v157PanelHead{font:750 16px/1.35 system-ui,-apple-system,Segoe UI,sans-serif;color:#253f4e}
+html.new-ui-v1 .v157PanelLink{color:#0b7293}
+html.new-ui-v1 .v157Empty{background:#f7fafb;border-color:#e2eaee;color:#657f8d}
+html.new-ui-v1 .v200WeatherCard b,html.new-ui-v1 .v200WeatherCard strong{color:#173b50}
+html.new-ui-v1 .v200WeatherCard span{color:#617c8b}
+html.new-ui-v1 #v157Drawer{background:#fff;color:#172d3b;box-shadow:12px 0 34px #0c283124}
+html.new-ui-v1 .v157DrawerHead{background:linear-gradient(145deg,#145169,#103c52 70%);min-height:255px}
+html.new-ui-v1 .v157MenuBody{background:#fff}
+html.new-ui-v1 .v157MenuItem{color:#244559;border-radius:13px;font-family:system-ui,-apple-system,Segoe UI,sans-serif;font-weight:750}
+html.new-ui-v1 .v157MenuItem .ico{background:#eaf6fb;color:#0b7293}
+html.new-ui-v1 .v157MenuItem.active{background:#e7f4f8;color:#11536c}
+html.new-ui-v1 .v157MenuItem.active .ico{background:#0b7293;color:#fff;box-shadow:none}
+html.new-ui-v1 .v157SectionTitle,html.new-ui-v1 .v157MenuItem .meta{color:#728b97}
+html.new-ui-v1 #v157BottomBar{background:#fff;border-top:1px solid #e0e8ed;box-shadow:0 -4px 22px #14384b10;border-radius:17px 17px 0 0;gap:5px}
+html.new-ui-v1 .v157BottomBtn{background:transparent;border-color:transparent;color:#667e8b;box-shadow:none;border-radius:12px;min-height:55px;font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+html.new-ui-v1 .v157BottomBtn.active{background:#e9f5f8;border-color:#d7eaf0;color:#0b6685;box-shadow:none}
+html.new-ui-v1 .v157BottomBtn.active b,html.new-ui-v1 .v157BottomBtn.active span{color:#0b6685}
+html.new-ui-v1 #v157HomeDashboard button,html.new-ui-v1 #v157Drawer button{touch-action:manipulation}
+html.new-ui-v1 :focus-visible{outline:3px solid #0b7293!important;outline-offset:2px}
+@media(max-width:520px){html.new-ui-v1 #v157HomeDashboard{padding-right:14px;padding-left:14px}html.new-ui-v1 .v157Metric{padding:13px 10px;min-height:116px}html.new-ui-v1 .v157MetricIco{width:35px;height:35px}html.new-ui-v1 .v157MetricNum,html.new-ui-v1 .v157MetricSub{margin-left:44px}html.new-ui-v1 .v157Panel{padding:14px}html.new-ui-v1 #v157BottomBar{padding-left:5px;padding-right:5px}}
+@media(min-width:900px){html.new-ui-v1 #v157HomeDashboard{padding-left:max(28px,calc((100vw - 1120px)/2));padding-right:max(28px,calc((100vw - 1120px)/2))}}
+@media(prefers-reduced-motion:reduce){html.new-ui-v1 *,html.new-ui-v1 *:before,html.new-ui-v1 *:after{scroll-behavior:auto!important;transition-duration:0s!important;animation-duration:0s!important}}
+
+/* NEW UI V1 — visible login redesign; original form fields/auth handlers are unchanged. */
+html.new-ui-v1 #roleLoginModal,
+html.new-ui-v1 #loginScreen,
+html.new-ui-v1 .login-screen,
+html.new-ui-v1 .login-page,
+html.new-ui-v1 .login-wrap,
+html.new-ui-v1 .login-container,
+html.new-ui-v1 body.login-mode {
+  background:#f0f7f9!important;
+  background-image:linear-gradient(145deg,#f0f8fa 0%,#f5f9fb 56%,#e4f1f5 100%)!important;
+  background-attachment:scroll!important;
+}
+html.new-ui-v1 #roleLoginModal{padding:clamp(14px,5vw,34px);overflow:auto;align-items:center;justify-content:center}
+html.new-ui-v1 .roleLoginCard{
+  width:min(100%,430px)!important;
+  padding:clamp(22px,5vw,34px)!important;
+  border:1px solid #dbe9ee!important;
+  border-radius:24px!important;
+  background:#fff!important;
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  box-shadow:0 16px 50px rgba(18,62,80,.10)!important;
+  color:#172d3b!important;
+}
+html.new-ui-v1 .roleLoginLogo{
+  width:116px!important;max-width:32vw!important;
+  margin:0 0 18px!important;padding:7px!important;
+  border:1px solid #dcecf1!important;border-radius:18px!important;
+  background:#f2f9fb!important;box-shadow:none!important;
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+}
+html.new-ui-v1 .roleLoginLogo img{border-radius:12px!important;box-shadow:none!important}
+html.new-ui-v1 .newUiLoginEyebrow{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 9px;font:800 10px/1.4 system-ui,-apple-system,Segoe UI,sans-serif;letter-spacing:.12em;color:#627f8d}
+html.new-ui-v1 .newUiLoginEyebrow span{white-space:nowrap;border-radius:999px;padding:5px 9px;letter-spacing:0;background:#e5f4f8;color:#086884;font-size:10px}
+html.new-ui-v1 .roleLoginCard h2{margin:0 0 21px!important;font:800 clamp(26px,6vw,32px)/1.15 system-ui,-apple-system,Segoe UI,sans-serif!important;letter-spacing:-.04em;color:#163749!important;text-transform:none!important}
+html.new-ui-v1 .roleLoginCard label{margin:14px 0 7px;color:#365768;font:700 13px/1.4 system-ui,-apple-system,Segoe UI,sans-serif}
+html.new-ui-v1 .roleLoginCard select,
+html.new-ui-v1 .roleLoginCard input{
+  width:100%;height:51px!important;min-height:51px;border:1px solid #d4e4ea!important;
+  border-radius:12px!important;background:#f7fafb!important;box-shadow:none!important;
+  color:#17394d!important;padding:0 14px!important;font:500 16px system-ui,-apple-system,Segoe UI,sans-serif!important;
+}
+html.new-ui-v1 .roleLoginCard input:focus-visible{outline:2px solid #1c85a3!important;outline-offset:2px}
+html.new-ui-v1 #roleLoginSubmit{
+  width:100%;height:52px!important;margin-top:22px;border:0!important;
+  border-radius:12px!important;background:#0b6581!important;color:#fff!important;
+  box-shadow:0 8px 20px rgba(9,94,127,.14)!important;
+  font:800 15px system-ui,-apple-system,Segoe UI,sans-serif!important;
+}
+html.new-ui-v1 #roleLoginError{font-size:12px;line-height:1.45;margin-top:10px}
+html.new-ui-v1 .roleLoginCard::after{
+  content:'Copyright © 2026 Nguyễn Trung Kiên. All rights reserved.';
+  display:block;margin-top:18px;text-align:center;color:#78909b;
+  font:500 10px/1.45 system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+/* Role landing page has no department photo. Keep its visibility/ARIA/state untouched. */
+html.new-ui-v1 #roleHomeIdle{background:#f5f8fa!important;background-image:linear-gradient(145deg,#f5f8fa,#e8f3f6)!important;background-attachment:scroll!important}
+/* Real flight manager (existing sessions and handlers, not the fake prototype). */
+html.new-ui-v1 #flightSessionModal{background:rgba(7,30,44,.54)!important;padding:10px!important;align-items:flex-end!important}
+html.new-ui-v1 .flightSessionBox{width:min(100%,640px)!important;max-height:min(90dvh,820px)!important;min-height:40vh;overflow:auto;border:1px solid #dce8ec!important;border-radius:22px 22px 0 0!important;background:#f5f8fa!important;padding:21px 16px calc(20px + env(safe-area-inset-bottom))!important;box-shadow:0 -10px 35px #071e2c20!important;font-family:system-ui,-apple-system,Segoe UI,sans-serif!important}
+html.new-ui-v1 .flightSessionBox h3{font:800 22px/1.2 system-ui,-apple-system,Segoe UI,sans-serif!important;letter-spacing:-.03em;color:#172d3b!important}
+html.new-ui-v1 .flightSessionCurrent{margin:9px 0 17px!important;padding:12px!important;background:#eaf6fb!important;border-radius:12px!important;color:#335d71!important;font-size:13px!important}
+html.new-ui-v1 .flightSessionCreate input,html.new-ui-v1 .flightSessionCreate select{min-height:44px!important;border:1px solid #d5e3e9!important;border-radius:11px!important;background:#fff!important;font:500 14px system-ui,-apple-system,Segoe UI,sans-serif!important;color:#203e4d!important}
+html.new-ui-v1 .flightSessionCreate button{min-height:44px!important;border-radius:11px!important;background:#0b6685!important;color:#fff!important}
+html.new-ui-v1 .flightSessionList{gap:10px!important}
+html.new-ui-v1 .flightSessionRow{background:#fff!important;border:1px solid #e1eaf0!important;border-radius:16px!important;padding:14px 11px!important;box-shadow:0 3px 12px #15374808!important;gap:8px!important}
+html.new-ui-v1 .flightSessionRow.active{border:2px solid #0b7293!important;background:#eff9fb!important}
+html.new-ui-v1 .flightSessionSelect{min-height:48px!important;overflow-wrap:anywhere}
+html.new-ui-v1 .flightSessionSelect strong{color:#173b50!important;font:800 19px/1.3 system-ui,-apple-system,Segoe UI,sans-serif!important}
+html.new-ui-v1 .flightSessionSelect span{color:#617987!important;font-size:12px!important}
+html.new-ui-v1 .flightSessionEdit,html.new-ui-v1 .flightSessionDelete{min-height:42px!important;border-radius:10px!important}
+html.new-ui-v1 .flightSessionClose{min-height:48px!important;background:#e4edf2!important;color:#244c5c!important;border-radius:12px!important}
+@media(min-width:700px){html.new-ui-v1 #flightSessionModal{align-items:center!important}html.new-ui-v1 .flightSessionBox{border-radius:22px!important;padding:24px!important;min-height:0}}
+@media(max-width:430px){html.new-ui-v1 .roleLoginCard{padding:24px 21px!important}html.new-ui-v1 .flightSessionBox{padding-left:12px!important;padding-right:12px!important}}
+
+
+/* NEW UI V1 · HOME FIX / DISPATCH. The legacy idle background sits at z=8000 and
+   covered the authenticated home (z=8). Keep the idle DOM/state intact for F5,
+   authentication and back navigation; put only its visual layer behind the home. */
+html.new-ui-v1 body.v157-authenticated.v157-home #roleHomeIdle {
+  z-index:1!important;
+  pointer-events:none!important;
+}
+/* The existing live dashboard, not a fake-data screen, is the landing page. */
+html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard {
+  display:block!important;
+  z-index:8!important;
+  background:linear-gradient(180deg,#f1f7f9 0%,#f6f9fb 48%,#eef5f7 100%)!important;
+  color:#163646!important;
+  padding:calc(22px + env(safe-area-inset-top)) 16px calc(106px + env(safe-area-inset-bottom))!important;
+  overscroll-behavior:contain;
+}
+html.new-ui-v1 body.v157-authenticated {--sags-bg:#f4f8fa;--sags-text:#193b4c}
+html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157Welcome {
+  position:relative;display:flex;align-items:center;gap:18px;min-height:136px;
+  border:1px solid #dce9ee;border-radius:22px;background:#fff;
+  box-shadow:0 6px 24px rgba(14,56,74,.055);padding:23px 22px!important;margin:0 0 16px;
+}
+html.new-ui-v1 #v157HomeDashboard .v200WelcomeCopy::before {
+  content:'NEW UI V1  /  MOBILE DISPATCH';display:block;margin:0 0 11px;
+  color:#0b7494;font:800 10px/1.3 system-ui,-apple-system,'Segoe UI',sans-serif;
+  letter-spacing:.13em;
+}
+html.new-ui-v1 #v157HomeDashboard .v157Welcome strong {
+  font:800 clamp(22px,3.2vw,32px)/1.18 system-ui,-apple-system,'Segoe UI',sans-serif;
+  letter-spacing:-.04em;color:#19394a!important;
+}
+html.new-ui-v1 #v157HomeDashboard .v157Welcome span {
+  font:500 13px/1.5 system-ui,-apple-system,'Segoe UI',sans-serif;color:#718895!important;
+}
+html.new-ui-v1 #v157HomeDashboard .v200WeatherCard {
+  flex:0 1 195px;min-width:146px;padding:14px!important;
+  border-radius:15px;background:#eaf5f8!important;border:1px solid #d4e7ed!important;
+  box-shadow:none!important;
+}
+html.new-ui-v1 #v157HomeDashboard .v200WeatherCard b {color:#0a6480!important}
+html.new-ui-v1 #v157HomeDashboard .v200WeatherCard strong {color:#193c50!important;font-size:15px}
+html.new-ui-v1 #v157HomeDashboard .v157MetricGrid {
+  grid-template-columns:minmax(0,1fr);gap:12px;margin:0 0 16px;
+}
+html.new-ui-v1 #v157HomeDashboard .v157Metric {
+  min-height:136px;padding:18px 17px!important;border-radius:19px;
+  border:1px solid #dce8ed!important;background:#fff!important;
+  box-shadow:0 6px 20px rgba(14,56,74,.055)!important;
+}
+html.new-ui-v1 #v157HomeDashboard .v157Metric:after{width:112px;height:112px;background:#e8f5f8!important}
+html.new-ui-v1 #v157HomeDashboard .v157Metric.warn:after{background:#fff0d9!important}
+html.new-ui-v1 #v157HomeDashboard .v157MetricHead{gap:11px;color:#526e7c!important;font-size:13px!important}
+html.new-ui-v1 #v157HomeDashboard .v157MetricIco{flex:0 0 42px;min-width:42px;height:42px;background:#e8f5f8!important;color:#11708c!important}
+html.new-ui-v1 #v157HomeDashboard .v157Metric.warn .v157MetricIco{background:#fff1df!important;color:#9d631e!important}
+html.new-ui-v1 #v157HomeDashboard .v157MetricNum{margin:8px 0 2px 52px;color:#17394b!important;font-size:32px!important}
+html.new-ui-v1 #v157HomeDashboard .v157MetricSub{margin-left:52px;color:#6a8390!important}
+html.new-ui-v1 #v157HomeDashboard .v157Panel {
+  background:#fff!important;border:1px solid #dce8ed!important;border-radius:19px;
+  margin:0 0 13px!important;padding:19px!important;
+  box-shadow:0 6px 20px rgba(14,56,74,.05)!important;
+}
+html.new-ui-v1 #v157HomeDashboard .v157PanelHead {
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  color:#193a4e!important;font:800 16px/1.35 system-ui,-apple-system,'Segoe UI',sans-serif!important;
+}
+html.new-ui-v1 #v157HomeDashboard .v157PanelLink {
+  flex:0 0 auto;min-height:44px;padding:10px 14px;
+  border-radius:11px;border:1px solid #cfe7ef!important;
+  background:#e8f5f9!important;color:#0b6582!important;
+  box-shadow:none!important;font:800 12px system-ui,-apple-system,'Segoe UI',sans-serif!important;
+}
+/* MY FLIGHT retains its original live flight assignment and task handlers. */
+html.new-ui-v1 #v157HomeDashboard .v157MetricGrid + .v157Panel {
+  border-color:#badce6!important;background:linear-gradient(145deg,#fff,#f7fcfd)!important;
+}
+html.new-ui-v1 #v157HomeDashboard .v157MetricGrid + .v157Panel .v157PanelHead > span {font-size:0!important}
+html.new-ui-v1 #v157HomeDashboard .v157MetricGrid + .v157Panel .v157PanelHead > span::after {
+  content:'✈  Chuyến bay & công việc';font:800 18px/1.35 system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+html.new-ui-v1 #v157HomeDashboard #v157HistoryBtn {background:#0b6986!important;color:#fff!important;border-color:#0b6986!important}
+html.new-ui-v1 #v157HomeDashboard #v157HistoryBtn::before {content:'MỞ MY FLIGHT  →';font-size:13px}
+html.new-ui-v1 #v157HomeDashboard #v157HistoryBtn {font-size:0!important}
+html.new-ui-v1 #v157HomeDashboard .v157Empty {
+  min-height:72px;margin-top:14px;padding:16px!important;border-radius:13px;
+  border:1px solid #e1edf0!important;background:#f4f9fb!important;
+  color:#526e7f!important;font:500 13px/1.5 system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+/* Original nav has late !important legacy navy/lime rules. Override only THIS home nav. */
+html.new-ui-v1 body.v157-authenticated.v157-home #v157BottomBar {
+  background:#fff!important;color:#617b89!important;border:1px solid #dbe8ed!important;
+  border-bottom:0!important;border-radius:18px 18px 0 0!important;
+  box-shadow:0 -6px 25px rgba(17,52,70,.09)!important;
+  gap:5px;padding:8px max(8px,env(safe-area-inset-right)) calc(9px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));
+}
+html.new-ui-v1 body.v157-authenticated.v157-home #v157BottomBar .v157BottomBtn {
+  min-height:55px;border:1px solid transparent!important;border-radius:12px!important;
+  background:transparent!important;color:#617b89!important;
+  box-shadow:none!important;font:750 11px system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+html.new-ui-v1 body.v157-authenticated.v157-home #v157BottomBar .v157BottomBtn.active {
+  border-color:#cbe6ee!important;background:#e6f4f8!important;color:#0a6482!important;box-shadow:none!important;
+}
+html.new-ui-v1 body.v157-authenticated.v157-home #v157BottomBar .v157BottomBtn.active b,
+html.new-ui-v1 body.v157-authenticated.v157-home #v157BottomBar .v157BottomBtn.active span {color:#0a6482!important}
+html.new-ui-v1 body.v157-authenticated.v157-home #v157BottomBar .v157BottomBtn:not(.active) b,
+html.new-ui-v1 body.v157-authenticated.v157-home #v157BottomBar .v157BottomBtn:not(.active) span {color:#617b89!important}
+/* Preserve the original LIVE Firebase MY FLIGHT list and all receive/claim buttons. */
+html.new-ui-v1 #fwcModal{background:rgba(9,35,48,.55)!important;padding:max(5px,env(safe-area-inset-top)) 6px max(5px,env(safe-area-inset-bottom))!important}
+html.new-ui-v1 #fwcModal .fwcPanel {
+  width:min(100%,1090px)!important;max-height:calc(100dvh - 12px)!important;
+  border-radius:21px!important;border:1px solid #dce8ed!important;background:#f3f8fa!important;
+  box-shadow:0 24px 68px rgba(7,30,44,.23)!important;padding:17px!important;
+  color:#193b4d!important;
+}
+html.new-ui-v1 #fwcModal .fwcHead {
+  padding:4px 3px 15px!important;border-bottom:1px solid #dfebee!important;
+  background:#f3f8fa!important;align-items:center;
+}
+html.new-ui-v1 #fwcModal .fwcHead h3 {
+  margin:0!important;color:#19394b!important;font:800 clamp(18px,3vw,24px)/1.25 system-ui,-apple-system,'Segoe UI',sans-serif!important;
+  letter-spacing:-.035em;
+}
+html.new-ui-v1 #fwcModal #fwcBody{padding:6px 2px 8px!important}
+html.new-ui-v1 #fwcModal .fwcTools{
+  display:flex;gap:8px;align-items:center;padding:12px;margin:4px 0 13px;
+  border-radius:14px;background:#fff;border:1px solid #e0eaee;
+}
+html.new-ui-v1 #fwcModal .fwcTools input{
+  min-width:125px;min-height:44px;border:1px solid #d4e4e9!important;border-radius:10px!important;
+  background:#f9fcfd!important;color:#19394b!important;font:600 14px system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+html.new-ui-v1 #fwcModal .fwcFlight {
+  grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) minmax(115px,auto);
+  align-items:center;gap:13px;padding:18px!important;margin:0 0 11px!important;
+  border:1px solid #dde9ee!important;border-radius:17px!important;
+  background:#fff!important;box-shadow:0 4px 14px rgba(12,55,75,.05)!important;
+  min-width:0;
+}
+html.new-ui-v1 #fwcModal .fwcFlight:hover {border-color:#b3d7e2!important;background:#fcfeff!important}
+html.new-ui-v1 #fwcModal .fwcFlightTitle {
+  color:#143d52!important;font:850 22px/1.3 system-ui,-apple-system,'Segoe UI',sans-serif!important;
+  letter-spacing:-.035em;overflow-wrap:anywhere;
+}
+html.new-ui-v1 #fwcModal .fwcMeta {color:#607b8a!important;font:500 12px/1.5 system-ui,-apple-system,'Segoe UI',sans-serif!important;overflow-wrap:anywhere}
+html.new-ui-v1 #fwcModal .fwcBadges,
+html.new-ui-v1 #fwcModal .fwcModules {gap:6px}
+html.new-ui-v1 #fwcModal .fwcBadge {border-radius:999px!important;background:#e4f4ee!important;color:#176b52!important;padding:6px 9px!important;font:800 11px system-ui,-apple-system,'Segoe UI',sans-serif!important}
+html.new-ui-v1 #fwcModal .fwcBadge.warn {background:#fff0df!important;color:#955d18!important}
+html.new-ui-v1 #fwcModal .fwcBtn:not(.green):not(.orange):not(.danger) {
+  min-height:44px;border:1px solid #cce5ed!important;border-radius:11px!important;
+  background:#e6f4f8!important;color:#0c6582!important;box-shadow:none!important;
+  font:800 12px system-ui,-apple-system,'Segoe UI',sans-serif!important;
+}
+html.new-ui-v1 #fwcModal .fwcFlight > .fwcBtn,
+html.new-ui-v1 #fwcModal .fwcFlight .v350CardActions > .fwcBtn:not(.green):not(.orange):not(.danger) {
+  background:#0a6b88!important;border-color:#0a6b88!important;color:#fff!important;
+}
+html.new-ui-v1 #fwcModal .fwcWorkspaceHead{
+  background:#fff!important;border:1px solid #cfe4ec!important;border-radius:17px!important;
+  padding:18px!important;margin:12px 0!important;
+}
+html.new-ui-v1 #fwcModal .fwcWorkspaceTitle {color:#153d51!important;font:850 25px/1.25 system-ui,-apple-system,'Segoe UI',sans-serif!important}
+html.new-ui-v1 #fwcModal .fwcUnitGrid {gap:11px}
+html.new-ui-v1 #fwcModal .fwcUnit {
+  border:1px solid #dfe9ee!important;border-radius:16px!important;
+  background:#fff!important;padding:17px!important;box-shadow:0 4px 15px rgba(12,55,75,.04)!important;
+}
+html.new-ui-v1 #fwcModal .fwcUnit.mine{border-color:#9cd9c2!important;background:#f3fbf7!important}
+html.new-ui-v1 #fwcModal .fwcUnit h4 {color:#173e52!important;font:800 17px/1.35 system-ui,-apple-system,'Segoe UI',sans-serif!important}
+/* Form canvas, signatures, FINAL/CROSSCHECK and camera UI are not restyled here. */
+@media(max-width:640px){
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard{padding:10px 12px calc(102px + env(safe-area-inset-bottom))!important}
+  html.new-ui-v1 #v157HomeDashboard .v157Welcome{padding:18px 15px!important;display:block}
+  html.new-ui-v1 #v157HomeDashboard .v200WeatherCard{margin-top:14px;max-width:none;min-width:0;padding:11px 13px!important}
+  html.new-ui-v1 #v157HomeDashboard .v157MetricGrid{gap:9px}
+  html.new-ui-v1 #v157HomeDashboard .v157Metric{min-height:122px;padding:13px 11px!important}
+  html.new-ui-v1 #v157HomeDashboard .v157MetricHead{display:block;font-size:11px!important}
+  html.new-ui-v1 #v157HomeDashboard .v157MetricIco{display:flex;align-items:center;justify-content:center;margin-bottom:8px;width:35px;min-width:35px;height:35px}
+  html.new-ui-v1 #v157HomeDashboard .v157MetricNum{margin:9px 0 3px;font-size:29px!important}
+  html.new-ui-v1 #v157HomeDashboard .v157MetricSub{margin-left:0}
+  html.new-ui-v1 #v157HomeDashboard .v157Panel{padding:15px!important}
+  html.new-ui-v1 #v157HomeDashboard .v157PanelHead{flex-wrap:wrap}
+  html.new-ui-v1 #v157HomeDashboard .v157MetricGrid + .v157Panel .v157PanelHead > span::after{font-size:17px}
+  html.new-ui-v1 #v157HomeDashboard #v157HistoryBtn {width:100%}
+  html.new-ui-v1 #fwcModal .fwcPanel{width:100%!important;padding:10px!important;border-radius:15px!important}
+  html.new-ui-v1 #fwcModal .fwcFlight{grid-template-columns:minmax(0,1fr)!important;gap:11px;padding:15px!important}
+  html.new-ui-v1 #fwcModal .fwcFlight > .fwcBtn,
+  html.new-ui-v1 #fwcModal .fwcFlight .v350CardActions > .fwcBtn{width:100%!important;min-height:44px!important}
+  html.new-ui-v1 #fwcModal .fwcTools{padding:9px}
+  html.new-ui-v1 #fwcModal .fwcTools input {flex:1 1 160px}
+  html.new-ui-v1 #fwcModal .fwcUnit{padding:13px!important}
+}
+
+@media(max-width:640px){
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157Welcome {
+    display:block!important;min-height:0!important;
+  }
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v200WeatherCard {
+    width:100%!important;max-width:none!important;min-width:0!important;margin:14px 0 0!important;
+  }
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157Metric {
+    min-height:151px!important;
+  }
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157MetricSub {
+    line-height:1.45!important;overflow-wrap:break-word;
+  }
+}
+
+
+/* NEW UI V1 / CONSISTENT APP SHELL — visual-only continuation.
+   Never modify .sheet, .hit, input coordinates, PDF page/canvas or business visibility. */
+html.new-ui-v1{
+  --sags-navy-950:#0d3144;--sags-navy-900:#123e54;--sags-navy-800:#15536a;
+  --sags-navy-700:#176c84;--sags-blue:#087b9c;--sags-bg:#f3f8fa;
+  --sags-surface:#fff;--sags-surface-soft:#f7fbfc;--sags-border:#dae8ee;
+  --sags-text:#1a3b4c;--sags-text-soft:#657f8d;
+  --sags-radius:14px;--sags-radius-lg:19px;
+  --sags-shadow:0 5px 18px rgba(20,61,78,.075);
+  --sags-shadow-strong:0 22px 55px rgba(8,35,50,.2);
+}
+html.new-ui-v1 body.v157-authenticated{background:#f3f8fa!important;color:#1a3b4c!important}
+/* Actual authenticated dashboard: keep original live data and its click handlers. */
+html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard > .v157Welcome,
+html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard > .v181AdminHomeQuick,
+html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard > .v157MetricGrid,
+html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard > .v157Panel{
+  max-width:1120px;margin-left:auto!important;margin-right:auto!important;
+}
+html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard > .v181AdminHomeQuick{margin-bottom:14px!important;border-radius:16px!important;background:linear-gradient(115deg,#104962,#176d86)!important;box-shadow:var(--sags-shadow)!important}
+html.new-ui-v1 #v157HomeDashboard #v181AdminHomeBtn{min-height:44px!important;border-radius:11px!important;background:#fff!important;color:#14546c!important}
+
+/* MAIN DRAWER: the old navy wallpaper had !important overrides; explicitly replace
+   those with a compact, legible light dispatch panel. Menu entries remain original DOM. */
+html.new-ui-v1 body.v157-authenticated #v157Drawer{
+  width:min(91vw,390px)!important;max-width:100%;
+  background:#f4f9fb!important;color:#173b4d!important;
+  border-right:1px solid #d6e6ed!important;
+  box-shadow:16px 0 56px rgba(9,35,51,.22)!important;
+  scrollbar-color:#b8d5df transparent;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157DrawerHead{
+  min-height:0!important;padding:calc(17px + env(safe-area-inset-top)) 17px 15px!important;
+  background:#fff!important;color:#173b4d!important;
+  border-bottom:1px solid #dae8ee!important;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157Brand{
+  display:grid!important;grid-template-columns:62px minmax(0,1fr)!important;
+  align-items:center!important;gap:13px!important;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157Brand::after{
+  content:'SAGS / E-REPORT\aNEW UI V1 · DISPATCH';white-space:pre-line;
+  color:#16445a;font:800 13px/1.55 system-ui,-apple-system,'Segoe UI',sans-serif;
+  letter-spacing:.015em;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157LogoBox{
+  width:62px!important;height:62px!important;margin:0!important;
+  padding:5px!important;display:grid!important;place-items:center!important;
+  background:#f2f9fb!important;border:1px solid #d7e8ee!important;
+  border-radius:15px!important;box-shadow:none!important;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157LogoBox img{
+  width:100%!important;height:100%!important;max-height:52px!important;object-fit:contain!important;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157BrandText{display:none!important}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157UserCard{
+  margin-top:15px!important;padding:11px!important;gap:10px!important;
+  border-radius:14px!important;background:#e9f5f8!important;border:1px solid #d6e9ee!important;
+  box-shadow:none!important;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157Avatar{
+  width:43px!important;height:43px!important;flex:0 0 43px!important;font-size:19px!important;
+  background:#0f6683!important;color:#fff!important;box-shadow:none!important;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157Avatar::after{border-color:#e9f5f8!important}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157UserName{
+  font:800 14px/1.3 system-ui,-apple-system,'Segoe UI',sans-serif!important;color:#17394d!important;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157Online{color:#207961!important;font-size:11px!important}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157UserRole{
+  margin-left:auto!important;border:1px solid #c5dfe7!important;border-radius:9px!important;
+  background:#fff!important;color:#16556e!important;padding:6px 8px!important;font-size:10px!important;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuBody{
+  margin:0!important;padding:12px 12px 20px!important;
+  background:#f4f9fb!important;border-radius:0!important;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157Section{
+  padding:0!important;margin:8px 0 18px!important;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157SectionTitle{
+  margin:0 0 8px!important;padding:0 8px!important;
+  color:#668494!important;letter-spacing:.105em!important;
+  font:800 10px/1.5 system-ui,-apple-system,'Segoe UI',sans-serif!important;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuItem{
+  display:grid!important;grid-template-columns:40px minmax(0,1fr)!important;
+  grid-template-rows:auto auto!important;column-gap:10px!important;row-gap:1px!important;
+  min-height:60px!important;margin:0 0 6px!important;padding:9px 10px!important;
+  background:#fff!important;color:#1a4052!important;
+  border:1px solid #e0ecf0!important;border-radius:13px!important;
+  box-shadow:0 2px 9px rgba(15,61,78,.035)!important;
+  font:750 13px/1.35 system-ui,-apple-system,'Segoe UI',sans-serif!important;
+  text-align:left!important;overflow-wrap:anywhere;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuItem > .ico{
+  grid-column:1!important;grid-row:1 / span 2!important;
+  display:grid!important;place-items:center!important;
+  width:38px!important;height:38px!important;border-radius:11px!important;
+  background:#e8f5f9!important;color:#176781!important;
+  box-shadow:none!important;font-size:18px!important;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuItem > span:nth-child(2){
+  grid-column:2!important;grid-row:1!important;align-self:end!important;min-width:0;
+  color:inherit!important;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuItem > .meta{
+  grid-column:2!important;grid-row:2!important;align-self:start!important;min-width:0;
+  max-width:100%!important;white-space:normal!important;color:#738b98!important;
+  font:500 11px/1.35 system-ui,-apple-system,'Segoe UI',sans-serif!important;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuItem.active,
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuItem[aria-current="page"]{
+  background:#e5f4f8!important;border-color:#a8d7e4!important;color:#086785!important;
+  box-shadow:inset 3px 0 #087fa0!important;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuItem.active > .ico{
+  background:#0c7897!important;color:#fff!important;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuItem[data-v157-key="adcontrol"]{
+  background:#fff9eb!important;border-color:#eddbae!important;color:#78571b!important;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuItem[disabled]{opacity:.48!important;cursor:not-allowed}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuDivider{
+  height:1px!important;background:#dbe8ed!important;margin:12px 4px!important;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157DrawerFooter{
+  position:sticky!important;bottom:0!important;
+  padding:12px 14px calc(12px + env(safe-area-inset-bottom))!important;
+  background:#fff!important;border-top:1px solid #dae8ee!important;box-shadow:0 -6px 18px rgba(16,55,76,.04)!important;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157AccountActions{gap:8px!important}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157PasswordBtn,
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157LogoutBtn{
+  min-height:46px!important;border-radius:11px!important;
+  font:750 13px system-ui,-apple-system,'Segoe UI',sans-serif!important;box-shadow:none!important;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157PasswordBtn{
+  background:#e8f5f9!important;border:1px solid #c7e5ef!important;color:#13617d!important;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157LogoutBtn{
+  background:#fff2ee!important;border:1px solid #f0d3ca!important;color:#a44232!important;
+}
+html.new-ui-v1 body.v157-authenticated #v157DrawerBackdrop{background:rgba(9,35,52,.5)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+
+/* Operational navigation: the original buttons and click bindings remain untouched. */
+html.new-ui-v1 body.v163-operational{background:#f3f8fa!important;color:#1a3b4c!important;padding-bottom:calc(125px + env(safe-area-inset-bottom))!important}
+html.new-ui-v1 body.v166-overlay-open.v163-operational{padding-bottom:0!important}
+html.new-ui-v1 body.v163-operational #v163OperationNav{
+  left:8px!important;right:8px!important;bottom:calc(5px + env(safe-area-inset-bottom))!important;
+  padding:5px!important;gap:4px!important;border:1px solid #d7e8ee!important;
+  background:#fff!important;border-radius:13px!important;
+  box-shadow:0 -4px 22px rgba(9,46,63,.13)!important;
+}
+html.new-ui-v1 body.v163-operational #v163OperationNav > button{
+  min-height:40px!important;min-width:0!important;border:1px solid transparent!important;
+  border-radius:9px!important;background:#eaf5f9!important;color:#17627b!important;
+  box-shadow:none!important;font:750 clamp(10px,2.4vw,12px)/1.15 system-ui,-apple-system,'Segoe UI',sans-serif!important;
+}
+html.new-ui-v1 body.v163-operational #v163OperationNav #v163HomeBtn{
+  border-color:#c8e5ee!important;background:#dff0f5!important;color:#075c79!important;
+}
+html.new-ui-v1 body.v163-operational #v324FormActions{
+  left:8px!important;right:8px!important;bottom:calc(59px + env(safe-area-inset-bottom))!important;border:1px solid #d3e6ec!important;
+  border-radius:12px!important;background:#fff!important;
+  box-shadow:0 -5px 20px rgba(9,46,63,.11)!important;padding:5px!important;
+}
+html.new-ui-v1 body.v163-operational #v324FormActions .v324FormAction{
+  min-height:39px!important;border-radius:9px!important;
+  border:1px solid #cfe4eb!important;background:#eaf5f9!important;color:#165b73!important;
+  box-shadow:none!important;font:750 clamp(10px,2.4vw,12px)/1.15 system-ui,-apple-system,'Segoe UI',sans-serif!important;
+}
+html.new-ui-v1 body.v163-operational #v324FormActions #v324HandoverBtn{
+  background:#fff1db!important;border-color:#edd6aa!important;color:#805b18!important;
+}
+
+/* Unified workspace surfaces, reports, user management and live operational dialogs.
+   Do not modify their visibility, positioning, scroll logic or any form canvas. */
+html.new-ui-v1 body :is(.sagsAdminModal,#dailyRosterModal,#aclAdminModal,#aclSimpleModal,#aclAiModal,#fleetManagerModal,#fwcMultitaskModal,#finalFormsModal,#cxCleanModal,#finalPaperSourceModal,#formMenuModal,#fs09QuickModal,#fs09PreviewModal,#exportModal,#finalSheetManagerModal,#v174DataHub,#v181AdminCenter){
+  background-color:rgba(9,37,54,.54)!important;
+}
+html.new-ui-v1 body :is(.sagsAdminPanel,.drPanel,.aclPanel,.acls-panel,.fleetManagerPanel,.fwcMultiPanel,.fs09qPanel,.fs09PreviewBox,.finalFormsPanel,.v377CreateFormCard,.vjLdmCard,.v174DataHubPanel,.v181AdminPanel,.attachmentSourceBox,.formMenuBox,.exportBox){
+  background:#f5f9fb!important;border:1px solid #d6e7ee!important;
+  border-radius:19px!important;box-shadow:0 20px 54px rgba(7,36,52,.2)!important;color:#1b3e50!important;
+}
+html.new-ui-v1 body :is(.sagsAdminPanel,.drPanel,.aclPanel,.acls-panel,.fleetManagerPanel,.fwcMultiPanel,.fs09qPanel,.finalFormsPanel,.v174DataHubPanel,.v181AdminPanel) :is(h2,h3){
+  color:#183e52!important;letter-spacing:-.025em!important;
+}
+html.new-ui-v1 body :is(.sagsUserRow,.sagsAuditItem,.aclCard,.v488Card,.v310ShiftCard,.v320Card,.v327Card,.v339Card,.v342Card,.v181AdminCard,.v174DataCard){
+  background:#fff!important;border-color:#dceaf0!important;border-radius:14px!important;
+  box-shadow:0 3px 12px rgba(18,59,78,.045)!important;color:#1b4053!important;
+}
+html.new-ui-v1 body :is(.v181AdminHead,.v174DataHubHead,.drHead,.fwcHead,.fwcMultiHead,.fs09qHead,.v327Head,.v339Head,.v342Head,.v377CreateFormHead,.vjLdmHead){
+  border-color:#dce8ed!important;
+}
+html.new-ui-v1 body :is(#v174DataHub,#v181AdminCenter) :is(.v174DataCard,.v181AdminCard){
+  min-height:106px!important;
+}
+html.new-ui-v1 body :is(#v174DataHub,#v181AdminCenter) :is(.v174DataIcon,.v181AdminIcon){
+  background:#e7f4f8!important;color:#126986!important;
+}
+html.new-ui-v1 body :is(#v174DataHub,#v181AdminCenter) :is(input:not([type="checkbox"]):not([type="radio"]),select,textarea){
+  max-width:100%;border-color:#d0e3ea!important;border-radius:10px!important;
+  background:#fff!important;color:#1a3b4d!important;
+}
+html.new-ui-v1 body :is(.sagsAdminPanel,.drPanel,.aclPanel,.acls-panel,.fleetManagerPanel,.fwcMultiPanel,.fs09qPanel,.finalFormsPanel,.v174DataHubPanel,.v181AdminPanel) :is(button,a,[role="button"]){
+  touch-action:manipulation;
+}
+/* All print/PDF/signature image sheets and pixel-aligned fields deliberately retain
+   their original CSS. No broad body input/button selectors. */
+@media(max-width:600px){
+  html.new-ui-v1 body.v157-authenticated #v157Drawer{width:min(92vw,370px)!important}
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157DrawerHead{padding:calc(12px + env(safe-area-inset-top)) 13px 12px!important}
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157Brand{grid-template-columns:54px minmax(0,1fr)!important;gap:10px!important}
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157LogoBox{width:54px!important;height:54px!important}
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157LogoBox img{max-height:44px!important}
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157Brand::after{font-size:11px!important}
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuBody{padding:10px 9px 14px!important}
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuItem{min-height:55px!important}
+  html.new-ui-v1 body.v163-operational #v163OperationNav{left:4px!important;right:4px!important}
+  html.new-ui-v1 body.v163-operational #v324FormActions{left:4px!important;right:4px!important}
+}
+@media(prefers-reduced-motion:reduce){
+  html.new-ui-v1 #v157Drawer,html.new-ui-v1 #v157DrawerBackdrop{transition:none!important}
+}
+
+
+/* NEW UI V1 / GLOBAL INTERACTION CONTRACT — 2026-09-23 */
+/*
+  One visual contract for every live app surface.
+  Scope is UI chrome only: never touches .sheet/.hit/SVG form coordinates, PDF
+  geometry, persisted field keys, Firebase logic or business rules.
+*/
+html.new-ui-v1{
+  --ui-primary:#176f86;
+  --ui-primary-strong:#135b70;
+  --ui-primary-soft:#eaf5f8;
+  --ui-text:#183f52;
+  --ui-text-muted:#617d8c;
+  --ui-surface:#ffffff;
+  --ui-surface-soft:#f5f9fb;
+  --ui-border:#b8ccd7;
+  --ui-border-soft:#dce8ee;
+  --ui-danger:#c7463c;
+  --ui-danger-soft:#fff1ef;
+  --ui-overlay:rgba(8,31,46,.64);
+  --ui-radius-modal:30px;
+  --ui-radius-card:18px;
+  --ui-radius-input:20px;
+  --ui-radius-action:999px;
+  --ui-control-height:52px;
+  --ui-shadow-modal:0 24px 70px rgba(8,31,46,.22);
+  --ui-shadow-card:0 5px 18px rgba(20,61,78,.06);
+  --ui-font:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+}
+
+/* 1) Every application overlay uses the same tint, spacing and typography. */
+html.new-ui-v1 body :is(
+  #accountManagerModal,#accountProfileEditModal,#changePasswordModal,
+  #opsMvaComposeModal,#opsMvtComposeModal,#ops9gMvtComposeModal,#opsVuMvtComposeModal,
+  #activityMonitorModal,#fleetManagerModal,#auditManagerModal,#firebaseUsageModal,
+  #v377CreateFormModal,#appUpdateModal,#flightSessionModal,#flightTypeEditModal,
+  #ferryAlertModal,#finalFormsModal,#v18ManualBBBTModal,#finalPaperSourceModal,
+  #cxCleanModal,#finalPaperHistoryModal,#finalPaperMismatchTypeModal,#vjLdmModal,
+  #dedicatedSheetChooserModal,#finalSheetManagerModal,#kh208ManagerModal,
+  #fs09SheetManagerModal,#attachmentSourceModal,#formMenuModal,#fs09PreviewModal,
+  #exportChoiceModal,#exportModal,#entry,#timeSkipModal,#templateModal,
+  #signatureSampleModal,#signModal,#v479ThreeUActionModal,#v476ThreeUModal,
+  #v485FeaturePermissionModal,#fs09QuickModal,#sagsQuickEntry,
+  .sagsAdminModal,#dailyRosterModal,#aclAdminModal,#aclSimpleModal,#aclAiModal,
+  #fwcMultitaskModal
+){
+  background-color:var(--ui-overlay)!important;
+  color:var(--ui-text)!important;
+  font-family:var(--ui-font)!important;
+  box-sizing:border-box!important;
+}
+@supports ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
+  html.new-ui-v1 body :is(
+    #accountManagerModal,#accountProfileEditModal,#changePasswordModal,
+    #opsMvaComposeModal,#opsMvtComposeModal,#ops9gMvtComposeModal,#opsVuMvtComposeModal,
+    #activityMonitorModal,#fleetManagerModal,#auditManagerModal,#firebaseUsageModal,
+    #v377CreateFormModal,#appUpdateModal,#flightSessionModal,#flightTypeEditModal,
+    #ferryAlertModal,#finalFormsModal,#v18ManualBBBTModal,#finalPaperSourceModal,
+    #cxCleanModal,#finalPaperHistoryModal,#finalPaperMismatchTypeModal,#vjLdmModal,
+    #dedicatedSheetChooserModal,#finalSheetManagerModal,#kh208ManagerModal,
+    #fs09SheetManagerModal,#attachmentSourceModal,#formMenuModal,#fs09PreviewModal,
+    #exportChoiceModal,#exportModal,#entry,#timeSkipModal,#templateModal,
+    #signatureSampleModal,#signModal,#v479ThreeUActionModal,#v476ThreeUModal,
+    #v485FeaturePermissionModal,#fs09QuickModal,#sagsQuickEntry
+  ){backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
+}
+
+/* 2) Every modal/panel/card follows one white-surface contract. */
+html.new-ui-v1 body :is(
+  .sagsAdminPanel,.drPanel,.aclPanel,.acls-panel,.fleetManagerPanel,
+  .fwcMultiPanel,.flightSessionBox,.flightTypeEditBox,.ferryAlertBox,.finalFormsPanel,
+  .v377CreateFormCard,.attachmentSourceBox,.finalPaperCard,.vjLdmCard,.formMenuBox,
+  .fs09PreviewBox,.exportChoiceBox,.exportBox,.fs09qPanel,
+  .v479ThreeUActionPanel,.v485PermBox,#entry>.panel,#signModal>.panel,
+  #templateModal>.templateBox,#timeSkipModal>div,#signatureSampleModal>div,
+  #appUpdateModal>div,#dedicatedSheetChooserModal>div,#finalSheetManagerModal>div,
+  #kh208ManagerModal>div,#fs09SheetManagerModal>div,#cxCleanModal>div,
+  #sagsQuickEntry>.sq-card
+){
+  background:var(--ui-surface)!important;
+  color:var(--ui-text)!important;
+  border:1px solid var(--ui-border-soft)!important;
+  border-radius:var(--ui-radius-modal)!important;
+  box-shadow:var(--ui-shadow-modal)!important;
+  font-family:var(--ui-font)!important;
+  box-sizing:border-box!important;
+}
+
+/* 3) Headings, support text and separators are identical across modules. */
+html.new-ui-v1 body :is(
+  .sagsAdminPanel,.drPanel,.aclPanel,.acls-panel,.fleetManagerPanel,
+  .fwcMultiPanel,.flightSessionBox,.flightTypeEditBox,.ferryAlertBox,.finalFormsPanel,
+  .v377CreateFormCard,.attachmentSourceBox,.finalPaperCard,.vjLdmCard,.formMenuBox,
+  .fs09PreviewBox,.exportChoiceBox,.exportBox,.fs09qPanel,
+  .v479ThreeUActionPanel,.v485PermBox,#entry>.panel,#signModal>.panel,
+  #templateModal>.templateBox,#timeSkipModal>div,#signatureSampleModal>div,
+  #sagsQuickEntry>.sq-card
+) :is(h1,h2,h3,.fs09qTitle,.sq-title){
+  color:var(--ui-text)!important;
+  font-family:var(--ui-font)!important;
+  font-weight:850!important;
+  letter-spacing:-.025em!important;
+}
+html.new-ui-v1 body :is(
+  .sagsAdminPanel,.drPanel,.aclPanel,.acls-panel,.fleetManagerPanel,
+  .fwcMultiPanel,.flightSessionBox,.flightTypeEditBox,.ferryAlertBox,.finalFormsPanel,
+  .v377CreateFormCard,.attachmentSourceBox,.finalPaperCard,.vjLdmCard,.formMenuBox,
+  .fs09PreviewBox,.exportChoiceBox,.exportBox,.fs09qPanel,
+  .v479ThreeUActionPanel,.v485PermBox,#entry>.panel,#signModal>.panel,
+  #templateModal>.templateBox,#timeSkipModal>div,#signatureSampleModal>div,
+  #sagsQuickEntry>.sq-card
+) :is(.sub,.hint,.meta,.sq-overline,.sq-count,.sq-hint,small){
+  color:var(--ui-text-muted)!important;
+  font-family:var(--ui-font)!important;
+}
+
+/* 4) One input/select/textarea appearance everywhere in app dialogs. */
+html.new-ui-v1 body :is(
+  .sagsAdminPanel,.drPanel,.aclPanel,.acls-panel,.fleetManagerPanel,
+  .fwcMultiPanel,.flightSessionBox,.flightTypeEditBox,.ferryAlertBox,.finalFormsPanel,
+  .v377CreateFormCard,.attachmentSourceBox,.finalPaperCard,.vjLdmCard,.formMenuBox,
+  .fs09PreviewBox,.exportChoiceBox,.exportBox,.fs09qPanel,
+  .v479ThreeUActionPanel,.v485PermBox,#entry>.panel,#signModal>.panel,
+  #templateModal>.templateBox,#timeSkipModal>div,#signatureSampleModal>div,
+  #sagsQuickEntry>.sq-card
+) :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),select,textarea){
+  box-sizing:border-box!important;
+  max-width:100%!important;
+  min-height:var(--ui-control-height)!important;
+  border:2px solid var(--ui-border)!important;
+  border-radius:var(--ui-radius-input)!important;
+  background:var(--ui-surface-soft)!important;
+  color:var(--ui-text)!important;
+  box-shadow:none!important;
+  outline:none!important;
+  font-family:var(--ui-font)!important;
+  font-size:16px!important;
+}
+html.new-ui-v1 body :is(
+  .sagsAdminPanel,.drPanel,.aclPanel,.acls-panel,.fleetManagerPanel,
+  .fwcMultiPanel,.flightSessionBox,.flightTypeEditBox,.ferryAlertBox,.finalFormsPanel,
+  .v377CreateFormCard,.attachmentSourceBox,.finalPaperCard,.vjLdmCard,.formMenuBox,
+  .fs09PreviewBox,.exportChoiceBox,.exportBox,.fs09qPanel,
+  .v479ThreeUActionPanel,.v485PermBox,#entry>.panel,#signModal>.panel,
+  #templateModal>.templateBox,#timeSkipModal>div,#signatureSampleModal>div,
+  #sagsQuickEntry>.sq-card
+) :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),select,textarea):focus{
+  border-color:var(--ui-primary)!important;
+  background:#fff!important;
+  box-shadow:0 0 0 4px rgba(23,111,134,.12)!important;
+}
+html.new-ui-v1 body :is(input,select,textarea)::placeholder{color:#879ba6!important;opacity:1}
+
+/* 5) All dialog actions share identical geometry. Default = secondary. */
+html.new-ui-v1 body :is(
+  .sagsAdminPanel,.drPanel,.aclPanel,.acls-panel,.fleetManagerPanel,
+  .fwcMultiPanel,.flightSessionBox,.flightTypeEditBox,.ferryAlertBox,.finalFormsPanel,
+  .v377CreateFormCard,.attachmentSourceBox,.finalPaperCard,.vjLdmCard,.formMenuBox,
+  .fs09PreviewBox,.exportChoiceBox,.exportBox,.fs09qPanel,
+  .v479ThreeUActionPanel,.v485PermBox,#entry>.panel,#signModal>.panel,
+  #templateModal>.templateBox,#timeSkipModal>div,#signatureSampleModal>div,
+  #sagsQuickEntry>.sq-card
+) button{
+  min-height:48px!important;
+  border:1px solid #cbdde5!important;
+  border-radius:var(--ui-radius-action)!important;
+  background:#eef5f7!important;
+  color:#31596b!important;
+  box-shadow:none!important;
+  font-family:var(--ui-font)!important;
+  font-size:14px!important;
+  font-weight:800!important;
+  line-height:1.2!important;
+  text-transform:none!important;
+  letter-spacing:0!important;
+  touch-action:manipulation;
+}
+html.new-ui-v1 body :is(
+  .sagsAdminPanel,.drPanel,.aclPanel,.acls-panel,.fleetManagerPanel,
+  .fwcMultiPanel,.flightSessionBox,.flightTypeEditBox,.ferryAlertBox,.finalFormsPanel,
+  .v377CreateFormCard,.attachmentSourceBox,.finalPaperCard,.vjLdmCard,.formMenuBox,
+  .fs09PreviewBox,.exportChoiceBox,.exportBox,.fs09qPanel,
+  .v479ThreeUActionPanel,.v485PermBox,#entry>.panel,#signModal>.panel,
+  #templateModal>.templateBox,#timeSkipModal>div,#signatureSampleModal>div,
+  #sagsQuickEntry>.sq-card
+) button:disabled{opacity:.42!important;cursor:not-allowed!important;filter:none!important}
+
+/* Primary actions — exactly one teal visual language, no green/blue variants. */
+html.new-ui-v1 body :is(
+  #entry .save,#sagsEntryNextBtn,#sagsQuickEntry .sq-next,
+  .exportPrimary,.flightSessionCreate button,
+  .v377CreateFormCard button[type="submit"],.fs09qPanel .primary,
+  .sagsAdminPanel .primary,.sagsAdminPanel .save,.drPanel .primary,
+  .aclPanel .primary,.acls-panel .primary,.v479ThreeUActionPanel .primary,
+  #timeSkipConfirmBtn
+){
+  background:var(--ui-primary)!important;
+  border-color:var(--ui-primary)!important;
+  color:#fff!important;
+}
+/* Destructive actions remain red, but use the exact same shape/type scale. */
+html.new-ui-v1 body :is(
+  #entry .del,.danger,.flightSessionDelete,.attachment-remove,
+  .sagsDelete,.sagsDanger,.deleteBtn,.removeBtn
+){
+  background:var(--ui-danger-soft)!important;
+  border-color:#efc6c0!important;
+  color:var(--ui-danger)!important;
+}
+/* Close/cancel = neutral secondary, never a new brand color. */
+html.new-ui-v1 body :is(
+  #entry .cancel,.exportCancel,.exportChoiceClose,.flightSessionClose,
+  .fs09PreviewFoot button,
+  .sagsAdminClose,.cancel,.close
+){
+  background:#eef5f7!important;
+  border-color:#cbdde5!important;
+  color:#31596b!important;
+}
+
+/* Icon-only navigation/close controls stay square and compact. */
+html.new-ui-v1 body :is(.fs09PreviewClose){
+  width:44px!important;height:44px!important;min-height:44px!important;padding:0!important;
+  border-radius:50%!important;background:#eef5f7!important;border:1px solid #d5e5eb!important;
+  color:var(--ui-text)!important;font-size:24px!important;line-height:42px!important;
+}
+
+/* 6) Legacy direct-entry popup is brought onto the same quick-entry design. */
+html.new-ui-v1 body #entry{
+  padding:12px!important;
+  align-items:flex-end!important;
+  justify-content:center!important;
+}
+html.new-ui-v1 body #entry>.panel{
+  width:min(100%,560px)!important;
+  max-height:calc(var(--sags-vv-height,100dvh) - 24px)!important;
+  padding:28px!important;
+  overflow:auto!important;
+}
+html.new-ui-v1 body #entry #entryTitle{
+  margin:0 0 18px!important;
+  color:var(--ui-text)!important;
+  font:850 clamp(24px,6vw,32px)/1.2 var(--ui-font)!important;
+}
+html.new-ui-v1 body #entry #entryPaperViewport{overflow-x:auto!important;overflow-y:visible!important;overscroll-behavior-x:contain!important}
+html.new-ui-v1 body #entry #entryPaperSheet{
+  border:0!important;background:transparent!important;border-radius:0!important;
+}
+html.new-ui-v1 body #entry #entryPaperSheet.sags-ruled{
+  border:2px solid var(--ui-border)!important;
+  border-radius:var(--ui-radius-input)!important;
+  background:var(--ui-surface-soft)!important;
+  overflow:hidden!important;
+}
+html.new-ui-v1 body #entry #entryText{
+  width:100%!important;min-height:112px!important;padding:16px 18px!important;
+  border:2px solid var(--ui-border)!important;border-radius:var(--ui-radius-input)!important;
+  background:var(--ui-surface-soft)!important;color:var(--ui-text)!important;
+  font:650 19px/1.35 var(--ui-font)!important;text-align:left!important;
+}
+html.new-ui-v1 body #entry #entryPaperSheet.sags-ruled #entryText{
+  border:0!important;border-radius:0!important;background:transparent!important;
+  padding:8px 12px!important;
+}
+html.new-ui-v1 body #entry #entryPaperRules{opacity:.42!important}
+html.new-ui-v1 body #entry #entryRowHint{
+  margin:10px 0 0!important;color:var(--ui-text-muted)!important;
+  font:650 12px/1.45 var(--ui-font)!important;
+}
+html.new-ui-v1 body #entry .actions{
+  display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:10px!important;margin:18px 0 0!important;
+}
+html.new-ui-v1 body #entry .actions button{width:100%!important;margin:0!important}
+html.new-ui-v1 body #entry #sagsEntryNextBtn{order:2!important}
+html.new-ui-v1 body #entry .save{order:1!important}
+html.new-ui-v1 body #entry .del{order:3!important}
+html.new-ui-v1 body #entry .cancel{order:4!important}
+
+/* 7) Fast numeric entry is the visual source of truth for all entry flows. */
+html.new-ui-v1 body #sagsQuickEntry{
+  padding:12px!important;align-items:flex-end!important;justify-content:center!important;
+}
+html.new-ui-v1 body #sagsQuickEntry>.sq-card{
+  width:min(100%,560px)!important;
+  max-height:calc(var(--sags-vv-height,100dvh) - 24px)!important;
+  padding:28px!important;overflow:auto!important;
+}
+html.new-ui-v1 body #sagsQuickEntry .sq-overline{
+  color:var(--ui-text-muted)!important;font:800 14px/1.4 var(--ui-font)!important;
+}
+html.new-ui-v1 body #sagsQuickEntry .sq-title{
+  margin:10px 0 14px!important;color:var(--ui-text)!important;
+  font:850 clamp(26px,7vw,34px)/1.18 var(--ui-font)!important;
+}
+html.new-ui-v1 body #sagsQuickEntry .sq-count{
+  margin:0 0 18px!important;color:var(--ui-text-muted)!important;
+  font:800 15px/1.4 var(--ui-font)!important;
+}
+html.new-ui-v1 body #sagsQuickEntry .sq-input{
+  min-height:74px!important;padding:12px 16px!important;
+  border:2px solid var(--ui-border)!important;border-radius:var(--ui-radius-input)!important;
+  background:var(--ui-surface-soft)!important;color:var(--ui-text)!important;
+  font:800 28px/1.2 var(--ui-font)!important;text-align:center!important;
+}
+html.new-ui-v1 body #sagsQuickEntry .sq-input:focus{
+  border-color:var(--ui-primary)!important;background:#fff!important;
+  box-shadow:0 0 0 4px rgba(23,111,134,.12)!important;
+}
+html.new-ui-v1 body #sagsQuickEntry .sq-hint{
+  min-height:44px!important;margin:14px 0 4px!important;
+  color:var(--ui-text-muted)!important;font:550 14px/1.5 var(--ui-font)!important;
+}
+html.new-ui-v1 body #sagsQuickEntry .sq-error{min-height:20px!important;margin:4px 0!important}
+html.new-ui-v1 body #sagsQuickEntry .sq-actions{
+  display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:12px!important;margin:18px 0 12px!important;
+}
+html.new-ui-v1 body #sagsQuickEntry .sq-actions button{
+  min-height:56px!important;font-size:17px!important;
+}
+html.new-ui-v1 body #sagsQuickEntry .sq-close{
+  min-height:46px!important;width:100%!important;border:0!important;background:transparent!important;
+  color:#466879!important;
+}
+html.new-ui-v1 body #sagsQuickEntry #sqRestoreDraft,
+html.new-ui-v1 body #sagsQuickEntry #sqDiscardDraft{
+  width:100%!important;margin:7px 0!important;min-height:44px!important;
+  background:#eef5f7!important;border:1px solid #cbdde5!important;color:#31596b!important;
+}
+
+/* 9) Common dialog cards/rows/tabs share the same surface tokens. */
+html.new-ui-v1 body :is(
+  .sagsUserRow,.sagsAuditItem,.aclCard,.v488Card,.v310ShiftCard,.v320Card,
+  .v327Card,.v339Card,.v342Card,.v181AdminCard,.v174DataCard,.flightSessionRow,
+  .finalFormsItem,.formMenuItem,.fs09qRow,.fleetManagerRow
+){
+  background:#fff!important;color:var(--ui-text)!important;
+  border:1px solid var(--ui-border-soft)!important;border-radius:var(--ui-radius-card)!important;
+  box-shadow:var(--ui-shadow-card)!important;
+}
+
+/* 10) Mobile/desktop placement and keyboard behavior are consistent. */
+@media(max-width:699px){
+  html.new-ui-v1 body :is(
+    #accountManagerModal,#accountProfileEditModal,#changePasswordModal,
+    #opsMvaComposeModal,#opsMvtComposeModal,#ops9gMvtComposeModal,#opsVuMvtComposeModal,
+    #activityMonitorModal,#fleetManagerModal,#auditManagerModal,#firebaseUsageModal,
+    #v377CreateFormModal,#appUpdateModal,#flightSessionModal,#flightTypeEditModal,
+    #ferryAlertModal,#finalFormsModal,#v18ManualBBBTModal,#finalPaperSourceModal,
+    #cxCleanModal,#finalPaperHistoryModal,#finalPaperMismatchTypeModal,#vjLdmModal,
+    #dedicatedSheetChooserModal,#finalSheetManagerModal,#kh208ManagerModal,
+    #fs09SheetManagerModal,#attachmentSourceModal,#formMenuModal,#fs09PreviewModal,
+    #exportChoiceModal,#exportModal,#entry,#timeSkipModal,#templateModal,
+    #signatureSampleModal,#signModal,#v479ThreeUActionModal,#v476ThreeUModal,
+    #v485FeaturePermissionModal,#fs09QuickModal,#sagsQuickEntry
+  ){
+    padding:12px max(12px,env(safe-area-inset-right))
+      max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))!important;
+  }
+  html.new-ui-v1 body :is(
+    #entry,#sagsQuickEntry,#timeSkipModal,#signatureSampleModal,
+    #templateModal,#exportModal,#exportChoiceModal,#formMenuModal,#fs09PreviewModal
+  ){align-items:flex-end!important}
+  html.new-ui-v1 body :is(
+    #entry>.panel,#sagsQuickEntry>.sq-card,
+    #timeSkipModal>div,#signatureSampleModal>div,#templateModal>.templateBox,
+    #exportModal>.exportBox,#exportChoiceModal>.exportChoiceBox,#formMenuModal>.formMenuBox,
+    #fs09PreviewModal>.fs09PreviewBox
+  ){
+    width:min(100%,620px)!important;
+    max-width:100%!important;
+    max-height:calc(var(--sags-vv-height,100dvh) - 24px)!important;
+    border-radius:var(--ui-radius-modal)!important;
+  }
+  html.new-ui-v1 body #entry>.panel,
+  html.new-ui-v1 body #sagsQuickEntry>.sq-card{padding:24px 20px!important}
+}
+@media(min-width:700px){
+  html.new-ui-v1 body :is(#entry,#sagsQuickEntry){align-items:center!important}
+}
+@media(max-width:390px){
+  html.new-ui-v1 body #entry>.panel,
+  html.new-ui-v1 body #sagsQuickEntry>.sq-card{padding:20px 16px!important}
+  html.new-ui-v1 body #entry .actions{gap:8px!important}
+  html.new-ui-v1 body #sagsQuickEntry .sq-actions{gap:8px!important}
+}
+@media(prefers-reduced-motion:reduce){
+  html.new-ui-v1 body :is(#entry,#sagsQuickEntry) *{
+    transition:none!important;animation:none!important;
+  }
+}
+
+
+/* GLOBAL INTERACTION CONTRACT / dynamic modal extension */
+html.new-ui-v1 body :is(#sagsV338DossierModal,#v339ApprovalModal,#v339NoticeModal,#shiftReportModal,#v1122SignChoiceModal){
+  background-color:var(--ui-overlay)!important;color:var(--ui-text)!important;
+  font-family:var(--ui-font)!important;box-sizing:border-box!important;
+}
+html.new-ui-v1 body :is(.v338Panel,.v339Box,.v339NoticeCard,.v1019Panel,.v1122SignCard){
+  background:var(--ui-surface)!important;color:var(--ui-text)!important;
+  border:1px solid var(--ui-border-soft)!important;border-radius:var(--ui-radius-modal)!important;
+  box-shadow:var(--ui-shadow-modal)!important;font-family:var(--ui-font)!important;box-sizing:border-box!important;
+}
+html.new-ui-v1 body :is(.v338Panel,.v339Box,.v339NoticeCard,.v1019Panel,.v1122SignCard) :is(h2,h3,.v339NoticeTitle){
+  color:var(--ui-text)!important;font-family:var(--ui-font)!important;font-weight:850!important;
+  letter-spacing:-.025em!important;
+}
+html.new-ui-v1 body :is(.v338Panel,.v339Box,.v339NoticeCard,.v1019Panel,.v1122SignCard)
+:is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),select,textarea){
+  min-height:var(--ui-control-height)!important;max-width:100%!important;box-sizing:border-box!important;
+  border:2px solid var(--ui-border)!important;border-radius:var(--ui-radius-input)!important;
+  background:var(--ui-surface-soft)!important;color:var(--ui-text)!important;box-shadow:none!important;
+  font:600 16px var(--ui-font)!important;outline:none!important;
+}
+html.new-ui-v1 body :is(.v338Panel,.v339Box,.v339NoticeCard,.v1019Panel,.v1122SignCard)
+:is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),select,textarea):focus{
+  border-color:var(--ui-primary)!important;background:#fff!important;
+  box-shadow:0 0 0 4px rgba(23,111,134,.12)!important;
+}
+html.new-ui-v1 body :is(.v338Panel,.v339Box,.v339NoticeCard,.v1019Panel,.v1122SignCard) button{
+  min-height:48px!important;border:1px solid #cbdde5!important;border-radius:var(--ui-radius-action)!important;
+  background:#eef5f7!important;color:#31596b!important;box-shadow:none!important;
+  font:800 14px/1.2 var(--ui-font)!important;text-transform:none!important;letter-spacing:0!important;
+}
+html.new-ui-v1 body :is(.v339NoticeOpen,.v1019Btn:not(.gray),.v1122SignChoice,.v338FinalDossierBtn){
+  background:var(--ui-primary)!important;border-color:var(--ui-primary)!important;color:#fff!important;
+}
+html.new-ui-v1 body :is(.v339NoticeLater,.v339Close,.v338Close,.v1019Close,.v1122Close,.v1122Sample){
+  background:#eef5f7!important;border-color:#cbdde5!important;color:#31596b!important;
+}
+html.new-ui-v1 body :is(.v1019Btn.green,.v1019Btn.orange,.v1019Btn.gray){
+  background:#eef5f7!important;border-color:#cbdde5!important;color:#31596b!important;
+}
+html.new-ui-v1 body :is(.v338Docs,.v339List,.v1019Summary,.v1122SignGrid){
+  color:var(--ui-text)!important;
+}
+@media(max-width:699px){
+  html.new-ui-v1 body :is(#sagsV338DossierModal,#v339ApprovalModal,#v339NoticeModal,#shiftReportModal,#v1122SignChoiceModal){
+    padding:12px max(12px,env(safe-area-inset-right))
+      max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))!important;
+    align-items:flex-end!important;
+  }
+  html.new-ui-v1 body :is(.v338Panel,.v339Box,.v339NoticeCard,.v1019Panel,.v1122SignCard){
+    width:min(100%,620px)!important;max-width:100%!important;
+    max-height:calc(var(--sags-vv-height,100dvh) - 24px)!important;overflow:auto!important;
+  }
+}
+
+/* Login follows the same input/action geometry while retaining its dedicated background. */
+html.new-ui-v1 body #roleLoginModal .roleLoginCard{
+  border-radius:var(--ui-radius-modal)!important;border-color:var(--ui-border-soft)!important;
+  box-shadow:var(--ui-shadow-modal)!important;
+}
+html.new-ui-v1 body #roleLoginModal .roleLoginCard :is(input,select){
+  min-height:var(--ui-control-height)!important;height:var(--ui-control-height)!important;
+  border:2px solid var(--ui-border)!important;border-radius:var(--ui-radius-input)!important;
+  background:var(--ui-surface-soft)!important;color:var(--ui-text)!important;
+}
+html.new-ui-v1 body #roleLoginModal #roleLoginSubmit{
+  min-height:54px!important;height:54px!important;border-radius:var(--ui-radius-action)!important;
+  background:var(--ui-primary)!important;border:1px solid var(--ui-primary)!important;color:#fff!important;
+  box-shadow:none!important;font-family:var(--ui-font)!important;
+}
+
+
+/* NEW UI V1 / MOBILE DENSITY PASS — 2026-09-23 */
+/*
+  Compact mobile chrome after the global UI-consistency pass.
+  Keep 44px touch targets and 16px text inputs (iOS zoom-safe), but remove
+  excessive vertical whitespace. Never touches .sheet/.hit/SVG/PDF geometry.
+*/
+@media(max-width:699px){
+  html.new-ui-v1{
+    --ui-radius-modal:20px;
+    --ui-radius-card:14px;
+    --ui-radius-input:14px;
+    --ui-control-height:44px;
+  }
+
+  /* Less dead space around bottom sheets and full-screen dialogs. */
+  html.new-ui-v1 body :is(
+    #accountManagerModal,#accountProfileEditModal,#changePasswordModal,
+    #opsMvaComposeModal,#opsMvtComposeModal,#ops9gMvtComposeModal,#opsVuMvtComposeModal,
+    #activityMonitorModal,#fleetManagerModal,#auditManagerModal,#firebaseUsageModal,
+    #v377CreateFormModal,#appUpdateModal,#flightSessionModal,#flightTypeEditModal,
+    #ferryAlertModal,#finalFormsModal,#v18ManualBBBTModal,#finalPaperSourceModal,
+    #cxCleanModal,#finalPaperHistoryModal,#finalPaperMismatchTypeModal,#vjLdmModal,
+    #dedicatedSheetChooserModal,#finalSheetManagerModal,#kh208ManagerModal,
+    #fs09SheetManagerModal,#attachmentSourceModal,#formMenuModal,#fs09PreviewModal,
+    #exportChoiceModal,#exportModal,#entry,#timeSkipModal,#templateModal,
+    #signatureSampleModal,#signModal,#v479ThreeUActionModal,#v476ThreeUModal,
+    #v485FeaturePermissionModal,#fs09QuickModal,#sagsQuickEntry,
+    #sagsV338DossierModal,#v339ApprovalModal,#v339NoticeModal,#shiftReportModal,#v1122SignChoiceModal
+  ){
+    padding:6px max(6px,env(safe-area-inset-right))
+      max(6px,env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-left))!important;
+  }
+
+  html.new-ui-v1 body :is(
+    .sagsAdminPanel,.drPanel,.aclPanel,.acls-panel,.fleetManagerPanel,
+    .fwcMultiPanel,.flightSessionBox,.flightTypeEditBox,.ferryAlertBox,.finalFormsPanel,
+    .v377CreateFormCard,.attachmentSourceBox,.finalPaperCard,.vjLdmCard,.formMenuBox,
+    .fs09PreviewBox,.exportChoiceBox,.exportBox,.fs09qPanel,
+    .v479ThreeUActionPanel,.v485PermBox,#entry>.panel,#signModal>.panel,
+    #templateModal>.templateBox,#timeSkipModal>div,#signatureSampleModal>div,
+    #appUpdateModal>div,#dedicatedSheetChooserModal>div,#finalSheetManagerModal>div,
+    #kh208ManagerModal>div,#fs09SheetManagerModal>div,#cxCleanModal>div,
+    #sagsQuickEntry>.sq-card,.v338Panel,.v339Box,.v339NoticeCard,.v1019Panel,.v1122SignCard
+  ){
+    max-height:calc(var(--sags-vv-height,100dvh) - 12px)!important;
+    border-radius:var(--ui-radius-modal)!important;
+  }
+
+  html.new-ui-v1 body :is(
+    .sagsAdminPanel,.drPanel,.aclPanel,.acls-panel,.fleetManagerPanel,
+    .fwcMultiPanel,.flightSessionBox,.flightTypeEditBox,.ferryAlertBox,.finalFormsPanel,
+    .v377CreateFormCard,.attachmentSourceBox,.finalPaperCard,.vjLdmCard,.formMenuBox,
+    .fs09PreviewBox,.exportChoiceBox,.exportBox,.fs09qPanel,
+    .v479ThreeUActionPanel,.v485PermBox,#entry>.panel,#signModal>.panel,
+    #templateModal>.templateBox,#timeSkipModal>div,#signatureSampleModal>div,
+    #sagsQuickEntry>.sq-card,.v338Panel,.v339Box,.v339NoticeCard,.v1019Panel,.v1122SignCard
+  ) :is(h1,h2,h3,.fs09qTitle,.sq-title){
+    margin-top:0!important;
+    margin-bottom:8px!important;
+    line-height:1.2!important;
+  }
+
+  /* Universal mobile controls: compact but still thumb-safe. */
+  html.new-ui-v1 body :is(
+    .sagsAdminPanel,.drPanel,.aclPanel,.acls-panel,.fleetManagerPanel,
+    .fwcMultiPanel,.flightSessionBox,.flightTypeEditBox,.ferryAlertBox,.finalFormsPanel,
+    .v377CreateFormCard,.attachmentSourceBox,.finalPaperCard,.vjLdmCard,.formMenuBox,
+    .fs09PreviewBox,.exportChoiceBox,.exportBox,.fs09qPanel,
+    .v479ThreeUActionPanel,.v485PermBox,#entry>.panel,#signModal>.panel,
+    #templateModal>.templateBox,#timeSkipModal>div,#signatureSampleModal>div,
+    #sagsQuickEntry>.sq-card,.v338Panel,.v339Box,.v339NoticeCard,.v1019Panel,.v1122SignCard
+  ) button{
+    min-height:44px!important;
+    font-size:13px!important;
+  }
+  html.new-ui-v1 body :is(
+    .sagsAdminPanel,.drPanel,.aclPanel,.acls-panel,.fleetManagerPanel,
+    .fwcMultiPanel,.flightSessionBox,.flightTypeEditBox,.ferryAlertBox,.finalFormsPanel,
+    .v377CreateFormCard,.attachmentSourceBox,.finalPaperCard,.vjLdmCard,.formMenuBox,
+    .fs09PreviewBox,.exportChoiceBox,.exportBox,.fs09qPanel,
+    .v479ThreeUActionPanel,.v485PermBox,#entry>.panel,#signModal>.panel,
+    #templateModal>.templateBox,#timeSkipModal>div,#signatureSampleModal>div,
+    #sagsQuickEntry>.sq-card,.v338Panel,.v339Box,.v339NoticeCard,.v1019Panel,.v1122SignCard
+  ) :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),select){
+    min-height:44px!important;
+    height:auto;
+    font-size:16px!important;
+  }
+
+  /* Direct entry: keep four actions visible without a long upward scroll. */
+  html.new-ui-v1 body #entry>.panel{
+    padding:14px 12px!important;
+  }
+  html.new-ui-v1 body #entry #entryTitle{
+    margin:0 0 10px!important;
+    font-size:clamp(20px,5.4vw,24px)!important;
+  }
+  html.new-ui-v1 body #entry #entryText{
+    min-height:84px!important;
+    padding:10px 12px!important;
+    font-size:17px!important;
+    line-height:1.3!important;
+  }
+  html.new-ui-v1 body #entry #entryPaperSheet.sags-ruled #entryText{padding:6px 9px!important}
+  html.new-ui-v1 body #entry #entryRowHint{margin:6px 0 0!important;line-height:1.3!important}
+  html.new-ui-v1 body #entry .actions{gap:7px!important;margin:10px 0 0!important}
+  html.new-ui-v1 body #entry .actions button{min-height:44px!important}
+
+  /* Fast entry: large enough to read, no oversized 74px field / 56px buttons. */
+  html.new-ui-v1 body #sagsQuickEntry>.sq-card{padding:14px 12px!important}
+  html.new-ui-v1 body #sagsQuickEntry .sq-overline{font-size:12px!important}
+  html.new-ui-v1 body #sagsQuickEntry .sq-title{
+    margin:5px 0 7px!important;
+    font-size:clamp(21px,5.8vw,25px)!important;
+  }
+  html.new-ui-v1 body #sagsQuickEntry .sq-count{
+    margin:0 0 8px!important;
+    font-size:13px!important;
+  }
+  html.new-ui-v1 body #sagsQuickEntry .sq-input{
+    min-height:56px!important;
+    padding:8px 12px!important;
+    font-size:23px!important;
+  }
+  html.new-ui-v1 body #sagsQuickEntry .sq-hint{
+    min-height:28px!important;
+    margin:7px 0 2px!important;
+    font-size:12px!important;
+    line-height:1.35!important;
+  }
+  html.new-ui-v1 body #sagsQuickEntry .sq-error{min-height:16px!important;margin:2px 0!important}
+  html.new-ui-v1 body #sagsQuickEntry .sq-actions{gap:7px!important;margin:9px 0 6px!important}
+  html.new-ui-v1 body #sagsQuickEntry .sq-actions button{min-height:46px!important;font-size:14px!important}
+  html.new-ui-v1 body #sagsQuickEntry .sq-close{min-height:44px!important}
+
+  /* Quick Time: maximize rows visible above the keyboard/footer. */
+
+  /* Home: two compact metrics per row instead of tall 151px cards. */
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard{
+    padding:8px 10px calc(86px + env(safe-area-inset-bottom))!important;
+  }
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157Welcome{
+    padding:12px!important;margin:0 0 9px!important;gap:9px!important;
+  }
+  html.new-ui-v1 #v157HomeDashboard .v200WelcomeCopy::before{margin:0 0 5px!important;font-size:9px!important}
+  html.new-ui-v1 #v157HomeDashboard .v157Welcome strong{font-size:20px!important}
+  html.new-ui-v1 #v157HomeDashboard .v157Welcome span{font-size:12px!important;line-height:1.35!important}
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v200WeatherCard{
+    margin:8px 0 0!important;padding:8px 10px!important;
+  }
+  html.new-ui-v1 #v157HomeDashboard .v157MetricGrid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:7px!important;margin:0 0 9px!important;
+  }
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157Metric{
+    min-height:104px!important;
+    padding:9px!important;
+    border-radius:14px!important;
+  }
+  html.new-ui-v1 #v157HomeDashboard .v157Metric:after{width:78px!important;height:78px!important}
+  html.new-ui-v1 #v157HomeDashboard .v157MetricHead{display:block!important;font-size:10px!important;line-height:1.25!important}
+  html.new-ui-v1 #v157HomeDashboard .v157MetricIco{
+    width:31px!important;min-width:31px!important;height:31px!important;
+    margin-bottom:5px!important;border-radius:9px!important;
+  }
+  html.new-ui-v1 #v157HomeDashboard .v157MetricNum{
+    margin:5px 0 1px!important;font-size:25px!important;
+  }
+  html.new-ui-v1 #v157HomeDashboard .v157MetricSub{
+    margin-left:0!important;font-size:10px!important;line-height:1.25!important;
+  }
+  html.new-ui-v1 #v157HomeDashboard .v157Panel{
+    padding:11px!important;margin:0 0 8px!important;border-radius:14px!important;
+  }
+  html.new-ui-v1 #v157HomeDashboard .v157PanelHead{
+    gap:7px!important;font-size:14px!important;
+  }
+  html.new-ui-v1 #v157HomeDashboard .v157MetricGrid + .v157Panel .v157PanelHead > span::after{font-size:15px!important}
+  html.new-ui-v1 #v157HomeDashboard .v157PanelLink{min-height:44px!important;padding:8px 10px!important}
+  html.new-ui-v1 #v157HomeDashboard .v157Empty{min-height:52px!important;margin-top:8px!important;padding:10px!important}
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157BottomBar{
+    gap:3px!important;
+    padding:4px max(5px,env(safe-area-inset-right)) calc(5px + env(safe-area-inset-bottom)) max(5px,env(safe-area-inset-left))!important;
+    border-radius:14px 14px 0 0!important;
+  }
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157BottomBar .v157BottomBtn{
+    min-height:48px!important;border-radius:10px!important;font-size:10px!important;
+  }
+
+  /* Drawer and assigned-flight workspace: fewer full-screen swipes. */
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157DrawerHead{
+    padding:calc(9px + env(safe-area-inset-top)) 10px 9px!important;
+  }
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157Brand{
+    grid-template-columns:46px minmax(0,1fr)!important;gap:8px!important;
+  }
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157LogoBox{
+    width:46px!important;height:46px!important;border-radius:12px!important;
+  }
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157LogoBox img{max-height:38px!important}
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157UserCard{
+    margin-top:8px!important;padding:8px!important;gap:8px!important;
+  }
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157Avatar{
+    width:38px!important;height:38px!important;flex-basis:38px!important;font-size:17px!important;
+  }
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuBody{padding:7px 7px 10px!important}
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuItem{min-height:48px!important}
+
+  html.new-ui-v1 #fwcModal .fwcPanel{padding:7px!important;border-radius:14px!important}
+  html.new-ui-v1 #fwcModal .fwcFlight{
+    gap:7px!important;padding:10px!important;margin-bottom:7px!important;border-radius:13px!important;
+  }
+  html.new-ui-v1 #fwcModal .fwcFlightTitle{font-size:18px!important;line-height:1.2!important}
+  html.new-ui-v1 #fwcModal .fwcMeta{font-size:11px!important;line-height:1.35!important}
+  html.new-ui-v1 #fwcModal .fwcBadge{padding:4px 7px!important;font-size:10px!important}
+  html.new-ui-v1 #fwcModal .fwcWorkspaceHead{padding:10px!important;margin:7px 0!important;border-radius:13px!important}
+  html.new-ui-v1 #fwcModal .fwcWorkspaceTitle{font-size:20px!important}
+  html.new-ui-v1 #fwcModal .fwcUnit{padding:10px!important;border-radius:13px!important}
+  html.new-ui-v1 #fwcModal .fwcUnit h4{font-size:15px!important}
+
+  /* Login is compact too, while input text stays 16px to avoid browser zoom. */
+  html.new-ui-v1 #roleLoginModal{padding:10px!important}
+  html.new-ui-v1 #roleLoginModal .roleLoginCard{padding:17px 15px!important;border-radius:18px!important}
+  html.new-ui-v1 body #roleLoginModal .roleLoginCard :is(input,select){
+    min-height:44px!important;height:44px!important;font-size:16px!important;
+  }
+  html.new-ui-v1 body #roleLoginModal #roleLoginSubmit{
+    min-height:48px!important;height:48px!important;
+  }
+}
+
+@media(max-width:370px){
+  html.new-ui-v1 #v157HomeDashboard .v157MetricGrid{grid-template-columns:minmax(0,1fr)!important}
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157Metric{min-height:92px!important}
+}
+
+
+/* NEW UI V1 / USER PREFERENCES + DARK THEME — 2026-09-23 */
+html.new-ui-v1{
+  color-scheme:light;
+}
+html.new-ui-v1[data-ui-theme="dark"]{
+  color-scheme:dark;
+  --ui-primary:#4aa7bc;
+  --ui-primary-strong:#65b9ca;
+  --ui-primary-soft:#18343d;
+  --ui-text:#edf6f8;
+  --ui-text-muted:#9fb3bc;
+  --ui-surface:#132129;
+  --ui-surface-soft:#1a2a33;
+  --ui-border:#3b5561;
+  --ui-border-soft:#2d414a;
+  --ui-danger:#ff8d83;
+  --ui-danger-soft:#3d2424;
+  --ui-overlay:rgba(2,8,12,.78);
+  --ui-shadow-modal:0 24px 70px rgba(0,0,0,.45);
+  --ui-shadow-card:0 5px 18px rgba(0,0,0,.22);
+}
+
+html.new-ui-v1 body .sagsUiPrefsBtn{
+  display:inline-flex!important;align-items:center;justify-content:center;white-space:nowrap;
+}
+html.new-ui-v1 body :is(.sagsUiPrefsModal,.sagsQteCustomizeModal){
+  position:fixed;inset:0;z-index:30020;display:none;align-items:flex-end;justify-content:center;
+  padding:10px max(10px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));
+  background:var(--ui-overlay);box-sizing:border-box;font-family:var(--ui-font);
+}
+html.new-ui-v1 body :is(.sagsUiPrefsModal,.sagsQteCustomizeModal).open{display:flex}
+html.new-ui-v1 body :is(.sagsUiPrefsCard,.sagsQteCustomizeCard){
+  width:min(100%,560px);max-height:calc(100dvh - 20px);overflow:auto;
+  background:var(--ui-surface);color:var(--ui-text);border:1px solid var(--ui-border-soft);
+  border-radius:22px;padding:16px;box-shadow:var(--ui-shadow-modal);box-sizing:border-box;
+}
+html.new-ui-v1 body .sagsUiPrefsHead{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px;
+}
+html.new-ui-v1 body .sagsUiPrefsHead b{display:block;font-size:17px;line-height:1.25}
+html.new-ui-v1 body .sagsUiPrefsHead small{display:block;margin-top:3px;color:var(--ui-text-muted);font-size:12px;line-height:1.35}
+html.new-ui-v1 body :is(.sagsUiPrefsClose,.sagsQteCustomizeClose){
+  width:44px;height:44px;min-height:44px;flex:0 0 44px;border:1px solid var(--ui-border-soft);
+  border-radius:50%;background:var(--ui-surface-soft);color:var(--ui-text);font-size:24px;font-weight:800;
+}
+html.new-ui-v1 body .sagsUiPrefsSectionTitle{
+  margin:4px 0 8px;color:var(--ui-text-muted);font-size:11px;font-weight:850;letter-spacing:.08em;
+}
+html.new-ui-v1 body .sagsUiThemeGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+html.new-ui-v1 body .sagsUiThemeGrid button{
+  min-height:96px;padding:12px;border:2px solid var(--ui-border-soft);border-radius:15px;
+  background:var(--ui-surface-soft);color:var(--ui-text);text-align:left;
+}
+html.new-ui-v1 body .sagsUiThemeGrid button.active{border-color:var(--ui-primary);background:var(--ui-primary-soft)}
+html.new-ui-v1 body .sagsUiThemeGrid button span{display:block;font-size:24px;line-height:1}
+html.new-ui-v1 body .sagsUiThemeGrid button b{display:block;margin-top:8px;font-size:14px}
+html.new-ui-v1 body .sagsUiThemeGrid button small{display:block;margin-top:3px;color:var(--ui-text-muted);font-size:11px;line-height:1.35}
+html.new-ui-v1 body .sagsUiPrefsHint{
+  margin-top:12px;padding:10px 11px;border-radius:12px;background:var(--ui-surface-soft);
+  color:var(--ui-text-muted);font-size:11px;line-height:1.45;
+}
+html.new-ui-v1 body .sagsUiPrefsDone{
+  width:100%;min-height:46px;margin-top:12px;border:0;border-radius:999px;
+  background:var(--ui-primary);color:#fff;font-weight:850;
+}
+html.new-ui-v1 body .sagsQteCustomizeList{display:grid;gap:7px}
+html.new-ui-v1 body .sagsQteChoice{
+  min-height:44px;display:flex;align-items:center;gap:10px;padding:9px 10px;
+  border:1px solid var(--ui-border-soft);border-radius:12px;background:var(--ui-surface-soft);
+  color:var(--ui-text);font-size:13px;font-weight:700;
+}
+html.new-ui-v1 body .sagsQteChoice input{width:20px;height:20px;flex:0 0 20px;accent-color:var(--ui-primary)}
+html.new-ui-v1 body .sagsQteCustomizeFoot{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+html.new-ui-v1 body .sagsQteCustomizeFoot button{
+  min-height:46px;border:1px solid var(--ui-border);border-radius:999px;
+  background:var(--ui-surface-soft);color:var(--ui-text);font-weight:800;
+}
+html.new-ui-v1 body .sagsQteCustomizeFoot button.primary{
+  background:var(--ui-primary);border-color:var(--ui-primary);color:#fff;
+}
+
+html.new-ui-v1[data-ui-theme="dark"] body{
+  background:#0d171d!important;color:var(--ui-text)!important;
+}
+html.new-ui-v1[data-ui-theme="dark"] body.v157-authenticated{background:#0d171d!important;color:var(--ui-text)!important}
+html.new-ui-v1[data-ui-theme="dark"] body.v157-authenticated.v157-home #v157HomeDashboard{
+  background:linear-gradient(180deg,#0f1c23 0%,#101a20 50%,#0b151a 100%)!important;color:var(--ui-text)!important;
+}
+html.new-ui-v1[data-ui-theme="dark"] body.v157-authenticated.v157-home #v157HomeDashboard :is(.v157Welcome,.v157Metric,.v157Panel,.v200WeatherCard){
+  background:#14232b!important;border-color:#2a414b!important;color:var(--ui-text)!important;box-shadow:var(--ui-shadow-card)!important;
+}
+html.new-ui-v1[data-ui-theme="dark"] #v157HomeDashboard :is(.v157Welcome strong,.v157MetricNum,.v157PanelHead){color:var(--ui-text)!important}
+html.new-ui-v1[data-ui-theme="dark"] #v157HomeDashboard :is(.v157Welcome span,.v157MetricHead,.v157MetricSub,.v157Empty){color:var(--ui-text-muted)!important}
+html.new-ui-v1[data-ui-theme="dark"] body.v157-authenticated #v157Drawer{
+  background:#101d24!important;color:var(--ui-text)!important;border-color:#2b414a!important;
+}
+html.new-ui-v1[data-ui-theme="dark"] body.v157-authenticated #v157Drawer :is(.v157DrawerHead,.v157UserCard){
+  background:#14242c!important;color:var(--ui-text)!important;border-color:#2b414a!important;
+}
+html.new-ui-v1[data-ui-theme="dark"] body.v157-authenticated #v157Drawer :is(.v157MenuItem,.v157UserRole){
+  background:#172831!important;color:var(--ui-text)!important;border-color:#304953!important;
+}
+html.new-ui-v1[data-ui-theme="dark"] body :is(.toolbar.compact-main-toolbar,.toolbar-row.main-actions){
+  background:#101c23!important;color:var(--ui-text)!important;border-color:#2c424c!important;
+}
+html.new-ui-v1[data-ui-theme="dark"] body .toolbar button{
+  background:#1a2b34!important;color:#e8f3f6!important;border-color:#35505b!important;
+}
+html.new-ui-v1[data-ui-theme="dark"] body :is(
+  .sagsAdminPanel,.drPanel,.aclPanel,.acls-panel,.fleetManagerPanel,
+  .fwcMultiPanel,.flightSessionBox,.flightTypeEditBox,.ferryAlertBox,.finalFormsPanel,
+  .v377CreateFormCard,.attachmentSourceBox,.finalPaperCard,.vjLdmCard,.formMenuBox,
+  .fs09PreviewBox,.exportChoiceBox,.exportBox,.fs09qPanel,
+  .v479ThreeUActionPanel,.v485PermBox,#entry>.panel,#signModal>.panel,
+  #templateModal>.templateBox,#timeSkipModal>div,#signatureSampleModal>div,
+  #appUpdateModal>div,#dedicatedSheetChooserModal>div,#finalSheetManagerModal>div,
+  #kh208ManagerModal>div,#fs09SheetManagerModal>div,#cxCleanModal>div,
+  #sagsQuickEntry>.sq-card,.v338Panel,.v339Box,.v339NoticeCard,.v1019Panel,.v1122SignCard
+){
+  background:var(--ui-surface)!important;color:var(--ui-text)!important;border-color:var(--ui-border-soft)!important;
+}
+html.new-ui-v1[data-ui-theme="dark"] body :is(
+  .sagsAdminPanel,.drPanel,.aclPanel,.acls-panel,.fleetManagerPanel,
+  .fwcMultiPanel,.flightSessionBox,.flightTypeEditBox,.ferryAlertBox,.finalFormsPanel,
+  .v377CreateFormCard,.attachmentSourceBox,.finalPaperCard,.vjLdmCard,.formMenuBox,
+  .fs09PreviewBox,.exportChoiceBox,.exportBox,.fs09qPanel,
+  .v479ThreeUActionPanel,.v485PermBox,#entry>.panel,#signModal>.panel,
+  #templateModal>.templateBox,#timeSkipModal>div,#signatureSampleModal>div,
+  #sagsQuickEntry>.sq-card,.v338Panel,.v339Box,.v339NoticeCard,.v1019Panel,.v1122SignCard
+) :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),select,textarea){
+  background:var(--ui-surface-soft)!important;color:var(--ui-text)!important;border-color:var(--ui-border)!important;
+}
+html.new-ui-v1[data-ui-theme="dark"] body :is(.sagsUserRow,.sagsAuditItem,.aclCard,.v488Card,.v310ShiftCard,.v320Card,.v327Card,.v339Card,.v342Card,.v181AdminCard,.v174DataCard,.flightSessionRow,.finalFormsItem,.formMenuItem,.fs09qRow,.fleetManagerRow){
+  background:#172831!important;color:var(--ui-text)!important;border-color:#2e4650!important;
+}
+html.new-ui-v1[data-ui-theme="dark"] body #entry #entryText,
+html.new-ui-v1[data-ui-theme="dark"] body #sagsQuickEntry .sq-input{
+  background:#1a2a33!important;color:#f3f8fa!important;border-color:#3d5965!important;
+}
+html.new-ui-v1[data-ui-theme="dark"] body #roleLoginModal{
+  background:#0b151b!important;background-image:none!important;
+}
+html.new-ui-v1[data-ui-theme="dark"] body #roleLoginModal .roleLoginCard{
+  background:#132129!important;color:var(--ui-text)!important;border-color:#2f4650!important;
+}
+html.new-ui-v1[data-ui-theme="dark"] body #roleLoginModal .roleLoginCard :is(input,select){
+  background:#1a2a33!important;color:var(--ui-text)!important;border-color:#3b5561!important;
+}
+/* Preserve the real paper/form canvas in both themes. */
+html.new-ui-v1[data-ui-theme="dark"] body :is(.sheet,.page-bg,.pdf-page,.pdfCanvas){
+  color-scheme:light;
+}
+
+@media(min-width:700px){
+  html.new-ui-v1 body :is(.sagsUiPrefsModal,.sagsQteCustomizeModal){align-items:center}
+}
+@media(max-width:699px){
+  html.new-ui-v1 body :is(.sagsUiPrefsModal,.sagsQteCustomizeModal){padding:6px}
+  html.new-ui-v1 body :is(.sagsUiPrefsCard,.sagsQteCustomizeCard){padding:13px;border-radius:18px}
+  html.new-ui-v1 body .sagsUiThemeGrid button{min-height:84px;padding:10px}
+  html.new-ui-v1 body .sagsQteCustomizeFoot{grid-template-columns:1fr}
+}
+
+
+
+
+
+/* V6.1.34 · FSAGS09 CLARITY + DENSITY */
+html.new-ui-v1 body #fs09QuickModal .sagsFs09Context{
+  position:sticky;top:0;z-index:8;display:flex;align-items:center;gap:7px;
+  min-height:30px;margin:0 0 4px;padding:4px 7px;box-sizing:border-box;
+  border:1px solid var(--ui-border-soft);border-radius:9px;
+  background:var(--ui-primary-soft);color:var(--ui-text);
+  box-shadow:0 2px 8px rgba(15,45,60,.07);
+}
+html.new-ui-v1 body #fs09QuickModal .sagsFs09Context span{
+  flex:0 0 auto;color:var(--ui-text-muted);font:850 7.5px/1 var(--ui-font);
+  letter-spacing:.08em;white-space:nowrap;
+}
+html.new-ui-v1 body #fs09QuickModal .sagsFs09Context b{
+  min-width:0;flex:1 1 auto;font:850 10px/1.15 var(--ui-font);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+html.new-ui-v1 body #fs09QuickModal .fs09qPanel{
+  height:min(98dvh,920px)!important;max-height:calc(var(--sags-vv-height,100dvh) - 4px)!important;
+}
+html.new-ui-v1 body #fs09QuickModal .fs09qHead{
+  position:relative!important;padding:5px 8px 4px!important;
+}
+html.new-ui-v1 body #fs09QuickModal .fs09qHeadTop{
+  grid-template-columns:34px minmax(0,1fr) 34px!important;gap:4px!important;
+}
+html.new-ui-v1 body #fs09QuickModal :is(.fs09qBack,.fs09qClose){
+  width:34px!important;height:34px!important;min-height:34px!important;line-height:32px!important;
+}
+html.new-ui-v1 body #fs09QuickModal .fs09qTitle{font-size:14px!important;line-height:1.08!important}
+html.new-ui-v1 body #fs09QuickModal .fs09qFlight{font-size:10px!important;margin-top:1px!important}
+html.new-ui-v1 body #fs09QuickModal .fs09qTabs{gap:4px!important;margin-top:4px!important}
+html.new-ui-v1 body #fs09QuickModal .fs09qTab{
+  min-height:34px!important;height:34px!important;padding:0 4px!important;
+  border-radius:9px!important;font-size:9.5px!important;letter-spacing:0!important;
+}
+html.new-ui-v1 body #fs09QuickModal .fs09qDots{display:none!important}
+html.new-ui-v1 body #fs09QuickModal .fs09qBody{
+  padding:2px 6px 6px!important;background:var(--ui-surface-soft)!important;
+}
+html.new-ui-v1 body #fs09QuickModal .fs09qPageTitle{display:none!important}
+html.new-ui-v1 body #fs09QuickModal .fs09qCloseoutSubTabs{gap:3px!important;margin:0 0 4px!important}
+html.new-ui-v1 body #fs09QuickModal .fs09qCloseoutSubTab{
+  min-height:31px!important;height:31px!important;border-radius:8px!important;font-size:9px!important;padding:0 4px!important;
+}
+html.new-ui-v1 body #fs09QuickModal .fs09qCloseoutMainTabs{gap:3px!important;margin:0 0 4px!important}
+html.new-ui-v1 body #fs09QuickModal .fs09qCloseoutMainBtn{
+  min-height:31px!important;height:31px!important;border-radius:8px!important;font-size:8.5px!important;padding:0 3px!important;
+}
+html.new-ui-v1 body #fs09QuickModal .fs09qOptionalToggle{
+  min-height:29px!important;height:29px!important;margin:0 0 4px!important;border-radius:8px!important;font-size:8.5px!important;
+}
+html.new-ui-v1 body #fs09QuickModal .fs09qOptionalRows{gap:3px!important;margin:0 0 4px!important}
+html.new-ui-v1 body #fs09QuickModal .fs09qOptionalRowBtn{
+  min-height:30px!important;height:30px!important;font-size:8.5px!important;
+}
+html.new-ui-v1 body #fs09QuickModal .fs09qCloseoutCard{
+  padding:7px!important;border-radius:9px!important;background:var(--ui-surface)!important;
+}
+html.new-ui-v1 body #fs09QuickModal .fs09qCloseoutHeadLine{margin:0 0 5px!important}
+html.new-ui-v1 body #fs09QuickModal .fs09qCloseoutTitle{margin:0 0 5px!important;font-size:10.5px!important}
+html.new-ui-v1 body #fs09QuickModal .fs09qCopyBtn{
+  min-height:28px!important;height:28px!important;padding:0 7px!important;font-size:7.5px!important;
+}
+html.new-ui-v1 body #fs09QuickModal .fs09qQuickSection,
+html.new-ui-v1 body #fs09QuickModal .fs09qSectionLabel{
+  margin:6px 1px 3px!important;font-size:7.5px!important;letter-spacing:.04em!important;
+}
+html.new-ui-v1 body #fs09QuickModal :is(.fs09qCorePax,.fs09qMiniClass,.fs09qBagGrid,.fs09qZonePriority,.fs09qCloseoutGrid){
+  gap:4px!important;
+}
+html.new-ui-v1 body #fs09QuickModal .fs09qDataLabel{
+  margin:0 0 2px!important;font-size:7.5px!important;line-height:1!important;
+}
+html.new-ui-v1 body #fs09QuickModal .fs09qDataInput{
+  height:36px!important;min-height:36px!important;border-radius:8px!important;font-size:13.5px!important;padding:0 4px!important;
+}
+html.new-ui-v1 body #fs09QuickModal .fs09qDataField.compact .fs09qDataInput{
+  height:33px!important;min-height:33px!important;font-size:12.5px!important;
+}
+html.new-ui-v1 body #fs09QuickModal .fs09qTextArea{
+  min-height:66px!important;padding:7px!important;font-size:11px!important;line-height:1.3!important;
+}
+html.new-ui-v1 body #fs09QuickModal .fs09qCloseoutDivider{margin:6px 0!important}
+html.new-ui-v1 body #fs09QuickModal .fs09qToggleGrid{gap:4px!important}
+html.new-ui-v1 body #fs09QuickModal .fs09qToggle{
+  min-height:38px!important;padding:5px 6px!important;border-radius:8px!important;font-size:8.5px!important;line-height:1.08!important;
+}
+html.new-ui-v1 body #fs09QuickModal .fs09qTimeSection{margin-bottom:5px!important;border-radius:9px!important}
+html.new-ui-v1 body #fs09QuickModal .fs09qTimeSectionHead{padding:5px 7px!important;font-size:9px!important}
+html.new-ui-v1 body #fs09QuickModal .fs09qRows{
+  border-radius:9px!important;border-color:var(--ui-border-soft)!important;background:var(--ui-surface)!important;
+}
+html.new-ui-v1 body #fs09QuickModal .fs09qRow{
+  min-height:42px!important;grid-template-columns:minmax(78px,1fr) 88px 88px!important;
+  gap:3px!important;padding:2px 4px!important;background:var(--ui-surface)!important;
+}
+html.new-ui-v1 body #fs09QuickModal .fs09qLabel{
+  font-size:10px!important;line-height:1.08!important;white-space:normal!important;
+}
+html.new-ui-v1 body #fs09QuickModal :is(.fs09qCell,.fs09qSingle){height:36px!important;min-height:36px!important}
+html.new-ui-v1 body #fs09QuickModal .fs09qRow.single .fs09qSingle{width:112px!important}
+html.new-ui-v1 body #fs09QuickModal .fs09qMini{left:4px!important;top:1px!important;font-size:6.5px!important}
+html.new-ui-v1 body #fs09QuickModal .fs09qInput{
+  height:36px!important;min-height:36px!important;padding:4px 29px 0 5px!important;
+  border-radius:8px!important;font-size:12.5px!important;line-height:34px!important;
+}
+html.new-ui-v1 body #fs09QuickModal .fs09qNow{
+  width:27px!important;height:27px!important;min-height:27px!important;right:2px!important;top:4px!important;
+  border-radius:7px!important;font-size:15px!important;line-height:27px!important;
+}
+html.new-ui-v1 body #fs09QuickModal .fs09qHint{padding:4px 0 0!important;font-size:7.5px!important}
+html.new-ui-v1 body #fs09QuickModal .fs09qFooter{padding:4px 6px calc(4px + env(safe-area-inset-bottom))!important}
+html.new-ui-v1 body #fs09QuickModal .fs09qSave{
+  min-height:40px!important;height:40px!important;border-radius:9px!important;font-size:13px!important;
+}
+html.new-ui-v1 body #fs09QuickModal .fs09qStatus{min-height:9px!important;margin-top:1px!important;font-size:8px!important}
+html.new-ui-v1[data-ui-theme="dark"] body #fs09QuickModal .sagsFs09Context{
+  background:#173039!important;border-color:#31515d!important;color:var(--ui-text)!important;
+}
+html.new-ui-v1[data-ui-theme="dark"] body #fs09QuickModal :is(.fs09qCloseoutCard,.fs09qRows,.fs09qRow){
+  background:#172730!important;border-color:#304954!important;color:var(--ui-text)!important;
+}
+@media(max-width:370px){
+  html.new-ui-v1 body #fs09QuickModal .fs09qRow{grid-template-columns:minmax(66px,1fr) 82px 82px!important}
+  html.new-ui-v1 body #fs09QuickModal .fs09qLabel{font-size:9.2px!important}
+  html.new-ui-v1 body #fs09QuickModal .fs09qTab{font-size:8.7px!important}
+}
+
+
+/* V6.1.35 · EXPORT SHEET CLEARANCE */
+/* Export chooser must sit above both operational toolbars, so Xuất BBBT is never covered. */
+html.new-ui-v1 body #exportChoiceModal{
+  z-index:12080!important;
+  padding-bottom:max(10px,env(safe-area-inset-bottom))!important;
+}
+html.new-ui-v1 body #exportChoiceModal>.exportChoiceBox{
+  max-height:calc(var(--sags-vv-height,100dvh) - max(20px,env(safe-area-inset-top)) - max(20px,env(safe-area-inset-bottom)))!important;
+  overflow:auto!important;
+  overscroll-behavior:contain!important;
+  -webkit-overflow-scrolling:touch!important;
+}
+html.new-ui-v1 body #exportChoiceModal .exportChoiceGrid{
+  padding-bottom:2px!important;
+}
+
+/* V6.1.36 · CENTERED EXPORT MODAL */
+/* Export is a true centered modal, never a bottom sheet and never positioned to dodge toolbars. */
+html.new-ui-v1 body #exportChoiceModal{
+  position:fixed!important;
+  inset:0!important;
+  width:100vw!important;
+  height:100dvh!important;
+  z-index:13080!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:
+    max(12px,env(safe-area-inset-top))
+    max(12px,env(safe-area-inset-right))
+    max(12px,env(safe-area-inset-bottom))
+    max(12px,env(safe-area-inset-left))!important;
+  box-sizing:border-box!important;
+}
+html.new-ui-v1 body #exportChoiceModal>.exportChoiceBox{
+  position:relative!important;
+  inset:auto!important;
+  transform:none!important;
+  margin:0!important;
+  width:min(560px,calc(100vw - 24px))!important;
+  max-width:560px!important;
+  max-height:min(80dvh,680px)!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  overscroll-behavior:contain!important;
+  -webkit-overflow-scrolling:touch!important;
+  box-sizing:border-box!important;
+}
+html.new-ui-v1 body #exportChoiceModal .exportChoiceGrid{
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  gap:10px!important;
+  padding:0!important;
+}
+html.new-ui-v1 body #exportChoiceModal .exportChoiceGrid>button{
+  width:100%!important;
+  min-height:58px!important;
+  flex:none!important;
+}
+@media(max-width:699px){
+  html.new-ui-v1 body #exportChoiceModal{
+    align-items:center!important;
+    justify-content:center!important;
+  }
+  html.new-ui-v1 body #exportChoiceModal>.exportChoiceBox{
+    max-height:min(82dvh,680px)!important;
+    border-radius:20px!important;
+  }
+}
+
+
+/* V6.1.36 · CENTERED SIGNATURE SAMPLE MODAL */
+/* Signature sample editor follows the same centered-dialog contract as Export PDF. */
+html.new-ui-v1 body #signatureSampleModal{
+  position:fixed!important;
+  inset:0!important;
+  width:100vw!important;
+  height:100dvh!important;
+  z-index:13090!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:
+    max(12px,env(safe-area-inset-top))
+    max(12px,env(safe-area-inset-right))
+    max(12px,env(safe-area-inset-bottom))
+    max(12px,env(safe-area-inset-left))!important;
+  box-sizing:border-box!important;
+}
+html.new-ui-v1 body #signatureSampleModal>div{
+  position:relative!important;
+  inset:auto!important;
+  transform:none!important;
+  margin:0!important;
+  width:min(560px,calc(100vw - 24px))!important;
+  max-width:560px!important;
+  max-height:min(84dvh,720px)!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  overscroll-behavior:contain!important;
+  -webkit-overflow-scrolling:touch!important;
+  box-sizing:border-box!important;
+}
+@media(max-width:699px){
+  html.new-ui-v1 body #signatureSampleModal{
+    align-items:center!important;
+    justify-content:center!important;
+  }
+  html.new-ui-v1 body #signatureSampleModal>div{
+    max-height:min(86dvh,720px)!important;
+    border-radius:20px!important;
+  }
+}
+
+/* V6.2.0 · QUICK TIME OPERATIONAL SHEET
+   SOLE VISUAL OWNER for FSAGS 42.1 / 42.3 / 55.1.
+   Flat operational form: no pill buttons, no nested cards, no legacy skin inheritance. */
+#quickTimeModal{
+  --qt-bg:#f4f7f9;
+  --qt-surface:#ffffff;
+  --qt-surface-2:#eef3f6;
+  --qt-line:#cfd9e1;
+  --qt-line-soft:#e4eaef;
+  --qt-text:#15364e;
+  --qt-muted:#667d8d;
+  --qt-accent:#0b6f9b;
+  --qt-accent-dark:#07597e;
+  --qt-focus:#e7f3f8;
+  position:fixed!important;inset:0!important;z-index:15000!important;
+  display:none;align-items:flex-end!important;justify-content:center!important;
+  padding:0!important;background:rgba(9,25,39,.58)!important;
+  color:var(--qt-text)!important;font-family:Arial,sans-serif!important;
+}
+body.sags-quicktime-open #csgBtn{visibility:hidden!important;pointer-events:none!important}
+#quickTimeModal .quickTimePanel,
+#quickTimeModal .quickTimePanel *,
+#quickTimeModal .quickTimePanel *::before,
+#quickTimeModal .quickTimePanel *::after{box-sizing:border-box!important}
+#quickTimeModal .quickTimePanel{
+  width:min(100%,720px)!important;max-width:720px!important;
+  height:min(96dvh,900px)!important;max-height:var(--sags-vv-height,100dvh)!important;
+  min-height:0!important;display:flex!important;flex-direction:column!important;
+  margin:0!important;overflow:hidden!important;
+  border:0!important;border-radius:14px 14px 0 0!important;
+  background:var(--qt-bg)!important;color:var(--qt-text)!important;
+  box-shadow:0 -10px 34px rgba(5,26,43,.20)!important;
+}
+
+/* Header: compact sheet header, square utility actions, underline navigation. */
+#quickTimeModal .quickTimeHead{
+  flex:0 0 auto!important;padding:11px 12px 0!important;
+  border:0!important;border-bottom:1px solid var(--qt-line)!important;
+  border-radius:0!important;background:var(--qt-surface)!important;box-shadow:none!important;
+}
+#quickTimeModal .quickTimeHeadTop{
+  display:grid!important;grid-template-columns:36px minmax(0,1fr) 36px 36px!important;
+  align-items:center!important;gap:5px!important;
+}
+#quickTimeModal .quickTimeHeadCenter{min-width:0!important;text-align:left!important}
+#quickTimeModal :is(.quickTimeBack,.quickTimeCloseIcon),
+#quickTimeModal #sagsQteCustomizeBtn{
+  width:36px!important;min-width:36px!important;max-width:36px!important;
+  height:36px!important;min-height:36px!important;max-height:36px!important;
+  margin:0!important;padding:0!important;
+  border:1px solid transparent!important;border-radius:6px!important;
+  background:transparent!important;color:#315a72!important;
+  box-shadow:none!important;transform:none!important;
+  line-height:34px!important;text-align:center!important;
+}
+#quickTimeModal :is(.quickTimeBack,.quickTimeCloseIcon){font-size:23px!important;font-weight:700!important}
+#quickTimeModal :is(.quickTimeBack,.quickTimeCloseIcon):active,
+#quickTimeModal #sagsQteCustomizeBtn:active{background:var(--qt-surface-2)!important;border-color:var(--qt-line)!important}
+#quickTimeModal .sagsQteCustomizeBar{display:block!important;position:static!important;margin:0!important;padding:0!important}
+#quickTimeModal #sagsQteCustomizeBtn{font-size:0!important}
+#quickTimeModal #sagsQteCustomizeBtn::before{content:"⚙"!important;font-size:18px!important;line-height:34px!important}
+#quickTimeModal .quickTimeTitle{
+  margin:0!important;color:var(--qt-text)!important;
+  font:900 18px/1.12 Arial,sans-serif!important;letter-spacing:.01em!important;
+}
+#quickTimeModal .quickTimeFlight{
+  margin:3px 0 0!important;color:var(--qt-muted)!important;
+  font:750 11px/1.2 Arial,sans-serif!important;
+  white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;
+}
+#quickTimeModal .quickTimeTabs{
+  display:flex!important;gap:22px!important;overflow-x:auto!important;
+  margin:10px 0 0!important;padding:0!important;
+  border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;
+  scrollbar-width:none!important;
+}
+#quickTimeModal .quickTimeTabs::-webkit-scrollbar{display:none!important}
+#quickTimeModal .quickTimeTab{
+  position:relative!important;flex:0 0 auto!important;
+  width:auto!important;min-width:0!important;max-width:none!important;
+  height:38px!important;min-height:38px!important;
+  margin:0!important;padding:0 1px!important;
+  border:0!important;border-radius:0!important;
+  background:transparent!important;color:var(--qt-muted)!important;
+  box-shadow:none!important;transform:none!important;
+  font:850 12px/38px Arial,sans-serif!important;white-space:nowrap!important;
+}
+#quickTimeModal .quickTimeTab::after{
+  content:""!important;position:absolute!important;left:0!important;right:0!important;bottom:0!important;
+  height:3px!important;background:transparent!important;
+}
+#quickTimeModal .quickTimeTab.active{color:var(--qt-accent-dark)!important}
+#quickTimeModal .quickTimeTab.active::after{background:var(--qt-accent)!important}
+#quickTimeModal .quickTimeTab[hidden]{display:none!important}
+#quickTimeModal .quickTimeSub{
+  display:block!important;margin:0 -12px!important;padding:7px 12px!important;
+  border:0!important;border-top:1px solid var(--qt-line-soft)!important;border-radius:0!important;
+  background:var(--qt-surface-2)!important;color:#49677a!important;
+  box-shadow:none!important;font:800 10px/1.2 Arial,sans-serif!important;letter-spacing:.03em!important;
+}
+#quickTimeModal .quickTimePageDots,
+#quickTimeModal .quickTimeTools{display:none!important}
+
+/* Body and section language. */
+#quickTimeModal .quickTimeBody{
+  flex:1 1 auto!important;min-height:0!important;
+  overflow-y:auto!important;overflow-x:hidden!important;overscroll-behavior:contain!important;
+  -webkit-overflow-scrolling:touch!important;
+  padding:10px 12px 18px!important;background:var(--qt-bg)!important;
+}
+#quickTimeModal .quickTimePageTitle{
+  margin:0!important;padding:2px 0 9px!important;border:0!important;
+  background:transparent!important;color:var(--qt-text)!important;
+  font:900 13px/1.2 Arial,sans-serif!important;letter-spacing:.015em!important;
+}
+#quickTimeModal .quickTimeColumnHead{
+  display:grid!important;grid-template-columns:minmax(160px,1fr) minmax(0,130px) minmax(0,130px)!important;
+  gap:8px!important;min-height:22px!important;padding:0 8px 5px!important;
+  border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;
+  color:var(--qt-muted)!important;font:800 9px/1.2 Arial,sans-serif!important;text-align:center!important;
+}
+#quickTimeModal .quickTimeRows{
+  margin:0!important;padding:0!important;overflow:visible!important;
+  border:1px solid var(--qt-line)!important;border-radius:0!important;
+  background:var(--qt-surface)!important;box-shadow:none!important;
+}
+#quickTimeModal .quickTimeRow{
+  display:grid!important;grid-template-columns:minmax(160px,1fr) minmax(0,130px) minmax(0,130px)!important;
+  align-items:center!important;gap:8px!important;min-height:56px!important;
+  margin:0!important;padding:7px 8px!important;
+  border:0!important;border-bottom:1px solid var(--qt-line-soft)!important;border-radius:0!important;
+  background:var(--qt-surface)!important;box-shadow:none!important;
+}
+#quickTimeModal .quickTimeRow:last-child{border-bottom:0!important}
+#quickTimeModal .quickTimeRow:has(.quickTimeInput:focus){background:#fbfdfe!important}
+#quickTimeModal .quickTimeLabel{
+  min-width:0!important;margin:0!important;padding:0!important;
+  color:var(--qt-text)!important;
+  font:850 11px/1.25 Arial,sans-serif!important;
+  white-space:normal!important;overflow:visible!important;text-overflow:clip!important;overflow-wrap:anywhere!important;
+}
+
+/* Time control: one rectangular field split into value + current-time action. */
+#quickTimeModal :is(.quickTimeTimeCell,.quickTimeSingleCell){
+  position:relative!important;display:grid!important;grid-template-columns:minmax(0,1fr) 40px!important;
+  align-items:stretch!important;gap:0!important;
+  width:100%!important;max-width:none!important;height:42px!important;min-height:42px!important;
+  margin:0!important;padding:0!important;overflow:hidden!important;
+  border:1px solid var(--qt-line)!important;border-radius:6px!important;
+  background:var(--qt-surface)!important;box-shadow:none!important;
+}
+#quickTimeModal .quickTimeRow.single{grid-template-columns:minmax(160px,1fr) minmax(0,270px)!important}
+#quickTimeModal .quickTimeRow.single .quickTimeSingleCell{
+  grid-column:2!important;width:100%!important;max-width:270px!important;justify-self:end!important;
+}
+#quickTimeModal .quickTimeInput{
+  position:static!important;display:block!important;grid-column:1!important;
+  width:100%!important;min-width:0!important;height:40px!important;min-height:40px!important;
+  margin:0!important;padding:0 8px!important;
+  border:0!important;border-radius:0!important;outline:0!important;
+  background:transparent!important;color:var(--qt-text)!important;box-shadow:none!important;
+  text-align:center!important;text-indent:0!important;
+  font:900 15px/40px Arial,sans-serif!important;font-variant-numeric:tabular-nums!important;letter-spacing:.04em!important;
+}
+#quickTimeModal .quickTimeInput:focus{
+  border:0!important;outline:0!important;background:var(--qt-focus)!important;box-shadow:none!important;
+}
+#quickTimeModal .quickTimeInput.dirty{background:#fff4d5!important;color:#745100!important}
+#quickTimeModal .quickTimeInput.na{color:#6c7e89!important;font-size:13px!important;letter-spacing:.02em!important}
+#quickTimeModal .quickTimeInput::placeholder{color:#93a4af!important;opacity:1!important}
+#quickTimeModal .quickTimeNow{
+  position:relative!important;inset:auto!important;grid-column:2!important;
+  width:40px!important;min-width:40px!important;max-width:40px!important;
+  height:40px!important;min-height:40px!important;max-height:40px!important;
+  margin:0!important;padding:0!important;
+  border:0!important;border-left:1px solid var(--qt-line)!important;border-radius:0!important;
+  background:#eef4f7!important;color:var(--qt-accent-dark)!important;
+  box-shadow:none!important;transform:none!important;font-size:0!important;line-height:1!important;
+}
+#quickTimeModal .quickTimeNow::before{
+  content:""!important;position:absolute!important;left:50%!important;top:50%!important;
+  width:14px!important;height:14px!important;border:2px solid currentColor!important;border-radius:50%!important;
+  transform:translate(-50%,-50%)!important;
+}
+#quickTimeModal .quickTimeNow::after{
+  content:""!important;position:absolute!important;left:50%!important;top:50%!important;
+  width:4px!important;height:5px!important;border-left:2px solid currentColor!important;border-bottom:2px solid currentColor!important;
+  transform:translate(-1px,-5px)!important;
+}
+#quickTimeModal .quickTimeNow:active{background:#dfeaf0!important}
+#quickTimeModal .quickTimeSwipeHint{
+  padding:9px 0 0!important;color:var(--qt-muted)!important;
+  font:700 9px/1.3 Arial,sans-serif!important;text-align:center!important;
+}
+#quickTimeModal .quickTimeEmpty{
+  margin:0!important;padding:18px 10px!important;
+  border:1px dashed var(--qt-line)!important;border-radius:6px!important;
+  background:var(--qt-surface)!important;color:var(--qt-muted)!important;box-shadow:none!important;
+  text-align:center!important;
+}
+
+/* 55.1: its own content structure, same field contract. */
+#quickTimeModal .qte551Summary{
+  margin:0 0 8px!important;padding:0!important;color:var(--qt-muted)!important;
+  font:750 10px/1.35 Arial,sans-serif!important;
+}
+#quickTimeModal .qte551ChecklistToggle{
+  width:100%!important;min-height:46px!important;margin:0 0 10px!important;padding:0 11px!important;
+  display:grid!important;grid-template-columns:minmax(0,1fr) auto 18px!important;align-items:center!important;gap:8px!important;
+  border:1px solid var(--qt-line)!important;border-radius:7px!important;
+  background:#f0f5f8!important;color:var(--qt-text)!important;box-shadow:none!important;transform:none!important;
+  text-align:left!important;font:900 11px/1.2 Arial,sans-serif!important;letter-spacing:.02em!important;
+}
+#quickTimeModal .qte551ChecklistToggle strong{
+  min-width:42px!important;text-align:right!important;color:var(--qt-accent-dark)!important;font:900 11px/1 Arial,sans-serif!important;
+}
+#quickTimeModal .qte551ChecklistToggle .qte551Chevron{
+  text-align:center!important;color:var(--qt-muted)!important;font:900 16px/1 Arial,sans-serif!important;
+}
+#quickTimeModal .qte551ChecklistToggle.open{background:var(--qt-focus)!important;border-color:var(--qt-accent)!important}
+#quickTimeModal .qte551ChecklistPanel{
+  margin:0 0 12px!important;border:1px solid var(--qt-line)!important;border-radius:7px!important;
+  overflow:hidden!important;background:var(--qt-surface)!important;box-shadow:none!important;
+}
+#quickTimeModal .qte551Bulk{
+  display:grid!important;grid-template-columns:1fr 1fr!important;gap:7px!important;margin:0!important;padding:7px!important;
+  border-bottom:1px solid var(--qt-line-soft)!important;background:var(--qt-surface-2)!important;
+}
+#quickTimeModal .qte551Bulk button{
+  min-height:40px!important;height:40px!important;margin:0!important;padding:0 8px!important;
+  border:1px solid var(--qt-line)!important;border-radius:6px!important;
+  background:#f0f5f8!important;color:#315b72!important;box-shadow:none!important;transform:none!important;
+  font:850 10px/1.15 Arial,sans-serif!important;
+}
+#quickTimeModal .qte551Bulk button.danger{background:#fff!important;color:#8c4540!important;border-color:#dfc9c6!important}
+#quickTimeModal .qte551Bulk button:disabled{opacity:.42!important}
+#quickTimeModal .qte551SectionTitle{
+  margin:13px 0 0!important;padding:9px 4px 5px!important;
+  border:0!important;border-top:1px solid var(--qt-line)!important;border-radius:0!important;
+  background:transparent!important;color:var(--qt-text)!important;box-shadow:none!important;
+  font:900 11px/1.2 Arial,sans-serif!important;letter-spacing:.02em!important;
+}
+#quickTimeModal .qte551CheckRow{
+  width:100%!important;display:flex!important;align-items:center!important;gap:10px!important;
+  min-height:46px!important;margin:0!important;padding:8px 9px!important;
+  border:0!important;border-bottom:1px solid var(--qt-line-soft)!important;border-radius:0!important;
+  background:var(--qt-surface)!important;color:var(--qt-text)!important;box-shadow:none!important;transform:none!important;
+  text-align:left!important;font:750 11px/1.3 Arial,sans-serif!important;
+}
+#quickTimeModal .qte551CheckRow:last-child{border-bottom:0!important}
+#quickTimeModal .qte551CheckRow .qte551CheckBox{
+  width:20px!important;height:20px!important;min-width:20px!important;flex:0 0 20px!important;
+  display:grid!important;place-items:center!important;margin:0!important;
+  border:2px solid #93aab7!important;border-radius:4px!important;background:#fff!important;color:#fff!important;
+  font:900 13px/1 Arial,sans-serif!important;
+}
+#quickTimeModal .qte551CheckRow .qte551CheckText{min-width:0!important;overflow-wrap:anywhere!important}
+#quickTimeModal .qte551CheckRow.checked{
+  background:var(--qt-focus)!important;color:var(--qt-text)!important;font-weight:900!important;
+}
+#quickTimeModal .qte551CheckRow.checked .qte551CheckBox{
+  border-color:var(--qt-accent-dark)!important;background:var(--qt-accent-dark)!important;color:#fff!important;
+}
+#quickTimeModal .qte551TimeRow{
+  display:grid!important;grid-template-columns:minmax(160px,1fr) minmax(0,270px)!important;
+  align-items:center!important;gap:8px!important;min-height:56px!important;
+  margin:0!important;padding:7px 8px!important;
+  border:0!important;border-bottom:1px solid var(--qt-line-soft)!important;border-radius:0!important;
+  background:var(--qt-surface)!important;color:var(--qt-text)!important;box-shadow:none!important;
+}
+#quickTimeModal .qte551TimeRow>span{
+  min-width:0!important;color:var(--qt-text)!important;
+  font:850 11px/1.25 Arial,sans-serif!important;overflow-wrap:anywhere!important;
+}
+#quickTimeModal .qte551TimeRow .quickTimeSingleCell{
+  width:100%!important;max-width:270px!important;justify-self:end!important;
+}
+
+/* Footer: one action strip, primary first. */
+#quickTimeModal .quickTimeFooter{
+  flex:0 0 auto!important;margin:0!important;
+  padding:9px 10px calc(9px + env(safe-area-inset-bottom))!important;
+  border:0!important;border-top:1px solid var(--qt-line)!important;border-radius:0!important;
+  background:var(--qt-surface)!important;box-shadow:none!important;
+}
+#quickTimeModal .quickTimeFooterActions{
+  display:grid!important;grid-template-columns:minmax(0,1.35fr) minmax(104px,.8fr) minmax(104px,.8fr)!important;
+  gap:7px!important;margin:0!important;padding:0!important;
+  border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;
+}
+#quickTimeModal .quickTimeFooterActions button{
+  width:100%!important;min-width:0!important;max-width:none!important;
+  min-height:44px!important;height:44px!important;margin:0!important;padding:0 9px!important;
+  border-radius:6px!important;box-shadow:none!important;transform:none!important;
+  font:850 11px/1 Arial,sans-serif!important;
+}
+#quickTimeModal .quickTimeSave{
+  border:1px solid var(--qt-accent)!important;background:var(--qt-accent)!important;color:#fff!important;
+}
+#quickTimeModal .quickTimeSave:active{background:var(--qt-accent-dark)!important}
+#quickTimeModal :is(.quickTimeNA,.quickTimeClear){
+  border:1px solid var(--qt-line)!important;background:#f3f6f8!important;color:var(--qt-text)!important;
+}
+#quickTimeModal .quickTimeClear:disabled{opacity:.38!important}
+#quickTimeModal.qte551-mode .quickTimeClear{grid-column:2/4!important}
+#quickTimeModal .quickTimeSaveStatus{
+  min-height:12px!important;margin:4px 0 0!important;padding:0!important;
+  border:0!important;border-radius:0!important;background:transparent!important;color:var(--qt-muted)!important;
+  box-shadow:none!important;font:700 9px/1.2 Arial,sans-serif!important;text-align:center!important;
+}
+
+/* Mobile contract: compact single rows; paired rows become label + two equal fields. */
+@media(max-width:560px){
+  #quickTimeModal .quickTimePanel{width:100%!important;max-width:none!important;height:min(97dvh,920px)!important;border-radius:12px 12px 0 0!important}
+  #quickTimeModal .quickTimeHead{padding:10px 10px 0!important}
+  #quickTimeModal .quickTimeHeadTop{grid-template-columns:34px minmax(0,1fr) 34px 34px!important;gap:3px!important}
+  #quickTimeModal :is(.quickTimeBack,.quickTimeCloseIcon),#quickTimeModal #sagsQteCustomizeBtn{
+    width:34px!important;min-width:34px!important;max-width:34px!important;height:34px!important;min-height:34px!important;max-height:34px!important;line-height:32px!important
+  }
+  #quickTimeModal .quickTimeTitle{font-size:17px!important}
+  #quickTimeModal .quickTimeFlight{font-size:10.5px!important}
+  #quickTimeModal .quickTimeTabs{gap:19px!important;margin-top:8px!important}
+  #quickTimeModal .quickTimeTab{height:36px!important;min-height:36px!important;font-size:11.5px!important;line-height:36px!important}
+  #quickTimeModal .quickTimeSub{margin-left:-10px!important;margin-right:-10px!important;padding:7px 10px!important}
+  #quickTimeModal .quickTimeBody{padding:9px 10px 15px!important}
+  #quickTimeModal .quickTimeColumnHead{
+    grid-template-columns:1fr 1fr!important;gap:7px!important;padding:0 0 4px!important;
+  }
+  #quickTimeModal .quickTimeColumnHead>*:first-child{display:none!important}
+  #quickTimeModal .quickTimeRows{border-left:0!important;border-right:0!important}
+  #quickTimeModal .quickTimeRow.pair{
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:7px!important;
+    min-height:0!important;padding:9px 0!important;
+  }
+  #quickTimeModal .quickTimeRow.pair .quickTimeLabel{grid-column:1/-1!important;padding:0 1px 1px!important}
+  #quickTimeModal .quickTimeRow.single{
+    grid-template-columns:minmax(0,1fr) minmax(132px,46%)!important;gap:9px!important;
+    min-height:58px!important;padding:7px 0!important;
+  }
+  #quickTimeModal .quickTimeRow.single .quickTimeSingleCell{
+    grid-column:2!important;width:100%!important;max-width:none!important;justify-self:stretch!important;
+  }
+  #quickTimeModal :is(.quickTimeTimeCell,.quickTimeSingleCell){height:44px!important;min-height:44px!important}
+  #quickTimeModal .quickTimeInput{height:42px!important;min-height:42px!important;font-size:14px!important;line-height:42px!important}
+  #quickTimeModal .quickTimeNow{
+    width:42px!important;min-width:42px!important;max-width:42px!important;height:42px!important;min-height:42px!important;max-height:42px!important
+  }
+  #quickTimeModal .qte551TimeRow{
+    grid-template-columns:minmax(0,1fr) minmax(132px,46%)!important;gap:9px!important;
+    min-height:58px!important;padding:7px 0!important;
+  }
+  #quickTimeModal .qte551TimeRow .quickTimeSingleCell{width:100%!important;max-width:none!important;justify-self:stretch!important}
+  #quickTimeModal .qte551SectionTitle{margin-top:11px!important;padding-left:0!important;padding-right:0!important}
+  #quickTimeModal .qte551CheckRow{padding-left:8px!important;padding-right:8px!important}
+  #quickTimeModal .quickTimeFooterActions{grid-template-columns:1fr 1fr!important;gap:7px!important}
+  #quickTimeModal .quickTimeSave{grid-column:1/-1!important}
+  #quickTimeModal.qte551-mode .quickTimeClear{grid-column:1/-1!important}
+}
+@media(max-width:360px){
+  #quickTimeModal .quickTimeRow.single,
+  #quickTimeModal .qte551TimeRow{grid-template-columns:minmax(0,1fr) 132px!important}
+  #quickTimeModal .quickTimeLabel,
+  #quickTimeModal .qte551TimeRow>span{font-size:10.5px!important}
+}
+@media(min-width:700px){
+  #quickTimeModal{align-items:center!important;padding:18px!important}
+  #quickTimeModal .quickTimePanel{border-radius:14px!important;max-height:calc(100dvh - 36px)!important}
+}
+
+/* Dark theme keeps identical geometry. */
+html.new-ui-v1[data-ui-theme="dark"] body #quickTimeModal{
+  --qt-bg:#111f28;--qt-surface:#192b35;--qt-surface-2:#20343f;
+  --qt-line:#3b515d;--qt-line-soft:#30444f;
+  --qt-text:#edf4f7;--qt-muted:#a8bac4;
+  --qt-accent:#63bad5;--qt-accent-dark:#7ac9e0;--qt-focus:#213a45;
+}
+html.new-ui-v1[data-ui-theme="dark"] body #quickTimeModal .quickTimeNow,
+html.new-ui-v1[data-ui-theme="dark"] body #quickTimeModal :is(.quickTimeNA,.quickTimeClear),
+html.new-ui-v1[data-ui-theme="dark"] body #quickTimeModal .qte551Bulk button{background:#20343f!important}
+html.new-ui-v1[data-ui-theme="dark"] body #quickTimeModal .qte551ChecklistToggle{background:#20343f!important}
+html.new-ui-v1[data-ui-theme="dark"] body #quickTimeModal .qte551CheckRow .qte551CheckBox{background:#192b35!important;border-color:#6f8794!important}
+html.new-ui-v1[data-ui-theme="dark"] body #quickTimeModal .qte551CheckRow.checked .qte551CheckBox{background:var(--qt-accent-dark)!important;border-color:var(--qt-accent-dark)!important}
+html.new-ui-v1[data-ui-theme="dark"] body #quickTimeModal .quickTimeInput.dirty{background:#493d18!important;color:#ffe7a0!important}
+
+
+/* V6.2.0 · Operational Sheet hard reset — Quick Input 42.1 / 42.3 / 55.1 */
+html.new-ui-v1 body #quickTimeModal button,
+html.new-ui-v1 body #quickTimeModal input{
+  -webkit-appearance:none!important;appearance:none!important;
+}
+html.new-ui-v1 body #quickTimeModal :is(.quickTimeBack,.quickTimeCloseIcon,#sagsQteCustomizeBtn){
+  border-radius:6px!important;
+}
+html.new-ui-v1 body #quickTimeModal .quickTimeTab{
+  border-radius:0!important;border-left:0!important;border-right:0!important;border-top:0!important;
+}
+html.new-ui-v1 body #quickTimeModal :is(.quickTimeTimeCell,.quickTimeSingleCell){
+  border-radius:6px!important;
+}
+html.new-ui-v1 body #quickTimeModal .quickTimeInput{border-radius:0!important}
+html.new-ui-v1 body #quickTimeModal .quickTimeNow{
+  border-radius:0!important;border-top:0!important;border-right:0!important;border-bottom:0!important;
+}
+html.new-ui-v1 body #quickTimeModal .quickTimeFooterActions,
+html.new-ui-v1 body #quickTimeModal .quickTimeFooterActions button{
+  border-radius:6px!important;
+}
