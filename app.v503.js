@@ -5915,7 +5915,13 @@ Phần của ${who} được ghi “BỎ QUA · KHÔNG E-FORM”, không ghi HO�
     return v;
   }
   function v1134Session(){try{return root.__sagsGetSession?.()||{role:root.currentRole||'',profile:root.currentUserProfile||{}}}catch(_){return {role:root.currentRole||'',profile:root.currentUserProfile||{}}}}
-  function v1134ActiveGroup(){try{return S(activeFormGroup).toLowerCase()}catch(_){return S(root.activeFormGroup).toLowerCase()}}
+  function v1134ActiveGroup(){
+    let g='';try{g=S(activeFormGroup).toLowerCase()}catch(_){g=S(root.activeFormGroup).toLowerCase()}
+    g=g.replace(/[\s-]+/g,'_');
+    if(['fsags54','loadcontrol_checklist','fsags54_loadcontrol','fsags54_load_control','grndls54'].includes(g))return 'fsags54';
+    if(['fsags94','fsags94_clc','clc_checklist','grndls94'].includes(g))return 'clc_checklist';
+    return g;
+  }
   function v1134VzContext(){
     try{
       const g=v1134ActiveGroup();if(g)return g==='tvjgof035';
@@ -5940,8 +5946,12 @@ Phần của ${who} được ghi “BỎ QUA · KHÔNG E-FORM”, không ghi HO�
       }catch(_){return false}
     }
     if(g==='fsags54'||g==='clc_checklist'){
-      try{const meta=activeMeta();if(S(meta?.rosterAssignmentId))return true}catch(_){}
-      return r==='AD';
+      // V6.3.44: the canonical NHẬP NHANH button follows the form permission itself.
+      // Do not hide it just because rosterAssignmentId is absent from the restored/open-shared session.
+      if(r==='AD')return true;
+      const feature=g==='fsags54'?'LOADCONTROL_CHECKLIST':'CLC_CHECKLIST';
+      if(typeof ov[feature]==='boolean')return ov[feature];
+      try{return typeof root.v485Can==='function'&&!!root.v485Can(feature,profile,sess.role)}catch(_){return r==='CBTT'}
     }
     if(g==='fsags'||g==='fsags421'||g==='fsags551'){
       if(typeof ov.QUICK_TIME==='boolean')return ov.QUICK_TIME;

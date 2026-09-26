@@ -1,11 +1,12 @@
 {
   "schema": 2,
-  "version": "V6.3.42",
-  "build": "V6.3.42-20260926-MYFLIGHT-CLEAR-LABELS-01",
+  "version": "V6.3.44",
+  "build": "V6.3.44-20260926-FSAGS54-94-COMMON-QUICK-01",
   "strategy": "immutable-entrypaths-verified-build-shell+mutable-form-registry-network-first",
   "bootstrapChanged": [
     "./index.html",
-    "./daily-roster.v502.js",
+    "./app.v503.js",
+    "./grnd-ls-checklists.v6326.js",
     "./service-worker.js",
     "./version.json"
   ],
@@ -51,8 +52,8 @@
       "bytes": 41334
     },
     "./app.v503.js": {
-      "sha256": "5be41f01915c39c0a87acd3dbbecfc08a7b8d0c031c9e398623f757327d4d073",
-      "bytes": 834523
+      "sha256": "5b48305b794a84f8f40542d546074fd3dfc4c0415df5480fdeb7cd8c2e853bf1",
+      "bytes": 835170
     },
     "./apple-touch-icon.png": {
       "sha256": "a190c19f9a52a40f43379917b11f84f99a2ab2fb4a3cdaedd1dad936a67c8e78",
@@ -79,8 +80,8 @@
       "bytes": 14836
     },
     "./daily-roster.v502.js": {
-      "sha256": "9d56b85ad8f4811e61ee527ce630d8db2cfa253fd4c89a058c80b0073bdbf5c8",
-      "bytes": 59166
+      "sha256": "08f49c52410af947280fe45468d78523eaae3ca7743df826893e6204165f148f",
+      "bytes": 59332
     },
     "./favicon-16.png": {
       "sha256": "bb74deb45be89aca360f6b6f9b7d6293c14b1d7efa5f1e4fe21f4804fb05ce58",
@@ -119,8 +120,8 @@
       "bytes": 17885
     },
     "./grnd-ls-checklists.v6326.js": {
-      "sha256": "3df813cc43036ce5f4861ed142135fa857b86d6601a2eeaf283ee377136a611e",
-      "bytes": 43705
+      "sha256": "68453cbe7e18b722cac72bfc1cbb83be7cb4e44b7ccc8bef2dc01db349535c08",
+      "bytes": 43232
     },
     "./icon-192.png": {
       "sha256": "6fe324b47572ae37d711aac8affc9d7e9bf60c36e2fb810f3e948497a2981ca3",
@@ -131,8 +132,8 @@
       "bytes": 104295
     },
     "./index.html": {
-      "sha256": "26f2745dc840e51d331eced39a19a949af1078a84ec92a2f12c94364e8116b09",
-      "bytes": 1602852
+      "sha256": "467a1e57be4cfe4666c673373de6cceab07a42bd528e6375e37afe8c212ce0d3",
+      "bytes": 1602909
     },
     "./indexeddb-flight-store.v1.js": {
       "sha256": "8a0c413a998827fc4211d032a4db3e1e298daaf4070ea45df0923b0ee6709506",
@@ -163,12 +164,12 @@
       "bytes": 118303
     },
     "./page1.png": {
-      "sha256": "9649fcbb09c5a0390d262017426023489045d9cace8345fc5b9d24f8c7fc44c0",
-      "bytes": 800174
+      "sha256": "94e543f3c9da5be72fb8bbf19510e4468c1c774f246781044a5613163002acfd",
+      "bytes": 390578
     },
     "./page10.png": {
-      "sha256": "924428ec6447174c713661983690fa20a8ff7e72f8ac403a0ee26b5371bb04ad",
-      "bytes": 760164
+      "sha256": "54bd638ebc6bb79cb32608ed5f682c5b89a9d6234063f65cb97d8865045cf4a3",
+      "bytes": 461776
     },
     "./page11.png": {
       "sha256": "11d83788014011aeee5abe56bb9292b7b4cd2d3186a226dbc1b7e95bb5463877",
@@ -183,24 +184,24 @@
       "bytes": 978212
     },
     "./page2.png": {
-      "sha256": "9b71c6febd9e667d46051a5e98680cd035f3eb5e3241d0ba5e3e48578b4d173a",
-      "bytes": 532592
+      "sha256": "793653dfaf5e8afc21cccb64cc72725f2c5e91cd4f090ee48d5d40daa04b5f61",
+      "bytes": 208756
     },
     "./page4.png": {
       "sha256": "996858caabb167511d11da0aa6286bc0d2536a2feb8f37c83530cecaf65f6562",
       "bytes": 546338
     },
     "./page6.png": {
-      "sha256": "8a24bc0d68c6f02da2c888e1d434b23c74c75bdb89572ff0c3f3fa4b5b754faf",
-      "bytes": 729862
+      "sha256": "e95068ef7cda07aa7f03547ba0863e334b2fb7a4b120755a20d3f63a25060af7",
+      "bytes": 304135
     },
     "./page7.png": {
-      "sha256": "b6585bf658721d69f19958b8aeee3f1a19cc40a7dee9bc9d4327c7972a969d83",
-      "bytes": 367522
+      "sha256": "3e42ca2b99ff0bb4294ddbcec06631a2debeff1d5e051a1621496477c181a106",
+      "bytes": 148501
     },
     "./page9.png": {
-      "sha256": "e4fb52f5ac2f1c591fe1b404e7d6ef45ea92f2a3a5a9421da7ad92b8df3cdfaf",
-      "bytes": 863685
+      "sha256": "7957780d4edd7c4f6b73f5b999843de36f3c6a03cefa7a6c0161bfc5be16a1a3",
+      "bytes": 585020
     },
     "./pdf-bg-page1.jpg": {
       "sha256": "84a73b5f34dcd42dc85420bf9b5eda97b5c6d869152128f63c9c8238c670013d",
@@ -267,8 +268,8 @@
       "bytes": 18421
     },
     "./service-worker.js": {
-      "sha256": "bf3919455564d1ebbb9a4c4519cf1c16047b548d2d4703c87a62b6de15dc389d",
-      "bytes": 13562
+      "sha256": "16a70a8e7f0f1eeb3d5706bff5660769d2a61c1a3eb9abeb3c18d5f0e7c75972",
+      "bytes": 13601
     },
     "./stability.v6-core.js": {
       "sha256": "930372721342bb68abb18b5d7b48f10c280812987e467c61ba0720366df571b4",
@@ -299,8 +300,8 @@
       "bytes": 24710
     },
     "./version.json": {
-      "sha256": "10c065b6ad1a1928752bbd31f5a33060c660eab5a5f4e9ecacc817e70ffaa145",
-      "bytes": 817
+      "sha256": "aff021d26be599955c40361737dc59d2ffd857e26900b4d07cd5e1684fdc8628",
+      "bytes": 868
     },
     "./VJfinal.png": {
       "sha256": "18a95d129c7408636db13d4e0ea238861aa184c6b171e6833b56545083193cc1",
@@ -314,6 +315,5 @@
       "sha256": "1a7372356daf61f8d25416315189ca4291b82c64407456ffe87412da9d7427ad",
       "bytes": 284127
     }
-  },
-  "formsLayoutSha256": "0b72425161ed168b4a373810fe642cab2aafd21b5f406b24dfe26d15e7de6208"
+  }
 }

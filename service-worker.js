@@ -2,10 +2,10 @@
    Base: V4.8.10B Layered PDF + HF1–HF4. Never mix navigation HTML with a different runtime.
 */
 'use strict';
-const BUILD='V6.3.42-20260926-MYFLIGHT-CLEAR-LABELS-01';
-const DISPLAY_VERSION='V6.3.42';
-const CACHE_NAME='sags-app-shell-v6342-myflight-clear-labels-01';
-const META_CACHE_NAME='sags-app-meta-v6342-myflight-clear-labels-01';
+const BUILD='V6.3.44-20260926-FSAGS54-94-COMMON-QUICK-01';
+const DISPLAY_VERSION='V6.3.44';
+const CACHE_NAME='sags-app-shell-v6344-fsags54-94-common-quick-01';
+const META_CACHE_NAME='sags-app-meta-v6344-fsags54-94-common-quick-01';
 const ASSET_MANIFEST_URL='./asset-manifest.json';
 const SAGS_BOOTSTRAP=['./index.html','./app.v503.js','./app.bundle.css','./runtime.v503hf2.bundle.js','./daily-roster.v502.js','./self-accept.v502.js','./cbtt-open-forms.v2.js','./admin-reset.v503hf2.js','./roster-lite.v5.js','./carrier-notebook.v1.js','./quick-entry.v1.js','./tvj-gof-035.v630.js','./tvj-gof-035.v631.js','./tvj-gof-035.v632.js','./grnd-ls-checklists.v6326.js','./stability.v6.js','./stability.v6-core.js','./mobile-draft-recovery.v1.js','./indexeddb-flight-store.v1.js','./cross-browser-entry.v1.js','./ui-preferences.v1.js','./new-ui-v1.css','./service-worker.js','./version.json'];
 const HOME= new URL('./index.html',self.registration.scope).href;
@@ -115,7 +115,7 @@ async function stageRelease(){
     if(path==='./index.html'||path==='./service-worker.js'||path==='./version.json')continue;
     // V6.3.33 recovery: app.v503.js and FSAGS54 interaction metadata changed. Fetch it
     // directly so stale manifest checksums cannot make a phone reuse the V6.3.22 bundle.
-    if(path==='./app.v503.js'||path==='./grnd-ls-checklists.v6326.js'||path==='./cbtt-open-forms.v2.js'){
+    if(path==='./app.v503.js'||path==='./daily-roster.v502.js'||path==='./grnd-ls-checklists.v6326.js'||path==='./cbtt-open-forms.v2.js'){
       try{const fresh=await fetchFresh(path);if(fresh.ok)await c.put(scopeUrl(path),fresh.clone())}catch(e){console.warn('V6.3.33 executable fetch',path,e?.message||e)}
       continue;
     }

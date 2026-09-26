@@ -1,12 +1,12 @@
-/* V6.3.41 · FSAGS54/FSAGS94 direct-interaction hotfix
-   - Direct editing follows the form permission itself, not rosterAssignmentId/QUICK_TIME.
-   - FSAGS54 legacy aliases normalize to the canonical native group.
-   - Native SVG hit regions remain active; page-level pointer handling is fallback-only.
+/* V6.3.43 · FSAGS54/FSAGS94 direct-interaction + alias hotfix
+   - One page-level pointer path handles every editable FSAGS54/94 field.
+   - CBTT/AD can edit their native checklist directly; explicit feature grants still work for other roles.
+   - MY FLIGHT aliases are normalized consistently with the roster module.
 */
 (function grndLsNativeV6326(root){
 'use strict';
 if(root.__SAGS_GRND_LS_NATIVE_V6326)return;
-const BUILD='V6.3.41-20260926-FSAGS54-94-DIRECT-INTERACTION-01';
+const BUILD='V6.3.44-20260926-FSAGS54-94-COMMON-QUICK-01';
 root.__SAGS_GRND_LS_NATIVE_V6326=BUILD;
 
 const BASE_W=1241,BASE_H=1755;
@@ -348,19 +348,17 @@ function formPermissionFeature(group){
 function canInteractGroup(group){
   group=canonicalGroup(group);if(!isGroup(group))return false;
   const role=(()=>{try{return S(root.__sagsGetSession?.()?.role||root.currentRole||root.currentUserProfile?.role).toUpperCase()}catch(_){return ''}})();
-  if(role==='AD')return true;
   try{
-    // Direct field editing is a property of the form permission itself.
-    // Do not couple it to DAILY ROSTER assignment metadata or QUICK_TIME.
     if(!activeId())return false;
     if(activeGroupRef()!==group)return false;
+    // CBTT is the native operator for FSAGS54/94; AD always has operational access.
+    // Do not let a stale per-account override or QUICK_TIME flag disable direct entry.
+    if(role==='AD'||role==='CBTT')return true;
     const feature=formPermissionFeature(group);
     const can=getGlobal('v485Can');
-    if(feature&&typeof can==='function')return !!can(feature);
+    if(feature&&typeof can==='function'&&can(feature))return true;
     const roleCan=getGlobal('roleCanForm');
-    if(typeof roleCan==='function')return !!roleCan(role,publicGroup(group));
-    // Safe compatibility fallback for older shells where V4.85 has not installed yet.
-    return role==='CBTT';
+    return typeof roleCan==='function'?!!roleCan(role,publicGroup(group)):false;
   }catch(_){return false}
 }
 function canQuickGroup(group){
@@ -375,21 +373,21 @@ function bindPageInteraction(group){
   const spec=SPECS[group],page=document.getElementById('page'+spec.page);if(!page||page.dataset.grndLs6326Input===BUILD)return;
   page.dataset.grndLs6326Input=BUILD;
   const pts=new Map();
+  let lastActivatedAt=0;
+  const editableAt=e=>fieldAtPoint(group,e);
   page.addEventListener('pointerdown',e=>{
     if(e.pointerType==='mouse'&&e.button!==0)return;
-    const f=fieldAtPoint(group,e);
-    if(!f)return; // Empty paper remains normal scroll/pan.
+    const f=editableAt(e);if(!f)return;
     if(!canInteractGroup(group)){
       e.preventDefault();e.stopImmediatePropagation();
       try{root.roleDenied?.('Tài khoản không có quyền chỉnh biểu mẫu này.')}catch(_){}
       return;
     }
-    // V6.3.41: let the Form Engine .hit element handle normal taps itself.
-    // Keep this page-level tracker only as a fallback for browsers (notably some
-    // Safari/iOS builds) that miss SVG child hit-testing.
-    const nativeHit=!!e.target?.closest?.('.hit');
-    pts.set(e.pointerId,{x:e.clientX,y:e.clientY,key:S(f.key),multi:pts.size>0,nativeHit});
+    // V6.3.43: exactly ONE interaction path for FSAGS54/94.
+    // Stop the SVG child handler here so a checkbox cannot toggle twice.
+    pts.set(e.pointerId,{x:e.clientX,y:e.clientY,key:S(f.key),multi:pts.size>0});
     if(pts.size>1)for(const p of pts.values())p.multi=true;
+    e.stopImmediatePropagation();
   },true);
   page.addEventListener('pointermove',e=>{
     const p=pts.get(e.pointerId);if(!p)return;
@@ -397,18 +395,19 @@ function bindPageInteraction(group){
   },true);
   const finish=(e,cancel)=>{
     const p=pts.get(e.pointerId);pts.delete(e.pointerId);if(!p)return;
+    e.stopImmediatePropagation();
     if(cancel||p.multi||p.moved)return;
-    // A real SVG .hit already runs the canonical core pointer handler. Do not
-    // activate a second time (checkboxes would otherwise toggle twice).
-    if(p.nativeHit)return;
-    const f=Array.isArray(fields)?fields.find(x=>Number(x.page)===spec.page&&S(x.key)===p.key):null;
-    if(!f)return;
-    e.preventDefault();
-    e.stopPropagation();
-    activateNativeField(f);
+    const f=Array.isArray(fields)?fields.find(x=>Number(x.page)===spec.page&&S(x.key)===p.key):null;if(!f)return;
+    e.preventDefault();lastActivatedAt=Date.now();activateNativeField(f);
   };
   page.addEventListener('pointerup',e=>finish(e,false),true);
   page.addEventListener('pointercancel',e=>finish(e,true),true);
+  // Keyboard/synthetic-click safety net. Normal pointer taps are suppressed for 450 ms.
+  page.addEventListener('click',e=>{
+    if(Date.now()-lastActivatedAt<450)return;
+    const f=editableAt(e);if(!f||!canInteractGroup(group))return;
+    e.preventDefault();e.stopImmediatePropagation();lastActivatedAt=Date.now();activateNativeField(f);
+  },true);
 }
 function ensureQuickStyle(){
   if(document.getElementById('grndLsQuick6326Style'))return;
@@ -514,22 +513,19 @@ function saveQuick(){
   try{root.showAutoUpdateToast?.('✓ Đã cập nhật biểu mẫu')}catch(_){}
 }
 function syncQuickButton(group=activeGroupRef()){
-  group=canonicalGroup(group);const on=isGroup(group),allowed=on&&canQuickGroup(group);
-  const b=document.getElementById('v1134QuickTimeBtn');
-  if(b){
-    const display=allowed?'inline-flex':'none',priority=allowed?'important':'';
-    if(b.style.getPropertyValue('display')!==display||b.style.getPropertyPriority('display')!==priority)b.style.setProperty('display',display,priority);
-    if(allowed){
-      if(b.textContent!=='⏱ NHẬP NHANH')b.textContent='⏱ NHẬP NHANH';
-      const title='Nhập nhanh '+SPECS[group].title;if(b.title!==title)b.title=title;
-      b.onclick=()=>openQuick(group);
-    }
+  // V6.3.44: use ONLY the canonical app-level NHẬP NHANH button.
+  // Never create an extra/fallback button for FSAGS54/94.
+  group=canonicalGroup(group);
+  const oldFallback=document.getElementById('grndLsQuickFallback6326');if(oldFallback)oldFallback.remove();
+  const b=document.getElementById('v1134QuickTimeBtn');if(!b)return;
+  if(!isGroup(group))return; // non-54/94 forms remain owned by the common app action manager
+  const allowed=canQuickGroup(group);
+  b.style.setProperty('display',allowed?'inline-flex':'none',allowed?'important':'');
+  if(allowed){
+    b.textContent='⏱ NHẬP NHANH';
+    b.title='Nhập nhanh '+SPECS[group].title;
+    b.onclick=()=>openQuick(group);
   }
-  let fb=document.getElementById('grndLsQuickFallback6326');
-  if(!b&&allowed){
-    const host=document.getElementById('v324FormActions')||document.querySelector('.toolbar-row.main-actions')||document.querySelector('.toolbar.compact-main-toolbar')||document.querySelector('.toolbar');
-    if(host){if(!fb){fb=document.createElement('button');fb.id='grndLsQuickFallback6326';fb.type='button';fb.textContent='⏱ NHẬP NHANH';fb.className='v324FormAction';host.appendChild(fb)}fb.style.display='inline-flex';fb.onclick=()=>openQuick(group)}
-  }else if(fb)fb.style.display=allowed?'inline-flex':'none';
 }
 
 function hideNativePages(){
