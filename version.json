@@ -1,14 +1,14 @@
 {
-  "version": "V6.3.38",
-  "displayVersion": "V6.3.38",
-  "label": "V6.3.38 · clean FSAGS54/94 header fields",
-  "build": "V6.3.38-20260926-GRNDLS-CLEAN-HEADER-ASSET-01",
-  "releasedAt": "2026-09-26T11:15:00+07:00",
-  "type": "v6.3.38-grndls-clean-header-asset",
-  "base": "V6.3.37",
+  "version": "V6.3.39",
+  "displayVersion": "V6.3.39",
+  "label": "V6.3.39 · fix VZ MY FLIGHT receive",
+  "build": "V6.3.39-20260926-VZ-MYFLIGHT-RECEIVE-01",
+  "releasedAt": "2026-09-26T14:05:00+07:00",
+  "type": "v6.3.39-vz-myflight-receive-hotfix",
+  "base": "V6.3.38",
   "updatePolicy": "optional",
   "minimumSupportedVersion": "V6.3.26",
   "minimumSupportedBuild": "V6.3.26-20260926-GRNDLS-INTERACT-QUICK-04",
-  "notes": "FSAGS54 and FSAGS94 use one continuous input zone for Flight No./Date and Sector. Obsolete printed slash separators are masked below entered values in live form and PDF. The FSAGS94 background asset is renamed from loadcontrol-page-01.png to FSAGS94-page-01.png. Direct touch, quick entry and one-tap PDF download are unchanged.",
-  "message": "V6.3.38: gộp vùng Flight No./Date + Sector, bỏ dấu / nền và đổi tên nền FSAGS94."
+  "notes": "Fix MY FLIGHT for VZ turnaround assignments using TVJ-GOF-035. The local-session factory now recognizes tvjgof035 and starts it on page 15. Existing FSAGS/PDF behavior is unchanged.",
+  "message": "V6.3.39: sửa lỗi không nhận được chuyến VZ trong MY FLIGHT."
 }
