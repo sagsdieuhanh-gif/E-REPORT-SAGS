@@ -255,7 +255,7 @@ function coKey(x){const total=Number(x?.coAssigneeTotal||1)||1;if(total>1){const
 function slotKey(date,x){return [S(date),flightKey(x),sourceKey(x),canonicalForm(x),U(x?.assignmentLeg)||'TURN',Number(x?.workPartOrder||1),coKey(x)].join('|')}
 function recency(x){return Number(x?.updatedAtMs||x?.publishedAtMs||x?.assignedAtMs||x?.createdAtMs||x?.importedAtMs||0)||0}
 function dedupeItems(date,items){const best=new Map(),dupes=[];for(const x of (items||[])){if(!x||x.active===false)continue;const k=slotKey(date,x),old=best.get(k);if(!old){best.set(k,x);continue}const a=recency(old),b=recency(x);let keep=old,drop=x;if(b>a||(b===a&&S(x.assignmentId)>S(old.assignmentId))){keep=x;drop=old;best.set(k,x)}dupes.push({key:k,keep,drop})}return {items:[...best.values()],dupes}}
-function formLabel(x){const g=canonicalForm(x),src=sourceKey(x);if(g==='FSAGS423')return '42.3';if(g==='FSAGS421')return '42.1';if(g==='FSAGS551')return '55.1';if(g==='FSAGS09')return 'KẾT SỔ';if(g==='FINAL')return 'BẢNG TẢI CUỐI CÙNG';if(g==='LOADCONTROL_CHECKLIST')return 'LOAD CONTROL CHECKLIST';if(g==='CLC_CHECKLIST')return 'CLC CHECKLIST';return src==='GRND_COR'?'ĐIỀU HÀNH':src==='GRND_LD'?'ĐIỀU HÀNH':src==='GRND_LS'?'CÂN BẰNG TRỌNG TẢI':src==='PAX_SUPR'?'PHỤC VỤ HÀNH KHÁCH':g}
+function formLabel(x){const g=canonicalForm(x),src=sourceKey(x);if(g==='FSAGS423')return '42.3';if(g==='FSAGS421')return '42.1';if(g==='FSAGS551')return '55.1';if(g==='FSAGS09')return 'KẾT SỔ';if(g==='FINAL')return 'FINAL';if(g==='LOADCONTROL_CHECKLIST')return 'FSAGS 54';if(g==='CLC_CHECKLIST')return 'FSAGS 94';return src==='GRND_COR'?'ĐIỀU HÀNH':src==='GRND_LD'?'ĐIỀU HÀNH':src==='GRND_LS'?'CÂN BẰNG TRỌNG TẢI':src==='PAX_SUPR'?'PHỤC VỤ HÀNH KHÁCH':g}
 function pbOf(st){const e=st?.envelope?.state||{},c=st?.completionEnvelope?.state||{};return S(st?.completedPushback||e.h24Start||e.f421_h24Start||c.h24Start||c.f421_h24Start)}
 function isPushbackSource(x){return ['FSAGS','FSAGS423','FSAGS421'].includes(U(x?.formGroup))}
 function normalizedTask(st){return U(st?.taskStatusV333||st?.taskStatus||st?.workPartStatus||st?.claimStatus).replace(/[\s-]+/g,'_')}
@@ -349,7 +349,7 @@ function visibleFormTasks(g){
 }
 function taskPills(g,date){return visibleFormTasks(g).map(({item:x,done})=>{
   const label=formLabel(x),aid=S(x.assignmentId);
-  return `<button type="button" class="v1199TaskBtn ${done?'done':''}" data-task-aid="${esc(aid)}" data-task-fid="${esc(S(x.flightId))}" data-task-date="${esc(S(date))}" data-task-completed="${done?'1':'0'}" aria-label="${esc('Nhận')} FSAGS ${esc(label)}">➜ NHẬN ${esc(label)}${done?' ✓':''}</button>`;
+  return `<button type="button" class="v1199TaskBtn ${done?'done':''}" data-task-aid="${esc(aid)}" data-task-fid="${esc(S(x.flightId))}" data-task-date="${esc(S(date))}" data-task-completed="${done?'1':'0'}" aria-label="${esc('Nhận ' + label)}">➜ NHẬN ${esc(label)}${done?' ✓':''}</button>`;
 }).join('')}
 function cardHtml(g,date){
   const x=g.primary,route=S(x?.route),ac=S(x?.acReg)||'—',sta=S(x?.sta)||'—',std=S(x?.std)||'—';

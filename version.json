@@ -1,14 +1,14 @@
 {
-  "version": "V6.3.41",
-  "displayVersion": "V6.3.41",
-  "label": "V6.3.41 · fix FSAGS54/94 direct interaction",
-  "build": "V6.3.41-20260926-FSAGS54-94-DIRECT-INTERACTION-01",
-  "releasedAt": "2026-09-26T16:05:00+07:00",
-  "type": "v6.3.41-fsags54-94-direct-interaction-hotfix",
-  "base": "V6.3.40",
+  "version": "V6.3.42",
+  "displayVersion": "V6.3.42",
+  "label": "V6.3.42 · clear MY FLIGHT receive labels",
+  "build": "V6.3.42-20260926-MYFLIGHT-CLEAR-LABELS-01",
+  "releasedAt": "2026-09-26T16:15:00+07:00",
+  "type": "v6.3.42-myflight-label-hotfix",
+  "base": "V6.3.41",
   "updatePolicy": "optional",
   "minimumSupportedVersion": "V6.3.26",
   "minimumSupportedBuild": "V6.3.26-20260926-GRNDLS-INTERACT-QUICK-04",
-  "notes": "Fix direct tap/edit interaction on FSAGS54 and FSAGS94. Editing now follows LOADCONTROL_CHECKLIST/CLC_CHECKLIST permission and active flight/form context, without requiring rosterAssignmentId or QUICK_TIME. Native SVG hit targets are preserved and the page-level handler is fallback-only. V6.3.40 PDF permission fix is retained.",
-  "message": "V6.3.41: sửa tương tác trực tiếp FSAGS54/FSAGS94; giữ nguyên quyền xuất PDF V6.3.40."
+  "notes": "UI-only MY FLIGHT label clarification: LOADCONTROL_CHECKLIST shows NHẬN FSAGS 54, CLC_CHECKLIST shows NHẬN FSAGS 94, and FINAL shows NHẬN FINAL. No assignment, permission, receive/open, form, PDF, or completion logic is changed. Includes all prior V6.3.41 behavior.",
+  "message": "V6.3.42: đổi nhãn nút MY FLIGHT thành NHẬN FSAGS 54 / NHẬN FSAGS 94 / NHẬN FINAL."
 }

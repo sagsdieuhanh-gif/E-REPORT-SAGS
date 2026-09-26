@@ -2,10 +2,10 @@
    Base: V4.8.10B Layered PDF + HF1–HF4. Never mix navigation HTML with a different runtime.
 */
 'use strict';
-const BUILD='V6.3.41-20260926-FSAGS54-94-DIRECT-INTERACTION-01';
-const DISPLAY_VERSION='V6.3.41';
-const CACHE_NAME='sags-app-shell-v6341-fsags54-94-direct-interaction-01';
-const META_CACHE_NAME='sags-app-meta-v6341-fsags54-94-direct-interaction-01';
+const BUILD='V6.3.42-20260926-MYFLIGHT-CLEAR-LABELS-01';
+const DISPLAY_VERSION='V6.3.42';
+const CACHE_NAME='sags-app-shell-v6342-myflight-clear-labels-01';
+const META_CACHE_NAME='sags-app-meta-v6342-myflight-clear-labels-01';
 const ASSET_MANIFEST_URL='./asset-manifest.json';
 const SAGS_BOOTSTRAP=['./index.html','./app.v503.js','./app.bundle.css','./runtime.v503hf2.bundle.js','./daily-roster.v502.js','./self-accept.v502.js','./cbtt-open-forms.v2.js','./admin-reset.v503hf2.js','./roster-lite.v5.js','./carrier-notebook.v1.js','./quick-entry.v1.js','./tvj-gof-035.v630.js','./tvj-gof-035.v631.js','./tvj-gof-035.v632.js','./grnd-ls-checklists.v6326.js','./stability.v6.js','./stability.v6-core.js','./mobile-draft-recovery.v1.js','./indexeddb-flight-store.v1.js','./cross-browser-entry.v1.js','./ui-preferences.v1.js','./new-ui-v1.css','./service-worker.js','./version.json'];
 const HOME= new URL('./index.html',self.registration.scope).href;

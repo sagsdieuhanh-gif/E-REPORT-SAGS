@@ -1,11 +1,11 @@
 {
   "schema": 2,
-  "version": "V6.3.41",
-  "build": "V6.3.41-20260926-FSAGS54-94-DIRECT-INTERACTION-01",
+  "version": "V6.3.42",
+  "build": "V6.3.42-20260926-MYFLIGHT-CLEAR-LABELS-01",
   "strategy": "immutable-entrypaths-verified-build-shell+mutable-form-registry-network-first",
   "bootstrapChanged": [
     "./index.html",
-    "./grnd-ls-checklists.v6326.js",
+    "./daily-roster.v502.js",
     "./service-worker.js",
     "./version.json"
   ],
@@ -79,8 +79,8 @@
       "bytes": 14836
     },
     "./daily-roster.v502.js": {
-      "sha256": "51bfff107f629e0a7aca821512e5d937801b6a15249915e76db9c783e2984c30",
-      "bytes": 59216
+      "sha256": "9d56b85ad8f4811e61ee527ce630d8db2cfa253fd4c89a058c80b0073bdbf5c8",
+      "bytes": 59166
     },
     "./favicon-16.png": {
       "sha256": "bb74deb45be89aca360f6b6f9b7d6293c14b1d7efa5f1e4fe21f4804fb05ce58",
@@ -131,8 +131,8 @@
       "bytes": 104295
     },
     "./index.html": {
-      "sha256": "1545c2c275c77dc859792d2ffdc8836163e9cd69dbf3812ca8342afd03cee0be",
-      "bytes": 1602806
+      "sha256": "26f2745dc840e51d331eced39a19a949af1078a84ec92a2f12c94364e8116b09",
+      "bytes": 1602852
     },
     "./indexeddb-flight-store.v1.js": {
       "sha256": "8a0c413a998827fc4211d032a4db3e1e298daaf4070ea45df0923b0ee6709506",
@@ -267,8 +267,8 @@
       "bytes": 18421
     },
     "./service-worker.js": {
-      "sha256": "0aeb66dc717aa7489cd5d0f160b5e1c517f85bff65586a4bba7233bd77908853",
-      "bytes": 13586
+      "sha256": "bf3919455564d1ebbb9a4c4519cf1c16047b548d2d4703c87a62b6de15dc389d",
+      "bytes": 13562
     },
     "./stability.v6-core.js": {
       "sha256": "930372721342bb68abb18b5d7b48f10c280812987e467c61ba0720366df571b4",
@@ -299,8 +299,8 @@
       "bytes": 24710
     },
     "./version.json": {
-      "sha256": "dcc4040176e02d33c6d5d9037e8349493e3b2c5a0d56d8bca8f9af56fdcd1779",
-      "bytes": 907
+      "sha256": "10c065b6ad1a1928752bbd31f5a33060c660eab5a5f4e9ecacc817e70ffaa145",
+      "bytes": 817
     },
     "./VJfinal.png": {
       "sha256": "18a95d129c7408636db13d4e0ea238861aa184c6b171e6833b56545083193cc1",

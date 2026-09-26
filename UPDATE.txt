@@ -1,0 +1,10 @@
+V6.3.42 UPDATE NHẸ — MY FLIGHT LABELS
+
+Ghi đè 5 file hệ thống vào ROOT repository:
+- index.html
+- daily-roster.v502.js
+- service-worker.js
+- version.json
+- asset-manifest.json
+
+HDSD_UPDATE_V6.3.42.txt chỉ là tài liệu hướng dẫn.

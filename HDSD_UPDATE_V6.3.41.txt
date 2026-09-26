@@ -1,0 +1,13 @@
+HDSD CẬP NHẬT V6.3.41
+
+FSAGS54 / FSAGS94 – TƯƠNG TÁC TRỰC TIẾP
+- Mở chuyến và chọn đúng FSAGS54 hoặc FSAGS94.
+- Chạm trực tiếp vào ô chữ/số/thời gian để mở bộ nhập liệu chuẩn.
+- FSAGS54: chạm ô kiểm tra để luân phiên trạng thái theo thiết kế hiện hành.
+- FSAGS94: chạm ô kiểm tra để tích/bỏ tích.
+- Quyền chỉnh trực tiếp:
+  + FSAGS54: LOADCONTROL_CHECKLIST.
+  + FSAGS94: CLC_CHECKLIST.
+- Không cần quyền QUICK_TIME để chỉnh trực tiếp. QUICK_TIME chỉ điều khiển nút NHẬP NHANH.
+- Không cần rosterAssignmentId chỉ để chỉnh trực tiếp; vẫn phải đang ở trong một flight session và đúng biểu mẫu đang mở.
+- Xuất PDF giữ theo bản V6.3.40.

@@ -1,0 +1,8 @@
+E-REPORT/SAGS V6.3.42 — MY FLIGHT LABELS
+
+THAY ĐỔI GIAO DIỆN:
+- LOADCONTROL_CHECKLIST: nút hiển thị “NHẬN FSAGS 54”.
+- CLC_CHECKLIST: nút hiển thị “NHẬN FSAGS 94”.
+- FINAL: nút hiển thị “NHẬN FINAL”.
+
+Không thay đổi logic nhận chuyến, phân quyền, biểu mẫu, PDF, trạng thái hoàn thành hoặc Firebase.
