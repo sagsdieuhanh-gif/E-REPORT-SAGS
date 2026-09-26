@@ -10979,9 +10979,10 @@ try {
   if(h) h.textContent="Lỗi khởi tạo: "+err.message;
   alert("Lỗi JavaScript: "+err.message);
 }
-const APP_BUILD_VERSION="V6.3.39-20260926-VZ-MYFLIGHT-RECEIVE-01";
+const APP_BUILD_VERSION="V6.3.41-20260926-FSAGS54-94-DIRECT-INTERACTION-01";
 window.__SAGS_RELEASE_BUILD__=APP_BUILD_VERSION;
-const APP_DISPLAY_VERSION="V6.3.39";
+const APP_DISPLAY_VERSION="V6.3.41";
+// V6.3.41: FSAGS54/FSAGS94 direct interaction follows form permission; no roster/QUICK_TIME coupling.
 // V1.1.103: hotfix duy nhất lỗi Firebase RTDB ancestor/descendant khi đồng bộ DAILY ROSTER; không thay đổi nghiệp vụ khác.
 // V4.21 — SAFE UPDATE SAVE
 // Before switching to a newly installed app version, force-save all current
@@ -21524,17 +21525,45 @@ openFinalSheetManager=function(){if(!v485Can("FINAL"))return roleDenied("Tài kh
 const v485OpenKH208Base=openKH208Manager;
 openKH208Manager=function(){if(!v485Can("FSAGS208"))return roleDenied("Tài khoản chưa được AD cấp quyền FSAGS 208.");return v485OpenKH208Base();};
 // Export only the forms the account can actually use. Tech-ramp defaults therefore export BBBT only.
+// V6.3.40: FSAGS54/FSAGS94 are CBTT checklist exports, not RAMP exports.
+// Their PDF permission follows LOADCONTROL_CHECKLIST / CLC_CHECKLIST directly and
+// must not require the unrelated EXPORT_RAMP permission.
+function v6340ActiveChecklistExportKind(){
+  let main="";
+  try{main=String(getCurrentExportMainForm?.()||"").trim().toLowerCase().replace(/[\s-]+/g,"_")}catch(_){}
+  if(["fsags54","loadcontrol_checklist","fsags54_loadcontrol","fsags54_load_control"].includes(main))
+    return v485Can("LOADCONTROL_CHECKLIST")?"loadcontrol_checklist":"";
+  if(["fsags94","fsags94_clc","clc_checklist"].includes(main))
+    return v485Can("CLC_CHECKLIST")?"clc_checklist":"";
+  return "";
+}
+function v6340RequestedChecklistKind(kind){
+  const g=String(kind||"").trim().toLowerCase().replace(/[\s-]+/g,"_");
+  if(["fsags54","loadcontrol_checklist","fsags54_loadcontrol","fsags54_load_control"].includes(g))return "loadcontrol_checklist";
+  if(["fsags94","fsags94_clc","clc_checklist"].includes(g))return "clc_checklist";
+  return "";
+}
 openExportChoiceMenu=function(){
-  if(!v485Can("EXPORT_RAMP"))return roleDenied("Tài khoản chưa được AD cấp quyền XUẤT RAMP / BBBT.");
+  const checklistKind=v6340ActiveChecklistExportKind();
+  if(!checklistKind&&!v485Can("EXPORT_RAMP"))return roleDenied("Tài khoản chưa được AD cấp quyền XUẤT RAMP / BBBT.");
   const out=_roleOpenExportChoiceMenu();
   try{
     const main=getCurrentExportMainForm(),grid=document.getElementById("exportChoiceGrid"),summary=document.getElementById("exportFlightSummary"),meta=currentFlightSessionMeta?.(),flightName=flightSessionDisplayName(meta)||deriveFlightSessionLabel()||"Chưa đặt tên chuyến",allowed=[];
     if(grid){[...grid.querySelectorAll("button")].forEach(b=>{const txt=(b.textContent||"").toUpperCase();let ok=true;if(txt.includes("BBBT")){ok=v485Can("BBBT");if(ok)allowed.push("BBBT");}else{const f=v485GroupFeature(main);ok=!!f&&v485Can(f);if(ok)allowed.push((b.textContent||"").replace(/^\s*Xuất\s*/i,"").trim());}if(!ok)b.remove();});}
     if(summary)summary.innerHTML='<strong>'+escapeHtml(flightName)+'</strong>'+escapeHtml(allowed.length?(" · "+allowed.join(" + ")):"");
     if(grid&&!grid.children.length){closeExportChoiceMenu();return roleDenied("Không có biểu mẫu nào được phép xuất trong chuyến này.");}
-  }catch(e){console.info("V4.85 export filter",e?.message||e);}return out;
+  }catch(e){console.info("V6.3.40 export filter",e?.message||e);}return out;
 };
 sendReport=async function(kind="all"){
+  const activeChecklist=v6340ActiveChecklistExportKind(),requestedChecklist=v6340RequestedChecklistKind(kind);
+  // A checklist opened in the current flight is a standalone one-page export.
+  // Accept the canonical checklist kind (or a legacy/default all call) when the
+  // account owns that checklist permission, without granting RAMP/BBBT export.
+  if(activeChecklist&&(requestedChecklist===activeChecklist||String(kind||"all").toLowerCase()==="all")){
+    kind=activeChecklist;
+    const out=await _roleSendReport(kind);writeAuditLog("EXPORT_REPORT",{kind,session:activeFlightSessionId||""});return out;
+  }
+  if(requestedChecklist&&!activeChecklist)return roleDenied("Hãy mở đúng FSAGS54/FSAGS94 được phân công trước khi xuất PDF.");
   if(!v485Can("EXPORT_RAMP"))return roleDenied("Tài khoản chưa được AD cấp quyền xuất.");
   const main=getCurrentExportMainForm(),needMain=v485GroupFeature(main);
   if(kind==="bbbt"&&!v485Can("BBBT"))return roleDenied("Không có quyền xuất BBBT.");
@@ -21755,7 +21784,7 @@ window.refreshAccountManager=refreshAccountManager;
 
 
 <script type="module" src="./ai.js?v=V4.7.6"></script>
-<script src="./app.v503.js?v=V6.3.39-20260926-VZ-MYFLIGHT-RECEIVE-01" data-phase="archive"></script>
+<script src="./app.v503.js?v=V6.3.41-20260926-FSAGS54-94-DIRECT-INTERACTION-01" data-phase="archive"></script>
 <script id="v120-build02-fixes">
 /* V1.20 BUILD 02 — background persistence, VHTTB, per-account usage detail, progress dedupe. */
 (function(){
@@ -22175,7 +22204,7 @@ window.refreshAccountManager=refreshAccountManager;
   setTimeout(()=>{ensureUi();startCloseoutListener();refreshValidation();try{window.sagsV440CleanupExpiredCloseoutEvents?.()}catch(_){}},500);
 })();
 </script>
-<script src="./app.v503.js?v=V6.3.39-20260926-VZ-MYFLIGHT-RECEIVE-01" data-phase="tools"></script>
+<script src="./app.v503.js?v=V6.3.41-20260926-FSAGS54-94-DIRECT-INTERACTION-01" data-phase="tools"></script>
 <script id="v173-quick-time">
 (function(){
   "use strict";
@@ -24255,7 +24284,7 @@ window.refreshAccountManager=refreshAccountManager;
   }
 }
 </style>
-<script src="./app.v503.js?v=V6.3.39-20260926-VZ-MYFLIGHT-RECEIVE-01" data-phase="flight"></script>
+<script src="./app.v503.js?v=V6.3.41-20260926-FSAGS54-94-DIRECT-INTERACTION-01" data-phase="flight"></script>
 <script id="v191IOSInteractionFix">
 (()=>{
   'use strict';
@@ -24291,7 +24320,7 @@ window.refreshAccountManager=refreshAccountManager;
 <script id="v631-ios-keyboard-scroll-lock">
 (()=>{
   'use strict';
-  const BUILD='V6.3.39-20260926-VZ-MYFLIGHT-RECEIVE-01';
+  const BUILD='V6.3.41-20260926-FSAGS54-94-DIRECT-INTERACTION-01';
   const isIOS=()=>/iP(?:hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
   if(!isIOS()||window.__SAGS_IOS_KEYBOARD_SCROLL_LOCK===BUILD)return;
   window.__SAGS_IOS_KEYBOARD_SCROLL_LOCK=BUILD;
@@ -24545,7 +24574,7 @@ window.refreshAccountManager=refreshAccountManager;
   window.addEventListener('pageshow',()=>setTimeout(refresh,120),{passive:true});
 })();
 </script>
-<script src="./app.v503.js?v=V6.3.39-20260926-VZ-MYFLIGHT-RECEIVE-01" data-phase="control"></script>
+<script src="./app.v503.js?v=V6.3.41-20260926-FSAGS54-94-DIRECT-INTERACTION-01" data-phase="control"></script>
 <style id="v330-group-permission-style">
 #v330GroupPermPanel{margin:12px 0 8px;padding:11px;border:1px solid #cbd9e6;border-radius:12px;background:#f7fbff;box-sizing:border-box}
 .v330GpHead{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;color:#173b5d;font:900 13px Arial}.v330GpSub{margin-top:4px;color:#61778b;font:700 11px/1.35 Arial}
@@ -24772,7 +24801,7 @@ function install(){addPermissions();ensureUi();ensureButton();refreshCount();lis
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install,350),{once:true});else setTimeout(install,350);root.addEventListener('pageshow',()=>setTimeout(install,250),{passive:true});
 })(window);
 </script>
-<script src="./app.v503.js?v=V6.3.39-20260926-VZ-MYFLIGHT-RECEIVE-01" data-phase="postcontrol"></script>
+<script src="./app.v503.js?v=V6.3.41-20260926-FSAGS54-94-DIRECT-INTERACTION-01" data-phase="postcontrol"></script>
 <script id="v377AdminFormToolsScript">
 /* V3.80 — AD form tools row + create all forms + closeout notice cleanup. */
 (function(){
@@ -25086,11 +25115,11 @@ root.v378ResetAllOldRecords=async function(){
   };
 })();
 </script>
-<script src="./app.v503.js?v=V6.3.39-20260926-VZ-MYFLIGHT-RECEIVE-01" data-phase="performance"></script>
+<script src="./app.v503.js?v=V6.3.41-20260926-FSAGS54-94-DIRECT-INTERACTION-01" data-phase="performance"></script>
 <script src="./daily-roster.v502.js?v=V5.0.3B" id="dailyRosterCleanV11102"></script>
 <!-- V5.0.2: removed automatic/named-person handover. Roster independently controls access. -->
 <script src="./self-accept.v502.js?v=V5.0.3B" id="sagsHF4SelfHandover"></script>
-<script src="./cbtt-open-forms.v2.js?v=V6.3.39-20260926-VZ-MYFLIGHT-RECEIVE-01" id="sagsCbttOpenFormsV2"></script>
+<script src="./cbtt-open-forms.v2.js?v=V6.3.41-20260926-FSAGS54-94-DIRECT-INTERACTION-01" id="sagsCbttOpenFormsV2"></script>
 <script id="v1016-delete-profile-fix">
 /* V1.0.16 · XÓA tài khoản phải xóa đúng profile E-Report, không chỉ Auth/users. */
 (function(){
@@ -26819,7 +26848,7 @@ window.adminResetAccountPassword=async function(uid){
 <script src="./tvj-gof-035.v630.js?v=V6.3.0-20260925-TVJ-VZ-01"></script>
 <script src="./tvj-gof-035.v631.js?v=V6.3.1-20260925-TVJ-PDF-ARCHIVE-01"></script>
 <script src="./tvj-gof-035.v632.js?v=V6.3.18-20260925-GRNDLS-F54-F94-20"></script>
-<script src="./grnd-ls-checklists.v6326.js?v=V6.3.39-20260926-VZ-MYFLIGHT-RECEIVE-01"></script>
+<script src="./grnd-ls-checklists.v6326.js?v=V6.3.41-20260926-FSAGS54-94-DIRECT-INTERACTION-01"></script>
 
 
 

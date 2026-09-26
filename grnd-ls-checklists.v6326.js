@@ -1,8 +1,12 @@
-/* V6.3.38 · clean merged header fields + slash-free visual background */
+/* V6.3.41 · FSAGS54/FSAGS94 direct-interaction hotfix
+   - Direct editing follows the form permission itself, not rosterAssignmentId/QUICK_TIME.
+   - FSAGS54 legacy aliases normalize to the canonical native group.
+   - Native SVG hit regions remain active; page-level pointer handling is fallback-only.
+*/
 (function grndLsNativeV6326(root){
 'use strict';
 if(root.__SAGS_GRND_LS_NATIVE_V6326)return;
-const BUILD='V6.3.38-20260926-GRNDLS-CLEAN-HEADER-ASSET-01';
+const BUILD='V6.3.41-20260926-FSAGS54-94-DIRECT-INTERACTION-01';
 root.__SAGS_GRND_LS_NATIVE_V6326=BUILD;
 
 const BASE_W=1241,BASE_H=1755;
@@ -12,7 +16,12 @@ const SPECS={
 };
 const S=v=>String(v==null?'':v).trim();
 const L=v=>S(v).toLowerCase();
-const canonicalGroup=v=>{const g=L(v).replace(/[\s-]+/g,'_');return g==='fsags94'||g==='fsags94_clc'?'clc_checklist':g};
+const canonicalGroup=v=>{
+  const g=L(v).replace(/[\s-]+/g,'_');
+  if(['fsags54','loadcontrol_checklist','fsags54_loadcontrol','fsags54_load_control','grndls54'].includes(g))return 'fsags54';
+  if(['fsags94','fsags94_clc','clc_checklist','grndls94'].includes(g))return 'clc_checklist';
+  return g;
+};
 const publicGroup=v=>canonicalGroup(v)==='fsags54'?'FSAGS54':canonicalGroup(v);
 const canonicalFieldKey=(group,key)=>S(key);
 const isGroup=g=>!!SPECS[canonicalGroup(g)];
@@ -54,7 +63,7 @@ function ensureStyle(){
   st.textContent=
     '#page16,#page17{position:relative;background:#fff;overflow:visible}'+
     '#page16>img,#page17>img{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:fill;user-select:none;-webkit-user-drag:none;pointer-events:none}'+
-    '#page16>svg,#page17>svg{position:absolute;inset:0;width:100%;height:100%;z-index:2;overflow:visible;pointer-events:none}'+
+    '#page16>svg,#page17>svg{position:absolute;inset:0;width:100%;height:100%;z-index:2;overflow:visible;pointer-events:auto;touch-action:pan-x pan-y pinch-zoom}'+
     '#page16>svg .hit,#page17>svg .hit{pointer-events:all}'+
     '#page16>svg image,#page17>svg image{pointer-events:none}'+
     '#page16[data-grndls-debug="1"] .hit,#page17[data-grndls-debug="1"] .hit{stroke:#e11d48!important;stroke-width:1!important;fill:rgba(225,29,72,.06)!important}'+
@@ -332,16 +341,34 @@ function fieldAtPoint(group,event){
   choices.sort((a,b)=>(Number(a.w||0)*Number(a.h||0))-(Number(b.w||0)*Number(b.h||0)));
   return choices[0]||null;
 }
+function formPermissionFeature(group){
+  group=canonicalGroup(group);
+  return group==='fsags54'?'LOADCONTROL_CHECKLIST':group==='clc_checklist'?'CLC_CHECKLIST':'';
+}
 function canInteractGroup(group){
   group=canonicalGroup(group);if(!isGroup(group))return false;
   const role=(()=>{try{return S(root.__sagsGetSession?.()?.role||root.currentRole||root.currentUserProfile?.role).toUpperCase()}catch(_){return ''}})();
   if(role==='AD')return true;
   try{
+    // Direct field editing is a property of the form permission itself.
+    // Do not couple it to DAILY ROSTER assignment metadata or QUICK_TIME.
+    if(!activeId())return false;
     if(activeGroupRef()!==group)return false;
-    const meta=metaRef(),env=envRef();
-    if(!S(meta?.rosterAssignmentId||env?.rosterAssignmentId))return false;
-    if(typeof root.v1134QuickTimeAllowed==='function'&&root.v1134QuickTimeAllowed()===false)return false;
-    return true;
+    const feature=formPermissionFeature(group);
+    const can=getGlobal('v485Can');
+    if(feature&&typeof can==='function')return !!can(feature);
+    const roleCan=getGlobal('roleCanForm');
+    if(typeof roleCan==='function')return !!roleCan(role,publicGroup(group));
+    // Safe compatibility fallback for older shells where V4.85 has not installed yet.
+    return role==='CBTT';
+  }catch(_){return false}
+}
+function canQuickGroup(group){
+  group=canonicalGroup(group);if(!canInteractGroup(group))return false;
+  try{
+    if(typeof root.v1134QuickTimeAllowed==='function')return root.v1134QuickTimeAllowed()!==false;
+    const can=getGlobal('v485Can');
+    return typeof can==='function'?!!can('QUICK_TIME'):true;
   }catch(_){return false}
 }
 function bindPageInteraction(group){
@@ -357,13 +384,12 @@ function bindPageInteraction(group){
       try{root.roleDenied?.('Tài khoản không có quyền chỉnh biểu mẫu này.')}catch(_){}
       return;
     }
-    // V6.3.36: page 16/17 use one direct pointer path for EVERY editable field.
-    // Do not depend on SVG child hit-testing: Safari/iOS may ignore child .hit nodes
-    // when the SVG paper layer itself has pointer-events:none. A short tap opens the
-    // canonical activate() editor; a drag/multi-touch remains scrolling/zooming.
-    pts.set(e.pointerId,{x:e.clientX,y:e.clientY,key:S(f.key),multi:pts.size>0});
+    // V6.3.41: let the Form Engine .hit element handle normal taps itself.
+    // Keep this page-level tracker only as a fallback for browsers (notably some
+    // Safari/iOS builds) that miss SVG child hit-testing.
+    const nativeHit=!!e.target?.closest?.('.hit');
+    pts.set(e.pointerId,{x:e.clientX,y:e.clientY,key:S(f.key),multi:pts.size>0,nativeHit});
     if(pts.size>1)for(const p of pts.values())p.multi=true;
-    e.stopImmediatePropagation();
   },true);
   page.addEventListener('pointermove',e=>{
     const p=pts.get(e.pointerId);if(!p)return;
@@ -371,11 +397,14 @@ function bindPageInteraction(group){
   },true);
   const finish=(e,cancel)=>{
     const p=pts.get(e.pointerId);pts.delete(e.pointerId);if(!p)return;
-    e.stopImmediatePropagation();
     if(cancel||p.multi||p.moved)return;
+    // A real SVG .hit already runs the canonical core pointer handler. Do not
+    // activate a second time (checkboxes would otherwise toggle twice).
+    if(p.nativeHit)return;
     const f=Array.isArray(fields)?fields.find(x=>Number(x.page)===spec.page&&S(x.key)===p.key):null;
     if(!f)return;
     e.preventDefault();
+    e.stopPropagation();
     activateNativeField(f);
   };
   page.addEventListener('pointerup',e=>finish(e,false),true);
@@ -452,7 +481,7 @@ function renderQuick(){
 }
 async function openQuick(group=activeGroupRef()){
   group=canonicalGroup(group);if(!isGroup(group))return false;
-  if(!canInteractGroup(group)){try{root.roleDenied?.('Tài khoản không có quyền NHẬP NHANH biểu mẫu này.')}catch(_){}return false}
+  if(!canQuickGroup(group)){try{root.roleDenied?.('Tài khoản không có quyền NHẬP NHANH biểu mẫu này.')}catch(_){}return false}
   if(!forms[group])await boot();
   seedValues(group);const st=stateRef();quickGroup=group;quickDraft={};
   for(const rf of forms[group]?.fields||[]){const k=canonicalFieldKey(group,rf.bind||rf.key);if(k)quickDraft[k]=st[k]}
@@ -485,7 +514,7 @@ function saveQuick(){
   try{root.showAutoUpdateToast?.('✓ Đã cập nhật biểu mẫu')}catch(_){}
 }
 function syncQuickButton(group=activeGroupRef()){
-  group=canonicalGroup(group);const on=isGroup(group),allowed=on&&canInteractGroup(group);
+  group=canonicalGroup(group);const on=isGroup(group),allowed=on&&canQuickGroup(group);
   const b=document.getElementById('v1134QuickTimeBtn');
   if(b){
     const display=allowed?'inline-flex':'none',priority=allowed?'important':'';
