@@ -46,7 +46,6 @@
   }
   function parseBag(value) {
     const old=numberText(value);
-    if(old.toUpperCase()==='N/A')return {pcs:'N/A',kg:'N/A',original:'N/A',valid:true,dirty:false};
     if(!old)return {pcs:'',kg:'',original:old,valid:true,dirty:false};
     const match=/^(\d+)\s*(?:pcs|kiện)?\s*\/\s*(\d+)\s*(?:kgs?|kg)?$/i.exec(old);
     return match ? {pcs:match[1],kg:match[2],original:old,valid:true,dirty:false}
@@ -68,7 +67,6 @@
       #sagsQuickEntry .sq-error{color:#ae2a24;font-weight:750;font-size:13px;min-height:19px}
       #sagsQuickEntry .sq-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:12px 0}
       #sagsQuickEntry button{min-height:46px;border-radius:11px;border:1px solid #b8d4e1;background:#e9f6fb;color:#16465c;font:800 15px system-ui,Arial;cursor:pointer}
-      #sagsQuickEntry button.sq-na{width:100%;margin-top:8px;background:#eef5ff;color:#16465c;border-color:#9fc7df}
       #sagsQuickEntry button.sq-next{background:#17637e;color:white;border-color:#17637e}
       #sagsQuickEntry button:disabled{opacity:.4;cursor:default}
       #sagsQuickEntry .sq-close{background:transparent;border:0;min-height:32px;width:100%;font-size:13px;color:#536d7b}
@@ -78,14 +76,13 @@
     document.head.appendChild(style);
     const shell=document.createElement('div');shell.id='sagsQuickEntry';shell.setAttribute('role','dialog');
     shell.setAttribute('aria-modal','true');shell.setAttribute('aria-label','Nhập nhanh FSAGS');
-    shell.innerHTML='<div class="sq-card"><div class="sq-overline" id="sqHeading"></div><div class="sq-title" id="sqTitle" aria-live="polite"></div><div class="sq-count" id="sqCount"></div><input id="sqValue" class="sq-input" type="text" inputmode="numeric" enterkeyhint="next" autocomplete="off" spellcheck="false" aria-labelledby="sqTitle"><div class="sq-hint" id="sqHint"></div><button id="sqRestoreDraft" type="button" hidden style="width:100%;min-height:36px;margin:6px 0;border:1px solid #60a5fa;background:#eff6ff;color:#1d4ed8">↩ Khôi phục số nhập dở trên máy</button><button id="sqDiscardDraft" type="button" hidden style="width:100%;min-height:32px;margin:4px 0;border:1px solid #d1d5db;background:#fff;color:#475569">Bỏ số nhập dở</button><div class="sq-error" id="sqError" role="alert"></div><button id="sqNA" class="sq-na" type="button">N/A &middot; &#212; TR&#7888;NG</button><div class="sq-actions"><button id="sqPrev" type="button">‹ Trước</button><button id="sqNext" class="sq-next" type="button">Tiếp ›</button></div><button id="sqClose" class="sq-close" type="button">Đóng nhập nhanh</button></div>';
+    shell.innerHTML='<div class="sq-card"><div class="sq-overline" id="sqHeading"></div><div class="sq-title" id="sqTitle" aria-live="polite"></div><div class="sq-count" id="sqCount"></div><input id="sqValue" class="sq-input" type="text" inputmode="numeric" enterkeyhint="next" autocomplete="off" spellcheck="false" aria-labelledby="sqTitle"><div class="sq-hint" id="sqHint"></div><button id="sqRestoreDraft" type="button" hidden style="width:100%;min-height:36px;margin:6px 0;border:1px solid #60a5fa;background:#eff6ff;color:#1d4ed8">↩ Khôi phục số nhập dở trên máy</button><button id="sqDiscardDraft" type="button" hidden style="width:100%;min-height:32px;margin:4px 0;border:1px solid #d1d5db;background:#fff;color:#475569">Bỏ số nhập dở</button><div class="sq-error" id="sqError" role="alert"></div><div class="sq-actions"><button id="sqPrev" type="button">‹ Trước</button><button id="sqNext" class="sq-next" type="button">Tiếp ›</button></div><button id="sqClose" class="sq-close" type="button">Đóng nhập nhanh</button></div>';
     document.body.appendChild(shell);
     const q=id=>shell.querySelector('#'+id);
-    ui={shell,heading:q('sqHeading'),title:q('sqTitle'),count:q('sqCount'),value:q('sqValue'),hint:q('sqHint'),error:q('sqError'),restore:q('sqRestoreDraft'),discard:q('sqDiscardDraft'),na:q('sqNA'),prev:q('sqPrev'),next:q('sqNext'),close:q('sqClose')};
+    ui={shell,heading:q('sqHeading'),title:q('sqTitle'),count:q('sqCount'),value:q('sqValue'),hint:q('sqHint'),error:q('sqError'),restore:q('sqRestoreDraft'),discard:q('sqDiscardDraft'),prev:q('sqPrev'),next:q('sqNext'),close:q('sqClose')};
     ui.prev.addEventListener('click',()=>move(-1));ui.next.addEventListener('click',()=>move(1));
-    ui.na.addEventListener('click',()=>{if(!session)return;ui.value.value='N/A';ui.value.dispatchEvent(new Event('input',{bubbles:true}));move(1)});
     ui.close.addEventListener('click',close);
-    ui.value.addEventListener('input',()=>{if(!session)return;/* empty value is valid; keep editor open */ui.error.textContent='';const st=session.steps[session.index];if(st.kind==='bag'){const draft=bagDraft(st.key);draft[st.part]=ui.value.value;draft.dirty=true;}try{root.sagsV61Draft?.record(st.key,ui.value.value,st.kind==='bag'?st.part:'quick');}catch(_){}});
+    ui.value.addEventListener('input',()=>{if(!session)return;ui.error.textContent='';const st=session.steps[session.index];if(st.kind==='bag'){const draft=bagDraft(st.key);draft[st.part]=ui.value.value;draft.dirty=true;}try{root.sagsV61Draft?.record(st.key,ui.value.value,st.kind==='bag'?st.part:'quick');}catch(_){}});
     ui.discard.addEventListener('click',()=>{
       if(!session)return;const st=session.steps[session.index];
       try{root.sagsV61Draft?.forget(st.key,st.kind==='bag'?st.part:'quick')}catch(_){}
@@ -136,16 +133,6 @@
   function saveBag(st,leaving){
     const draft=bagDraft(st.key);
     const raw=numberText(ui.value.value);
-    if(raw.toUpperCase()==='N/A'){
-      draft.pcs='N/A';draft.kg='N/A';draft.original='N/A';draft.valid=true;draft.dirty=false;
-      if(numberText(state[st.key]).toUpperCase()!=='N/A'){
-        const hadOld=Object.prototype.hasOwnProperty.call(state,st.key),old=state[st.key];
-        state[st.key]='N/A';
-        try{persist();}catch(e){if(hadOld)state[st.key]=old;else delete state[st.key];ui.error.textContent=String(e?.message||e);return false}
-      }
-      try{root.sagsV61Draft?.forget(st.key,'pcs');root.sagsV61Draft?.forget(st.key,'kg')}catch(_){ }
-      return true;
-    }
     if(raw && !/^\d+$/.test(raw)){ui.error.textContent='Chỉ nhập số nguyên không âm.';return false}
     draft[st.part]=raw;
     if(!leaving || st.part!=='kg')return true;
@@ -173,17 +160,17 @@
     const st=session.steps[session.index];
     if(st.kind==='bag')return saveBag(st,leaving);
     const value=numberText(ui.value.value);
-    if(value && !/^\d+$/.test(value) && value.toUpperCase()!=='N/A'){
+    if(value && !/^\d+$/.test(value) && !(st.kind==='equipment'&&value.toUpperCase()==='N/A')){
       ui.error.textContent=st.kind==='equipment'?'Nhập số hoặc N/A.':'Chỉ nhập số nguyên không âm.';return false;
     }
     const canonical=value.toUpperCase()==='N/A'?'N/A':value;
     if(canonical!==numberText(state[st.key])){
       const hadOld=Object.prototype.hasOwnProperty.call(state,st.key),old=state[st.key];
       if(canonical)state[st.key]=canonical;else delete state[st.key];
-      if(st.kind==='number'&&canonical!=='N/A')updateBagTotals();
+      if(st.kind==='number')updateBagTotals();
       try{persist();}catch(e){
         if(hadOld)state[st.key]=old;else delete state[st.key];
-        if(st.kind==='number'&&canonical!=='N/A')updateBagTotals();
+        if(st.kind==='number')updateBagTotals();
         ui.error.textContent='Không lưu được trên máy. Giữ nguyên ô đang nhập; không tải lại. '+String(e?.message||e);
         return false;
       }

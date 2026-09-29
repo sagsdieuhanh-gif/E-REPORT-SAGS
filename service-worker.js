@@ -1,14 +1,13 @@
-/* E-REPORT SAGS V6.4.25 · CORE PHASE RESTORE + SAFE CACHE CLEANUP · IMMUTABLE EXECUTABLE PATHS / PINNED VERIFIED SHELL
+/* E-REPORT SAGS V6.4.4 · CORE PHASE RESTORE + SAFE CACHE CLEANUP · IMMUTABLE EXECUTABLE PATHS / PINNED VERIFIED SHELL
    Base: V4.8.10B Layered PDF + HF1–HF4. Never mix navigation HTML with a different runtime.
 */
 'use strict';
-const BUILD='V6.4.25-20260929-FSAGS54-94-DIRECT-EDITOR-01';
-const DISPLAY_VERSION='V6.4.25';
-const CACHE_NAME='sags-app-shell-v6425-fsags54-94-direct-editor-01';
-const META_CACHE_NAME='sags-app-meta-v6425-fsags54-94-direct-editor-01';
+const BUILD='V6.4.5-20260928-MYFLIGHT-FSAGS-UI-CLEAN-R3-01';
+const DISPLAY_VERSION='V6.4.5';
+const CACHE_NAME='sags-app-shell-v645-myflight-fsags-ui-clean-r3-01';
+const META_CACHE_NAME='sags-app-meta-v645-myflight-fsags-ui-clean-r3-01';
 const ASSET_MANIFEST_URL='./asset-manifest.json';
-const MUTABLE_METADATA=new Set(['./forms/forms.registry.json']);
-const SAGS_BOOTSTRAP=["./index.html","./app/core/app.v503.js","./app/styles/app.bundle.css","./app/core/runtime.v503hf2.bundle.js","./app/modules/daily-roster.v502.js","./app/modules/self-accept.v502.js","./app/modules/admin-reset.v503hf2.js","./app/modules/roster-lite.v5.js","./app/modules/carrier-notebook.v1.js","./app/modules/quick-entry.v1.js","./app/modules/tvj-gof-035.v630.js","./app/modules/tvj-gof-035.v631.js","./app/modules/tvj-gof-035.v632.js","./forms/fsags54/page-01.png","./forms/fsags94/page-01.png","./app/modules/fsags54-94.v622.js","./app/modules/form-registry-runtime.v647.js","./app/modules/form-registry-runtime.v6419.js","./app/modules/stability.v6.js","./app/modules/stability.v6-core.js","./app/modules/mobile-draft-recovery.v1.js","./app/modules/indexeddb-flight-store.v1.js","./app/modules/cross-browser-entry.v1.js","./app/modules/ui-preferences.v1.js","./app/styles/new-ui-v1.css","./service-worker.js","./version.json"];
+const SAGS_BOOTSTRAP=["./index.html","./app/core/app.v503.js","./app/styles/app.bundle.css","./app/core/runtime.v503hf2.bundle.js","./app/modules/daily-roster.v502.js","./app/modules/self-accept.v502.js","./app/modules/admin-reset.v503hf2.js","./app/modules/roster-lite.v5.js","./app/modules/carrier-notebook.v1.js","./app/modules/quick-entry.v1.js","./app/modules/tvj-gof-035.v630.js","./app/modules/tvj-gof-035.v631.js","./app/modules/tvj-gof-035.v632.js","./forms/fsags54/page-01.png","./forms/fsags94/page-01.png","./app/modules/fsags54-94.v622.js","./app/modules/stability.v6.js","./app/modules/stability.v6-core.js","./app/modules/mobile-draft-recovery.v1.js","./app/modules/indexeddb-flight-store.v1.js","./app/modules/cross-browser-entry.v1.js","./app/modules/ui-preferences.v1.js","./app/styles/new-ui-v1.css","./service-worker.js","./version.json"];
 const HOME= new URL('./index.html',self.registration.scope).href;
 const SCOPE_PATH=new URL(self.registration.scope).pathname;
 function scopeUrl(path){return new URL(path,self.registration.scope).href}
@@ -184,7 +183,6 @@ async function safeCleanupOldReleaseCaches(){
  const prior=names.filter(name=>name!==CACHE_NAME&&name.startsWith('sags-app-shell-'));
  const current=await caches.open(CACHE_NAME);let moved=0,fetched=0;
  for(const [path,meta] of Object.entries(m.assets||{})){
-  if(MUTABLE_METADATA.has(path))continue;
   const key=scopeUrl(path);let hit=await current.match(key),good=false;
   if(hit){try{await checksum(hit,meta,path);good=true}catch(_){try{await current.delete(key)}catch(__){}}}
   if(good)continue;
@@ -202,7 +200,6 @@ async function safeCleanupOldReleaseCaches(){
  }
  // Current release must now be standalone before any whole-cache deletion.
  for(const [path,meta] of Object.entries(m.assets||{})){
-  if(MUTABLE_METADATA.has(path))continue;
   const r=await current.match(scopeUrl(path));if(!r)throw new Error('Standalone cache missing '+path);await checksum(r,meta,path);
  }
  const deleted=[];

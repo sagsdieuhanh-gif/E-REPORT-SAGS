@@ -7986,40 +7986,49 @@ async function sagsV6111PdfVerifiedWorker(){
   return active;
 }
 root.sagsV495BeforeExport=async()=>{
-  const validateRegistry=registry=>{
-    if(Number(registry?.schema)!==2||!Array.isArray(registry?.forms)||!registry.forms.length)
-      throw new Error('forms/forms.registry.json thiếu schema/forms hợp lệ.');
-    for(const f of registry.forms){
-      if(!String(f?.id||'')||!Array.isArray(f?.pages)||!Array.isArray(f?.fields))throw new Error('Registry có form không hợp lệ: '+String(f?.id||'?'));
-      const pageIds=new Set();
-      for(const pg of f.pages){
-        const id=String(pg?.id||'');
-        if(!id||pageIds.has(id)||!(Number(pg?.width)>0)||!(Number(pg?.height)>0))throw new Error('Registry có page không hợp lệ ở '+String(f.id));
-        pageIds.add(id);
-      }
-      for(const fld of f.fields)if(!String(fld?.key||'')||!pageIds.has(String(fld?.pageId||'')))throw new Error('Registry có field không hợp lệ ở '+String(f.id));
-    }
-    return registry;
-  };
-  let registry=null,freshError=null;
-  try{
-    const r=await fetch('./forms/forms.registry.json?__sags_registry='+Date.now(),{cache:'no-store'});
-    if(!r.ok)throw new Error('HTTP '+r.status);
-    registry=validateRegistry(await r.json());
-  }catch(e){freshError=e}
-  if(!registry){
-    try{registry=validateRegistry(clone(published))}catch(_){}
-    if(registry)console.warn('V6.4.23 PDF uses last valid Form Manager registry because latest server registry is temporarily unavailable/invalid.',freshError?.message||freshError);
+  const expectedBuild=String(root.__SAGS_RELEASE_BUILD__||'');
+  if(!expectedBuild)throw new Error('Không xác định được phiên bản ứng dụng đang chạy. Vui lòng báo quản trị viên.');
+  const stamp=Date.now();
+  const [remote,registryResponse]=await Promise.all([
+    fetch('./version.json?__sags_strict=1&t='+stamp,{cache:'no-store'}).catch(()=>null),
+    fetch('./forms/forms.registry.json?t='+stamp,{cache:'no-store'}).catch(()=>null)
+  ]);
+  // V6.3.4: forms/forms.registry.json is mutable metadata. PDF export must never be
+  // blocked by asset-manifest/version synchronization merely because the registry
+  // was copied/published independently. Program release verification remains the
+  // Service Worker's responsibility; here we validate the live registry itself.
+  let remoteVersion={build:expectedBuild,version:'',displayVersion:''};
+  if(remote?.ok){try{const x=await remote.json();if(x&&typeof x==='object')remoteVersion=x}catch(_){}}
+  if(!registryResponse?.ok)throw new Error('Không tải được forms/forms.registry.json mới nhất. Dữ liệu vẫn được giữ.');
+  let registry=null;
+  try{registry=await registryResponse.json()}catch(_){throw new Error('forms/forms.registry.json không phải JSON hợp lệ.');}
+  if(Number(registry?.schema)!==2||!Array.isArray(registry?.forms)||!registry.forms.length)
+    throw new Error('forms/forms.registry.json thiếu schema/forms hợp lệ.');
+  for(const f of registry.forms){
+    if(!String(f?.id||'')||!Array.isArray(f?.pages)||!Array.isArray(f?.fields))throw new Error('Registry có form không hợp lệ.');
+    const pageIds=new Set();
+    for(const pg of f.pages){const id=String(pg?.id||'');if(!id||pageIds.has(id)||!(Number(pg?.width)>0)||!(Number(pg?.height)>0))throw new Error('Registry có page không hợp lệ ở '+String(f.id));pageIds.add(id);}
+    for(const fld of f.fields){if(!String(fld?.key||'')||!pageIds.has(String(fld?.pageId||'')))throw new Error('Registry có field không hợp lệ ở '+String(f.id));}
   }
-  if(!registry)throw new Error('Không có forms/forms.registry.json hợp lệ để dựng PDF. '+String(freshError?.message||freshError||''));
+  let verified=null,workerError=null;
+  try{
+    const worker=await sagsV6111PdfVerifiedWorker();
+    verified=await new Promise(resolve=>{
+      const channel=new MessageChannel();let done=false;
+      const finish=info=>{if(done)return;done=true;clearTimeout(timer);channel.port1.close();resolve(info)};
+      const timer=setTimeout(()=>finish(null),5000);
+      channel.port1.onmessage=e=>finish(e.data||null);
+      try{worker.postMessage({type:'SAGS_QUERY_BUILD'},[channel.port2])}catch(_e){finish(null)}
+    });
+  }catch(e){workerError=e}
+  if(verified?.ready!==true&&remoteVersion?.build&&remoteVersion.build!==expectedBuild)
+    console.warn('V6.3.4 PDF guard: server đang công bố build khác, nhưng PDF tiếp tục bằng app hiện tại + registry hợp lệ.',remoteVersion.build,expectedBuild);
+  if(verified?.ready!==true)console.warn('V6.3.4 PDF guard: worker chưa trả ready; tiếp tục bằng app hiện tại + registry validation.',workerError?.message||workerError||'no-worker-status');
   published=registry;fmDedupePublishedSystemV636(published);fmNormalizeRegistryV487(published);
-  if(!root.__SAGS_V440_FORM_MANAGER_OPEN){draft=clone(published);draft.schema=2;fmNormalizeRegistryV487(draft)}
-  syncLegacyToLive(false,published);
-  // IMPORTANT: do not require every historical system page here.
-  // Each export validates only the page/form it actually renders, so a newly
-  // published registry can be independent from the application release.
+  if(!root.__SAGS_V440_FORM_MANAGER_OPEN){draft=clone(published);draft.schema=2;fmNormalizeRegistryV487(draft)}syncLegacyToLive(false,published);
+  const required=[1,2,4,6,7,9,10,11,12,13];
+  for(const pageNo of required)if(!fmManagedPageV495(pageNo))throw new Error('Thiếu trang '+pageNo+' trong Form Manager; dừng xuất PDF.');
   if(typeof draw==='function' && (isAD() || typeof root.sagsV450FastRenderPage!=='function' || !document.querySelector("svg[id^='svg'] > *")))draw();
-  return true;
 };
 async function previewCustomPageV45(f,p){
   status('Đang dựng PDF preview…');
@@ -8149,7 +8158,7 @@ async function customPicker(){
 }
 root.sagsV440OpenCustomFormPicker=customPicker;
 async function injectRuntimeButton(){await loadPublished();const forms=(published.forms||[]).filter(f=>!f.legacy),bar=document.querySelector('.toolbar-row.main-actions');if(!bar)return;let b=$('roleBtnCustomForms');if(!forms.length){if(b)b.style.display='none';return}if(!b){b=document.createElement('button');b.id='roleBtnCustomForms';b.textContent='BIỂU MẪU+';b.onclick=customPicker;bar.appendChild(b)}b.style.display=''}
-async function bootV45Layout(){try{await loadPublished(true);mergeRegistry();syncLegacyToLive(true,published);await injectRuntimeButton()}catch(e){root.__SAGS_FORM_REGISTRY_LIVE_OK=false;console.warn('Không tải được forms/forms.registry.json mới nhất khi khởi động',e?.message||e)}}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>{bootV45Layout();},350),{once:true});else setTimeout(()=>bootV45Layout(),350);root.addEventListener('pageshow',()=>setTimeout(async()=>{try{await loadPublished(true);if(!root.__SAGS_V440_FORM_MANAGER_OPEN){mergeRegistry();syncLegacyToLive(true,published)}await injectRuntimeButton()}catch(e){console.warn('Không refresh được forms/forms.registry.json mới nhất',e?.message||e)}},300),{passive:true});root.sagsV450GetFormRegistry=()=>clone(published);root.sagsV450ApplyLayout=async()=>{let reg=null;try{reg=await loadPublished(true)}catch(e){if(published?.forms?.length){reg=published;console.warn('V6.4.23 registry refresh failed; using last valid registry for live/PDF',e?.message||e)}else throw e}if(!root.__SAGS_V440_FORM_MANAGER_OPEN){draft=clone(reg);draft.schema=2;fmNormalizeRegistryV487(draft)}return syncLegacyToLive(true,reg)};
+async function bootV45Layout(){try{await loadPublished(true);mergeRegistry();syncLegacyToLive(true,published);await injectRuntimeButton()}catch(e){root.__SAGS_FORM_REGISTRY_LIVE_OK=false;console.warn('Không tải được forms/forms.registry.json mới nhất khi khởi động',e?.message||e)}}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>{bootV45Layout();},350),{once:true});else setTimeout(()=>bootV45Layout(),350);root.addEventListener('pageshow',()=>setTimeout(async()=>{try{await loadPublished(true);if(!root.__SAGS_V440_FORM_MANAGER_OPEN){mergeRegistry();syncLegacyToLive(true,published)}await injectRuntimeButton()}catch(e){console.warn('Không refresh được forms/forms.registry.json mới nhất',e?.message||e)}},300),{passive:true});root.sagsV450GetFormRegistry=()=>clone(published);root.sagsV450ApplyLayout=async()=>{const reg=await loadPublished(true);if(!root.__SAGS_V440_FORM_MANAGER_OPEN)mergeRegistry();return syncLegacyToLive(true,reg)};
 })(typeof window!=='undefined'?window:globalThis);
 /* ===== END V4.4.0 FORM MANAGER ===== */
 

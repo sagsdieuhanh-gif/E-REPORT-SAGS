@@ -120,10 +120,8 @@ async function openLite(requestedDate){
     const man=await root.sagsV478ManifestForWorker(d);
     const status=document.getElementById('fwcStatus');
     if(status)status.textContent=man.fromDeviceCache?'Đang ngoại tuyến · danh sách phân công đã lưu trên máy; chỉ mở form khi kết nối cho phép.':'MY FLIGHT · chỉ nhận nhiệm vụ của tài khoản và ngày đang chọn';
-    let renderer=root.__SAGS_DAILY_ROSTER_FINAL_V1199?.renderPersonal;
-    for(let i=0;typeof renderer!=='function'&&i<20;i++){await new Promise(r=>setTimeout(r,50));renderer=root.__SAGS_DAILY_ROSTER_FINAL_V1199?.renderPersonal}
-    if(typeof renderer!=='function')throw new Error('MY FLIGHT renderer mới chưa sẵn sàng; không dùng giao diện legacy.');
-    await renderer(d);return true;
+    await root.__SAGS_DAILY_ROSTER_FINAL_V1199?.renderPersonal?.(d);
+    return true;
   }catch(e){const el=document.getElementById('fwcStatus');if(el)el.textContent='Không đọc được MY FLIGHT: '+S(e?.message||e);return false}
 }
 openLite.__v477MailboxLite=true;
@@ -132,11 +130,12 @@ async function refreshLite(){
   root.sagsV477InvalidateQueueStatus?.();if(live.ref){try{const snap=await live.ref.once('value');if(live.handler)live.handler(snap)}catch(_){}}return openLite(date());
 }
 refreshLite.__v477MailboxLite=true;
-function renderCanonicalIfVisible(){if(role()==='AD'||!visible())return;const renderer=root.__SAGS_DAILY_ROSTER_FINAL_V1199?.renderPersonal;if(typeof renderer==='function')Promise.resolve(renderer(date())).catch(e=>console.warn('V6.4.24 canonical MY FLIGHT render',e?.message||e))}
-function install(){if(root.flightWorkspaceOpenList!==openLite)root.flightWorkspaceOpenList=openLite;if(root.flightWorkspaceRefresh!==refreshLite)root.flightWorkspaceRefresh=refreshLite;const b=document.getElementById('roleBtnRosterFlights');if(b&&role()!=='AD')b.onclick=()=>openLite(dateNow())}
-function assertCanonical(){install();renderCanonicalIfVisible()}
-root.sagsV478OpenMyFlightLite=openLite;root.sagsV478RefreshMyFlightLite=refreshLite;root.sagsV478InstallCanonicalMyFlight=assertCanonical;
-const baseApplyRoleUI=root.applyRoleUI;if(typeof baseApplyRoleUI==='function'&&!baseApplyRoleUI.__v6424MyFlightAuthority){const wrapped=function(){const out=baseApplyRoleUI.apply(this,arguments);[0,120,500,1400].forEach(ms=>setTimeout(assertCanonical,ms));return out};wrapped.__v6424MyFlightAuthority=true;wrapped.__v6424Base=baseApplyRoleUI;root.applyRoleUI=wrapped;try{applyRoleUI=wrapped}catch(_){}}
-install();setTimeout(assertCanonical,350);setTimeout(assertCanonical,1100);setTimeout(assertCanonical,3600);root.addEventListener?.('pageshow',()=>setTimeout(assertCanonical,60),{passive:true});root.addEventListener?.('focus',()=>setTimeout(assertCanonical,60),{passive:true});document.addEventListener?.('visibilitychange',()=>{if(!document.hidden)setTimeout(assertCanonical,80)},{passive:true});
+function install(){
+  if(root.flightWorkspaceOpenList!==openLite)root.flightWorkspaceOpenList=openLite;
+  if(root.flightWorkspaceRefresh!==refreshLite)root.flightWorkspaceRefresh=refreshLite;
+  const b=document.getElementById('roleBtnRosterFlights');if(b&&role()!=='AD')b.onclick=()=>openLite(dateNow());
+}
+install();setTimeout(install,1800);setTimeout(install,3600);
+root.addEventListener?.('pageshow',install,{passive:true});
 root.sagsV477MailboxStats=root.sagsV478MailboxStats;
 })(typeof window!=='undefined'?window:globalThis);

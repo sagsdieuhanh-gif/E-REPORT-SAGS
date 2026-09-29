@@ -4,7 +4,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1, maximum-scale=6, user-scalable=yes, viewport-fit=cover, interactive-widget=resizes-content" name="viewport"/>
 <title>PĐH SAGS-CXR</title>
-<link href="./manifest.webmanifest?v=V6.4.24" rel="manifest"/>
+<link href="./manifest.webmanifest?v=5" rel="manifest"/>
 <link href="./assets/icons/favicon-16.png?v=486" rel="icon" sizes="16x16" type="image/png"/>
 <link href="./assets/icons/favicon-32.png?v=486" rel="icon" sizes="32x32" type="image/png"/>
 <link href="./assets/icons/icon-192.png?v=486" rel="icon" sizes="192x192" type="image/png"/>
@@ -2351,7 +2351,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <style id="sags-v115-clean-ui">
 #roleLoginHint,#v1014UsernameLoginNote,.templateNote,.fs09qUsageNote,.v377CreateFormNote,.v1019Hint{display:none!important}
 </style>
-<link rel="stylesheet" href="./app/styles/app.bundle.css?v=V6.4.26-20260929-MOBILE-TOUCH-QUICK-FIX">
+<link rel="stylesheet" href="./app/styles/app.bundle.css?v=V6.4.5-20260928-MYFLIGHT-FSAGS-UI-CLEAN-R3-01">
 <style id="v502RosterDirectStyle">#v310ShiftNav,#v1113QrFormBtn,.hf4Release{display:none!important}</style>
 <style id="v503hf1AdControlResetStyle">
 #activityMonitorModal #v503AdminResetPanel #v378ResetRecordsBtn{background:#075fb0!important;color:#fff!important;border-color:#075fb0!important;grid-column:auto!important;min-height:44px;white-space:normal!important}
@@ -2360,7 +2360,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 #activityMonitorModal #v503AdminResetPanel #v378ResetStatus{grid-column:auto!important;max-width:100%;overflow-wrap:anywhere;box-sizing:border-box;}
 @media(max-width:600px){#activityMonitorModal #v503AdminResetPanel{padding:10px!important;margin:9px 0 12px!important;}}
 </style>
-<link rel="stylesheet" href="./app/styles/new-ui-v1.css?v=V6.4.26-20260929-MOBILE-TOUCH-QUICK-FIX">
+<link rel="stylesheet" href="./app/styles/new-ui-v1.css?v=V6.4.5-20260928-MYFLIGHT-FSAGS-UI-CLEAN-R3-01">
 
 <script id="sags-v620-unified-form-migration">
 (function(){
@@ -6263,12 +6263,7 @@ function draw(){
     const r3=sv("route3");
     state.bbbtRoute=[r1,r2,r3].filter(Boolean).join("/");
   }
-  // V6.4.19: clear EVERY runtime SVG overlay before repainting. Pages 16/17
-  // are created dynamically for FSAGS54/94 and were missing from the old
-  // hard-coded clear list, leaving stale signature <image> nodes permanently
-  // stacked in the DOM after re-sign/delete operations.
-  const __sagsSvgPages=new Set(fields.map(f=>Number(f?.page||0)).filter(n=>Number.isFinite(n)&&n>0));
-  for(const n of __sagsSvgPages){const s=document.getElementById("svg"+n);if(s)s.innerHTML=""}
+  svg1.innerHTML="";svg2.innerHTML="";svg4.innerHTML="";svg6.innerHTML="";svg7.innerHTML="";svg9.innerHTML="";svg10.innerHTML="";svg11.innerHTML="";svg12.innerHTML="";const svg13=document.getElementById("svg13");if(svg13)svg13.innerHTML="";
  for(const f of fields){
   const __sagsRuntimeSigV634=Number(f?.page||0)+"|"+String(f?.key||"");
   if(__sagsDrawSeenV634.has(__sagsRuntimeSigV634))continue;
@@ -7081,7 +7076,7 @@ function restoreEntryViewport(){
 }
 function activate(f){
  // NEW UI V1: opt-in for targeted existing numeric fields only; bypass the old modal.
- if(!window.__SAGS_FORCE_NATIVE_ENTRY__ && window.sagsQuickTryActivate?.(f))return;
+ if(window.sagsQuickTryActivate?.(f))return;
  captureEntryViewport();
  if(f.type==="signature" && signModal && signModal.style.display==="flex") return;
  if(!canCreateOrderedTime(f)) return;
@@ -7282,16 +7277,6 @@ function activate(f){
    catch(e){try{entryText.focus();}catch(_){}}
  });
 }
-/* V6.4.22 — ONE native editor path for current and future forms.
-   Modules/registry adapters must call this API instead of building their own entry modal
-   or passing through quick-entry interception. */
-window.sagsOpenNativeFieldEditor=function(f){
-  if(!f||!f.key)return false;
-  const had=Object.prototype.hasOwnProperty.call(window,"__SAGS_FORCE_NATIVE_ENTRY__"),prev=window.__SAGS_FORCE_NATIVE_ENTRY__;window.__SAGS_FORCE_NATIVE_ENTRY__=true;
-  try{activate(f);const modal=document.getElementById("entry");return !!(modal&&editing===f&&getComputedStyle(modal).display!=="none"&&getComputedStyle(modal).visibility!=="hidden")}
-  finally{if(had)window.__SAGS_FORCE_NATIVE_ENTRY__=prev;else try{delete window.__SAGS_FORCE_NATIVE_ENTRY__}catch(_e){window.__SAGS_FORCE_NATIVE_ENTRY__=false}}
-};
-window.sagsActivateNativeField=window.sagsOpenNativeFieldEditor;
 function shouldUppercaseManualField(f){
   if(!f) return false;
   if(f.type!=="text") return false;
@@ -8131,12 +8116,10 @@ function v479ShowPreparedButtons(){
   if(down){down.style.display=preparedPdfFile?"block":"none";down.textContent=ios?"LƯU PDF TRÊN iPHONE/iPAD":"Tải PDF";}
 }
 function getCurrentExportMainForm(){
-  // V6.4.19: every system form, including F/SAGS-CXR/54 and 94, uses the same export chooser.
-  const canon=g=>{const x=String(g||"").trim().toLowerCase();if(x==="fsags54")return"fsags54";if(["clc_checklist","fsags94","fsags94_clc"].includes(x))return"fsags94";return x};
-  const live=canon(activeFormGroup),allowed=["fsags","fsags421","fsags551","fsags09","loading208","tvjgof035","fsags54","fsags94"];
-  if(allowed.includes(live))return live;
-  const stored=canon(getActiveFlightMainForm());
-  return allowed.includes(stored)?stored:"fsags";
+  // V6.2.0-TVJ: TVJ-GOF-035 is a first-class one-page RAMP form on runtime page 15.
+  // If BBBT is being viewed, fall back to the main form stored on the current flight session.
+  if(["fsags","fsags421","fsags551","fsags09","loading208","tvjgof035"].includes(activeFormGroup)) return activeFormGroup;
+  return getActiveFlightMainForm();
 }
 function openExportChoiceMenu(){
   const modal=document.getElementById("exportChoiceModal");
@@ -8151,9 +8134,7 @@ function openExportChoiceMenu(){
     fsags551:{title:"FSAGS 55.1"},
     fsags09:{title:"F/SAGS-CXR/09"},
     loading208:{title:"F/SAG-CXR/208 · Loading Detail Sheet"},
-    tvjgof035:{title:"TVJ-GOF-035 · VZ Ramp Checklist"},
-    fsags54:{title:"F/SAGS-CXR/54 · Load Control Checklist"},
-    fsags94:{title:"F/SAGS-CXR/94 · CLC Checklist"}
+    tvjgof035:{title:"TVJ-GOF-035 · VZ Ramp Checklist"}
   }[main]||{title:"FSAGS 42.3"};
   const ops=getCurrentFlightOps();
   const ferry=ferryStatusText(ops);
@@ -8320,9 +8301,9 @@ async function sendReport(kind="all"){
   if(kind==="bbbt" || kind==="all"){
     nameGroup=(typeof getCurrentExportMainForm==="function") ? getCurrentExportMainForm() : ((typeof getActiveFlightMainForm==="function") ? getActiveFlightMainForm() : "fsags");
   }
-  if(!["fsags","fsags421","fsags551","fsags09","loading208","tvjgof035","fsags54","fsags94"].includes(nameGroup)) nameGroup="fsags";
+  if(!["fsags","fsags421","fsags551","fsags09","loading208","tvjgof035"].includes(nameGroup)) nameGroup="fsags";
   const formName=(kind==="bbbt") ? "BBBT" :
-    (nameGroup==="fsags54" ? "F-SAGS-CXR-54" : (nameGroup==="fsags94" ? "F-SAGS-CXR-94" : (nameGroup==="tvjgof035" ? "TVJ-GOF-035" : (nameGroup==="loading208" ? "F-SAG-CXR-208_LOADING_DETAIL" : (nameGroup==="fsags421" ? "FSAGS_42.1" : (nameGroup==="fsags551" ? "FSAGS_55.1" : (nameGroup==="fsags09" ? "FSAGS-CXR-09" : "FSAGS_42.3")))))));
+    (nameGroup==="tvjgof035" ? "TVJ-GOF-035" : (nameGroup==="loading208" ? "F-SAG-CXR-208_LOADING_DETAIL" : (nameGroup==="fsags421" ? "FSAGS_42.1" : (nameGroup==="fsags551" ? "FSAGS_55.1" : (nameGroup==="fsags09" ? "FSAGS-CXR-09" : "FSAGS_42.3")))));
   const {flightPart,datePart}=filenameMetaForGroup(nameGroup);
   const fileName=`${safeFilePart(formName)}_${flightPart}_${datePart}.pdf`;
   // Android native bridge remains supported. It only handles the legacy full report,
@@ -8368,16 +8349,6 @@ async function sendReport(kind="all"){
       if(typeof window.sagsV495ManagedPage==="function"&&!window.sagsV495ManagedPage(15))throw new Error("TVJ-GOF-035 chưa được đăng ký canonical ở Trang 15.");
       try{window.sagsTvjSyncAccountIdentity?.()}catch(_){}
       pages.push(await renderReportPage(15));
-    }else if(kind==="fsags54"){
-      const status=document.getElementById("exportStatus");
-      if(status) status.textContent="Đang tạo F/SAGS-CXR/54...";
-      const render5494=window.sagsV6419Render5494Page;
-      pages.push(await (typeof render5494==="function"?render5494(16):renderReportPage(16)));
-    }else if(kind==="fsags94"){
-      const status=document.getElementById("exportStatus");
-      if(status) status.textContent="Đang tạo F/SAGS-CXR/94...";
-      const render5494=window.sagsV6419Render5494Page;
-      pages.push(await (typeof render5494==="function"?render5494(17):renderReportPage(17)));
     }else if(kind==="bbbt"){
       const status=document.getElementById("exportStatus");
       if(status) status.textContent="Đang tạo BBBT...";
@@ -9581,31 +9552,10 @@ function saveSignature(){
  draw();
 }
 function closeSignature(){signModal.style.display="none";signing=null;activeKey=null}
-(function(){
- let activePointerId=null,last=null;
- function pt(e){const r=sigCanvas.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}}
- function finish(e){
-   if(activePointerId===null)return;
-   if(e&&e.pointerId!==undefined&&e.pointerId!==activePointerId)return;
-   try{sigCanvas.releasePointerCapture?.(activePointerId)}catch(_){}
-   activePointerId=null;last=null;
- }
- sigCanvas.addEventListener("pointerdown",e=>{
-   if(e.isPrimary===false||activePointerId!==null){e.preventDefault();return}
-   activePointerId=e.pointerId;last=pt(e);
-   try{sigCanvas.setPointerCapture?.(e.pointerId)}catch(_){}
-   e.preventDefault();
- });
- sigCanvas.addEventListener("pointermove",e=>{
-   if(activePointerId===null||e.pointerId!==activePointerId||!last)return;
-   const q=pt(e),c=sigCanvas.getContext("2d");
-   c.beginPath();c.moveTo(last.x,last.y);c.lineTo(q.x,q.y);c.stroke();last=q;e.preventDefault();
- });
- sigCanvas.addEventListener("pointerup",finish);
- sigCanvas.addEventListener("pointercancel",finish);
- window.addEventListener("pointerup",finish,true);
- window.addEventListener("pointercancel",finish,true);
-})();
+(function(){let down=false,last=null;function pt(e){const r=sigCanvas.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}}
+sigCanvas.addEventListener("pointerdown",e=>{down=true;last=pt(e);e.preventDefault()});
+sigCanvas.addEventListener("pointermove",e=>{if(!down)return;const q=pt(e),c=sigCanvas.getContext("2d");c.beginPath();c.moveTo(last.x,last.y);c.lineTo(q.x,q.y);c.stroke();last=q;e.preventDefault()});
+window.addEventListener("pointerup",()=>down=false)})();
 // PAGE 1 - header manual fields
 // AUTO V1.11: these hitboxes are aligned to the visible dotted/value area,
 // not to the full table-row height. This removes the "selected region too high" effect.
@@ -10944,9 +10894,9 @@ try {
   if(h) h.textContent="Lỗi khởi tạo: "+err.message;
   alert("Lỗi JavaScript: "+err.message);
 }
-const APP_BUILD_VERSION="V6.4.26-20260929-MOBILE-TOUCH-QUICK-FIX";
+const APP_BUILD_VERSION="V6.4.5-20260928-MYFLIGHT-FSAGS-UI-CLEAN-R3-01";
 window.__SAGS_RELEASE_BUILD__=APP_BUILD_VERSION;
-const APP_DISPLAY_VERSION="V6.4.26";
+const APP_DISPLAY_VERSION="V6.4.5";
 // V1.1.103: hotfix duy nhất lỗi Firebase RTDB ancestor/descendant khi đồng bộ DAILY ROSTER; không thay đổi nghiệp vụ khác.
 // V4.21 — SAFE UPDATE SAVE
 // Before switching to a newly installed app version, force-save all current
@@ -10987,7 +10937,7 @@ function syncDisplayedAppVersion(){
     if(marker) marker.textContent=APP_DISPLAY_VERSION;
     const login=document.getElementById("loginReleaseVersion");if(login)login.textContent=APP_DISPLAY_VERSION;
     const hint=document.getElementById("statusHint");
-    if(hint && !/^Lỗi khởi tạo:/.test(hint.textContent||"")) hint.textContent=APP_DISPLAY_VERSION+" 29/09/26";
+    if(hint && !/^Lỗi khởi tạo:/.test(hint.textContent||"")) hint.textContent=APP_DISPLAY_VERSION+" 28/09/26";
     document.documentElement.setAttribute("data-app-version",APP_DISPLAY_VERSION);
   }catch(_e){}
 }
@@ -11224,7 +11174,7 @@ async function applyAppUpdate(){
     if(btn){btn.disabled=true;btn.textContent='ĐANG CẬP NHẬT…';}
     let reg=appUpdateRegistration||await navigator.serviceWorker.getRegistration('./');
     if(!reg){
-      reg=await navigator.serviceWorker.register('./service-worker.js?build='+encodeURIComponent(APP_BUILD_VERSION),{scope:'./',updateViaCache:'none'});
+      reg=await navigator.serviceWorker.register('./service-worker.js',{scope:'./',updateViaCache:'none'});
       appUpdateRegistration=reg;wireUpdateSignals(reg);
     }
     await reg.update();
@@ -11307,7 +11257,7 @@ function wireUpdateSignals(reg){
 if("serviceWorker" in navigator){
   window.addEventListener("load",async()=>{
     try{
-      const reg=await navigator.serviceWorker.register("./service-worker.js?build="+encodeURIComponent(APP_BUILD_VERSION),{updateViaCache:"none"});
+      const reg=await navigator.serviceWorker.register("./service-worker.js",{updateViaCache:"none"});
       appUpdateRegistration=reg;
       wireUpdateSignals(reg);
       await checkForNewestBuild(reg);
@@ -19296,30 +19246,15 @@ async function roleSha256(v){
   const buf=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(String(v||"")));
   return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join("");
 }
-function canonicalRoleFormGroup(group){
-  const g=String(group||"").trim().toLowerCase().replace(/\s+/g,"_");
-  if(["fsags54","f/sags-cxr/54","f_sags_cxr_54"].includes(g))return "fsags54";
-  if(["clc_checklist","fsags94","fsags94_clc","f/sags-cxr/94","f_sags_cxr_94"].includes(g))return "clc_checklist";
-  return g;
-}
-function roleCanAssignedForm(group){
-  const target=canonicalRoleFormGroup(group);if(!target)return false;
-  try{
-    const p=currentUserProfile||{};
-    const normUser=v=>{try{return typeof normalizePersonalUsername==="function"?normalizePersonalUsername(v):String(v||"").trim().toUpperCase()}catch(_e){return String(v||"").trim().toUpperCase()}};
-    const user=normUser(p.username||""),meta=typeof currentFlightSessionMeta==="function"?(currentFlightSessionMeta()||{}):{},sid=String(((typeof activeFlightSessionId!=="undefined"&&activeFlightSessionId)||meta.id||"")),env=sid&&typeof readFlightSessionEnvelope==="function"?(readFlightSessionEnvelope(sid)||{}):{},sessionForm=canonicalRoleFormGroup(meta.initialGroup||env.activeFormGroup||env.mainForm||""),assignmentId=String(meta.rosterAssignmentId||env.rosterAssignmentId||"").trim(),owner=normUser(meta.rosterOwner||env.rosterOwner||"");
-    if(!assignmentId||!user||sessionForm!==target)return false;
-    if(owner)return owner===user;
-    if(["fsags54","clc_checklist"].includes(target)&&typeof window.sags5494CanUse==="function")return !!window.sags5494CanUse(target);
-    return false;
-  }catch(_e){return false}
-}
 function roleCanForm(role,group){
-  const g=canonicalRoleFormGroup(group);
-  if(role==="AD")return true;if(role==="VIEWER")return true;
-  if(role==="DH"&&["fsags","fsags421","fsags551","bbbt","loading208"].includes(g))return true;
-  if(role==="CBTT"&&g==="loading208")return true;if(role==="PVHK"&&g==="fsags09")return true;if(role==="KH"&&g==="loading208")return true;
-  return roleCanAssignedForm(g);
+  // KH quản lý riêng F/SAG-CXR/208. DH/CBTT/AD có thể mở bản KH đã gửi ở chế độ đọc.
+  if(role==="AD")return true;
+  if(role==="VIEWER")return true;
+  if(role==="DH")return ["fsags","fsags421","fsags551","bbbt","loading208"].includes(group);
+  if(role==="CBTT")return group==="loading208";
+  if(role==="PVHK")return group==="fsags09";
+  if(role==="KH")return group==="loading208";
+  return false;
 }
 function roleCanFinal(role){return role!=="KH" && !!ROLE_ACCOUNTS[role];}
 function roleCanEdit(){return currentRole && currentRole!=="VIEWER";}
@@ -21719,7 +21654,7 @@ refreshAccountManager=async function(){
 window.refreshAccountManager=refreshAccountManager;
 </script>
 <script type="module" src="./app/modules/ai.js?v=V4.7.6"></script>
-<script src="./app/core/app.v503.js?v=V6.4.26-20260929-MOBILE-TOUCH-QUICK-FIX" data-phase="archive"></script>
+<script src="./app/core/app.v503.js?v=V6.4.5-20260928-MYFLIGHT-FSAGS-UI-CLEAN-R3-01" data-phase="archive"></script>
 <script id="v120-build02-fixes">
 /* V1.20 BUILD 02 — background persistence, VHTTB, per-account usage detail, progress dedupe. */
 (function(){
@@ -22138,7 +22073,7 @@ window.refreshAccountManager=refreshAccountManager;
   setTimeout(()=>{ensureUi();startCloseoutListener();refreshValidation();try{window.sagsV440CleanupExpiredCloseoutEvents?.()}catch(_){}},500);
 })();
 </script>
-<script src="./app/core/app.v503.js?v=V6.4.26-20260929-MOBILE-TOUCH-QUICK-FIX" data-phase="tools"></script>
+<script src="./app/core/app.v503.js?v=V6.4.5-20260928-MYFLIGHT-FSAGS-UI-CLEAN-R3-01" data-phase="tools"></script>
 <script id="v173-quick-time">
 (function(){
   "use strict";
@@ -24696,7 +24631,7 @@ body.v38-clean-workflow #v313QuickContext{display:none!important}
 
       let reg=appUpdateRegistration||await navigator.serviceWorker.getRegistration();
       if(!reg){
-        reg=await navigator.serviceWorker.register("./service-worker.js?build="+encodeURIComponent(APP_BUILD_VERSION),{updateViaCache:"none"});
+        reg=await navigator.serviceWorker.register("./service-worker.js",{updateViaCache:"none"});
         appUpdateRegistration=reg;
         wireUpdateSignals(reg);
       }
@@ -24739,14 +24674,14 @@ body.v38-clean-workflow #v313QuickContext{display:none!important}
 </script>
 
 <!-- V6.4.4: restore execution phases accidentally dropped during V6.4 directory restructuring. -->
-<script src="./app/core/app.v503.js?v=V6.4.26-20260929-MOBILE-TOUCH-QUICK-FIX" data-phase="flight"></script>
-<script src="./app/core/app.v503.js?v=V6.4.26-20260929-MOBILE-TOUCH-QUICK-FIX" data-phase="control"></script>
-<script src="./app/core/app.v503.js?v=V6.4.26-20260929-MOBILE-TOUCH-QUICK-FIX" data-phase="postcontrol"></script>
-<script src="./app/modules/admin-reset.v503hf2.js?v=V6.4.26-20260929-MOBILE-TOUCH-QUICK-FIX" id="v503AdminBackupReset"></script>
-<script src="./app/core/app.v503.js?v=V6.4.26-20260929-MOBILE-TOUCH-QUICK-FIX" data-phase="performance"></script>
-<script src="./app/modules/daily-roster.v502.js?v=V6.4.26-20260929-MOBILE-TOUCH-QUICK-FIX" id="dailyRosterCleanV11102"></script>
+<script src="./app/core/app.v503.js?v=V6.4.5-20260928-MYFLIGHT-FSAGS-UI-CLEAN-R3-01" data-phase="flight"></script>
+<script src="./app/core/app.v503.js?v=V6.4.5-20260928-MYFLIGHT-FSAGS-UI-CLEAN-R3-01" data-phase="control"></script>
+<script src="./app/core/app.v503.js?v=V6.4.5-20260928-MYFLIGHT-FSAGS-UI-CLEAN-R3-01" data-phase="postcontrol"></script>
+<script src="./app/modules/admin-reset.v503hf2.js?v=V6.4.5-20260928-MYFLIGHT-FSAGS-UI-CLEAN-R3-01" id="v503AdminBackupReset"></script>
+<script src="./app/core/app.v503.js?v=V6.4.5-20260928-MYFLIGHT-FSAGS-UI-CLEAN-R3-01" data-phase="performance"></script>
+<script src="./app/modules/daily-roster.v502.js?v=V6.4.5-20260928-MYFLIGHT-FSAGS-UI-CLEAN-R3-01" id="dailyRosterCleanV11102"></script>
 <!-- Named-person handover remains removed; self-accept only restores the supported self/roster workflow. -->
-<script src="./app/modules/self-accept.v502.js?v=V6.4.26-20260929-MOBILE-TOUCH-QUICK-FIX" id="sagsHF4SelfHandover"></script>
+<script src="./app/modules/self-accept.v502.js?v=V6.4.5-20260928-MYFLIGHT-FSAGS-UI-CLEAN-R3-01" id="sagsHF4SelfHandover"></script>
 <script id="v644SafeStorageCleanup">
 (()=>{'use strict';
   const KEY='sagsSafeStorageCleanupV644';
@@ -24783,7 +24718,7 @@ body.v38-clean-workflow #v313QuickContext{display:none!important}
   window.addEventListener('pageshow',()=>schedule(9000),{passive:true});
 })();
 </script>
-<script src="./app/core/runtime.v503hf2.bundle.js?v=V6.4.26-20260929-MOBILE-TOUCH-QUICK-FIX"></script>
+<script src="./app/core/runtime.v503hf2.bundle.js?v=V6.4.5-20260928-MYFLIGHT-FSAGS-UI-CLEAN-R3-01"></script>
 <script id="v460RuntimeGuard">
 (()=>{
   setTimeout(async()=>{
@@ -24861,7 +24796,7 @@ window.adminResetAccountPassword=async function(uid){
 <script src="./app/modules/quick-entry.v1.js?v=20260922-03"></script>\n<script src="./app/modules/ui-preferences.v1.js?v=V6.2.0-TVJ-QUICK-PREFS-03"></script>
 <script src="./app/modules/stability.v6.js?v=20260922-03"></script>
 <script src="./app/modules/cross-browser-entry.v1.js?v=20260923-02"></script>
-<script src="./app/modules/roster-lite.v5.js?v=V6.4.26-20260929-MOBILE-TOUCH-QUICK-FIX" id="v477MailboxLite"></script>
+<script src="./app/modules/roster-lite.v5.js?v=V5.0.3B" id="v477MailboxLite"></script>
 
 
 <script id="sags-v6120-all-form-render-standard">
@@ -24947,7 +24882,7 @@ window.adminResetAccountPassword=async function(uid){
 (function(root){
 'use strict';
 if(root.__SAGS_GRND_LS_V621)return;
-root.__SAGS_GRND_LS_V621='V6.4.26-20260929-MOBILE-TOUCH-QUICK-FIX';
+root.__SAGS_GRND_LS_V621='V6.4.5-20260928-MYFLIGHT-FSAGS-UI-CLEAN-R3-01';
 const BW=1241,BH=1755;
 const C54=[
 [.118382352941,.224431818182,.011764705882,.009659090909,.124264705882,.229261363636],[.520588235294,.224431818182,.0125,.009659090909,.526838235294,.229261363636],
@@ -25038,9 +24973,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 </script>
 
 
-<script src="./app/modules/fsags54-94.v622.js?v=V6.4.26-20260929-MOBILE-TOUCH-QUICK-FIX"></script>
-<script src="./app/modules/form-registry-runtime.v647.js?v=V6.4.26-20260929-MOBILE-TOUCH-QUICK-FIX"></script>
-<script src="./app/modules/form-registry-runtime.v6419.js?v=V6.4.26-20260929-MOBILE-TOUCH-QUICK-FIX"></script>
+<script src="./app/modules/fsags54-94.v622.js?v=V6.2.5-FORM-SYNC-PDF-GUARD-01"></script>
 
 </body>
 </html>
