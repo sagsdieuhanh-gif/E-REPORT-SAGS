@@ -1,0 +1,296 @@
+{
+    "schema":  2,
+    "version":  "V6.4.5",
+    "build":  "V6.4.5-20260928-MYFLIGHT-FSAGS-UI-CLEAN-R3-01",
+    "strategy":  "immutable-entrypaths-verified-build-shell-with-mutable-form-registry",
+    "mutableMetadata":  [
+                            "./forms/forms.registry.json"
+                        ],
+    "bootstrapChanged":  true,
+    "assets":  {
+                   "./app/core/app.v503.js":  {
+                                                  "sha256":  "a90acf5b87142e6ee7bfd44d9bec4a0383d46f158f5c46ee1d57bab55f5db80d",
+                                                  "bytes":  836972
+                                              },
+                   "./app/core/runtime.v503hf2.bundle.js":  {
+                                                                "sha256":  "b04f1895ec39666d143c89b9559a659698889e32eac72d9cf3fb08538e4adc1c",
+                                                                "bytes":  575870
+                                                            },
+                   "./app/modules/admin-reset.v503hf2.js":  {
+                                                                "sha256":  "49093bd5d77231c1769d6181c525f55d149289bbdadf249be7af6af9c6ae6fa4",
+                                                                "bytes":  14772
+                                                            },
+                   "./app/modules/ai.js":  {
+                                               "sha256":  "e6c1ada3a059795f1e1807b1c4a0fffcbc54861362b56d611dd2737e9d4c220f",
+                                               "bytes":  33287
+                                           },
+                   "./app/modules/carrier-notebook.v1.js":  {
+                                                                "sha256":  "fea392114cedae98def1e50212a3d46d06f9a3f1698f5724d3f0ab95cf558eb9",
+                                                                "bytes":  40231
+                                                            },
+                   "./app/modules/cross-browser-entry.v1.js":  {
+                                                                   "sha256":  "98f02912bf6deab95e8c1191912335c5c33b85b3ce7de4bf4b5d7cf8400692e0",
+                                                                   "bytes":  15156
+                                                               },
+                   "./app/modules/daily-roster.v502.js":  {
+                                                              "sha256":  "14de19c87645d21cc6dfb0a230da088c42a15b080fa9fb378e1792bfadf9da67",
+                                                              "bytes":  60542
+                                                          },
+                   "./app/modules/fsags54-94.v622.js":  {
+                                                            "sha256":  "164453868b502cb6c657f7324526c7c9ec882dab8cab70c743d790d6cb985207",
+                                                            "bytes":  19448
+                                                        },
+                   "./app/modules/indexeddb-flight-store.v1.js":  {
+                                                                      "sha256":  "e15e42465acdc134fddb0a9a8f67a4fa14d47b1fad075b022637203d84d1e0b0",
+                                                                      "bytes":  12288
+                                                                  },
+                   "./app/modules/mobile-draft-recovery.v1.js":  {
+                                                                     "sha256":  "2aaebe85fd31f1008c91d3a0d040584c177a41eca602ef28db5007c065bd716a",
+                                                                     "bytes":  4328
+                                                                 },
+                   "./app/modules/network-diagnostics.js":  {
+                                                                "sha256":  "16a8cf26b58ce77a399e2ee71734dfe16266a24ac29c3e0761e414b52b506019",
+                                                                "bytes":  12387
+                                                            },
+                   "./app/modules/quick-entry.v1.js":  {
+                                                           "sha256":  "a7f11bbfe4263fdd48b50d2a6ee9f0ef85e4eb891730af154b8007011be25f74",
+                                                           "bytes":  13793
+                                                       },
+                   "./app/modules/roster-lite.v5.js":  {
+                                                           "sha256":  "08a67528e8a869a068d1bd1d562215f4594efd39d9b585b388044069d970dff3",
+                                                           "bytes":  11019
+                                                       },
+                   "./app/modules/self-accept.v502.js":  {
+                                                             "sha256":  "2915df3cc64b54d11d32569a6cc3a0f354ed391a549a7a0d62b6eb8c763b755b",
+                                                             "bytes":  18504
+                                                         },
+                   "./app/modules/stability.v6-core.js":  {
+                                                              "sha256":  "8f102af323fd8f4306e24a8484d7ad11873a9f845f8d14810410b3b5e8fea069",
+                                                              "bytes":  14976
+                                                          },
+                   "./app/modules/stability.v6.js":  {
+                                                         "sha256":  "3863939167090f104d710a0150ce380f5a2fbce15940548ad64ea04d0d455f75",
+                                                         "bytes":  1189
+                                                     },
+                   "./app/modules/tvj-gof-035.v630.js":  {
+                                                             "sha256":  "5eff3f968cc3c4510698dc4102ad079c0a271643030f7d7c85f9f8e55ca9dd26",
+                                                             "bytes":  16868
+                                                         },
+                   "./app/modules/tvj-gof-035.v631.js":  {
+                                                             "sha256":  "b3c2be52c87be963184245d6e35fea78c689d5a8218ff4c385172099e7ecb660",
+                                                             "bytes":  8322
+                                                         },
+                   "./app/modules/tvj-gof-035.v632.js":  {
+                                                             "sha256":  "c09d51514a963b8afac990e9b07a99eb7ee5b13498e1fbe5eb83c61258427785",
+                                                             "bytes":  10377
+                                                         },
+                   "./app/modules/ui-preferences.v1.js":  {
+                                                              "sha256":  "3a0f1c1bdc5622b05bdf07039b53fd6a69268f705d4e0b6eed76e8fe713b8acb",
+                                                              "bytes":  25957
+                                                          },
+                   "./app/styles/app.bundle.css":  {
+                                                       "sha256":  "67b648298918a71d9e9a4118e99e3455f7d011128af5aec9eadd05f925361ae8",
+                                                       "bytes":  42593
+                                                   },
+                   "./app/styles/new-ui-v1.css":  {
+                                                      "sha256":  "9cc70dd6303e50651a25a28e66b3d98a243e792c13948c2b9569243cd4304814",
+                                                      "bytes":  118610
+                                                  },
+                   "./assets/audio/alert-crosscheck-complete.mp3":  {
+                                                                        "sha256":  "2291844c0abc77005a2e8800e0dc8115c373134385a31a5d3d9e5f920a5acc07",
+                                                                        "bytes":  28465
+                                                                    },
+                   "./assets/audio/alert-ket-so-moi.mp3":  {
+                                                               "sha256":  "2563bf00f263c6c57f0e33fc161902c531db95b307411e498a500b4e18a5d3ab",
+                                                               "bytes":  35988
+                                                           },
+                   "./assets/audio/alert-ket-so-thay-doi.mp3":  {
+                                                                    "sha256":  "c17b5c4943fff8d4259f1e685ae02aede60192b62c50ccf67f8683ba8f9f7cd6",
+                                                                    "bytes":  25121
+                                                                },
+                   "./assets/audio/alert-mva.mp3":  {
+                                                        "sha256":  "a4ef139f54b1465bc96bc7e12d7d69c4a0c7b5af48851d6df718d31e106fc23b",
+                                                        "bytes":  36405
+                                                    },
+                   "./assets/audio/alert-mvt.mp3":  {
+                                                        "sha256":  "441b0df7aba5451ea8c85df517b66fc42e2e0e538caa77d71ac06ce8492a07ae",
+                                                        "bytes":  70260
+                                                    },
+                   "./assets/audio/alert-pushback-missing.mp3":  {
+                                                                     "sha256":  "9241aa52924071745dd64247291b4e09d556f2c1db3f5a605bd5635d02cba9bd",
+                                                                     "bytes":  77783
+                                                                 },
+                   "./assets/audio/ket-so.wav":  {
+                                                     "sha256":  "cf03e8d4021f989f61fd12249f282ae2e53588cc9d55d68393778223db8132a1",
+                                                     "bytes":  72368
+                                                 },
+                   "./assets/branding/login-logo-10years.png":  {
+                                                                    "sha256":  "02bef06f4d742be09b9f8efcdf9e0ce155ee95d0008696e208dc3374acc5358c",
+                                                                    "bytes":  249729
+                                                                },
+                   "./assets/branding/logo.png":  {
+                                                      "sha256":  "15f7035ba48363ef36ac7a5794427e6107c48f1353a1d2e6ae263148ed660950",
+                                                      "bytes":  46976
+                                                  },
+                   "./assets/icons/apple-touch-icon.png":  {
+                                                               "sha256":  "a190c19f9a52a40f43379917b11f84f99a2ab2fb4a3cdaedd1dad936a67c8e78",
+                                                               "bytes":  17275
+                                                           },
+                   "./assets/icons/favicon-16.png":  {
+                                                         "sha256":  "bb74deb45be89aca360f6b6f9b7d6293c14b1d7efa5f1e4fe21f4804fb05ce58",
+                                                         "bytes":  437
+                                                     },
+                   "./assets/icons/favicon-32.png":  {
+                                                         "sha256":  "1a1fd13fb978fc5422843286feeb16b821aa52f3eb15665bdc717b034b9fb613",
+                                                         "bytes":  1151
+                                                     },
+                   "./assets/icons/icon-192.png":  {
+                                                       "sha256":  "6fe324b47572ae37d711aac8affc9d7e9bf60c36e2fb810f3e948497a2981ca3",
+                                                       "bytes":  19146
+                                                   },
+                   "./assets/icons/icon-512.png":  {
+                                                       "sha256":  "90aa4e4ece11944460015926ca2aaf4271b439c06d3f808aeaaa9ba7b71f33b7",
+                                                       "bytes":  104295
+                                                   },
+                   "./data/carrier-guide-version.json":  {
+                                                             "sha256":  "c347820382dc8a22294b6b318150de95376f8682da64f7f6c9d9bac61cce9228",
+                                                             "bytes":  301
+                                                         },
+                   "./data/carrier-service-guide.json":  {
+                                                             "sha256":  "9f0c82b5dc6d5e6f597e3155793ec66b92fcc3ea905eca108b262000bf29f3d7",
+                                                             "bytes":  31467
+                                                         },
+                   "./data/fsags-display-coordinates.json":  {
+                                                                 "sha256":  "acc96d4f5f41b1b860a0bc1d065cfd53306ba905c0a31a699ec49da76f94abaa",
+                                                                 "bytes":  13791
+                                                             },
+                   "./forms/9g/page-01.png":  {
+                                                  "sha256":  "8e8a65b7370ef2ec7a733e28e6df369e27a5c59fdaef44009d0b34251c87f75a",
+                                                  "bytes":  321831
+                                              },
+                   "./forms/bbbt/page-01.png":  {
+                                                    "sha256":  "f2edeb02d4c4bf6acb96edc3ea3c5463998e5b87ed45611d46198d614ff864fe",
+                                                    "bytes":  489595
+                                                },
+                   "./forms/fsags09/page-01.png":  {
+                                                       "sha256":  "11d83788014011aeee5abe56bb9292b7b4cd2d3186a226dbc1b7e95bb5463877",
+                                                       "bytes":  301528
+                                                   },
+                   "./forms/fsags09/page-02.png":  {
+                                                       "sha256":  "839086031a1c3f085b4cdc7196a2d9b09bde0d5752f27f330c316a6ec507a1c2",
+                                                       "bytes":  218099
+                                                   },
+                   "./forms/fsags208/page-01.png":  {
+                                                        "sha256":  "0780ba912b969d351de7be4f86d9563279e94b65beb8e6df321e05d1d9106a0b",
+                                                        "bytes":  978212
+                                                    },
+                   "./forms/fsags42.1/page-01.png":  {
+                                                         "sha256":  "e95068ef7cda07aa7f03547ba0863e334b2fb7a4b120755a20d3f63a25060af7",
+                                                         "bytes":  304135
+                                                     },
+                   "./forms/fsags42.1/page-02.png":  {
+                                                         "sha256":  "3e42ca2b99ff0bb4294ddbcec06631a2debeff1d5e051a1621496477c181a106",
+                                                         "bytes":  148501
+                                                     },
+                   "./forms/fsags42.3/page-01.png":  {
+                                                         "sha256":  "94e543f3c9da5be72fb8bbf19510e4468c1c774f246781044a5613163002acfd",
+                                                         "bytes":  390578
+                                                     },
+                   "./forms/fsags42.3/page-02.png":  {
+                                                         "sha256":  "793653dfaf5e8afc21cccb64cc72725f2c5e91cd4f090ee48d5d40daa04b5f61",
+                                                         "bytes":  208756
+                                                     },
+                   "./forms/fsags54/page-01.png":  {
+                                                       "sha256":  "6ff53598e2a1301ef8966e45ea29cd9f0b716bee62a84891e1bddcdc45175e9b",
+                                                       "bytes":  2058067
+                                                   },
+                   "./forms/fsags55.1/page-01.png":  {
+                                                         "sha256":  "7bac9fa6524e2d97a17f4919ad57d6093c9fe463e6070dfea8a3d712cf508651",
+                                                         "bytes":  540544
+                                                     },
+                   "./forms/fsags55.1/page-02.png":  {
+                                                         "sha256":  "54bd638ebc6bb79cb32608ed5f682c5b89a9d6234063f65cb97d8865045cf4a3",
+                                                         "bytes":  461776
+                                                     },
+                   "./forms/fsags94/page-01.png":  {
+                                                       "sha256":  "fd264f56961d09847d8902582dc326dad0ff278f1f3fc4377f336f6eeca0dc77",
+                                                       "bytes":  501947
+                                                   },
+                   "./forms/tvj/page-01.png":  {
+                                                   "sha256":  "1f9e4a745617d1a8e7c3fa4b465178bb38f420623802af4e8136069f0dfa7ffb",
+                                                   "bytes":  1673628
+                                               },
+                   "./forms/vj/vj1.png":  {
+                                              "sha256":  "cd3beed60e5864d1d294ae79b2fba08440a5897f8eb374407d756732af4ef3f6",
+                                              "bytes":  1362777
+                                          },
+                   "./forms/vj/vj2.png":  {
+                                              "sha256":  "c4d915fbd2a4ffb945037352237bb4036194559edeaf1e5ccfa28467f9f64205",
+                                              "bytes":  615784
+                                          },
+                   "./forms/vu/page-01.png":  {
+                                                  "sha256":  "1a7372356daf61f8d25416315189ca4291b82c64407456ffe87412da9d7427ad",
+                                                  "bytes":  284127
+                                              },
+                   "./index.html":  {
+                                        "sha256":  "83ccbb35dccc42897f9dfff5a4985eac9a0e2ea4ac710bb03351309f5f73c81f",
+                                        "bytes":  1457400
+                                    },
+                   "./manifest.webmanifest":  {
+                                                  "sha256":  "b06aaccd8b182991ecbafd307a30089dec427860e59d22593e6ff7f39cf4cee2",
+                                                  "bytes":  590
+                                              },
+                   "./pdf-bg/bbbt/page-01.jpg":  {
+                                                     "sha256":  "cf50e0d022c213d3979ffe21f539102415bb2272a28bdd8e26c6005a451e5e9c",
+                                                     "bytes":  385753
+                                                 },
+                   "./pdf-bg/fsags09/page-01.jpg":  {
+                                                        "sha256":  "f7b1218a8502208bbaf19a3dfe9dc451ec0bc6b9e55183ec605e9da32cbe57f7",
+                                                        "bytes":  411276
+                                                    },
+                   "./pdf-bg/fsags09/page-02.jpg":  {
+                                                        "sha256":  "b706511c04d652e54571b490aec3c004566ca438b36a601b8387b8edb1a40bbb",
+                                                        "bytes":  309775
+                                                    },
+                   "./pdf-bg/fsags208/page-01.jpg":  {
+                                                         "sha256":  "e8bfdfb4fdcb12732a22967f07f55de90ae1d8a264404d6b1dad8b0ff708761b",
+                                                         "bytes":  329263
+                                                     },
+                   "./pdf-bg/fsags42.1/page-01.jpg":  {
+                                                          "sha256":  "5362f171d2e5476374cc6604889a93e73cceccaa45cb8579c7c51e7a97598de3",
+                                                          "bytes":  556778
+                                                      },
+                   "./pdf-bg/fsags42.1/page-02.jpg":  {
+                                                          "sha256":  "2c05866c78af46026b6895a93eaba6dbf9963a411884d74c48c8ad6ec32c36c2",
+                                                          "bytes":  301949
+                                                      },
+                   "./pdf-bg/fsags42.3/page-01.jpg":  {
+                                                          "sha256":  "b084715277801aacfe1a05aecead57a0f594b424c6aaa5b4ebbf32b24f683789",
+                                                          "bytes":  549016
+                                                      },
+                   "./pdf-bg/fsags42.3/page-02.jpg":  {
+                                                          "sha256":  "10378a4a02288af2bea833f3e7a9e472b8beb1eed9760d2c7eb15229a9fbebda",
+                                                          "bytes":  434869
+                                                      },
+                   "./pdf-bg/fsags55.1/page-01.jpg":  {
+                                                          "sha256":  "c7092222cded34b6f267c740f46b201d7eb20f5ef72bccba8546dfc77f1df0d8",
+                                                          "bytes":  490633
+                                                      },
+                   "./pdf-bg/fsags55.1/page-02.jpg":  {
+                                                          "sha256":  "25825374e1204fa80c7e4e89dbb6349738dd4da031bff550b43bb350bee4865e",
+                                                          "bytes":  465580
+                                                      },
+                   "./repair.html":  {
+                                         "sha256":  "312a63b08a303f6a3ceebaa6bc7eba858395e6676c73e30578b912ace5eaf371",
+                                         "bytes":  5161
+                                     },
+                   "./service-worker.js":  {
+                                               "sha256":  "d43dfe886ab35d7f27b3ff8a001325ee032d53b89691b48a64b71c9b988756ee",
+                                               "bytes":  16223
+                                           },
+                   "./version.json":  {
+                                          "sha256":  "86a223dfdeb561ced5e06db03b231384dda5098d03ab0753e0e67ef495ec48f9",
+                                          "bytes":  811
+                                      }
+               }
+}

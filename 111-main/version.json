@@ -1,0 +1,12 @@
+{
+    "version":  "V6.4.5",
+    "displayVersion":  "V6.4.5",
+    "label":  "V6.4.5 - MY FLIGHT FSAGS LABEL + UI CLEAN R3",
+    "build":  "V6.4.5-20260928-MYFLIGHT-FSAGS-UI-CLEAN-R3-01",
+    "releasedAt":  "2026-09-28T23:30:00+07:00",
+    "type":  "v6.4.5-myflight-fsags-label-ui-clean-r3",
+    "base":  "V6.4.4-20260928-CORE-PHASE-RESTORE-SAFE-CLEAN-01",
+    "updatePolicy":  "recommended",
+    "notes":  "MY FLIGHT resolves FSAGS54 and CLC_CHECKLIST/FSAGS94 aliases to their actual form names before falling back to department labels. Visible NEW UI / MOBILE DISPATCH branding is removed from Home and the drawer. No operational form data, roster assignment, or form geometry is changed.",
+    "message":  "V6.4.5: fix MY FLIGHT FSAGS labels and remove visible NEW UI / MOBILE DISPATCH branding."
+}
