@@ -1,0 +1,12 @@
+{
+  "version": "V6.4.26",
+  "displayVersion": "V6.4.26",
+  "label": "V6.4.26 - MOBILE PORTRAIT TOUCH + QUICK ENTRY FIX",
+  "build": "V6.4.26-20260929-MOBILE-TOUCH-QUICK-FIX",
+  "releasedAt": "2026-09-29T14:20:00+07:00",
+  "type": "v6.4.25-fsags54-94-direct-editor",
+  "base": "V6.4.24-20260929-CORE-FORM-ENTRY-MYFLIGHT-PDF-01",
+  "updatePolicy": "recommended",
+  "notes": "Fix mobile portrait direct field touch for FSAGS54/94 and keep quick entry editor stable when value becomes empty.",
+  "message": "V6.4.25: sửa dứt điểm chạm trực tiếp mẫu 54/94 nhưng không hiện bảng nhập liệu."
+}
