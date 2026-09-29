@@ -1,0 +1,737 @@
+{
+  "schema": 1,
+  "version": "2026-09-16",
+  "source": "TỔNG HỢP LƯU Ý PHỤC VỤ CÁC HÃNG.xlsx",
+  "station": "CXR",
+  "generatedAt": "2026-09-16T05:45:00Z",
+  "carriers": [
+    {
+      "serial": 1,
+      "carrier": "HAV",
+      "aliases": [
+        "HAV"
+      ],
+      "aircraftTypes": [
+        "GA7C"
+      ],
+      "aircraftTypeRaw": "GA7C",
+      "routeType": "Charter",
+      "request": "",
+      "sections": {
+        "coor": [
+          "Nhận thông tin briefing từ Rep, TBĐH và triển khai phục vụ tàu.\nLưu ý ghi nhận các dịch vụ phát sinh ( Remark Smis) để ghi Receipt."
+        ],
+        "loading": [
+          "NIL"
+        ],
+        "documents": [
+          "NIL"
+        ],
+        "flightplan": [
+          "NIL"
+        ]
+      }
+    },
+    {
+      "serial": 2,
+      "carrier": "VJ",
+      "aliases": [
+        "VJ"
+      ],
+      "aircraftTypes": [
+        "A320",
+        "A321",
+        "A330"
+      ],
+      "aircraftTypeRaw": "A320/A321/A330",
+      "routeType": "Domestic",
+      "request": "",
+      "sections": {
+        "coor": [
+          "- Thực hiện đóng mở cửa tàu bay VJ\n- Chú ý các chuyến bay thực hiện TAT & PTS  của Hãng"
+        ],
+        "loading": [
+          "Lưu ý đối với các loại tàu có thùng dầu phụ để ước lượng chất xếp. Các loại tàu này H5 ko có giới hạn Kgs. Còn loại tàu không có thùng dầu phụ H5 500kgs\nLưu ý đối với chuyến bay có hàng, cần estimate volume hãng để báo chất xếp cho tài liệu sớm tránh trường hợp thay đổi cận giờ STD/ETD"
+        ],
+        "documents": [
+          "-Phương thức làm tải: CLC\n-Các tàu Thomas Cook Group P (Y220, 01ACT pos 31) nặng đầu. Nếu full khách cần ít nhất từ 1-1,2 tấn để dằn tải.\n-Tàu VN-A651 (Y220, 02ACT pos 31,32) lưu ý chất xếp."
+        ],
+        "flightplan": [
+          "NIL"
+        ]
+      }
+    },
+    {
+      "serial": 3,
+      "carrier": "QH",
+      "aliases": [
+        "QH"
+      ],
+      "aircraftTypes": [
+        "A320",
+        "A321"
+      ],
+      "aircraftTypeRaw": "A320/A321",
+      "routeType": "Domestic",
+      "request": "",
+      "sections": {
+        "coor": [
+          "- Thực hiện mở cửa tàu bay \n- Cung cấp tài liệu tải cho Capt ( Phiếu dầu,  Lir, Final Load )\n- Chú ý ưu tiên thời gian quay đầu. Cắt Cargo để đảm bảo ground time nếu có."
+        ],
+        "loading": [
+          "Lưu ý chất xếp tàu VNA596 nặng đuôi."
+        ],
+        "documents": [
+          "-Phương thức làm tải: CLC\n-Tàu VN-A596 khi full khách rất nặng đuôi và dễ out Trim. Lưu ý xếp khách full zone A,B trước, hành lý và hàng hóa ưu tiên chất hầm trước. Nếu checkin full khách Y thì nêu có phương án up pax C sớm trước khi boarding để đảm bảo Trim an toàn."
+        ],
+        "flightplan": [
+          "NIL"
+        ]
+      }
+    },
+    {
+      "serial": 4,
+      "carrier": "DV",
+      "aliases": [
+        "DV"
+      ],
+      "aircraftTypes": [
+        "B737-MAX9"
+      ],
+      "aircraftTypeRaw": "B737-MAX9",
+      "routeType": "International",
+      "request": "",
+      "sections": {
+        "coor": [
+          "- Chuyển thông tin kết sổ cho Capt làm tải.\n- B737: Cập 1 thang (L1)\n- B767: Cập 2 thang (L1, L4 - Nằm bãi). \n- Tiếp viên thực hiện đóng, mở cửa cabin"
+        ],
+        "loading": [
+          "- Loại tàu dễ TIPPING, bắt buộc: unload từ hầm sau trước và phải xuống ít nhất 50% hầm sau mới bắt đầu cho khách xuống.\n- Chất xếp hành lý theo Load Master"
+        ],
+        "documents": [
+          "-Phương thức làm tải: CLC"
+        ],
+        "flightplan": [
+          "YES"
+        ]
+      }
+    },
+    {
+      "serial": 5,
+      "carrier": "KC",
+      "aliases": [
+        "KC"
+      ],
+      "aircraftTypes": [
+        "A321"
+      ],
+      "aircraftTypeRaw": "A321",
+      "routeType": "International",
+      "request": "",
+      "sections": {
+        "coor": [
+          "- A321: Cập 1 cửa L1. Thợ máy Vietstar.\n- Chú ý các loại hành lý gắn tag DAA trả tại gate.\n- Tài liệu làm tải & ký tải tại tàu. Chú ý Hãng cho GHA LMC 300kgs"
+        ],
+        "loading": [
+          "- Các loại HL ưu tiên, HL tổ bay trả trước, có nhiều code HL đặc biệt.\n- Chú ý xem kỹ 2 mặt bảng LIR, chất xếp theo từng vị trí, briefing cụ thể chất xếp chuyến đi với TL.\n- Dụng cụ thể theo, pin, xe lăn điện không load hầm sau, chăn chất H5.\n- Giám sát, nhắc nhở quá trình chất xếp không cho HL quá vạch giới hạn hầm hàng, chụp hình hầm hàng sau xếp dỡ, chất xếp."
+        ],
+        "documents": [
+          "-Phương thức làm tải: CLC - Loadsheet Hãng gửi qua Acars\n-Kiểm tra kỹ LIR: vị trí chất xếp các hành lý đặc biệt (TRL, BT, BC, BP,Blanket,…) và báo LCC xuất LIR mới nếu phát hiện LIR không đúng.\n-Blanket load hầm 5, CBTT báo số pcs và kgs blanket cho LCC để LCC cộng vào tải."
+        ],
+        "flightplan": [
+          "YES"
+        ]
+      }
+    },
+    {
+      "serial": 6,
+      "carrier": "C6",
+      "aliases": [
+        "C6"
+      ],
+      "aircraftTypes": [
+        "A321"
+      ],
+      "aircraftTypeRaw": "A321",
+      "routeType": "International",
+      "request": "",
+      "sections": {
+        "coor": [
+          "- Tàu nằm bãi cập 2 thang \n- Dịch vụ xe vệ sinh & nước sạch thực hiện theo yêu cầu."
+        ],
+        "loading": [
+          "Không có load master hãng đối với tàu A321. SAGS cung cấp kết sổ cho Capt làm tải (bảng LIR trắng TL cung cấp, không có LIR hãng, nhớ đưa capt phân tải & ký xác nhận)\nA330 có load master. Yêu cầu có mặt Load master mới tiến hành mở hầm hàng để xếp dỡ ULD"
+        ],
+        "documents": [
+          "-Phương thức làm tải: CLC"
+        ],
+        "flightplan": [
+          "YES"
+        ]
+      }
+    },
+    {
+      "serial": 7,
+      "carrier": "KA",
+      "aliases": [
+        "KA"
+      ],
+      "aircraftTypes": [
+        "A320"
+      ],
+      "aircraftTypeRaw": "A320",
+      "routeType": "International",
+      "request": "",
+      "sections": {
+        "coor": [
+          "- Tàu đậu bãi cập 2 thang : L1.L4\n- Hành lý gắn tag:\" Delivery at gate\" được trả tại cầu ống hoặc trả tại cửa ga đến nếu tàu đậu bãi không quá 10'.\n- giám sát load & unload hành lý cùng Load Master.\n- Dịch vụ xe vệ sinh, nước sạch đã bao gồm."
+        ],
+        "loading": [
+          "Hành lý có: BC, priority, nối chuyến, nối chuyến ngắn. Giám sát onload, unload theo thứ tự cùng với load master.\nHãng bay nhiều chặng, chú ý hành lý mỗi chặng nên chất tách biệt hầm, tránh nhầm lẫn"
+        ],
+        "documents": [
+          "-Phương thức làm tải: CLC"
+        ],
+        "flightplan": [
+          "YES"
+        ]
+      }
+    },
+    {
+      "serial": 8,
+      "carrier": "N4",
+      "aliases": [
+        "N4"
+      ],
+      "aircraftTypes": [
+        "A330"
+      ],
+      "aircraftTypeRaw": "A330",
+      "routeType": "International",
+      "request": "",
+      "sections": {
+        "coor": [
+          "- Tàu đậu ống cập 2 thang L1.2\n- Tàu đậu bãi câp 2 thang L2.4\n- Tàu đậu ống lồng ( Cầu 1 ống) cập 1 thang L2 \n- Dịch vụ xe vệ sinh & nước sạch auto\n- Thợ máy Vietsky"
+        ],
+        "loading": [
+          "Vị trí hầm hàng luôn có FAK theo tàu (không offload), có thể là ở 3.1 hoặc 2.5, và H5\nH5 có các tấm bạt phủ động cơ, kiểm tra kỹ, đề phòng HL bị phủ bên dưới\nCó Load master của Hãng"
+        ],
+        "documents": [
+          "-Phương thức làm tải: CBTT làm tải Manual. Tài liệu ra tàu ký tải.\n-Phiếu dầu cơ trưởng cung cấp\n-Summer Season: số kgs pax ADL/CHD/INF là 75/30/15 (cộng Cabin Bag vào tải)\n-Winter Season: số kgs pax ADL/CHD/INF là 80/30/15 (cộng Cabin Bag vào tải)\n-Holiday charters:  số kgs pax ADL/CHD/INF là 75/30/15 ( KHÔNG cộng Cabin Bag vào tải)"
+        ],
+        "flightplan": [
+          "YES"
+        ]
+      }
+    },
+    {
+      "serial": 9,
+      "carrier": "AK/FD",
+      "aliases": [
+        "AK",
+        "FD"
+      ],
+      "aircraftTypes": [
+        "A320"
+      ],
+      "aircraftTypeRaw": "A320",
+      "routeType": "International",
+      "request": "",
+      "sections": {
+        "coor": [
+          "- Board standby khoảng 3-5' trước khi tàu hạ ( theo flight radar, ERP..)\n- Tàu đóng chèn báo boarding.\n- Đứng ngoài đầu mút cánh phân luồng, hướng dẫn khách không đi dưới cánh máy bay.\n- Coor không đội mũ đỏ, bịt kính mặt khi lên lên tàu.\n- Biểu mẫu Gate management report: \n+ Giờ LAST PAX AT GATE: Ghi giờ đầu và giờ cuối khách lên tàu bay."
+        ],
+        "loading": [
+          "Chỉ tiến hành chất xếp sau khi đã được CBTT xác nhận vị trí hầm hàng.\nGiám sát chất xếp từ vách hầm hàng ra cửa, không để trống section (ví dụ: hầm 1 phải chất từ 1.3 ra) dù có ít hành lý, hàng hóa.\nKhông di dời lưới hầm hàng."
+        ],
+        "documents": [
+          "-Phương thức làm tải: CLC\n-AK: CBTT chịu trách nhiệm xuất LIR\n-FD: Cơ trưởng chịu trách nhiệm xuất LIR\n-Lưu ý lấy đủ giấy tờ trước khi tàu đóng cửa, nếu thiếu phải báo ngay cho Rep để miễn trừ."
+        ],
+        "flightplan": [
+          "NIL\nHÃNG TỰ LÀM"
+        ]
+      }
+    },
+    {
+      "serial": 10,
+      "carrier": "KE",
+      "aliases": [
+        "KE"
+      ],
+      "aircraftTypes": [
+        "A330-300",
+        "B737",
+        "A321"
+      ],
+      "aircraftTypeRaw": "A330-300\nB737\nA321",
+      "routeType": "International",
+      "request": "",
+      "sections": {
+        "coor": [
+          "- A330: Coor thực hiện mở cửa L2. Rep mở cửa L1. Tiếp viên đóng cửa.\n- B787: cập thang L1,L2\n- B737: Tiếp viên thực hiện đóng mở cửa\n- A321: Coor mở cửa. Tiếp viên đóng cửa\n- Check tail fuel và báo cho tài liệu. \n- Dịch vụ nước sạch yêu cầu. \n- Coor chủ động việc truyền đạt thông tin cho các bộ phận liên quan: LnF, VAECO, giao POB.\n- Chú ý giám sát nhân sự PVTT đầy đủ."
+        ],
+        "loading": [
+          "Lưu ý thứ tự ưu tiên khi chất xếp: BS - BF - BC & crew - BL - BT - BY.\nChụp ảnh hành lý đặc biệt và vị trí chất xếp: xe lăn, nhạc cụ, dụng cụ thể thao\nCross check vị trí chất xếp, số của ULD hành lý với TL, bàn giao LIR, check list cho rep sau chuyến bay\nHành lý đến dùng dolly đơn, đi dùng dolly đôi\nGửi SCM hãng thứ 5 hàng tuần."
+        ],
+        "documents": [
+          "-Phương thức làm tải: CLC, hệ thống winloads\n-CBTT Fit số công trên Load Plan và giao cho Loading Supervisor trước khi chất xếp\n-Đối với tàu A330: CBTT cung cấp Final Ramp Fuel và Tail fuel cho LCC để làm tải\n-LCC làm NOTOC remark trên LS (nếu có)\n-Báo cho Rep & Coor nắm thông tin ngay khi có LS kèm theo số POB và khi LS APPROVED.\n-Remark thông tin hành lý và số lượng Blanket vào CPM ngay khi tàu đóng cửa."
+        ],
+        "flightplan": [
+          "YES"
+        ]
+      }
+    },
+    {
+      "serial": 11,
+      "carrier": "BX",
+      "aliases": [
+        "BX"
+      ],
+      "aircraftTypes": [
+        "A321"
+      ],
+      "aircraftTypeRaw": "A321",
+      "routeType": "International",
+      "request": "",
+      "sections": {
+        "coor": [
+          "- Hành lý gắn tag: Delivery at gate - Trả tại cầu ống nếu tàu đậu ống. Giao đầu kéo bàn giao tại cửa ga đến nếu tàu ở bãi.\n- Dịch vụ vệ sinh & nước sạch yêu cầu.\n- Sau chuyến bay chụp: Ramp Coor, CM, LS gửi group.\n- A321: Cập thang cửa L1.\n- Báo vị trí chất xếp hành lý ưu tiên cho REP."
+        ],
+        "loading": [
+          "Xác nhận chất xếp rõ ràng (số kiện từng hầm hàng, vị trí HL ưu tiên) với TL.\nHầm hàng BX có nhiều FAK, cần kiểm tra kỹ lưỡng tránh bỏ sót HL.\n- Hành lý có nhãn: Special - trả trước.\n- Tag:\" Door Side\" - Chất tại cửa hầm hàng"
+        ],
+        "documents": [
+          "-Phương thức làm tải: CBTT làm tải trực tiếp trên file Excel\n-Nhân viên Flight Plan cung cấp tờ CFP có đầy đủ thông tin Fuel cho CBTT\n-Nếu có thay đổi tải giờ chót, CBTT không được làm LMC trên LS mà phải báo cho Cơ trưởng nắm thông tin. CBTT sẽ làm lại LS nếu Cơ trưởng yêu cầu và không cần làm lại LS nếu Cơ trưởng không yêu cầu."
+        ],
+        "flightplan": [
+          "YES"
+        ]
+      }
+    },
+    {
+      "serial": 12,
+      "carrier": "WE",
+      "aliases": [
+        "WE"
+      ],
+      "aircraftTypes": [
+        "A320"
+      ],
+      "aircraftTypeRaw": "A320",
+      "routeType": "International",
+      "request": "",
+      "sections": {
+        "coor": [
+          "- Hãng khai thác khách C,Premium Comfort.\n- Tàu đậu bãi cập 1 thang - L1. \n- Coor mở cửa. Tiếp viên đóng cửa.\n- Tài liệu giao Load Sheet cho Capt. Giao GD + CM cho tiếp viên chuyến đi \n- Dịch vụ xe vệ sinh & và nước sạch theo yêu cầu. (A330-75% - nước sạch)\n - A330:Tàu nằm bãi xa sẽ sử dụng 2 thang (cập L1, L2 - L1 Coor mở, L2 Sân đỗ mở).\n - A330: Tàu đậu ống 33, 36 sử dụng 2 ống để phục vụ. (Coor mở cửa L1, loading mở cửa L2). Tàu đậu ống 34.35 cập 1 cửa L2 để phục vụ. Khi đóng sẽ đóng cửa L1 trước"
+        ],
+        "loading": [
+          "Cross check chất xếp HL với TL ngoài tàu.\nHành lý gắn tag phụ theo thứ tự ưu tiên: Priority -> Business smart -> Premium -> BY.\nWCHG chuyến đi sau khi load xong nhớ báo lại vị trí để TL gửi điện cho hãng. WCH điện phải được ràng buộc.\nHãng không nhận AVIH"
+        ],
+        "documents": [
+          "-Phương thức làm tải: CBTT làm tải trên website của hãng\n-Nhân viên Flight Plan cung cấp tờ CFP có đầy đủ thông tin Fuel cho CBTT"
+        ],
+        "flightplan": [
+          "YES"
+        ]
+      }
+    },
+    {
+      "serial": 13,
+      "carrier": "RF",
+      "aliases": [
+        "RF"
+      ],
+      "aircraftTypes": [
+        "A320"
+      ],
+      "aircraftTypeRaw": "A320",
+      "routeType": "International",
+      "request": "",
+      "sections": {
+        "coor": [
+          "- Hãng không khai thác C. Tuy nhiên hành lý có gắn tag \" Priority\" chất xếp theo đúng thứ tự ưu tiên.\n- Xe nôi gate trả tại cầu ống hoặc tại ga đến quốc tế nếu nằm bãi.\n- Dịch vụ vệ sinh & nước sạch theo yêu cầu.\n- Hãng không thực hiện boarding nạp dầu. Nếu cần thiết thì yêu cầu cập 02 thang, xe cứu hỏa trực tại tàu."
+        ],
+        "loading": [
+          "Chuyến đến: Xe nôi trả băng chuyền, xe lăn trả tại gate.\nKhông nhận AVIH. H5 có EIC là bánh xe nên hạn chế chất xếp. Chỉ chất xếp khi cần thiết."
+        ],
+        "documents": [
+          "-Phương thức làm tải: CBTT làm tải trên website của hãng\n-Nhân viên Flight Plan cung cấp tờ CFP có đầy đủ thông tin Fuel cho CBTT"
+        ],
+        "flightplan": [
+          "YES"
+        ]
+      }
+    },
+    {
+      "serial": 14,
+      "carrier": "TW",
+      "aliases": [
+        "TW"
+      ],
+      "aircraftTypes": [
+        "B737",
+        "A330"
+      ],
+      "aircraftTypeRaw": "B737\nA330",
+      "routeType": "International",
+      "request": "",
+      "sections": {
+        "coor": [
+          "- B737: Cập 1 thang L1 khi tàu đậu bãi hoặc ống. \n- A330: Cập 2 thang L1.L2 khi tàu đậu bãi hoặc ống.\n- A330: Coor thực hiện mở cửa L1 & L2. Tiếp viên đóng cửa.\n- Bàn giao tài liệu chuyến đến cho Rep.\n- Nhắn giờ Chock on lên group cho REP"
+        ],
+        "loading": [
+          "Chụp ảnh hành lý đặc biệt sau khi onload: xe nôi, xe lăn điện...\nXác nhận số kiện rõ ràng từng hầm với TL trước khi chất xếp"
+        ],
+        "documents": [
+          "-Phương thức làm tải:  CLC\n-CBTT nhận LIR từ LCC qua email \n-CBTT cung cấp LOAD INFO I19(Final thông tin kết sổ và chất xếp) cho LCC bằng cách nhắn tin trên KAKAO TALK."
+        ],
+        "flightplan": [
+          "YES"
+        ]
+      }
+    },
+    {
+      "serial": 15,
+      "carrier": "OZ",
+      "aliases": [
+        "OZ"
+      ],
+      "aircraftTypes": [
+        "A330"
+      ],
+      "aircraftTypeRaw": "A330",
+      "routeType": "International",
+      "request": "",
+      "sections": {
+        "coor": [
+          "- Tàu đậu bãi cập 1 xe thang cửa L2.\n- Cửa Cabin: Rep mở.\n- Dịch vụ xe vệ sinh & nước sạch theo yêu cầu.\n- Giao tài liệu chuyến đi cho Purer: GD & CM."
+        ],
+        "loading": [
+          "Chuyến đến có xe nôi gate: bọc xanh trả gate, bọc trắng trả BC đến.\nThứ tự ưu tiên theo tag: Business (tag phụ màu xanh, giữa hình chữ nhật màu đỏ), priority (tag phụ màu đỏ), gold (màu vàng).\nHầm hàng luôn chất xếp từ vị trí trong cùng ra tới cửa.\nLưu ý vị trí chất chăn, bao gối và số lượng báo cho tài liệu.\nHL C phải chất riêng. HL prio có thể chất cùng HL thường, bảo đảm chất trên cùng trong ULD, ngoài cùng trong chất xá, và ghi chú thông tin điện văn.\nH5 chỉ chất đc 300kgs đã bao gồm FAK, do đó HL chỉ còn 30kgs tải cho HL"
+        ],
+        "documents": [
+          "-Phương thức làm tải:  CLC trên hệ thống Amadeus"
+        ],
+        "flightplan": [
+          "YES"
+        ]
+      }
+    },
+    {
+      "serial": 16,
+      "carrier": "LJ",
+      "aliases": [
+        "LJ"
+      ],
+      "aircraftTypes": [
+        "B737-800"
+      ],
+      "aircraftTypeRaw": "B737-800",
+      "routeType": "International",
+      "request": "",
+      "sections": {
+        "coor": [
+          "- Tiếp viên thực hiện đóng mở cửa.Tàu đậu bãi cập 1 thang - L1\n- B373: Cập 1 thang - L1\n- B777: Cập 2 thang - L2,L4\n- Dịch vụ nước sạch yêu cầu.\n- Hành lý gắn tag:\"Delivery at gate\" trả tại cầu ống lồng nếu đậu ống. Đậu bãi giao xe đầu kéo bàn giao LNF tại cửa ga đến.\n- Giao GD & CM cho tổ bay đi."
+        ],
+        "loading": [
+          "Luôn unload hầm sau -> hầm trước, không song song 2 hầm.\nLoại tàu max8 hầm hàng dạng thảm trượt, ước lượng dưới 130 kiện để bảo đảm chất đủ, ko phải thay đổi tải giờ chót."
+        ],
+        "documents": [
+          "-Phương thức làm tải:  CLC qua email\n-Gửi MVA kèm theo Remaining Fuel\n-CBTT nhận LIR từ LCC qua email\n-CBTT gửi Final Data cho LCC qua email\n-LCC làm NOTOC remark trên LS (nếu có)\n-Gửi Final Lir cho LCC ngay khi tàu đóng cửa"
+        ],
+        "flightplan": [
+          "YES"
+        ]
+      }
+    },
+    {
+      "serial": 17,
+      "carrier": "3U",
+      "aliases": [
+        "3U"
+      ],
+      "aircraftTypes": [
+        "A321"
+      ],
+      "aircraftTypeRaw": "A321",
+      "routeType": "International",
+      "request": "",
+      "sections": {
+        "coor": [
+          "- Gửi thông tin điện văn đến lên group cho Rep.\n- Cập 1 thang - L1.\n- Hãng khai thác khách C.\n- Dịch vụ vệ sinh & nước sạch theo yêu cầu.\n- Gửi thông tin thời gian đóng, mở cửa hầm hàng & load,unload hành lý lên group cho Rep"
+        ],
+        "loading": [
+          "Hầm hàng có thùng dầu phụ tùy vị trí của từng đăng bạ tàu. Kiểm tra trước để ước lượng số kiện chất xếp.\nHL có ưu tiên nhưng điện văn không gửi. Lưu ý load xuống hết HL rồi mới kéo vào bc để bảo đảm HL ưu tiên phải đc trả trước HL thường"
+        ],
+        "documents": [
+          "-Phương thức làm tải: CBTT làm tải trên hệ thống NLDP"
+        ],
+        "flightplan": [
+          "NIL \nHÃNG TỰ LÀM"
+        ]
+      }
+    },
+    {
+      "serial": 18,
+      "carrier": "UQ",
+      "aliases": [
+        "UQ"
+      ],
+      "aircraftTypes": [
+        "B737-800"
+      ],
+      "aircraftTypeRaw": "B737-800",
+      "routeType": "International",
+      "request": "",
+      "sections": {
+        "coor": [
+          "- Tàu đậu bãi cập 1 thang -L1.\n- Hãng khai thác khách C.\n- Dịch vụ xe vệ sinh, nước sạch theo yêu cầu."
+        ],
+        "loading": [
+          "Hành lý có tag BJ/BY chất xếp đúng theo thứ tự ưu tiên, hành lý đi 2 chặng, lưu ý mỗi chặng chất riêng 1 hầm."
+        ],
+        "documents": [
+          "-Phương thức làm tải: CBTT làm tải trên hệ thống NLDP\n-LS ACARS"
+        ],
+        "flightplan": [
+          "YES"
+        ]
+      }
+    },
+    {
+      "serial": 19,
+      "carrier": "DR",
+      "aliases": [
+        "DR"
+      ],
+      "aircraftTypes": [
+        "B737"
+      ],
+      "aircraftTypeRaw": "B737",
+      "routeType": "International",
+      "request": "",
+      "sections": {
+        "coor": [
+          "- Hãng khai thác khách F/C. Có hành lý ưu tiên.\n- Tàu đậu bãi cập 1 thang -L1.\n- Dịch vụ xe vệ sinh & nước sạch theo yêu cầu."
+        ],
+        "loading": [],
+        "documents": [
+          "-Phương thức làm tải: CBTT làm tải trên hệ thống NLDP"
+        ],
+        "flightplan": [
+          "YES"
+        ]
+      }
+    },
+    {
+      "serial": 20,
+      "carrier": "TR",
+      "aliases": [
+        "TR"
+      ],
+      "aircraftTypes": [
+        "E190"
+      ],
+      "aircraftTypeRaw": "E190",
+      "routeType": "International",
+      "request": "",
+      "sections": {
+        "coor": [
+          "- Hãng không khai thác khách C. Có hành lý transit.\n- Tàu không đổi tổ bay. Thu rác phát sinh khi có yêu cầu.\n- Tàu đậu bãi cập 1 thang - L1. COOR mở cửa ( Không hạ thanh Handle ). Tiếp viên đóng.\n- Không boarding nạp dầu. Xác nhận hệ thống ACARS hoạt động bình thường với tổ bay.\n- Dịch vụ vệ sinh & nước sạch theo yêu cầu.\n- LMC với tàu ERJ 190 là 300kgs.\n-Tài liệu in E.NOTOC (backup) nếu Capt không nhận được thì Coor ký giap Capt."
+        ],
+        "loading": [
+          "BB STRL và WCH đến đều trả băng chuyền.\nBT luôn chất hầm sau, HOT luôn để ngay cửa hầm sau.\nChú ý cây ROD cất hầm trước, đầu móc hướng về cửa hầm.\nKhông chất hành lý ở vị trí FAK 11&42\nLưới hầm hàng luôn phải cài, kể cả không chất xếp."
+        ],
+        "documents": [
+          "-Phương thức làm tải: CLC trên hệ thống TR-FM Mobile\n-Lưu ý thực hiện đúng công việc theo các mốc thời gian trên GHA Check list\n-Hành lý BT chất ở vị trí 41\n-Không chất hành lý ở vị trí có FAK 11&42\n-Nhập delay code trên Ground Portal ngay khi tàu cất cánh"
+        ],
+        "flightplan": [
+          "YES"
+        ]
+      }
+    },
+    {
+      "serial": 21,
+      "carrier": "HY",
+      "aliases": [
+        "HY"
+      ],
+      "aircraftTypes": [
+        "A321"
+      ],
+      "aircraftTypeRaw": "A321",
+      "routeType": "International",
+      "request": "",
+      "sections": {
+        "coor": [
+          "- A321: Cập 1 thang cửa L1\n- Dịch vụ xe vệ sinh nước sạch khi có yêu cầu.\n- Hãng có khai thác khách C."
+        ],
+        "loading": [
+          "Chuyến đi chất BC, crew H5.\nVị trí 4.2 có FAK."
+        ],
+        "documents": [
+          "- Phương thức làm tải: CBTT làm hệ thống Amadeus\n-  In load sheet ra tàu ký tải"
+        ],
+        "flightplan": [
+          "YES"
+        ]
+      }
+    },
+    {
+      "serial": 22,
+      "carrier": "HU",
+      "aliases": [
+        "HU"
+      ],
+      "aircraftTypes": [
+        "B737-Max"
+      ],
+      "aircraftTypeRaw": "B737-Max",
+      "routeType": "International",
+      "request": "",
+      "sections": {
+        "coor": [
+          "- Hãng khai thác khách C. \n- Tàu đậu bãi cập 1 thang - L1\n- Lưu ý đặt đủ chóp tại đầu mút cánh.\n- Dịch vụ xe vệ sinh, nước sạch bao gồm"
+        ],
+        "loading": [
+          "Hầm hàng B737 chỉ phân chia trước & sau.\nCó HL BC (tag xám), ưu tiên (tag tím), nối chuyến (tag xanh).\nGhi LIR chất xếp thực tế: số kgs mỗi hầm và chụp LIR gửi group cho Rep\nChụp ảnh hầm hàng (hành lý, lưới cài) sau khi unload & onload cho Rep"
+        ],
+        "documents": [
+          "- Phương thức làm tải: CBTT làm hệ thống NLDP\n- Gửi loadsheet qua hệ thống ACARS cho Capt Approve."
+        ],
+        "flightplan": [
+          "YES"
+        ]
+      }
+    },
+    {
+      "serial": 23,
+      "carrier": "VZ",
+      "aliases": [
+        "VZ"
+      ],
+      "aircraftTypes": [
+        "B737"
+      ],
+      "aircraftTypeRaw": "B737",
+      "routeType": "International",
+      "request": "",
+      "sections": {
+        "coor": [
+          "- Không chuyên chở khách nằm cáng, DEPA, DEPU.",
+          "- Không chuyên chở động vật sống, nội tạng, súng đạn, dụng cụ bơm oxy.",
+          "- Tàu đậu bãi cập thang L1 (A320,B737)",
+          "- Tàu B737 chấp nhận tối đa 4 WCHS/ chuyến, phải xếp ghế cửa sổ.\n-Kết thúc chuyến bay tính theo giờ chock off. Nếu đóng cửa sớm hơn giờ STD, ta sẽ có  thời gian chờ cho đến khi rút chèn là 5’, ko phải gửi code delay. Ví dụ STD1420, D/C 1418, nếu rút chèn 1425 sẽ ko phải gửi code delay. Tuy nhiên nếu rút chèn từ phút thứ 6 trở đi: ví dụ 1426, ta sẽ phải gửi code delay 6’ (từ 1420 đến 1426)."
+        ],
+        "loading": [
+          "-Hầm sau đăng bạ HS-VKL, HS-VKM có 2 thùng dầu, HS-VKR có 1 thùng dầu. Lưu ý để ước lượng chất xếp hành lý, hàng hóa.\n-B737 dễ tipping chú ý unload hầm sau xong mới tới hầm trước. Chuyến bay đi làm ngược lại.\n-Không chất xếp DGR tại hầm 4 đối với loại tàu B737, hầm 5 đối với loại tàu A320,321 do độ dốc của hầm hàng"
+        ],
+        "documents": [
+          "- Capt làm tải tay\n- Hãng gửi Lir trước. TL xác nhận lại thông tin chất xếp và báo Coor. \n- Gửi điện văn trên hệ thống FS"
+        ],
+        "flightplan": [
+          "YES"
+        ]
+      }
+    },
+    {
+      "serial": 24,
+      "carrier": "9G",
+      "aliases": [
+        "9G"
+      ],
+      "aircraftTypes": [
+        "A320",
+        "321"
+      ],
+      "aircraftTypeRaw": "A320/321",
+      "routeType": "Domestic",
+      "request": "",
+      "sections": {
+        "coor": [
+          "Hãng khai thác hạng ghế Economy.",
+          "Tàu đậu bãi sử dụng thang (cập cửa L1 +L4)",
+          "Groundtime chuyến bay 40’ ( TÍNH TỪ GIỜ ĐÓNG CHÈN -> RÚT CHÈN )",
+          "PVTT DỌN VỆ SINH CHUYẾN ĐẾN. XE VỆ SINH NƯỚC SẠCH REQUEST"
+        ],
+        "loading": [
+          "Có khai thác khách C. (Có hành lý prio)",
+          "Hành lý có tag PRIORITY phải chất xếp đúng theo thứ tự ưu tiên."
+        ],
+        "documents": [
+          "CAPT LÀM TẢI MÁY",
+          "CBTT CUNG CẤP SỐ LIỆU FINAL DATA",
+          "GỬI ĐIỆN VĂN QUA MAIL"
+        ],
+        "flightplan": [
+          "NIL"
+        ]
+      }
+    },
+    {
+      "serial": 25,
+      "carrier": "B2",
+      "aliases": [
+        "B2"
+      ],
+      "aircraftTypes": [
+        "B777"
+      ],
+      "aircraftTypeRaw": "B777",
+      "routeType": "International",
+      "request": "",
+      "sections": {
+        "coor": [
+          "Tàu đậu bãi sử dụng thang (cập cửa L1 + L4)",
+          "DỊCH VỤ VỆ SINH NƯỚC SẠCH REQUEST",
+          "PVTT dọn vệ sinh chuyến bay đến.",
+          "Ground time dự kiến: 120 phút"
+        ],
+        "loading": [
+          "Hành lý có tag PRIORITY và Transfer, phải chất xếp riêng so với BY và đúng thứ tự ưu tiên.",
+          "Hầm hàng có FAK. Xác nhận lại vị trí FAK với phi công.",
+          "Hãng sử dụng dịch vụ Catering MASCO ( Từ 11JUN)"
+        ],
+        "documents": [
+          "CBTT xuất LIR và làm tàu trên hệ thống Astra. Xuất Loadsheet và in ra cung cấp crew"
+        ],
+        "flightplan": [
+          "YES"
+        ]
+      }
+    },
+    {
+      "serial": 26,
+      "carrier": "VU",
+      "aliases": [
+        "VU"
+      ],
+      "aircraftTypes": [
+        "A320",
+        "A321"
+      ],
+      "aircraftTypeRaw": "A320/A321",
+      "routeType": "Domestic",
+      "request": "",
+      "sections": {
+        "coor": [
+          "Ground time: 35 phút. Delay tính theo giờ đẩy",
+          "PVHK: có khách ưu tiên, xe chở khách tính tiền theo lượt",
+          "Hàng hóa: 2.500 kg/chuyến (không quá 32 kg/kiện)",
+          "Tổ bay làm vệ sinh. Dịch vụ vệ sinh + nước sạch theo yêu cầu"
+        ],
+        "loading": [
+          "Chú ý các tàu có thùng dầu",
+          "Có hành lý ưu tiên. Lưu ý chất xếp"
+        ],
+        "documents": [
+          "Tài liệu: có ký tải, gửi các điện văn qua email",
+          "TL chuyến đi: GD + CM ( 1 bản)"
+        ],
+        "flightplan": [
+          "NO"
+        ]
+      }
+    }
+  ]
+}
