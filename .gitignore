@@ -1,0 +1,33 @@
+# Environment
+.env
+.env.*
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Build
+dist/
+build/
+
+# Temporary
+temp/
+.tmp/
+*.tmp
+
+# Logs
+*.log
+
+# User generated data
+uploads/
+user-data/
+reports-output/
+
+# Local database
+*.db
+*.sqlite
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
