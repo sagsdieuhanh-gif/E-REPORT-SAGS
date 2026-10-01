@@ -2043,3 +2043,398 @@ html.new-ui-v1 body #roleHomeIdle{pointer-events:none!important;z-index:0!import
 html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard{pointer-events:auto!important;z-index:8!important}
 html.new-ui-v1 body.v157-authenticated #v157BottomBar{pointer-events:auto!important}
 html.new-ui-v1 body.v157-authenticated:not(.v157-drawer-open) #v157DrawerBackdrop{pointer-events:none!important}
+/* === SAGS FLIGHTOPS UI V6.4.28 === */
+/*
+  Presentation-only refresh.
+  No workflow, Firebase path, event handler, route, field key, print/PDF geometry,
+  visibility state or business rule is changed by this block.
+*/
+html.new-ui-v1{
+  --fo-navy:#0b1f33;
+  --fo-navy-2:#102a43;
+  --fo-blue:#1769e0;
+  --fo-blue-strong:#0f56bd;
+  --fo-blue-soft:#eaf2ff;
+  --fo-cyan-soft:#ecf8fc;
+  --fo-bg:#f3f6fa;
+  --fo-surface:#ffffff;
+  --fo-surface-2:#f8fafc;
+  --fo-text:#132238;
+  --fo-muted:#65758b;
+  --fo-line:#d8e1eb;
+  --fo-line-strong:#c5d1dd;
+  --fo-success:#14805e;
+  --fo-warning:#a76413;
+  --fo-danger:#c53e45;
+  --fo-radius-card:12px;
+  --fo-radius-control:8px;
+  --fo-radius-modal:16px;
+  --fo-control-h:44px;
+  --fo-shadow-card:0 6px 18px rgba(15,35,58,.055);
+  --fo-shadow-modal:0 24px 70px rgba(4,19,35,.22);
+
+  --ui-primary:var(--fo-blue);
+  --ui-primary-strong:var(--fo-blue-strong);
+  --ui-primary-soft:var(--fo-blue-soft);
+  --ui-text:var(--fo-text);
+  --ui-text-muted:var(--fo-muted);
+  --ui-surface:var(--fo-surface);
+  --ui-surface-soft:var(--fo-surface-2);
+  --ui-border:var(--fo-line-strong);
+  --ui-border-soft:var(--fo-line);
+  --ui-danger:var(--fo-danger);
+  --ui-overlay:rgba(5,20,36,.62);
+  --ui-radius-modal:var(--fo-radius-modal);
+  --ui-radius-card:var(--fo-radius-card);
+  --ui-radius-input:var(--fo-radius-control);
+  --ui-radius-action:var(--fo-radius-control);
+  --ui-control-height:var(--fo-control-h);
+  --ui-shadow-modal:var(--fo-shadow-modal);
+  --ui-shadow-card:var(--fo-shadow-card);
+  --ui-font:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+
+  --v157-navy:var(--fo-navy);
+  --v157-navy2:var(--fo-navy-2);
+  --v157-blue:var(--fo-blue);
+  --v157-blue-soft:var(--fo-blue-soft);
+  --v157-bg:var(--fo-bg);
+  --v157-text:var(--fo-text);
+  --v157-muted:var(--fo-muted);
+  --v157-line:var(--fo-line);
+  --v157-card:var(--fo-surface);
+  accent-color:var(--fo-blue);
+}
+html.new-ui-v1 body{
+  background:var(--fo-bg)!important;
+  color:var(--fo-text)!important;
+  font-family:var(--ui-font)!important;
+}
+
+/* LOGIN — same fields and auth handlers, new FlightOps skin only. */
+html.new-ui-v1 #roleLoginModal,
+html.new-ui-v1 #loginScreen,
+html.new-ui-v1 .login-screen,
+html.new-ui-v1 .login-page,
+html.new-ui-v1 .login-wrap,
+html.new-ui-v1 .login-container,
+html.new-ui-v1 body.login-mode{
+  background:
+    radial-gradient(circle at 80% 8%,rgba(23,105,224,.09),transparent 34%),
+    linear-gradient(145deg,#eef3f8 0%,#f7f9fc 55%,#edf3f8 100%)!important;
+}
+html.new-ui-v1 #roleLoginModal{padding:clamp(16px,4vw,42px)!important}
+html.new-ui-v1 .roleLoginCard{
+  width:min(100%,440px)!important;
+  padding:clamp(24px,4.6vw,36px)!important;
+  border:1px solid var(--fo-line)!important;
+  border-radius:var(--fo-radius-modal)!important;
+  background:#fff!important;
+  box-shadow:var(--fo-shadow-modal)!important;
+}
+html.new-ui-v1 .roleLoginLogo{
+  width:104px!important;
+  border:1px solid var(--fo-line)!important;
+  border-radius:12px!important;
+  background:#f7f9fc!important;
+  padding:7px!important;
+}
+html.new-ui-v1 .roleLoginLogo img{border-radius:8px!important}
+html.new-ui-v1 .roleLoginCard h2{
+  color:var(--fo-text)!important;
+  font-weight:850!important;
+  letter-spacing:-.035em!important;
+}
+html.new-ui-v1 .roleLoginCard label{color:#43546a!important;font-weight:700!important}
+html.new-ui-v1 .roleLoginCard input,
+html.new-ui-v1 .roleLoginCard select{
+  min-height:48px!important;height:48px!important;
+  border:1px solid var(--fo-line-strong)!important;
+  border-radius:var(--fo-radius-control)!important;
+  background:#fff!important;color:var(--fo-text)!important;
+  box-shadow:0 1px 1px rgba(15,35,58,.02)!important;
+}
+html.new-ui-v1 #roleLoginSubmit{
+  min-height:48px!important;height:48px!important;
+  border-radius:var(--fo-radius-control)!important;
+  background:var(--fo-blue)!important;color:#fff!important;
+  box-shadow:0 7px 18px rgba(23,105,224,.18)!important;
+}
+html.new-ui-v1 #roleLoginSubmit:hover{background:var(--fo-blue-strong)!important}
+
+/* HOME / DASHBOARD */
+html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard{
+  background:var(--fo-bg)!important;
+  color:var(--fo-text)!important;
+  padding-top:calc(18px + env(safe-area-inset-top))!important;
+}
+html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157Welcome{
+  min-height:auto!important;
+  padding:20px!important;margin:0 0 14px!important;
+  border:1px solid var(--fo-line)!important;
+  border-radius:var(--fo-radius-card)!important;
+  background:#fff!important;
+  box-shadow:var(--fo-shadow-card)!important;
+}
+html.new-ui-v1 #v157HomeDashboard .v157Welcome strong{
+  color:var(--fo-text)!important;
+  font-weight:850!important;letter-spacing:-.035em!important;
+}
+html.new-ui-v1 #v157HomeDashboard .v157Welcome span{color:var(--fo-muted)!important}
+html.new-ui-v1 #v157HomeDashboard .v200WeatherCard{
+  border:1px solid #d7e6f6!important;
+  border-radius:10px!important;
+  background:#f1f6fd!important;
+  box-shadow:none!important;
+}
+html.new-ui-v1 #v157HomeDashboard .v157MetricGrid{gap:12px!important}
+html.new-ui-v1 #v157HomeDashboard .v157Metric{
+  min-height:124px!important;
+  padding:16px!important;
+  border:1px solid var(--fo-line)!important;
+  border-radius:var(--fo-radius-card)!important;
+  background:#fff!important;
+  box-shadow:var(--fo-shadow-card)!important;
+}
+html.new-ui-v1 #v157HomeDashboard .v157Metric:after{background:#edf4ff!important}
+html.new-ui-v1 #v157HomeDashboard .v157Metric.warn:after{background:#fff4e5!important}
+html.new-ui-v1 #v157HomeDashboard .v157MetricIco{
+  border-radius:9px!important;background:var(--fo-blue-soft)!important;color:var(--fo-blue)!important;
+}
+html.new-ui-v1 #v157HomeDashboard .v157Metric.warn .v157MetricIco{
+  background:#fff1dc!important;color:var(--fo-warning)!important;
+}
+html.new-ui-v1 #v157HomeDashboard .v157MetricNum{color:var(--fo-text)!important}
+html.new-ui-v1 #v157HomeDashboard .v157MetricHead,
+html.new-ui-v1 #v157HomeDashboard .v157MetricSub{color:var(--fo-muted)!important}
+html.new-ui-v1 #v157HomeDashboard .v157Panel{
+  border:1px solid var(--fo-line)!important;
+  border-radius:var(--fo-radius-card)!important;
+  background:#fff!important;
+  box-shadow:var(--fo-shadow-card)!important;
+}
+html.new-ui-v1 #v157HomeDashboard .v157PanelHead{color:var(--fo-text)!important}
+html.new-ui-v1 #v157HomeDashboard .v157PanelLink{
+  min-height:42px!important;
+  padding:9px 13px!important;
+  border:1px solid #cfe0f6!important;
+  border-radius:var(--fo-radius-control)!important;
+  background:var(--fo-blue-soft)!important;color:var(--fo-blue-strong)!important;
+}
+html.new-ui-v1 #v157HomeDashboard #v157HistoryBtn{
+  background:var(--fo-blue)!important;color:#fff!important;border-color:var(--fo-blue)!important;
+}
+html.new-ui-v1 #v157HomeDashboard .v157Empty{
+  border:1px dashed #ced9e5!important;
+  border-radius:10px!important;background:#f8fafc!important;color:var(--fo-muted)!important;
+}
+
+/* DRAWER / NAVIGATION */
+html.new-ui-v1 body.v157-authenticated #v157Drawer{
+  background:var(--fo-navy)!important;color:#fff!important;
+  box-shadow:18px 0 42px rgba(4,19,35,.28)!important;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157DrawerHead{
+  background:linear-gradient(155deg,#0d2945 0%,#0b1f33 72%)!important;
+  color:#fff!important;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157LogoBox{
+  border-radius:10px!important;box-shadow:none!important;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuBody{
+  background:var(--fo-navy)!important;border-radius:0!important;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157SectionTitle{color:#89a1b9!important}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuItem{
+  min-height:52px!important;
+  border:1px solid transparent!important;
+  border-radius:9px!important;
+  color:#dce7f1!important;
+  background:transparent!important;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuItem .ico{
+  border-radius:8px!important;background:#163653!important;color:#b9d6f4!important;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuItem .meta{color:#8fa6bb!important}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuItem.active{
+  background:#173c60!important;border-color:#24527d!important;color:#fff!important;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuItem.active .ico{
+  background:var(--fo-blue)!important;color:#fff!important;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157DrawerFooter{
+  background:#0b1f33!important;border-color:#1d3c59!important;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157PasswordBtn{
+  border:1px solid #31506d!important;border-radius:8px!important;background:#142f49!important;color:#e6eef6!important;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157LogoutBtn{
+  border-radius:8px!important;background:#a9343d!important;box-shadow:none!important;
+}
+
+/* HOME BOTTOM BAR */
+html.new-ui-v1 body.v157-authenticated.v157-home #v157BottomBar{
+  background:#fff!important;border:1px solid var(--fo-line)!important;border-bottom:0!important;
+  border-radius:12px 12px 0 0!important;box-shadow:0 -5px 18px rgba(15,35,58,.08)!important;
+}
+html.new-ui-v1 body.v157-authenticated.v157-home #v157BottomBar .v157BottomBtn{
+  min-height:54px!important;border-radius:8px!important;color:var(--fo-muted)!important;
+}
+html.new-ui-v1 body.v157-authenticated.v157-home #v157BottomBar .v157BottomBtn.active{
+  border-color:#cddff6!important;background:var(--fo-blue-soft)!important;color:var(--fo-blue-strong)!important;
+}
+
+/* MYFLY — same live data, click handlers and claim/receive actions. */
+html.new-ui-v1 #fwcModal{background:rgba(5,20,36,.62)!important}
+html.new-ui-v1 #fwcModal .fwcPanel{
+  border:1px solid var(--fo-line)!important;
+  border-radius:var(--fo-radius-modal)!important;
+  background:var(--fo-bg)!important;
+  box-shadow:var(--fo-shadow-modal)!important;
+}
+html.new-ui-v1 #fwcModal .fwcHead{
+  background:var(--fo-bg)!important;border-color:var(--fo-line)!important;
+}
+html.new-ui-v1 #fwcModal .fwcHead h3{color:var(--fo-text)!important}
+html.new-ui-v1 #fwcModal .fwcTools{
+  border:1px solid var(--fo-line)!important;border-radius:10px!important;background:#fff!important;
+}
+html.new-ui-v1 #fwcModal .fwcTools input,
+html.new-ui-v1 #fwcModal .fwcTools select{
+  min-height:44px!important;border:1px solid var(--fo-line-strong)!important;
+  border-radius:8px!important;background:#fff!important;color:var(--fo-text)!important;
+}
+html.new-ui-v1 #fwcModal .fwcFlight{
+  border:1px solid var(--fo-line)!important;
+  border-radius:10px!important;background:#fff!important;
+  box-shadow:0 3px 12px rgba(15,35,58,.04)!important;
+}
+html.new-ui-v1 #fwcModal .fwcFlight:hover{border-color:#a9c7ec!important}
+html.new-ui-v1 #fwcModal .fwcFlightTitle{color:var(--fo-text)!important}
+html.new-ui-v1 #fwcModal .fwcMeta{color:var(--fo-muted)!important}
+html.new-ui-v1 #fwcModal :is(button,.fwcAction,.fwcReceive,.fwcClaim){
+  border-radius:8px!important;
+}
+
+/* FLIGHT SELECTOR / SESSION */
+html.new-ui-v1 #flightSessionModal{background:rgba(5,20,36,.62)!important}
+html.new-ui-v1 .flightSessionBox{
+  border:1px solid var(--fo-line)!important;
+  border-radius:var(--fo-radius-modal)!important;
+  background:var(--fo-bg)!important;
+  box-shadow:var(--fo-shadow-modal)!important;
+}
+html.new-ui-v1 .flightSessionBox h3{color:var(--fo-text)!important}
+html.new-ui-v1 .flightSessionCurrent{
+  border:1px solid #d3e4f8!important;border-radius:9px!important;background:#eef5fe!important;color:#315578!important;
+}
+html.new-ui-v1 .flightSessionCreate input,
+html.new-ui-v1 .flightSessionCreate select{
+  min-height:44px!important;border:1px solid var(--fo-line-strong)!important;
+  border-radius:8px!important;background:#fff!important;color:var(--fo-text)!important;
+}
+html.new-ui-v1 .flightSessionCreate button{
+  min-height:44px!important;border-radius:8px!important;background:var(--fo-blue)!important;color:#fff!important;
+}
+html.new-ui-v1 .flightSessionRow{
+  border:1px solid var(--fo-line)!important;border-radius:10px!important;background:#fff!important;
+  box-shadow:0 3px 10px rgba(15,35,58,.035)!important;
+}
+html.new-ui-v1 .flightSessionRow.active{
+  border:2px solid var(--fo-blue)!important;background:#f2f7ff!important;
+}
+html.new-ui-v1 .flightSessionClose{
+  border-radius:8px!important;background:#e9eef4!important;color:#334a62!important;
+}
+
+/* OPERATIONAL NAV / FORM ACTIONS — handlers untouched. */
+html.new-ui-v1 body.v163-operational{
+  background:var(--fo-bg)!important;color:var(--fo-text)!important;
+}
+html.new-ui-v1 body.v163-operational #v163OperationNav{
+  border:1px solid var(--fo-line)!important;border-radius:10px!important;
+  background:#fff!important;box-shadow:0 -5px 18px rgba(15,35,58,.09)!important;
+}
+html.new-ui-v1 body.v163-operational #v163OperationNav > button{
+  min-height:40px!important;border:1px solid #d2e0f2!important;
+  border-radius:7px!important;background:#f1f5fa!important;color:#284c72!important;
+}
+html.new-ui-v1 body.v163-operational #v163OperationNav #v163HomeBtn{
+  border-color:#c5daf5!important;background:var(--fo-blue-soft)!important;color:var(--fo-blue-strong)!important;
+}
+html.new-ui-v1 body.v163-operational #v324FormActions{
+  border:1px solid var(--fo-line)!important;border-radius:10px!important;background:#fff!important;
+  box-shadow:0 -5px 18px rgba(15,35,58,.08)!important;
+}
+html.new-ui-v1 body.v163-operational #v324FormActions .v324FormAction{
+  min-height:40px!important;border:1px solid #c8dcf4!important;border-radius:7px!important;
+  background:var(--fo-blue-soft)!important;color:var(--fo-blue-strong)!important;
+}
+html.new-ui-v1 body.v163-operational #v324FormActions #v324HandoverBtn{
+  background:#fff4e4!important;border-color:#efd4a9!important;color:#855713!important;
+}
+
+/* LIVE DIALOGS / ADMIN / DATA HUB — visual tokens only. */
+html.new-ui-v1 body :is(
+  .rsPanel,.sagsAdminPanel,.drPanel,.aclPanel,.acls-panel,.fleetManagerPanel,
+  .fwcMultiPanel,.flightSessionBox,.flightTypeEditBox,.ferryAlertBox,.finalFormsPanel,
+  .v377CreateFormCard,.attachmentSourceBox,.finalPaperCard,.vjLdmCard,.formMenuBox,
+  .fs09PreviewBox,.exportChoiceBox,.exportBox,.fs09qPanel,.v479ThreeUActionPanel,
+  .v485PermBox,#entry>.panel,#signModal>.panel,#templateModal>.templateBox,
+  #timeSkipModal>div,#signatureSampleModal>div,#appUpdateModal>div,
+  #dedicatedSheetChooserModal>div,#finalSheetManagerModal>div,#kh208ManagerModal>div,
+  #fs09SheetManagerModal>div,#cxCleanModal>div,#sagsQuickEntry>.sq-card,
+  .v174DataHubPanel,.v181AdminPanel
+){
+  border:1px solid var(--fo-line)!important;
+  border-radius:var(--fo-radius-modal)!important;
+  background:#fff!important;color:var(--fo-text)!important;
+  box-shadow:var(--fo-shadow-modal)!important;
+}
+html.new-ui-v1 body :is(
+  .sagsAdminPanel,.drPanel,.aclPanel,.acls-panel,.fleetManagerPanel,.fwcMultiPanel,
+  .flightTypeEditBox,.ferryAlertBox,.finalFormsPanel,.v174DataHubPanel,.v181AdminPanel,
+  .formMenuBox,.fs09qPanel,#sagsQuickEntry>.sq-card
+) :is(input:not([type="checkbox"]):not([type="radio"]),select,textarea){
+  border:1px solid var(--fo-line-strong)!important;
+  border-radius:var(--fo-radius-control)!important;
+  background:#fff!important;color:var(--fo-text)!important;
+  box-shadow:none!important;
+}
+html.new-ui-v1 body :is(
+  .sagsAdminPanel,.drPanel,.aclPanel,.acls-panel,.fleetManagerPanel,.fwcMultiPanel,
+  .flightTypeEditBox,.ferryAlertBox,.finalFormsPanel,.v174DataHubPanel,.v181AdminPanel,
+  .formMenuBox,.fs09qPanel,#sagsQuickEntry>.sq-card
+) :is(button,a[role="button"],[role="button"]){
+  border-radius:var(--fo-radius-control)!important;
+}
+
+/* ACCESSIBILITY / INTERACTION */
+html.new-ui-v1 :focus-visible{
+  outline:3px solid rgba(23,105,224,.38)!important;
+  outline-offset:2px!important;
+}
+html.new-ui-v1 button,
+html.new-ui-v1 [role="button"]{touch-action:manipulation}
+html.new-ui-v1 button:disabled,
+html.new-ui-v1 [aria-disabled="true"]{opacity:.48}
+
+/* Responsive geometry: appearance changes only, workflow/state remains untouched. */
+@media(max-width:600px){
+  html.new-ui-v1 .roleLoginCard{border-radius:14px!important;padding:24px 20px!important}
+  html.new-ui-v1 body.v157-authenticated #v157Drawer{width:min(90vw,360px)!important}
+  html.new-ui-v1 #fwcModal .fwcPanel{border-radius:14px!important;padding:12px!important}
+  html.new-ui-v1 #fwcModal .fwcFlight{padding:13px!important}
+  html.new-ui-v1 .flightSessionBox{border-radius:14px 14px 0 0!important}
+}
+@media(min-width:900px){
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard{
+    padding-left:max(30px,calc((100vw - 1180px)/2))!important;
+    padding-right:max(30px,calc((100vw - 1180px)/2))!important;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  html.new-ui-v1 *,html.new-ui-v1 *:before,html.new-ui-v1 *:after{
+    animation-duration:0s!important;transition-duration:0s!important;scroll-behavior:auto!important;
+  }
+}
+
