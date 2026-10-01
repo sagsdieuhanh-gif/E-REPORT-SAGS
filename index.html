@@ -19031,7 +19031,8 @@ async function firebasePersonalAccountLogin(email,pass){
     else if(code.includes("operation-not-allowed"))msg="Đăng nhập hiện chưa sẵn sàng.";
     else if(code.includes("network-request-failed"))msg="Không có kết nối. Kiểm tra mạng rồi thử lại.";
     else if(code.includes("invalid-api-key"))msg="Lỗi cấu hình đăng nhập.";
-    else if(code.includes("unauthorized-domain"))msg="Thiết bị hiện chưa được phép đăng nhập.";
+    else if(code.includes("unauthorized-domain"))msg="Firebase chưa cho phép hostname Preview này.";
+    else if(code.includes("requests-from-referer")||/referer.+blocked|api key.+referrer/i.test(detail))msg="API key Firebase/Google Cloud đang chặn hostname Preview này.";
     else if(detail.includes("firebase-profile-missing"))msg="Tài khoản chưa được cấp hồ sơ sử dụng.";
     else if(detail.includes("firebase-profile-disabled"))msg="Tài khoản đã bị khóa.";
     else if(detail.includes("firebase-username-missing"))msg="Đăng nhập Auth thành công nhưng users/{UID} chưa có username.";
@@ -19046,9 +19047,12 @@ async function firebasePersonalAccountLogin(email,pass){
         msg += " ["+shortCode+"]";
       }
       if(err){
-        err.textContent=msg;
+        const isPreview=host.endsWith(".vercel.app")||host.includes("-git-")||host.includes("preview");
+        const diag=isPreview?" · HOST: "+host:"";
+        err.textContent=msg+" ["+shortCode+"]"+diag;
         err.dataset.firebaseCode=shortCode;
         err.dataset.previewHost=host;
+        err.title="Firebase Auth diagnostic · "+shortCode+" · "+host;
       }
       console.warn("Firebase personal login",shortCode,detail,{host},e);
       return false;
