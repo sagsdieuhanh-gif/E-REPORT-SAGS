@@ -3906,7 +3906,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  */
 (function(root){'use strict';
   const BUILD='V3.63-20260822-01';
-  const ROOT='flight_records', MANIFEST='roster_manifests', MAIL='roster_mail';
+  const ROOT='flight_records', MANIFEST='roster_manifests', MAIL='roster_mail', LOOKUP='flight_lookup';
   const S=v=>String(v??'').trim(), U=v=>S(v).toUpperCase();
   const safe=v=>S(v).replace(/[.#$\[\]\/]/g,'_');
   const normFlight=v=>U(v).replace(/[^A-Z0-9]/g,'');
@@ -3961,6 +3961,11 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
           }
           patch[assignmentPath]=assignment;
         }
+        // V6.4.29 DATA SAVER: tiny token -> flightId index. Module updates can now
+        // resolve their master flight without downloading flight_records/<date>.
+        const tokens=[rec.arrFlight,rec.depFlight,...splitFlights(rec.flightRaw),...splitFlights(rec.flightName)]
+          .map(normFlight).filter(Boolean);
+        for(const token of new Set(tokens))patch[`${LOOKUP}/${safe(date)}/${safe(token)}`]=fid;
       }
       patch[`${MANIFEST}/${date}/flightHubSchema`]=1;
     }
@@ -3968,8 +3973,59 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   async function readDate(date){try{return (await root.sagsV470Ref(`${ROOT}/${safe(date)}`).once('value')).val()||{}}catch(_){return {}}}
   function identity(payload,meta){const id=payload?.identity||{},f09=payload?.f09||{},st=payload?.state||{};const rawFlights=[];for(const x of [id.flightToken,...(id.flights||[]),payload?.flight,payload?.flightRaw,f09.f09_fltBefore,f09.f09_fltAfter,st.fltBefore,st.fltAfter,st.f421_fltBefore,st.f421_fltAfter])if(S(x))rawFlights.push(normFlight(x));const flights=[...new Set(rawFlights.filter(Boolean))];const date=isoDate(meta?.opDate||id.date||id.dateToken||payload?.date||f09.f09_date||st.date||st.f421_date||meta?.date||today());return {date,flights,reg:S(id.acRegToken||payload?.acReg||payload?.acreg||f09.f09_regn||st.regn||st.f421_regn).toUpperCase()}}
   function matchRecord(records,flights){const fset=new Set(flights);for(const rec of Object.values(records||{})){const rfl=[rec.arrFlight,rec.depFlight,...splitFlights(rec.flightRaw),...splitFlights(rec.flightName)].map(normFlight).filter(Boolean);if(rfl.some(x=>fset.has(x)))return rec;}return null}
+  const hubTokenCache=new Map(),hubFallbackCache=new Map();
+  function hubTokens(id){return [...new Set((id?.flights||[]).map(normFlight).filter(Boolean))]}
+  function rememberHub(date,fid,rec=null){
+    fid=S(fid);date=S(date);if(!fid||!date)return;
+    const tokens=[...(rec?[rec.arrFlight,rec.depFlight,...splitFlights(rec.flightRaw),...splitFlights(rec.flightName)]:[])].map(normFlight).filter(Boolean);
+    for(const token of new Set(tokens))hubTokenCache.set(date+'|'+token,fid);
+  }
+  async function resolveHubFlight(id,meta={}){
+    const date=S(id?.date),tokens=hubTokens(id),active=(()=>{try{return root.currentFlightSessionMeta?.()||null}catch(_){return null}})();
+    const activeDate=isoDate(active?.rosterOpDate||active?.opDate||date);
+    const hinted=S(meta?.flightId||meta?.rosterFlightId||((activeDate===date)?active?.rosterFlightId:''));
+    if(hinted)return {fid:hinted,rec:null,source:'hint'};
+    for(const token of tokens){
+      const cached=hubTokenCache.get(date+'|'+token);if(cached)return {fid:cached,rec:null,source:'memory-index'};
+      try{
+        const snap=await root.sagsV470Ref(`${LOOKUP}/${safe(date)}/${safe(token)}`).once('value'),v=snap?.val?.();
+        const fid=S(v?.flightId||v);
+        if(fid){hubTokenCache.set(date+'|'+token,fid);return {fid,rec:null,source:'rtdb-index'}}
+      }catch(_){}
+    }
+    // Legacy fallback only. Cache the one unavoidable full-day read briefly and
+    // backfill the compact index so the same client and future clients stop repeating it.
+    const now=Date.now(),cachedDay=hubFallbackCache.get(date);
+    let records=cachedDay&&now-cachedDay.at<60000?cachedDay.records:null;
+    if(!records){records=await readDate(date);hubFallbackCache.set(date,{at:now,records})}
+    const rec=matchRecord(records,tokens),fid=S(rec?.flightId);
+    if(fid){
+      rememberHub(date,fid,rec);
+      const p={};for(const token of new Set([rec.arrFlight,rec.depFlight,...splitFlights(rec.flightRaw),...splitFlights(rec.flightName)].map(normFlight).filter(Boolean)))p[`${LOOKUP}/${safe(date)}/${safe(token)}`]=fid;
+      if(Object.keys(p).length)try{await root.sagsV470Ref('').update(p)}catch(_){}
+      return {fid,rec,source:'legacy-day-fallback'};
+    }
+    return {fid:'',rec:null,source:'new'};
+  }
   function moduleSummary(kind,payload,meta){const k=U(kind),id=identity(payload,meta);const base={kind:k,updatedAtMs:Date.now(),updatedBy:S(root.currentUserProfile?.username||root.currentRole||''),docId:S(meta?.docId),sourcePath:S(meta?.sourcePath),revisionNo:Number(meta?.revisionNo||payload?.revisionNo||payload?.closeoutNo||0)||0,reg:id.reg};if(k==='KẾT SỔ'||k==='KET_SO'||k==='CLOSEOUT')return {...base,kind:'KẾT SỔ',status:'ĐÃ CÓ',adl:payload?.f09?.f09_finalADL??null,chd:payload?.f09?.f09_finalCHD??null,inf:payload?.f09?.f09_finalINF??null,bagPcs:payload?.f09?.f09_finalBagP??null,bagKg:payload?.f09?.f09_finalBagW??null};if(k==='FINAL')return {...base,status:'ĐÃ CÓ',form:S(payload?.form),crosscheckStatus:S(payload?.cleanCrosscheck?.[String(payload?.revisionNo||1)]?.status||'WAITING')};if(k==='RAMP')return {...base,status:S(meta?.status||'ĐANG KHAI THÁC'),sessionId:S(meta?.sessionId),assignmentId:S(meta?.assignmentId),workspaceKey:S(meta?.workspaceKey),sourcePath:S(meta?.sourcePath),chockOn:S(meta?.chockOn),doorClose:S(meta?.doorClose),chockOff:S(meta?.chockOff),pushback:S(meta?.pushback),cargoOffload:S(meta?.cargoOffload),cargoOnload:S(meta?.cargoOnload)};return {...base,status:S(meta?.status||'ĐÃ CẬP NHẬT')};}
-  root.sagsFlightHubLink=async function(kind,payload,meta={}){try{if(typeof root.sagsV470Ref!=='function')return null;const id=identity(payload,meta),records=await readDate(id.date);let rec=matchRecord(records,id.flights),fid=rec?.flightId;if(!fid){fid=flightId(id.date,id.flights[0],id.flights[1],id.flights.join('/'));rec={flightId:fid,opDate:id.date,flightRaw:id.flights.join('/'),flightName:id.flights.join(' / '),arrFlight:id.flights[0]||'',depFlight:id.flights[1]||'',createdFrom:'MODULE_FALLBACK',createdAtMs:Date.now(),assignments:{}};}const mod=moduleSummary(kind,payload,meta),eventId=`EV_${Date.now()}_${hash(kind+'|'+S(meta.docId)+'|'+Math.random())}`;const patch={};patch[`${ROOT}/${safe(id.date)}/${safe(fid)}/flightId`]=fid;patch[`${ROOT}/${safe(id.date)}/${safe(fid)}/opDate`]=id.date;patch[`${ROOT}/${safe(id.date)}/${safe(fid)}/updatedAtMs`]=Date.now();if(id.reg)patch[`${ROOT}/${safe(id.date)}/${safe(fid)}/acReg`]=id.reg;patch[`${ROOT}/${safe(id.date)}/${safe(fid)}/modules/${safe(mod.kind)}`]=mod;patch[`${ROOT}/${safe(id.date)}/${safe(fid)}/timeline/${safe(eventId)}`]={eventId,kind:mod.kind,status:mod.status,atMs:Date.now(),by:mod.updatedBy,docId:mod.docId,revisionNo:mod.revisionNo};await root.sagsV470Ref('').update(patch);return {flightId:fid,opDate:id.date}}catch(e){console.warn('FlightHub link',kind,e);return null}};
+  root.sagsFlightHubLink=async function(kind,payload,meta={}){try{
+    if(typeof root.sagsV470Ref!=='function')return null;
+    const id=identity(payload,meta),resolved=await resolveHubFlight(id,meta);
+    let rec=resolved.rec,fid=S(resolved.fid);
+    if(!fid){
+      fid=flightId(id.date,id.flights[0],id.flights[1],id.flights.join('/'));
+      rec={flightId:fid,opDate:id.date,flightRaw:id.flights.join('/'),flightName:id.flights.join(' / '),arrFlight:id.flights[0]||'',depFlight:id.flights[1]||'',createdFrom:'MODULE_FALLBACK',createdAtMs:Date.now(),assignments:{}};
+    }
+    const mod=moduleSummary(kind,payload,meta),eventId=`EV_${Date.now()}_${hash(kind+'|'+S(meta.docId)+'|'+Math.random())}`,patch={};
+    patch[`${ROOT}/${safe(id.date)}/${safe(fid)}/flightId`]=fid;
+    patch[`${ROOT}/${safe(id.date)}/${safe(fid)}/opDate`]=id.date;
+    patch[`${ROOT}/${safe(id.date)}/${safe(fid)}/updatedAtMs`]=Date.now();
+    if(id.reg)patch[`${ROOT}/${safe(id.date)}/${safe(fid)}/acReg`]=id.reg;
+    patch[`${ROOT}/${safe(id.date)}/${safe(fid)}/modules/${safe(mod.kind)}`]=mod;
+    patch[`${ROOT}/${safe(id.date)}/${safe(fid)}/timeline/${safe(eventId)}`]={eventId,kind:mod.kind,status:mod.status,atMs:Date.now(),by:mod.updatedBy,docId:mod.docId,revisionNo:mod.revisionNo};
+    for(const token of hubTokens(id)){patch[`${LOOKUP}/${safe(id.date)}/${safe(token)}`]=fid;hubTokenCache.set(id.date+'|'+token,fid)}
+    await root.sagsV470Ref('').update(patch);return {flightId:fid,opDate:id.date,resolveSource:resolved.source};
+  }catch(e){console.warn('FlightHub link',kind,e);return null}};
   function rampMeta(){try{const st=root.state||{},meta=typeof root.currentFlightSessionMeta==='function'?root.currentFlightSessionMeta():null,aid=S(meta?.rosterAssignmentId||st.rosterAssignmentId),wi=typeof root.rosterWorkspaceInfo==='function'?root.rosterWorkspaceInfo(aid):null;return {opDate:S(meta?.rosterOpDate),sessionId:S(root.activeFlightSessionId),assignmentId:aid,workspaceKey:S(wi?.workspaceKey),sourcePath:wi?.workspaceKey?`roster_flight_workspaces/${safe(wi.workspaceKey)}`:'',chockOn:S(st.h5||st.f421_h5),doorClose:S(st.h21||st.f421_h21),chockOff:S(st.h22||st.f421_h22),pushback:S(st.h24||st.f421_h24),cargoOffload:S(st.offloadCargoFinish||st.f421_offloadCargoFinish),cargoOnload:S(st.onloadCargoFinish||st.f421_onloadCargoFinish),status:S(st.h24||st.f421_h24)?'PUSHBACK':(S(st.h21||st.f421_h21)?'DOOR CLOSE':'ĐANG KHAI THÁC')}}catch(_){return {}}}
   let syncTimer=0,lastRampSig='';root.sagsFlightHubSyncCurrentRamp=function(){clearTimeout(syncTimer);syncTimer=setTimeout(async()=>{try{if(!root.activeFlightSessionId)return;const st=clone(root.state||{}),m=rampMeta(),sig=JSON.stringify([root.activeFlightSessionId,m.chockOn,m.doorClose,m.chockOff,m.pushback,m.cargoOffload,m.cargoOnload,S(st.fltBefore||st.f421_fltBefore),S(st.fltAfter||st.f421_fltAfter)]);if(sig===lastRampSig)return;lastRampSig=sig;await root.sagsFlightHubLink('RAMP',{state:st},m)}catch(e){console.warn('FlightHub ramp',e)}},700)};
   function installPersistHook(){if(root.__FLIGHT_HUB_PERSIST_HOOK)return;const base=root.persist;if(typeof base!=='function'){setTimeout(installPersistHook,500);return}root.__FLIGHT_HUB_PERSIST_HOOK=1;root.persist=function(){const r=base.apply(this,arguments);try{root.sagsFlightHubSyncCurrentRamp()}catch(_){}return r}}
@@ -6261,38 +6317,60 @@ body.v38-clean-workflow #v38CleanNav .v326GrantedPermission::after{content:'+';d
   function flightIdFor(date,item){let fid=S(item?.flightId);if(fid)return fid;try{if(typeof root.sagsFlightHubFlightId==='function')fid=S(root.sagsFlightHubFlightId(date,item?.arrFlight||'',item?.depFlight||'',item?.flightRaw||item?.flightName||''))}catch(_){}return fid}
 
   async function cleanup(date,oldMan,newMan,repair=false){
-    const newItems=newMan?.items||{}, activeIds=new Set(Object.keys(newItems).filter(id=>newItems[id]&&newItems[id].active!==false));
-    const [mailSnap,sessSnap,flightSnap]=await Promise.all([db('roster_mail').once('value').catch(()=>null),db('roster_sessions').once('value').catch(()=>null),db(`flight_records/${safe(date)}`).once('value').catch(()=>null)]);
-    const allMail=mailSnap?.val?.()||{}, sessions=sessSnap?.val?.()||{}, flights=flightSnap?.val?.()||{};
+    const newItems=newMan?.items||{},activeIds=new Set(Object.keys(newItems).filter(id=>newItems[id]&&newItems[id].active!==false));
+    let allMail={},sessions={},flights={};
+    if(repair){
+      // Deep repair remains available ONLY when AD explicitly invokes it.
+      const [mailSnap,sessSnap,flightSnap]=await Promise.all([
+        db('roster_mail').once('value').catch(()=>null),
+        db('roster_sessions').once('value').catch(()=>null),
+        db(`flight_records/${safe(date)}`).once('value').catch(()=>null)
+      ]);
+      allMail=mailSnap?.val?.()||{};sessions=sessSnap?.val?.()||{};flights=flightSnap?.val?.()||{};
+    }else{
+      // Normal roster replacement needs only compact unit-assignment leaves for flights
+      // touched by the old/new manifest. Never scan global roster_mail/roster_sessions.
+      const fids=new Set();
+      for(const item of [...Object.values(oldMan?.items||{}),...Object.values(newItems||{})]){
+        if(!item)continue;const fid=flightIdFor(date,item);if(fid)fids.add(fid);
+      }
+      await Promise.all([...fids].map(async fid=>{
+        try{
+          const s=await db(`flight_records/${safe(date)}/${safe(fid)}/unitAssignments`).once('value');
+          flights[fid]={flightId:fid,unitAssignments:s.val()||{}};
+        }catch(_){flights[fid]={flightId:fid,unitAssignments:{}}}
+      }));
+    }
     const stale=new Map();
     const add=(aid,item={})=>{aid=S(aid);if(!aid||activeIds.has(aid))return;stale.set(aid,{...(stale.get(aid)||{}),...item,assignmentId:aid})};
     for(const [aid,x] of Object.entries(oldMan?.items||{}))if(x&&!activeIds.has(aid))add(aid,x);
     for(const [aid,x] of Object.entries(newItems||{}))if(x&&(x.active===false||['ROSTER_REMOVED','ROSTER_REASSIGNED'].includes(U(x.rosterStatus))))add(aid,x);
-    for(const [user,node] of Object.entries(allMail||{}))for(const [aid,x] of Object.entries(node?.items||{})){if(!x||S(x.opDate)!==date||activeIds.has(aid))continue;add(aid,{...x,user:norm(x.targetUser||user)})}
-    for(const [fid,rec] of Object.entries(flights||{}))for(const [aid,x] of Object.entries(rec?.assignments||{}))if(!activeIds.has(aid))add(aid,{...x,flightId:S(rec?.flightId||fid),flightRaw:S(rec?.flightRaw),flightName:S(rec?.flightName)});
-    for(const [key,st] of Object.entries(sessions||{})){const aid=S(st?.assignmentId||key);if(activeIds.has(aid))continue;if(stale.has(aid)||sessionDate(st)===date)add(aid,{ownerUser:norm(st?.ownerUser),sessionMatched:true})}
+    if(repair){
+      for(const [user,node] of Object.entries(allMail||{}))for(const [aid,x] of Object.entries(node?.items||{})){if(!x||S(x.opDate)!==date||activeIds.has(aid))continue;add(aid,{...x,user:norm(x.targetUser||user)})}
+      for(const [fid,rec] of Object.entries(flights||{}))for(const [aid,x] of Object.entries(rec?.assignments||{}))if(!activeIds.has(aid))add(aid,{...x,flightId:S(rec?.flightId||fid),flightRaw:S(rec?.flightRaw),flightName:S(rec?.flightName)});
+      for(const [key,st] of Object.entries(sessions||{})){const aid=S(st?.assignmentId||key);if(activeIds.has(aid))continue;if(stale.has(aid)||sessionDate(st)===date)add(aid,{ownerUser:norm(st?.ownerUser),sessionMatched:true})}
+    }
 
     const patch={},t=Date.now(),by=norm(root.currentUserProfile?.username||root.currentRole||'SYSTEM');
     for(const [aid,item] of stale){
       const oldUser=norm(item.user||item.targetUser||item.ownerUser||item.originalUser),fid=flightIdFor(date,item),unit=unitOf(item);
-      // Latest roster is the only ACTIVE manifest. Remove stale/tombstone entries physically.
       patch[`roster_manifests/${safe(date)}/items/${safe(aid)}`]=null;
-      // Remove every stale mailbox copy, not just the username stored in the old manifest.
-      for(const [mailUser,node] of Object.entries(allMail||{})){if(node?.items?.[aid]&&S(node.items[aid]?.opDate)===date){patch[`roster_mail/${safe(mailUser)}/items/${safe(aid)}`]=null;patch[`roster_revocations/${safe(mailUser)}/items/${safe(aid)}`]={assignmentId:aid,reason:'ROSTER_REPLACED_BY_LATEST',atMs:t,by,opDate:date,sourceFile:S(newMan?.fileName)}}}
-      if(oldUser)patch[`roster_revocations/${safe(oldUser)}/items/${safe(aid)}`]={assignmentId:aid,reason:'ROSTER_REPLACED_BY_LATEST',atMs:t,by,opDate:date,sourceFile:S(newMan?.fileName)};
-      // Preserve envelope/draft and historical completion payload, but revoke ACTIVE authority.
+      const mailUsers=new Set([oldUser,norm(item.user),norm(item.targetUser),norm(item.originalUser),norm(item.ownerUser)].filter(Boolean));
+      if(repair)for(const [mailUser,node] of Object.entries(allMail||{}))if(node?.items?.[aid]&&S(node.items[aid]?.opDate)===date)mailUsers.add(norm(mailUser));
+      for(const mailUser of mailUsers){
+        patch[`roster_mail/${safe(mailUser)}/items/${safe(aid)}`]=null;
+        patch[`roster_revocations/${safe(mailUser)}/items/${safe(aid)}`]={assignmentId:aid,reason:'ROSTER_REPLACED_BY_LATEST',atMs:t,by,opDate:date,sourceFile:S(newMan?.fileName)};
+      }
       patch[`roster_sessions/${safe(aid)}/rosterActive`]=false;patch[`roster_sessions/${safe(aid)}/active`]=false;patch[`roster_sessions/${safe(aid)}/rosterStatus`]='ROSTER_REMOVED';patch[`roster_sessions/${safe(aid)}/rosterRemovedAtMs`]=t;patch[`roster_sessions/${safe(aid)}/rosterRemovedBy`]=by;patch[`roster_sessions/${safe(aid)}/rosterRemovedSourceFile`]=S(newMan?.fileName);patch[`roster_sessions/${safe(aid)}/handoverReady`]=false;patch[`roster_sessions/${safe(aid)}/workPartReady`]=false;patch[`roster_sessions/${safe(aid)}/taskAvailabilityV333`]='ROSTER_REMOVED';
       if(fid){patch[`flight_records/${safe(date)}/${safe(fid)}/assignments/${safe(aid)}`]=null;patch[`flight_records/${safe(date)}/${safe(fid)}/taskStatus/${safe(aid)}`]=null;if(oldUser){patch[`flight_records/${safe(date)}/${safe(fid)}/taskClaims/${safe(oldUser)}/${safe(aid)}/status`]='ROSTER_REMOVED';patch[`flight_records/${safe(date)}/${safe(fid)}/taskClaims/${safe(oldUser)}/${safe(aid)}/taskStatus`]='ROSTER_REMOVED';patch[`flight_records/${safe(date)}/${safe(fid)}/taskClaims/${safe(oldUser)}/${safe(aid)}/rosterRemovedAtMs`]=t}const ev=`ROSTER_REPLACE_${t}_${safe(aid)}`;patch[`flight_records/${safe(date)}/${safe(fid)}/assignmentHistory/${safe(ev)}`]={eventId:ev,action:'ROSTER_ASSIGNMENT_REMOVED',assignmentId:aid,removedUser:oldUser,unit,atMs:t,by,sourceFile:S(newMan?.fileName)}}
     }
-    // Current assignments are explicitly ACTIVE again if they existed historically.
     for(const [aid,item] of Object.entries(newItems)){if(!item||item.active===false)continue;patch[`roster_sessions/${safe(aid)}/rosterActive`]=true;patch[`roster_sessions/${safe(aid)}/active`]=true;patch[`roster_sessions/${safe(aid)}/rosterStatus`]='ACTIVE';patch[`roster_sessions/${safe(aid)}/rosterRemovedAtMs`]=null;patch[`roster_sessions/${safe(aid)}/rosterRemovedBy`]=null;patch[`roster_sessions/${safe(aid)}/rosterRemovedSourceFile`]=null}
     if(Object.keys(patch).length)await db('').update(patch);
 
-    // Reconcile live unit owners against the newest manifest for every flight, including pre-V3.35 ghosts.
     let claims=0;const p2={};
     for(const [fid,rec] of Object.entries(flights||{})){for(const unit of ['DH','CBTT','PVHK']){const a=rec?.unitAssignments?.[unit],owner=norm(a?.username);if(!owner)continue;const allowed=currentUsersForFlight(newMan,{...rec,flightId:S(rec?.flightId||fid)},unit);if(allowed.includes(owner))continue;const ev=`ROSTER_OWNER_CLEAR_${t}_${safe(unit)}`;p2[`flight_records/${safe(date)}/${safe(fid)}/assignmentHistory/${safe(ev)}`]={eventId:ev,action:'INVALID_ROSTER_CLAIM_REMOVED',unit,removedUser:owner,rosterEligibleUsers:allowed,atMs:t,by:'SYSTEM_V3.35'};p2[`flight_records/${safe(date)}/${safe(fid)}/unitAssignments/${safe(unit)}`]=null;claims++}}
     if(Object.keys(p2).length)await db('').update(p2);
-    root.__SAGS_V335_LAST={date,removed:stale.size,claims,repair,atMs:t};return {removed:stale.size,claims};
+    root.__SAGS_V335_LAST={date,removed:stale.size,claims,repair,atMs:t,dataSaver:!repair};return {removed:stale.size,claims};
   }
 
   async function repairCurrent(date=opDate()){const man=await readManifest(date);if(!man?.publishedAtMs||!man?.items)return {removed:0,claims:0};return cleanup(date,{},man,true)}
@@ -6300,7 +6378,9 @@ body.v38-clean-workflow #v38CleanNav .v326GrantedPermission::after{content:'+';d
   install();setTimeout(install,350);setTimeout(install,1200);
   // V3.63: ghost repair không còn chạy trên mọi tài khoản/mọi lần mở app.
   // Chỉ AD chạy tối đa 1 lần/ngày trên thiết bị để tránh quét roster_mail + roster_sessions + flight_records lặp lại.
-  setTimeout(()=>{try{const r=U(root.currentRole||root.currentUserProfile?.role),date=opDate(),mark=`sagsV335RepairDone:V1.1.80:${date}`;if(r!=='AD'||localStorage.getItem(mark)==='1')return;repairCurrent(date).then(c=>{try{localStorage.setItem(mark,'1')}catch(_){}if(c.removed||c.claims){try{root.dailyRosterRestartMailbox?.()}catch(_){}try{root.flightWorkspaceRefresh?.()}catch(_){}}}).catch(e=>console.info('V3.35 repair',e?.message||e))}catch(_){}},1800);
+  // V6.4.29 DATA SAVER: deep repair scans global roster_mail + roster_sessions and is
+  // intentionally manual-only. Normal roster publish already performs scoped cleanup.
+  root.__SAGS_V335_AUTO_REPAIR_DISABLED='V6.4.29_RTDB_DATA_SAVER';
   root.sagsRosterAuthoritativeRepair=repairCurrent;
   root.__SAGS_V335_BUILD=BUILD;
 })(typeof window!=='undefined'?window:globalThis);
