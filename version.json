@@ -1,12 +1,12 @@
 {
-  "version": "V6.4.31",
-  "displayVersion": "V6.4.31",
-  "label": "V6.4.31 - UNIFIED UI",
-  "build": "V6.4.31-20261001-UNIFIED-UI-01",
-  "releasedAt": "2026-10-01T16:50:00+07:00",
-  "type": "v6.4.31-unified-ui",
-  "base": "V6.4.30-20261001-VERSION-SYNC-01",
+  "version": "V6.4.32",
+  "displayVersion": "V6.4.32",
+  "label": "V6.4.32 - OPS SLATE UI",
+  "build": "V6.4.32-20261001-OPS-SLATE-UI-01",
+  "releasedAt": "2026-10-01T16:58:00+07:00",
+  "type": "v6.4.32-ops-slate-ui",
+  "base": "V6.4.31-20261001-UNIFIED-UI-01",
   "updatePolicy": "required",
-  "notes": "Đồng nhất màu sắc theo chức năng từ màn hình chính vào màn hình con; loại bỏ entry Báo cáo/Báo cáo điều hành/Báo cáo nhanh/Báo cáo K khỏi màn hình chính; giữ nguyên luồng nghiệp vụ và tối ưu RTDB V6.4.29. Nhãn phiên bản login/bootstrap hiển thị trực tiếp V6.4.31.",
-  "message": "V6.4.31: giao diện đồng nhất và hiển thị phiên bản chính xác."
+  "notes": "Thay toàn bộ lớp giao diện sang SAGS Ops Slate: graphite + petrol/cyan + teal, giảm gradient và màu rực, giữ màu chức năng nhất quán từ màn hình chính vào màn hình con. Giữ nguyên workflow, Firebase, RTDB Data Saver và các hotfix MyFlight.",
+  "message": "V6.4.32: giao diện Ops Slate mới, nghiệp vụ không đổi."
 }
