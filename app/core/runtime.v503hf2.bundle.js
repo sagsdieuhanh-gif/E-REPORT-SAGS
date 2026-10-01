@@ -7604,6 +7604,19 @@ function status(t,err=false){const e=$('v440Status');if(e){e.textContent=String(
 function open(){if(!isAD())return alert('Chỉ AD được phép quản lý biểu mẫu.');ensureUi();loadPublished(true).then(()=>{mergeRegistry();if(!currentId||!draft.forms?.some(f=>f.id===currentId))currentId=draft.forms?.[0]?.id||'';testMode=true;testEditMode=true;multiPickV626=false;maxFormV627=true;drawerV627='';root.__SAGS_V440_FORM_MANAGER_OPEN=true;$('v440Fm').classList.add('show');renderAll();renderMaxFormV627();requestAnimationFrame(()=>renderEditor());status('✓ ĐANG DÙNG forms/forms.registry.json MỚI NHẤT từ máy chủ · không dùng/merge bản nháp cũ trên máy.')}).catch(e=>alert('Không mở Form Manager vì chưa tải được forms/forms.registry.json mới nhất: '+(e?.message||e)))}
 function close(){root.__SAGS_V440_FORM_MANAGER_OPEN=false;clearUrls();$('v440Fm')?.classList.remove('show');syncLegacyToLive(true,published)}
 root.sagsV440OpenFormManager=open;
+  root.sagsV440GetDraft=()=>clone(draft);
+  root.sagsV440GetCurrentForm=()=>clone(form());
+  root.sagsV440PatchCurrentFormMeta=function(patch={}){
+    const f=form();if(!f||!patch||typeof patch!=='object')return false;
+    pushHistory();
+    f.integration={...(f.integration&&typeof f.integration==='object'?f.integration:{}),...clone(patch)};
+    f.updatedAt=new Date().toISOString();
+    saveLocal();renderAll();status('✓ Đã lưu Integration Contract cho '+(f.code||f.id)+'.');
+    return clone(f);
+  };
+  root.sagsV440OpenAiReview=aiOpenV460;
+  root.sagsV440GetAiPreview=()=>clone(aiPreviewV460);
+  root.sagsV440CurrentFormValidation=()=>fmValidateFormV487?clone(fmValidateFormV487(form())):null;
 root.sagsV628AddForm=openFormWizardV628;
 root.sagsV440CreateNewForm=function(){if(!isAD())return alert('Chỉ AD được phép tạo biểu mẫu.');ensureUi();loadPublished(true).then(()=>{mergeRegistry();testMode=true;testEditMode=true;multiPickV626=false;maxFormV627=true;drawerV627='';root.__SAGS_V440_FORM_MANAGER_OPEN=true;$('v440Fm').classList.add('show');renderAll();renderMaxFormV627();setTimeout(createForm,60)}).catch(e=>alert('Không tạo form vì chưa tải được registry mới nhất: '+(e?.message||e)))};
 function renderZoomUi(){const z=Math.round(editorZoom*100),lab=$('v451ZoomLabel'),rng=$('v451ZoomRange');if(lab)lab.textContent=z+'%';if(rng)rng.value=String(Math.max(50,Math.min(400,z)))}
@@ -7614,9 +7627,9 @@ function aiNormV460(s){return String(s||'').normalize('NFD').replace(/[\u0300-\u
 function aiSlugV460(s){let x=aiNormV460(s).toLowerCase().replace(/\b(no|number|name|type|information|info|time)\b/g,' ').replace(/\s+/g,' ').trim();if(!x)x='field';const a=x.split(' ').filter(Boolean),first=(a.shift()||'field').replace(/[^a-z0-9]/g,'');return (first+a.map(v=>v.charAt(0).toUpperCase()+v.slice(1)).join('')).slice(0,52)||'field'}
 function aiTokensV460(s){return new Set(aiNormV460(s).split(' ').filter(x=>x.length>1))}
 function aiScoreTextV460(a,b){a=aiNormV460(a);b=aiNormV460(b);if(!a||!b)return 0;if(a===b)return 1;if(a.includes(b)||b.includes(a))return .88;const A=aiTokensV460(a),B=aiTokensV460(b);if(!A.size||!B.size)return 0;let hit=0;A.forEach(x=>{if(B.has(x))hit++});return 2*hit/(A.size+B.size)}
-function aiTypeV460(txt){const n=aiNormV460(txt);if(/\b(SIGNATURE|SIGNED|SIGN|CHU KY|KY TEN)\b/.test(n))return 'signature';if(/\b(REMARKS?|NOTES?|REASON|COMMENT|GHI CHU|LY DO)\b/.test(n))return 'textarea';if(/\b(DATE|NGAY)\b/.test(n))return 'date';if(/\b(STD|STA|ETD|ETA|START|FINISH|TIME|ARR TIME|DEP TIME|GIO)\b/.test(n))return 'time';if(/\b(CHECK|YES|NO|OK|Y N)\b/.test(n))return 'checkbox';if(/\b(TOTAL|QTY|QUANTITY|PAX|BAG|BAGS|CARGO|WEIGHT|KG|PCS)\b/.test(n))return 'number';return 'text'}
-function aiSignalV460(txt){const n=aiNormV460(txt);const strong=/\b(DATE|FLT|FLIGHT|ROUTE|REGN|REG|A C|AIRCRAFT|STD|STA|ETD|ETA|ARR|DEP|START|FINISH|BAY|GATE|PAX|BAG|CARGO|TOTAL|NAME|SIGNATURE|REMARKS?|NOTES?|REASON|SPECIAL|DELAY|TIME|DATE|TURNAROUND)\b/.test(n);const colon=/:\s*$/.test(String(txt||''));return strong?1:colon?.78:.35}
-function aiKnownBaseV460(txt){const n=aiNormV460(txt);const map=[[/\b(FLT|FLIGHT)\s*(NO|NUMBER)?\b/,'flightNo'],[/\bA C\s*TYPE\b|\bAIRCRAFT\s*TYPE\b/,'aircraftType'],[/\bREGN\b|\bREGISTRATION\b|\bA C\s*REG\b/,'acReg'],[/\bROUTE\b/,'route'],[/\bSTD\b/,'std'],[/\bSTA\b/,'sta'],[/\bETD\b/,'etd'],[/\bETA\b/,'eta'],[/\bDATE\b/,'date'],[/\bBAY\b/,'bay'],[/\bGATE\b/,'gate'],[/\bPAX\b/,'pax'],[/\bTOTAL\s*BAGS?\b/,'totalBags'],[/\bREMARKS?\b/,'remarks'],[/\bDELAY\s*REASON\b/,'delayReason'],[/\bSIGNATURE\b/,'signature']];for(const [re,k] of map)if(re.test(n))return k;return aiSlugV460(txt)}
+function aiTypeV460(txt){const n=aiNormV460(txt);if(/\b(SIGNATURE|SIGNED|SIGN|CHU KY|KY TEN|CAPTAIN SIGN|DISPATCH SIGN|LOADMASTER SIGN)\b/.test(n))return 'signature';if(/\b(REMARKS?|NOTES?|REASON|COMMENT|GHI CHU|LY DO|SPECIAL INSTRUCTION)\b/.test(n))return 'textarea';if(/\b(DATE|NGAY)\b/.test(n))return 'date';if(/\b(STD|STA|ETD|ETA|ATD|ATA|START|FINISH|TIME|ARR TIME|DEP TIME|GIO)\b/.test(n))return 'time';if(/\b(CHECK|YES|NO|OK|Y N|ACCEPT|REJECT)\b/.test(n))return 'checkbox';if(/\b(TOTAL|QTY|QUANTITY|PAX|BAG|BAGS|CARGO|WEIGHT|KG|PCS|DOW|DOI|ZFW|TOW|LAW|LW|CG|MAC|TRIM|FUEL|PAYLOAD|LOAD|INDEX|MOMENT|ARM|LMC|TTL)\b/.test(n))return 'number';return 'text'}
+function aiSignalV460(txt){const n=aiNormV460(txt);const strong=/\b(DATE|FLT|FLIGHT|ROUTE|REGN|REG|A C|AIRCRAFT|STD|STA|ETD|ETA|ATD|ATA|ARR|DEP|START|FINISH|BAY|GATE|PAX|BAG|CARGO|TOTAL|NAME|SIGNATURE|REMARKS?|NOTES?|REASON|SPECIAL|DELAY|TIME|TURNAROUND|DOW|DOI|ZFW|TOW|LAW|LW|CG|MAC|TRIM|FUEL|PAYLOAD|LOAD|INDEX|MOMENT|ARM|LMC)\b/.test(n);const colon=/:\s*$/.test(String(txt||''));return strong?1:colon?.78:.35}
+function aiKnownBaseV460(txt){const n=aiNormV460(txt);const map=[[/\b(FLT|FLIGHT)\s*(NO|NUMBER)?\b/,'flightNo'],[/\bA C\s*TYPE\b|\bAIRCRAFT\s*TYPE\b/,'aircraftType'],[/\bREGN\b|\bREGISTRATION\b|\bA C\s*REG\b/,'acReg'],[/\bROUTE\b/,'route'],[/\bSTD\b/,'std'],[/\bSTA\b/,'sta'],[/\bETD\b/,'etd'],[/\bETA\b/,'eta'],[/\bDATE\b/,'date'],[/\bBAY\b/,'bay'],[/\bGATE\b/,'gate'],[/\bPAX\b/,'pax'],[/\bTOTAL\s*BAGS?\b/,'totalBags'],[/\bDOW\b/,'dow'],[/\bDOI\b/,'doi'],[/\bZFW\b/,'zfw'],[/\bTOW\b/,'tow'],[/\b(?:LAW|LW)\b/,'law'],[/\b(?:CG|MAC)\b/,'cgMac'],[/\bTRIM\b/,'trim'],[/\bFUEL\b/,'fuel'],[/\bPAYLOAD\b/,'payload'],[/\bINDEX\b/,'index'],[/\bMOMENT\b/,'moment'],[/\bREMARKS?\b/,'remarks'],[/\bDELAY\s*REASON\b/,'delayReason'],[/\bSIGNATURE\b/,'signature']];for(const [re,k] of map)if(re.test(n))return k;return aiSlugV460(txt)}
 function aiBestBindV460(label,used){let best=null,score=0;for(const g of globalFieldsV45()){const s=Math.max(aiScoreTextV460(label,g?.label),aiScoreTextV460(label,g?.key));if(s>score){score=s;best=g}}if(best&&score>=.82&&!used.has(String(best.key)))return {key:String(best.key),bind:String(best.key),label:String(best.label||label),match:score};const base=aiKnownBaseV460(label);let key=fieldKey(base)||'field',n=2;while(used.has(key))key=(fieldKey(base)||'field')+'_'+n++;return {key,bind:key,label:String(label||key),match:0}}
 function aiFlattenWordsV460(data){if(Array.isArray(data?.words)&&data.words.length)return data.words;const out=[];for(const b of data?.blocks||[])for(const p of b?.paragraphs||[])for(const l of p?.lines||[])for(const w of l?.words||[])out.push(w);return out}
 function aiLinesV460(words){const a=(words||[]).map(w=>{const b=w.bbox||w.boundingBox||{};return {text:String(w.text||'').trim(),conf:Number(w.confidence??w.conf??0),x0:Number(b.x0??b.left??0),y0:Number(b.y0??b.top??0),x1:Number(b.x1??b.right??0),y1:Number(b.y1??b.bottom??0)}}).filter(w=>w.text&&w.x1>w.x0&&w.y1>w.y0&&w.conf>=25).sort((x,y)=>x.y0-y.y0||x.x0-y.x0);const lines=[];for(const w of a){const cy=(w.y0+w.y1)/2,h=w.y1-w.y0;let best=null,bd=1e9;for(const l of lines){const d=Math.abs(cy-l.cy);if(d<Math.max(7,Math.min(24,(h+l.h)/1.7))&&d<bd){best=l;bd=d}}if(!best){best={words:[],cy,h};lines.push(best)}best.words.push(w);best.cy=(best.cy*(best.words.length-1)+cy)/best.words.length;best.h=Math.max(best.h,h)}return lines.map(l=>{l.words.sort((a,b)=>a.x0-b.x0);const x0=Math.min(...l.words.map(w=>w.x0)),y0=Math.min(...l.words.map(w=>w.y0)),x1=Math.max(...l.words.map(w=>w.x1)),y1=Math.max(...l.words.map(w=>w.y1));return {text:l.words.map(w=>w.text).join(' '),conf:l.words.reduce((s,w)=>s+w.conf,0)/l.words.length,x0,y0,x1,y1,words:l.words}}).sort((a,b)=>a.y0-b.y0||a.x0-b.x0)}
@@ -7628,9 +7641,45 @@ function aiOpenV460(){if(!isAD())return alert('Chỉ AD được dùng AI nhận
 function aiCloseV460(){aiPreviewV460=[];drawBoxes();$('v460AiModal')?.classList.remove('show')}
 function aiLoadLibV460(){if(root.Tesseract?.createWorker)return Promise.resolve(root.Tesseract);if(aiLibPromiseV460)return aiLibPromiseV460;aiLibPromiseV460=new Promise((resolve,reject)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';s.async=true;s.crossOrigin='anonymous';s.onload=()=>root.Tesseract?.createWorker?resolve(root.Tesseract):reject(new Error('Tesseract chưa khởi tạo'));s.onerror=()=>reject(new Error('Không tải được engine OCR. Kiểm tra Internet/CDN.'));document.head.appendChild(s)}).catch(e=>{aiLibPromiseV460=null;throw e});return aiLibPromiseV460}
 async function aiGetWorkerV460(lang){if(aiWorkerV460&&aiWorkerLangV460===lang)return aiWorkerV460;if(aiWorkerV460)try{await aiWorkerV460.terminate()}catch(_){}aiWorkerV460=null;aiWorkerLangV460='';const T=await aiLoadLibV460();aiWorkerV460=await T.createWorker(lang,1,{logger:m=>{const p=Number(m?.progress||0),txt=String(m?.status||'Đang xử lý');aiSetV460(txt+(p?` · ${Math.round(p*100)}%`:''),Math.max(4,p*88))}});aiWorkerLangV460=lang;return aiWorkerV460}
-function aiRenderListV460(){const h=$('v460AiList');if(!h)return;if(!aiPreviewV460.length){h.style.display='none';h.innerHTML='';return}h.style.display='block';h.innerHTML=aiPreviewV460.slice(0,80).map(x=>`<div class="v460AiRow"><span class="v460AiScore ${x.aiConfidence<75?'v460AiWarn':''}">${Number(x.aiConfidence||0)}%</span><span><b>${esc(x.label||x.aiText||x.key)}</b><br><small>${esc(x.aiText||'')}</small></span><span>${esc(x.type)}</span><span>${esc(x.bind||x.key)}</span></div>`).join('')+(aiPreviewV460.length>80?`<div style="padding:8px;font-weight:800">… và ${aiPreviewV460.length-80} gợi ý khác</div>`:'')}
+function aiRenderListV460(){
+  const h=$('v460AiList');if(!h)return;
+  if(!aiPreviewV460.length){h.style.display='none';h.innerHTML='';return}
+  h.style.display='block';
+  const typeOptions=['text','textarea','number','time','date','checkbox','signature','static-text'];
+  h.innerHTML=aiPreviewV460.slice(0,120).map((x,i)=>{
+    if(x.aiInclude===undefined)x.aiInclude=true;
+    return `<div class="v460AiRow vFMaiReviewRow" data-ai-i="${i}">
+      <label class="vFMaiKeep"><input type="checkbox" data-ai-include="${i}" ${x.aiInclude===false?'':'checked'}> DÙNG</label>
+      <span class="v460AiScore ${x.aiConfidence<75?'v460AiWarn':''}">${Number(x.aiConfidence||0)}%</span>
+      <label class="vFMaiEdit"><small>LABEL</small><input data-ai-label="${i}" value="${esc(x.label||x.aiText||x.key)}"></label>
+      <label class="vFMaiEdit"><small>TYPE</small><select data-ai-type="${i}">${typeOptions.map(t=>`<option value="${t}" ${String(x.type)===t?'selected':''}>${t}</option>`).join('')}</select></label>
+      <label class="vFMaiEdit"><small>BIND</small><input data-ai-bind="${i}" value="${esc(x.bind||x.key)}"></label>
+      <span class="vFMaiOcr"><small>OCR</small>${esc(x.aiText||'')}</span>
+    </div>`;
+  }).join('')+(aiPreviewV460.length>120?`<div style="padding:8px;font-weight:800">… và ${aiPreviewV460.length-120} gợi ý khác</div>`:'');
+  h.querySelectorAll('[data-ai-include]').forEach(el=>el.onchange=()=>{const i=Number(el.dataset.aiInclude);if(aiPreviewV460[i])aiPreviewV460[i].aiInclude=!!el.checked});
+  h.querySelectorAll('[data-ai-label]').forEach(el=>el.oninput=()=>{const i=Number(el.dataset.aiLabel);if(aiPreviewV460[i])aiPreviewV460[i].label=String(el.value||'').trim()});
+  h.querySelectorAll('[data-ai-type]').forEach(el=>el.onchange=()=>{const i=Number(el.dataset.aiType);if(aiPreviewV460[i])aiPreviewV460[i].type=String(el.value||'text')});
+  h.querySelectorAll('[data-ai-bind]').forEach(el=>el.oninput=()=>{const i=Number(el.dataset.aiBind);if(!aiPreviewV460[i])return;const v=fieldKey(String(el.value||''))||aiPreviewV460[i].key;aiPreviewV460[i].bind=v;aiPreviewV460[i].key=v});
+}
 async function aiRunV460(){if(aiBusyV460)return;const f=form(),p=page();if(!f||!p)return;aiBusyV460=true;$('v460AiRun').disabled=true;try{aiPreviewV460=[];drawBoxes();const src=await pageSrc(p);if(!src)throw new Error('Trang chưa có ảnh nền.');const lang=$('v460AiLang')?.value||'eng',threshold=Math.max(40,Math.min(95,Number($('v460AiThreshold')?.value||60)));aiSetV460('Đang tải/khởi tạo OCR…',2);const w=await aiGetWorkerV460(lang);aiSetV460('Đang nhận dạng chữ và cấu trúc form…',8);const ret=await w.recognize(src);aiSetV460('Đang suy luận field + kiểu dữ liệu + bind…',92);aiPreviewV460=aiCandidatesV460(ret?.data||{},threshold);drawBoxes();aiRenderListV460();const avg=aiPreviewV460.length?Math.round(aiPreviewV460.reduce((s,x)=>s+Number(x.aiConfidence||0),0)/aiPreviewV460.length):0;aiSetV460(aiPreviewV460.length?`✓ Phát hiện ${aiPreviewV460.length} gợi ý field · độ tin cậy TB ${avg}%. Các khung nét đứt xanh là preview; chưa lưu vào form.`:'Không tìm thấy field đủ tin cậy. Thử hạ ngưỡng hoặc đổi ngôn ngữ.',100,!aiPreviewV460.length);$('v460AiApply').style.display=aiPreviewV460.length?'':'none';$('v460AiApply85').style.display=aiPreviewV460.some(x=>x.aiConfidence>=85)?'':'none'}catch(e){console.error('V4.6 AI form',e);aiSetV460('AI không chạy được: '+(e?.message||e),0,true)}finally{aiBusyV460=false;$('v460AiRun').disabled=false}}
-function aiApplyV460(minConf){const f=form(),p=page();if(!f||!p||!aiPreviewV460.length)return;const add=aiPreviewV460.filter(x=>Number(x.aiConfidence||0)>=Number(minConf||0));if(!add.length)return alert('Không có gợi ý đạt ngưỡng.');pushHistory();f.fields=Array.isArray(f.fields)?f.fields:[];for(const x0 of add){const x=clone(x0);if(f.legacy){x.customFieldV463=true;x.generatedFromLegacy=false;x.createdByFormManager=true;x.sourcePage=Number(p.sourcePage||pageNoV45(p)||0)}f.fields.push(x)}saveLocal();aiPreviewV460=[];renderAll();aiRenderListV460();$('v460AiApply').style.display='none';$('v460AiApply85').style.display='none';aiSetV460(`✓ Đã thêm ${add.length} field AI. Có thể Undo ngay nếu chưa phù hợp.`,100);status(`✓ AI đã thêm ${add.length} field trên trang ${pageIndex+1}.`)}
+function aiApplyV460(minConf){
+  const f=form(),p=page();if(!f||!p||!aiPreviewV460.length)return;
+  const add=aiPreviewV460.filter(x=>x.aiInclude!==false&&Number(x.aiConfidence||0)>=Number(minConf||0));
+  if(!add.length)return alert('Không có gợi ý đã chọn đạt ngưỡng.');
+  const used=new Set((f.fields||[]).map(x=>String(x.key)));
+  for(const x of add){if(!x.key||used.has(String(x.key)))return alert('BIND/KEY bị trùng: '+String(x.key||'')+'. Hãy sửa trước khi Apply.');used.add(String(x.key))}
+  pushHistory();f.fields=Array.isArray(f.fields)?f.fields:[];
+  for(const x0 of add){
+    const x=clone(x0);delete x.aiInclude;
+    if(f.legacy){x.customFieldV463=true;x.generatedFromLegacy=false;x.createdByFormManager=true;x.sourcePage=Number(p.sourcePage||pageNoV45(p)||0)}
+    f.fields.push(x)
+  }
+  saveLocal();aiPreviewV460=[];renderAll();aiRenderListV460();
+  $('v460AiApply').style.display='none';$('v460AiApply85').style.display='none';
+  aiSetV460(`✓ Đã thêm ${add.length} field đã duyệt. Có thể Undo ngay nếu chưa phù hợp.`,100);
+  status(`✓ AI đã thêm ${add.length} field đã được AD duyệt trên trang ${pageIndex+1}.`)
+}
 function aiClearFieldsV460(){const f=form(),p=page();if(!f||!p)return;const n=(f.fields||[]).filter(x=>x.pageId===p.id&&x.aiGenerated).length;if(!n)return alert('Trang này chưa có field do AI tạo.');if(!confirm(`Xóa ${n} field AI trên trang này? Field tạo/chỉnh tay sẽ giữ nguyên.`))return;pushHistory();f.fields=(f.fields||[]).filter(x=>!(x.pageId===p.id&&x.aiGenerated));aiPreviewV460=[];saveLocal();renderAll();aiSetV460(`✓ Đã xóa ${n} field AI.`,0)}
 
 function renderAll(){const fm=$('v440Fm');if(fm)fm.classList.toggle('v624Dense',currentId==='fsags54'||currentId==='fsags94');renderList();renderPages();renderEditor();renderInspector();$('v440Undo').disabled=!history.length;$('v440Redo').disabled=!future.length;if($('v450Test'))$('v450Test').textContent=testMode?'✕ THOÁT TEST':'👁 TEST HIỂN THỊ';renderTestModeUiV462();renderPerfV45();renderZoomUi();ensureWordRibbonV641();renderQuickBarV626();renderWordRibbonV641();renderMaxFormV627()}
@@ -8051,6 +8100,22 @@ function deleteForm(){const f=form();if(!f||f.legacy)return;if(!confirm(`Xóa nh
 function addPage(push=true){const f=form();if(!f)return;if(push)pushHistory();const id='p'+String((f.pages?.length||0)+1);f.pages=f.pages||[];f.pages.push({id,image:'',blobKey:'',width:1241,height:1755,sha256:''});pageIndex=f.pages.length-1;saveLocal();renderAll()}
 function deletePage(){const f=form(),p=page();if(!f||!p)return;if(f.legacy)return alert('Trang của form LEGACY không xóa trong Form Manager mới.');if(!confirm('Xóa trang này và các field trên trang?'))return;pushHistory();if(p.blobKey)assetDel(p.blobKey);f.fields=(f.fields||[]).filter(x=>x.pageId!==p.id);f.pages.splice(pageIndex,1);pageIndex=Math.max(0,pageIndex-1);saveLocal();renderAll()}
 function addField(){const f=form(),p=page();if(!f||!p)return alert('Cần có trang trước.');const key=fieldKey(prompt(f.legacy?'KEY field mới trên FORM HỆ THỐNG (ví dụ extraRemark):':'KEY field, ví dụ std hoặc cargoStart:','field'+((f.fields||[]).length+1)));if(!key)return;if(f.fields.some(x=>x.key===key))return alert('KEY đã tồn tại.');pushHistory();const fld={key,label:key,type:'text',bind:key,pageId:p.id,sourcePage:Number(p.sourcePage||pageNoV45(p)||0),x:.35,y:.35,w:.20,h:.035,fontSize:14,fontWeight:700,align:'left',valign:'middle',customFieldV463:!!f.legacy,generatedFromLegacy:false,createdByFormManager:true};f.fields=f.fields||[];fmNormalizeFieldV487(fld);f.fields.push(fld);selectedKey=key;selectedMany=new Set([key]);saveLocal();renderAll();status(f.legacy?'✓ Đã thêm FIELD MỚI trong PHIÊN chỉnh hiện tại. Xuất JSON TẤT CẢ và upload forms/forms.registry.json để phát hành.':'✓ Đã thêm field mới trong phiên hiện tại.')}
+
+function addFieldPresetV2(type='text'){
+ const f=form(),p=page();if(!f||!p)return alert('Cần có trang trước.');
+ const allowed=['text','textarea','number','time','date','checkbox','select','signature'];
+ type=allowed.includes(String(type))?String(type):'text';
+ const defaults={text:'Nội dung',textarea:'Ghi chú',number:'Số lượng',time:'Giờ',date:'Ngày',checkbox:'Xác nhận',select:'Lựa chọn',signature:'Chữ ký'};
+ const label=String(prompt('Tên trường hiển thị:',defaults[type]||'Nội dung')||'').trim();if(!label)return;
+ let base=fieldKey(label)||('field'+((f.fields||[]).length+1)),key=base,n=2;while((f.fields||[]).some(x=>x.key===key))key=base+'_'+n++;
+ pushHistory();
+ const wh={text:[.20,.035],textarea:[.30,.075],number:[.16,.035],time:[.14,.035],date:[.16,.035],checkbox:[.08,.035],select:[.22,.04],signature:[.28,.065]}[type]||[.20,.035];
+ const fld={key,label,type,bind:key,pageId:p.id,sourcePage:Number(p.sourcePage||pageNoV45(p)||0),x:.35,y:.35,w:wh[0],h:wh[1],fontSize:14,fontWeight:700,align:type==='checkbox'?'center':'left',valign:'middle',customFieldV463:!!f.legacy,generatedFromLegacy:false,createdByFormManager:true};
+ if(type==='select')fld.options=['Lựa chọn 1','Lựa chọn 2'];
+ f.fields=f.fields||[];fmNormalizeFieldV487(fld);f.fields.push(fld);selectedKey=key;selectedMany=new Set([key]);saveLocal();renderAll();
+ status('✓ Đã thêm '+label+' · '+type+'. Kéo field tới đúng vị trí trên mẫu.');return clone(fld)
+}
+root.sagsV440AddFieldPreset=addFieldPresetV2;
 function duplicateField(fld){
  const f=form(),p=page();if(!f||!fld||!p)return;
  pushHistory();
@@ -8320,3 +8385,20 @@ console.info('E-REPORT/SAGS V4.8.10B Layered PDF active');
   root.addEventListener?.('pageshow',cleanup,{passive:true});
 })(typeof window!=='undefined'?window:globalThis);
 /* ===== END V6.4.31 UI ENTRY CLEANUP ===== */
+
+/* ===== FORM MANAGER GOVERNANCE + GUIDED UX LOADER V2 ===== */
+(function(root){
+  'use strict';
+  if(root.__SAGS_FORM_GOV_LOADER_V2)return;root.__SAGS_FORM_GOV_LOADER_V2=true;
+  function inject(src,attr,label){
+    if(document.querySelector('script['+attr+']'))return;
+    const s=document.createElement('script');s.src=src;s.async=false;s.setAttribute(attr,'1');
+    s.onerror=()=>console.warn('Không tải được '+label+'.');document.head.appendChild(s);
+  }
+  function load(){
+    if(!root.__SAGS_FORM_GOV_V1)inject('./app/modules/form-manager-governance.v1.js?v=20261001-02','data-sags-form-gov-v1','Form Manager Governance V1');
+    if(!root.__SAGS_FORM_MANAGER_UX_V2)inject('./app/modules/form-manager-ux.v2.js?v=20261001-02','data-sags-form-ux-v2','Form Manager UX V2');
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',load,{once:true});else load();
+})(typeof window!=='undefined'?window:globalThis);
+/* ===== END FORM MANAGER GOVERNANCE + GUIDED UX LOADER V2 ===== */
