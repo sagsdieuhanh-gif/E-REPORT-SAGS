@@ -8369,3 +8369,19 @@ console.info('E-REPORT/SAGS V4.8.10B Layered PDF active');
   root.addEventListener?.('pageshow',cleanup,{passive:true});
 })(typeof window!=='undefined'?window:globalThis);
 /* ===== END V6.4.31 UI ENTRY CLEANUP ===== */
+
+/* ===== FORM MANAGER GOVERNANCE LOADER V1 ===== */
+(function(root){
+  'use strict';
+  if(root.__SAGS_FORM_GOV_LOADER_V1)return;root.__SAGS_FORM_GOV_LOADER_V1=true;
+  function load(){
+    if(root.__SAGS_FORM_GOV_V1||document.querySelector('script[data-sags-form-gov-v1]'))return;
+    const s=document.createElement('script');
+    s.src='./app/modules/form-manager-governance.v1.js?v=20261001-01';
+    s.async=false;s.dataset.sagsFormGovV1='1';
+    s.onerror=()=>console.warn('Không tải được Form Manager Governance V1.');
+    document.head.appendChild(s);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',load,{once:true});else load();
+})(typeof window!=='undefined'?window:globalThis);
+/* ===== END FORM MANAGER GOVERNANCE LOADER V1 ===== */
