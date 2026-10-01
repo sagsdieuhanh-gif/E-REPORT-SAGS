@@ -1,16 +1,16 @@
 {
   "schema": 2,
-  "version": "V6.4.28",
-  "build": "V6.4.28-20261001-FLIGHTOPS-UI-01",
-  "strategy": "flightops-ui-presentation-only",
+  "version": "V6.4.29",
+  "build": "V6.4.29-20261001-RTDB-DATA-SAVER-01",
+  "strategy": "rtdb-data-saver-scoped-reads",
   "mutableMetadata": [
     "./forms/forms.registry.json"
   ],
   "bootstrapChanged": true,
   "assets": {
     "./app/core/app.v503.js": {
-      "sha256": "d078ea3a956a4df2c2b16c349a1931661743694ed5ea6c998c09d7c5fbea6103",
-      "bytes": 826234
+      "sha256": "ab6c6ab6287b92f5efee5e2e0c3632f167eecf2aff75db5fd18e7cd524c9b693",
+      "bytes": 829463
     },
     "./app/core/runtime.v503hf2.bundle.js": {
       "sha256": "fb7561197ade885d58d484845b221266dc4c8c91df41f3df36514f69647a6895",
@@ -285,12 +285,12 @@
       "bytes": 5161
     },
     "./service-worker.js": {
-      "sha256": "cea73730bf16d1a0a2f406e7a55e54bc45c12743851bc2b3fafc9f85f7d62966",
-      "bytes": 16179
+      "sha256": "2dd87a31119a9680dd4df87bed239b440397a216de47fd21e8e6d4b3d58101fa",
+      "bytes": 16191
     },
     "./version.json": {
-      "sha256": "9dec0dcc23a952f07a1c379deefc1b4e834c86a3ac9615017f3e26aad2cb33ed",
-      "bytes": 573
+      "sha256": "67fa6e4a6244876f6c0cc3b3c2efe063f5ec85f86a92737cd3b3d9c772fdb5fd",
+      "bytes": 731
     },
     "./app/modules/form-registry-runtime.v647.js": {
       "sha256": "396c6804cb9cdb45b9aaacc5f10f6c38529385b5fa1b51d9a7a120a31917f69f",
