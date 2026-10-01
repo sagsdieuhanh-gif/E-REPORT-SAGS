@@ -233,8 +233,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "2b9da1f01294c1a4f9a479b1f961c97455d54d8d65b466efc2f5901068d6dcdb",
-      "bytes": 1434424
+      "sha256": "8a3d65f8fcfd0ae34c48e11a0e2a2196d2a7ab966cfb18bcaa6e1edc87a66cb7",
+      "bytes": 1434296
     },
     "./manifest.webmanifest": {
       "sha256": "b06aaccd8b182991ecbafd307a30089dec427860e59d22593e6ff7f39cf4cee2",
@@ -285,12 +285,12 @@
       "bytes": 5161
     },
     "./service-worker.js": {
-      "sha256": "f556898e1fc53e79892d2e36ad09d9256ebcf68bc775a956af0062f2deee6ee8",
+      "sha256": "4b0d9ddd379cbc6394dc115918a7a35cdd51c168ae37ff86e901db6427f1daf5",
       "bytes": 16212
     },
     "./version.json": {
-      "sha256": "0d2760194c398299cae347f7750fd65ad2afb102e1aa9246e7cc363e86adf83a",
-      "bytes": 667
+      "sha256": "679fd35dc5427f5d40fd7d2c96aff2f034466b168c2db36b5bf3ba12f5f996fe",
+      "bytes": 473
     },
     "./app/modules/form-registry-runtime.v647.js": {
       "sha256": "396c6804cb9cdb45b9aaacc5f10f6c38529385b5fa1b51d9a7a120a31917f69f",
