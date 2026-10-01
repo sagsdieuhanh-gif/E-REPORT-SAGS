@@ -19037,7 +19037,22 @@ async function firebasePersonalAccountLogin(email,pass){
     else if(detail.includes("firebase-username-missing"))msg="Đăng nhập Auth thành công nhưng users/{UID} chưa có username.";
     else if(detail.includes("firebase-role-invalid"))msg="Tài khoản chưa được cấp quyền hợp lệ.";
     else if(detail.includes("auth-not-ready"))msg="Đăng nhập chưa sẵn sàng. Tải lại ứng dụng.";
-    if(err)err.textContent=msg;console.warn("Firebase personal login",code,detail,e);return false;
+    {
+      const host=String(location.hostname||"");
+      const shortCode=code||"auth/unknown";
+      if(host.endsWith(".vercel.app")&&code.includes("unauthorized-domain")){
+        msg="Firebase chưa cho phép domain Preview này: "+host+". Hãy thêm domain này vào Firebase Authentication → Settings → Authorized domains.";
+      }else{
+        msg += " ["+shortCode+"]";
+      }
+      if(err){
+        err.textContent=msg;
+        err.dataset.firebaseCode=shortCode;
+        err.dataset.previewHost=host;
+      }
+      console.warn("Firebase personal login",shortCode,detail,{host},e);
+      return false;
+    }
   }
 }
 async function personalAccountLogin(){
