@@ -1,8 +1,8 @@
 {
   "schema": 2,
-  "version": "V6.4.32",
-  "build": "V6.4.32-20261001-OPS-SLATE-UI-01",
-  "strategy": "ops-slate-ui-plus-form-manager-ai-branch",
+  "version": "V6.4.32-FMTEST1",
+  "build": "V6.4.32-20261001-FMTEST1",
+  "strategy": "form-manager-ai-preview-synchronized",
   "mutableMetadata": [
     "./forms/forms.registry.json"
   ],
@@ -285,8 +285,8 @@
       "bytes": 5161
     },
     "./service-worker.js": {
-      "sha256": "4b0d9ddd379cbc6394dc115918a7a35cdd51c168ae37ff86e901db6427f1daf5",
-      "bytes": 16212
+      "sha256": "b817cc4b485bb1b1b1281156bab5ddaa515031fa41ca73fda80035ae59187145",
+      "bytes": 16204
     },
     "./version.json": {
       "sha256": "679fd35dc5427f5d40fd7d2c96aff2f034466b168c2db36b5bf3ba12f5f996fe",
