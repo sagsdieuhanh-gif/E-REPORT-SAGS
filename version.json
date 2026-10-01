@@ -1,12 +1,12 @@
 {
-  "version": "V6.4.27",
-  "displayVersion": "V6.4.27",
-  "label": "V6.4.27 - STABILITY HOTFIX",
-  "build": "V6.4.27-20261001-STABILITY-HOTFIX-01",
-  "releasedAt": "2026-10-01T15:55:00+07:00",
-  "type": "v6.4.27-stability-hotfix",
-  "base": "V6.4.26-20261001-PDH-PVHK-STANDBY-01",
+  "version": "V6.4.28",
+  "displayVersion": "V6.4.28",
+  "label": "V6.4.28 - FLIGHTOPS UI",
+  "build": "V6.4.28-20261001-FLIGHTOPS-UI-01",
+  "releasedAt": "2026-10-01T16:12:00+07:00",
+  "type": "v6.4.28-flightops-ui",
+  "base": "V6.4.27-20261001-STABILITY-HOTFIX-01",
   "updatePolicy": "required",
-  "notes": "Hotfix lỗi core JavaScript làm giao diện chính/MyFly không thao tác được. Khôi phục chuỗi điều kiện duty hợp lệ, không dọn thêm dependency, đổi cache release để buộc tải core mới.",
-  "message": "V6.4.27: sửa lỗi MyFly/màn hình chính do core JS parse fail."
+  "notes": "UI-only refresh theo SAGS FlightOps design system. Giữ nguyên luồng nghiệp vụ, Firebase, event handlers, quyền, field keys và logic MyFly của V6.4.27.",
+  "message": "V6.4.28: thay lớp giao diện FlightOps, không thay đổi nghiệp vụ."
 }
