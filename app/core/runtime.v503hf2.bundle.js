@@ -8326,3 +8326,46 @@ const baseSend=root.sendReport;if(typeof baseSend==='function'&&!baseSend.__sags
 root.sagsV450PdfPerformance=()=>root.__SAGS_V450_PDF_PERF||(()=>{try{return JSON.parse(localStorage.getItem('sags.v450.pdfPerf')||'null')}catch(_){return null}})();
 console.info('E-REPORT/SAGS V4.8.10B Layered PDF active');
 })(typeof window!=='undefined'?window:globalThis);
+/* ===== V6.4.31 UI ENTRY CLEANUP ===== */
+(function(root){
+  'use strict';
+  if(root.__SAGS_V6431_UI_ENTRY_CLEANUP)return;
+  root.__SAGS_V6431_UI_ENTRY_CLEANUP=true;
+  const norm=v=>String(v??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[Đđ]/g,'D').toUpperCase().replace(/\s+/g,' ').trim();
+  const REPORT_KEYS=new Set(['shift','night']);
+  function removeReportEntries(){
+    try{
+      document.querySelectorAll('#srOpen,#v157ReportBtn,[data-sags-quick-report="1"],[data-v157-key="shift"],[data-v157-key="night"]').forEach(el=>el.remove());
+      document.querySelectorAll('.v157Section').forEach(sec=>{
+        const title=norm(sec.querySelector('.v157SectionTitle')?.textContent||'');
+        if(title.includes('BAO CAO DIEU HANH')||title==='BAO CAO'||title==='BAO CAO K')sec.remove();
+      });
+      for(const host of [document.getElementById('v157Drawer'),document.getElementById('v157HomeDashboard'),document.getElementById('roleHomeIdle')]){
+        if(!host)continue;
+        host.querySelectorAll('button,a,[role="button"]').forEach(el=>{
+          const key=String(el.dataset?.v157Key||'');
+          if(REPORT_KEYS.has(key)){el.remove();return;}
+          const t=norm(el.textContent||'');
+          if(
+            t==='BAO CAO'||t.startsWith('BAO CAO DIEU HANH')||
+            t.startsWith('BAO CAO NHANH')||t.startsWith('BAO CAO CA')||
+            t.startsWith('BAO CAO K')
+          )el.remove();
+        });
+      }
+      document.querySelectorAll('.v157Section').forEach(sec=>{
+        if(!sec.querySelector('.v157MenuItem,button,a,[role="button"]'))sec.remove();
+      });
+    }catch(e){console.warn('V6.4.31 report entry cleanup',e);}
+  }
+  let queued=false;
+  function schedule(){
+    if(queued)return;queued=true;
+    requestAnimationFrame(()=>{queued=false;removeReportEntries();});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',schedule,{once:true});else schedule();
+  new MutationObserver(schedule).observe(document.documentElement,{childList:true,subtree:true});
+  ['pageshow','sags:login','sags:rolechange','sags:profilechange','sags:ui-ready'].forEach(name=>root.addEventListener?.(name,schedule,{passive:true}));
+  root.__SAGS_V6431_REMOVE_REPORT_ENTRIES__=removeReportEntries;
+})(typeof window!=='undefined'?window:globalThis);
+/* ===== END V6.4.31 UI ENTRY CLEANUP ===== */
