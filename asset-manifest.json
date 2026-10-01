@@ -2,7 +2,7 @@
   "schema": 2,
   "version": "V6.4.32",
   "build": "V6.4.32-20261001-OPS-SLATE-UI-01",
-  "strategy": "ops-slate-ui-presentation-only",
+  "strategy": "ops-slate-ui-plus-form-manager-ai-branch",
   "mutableMetadata": [
     "./forms/forms.registry.json"
   ],
@@ -13,8 +13,8 @@
       "bytes": 829463
     },
     "./app/core/runtime.v503hf2.bundle.js": {
-      "sha256": "0815324cc96ef1f6e2b896c19cc63d154e095d10c5cbf870d59366f4854220ad",
-      "bytes": 566075
+      "sha256": "5f71be271401b16fe1347bbb18997a2a4fe9d2240d573a78a2352241128ee172",
+      "bytes": 569899
     },
     "./app/modules/admin-reset.v503hf2.js": {
       "sha256": "870c5be3c30f138098fae6231b3b5464fe675480cb8955ab9b8dd62421d4e419",
@@ -299,6 +299,10 @@
     "./app/modules/form-registry-runtime.v6419.js": {
       "sha256": "8c33713d4b54aafd4f158659089600646003c7a1a72b0bef5718347fa4576e32",
       "bytes": 32038
+    },
+    "./app/modules/form-manager-governance.v1.js": {
+      "sha256": "c3f20a75e1b79cc7a38abe6a23f97b9cbac1b89766967c2efee3473545251386",
+      "bytes": 15984
     }
   }
 }
