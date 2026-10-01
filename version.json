@@ -1,12 +1,12 @@
 {
-  "version": "V6.4.25",
-  "displayVersion": "V6.4.25",
-  "label": "V6.4.25 - FSAGS 54/94 DIRECT FIELD EDITOR",
-  "build": "V6.4.25-20260929-FSAGS54-94-DIRECT-EDITOR-01",
-  "releasedAt": "2026-09-29T14:20:00+07:00",
-  "type": "v6.4.25-fsags54-94-direct-editor",
-  "base": "V6.4.24-20260929-CORE-FORM-ENTRY-MYFLIGHT-PDF-01",
+  "version": "V6.4.26",
+  "displayVersion": "V6.4.26",
+  "label": "V6.4.26 - PĐH FULL · PVHK STANDBY HIDDEN",
+  "build": "V6.4.26-20261001-PDH-PVHK-STANDBY-01",
+  "releasedAt": "2026-10-01T15:30:00+07:00",
+  "type": "v6.4.26-pdh-pvhk-standby",
+  "base": "V6.4.25-20260929-FSAGS54-94-DIRECT-EDITOR-01",
   "updatePolicy": "recommended",
-  "notes": "Fixes F/SAGS-CXR/54 and /94 direct touch entry so a field editor always opens on tap. The runtime still prefers the native core editor when available, then falls back to a dedicated 54/94 editor. Checkbox interaction remains direct and signature fields are untouched.",
-  "message": "V6.4.25: sửa dứt điểm chạm trực tiếp mẫu 54/94 nhưng không hiện bảng nhập liệu."
+  "notes": "Phòng Điều Hành (ĐH, CBTT, Kho Hàng, Viewer) hoạt động đầy đủ. Phòng Phục Vụ Hành Khách được giữ nguyên code/dữ liệu để tái kích hoạt sau nhưng tạm ẩn giao diện và chặn đăng nhập nghiệp vụ. Toàn bộ vai trò/chức năng Phục Vụ Sân Đỗ được loại khỏi phạm vi hoạt động. Dọn các form-registry runtime cũ không còn được dùng.",
+  "message": "V6.4.26: PĐH đầy đủ; PVHK tạm ẩn; PVSĐ loại khỏi bản vận hành."
 }

@@ -682,7 +682,7 @@ const ACL_SIGNAL='ac_limits/catalog_signal';
 const ACL_PUBLIC='ac_limits/catalog_public';
 const ACL_CACHE='sags_ac_limits_catalog_cache_v1';
 const ACL_ACK='sags_ac_limits_ack_v1';
-const ACL_DEFAULT_ROLES=['DH','CBTT','VHTTB','PVHK','PVHLNG'];
+const ACL_DEFAULT_ROLES=['DH','CBTT'];
 const ACL_CATEGORIES=['APU INOP','HOLD INOP/ISSUES','SEAT INOP','OTHERS'];
 let aclCatalog={version:0,items:[],dailyDate:'',dailyVersion:''};
 let aclSignalRef=null,aclSignalCb=null,aclPollTimer=null;
@@ -703,7 +703,7 @@ function aclIsAdmin(){return aclRole()==='AD'}
 function aclCanManage(){return aclIsAdmin()||(typeof window.v485Can==='function'&&window.v485Can('AC_LIMITS'))}
 function todayISO(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function aclRolesFromHost(host){return [...host.querySelectorAll('input[type=checkbox][data-acl-role]:checked')].map(x=>aclNormRole(x.dataset.aclRole||'')).filter(Boolean)}
-function aclRolesHtml(prefix,selected=ACL_DEFAULT_ROLES){const set=new Set((selected||[]).map(x=>String(x).toUpperCase()));const roles=['DH','CBTT','PVHK','VHTTB','KTTB','PVHLNG','LOSTFOUND','AD'];return `<div class="aclRoleGrid">${roles.map(r=>`<label><input type="checkbox" data-acl-role="${r}" id="${prefix}_${r}" ${set.has(r)?'checked':''}> ${r}</label>`).join('')}</div>`}
+function aclRolesHtml(prefix,selected=ACL_DEFAULT_ROLES){const set=new Set((selected||[]).map(x=>String(x).toUpperCase()));const roles=['DH','CBTT','KH','VIEWER','AD'];return `<div class="aclRoleGrid">${roles.map(r=>`<label><input type="checkbox" data-acl-role="${r}" id="${prefix}_${r}" ${set.has(r)?'checked':''}> ${r}</label>`).join('')}</div>`}
 function aclNormalizeItem(x={}){return {
  id:String(x.id||uid()),source:String(x.source||'MANUAL').toUpperCase(),active:x.active!==false,
  airline:norm(x.airline||''),flightNo:normFlight(x.flightNo||''),acReg:normReg(x.acReg||''),displayReg:norm(x.displayReg||x.acReg||''),
@@ -806,8 +806,8 @@ const HISTORY_PREFIX='AC_LIMITS_HISTORY_';
 const KIND='sags_ac_limits_catalog_v1';
 const PUBLIC_PATH='ac_limits/catalog_public';
 const SIGNAL_PATH='ac_limits/catalog_signal';
-const DEFAULT_ROLES=['DH','CBTT','VHTTB','PVHK','PVHLNG'];
-const ALL_ROLES=['DH','CBTT','PVHK','VHTTB','KTTB','PVHLNG','LOSTFOUND','AD'];
+const DEFAULT_ROLES=['DH','CBTT'];
+const ALL_ROLES=['DH','CBTT','KH','VIEWER','AD'];
 let catalog={version:0,items:[],dailyDate:'',dailyVersion:''};
 let editingId='';
 let lastReg='';
@@ -1103,7 +1103,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     try{group=String(meta?.initialGroup||meta?.rosterSourceColumn||appState()?.rosterFormGroup||appState()?.activeFormGroup||'').toUpperCase();}catch(_){ }
     const name=String(p.name||p.fullName||p.displayName||p.username||'').trim();
     let duty='';
-    if(accountRole==='PVHLNG') duty='PVHLNG';
+    
     else if(accountRole==='LOSTFOUND') duty='LOST & FOUND';
     else if(/551|GRND_LD/.test(group)) duty='LOADING SUPERVISOR';
     else if(/423|421|FSAGS|GRND_COR/.test(group)) duty='CO-ORDINATOR';
@@ -2289,7 +2289,7 @@ if(phase==='flight'){
       // Thứ tự username trong cùng ô là thứ tự bắt buộc nhận/làm: A / B / C => A → B → C.
       lsUsers.forEach((u,i)=>{add(u,"final","Grnd_Ls","CBTT",i+1,lsUsers.length);add(u,"FSAGS54","Grnd_Ls","CBTT",1,1);add(u,"clc_checklist","Grnd_Ls","CBTT",1,1);});
       // V1.77: PVHK Passenger Supervisor nhận F/SAGS-CXR/09.
-      paxUsers.forEach((u,i)=>add(u,"fsags09","Pax_Supr","PAX09",i+1,paxUsers.length));
+      if(false) paxUsers.forEach((u,i)=>add(u,"fsags09","Pax_Supr","PAX09",i+1,paxUsers.length)); // PVHK standby hidden in V6.4.26
     }
     return {records:out,ldConflicts,headerMap:map,headerRow:hi+1,rosterDate:rosterDate?.iso||""};
   }
@@ -3350,7 +3350,7 @@ body.v38-clean-workflow #v38CleanNav #roleBtnActionCenter{
     try{group=text(meta?.initialGroup||meta?.rosterSourceColumn||state?.rosterFormGroup||state?.activeFormGroup).toUpperCase();}catch(_){ }
     const name=text(profile.name||profile.fullName||profile.displayName||profile.username);
     let duty='';
-    if(role==='PVHLNG') duty='PVHLNG';
+    
     else if(role==='LOSTFOUND') duty='LOST & FOUND';
     else if(/551|GRND_LD/.test(group)) duty='LOADING SUPERVISOR';
     else if(/423|421|FSAGS|GRND_COR/.test(group)) duty='CO-ORDINATOR';
@@ -3409,7 +3409,7 @@ body.v38-clean-workflow #v38CleanNav #roleBtnActionCenter{
   function template(){try{return typeof getSavedTemplate==='function'?getSavedTemplate():null}catch(_){return null}}
   function notify(key,message){try{const k=`v2237Notice:${key}`;if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1');if(typeof root.sagsActionPopup==='function')root.sagsActionPopup({type:'auto',title:'TỰ KÝ DAILY ROSTER',message});else if(typeof root.showToast==='function')root.showToast(message)}catch(_){}}
   function canonicalGroup(v){const x=U(v).replace(/[^A-Z0-9]/g,'');if(x.includes('551')||x==='GRNDLD')return 'FSAGS551';if(x.includes('421'))return 'FSAGS421';if(x.includes('423')||x==='FSAGS'||x==='GRNDCOR')return 'FSAGS';return x}
-  function dutyFor(group){const r=accountRole();if(r==='PVHLNG')return 'PVHLNG';if(r==='LOSTFOUND'||r==='LNF')return 'LOST & FOUND';if(group==='FSAGS551')return 'LOADING SUPERVISOR';if(group==='FSAGS'||group==='FSAGS421')return 'CO-ORDINATOR';const p=profile();return U(p.jobTitle||p.position||p.functionName||p.departmentName||r)}
+  function dutyFor(group){const r=accountRole();if(r==='LOSTFOUND'||r==='LNF')return 'LOST & FOUND';if(group==='FSAGS551')return 'LOADING SUPERVISOR';if(group==='FSAGS'||group==='FSAGS421')return 'CO-ORDINATOR';const p=profile();return U(p.jobTitle||p.position||p.functionName||p.departmentName||r)}
   function safe(v){return S(v).replace(/[.#$\[\]\/]/g,'_')}
   async function dbValue(path){try{const ref=(root.sagsV470Ref||((typeof sagsV470Ref==='function')?sagsV470Ref:null));if(!ref)return null;return (await ref(path).once('value')).val()}catch(_){return null}}
   async function assignment(meta,user){
@@ -4234,14 +4234,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   const normUser=v=>{try{return typeof root.normalizePersonalUsername==='function'?root.normalizePersonalUsername(v):U(v).replace(/\s+/g,'').replace(/[^A-Z0-9._-]/g,'_').slice(0,40)}catch(_){return U(v).replace(/\s+/g,'').replace(/[^A-Z0-9._-]/g,'_').slice(0,40)}};
   const UNITS=[
     {key:'DH',label:'ĐH · ĐIỀU HÀNH',icon:'✈',tasks:['Theo dõi và điều phối tổng thể chuyến','Theo dõi STA/STD/ETD, Door Close, Pushback, MVA/MVT','Theo dõi tiến độ và bất thường khai thác']},
-    {key:'CBTT',label:'CBTT · CÂN BẰNG TRỌNG TẢI',icon:'⚖',tasks:['Nhận dữ liệu KẾT SỔ, hành lý và hàng hóa','Lập/kiểm tra FINAL, Weight & Balance','Thực hiện CROSSCHECK FINAL theo revision']},
-    {key:'PVHK',label:'PVHK · PHỤC VỤ HÀNH KHÁCH',icon:'👥',tasks:['Check-in/boarding và KẾT SỔ','ADL / CHD / INF','BAG PCS / KG và khách đặc biệt']},
-    {key:'HLNG',label:'HLNG · HÀNH LÝ NHÀ GA',icon:'🛄',tasks:['Chuyến đi: nhận hành lý từ băng chuyền, phân loại, chất lên móc/ULD','Chuyến đến: nhận hành lý từ móc/ULD, đưa lên băng chuyền trả khách','Ghi nhận thời gian hoàn tất và bất thường']},
-    {key:'CARGO',label:'KHO HÀNG · CARGO',icon:'📦',tasks:['Tiếp nhận/xử lý hàng hóa','Build-up / loading / breakdown','Cargo weight, ULD hàng và hàng đặc biệt']},
-    {key:'VSTB',label:'VSTB · VỆ SINH TÀU BAY',icon:'🧹',tasks:['Nhận nhiệm vụ vệ sinh tàu bay','Bắt đầu và hoàn tất vệ sinh','Ghi nhận bất thường phục vụ cabin']},
-    {key:'VHTTB',label:'VHTTB · VẬN HÀNH TRANG THIẾT BỊ',icon:'🚜',tasks:['Nhận yêu cầu thiết bị phục vụ','Điều động thiết bị và nhân sự vận hành','Cập nhật tình trạng đáp ứng']},
-    {key:'KTTB',label:'KTTB · KỸ THUẬT THIẾT BỊ',icon:'🔧',tasks:['Tiếp nhận yêu cầu báo hỏng thiết bị','Bảo trì / bảo dưỡng / sửa chữa','Cập nhật tình trạng thiết bị sau xử lý'],requestOnly:true},
-    {key:'LNF',label:'LNF · LOST & FOUND',icon:'🔎',tasks:['Tiếp nhận case hành lý thất lạc chuyến đến','Theo dõi xử lý','Ghi nhận kết quả trả khách'],requestOnly:true}
+    {key:'CBTT',label:'CBTT · CÂN BẰNG TRỌNG TẢI',icon:'⚖',tasks:['Nhận dữ liệu khai thác','Lập/kiểm tra FINAL, Weight & Balance','Thực hiện CROSSCHECK FINAL theo revision']},
+    {key:'CARGO',label:'KHO HÀNG · CARGO',icon:'📦',tasks:['Tiếp nhận/xử lý hàng hóa','Build-up / loading / breakdown','Cargo weight, ULD hàng và hàng đặc biệt']}
   ];
   function session(){try{return root.__sagsGetSession?.()||{role:root.currentRole||'',profile:root.currentUserProfile||{}}}catch(_){return {role:root.currentRole||'',profile:root.currentUserProfile||{}}}}
   function profile(){return session().profile||root.currentUserProfile||{}}
@@ -4255,13 +4249,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     const p=profile(), text=U([p.role,p.roleCode,p.groupCode,p.departmentCode,p.systemDepartment,p.department,p.group,p.jobTitle].filter(Boolean).join(' '));
     const tests=[
       ['CBTT',/(CBTT|CÂN BẰNG TRỌNG TẢI|CAN BANG TRONG TAI|LOAD CONTROL)/],
-      ['PVHK',/(PVHK|PHỤC VỤ HÀNH KHÁCH|PHUC VU HANH KHACH)/],
-      ['HLNG',/(HLNG|HÀNH LÝ NHÀ GA|HANH LY NHA GA)/],
       ['CARGO',/(KHO HÀNG|KHO HANG|CARGO)/],
-      ['VSTB',/(VSTB|VỆ SINH TÀU BAY|VE SINH TAU BAY)/],
-      ['VHTTB',/(VHTTB|VẬN HÀNH TRANG THIẾT BỊ|VAN HANH TRANG THIET BI)/],
-      ['KTTB',/(KTTB|KỸ THUẬT THIẾT BỊ|KY THUAT THIET BI)/],
-      ['LNF',/(LNF|LOST\s*&?\s*FOUND|LOST AND FOUND)/],
       ['DH',/(^|\s)(ĐH|DH)(\s|$)|ĐIỀU HÀNH|DIEU HANH/]
     ];
     for(const [k,re] of tests)if(re.test(text))return k;
@@ -6337,7 +6325,7 @@ body.v38-clean-workflow #v38CleanNav .v326GrantedPermission::after{content:'+';d
   const normFlight=v=>U(v).replace(/[^A-Z0-9]/g,'');
   const hash=v=>{let h=2166136261>>>0;for(const ch of String(v)){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)>>>0}return h.toString(36).toUpperCase()};
   const canonicalFormGroup=v=>({FSAGS:'fsags',FSAGS423:'fsags',FSAGS421:'fsags421',FSAGS551:'fsags551',FSAGS09:'fsags09',TVJGOF035:'tvjgof035',FSAGS54:'FSAGS54',CLC_CHECKLIST:'clc_checklist',FSAGS94:'clc_checklist',FSAGS94_CLC:'clc_checklist',FINAL:'final',UNIT_TASK:'unit_task'}[U(v)]||'');
-  const UNITS={DH:'ĐH · ĐIỀU HÀNH',CBTT:'CBTT · CÂN BẰNG TRỌNG TẢI',PVHK:'PVHK · PHỤC VỤ HÀNH KHÁCH',HLNG:'HLNG · HÀNH LÝ NHÀ GA',CARGO:'KHO HÀNG · CARGO',VSTB:'VSTB · VỆ SINH TÀU BAY',VHTTB:'VHTTB · VẬN HÀNH TRANG THIẾT BỊ',KTTB:'KTTB · KỸ THUẬT THIẾT BỊ',LNF:'LNF · LOST & FOUND'};
+  const UNITS={DH:'ĐH · ĐIỀU HÀNH',CBTT:'CBTT · CÂN BẰNG TRỌNG TẢI',CARGO:'KHO HÀNG · CARGO'};
   function session(){try{return root.__sagsGetSession?.()||{role:root.currentRole||'',profile:root.currentUserProfile||{}}}catch(_){return {role:root.currentRole||'',profile:root.currentUserProfile||{}}}}
   function profile(){return session().profile||root.currentUserProfile||{}}
   function role(){return U(session().role||profile().role)}
@@ -6346,10 +6334,10 @@ body.v38-clean-workflow #v38CleanNav .v326GrantedPermission::after{content:'+';d
   function today(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
   function db(path){if(typeof root.sagsV470Ref!=='function')throw new Error('Firebase RTDB chưa sẵn sàng.');return root.sagsV470Ref(path)}
   function unitForProfile(){
-    const r=role(),direct={DH:'DH',FPL:'DH',CBTT:'CBTT',PVHK:'PVHK',KH:'CARGO',PVHLNG:'HLNG',PVHLSD:'HLNG',VSTB:'VSTB',VHTTB:'VHTTB',KTTB:'KTTB',LOSTFOUND:'LNF',LNF:'LNF'};
+    const r=role(),direct={DH:'DH',FPL:'DH',CBTT:'CBTT',KH:'CARGO'};
     if(direct[r])return direct[r];if(r==='AD')return '';
     const p=profile(),text=plain([p.role,p.roleCode,p.groupCode,p.departmentCode,p.systemDepartment,p.department,p.group,p.jobTitle].filter(Boolean).join(' '));
-    const tests=[['CBTT',/(CBTT|CAN BANG TRONG TAI|LOAD CONTROL)/],['PVHK',/(PVHK|PHUC VU HANH KHACH)/],['HLNG',/(HLNG|PVHLNG|HANH LY NHA GA|PHUC VU HANH LY)/],['CARGO',/(KHO HANG|CARGO)/],['VSTB',/(VSTB|VE SINH TAU BAY)/],['VHTTB',/(VHTTB|VAN HANH TRANG THIET BI)/],['KTTB',/(KTTB|KY THUAT THIET BI)/],['LNF',/(LNF|LOST\s*&?\s*FOUND|LOST AND FOUND)/],['DH',/(^|\s)(DH|DIEU HANH|FPL)(\s|$)/]];
+    const tests=[['CBTT',/(CBTT|CAN BANG TRONG TAI|LOAD CONTROL)/],['CARGO',/(KHO HANG|CARGO)/],['DH',/(^|\s)(DH|DIEU HANH|FPL)(\s|$)/]];
     for(const [k,re] of tests)if(re.test(text))return k;return '';
   }
   function formOptions(unit){

@@ -4,7 +4,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1, maximum-scale=6, user-scalable=yes, viewport-fit=cover, interactive-widget=resizes-content" name="viewport"/>
 <title>PĐH SAGS-CXR</title>
-<link href="./manifest.webmanifest?v=V6.4.25" rel="manifest"/>
+<link href="./manifest.webmanifest?v=V6.4.26" rel="manifest"/>
 <link href="./assets/icons/favicon-16.png?v=486" rel="icon" sizes="16x16" type="image/png"/>
 <link href="./assets/icons/favicon-32.png?v=486" rel="icon" sizes="32x32" type="image/png"/>
 <link href="./assets/icons/icon-192.png?v=486" rel="icon" sizes="192x192" type="image/png"/>
@@ -2351,7 +2351,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <style id="sags-v115-clean-ui">
 #roleLoginHint,#v1014UsernameLoginNote,.templateNote,.fs09qUsageNote,.v377CreateFormNote,.v1019Hint{display:none!important}
 </style>
-<link rel="stylesheet" href="./app/styles/app.bundle.css?v=V6.4.25-20260929-FSAGS54-94-DIRECT-EDITOR-01">
+<link rel="stylesheet" href="./app/styles/app.bundle.css?v=V6.4.26-20261001-PDH-PVHK-STANDBY-01">
 <style id="v502RosterDirectStyle">#v310ShiftNav,#v1113QrFormBtn,.hf4Release{display:none!important}</style>
 <style id="v503hf1AdControlResetStyle">
 #activityMonitorModal #v503AdminResetPanel #v378ResetRecordsBtn{background:#075fb0!important;color:#fff!important;border-color:#075fb0!important;grid-column:auto!important;min-height:44px;white-space:normal!important}
@@ -2360,7 +2360,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 #activityMonitorModal #v503AdminResetPanel #v378ResetStatus{grid-column:auto!important;max-width:100%;overflow-wrap:anywhere;box-sizing:border-box;}
 @media(max-width:600px){#activityMonitorModal #v503AdminResetPanel{padding:10px!important;margin:9px 0 12px!important;}}
 </style>
-<link rel="stylesheet" href="./app/styles/new-ui-v1.css?v=V6.4.25-20260929-FSAGS54-94-DIRECT-EDITOR-01">
+<link rel="stylesheet" href="./app/styles/new-ui-v1.css?v=V6.4.26-20261001-PDH-PVHK-STANDBY-01">
 
 <script id="sags-v620-unified-form-migration">
 (function(){
@@ -2396,7 +2396,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 /* The update dialog must be above the reminder even on the bottom-navigation UI. */
 #appUpdateModal{z-index:27000!important}
 </style>
-</head>
+<style id="pdh-pvhk-standby-hide">#fs09QuickBtn,#formMenu09,#fs09QuickModal,#fs09CloudToast,#fs09PreviewModal,[id^="fs09"][role="dialog"],[id^="fs09"][class*="Modal"],[id^="fs09"][class*="modal"],#roleBtnManualBBBT{display:none!important}</style></head>
 <body>
 <div aria-hidden="true" id="roleHomeIdle"></div>
 <div id="roleLoginModal">
@@ -8862,8 +8862,8 @@ function applySavedSignatureTemplate(){
   // BBBT: middle SAGS-CXR Agent + Person 1 = Full name + Duty = Coor.
   count+=setTemplateValue("bbbtSigAgent1",sig);
   count+=setTemplateValue("bbbtPerson1",name);
-  // BBBT thủ công của PVHLNG/Lost & Found không ép Duty = Coor; người dùng tự nhập đúng chức danh thực tế.
-  if(!["PVHLNG","LOSTFOUND"].includes(String(currentRole||"").toUpperCase()))state.bbbtDuty1="Coor";
+  // BBBT thủ công của Lost & Found (PVHK standby) giữ dữ liệu tương thích.
+  if(String(currentRole||"").toUpperCase()!=="LOSTFOUND")state.bbbtDuty1="Coor";
   persist();
   activeKey=null;
   draw();
@@ -10944,9 +10944,9 @@ try {
   if(h) h.textContent="Lỗi khởi tạo: "+err.message;
   alert("Lỗi JavaScript: "+err.message);
 }
-const APP_BUILD_VERSION="V6.4.25-20260929-FSAGS54-94-DIRECT-EDITOR-01";
+const APP_BUILD_VERSION="V6.4.26-20261001-PDH-PVHK-STANDBY-01";
 window.__SAGS_RELEASE_BUILD__=APP_BUILD_VERSION;
-const APP_DISPLAY_VERSION="V6.4.25";
+const APP_DISPLAY_VERSION="V6.4.26";
 // V1.1.103: hotfix duy nhất lỗi Firebase RTDB ancestor/descendant khi đồng bộ DAILY ROSTER; không thay đổi nghiệp vụ khác.
 // V4.21 — SAFE UPDATE SAVE
 // Before switching to a newly installed app version, force-save all current
@@ -10987,7 +10987,7 @@ function syncDisplayedAppVersion(){
     if(marker) marker.textContent=APP_DISPLAY_VERSION;
     const login=document.getElementById("loginReleaseVersion");if(login)login.textContent=APP_DISPLAY_VERSION;
     const hint=document.getElementById("statusHint");
-    if(hint && !/^Lỗi khởi tạo:/.test(hint.textContent||"")) hint.textContent=APP_DISPLAY_VERSION+" 29/09/26";
+    if(hint && !/^Lỗi khởi tạo:/.test(hint.textContent||"")) hint.textContent=APP_DISPLAY_VERSION+" 01/10/26";
     document.documentElement.setAttribute("data-app-version",APP_DISPLAY_VERSION);
   }catch(_e){}
 }
@@ -18939,9 +18939,7 @@ function normalizeFirebaseOperationalRole(v){
   if(r==="ADMIN"||r==="AD")return "AD";
   return r;
 }
-function firebasePersonalRoleAllowed(r){
-  return ["AD","DH","CBTT","PVHK","KH","VIEWER","VHTTB","PVHLSD","PVHLNG","LOSTFOUND","VSTB","KTTB"].includes(normalizeFirebaseOperationalRole(r));
-}
+function firebasePersonalRoleAllowed(r){return ["AD","DH","CBTT","KH","VIEWER"].includes(normalizeFirebaseOperationalRole(r));}
 const FIREBASE_INTERNAL_DOMAIN="ereport-sags.local";
 function firebaseLoginSlug(v){
   let x=String(v||"").trim().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[Đđ]/g,"D").toLowerCase();
@@ -19135,7 +19133,7 @@ async function adminToggleAccount(id,newActive){
   refreshAccountManager();
 }
 async function adminChangeAccountRole(id){
-  if(currentRole!=="AD")return;const val=prompt("Nhập quyền mới: DH / CBTT / PVHK / KH / VIEWER / AD / VHTTB / PVHLSD / PVHLNG / LOSTFOUND / VSTB / KTTB");if(val===null)return;
+  if(currentRole!=="AD")return;const val=prompt("Nhập quyền mới: DH / CBTT / KH / VIEWER / AD");if(val===null)return;
   const role=normalizeFirebaseOperationalRole(val);if(!firebasePersonalRoleAllowed(role))return alert("Quyền không hợp lệ.");
   await firebase.firestore().collection("users").doc(id).set({role:role==="AD"?"ADMIN":role,roleCode:role,updatedAtMs:Date.now()},{merge:true});refreshAccountManager();
 }
@@ -21302,24 +21300,11 @@ setTimeout(()=>{try{sagsV470StartConnection();sagsV470RenderStatus();}catch(e){}
 <script id="v484SystemDepartmentRoles">
 /* V4.84 — Hierarchical system department + role model.
    jobTitle/workUnit remain canonical HR fields and are NOT replaced by this structure. */
-const SAGS_SYSTEM_DEPARTMENTS_V484={
-  PDH:{label:"Phòng Điều Hành",roles:["DH","CBTT","PVHK","KH","VIEWER","AD"]},
-  PKTSD:{label:"Phòng Kĩ Thuật Sân Đỗ",roles:["VHTTB","PVHLSD","PVHLNG"]},
-  PPVHK:{label:"Phòng Phục Vụ Hành Khách",roles:[]},
-  ALL:{label:"Toàn hệ thống",roles:["AD"]}
-};
-const SAGS_ROLE_LABELS_V484={DH:"ĐH",CBTT:"CBTT",PVHK:"PVHK",KH:"KH",VIEWER:"VIEWER",AD:"AD",VHTTB:"VHTTB",PVHLSD:"PVHLSĐ",PVHLNG:"PVHLNG"};
+const SAGS_SYSTEM_DEPARTMENTS_V484={PDH:{label:"Phòng Điều Hành",roles:["DH","CBTT","KH","VIEWER","AD"]},PPVHK:{label:"Phòng Phục Vụ Hành Khách · TẠM ẨN",roles:["PVHK","LOSTFOUND"]},ALL:{label:"Toàn hệ thống",roles:["AD"]}};
+const SAGS_ROLE_LABELS_V484={DH:"ĐH",CBTT:"CBTT",PVHK:"PVHK",LOSTFOUND:"Lost & Found",KH:"KH",VIEWER:"VIEWER",AD:"AD"};
 const SAGS_VALID_ROLES_V484=Object.keys(SAGS_ROLE_LABELS_V484);
 function v484RoleLabel(r){return SAGS_ROLE_LABELS_V484[String(r||"").toUpperCase()]||String(r||"").toUpperCase();}
-function v484InferSystemDepartment(role,d={}){
-  const r=String(role||d?.role||"").toUpperCase();
-  // Role ownership is canonical. This prevents an old/stale department field from moving a role to the wrong room.
-  if(r==="AD")return "ALL";
-  if(["VHTTB","PVHLSD","PVHLNG"].includes(r))return "PKTSD";
-  if(["DH","CBTT","PVHK","KH","VIEWER"].includes(r))return "PDH";
-  const explicit=String(d?.systemDepartment||d?.systemDept||"").toUpperCase();
-  return SAGS_SYSTEM_DEPARTMENTS_V484[explicit]?explicit:"";
-}
+function v484InferSystemDepartment(role,d={}){const r=String(role||d?.role||"").toUpperCase();if(r==="AD")return "ALL";if(["PVHK","LOSTFOUND"].includes(r))return "PPVHK";if(["DH","CBTT","KH","VIEWER"].includes(r))return "PDH";const explicit=String(d?.systemDepartment||d?.systemDept||"").toUpperCase();return ["PDH","PPVHK","ALL"].includes(explicit)?explicit:"";}
 function v484DepartmentLabel(dep){return SAGS_SYSTEM_DEPARTMENTS_V484[String(dep||"").toUpperCase()]?.label||"Chưa khai báo";}
 function v484RolesForDepartment(dep){return (SAGS_SYSTEM_DEPARTMENTS_V484[String(dep||"").toUpperCase()]?.roles||[]).slice();}
 function v484SyncRoleSelect(deptId,roleId,selected=""){
@@ -21328,7 +21313,7 @@ function v484SyncRoleSelect(deptId,roleId,selected=""){
   r.innerHTML=roles.length?roles.map(x=>`<option value="${x}" ${x===sel?"selected":""}>${v484RoleLabel(x)}</option>`).join(""):'<option value="">-- Chưa khai báo vai trò --</option>';
   r.disabled=!roles.length;
   const hint=document.getElementById(roleId==="admRole"?"admRoleHintV484":"editRoleHintV484");
-  if(hint)hint.textContent=roles.length?(dep==="PDH"?"Các vai trò hiện hữu của hệ thống thuộc Phòng Điều Hành.":dep==="PKTSD"?"Vai trò Phòng Kĩ Thuật Sân Đỗ.":""):'Phòng Phục Vụ Hành Khách chưa khai báo vai trò — sẽ bổ sung sau.';
+  if(hint)hint.textContent=dep==="PDH"?"Phòng Điều Hành đang hoạt động đầy đủ.":dep==="PPVHK"?"Phòng Phục Vụ Hành Khách đang TẠM ẨN trong bản này.":"";
   delete r.dataset.pendingRole;
 }
 function v484InitAccountRoleUi(){
@@ -21336,7 +21321,7 @@ function v484InitAccountRoleUi(){
 }
 window.v484SyncRoleSelect=v484SyncRoleSelect;
 // New roles are real login roles, but do not inherit operational privileges by accident.
-ROLE_ACCOUNTS.VHTTB={label:"VHTTB"};ROLE_ACCOUNTS.PVHLSD={label:"PVHLSĐ"};ROLE_ACCOUNTS.PVHLNG={label:"PVHLNG"};
+
 roleCanFinal=function(role){return ["DH","CBTT","PVHK","VIEWER","AD"].includes(String(role||"").toUpperCase());};
 // Canonical actor/catalog now carries the system department as a separate dimension.
 currentActor=function(){
@@ -21400,15 +21385,11 @@ adminSaveAccountProfile=async function(){
 const v484RefreshAccountManagerBase=refreshAccountManager;
 refreshAccountManager=async function(){
   if(currentRole!=="AD")return;const list=document.getElementById("accountManagerList");if(list)list.innerHTML="Đang tải...";
-  try{const db=initHandoverFirebase(),snap=await db.collection(HANDOVER_COLLECTION).where("kind","==",PERSONAL_USER_KIND).get(),arr=[];snap.forEach(doc=>arr.push({id:doc.id,...doc.data()}));arr.sort((a,b)=>{const da=v484InferSystemDepartment(a.role,a),dbb=v484InferSystemDepartment(b.role,b),ord={ALL:0,PDH:1,PKTSD:2,PPVHK:3};return (ord[da]??9)-(ord[dbb]??9)||String(a.name||a.username).localeCompare(String(b.name||b.username),"vi");});void v466PublishUserCatalogFromItems(arr);const fixed='<div class="sagsUserRow" style="border-color:#9dbce0;background:#f5f9ff"><div class="sagsUserMain"><b>AD · TÀI KHOẢN CHỨC NĂNG CỐ ĐỊNH</b><div class="sagsUserMeta">TK: AD · Phạm vi: <b>TOÀN HỆ THỐNG</b> · Xác thực: <b>Firebase Authentication</b> · tài khoản khởi tạo/dự phòng</div></div><div class="sagsUserMeta">Không xóa · Không đổi quyền.</div></div>';if(list)list.innerHTML=fixed+(arr.length?arr.map(x=>accountRowHtml(x,x.id)).join(""):"<div class='sagsUserMeta'>Chưa có tài khoản cá nhân.</div>");
+  try{const db=initHandoverFirebase(),snap=await db.collection(HANDOVER_COLLECTION).where("kind","==",PERSONAL_USER_KIND).get(),arr=[];snap.forEach(doc=>arr.push({id:doc.id,...doc.data()}));arr.sort((a,b)=>{const da=v484InferSystemDepartment(a.role,a),dbb=v484InferSystemDepartment(b.role,b),ord={ALL:0,PDH:1,REMOVED_DEPT:2,PPVHK:3};return (ord[da]??9)-(ord[dbb]??9)||String(a.name||a.username).localeCompare(String(b.name||b.username),"vi");});void v466PublishUserCatalogFromItems(arr);const fixed='<div class="sagsUserRow" style="border-color:#9dbce0;background:#f5f9ff"><div class="sagsUserMain"><b>AD · TÀI KHOẢN CHỨC NĂNG CỐ ĐỊNH</b><div class="sagsUserMeta">TK: AD · Phạm vi: <b>TOÀN HỆ THỐNG</b> · Xác thực: <b>Firebase Authentication</b> · tài khoản khởi tạo/dự phòng</div></div><div class="sagsUserMeta">Không xóa · Không đổi quyền.</div></div>';if(list)list.innerHTML=fixed+(arr.length?arr.map(x=>accountRowHtml(x,x.id)).join(""):"<div class='sagsUserMeta'>Chưa có tài khoản cá nhân.</div>");
   }catch(e){if(list)list.textContent="Không tải được danh sách: "+(e?.message||e);}
 };window.refreshAccountManager=refreshAccountManager;
 // New technical-ramp roles keep only currently defined operational permissions.
-const v484ApplyRoleUiBase=applyRoleUI;
-applyRoleUI=function(){
-  v484ApplyRoleUiBase();const r=String(currentRole||"").toUpperCase(),tech=["VHTTB","PVHLSD","PVHLNG"].includes(r),dep=v484InferSystemDepartment(r,currentUserProfile||{});document.body.classList.toggle("role-ramptech",tech);if(tech){roleSetVisible("roleBtnFlights",false);roleSetVisible("fs09QuickBtn",false);roleSetVisible("khQuickBtn",false);roleSetVisible("finalFormsQuickBtn",false);roleSetVisible("roleBtnExport",false);roleSetVisible("roleBtnNA",false);roleSetVisible("roleBtnNew",false);roleSetVisible("roleBtnSignature",true);const b=document.getElementById("roleBtnSignature");if(b)b.textContent="Lấy chữ kí";}
-  const badge=document.getElementById("roleStatusBadge");if(badge&&currentUserProfile?.name){badge.title=v484DepartmentLabel(dep)+" · "+v484RoleLabel(r);badge.textContent=currentUserProfile.name+" • "+v484RoleLabel(r);}
-};window.applyRoleUI=applyRoleUI;
+const v484ApplyRoleUiBase=applyRoleUI;applyRoleUI=function(){v484ApplyRoleUiBase();const r=String(currentRole||"").toUpperCase(),dep=v484InferSystemDepartment(r,currentUserProfile||{}),badge=document.getElementById("roleStatusBadge");if(badge&&currentUserProfile?.name){badge.title=v484DepartmentLabel(dep)+" · "+v484RoleLabel(r);badge.textContent=currentUserProfile.name+" • "+v484RoleLabel(r);}};window.applyRoleUI=applyRoleUI;
 // Passenger Service room stays visible but empty for future roles.
 
 // Activity RTDB now includes department; old records are inferred from role.
@@ -21455,7 +21436,7 @@ FLEET:{label:"FLEET TÀU BAY",note:"Quản lý Fleet/A-C REG/A-C Type/ZONE"},
   QUICK_TIME:{label:"NHẬP GIỜ NHANH",note:"Dùng màn ⏱ NHẬP GIỜ trên FSAGS 42.1/42.3"},
   DAILY_ROSTER:{label:"DAILY ROSTER",note:"Upload roster, tạo/phân công biểu mẫu và chuyển người phụ trách"}
 };
-const V485_FEATURE_KEYS=Object.keys(SAGS_FEATURES_V485);
+const V485_FEATURE_KEYS=Object.keys(SAGS_FEATURES_V485).filter(k=>k!=="FSAGS09");
 function v485Blank(){return Object.fromEntries(V485_FEATURE_KEYS.map(k=>[k,false]));}
 function v485RoleDefaults(role){
   const raw=String(role||"").trim().toUpperCase();
@@ -21467,7 +21448,7 @@ function v485RoleDefaults(role){
   else if(r==="PVHK")on("FSAGS09","FINAL");
   else if(r==="KH")on("FSAGS208");
   else if(r==="VIEWER")on("FLIGHTS","FSAGS423","FSAGS421","FSAGS551","BBBT","FSAGS09","FSAGS208","FINAL");
-  else if(["VHTTB","PVHLSD","PVHLNG"].includes(r))on("FLIGHTS","BBBT","EXPORT_RAMP");
+  
   return p;
 }
 function v485Overrides(profile){const x=profile?.featureOverridesV485;return x&&typeof x==="object"?x:{};}
@@ -21574,47 +21555,17 @@ setTimeout(()=>{try{applyRoleUI();updateFormMenuForCurrentFlight();v485StartPerm
 const V18_POSITION_CODES=Object.freeze({
   "Trưởng phòng":"TRUONG_PHONG","Phó phòng":"PHO_PHONG","Đội trưởng":"DOI_TRUONG","Đội phó":"DOI_PHO","Ca trưởng":"CA_TRUONG","Ca phó":"CA_PHO","Nhân viên":"NHAN_VIEN"
 });
-const V18_DEPARTMENTS=Object.freeze({
-  "PĐH":{label:"Phòng Điều Hành",groups:{
-    "ĐH":{label:"Điều hành / Coordination & Loadmaster",role:"DH",roleCode:"ĐH",unit:"Điều Hành"},
-    "CBTT":{label:"Cân bằng trọng tải / Weight & Balance",role:"CBTT",roleCode:"CBTT",unit:"Cân Bằng Trọng Tải"},
-    "KH":{label:"Kho Hàng",role:"KH",roleCode:"KH",unit:"Kho Hàng"},
-    "VIEWER":{label:"Chỉ xem",role:"VIEWER",roleCode:"VIEWER",unit:"Chỉ xem"}
-  }},
-  "PVHK":{label:"Phòng Phục Vụ Hành Khách",groups:{
-    "PVHK":{label:"Phục vụ hành khách chuyến đi",role:"PVHK",roleCode:"PVHK",unit:"Phục Vụ Hành Khách"},
-    "LNF":{label:"Arrival & Lost and Found",role:"LOSTFOUND",roleCode:"LOSTFOUND",unit:"Lost & Found"}
-  }},
-  "PVSĐ":{label:"Phòng Phục Vụ Sân Đỗ",groups:{
-    "PVHLNG":{label:"Phục vụ hành lý",role:"PVHLNG",roleCode:"PVHLNG",unit:"Phục Vụ Hành Lý"},
-    "VHTTB":{label:"Vận hành trang thiết bị",role:"VHTTB",roleCode:"VHTTB",unit:"Vận Hành Trang Thiết Bị"},
-    "VSTB":{label:"Vệ sinh tàu bay",role:"VSTB",roleCode:"VSTB",unit:"Vệ Sinh Tàu Bay"},
-    "KTTB":{label:"Kỹ thuật / bảo dưỡng thiết bị",role:"KTTB",roleCode:"KTTB",unit:"Kỹ Thuật Trang Thiết Bị"}
-  }},
-  "ADMIN":{label:"Quản trị hệ thống",groups:{
-    "ADMIN":{label:"Quản trị hệ thống",role:"AD",roleCode:"AD",unit:"Quản trị hệ thống"}
-  }}
-});
-const V18_ROLE_LABELS=Object.freeze({DH:"ĐH",CBTT:"CBTT",PVHK:"PVHK",LOSTFOUND:"Lost & Found",PVHLNG:"PVHLNG",VHTTB:"VHTTB",VSTB:"VSTB",KTTB:"KTTB",KH:"KH",VIEWER:"VIEWER",AD:"AD",PVHLSD:"PVHLSĐ"});
+const V18_DEPARTMENTS=Object.freeze({"PĐH":{label:"Phòng Điều Hành",groups:{"ĐH":{label:"Điều hành / Coordination & Loadmaster",role:"DH",roleCode:"ĐH",unit:"Điều Hành"},"CBTT":{label:"Cân bằng trọng tải / Weight & Balance",role:"CBTT",roleCode:"CBTT",unit:"Cân Bằng Trọng Tải"},"KH":{label:"Kho Hàng",role:"KH",roleCode:"KH",unit:"Kho Hàng"},"VIEWER":{label:"Chỉ xem",role:"VIEWER",roleCode:"VIEWER",unit:"Chỉ xem"}}},"PVHK":{label:"Phòng Phục Vụ Hành Khách · TẠM ẨN",groups:{"PVHK":{label:"Phục vụ hành khách chuyến đi",role:"PVHK",roleCode:"PVHK",unit:"Phục Vụ Hành Khách"},"LNF":{label:"Arrival & Lost and Found",role:"LOSTFOUND",roleCode:"LOSTFOUND",unit:"Lost & Found"}}},"ADMIN":{label:"Quản trị hệ thống",groups:{"ADMIN":{label:"Quản trị hệ thống",role:"AD",roleCode:"AD",unit:"Quản trị hệ thống"}}}});
+const V18_ROLE_LABELS=Object.freeze({DH:"ĐH",CBTT:"CBTT",PVHK:"PVHK",LOSTFOUND:"Lost & Found",KH:"KH",VIEWER:"VIEWER",AD:"AD"});
 const V18_ALLOWED_INTERNAL_ROLES=Object.keys(V18_ROLE_LABELS);
 function v18RoleLabel(r){return V18_ROLE_LABELS[String(r||"").toUpperCase()]||String(r||"").toUpperCase();}
 function v18DeptLabel(code){return V18_DEPARTMENTS[String(code||"").toUpperCase()]?.label||String(code||"")||"Chưa khai báo";}
-function v18LegacyDept(d={},role=""){
-  const explicit=String(d.departmentCode||"").toUpperCase();if(V18_DEPARTMENTS[explicit])return explicit;
-  const old=String(d.systemDepartment||d.systemDept||"").toUpperCase();
-  if(old==="PDH")return "PĐH";if(old==="PKTSD")return "PVSĐ";if(old==="PPVHK")return "PVHK";if(old==="ALL")return "ADMIN";
-  const r=String(role||d.role||"").toUpperCase();
-  if(r==="AD")return "ADMIN";if(["PVHLNG","VHTTB","VSTB","KTTB","PVHLSD"].includes(r))return "PVSĐ";if(["PVHK","LOSTFOUND"].includes(r))return "PVHK";return "PĐH";
-}
-function v18InferGroup(d={},role=""){
-  const dep=v18LegacyDept(d,role),explicit=String(d.groupCode||"").toUpperCase();if(V18_DEPARTMENTS[dep]?.groups?.[explicit])return explicit;
-  const r=String(role||d.role||"").toUpperCase();
-  return ({DH:"ĐH",CBTT:"CBTT",PVHK:"PVHK",LOSTFOUND:"LNF",PVHLNG:"PVHLNG",VHTTB:"VHTTB",VSTB:"VSTB",KTTB:"KTTB",KH:"KH",VIEWER:"VIEWER",AD:"ADMIN",PVHLSD:"PVHLNG"})[r]||Object.keys(V18_DEPARTMENTS[dep]?.groups||{})[0]||"";
-}
+function v18LegacyDept(d={},role=""){const explicit=String(d.departmentCode||"").toUpperCase();if(V18_DEPARTMENTS[explicit])return explicit;const old=String(d.systemDepartment||d.systemDept||"").toUpperCase();if(old==="PDH")return "PĐH";if(old==="PPVHK")return "PVHK";if(old==="ALL")return "ADMIN";const r=String(role||d.role||"").toUpperCase();if(r==="AD")return "ADMIN";if(["PVHK","LOSTFOUND"].includes(r))return "PVHK";if(["DH","CBTT","KH","VIEWER"].includes(r))return "PĐH";return "";}
+function v18InferGroup(d={},role=""){const dep=v18LegacyDept(d,role),explicit=String(d.groupCode||"").toUpperCase();if(V18_DEPARTMENTS[dep]?.groups?.[explicit])return explicit;const r=String(role||d.role||"").toUpperCase();return ({DH:"ĐH",CBTT:"CBTT",PVHK:"PVHK",LOSTFOUND:"LNF",KH:"KH",VIEWER:"VIEWER",AD:"ADMIN"})[r]||Object.keys(V18_DEPARTMENTS[dep]?.groups||{})[0]||"";}
 function v18GroupDef(dep,group){return V18_DEPARTMENTS[String(dep||"").toUpperCase()]?.groups?.[String(group||"").toUpperCase()]||null;}
 function v18RoleCode(role,d={}){return String(d.roleCode||"").trim()||v18RoleLabel(role);}
 function v18PositionCode(jobTitle,d={}){return String(d.positionCode||"").trim()||V18_POSITION_CODES[String(jobTitle||d.jobTitle||"").trim()]||"";}
-function v18FillDeptOptions(select,selected){if(!select)return;select.innerHTML=Object.entries(V18_DEPARTMENTS).map(([k,v])=>`<option value="${k}" ${k===selected?"selected":""}>${v.label} · ${k}</option>`).join("");}
+function v18FillDeptOptions(select,selected){if(!select)return;const visible=["PĐH","ADMIN"];select.innerHTML=visible.map(k=>[k,V18_DEPARTMENTS[k]]).filter(x=>x[1]).map(([k,v])=>`<option value="${k}" ${k===selected?"selected":""}>${v.label} · ${k}</option>`).join("");}
 function v18SyncAccountHierarchy(prefix,groupChanged=false,selected={}){
   const ids=prefix==="adm"?{dep:"admSystemDepartment",group:"admGroupCode",role:"admRole",unit:"admUnit",hint:"admRoleHintV484"}:{dep:"editAccountSystemDepartment",group:"editAccountGroupCode",role:"editAccountRole",unit:"editAccountUnit",hint:"editRoleHintV484"};
   const depEl=document.getElementById(ids.dep),groupEl=document.getElementById(ids.group),roleEl=document.getElementById(ids.role),unitEl=document.getElementById(ids.unit),hint=document.getElementById(ids.hint);if(!depEl||!groupEl||!roleEl)return;
@@ -21635,7 +21586,7 @@ v484RolesForDepartment=function(dep){return Object.values(V18_DEPARTMENTS[String
 v484SyncRoleSelect=function(deptId,roleId,selected=""){const prefix=deptId==="admSystemDepartment"?"adm":"editAccount";v18SyncAccountHierarchy(prefix,false,{dep:document.getElementById(deptId)?.value||"PĐH"});};
 v484InitAccountRoleUi=v18InitAccountUi;window.v484SyncRoleSelect=v484SyncRoleSelect;
 // Add new login roles. DH remains the internal compatibility key but displays/stores canonical code ĐH.
-ROLE_ACCOUNTS.LOSTFOUND={label:"Lost & Found"};ROLE_ACCOUNTS.VSTB={label:"VSTB"};ROLE_ACCOUNTS.KTTB={label:"KTTB"};ROLE_ACCOUNTS.DH.label="ĐH";
+ROLE_ACCOUNTS.LOSTFOUND={label:"Lost & Found"};ROLE_ACCOUNTS.DH.label="ĐH";
 // Actor and user catalog now carry the full 4-level account coding, including bootstrap AD.
 currentActor=function(){
   if(currentUserProfile){const role=String(currentUserProfile.role||currentRole||"").toUpperCase(),dep=v18LegacyDept(currentUserProfile,role),group=v18InferGroup(currentUserProfile,role);return {username:currentUserProfile.username||"",employeeCode:currentUserProfile.employeeCode||"",name:currentUserProfile.name||"",role,roleCode:v18RoleCode(role,currentUserProfile),departmentCode:dep,groupCode:group,positionCode:v18PositionCode(currentUserProfile.jobTitle,currentUserProfile),jobTitle:currentUserProfile.jobTitle||"",unit:currentUserProfile.unit||v18GroupDef(dep,group)?.unit||""};}
@@ -21649,7 +21600,7 @@ adminCreatePersonalAccount=async function(){
   const employeeCode=normalizeEmployeeCode(document.getElementById("admEmployeeCode")?.value||""),name=String(document.getElementById("admFullName")?.value||"").trim(),username=normalizePersonalUsername(document.getElementById("admUsername")?.value),dep=String(document.getElementById("admSystemDepartment")?.value||"").toUpperCase(),group=String(document.getElementById("admGroupCode")?.value||"").toUpperCase(),jobTitle=String(document.getElementById("admJobTitle")?.value||"").trim();
   const def=v18GroupDef(dep,group),role=String(def?.role||"").toUpperCase(),roleCode=String(def?.roleCode||v18RoleLabel(role)),unit=String(def?.unit||""),positionCode=V18_POSITION_CODES[jobTitle]||"";
   if(!employeeCode||!name||!username||!def||!role||!positionCode)return setAccountManagerStatus("Cần nhập/chọn đủ Mã nhân viên, Họ tên, Tài khoản, Phòng, Nhóm/chức năng và Chức danh.",true);
-  const reserved=new Set(["AD","ĐH","DH","CBTT","PVHK","LNF","LOSTFOUND","PVHLNG","VHTTB","VSTB","KTTB","KH","VIEWER","PĐH","PVSĐ","ADMIN"]);if(reserved.has(username))return setAccountManagerStatus("Không dùng tên tài khoản "+username+" vì trùng mã hệ thống.",true);
+  const reserved=new Set(["AD","ĐH","DH","CBTT","PVHK","LNF","LOSTFOUND","KH","VIEWER","PĐH","ADMIN"]);if(reserved.has(username))return setAccountManagerStatus("Không dùng tên tài khoản "+username+" vì trùng mã hệ thống.",true);
   try{setAccountManagerStatus("Đang tạo tài khoản...");const db=initHandoverFirebase(),ref=db.collection(HANDOVER_COLLECTION).doc(personalUserDocId(username)),old=await ref.get();if(old.exists)return setAccountManagerStatus("Tài khoản "+username+" đã tồn tại.",true);const sameCode=await db.collection(HANDOVER_COLLECTION).where("kind","==",PERSONAL_USER_KIND).where("employeeCode","==",employeeCode).get();if(!sameCode.empty)return setAccountManagerStatus("Mã nhân viên "+employeeCode+" đã được sử dụng.",true);
     const salt=randomAccountSalt(),passHash=await roleSha256(salt+"|123456"),now=Date.now();await ref.set({kind:PERSONAL_USER_KIND,username,employeeCode,name,role,roleCode,departmentCode:dep,groupCode:group,systemDepartment:dep,positionCode,jobTitle,unit,workUnit:unit,active:true,passSalt:salt,passHash,authRev:1,mustChangePassword:true,featureOverridesV485:{},permissionRoleV485:role,createdBy:currentActor(),createdAt:firebase.firestore.FieldValue.serverTimestamp(),createdAtMs:now,updatedAtMs:now});
     ["admEmployeeCode","admFullName","admUsername","admJobTitle"].forEach(id=>{const x=document.getElementById(id);if(x)x.value="";});v18InitAccountUi();setAccountManagerStatus(`Đã tạo ${username} · ${name} · ${dep}/${group}/${roleCode} · ${jobTitle} · mật khẩu 123456.`);refreshAccountManager();
@@ -21666,21 +21617,21 @@ adminSaveAccountProfile=async function(){
   }catch(e){if(st)st.textContent="Không lưu được: "+(e?.message||e);}
 };window.adminSaveAccountProfile=adminSaveAccountProfile;
 accountRowHtml=function(d,id){const safe=x=>escapeHtml(String(x??"")),active=d.active!==false,role=String(d.role||"").toUpperCase(),dep=v18LegacyDept(d,role),group=v18InferGroup(d,role),roleCode=v18RoleCode(role,d),positionCode=v18PositionCode(d.jobTitle,d),unit=String(d.unit||d.workUnit||v18GroupDef(dep,group)?.unit||"");return `<div class="sagsUserRow"><div class="sagsUserMain"><b>${safe(d.name||d.username)}</b><div class="sagsUserMeta">${safe(d.employeeCode)} · TK: ${safe(d.username)}<br><span class="v18CodePill">${safe(dep)}</span><span class="v18CodePill">${safe(group)}</span><span class="v18CodePill">${safe(roleCode)}</span> · Chức danh: <b>${safe(d.jobTitle||"CHƯA KHAI BÁO")}</b> <span class="v18CodePill">${safe(positionCode||"NO_POSITION")}</span> · Đơn vị: <b>${safe(unit||"CHƯA KHAI BÁO")}</b> · ${active?"ĐANG MỞ":"ĐÃ KHÓA"}</div></div><div class="sagsUserMeta">Cập nhật: ${new Date(Number(d.updatedAtMs||d.createdAtMs||0)||Date.now()).toLocaleString("vi-VN")}</div><div class="sagsUserActions"><button onclick='adminOpenProfileEditor(${JSON.stringify(id)})'>SỬA HỒ SƠ / QUYỀN</button><button onclick='adminEditEmployeeCode(${JSON.stringify(id)})'>SỬA MÃ NV</button><button onclick='adminToggleAccount(${JSON.stringify(id)},${!active})'>${active?"KHÓA":"MỞ"}</button><button onclick='v485OpenPermissionEditor(${JSON.stringify(id)})'>PHÂN QUYỀN</button><button onclick='adminResetAccountPassword(${JSON.stringify(id)})'>RESET 123456</button><button class="dangerAccountBtn" onclick='adminDeletePersonalAccount(${JSON.stringify(id)})'>XÓA</button></div></div>`;};window.accountRowHtml=accountRowHtml;
-refreshAccountManager=async function(){if(currentRole!=="AD")return;const list=document.getElementById("accountManagerList");if(list)list.innerHTML="Đang tải...";try{const snap=await initHandoverFirebase().collection(HANDOVER_COLLECTION).where("kind","==",PERSONAL_USER_KIND).get(),arr=[];snap.forEach(doc=>arr.push({id:doc.id,...doc.data()}));const ord={ADMIN:0,"PĐH":1,PVHK:2,"PVSĐ":3};arr.sort((a,b)=>(ord[v18LegacyDept(a,a.role)]??9)-(ord[v18LegacyDept(b,b.role)]??9)||String(a.name||a.username).localeCompare(String(b.name||b.username),"vi"));void v466PublishUserCatalogFromItems(arr);const fixed='<div class="sagsUserRow" style="border-color:#9dbce0;background:#f5f9ff"><div class="sagsUserMain"><b>AD · FIREBASE AUTH</b><div class="sagsUserMeta">TK: AD · <span class="v18CodePill">ADMIN</span><span class="v18CodePill">ADMIN</span><span class="v18CodePill">AD</span> · Chức danh: <b>Quản trị hệ thống</b> <span class="v18CodePill">QUAN_TRI_HE_THONG</span> · Xác thực: <b>Firebase Authentication</b></div></div><div class="sagsUserMeta">Toàn quyền · không xóa. AD vẫn có thể tạo thêm tài khoản cá nhân role AD đầy đủ Phòng/Nhóm/Vai trò/Chức danh.</div></div>';if(list)list.innerHTML=fixed+(arr.length?arr.map(x=>accountRowHtml(x,x.id)).join(""):"<div class='sagsUserMeta'>Chưa có tài khoản cá nhân.</div>");}catch(e){if(list)list.textContent="Không tải được danh sách: "+(e?.message||e);}};window.refreshAccountManager=refreshAccountManager;
+refreshAccountManager=async function(){if(currentRole!=="AD")return;const list=document.getElementById("accountManagerList");if(list)list.innerHTML="Đang tải...";try{const snap=await initHandoverFirebase().collection(HANDOVER_COLLECTION).where("kind","==",PERSONAL_USER_KIND).get(),arr=[];snap.forEach(doc=>arr.push({id:doc.id,...doc.data()}));const ord={ADMIN:0,"PĐH":1,PVHK:2};arr.sort((a,b)=>(ord[v18LegacyDept(a,a.role)]??9)-(ord[v18LegacyDept(b,b.role)]??9)||String(a.name||a.username).localeCompare(String(b.name||b.username),"vi"));void v466PublishUserCatalogFromItems(arr);const fixed='<div class="sagsUserRow" style="border-color:#9dbce0;background:#f5f9ff"><div class="sagsUserMain"><b>AD · FIREBASE AUTH</b><div class="sagsUserMeta">TK: AD · <span class="v18CodePill">ADMIN</span><span class="v18CodePill">ADMIN</span><span class="v18CodePill">AD</span> · Chức danh: <b>Quản trị hệ thống</b> <span class="v18CodePill">QUAN_TRI_HE_THONG</span> · Xác thực: <b>Firebase Authentication</b></div></div><div class="sagsUserMeta">Toàn quyền · không xóa. AD vẫn có thể tạo thêm tài khoản cá nhân role AD đầy đủ Phòng/Nhóm/Vai trò/Chức danh.</div></div>';if(list)list.innerHTML=fixed+(arr.length?arr.map(x=>accountRowHtml(x,x.id)).join(""):"<div class='sagsUserMeta'>Chưa có tài khoản cá nhân.</div>");}catch(e){if(list)list.textContent="Không tải được danh sách: "+(e?.message||e);}};window.refreshAccountManager=refreshAccountManager;
 // Correct default permissions by actual function.
-v485RoleDefaults=function(role){const raw=String(role||"").trim().toUpperCase(),r=(raw==="ĐH"||raw==="DIEU HANH"||raw==="ĐIỀU HÀNH"||raw==="DIEUHANH")?"DH":raw,p=v485Blank(),on=(...ks)=>ks.forEach(k=>p[k]=true);if(r==="AD")on(...V485_FEATURE_KEYS);else if(r==="DH")on("FLIGHTS","FSAGS423","FSAGS421","FSAGS551","BBBT","FSAGS208","FINAL","EXPORT_RAMP","QUICK_TIME");else if(r==="CBTT")on("FSAGS208","FINAL");else if(r==="PVHK")on("FSAGS09");else if(r==="KH")on("FSAGS208");else if(r==="VIEWER")on("FLIGHTS","FSAGS423","FSAGS421","FSAGS551","BBBT","FSAGS09","FSAGS208","FINAL");else if(r==="LOSTFOUND"||r==="PVHLNG"||r==="PVHLSD")on("BBBT","EXPORT_RAMP");return p;};
+v485RoleDefaults=function(role){const raw=String(role||"").trim().toUpperCase(),r=(raw==="ĐH"||raw==="DIEU HANH"||raw==="ĐIỀU HÀNH"||raw==="DIEUHANH")?"DH":raw,p=v485Blank(),on=(...ks)=>ks.forEach(k=>p[k]=true);if(r==="AD")on(...V485_FEATURE_KEYS);else if(r==="DH")on("FLIGHTS","FSAGS423","FSAGS421","FSAGS551","BBBT","FSAGS208","FINAL","EXPORT_RAMP","QUICK_TIME");else if(r==="CBTT")on("FSAGS208","FINAL");else if(r==="PVHK")on("FSAGS09");else if(r==="KH")on("FSAGS208");else if(r==="VIEWER")on("FLIGHTS","FSAGS423","FSAGS421","FSAGS551","BBBT","FSAGS208","FINAL");return p;};
 
 
-// Manual BBBT for PVHLNG and Lost & Found: no CHUYẾN/Ramp dependency.
-function v18ManualBBBTRole(){return ["PVHLNG","LOSTFOUND"].includes(String(currentRole||"").toUpperCase());}
+// Manual BBBT legacy path retained only for hidden Lost & Found standby data.
+function v18ManualBBBTRole(){return false;}
 function v18FillManualBBBTMeta(){const map={v18BbbtFlight:"bbbtFlight",v18BbbtRegn:"bbbtRegn",v18BbbtAcType:"bbbtAcType",v18BbbtDate:"bbbtDateText",v18BbbtRoute:"bbbtRoute"};Object.entries(map).forEach(([id,k])=>{const el=document.getElementById(id);if(el)el.value=String(state?.[k]||"");});}
-function v18OpenManualBBBT(){if(!v18ManualBBBTRole()&&currentRole!=="AD")return roleDenied("BBBT thủ công mặc định dành cho PVHLNG / Lost & Found / AD.");if(typeof v485Can==="function"&&!v485Can("BBBT"))return roleDenied("Tài khoản chưa được cấp quyền BBBT.");v18FillManualBBBTMeta();const m=document.getElementById("v18ManualBBBTModal");if(m)m.style.display="flex";}
+function v18OpenManualBBBT(){if(!v18ManualBBBTRole()&&currentRole!=="AD")return roleDenied("BBBT thủ công đang tạm ẩn trong bản PĐH.");if(typeof v485Can==="function"&&!v485Can("BBBT"))return roleDenied("Tài khoản chưa được cấp quyền BBBT.");v18FillManualBBBTMeta();const m=document.getElementById("v18ManualBBBTModal");if(m)m.style.display="flex";}
 function v18CloseManualBBBTMeta(){const m=document.getElementById("v18ManualBBBTModal");if(m)m.style.display="none";}
 function v18SaveManualBBBTMeta(){const val=id=>String(document.getElementById(id)?.value||"").trim().toUpperCase();state.bbbtManualV18=true;state.bbbtFlight=val("v18BbbtFlight");state.bbbtRegn=val("v18BbbtRegn");state.bbbtAcType=val("v18BbbtAcType");state.bbbtDateText=val("v18BbbtDate");state.bbbtRoute=val("v18BbbtRoute");try{persist();}catch(e){}v18CloseManualBBBTMeta();try{hideRoleHomeIdle();}catch(e){}showFormGroup("bbbt",true);draw();}
 function v18ResetManualBBBT(){if(!confirm("Tạo BBBT mới? Dữ liệu BBBT đang nhập trên tài khoản này sẽ được xóa."))return;try{fields.filter(f=>f.page===4).forEach(f=>{if(f.type==="check"||f.type==="displayCheck")state[f.key]=false;else state[f.key]="";});state.bbbtAttachments=[];state.bbbtCxrNo=null;state.bbbtManualV18=true;persist();draw();v18FillManualBBBTMeta();const st=document.getElementById("v18ManualBBBTStatus");if(st)st.textContent="✓ Đã tạo BBBT trắng mới. Nhập thông tin chuyến rồi bấm LƯU & MỞ BBBT.";}catch(e){alert("Không tạo được BBBT mới: "+(e?.message||e));}}
 window.v18OpenManualBBBT=v18OpenManualBBBT;window.v18CloseManualBBBTMeta=v18CloseManualBBBTMeta;window.v18SaveManualBBBTMeta=v18SaveManualBBBTMeta;window.v18ResetManualBBBT=v18ResetManualBBBT;
 // Final UI pass: PVHK has no FINAL; manual BBBT roles get a dedicated BBBT button and export only BBBT.
-const v18ApplyRoleUIBase=applyRoleUI;applyRoleUI=function(){v18ApplyRoleUIBase();const r=String(currentRole||"").toUpperCase(),manual=v18ManualBBBTRole(),pvsd=["PVHLNG","VHTTB","VSTB","KTTB","PVHLSD"].includes(r);roleSetVisible("roleBtnManualBBBT",manual||r==="AD");if(r==="AD"){const mb=document.getElementById("roleBtnManualBBBT");if(mb){mb.textContent="➕ TẠO BBBT";mb.style.display="";}}if(pvsd||r==="LOSTFOUND")roleSetVisible("roleBtnSignature",true);if(manual){roleSetVisible("roleBtnFlights",false);roleSetVisible("fs09QuickBtn",false);roleSetVisible("khQuickBtn",false);roleSetVisible("finalFormsQuickBtn",false);roleSetVisible("roleBtnNA",false);roleSetVisible("roleBtnNew",false);roleSetVisible("roleBtnExport",typeof v485Can==="function"?v485Can("EXPORT_RAMP"):true);roleSetVisible("roleBtnSignature",true);}if(r==="PVHK")roleSetVisible("finalFormsQuickBtn",false);const badge=document.getElementById("roleStatusBadge");if(badge&&currentUserProfile?.name){const dep=v18LegacyDept(currentUserProfile,r),group=v18InferGroup(currentUserProfile,r);badge.textContent=currentUserProfile.name+" • "+v18RoleLabel(r);badge.title=`${v18DeptLabel(dep)} · ${group} · ${v18RoleCode(r,currentUserProfile)}`;}};window.applyRoleUI=applyRoleUI;
+const v18ApplyRoleUIBase=applyRoleUI;applyRoleUI=function(){v18ApplyRoleUIBase();roleSetVisible("fs09QuickBtn",false);roleSetVisible("roleBtnManualBBBT",false);const fm=document.getElementById("formMenu09");if(fm)fm.style.display="none";const r=String(currentRole||"").toUpperCase(),badge=document.getElementById("roleStatusBadge");if(badge&&currentUserProfile?.name){const dep=v18LegacyDept(currentUserProfile,r),group=v18InferGroup(currentUserProfile,r);badge.textContent=currentUserProfile.name+" • "+v18RoleLabel(r);badge.title=`${v18DeptLabel(dep)} · ${group} · ${v18RoleCode(r,currentUserProfile)}`;}};window.applyRoleUI=applyRoleUI;
 const v18OpenExportChoiceBase=openExportChoiceMenu;openExportChoiceMenu=function(){if(v18ManualBBBTRole()&&v485Can("BBBT"))return sendReport("bbbt");return v18OpenExportChoiceBase();};window.openExportChoiceMenu=openExportChoiceMenu;
 // Keep personal sessions enriched with canonical hierarchy after login/permission refresh where possible.
 const v18InitRoleLoginBase=initRoleLogin;initRoleLogin=function(){v18InitRoleLoginBase();if(currentUserProfile){const r=String(currentUserProfile.role||currentRole||"").toUpperCase(),dep=v18LegacyDept(currentUserProfile,r),group=v18InferGroup(currentUserProfile,r);currentUserProfile={...currentUserProfile,roleCode:v18RoleCode(r,currentUserProfile),departmentCode:dep,groupCode:group,positionCode:v18PositionCode(currentUserProfile.jobTitle,currentUserProfile)};try{localStorage.setItem(PERSONAL_SESSION_KEY,JSON.stringify(currentUserProfile));}catch(e){}}};
@@ -21711,17 +21662,18 @@ refreshAccountManager=async function(){
   try{
     const snap=await initHandoverFirebase().collection(HANDOVER_COLLECTION).where("kind","==",PERSONAL_USER_KIND).get(),arr=[];
     snap.forEach(doc=>arr.push({id:doc.id,...doc.data()}));
-    const ord={ADMIN:0,"PĐH":1,PVHK:2,"PVSĐ":3};
-    arr.sort((a,b)=>(ord[v18LegacyDept(a,a.role)]??9)-(ord[v18LegacyDept(b,b.role)]??9)||String(a.name||a.username).localeCompare(String(b.name||b.username),"vi"));
-    v116AccountManagerItems=arr;void v466PublishUserCatalogFromItems(arr);v116RenderAccountManagerList();
+    const visible=arr.filter(x=>["PĐH","ADMIN"].includes(v18LegacyDept(x,x.role)));
+    const ord={ADMIN:0,"PĐH":1};
+    visible.sort((a,b)=>(ord[v18LegacyDept(a,a.role)]??9)-(ord[v18LegacyDept(b,b.role)]??9)||String(a.name||a.username).localeCompare(String(b.name||b.username),"vi"));
+    v116AccountManagerItems=visible;void v466PublishUserCatalogFromItems(visible);v116RenderAccountManagerList();
   }catch(e){if(list)list.textContent="Không tải được danh sách: "+(e?.message||e);}
 };
 window.refreshAccountManager=refreshAccountManager;
 </script>
 <script type="module" src="./app/modules/ai.js?v=V4.7.6"></script>
-<script src="./app/core/app.v503.js?v=V6.4.25-20260929-FSAGS54-94-DIRECT-EDITOR-01" data-phase="archive"></script>
+<script src="./app/core/app.v503.js?v=V6.4.26-20261001-PDH-PVHK-STANDBY-01" data-phase="archive"></script>
 <script id="v120-build02-fixes">
-/* V1.20 BUILD 02 — background persistence, VHTTB, per-account usage detail, progress dedupe. */
+/* V1.20 BUILD 02 — background persistence, per-account usage detail, progress dedupe. */
 (function(){
   /* ---------- FIREBASE USAGE · DETAIL BY ACCOUNT ---------- */
   function mergeBreakdownInto(dst,src){
@@ -22138,7 +22090,7 @@ window.refreshAccountManager=refreshAccountManager;
   setTimeout(()=>{ensureUi();startCloseoutListener();refreshValidation();try{window.sagsV440CleanupExpiredCloseoutEvents?.()}catch(_){}},500);
 })();
 </script>
-<script src="./app/core/app.v503.js?v=V6.4.25-20260929-FSAGS54-94-DIRECT-EDITOR-01" data-phase="tools"></script>
+<script src="./app/core/app.v503.js?v=V6.4.26-20261001-PDH-PVHK-STANDBY-01" data-phase="tools"></script>
 <script id="v173-quick-time">
 (function(){
   "use strict";
@@ -24739,14 +24691,14 @@ body.v38-clean-workflow #v313QuickContext{display:none!important}
 </script>
 
 <!-- V6.4.4: restore execution phases accidentally dropped during V6.4 directory restructuring. -->
-<script src="./app/core/app.v503.js?v=V6.4.25-20260929-FSAGS54-94-DIRECT-EDITOR-01" data-phase="flight"></script>
-<script src="./app/core/app.v503.js?v=V6.4.25-20260929-FSAGS54-94-DIRECT-EDITOR-01" data-phase="control"></script>
-<script src="./app/core/app.v503.js?v=V6.4.25-20260929-FSAGS54-94-DIRECT-EDITOR-01" data-phase="postcontrol"></script>
-<script src="./app/modules/admin-reset.v503hf2.js?v=V6.4.25-20260929-FSAGS54-94-DIRECT-EDITOR-01" id="v503AdminBackupReset"></script>
-<script src="./app/core/app.v503.js?v=V6.4.25-20260929-FSAGS54-94-DIRECT-EDITOR-01" data-phase="performance"></script>
-<script src="./app/modules/daily-roster.v502.js?v=V6.4.25-20260929-FSAGS54-94-DIRECT-EDITOR-01" id="dailyRosterCleanV11102"></script>
+<script src="./app/core/app.v503.js?v=V6.4.26-20261001-PDH-PVHK-STANDBY-01" data-phase="flight"></script>
+<script src="./app/core/app.v503.js?v=V6.4.26-20261001-PDH-PVHK-STANDBY-01" data-phase="control"></script>
+<script src="./app/core/app.v503.js?v=V6.4.26-20261001-PDH-PVHK-STANDBY-01" data-phase="postcontrol"></script>
+<script src="./app/modules/admin-reset.v503hf2.js?v=V6.4.26-20261001-PDH-PVHK-STANDBY-01" id="v503AdminBackupReset"></script>
+<script src="./app/core/app.v503.js?v=V6.4.26-20261001-PDH-PVHK-STANDBY-01" data-phase="performance"></script>
+<script src="./app/modules/daily-roster.v502.js?v=V6.4.26-20261001-PDH-PVHK-STANDBY-01" id="dailyRosterCleanV11102"></script>
 <!-- Named-person handover remains removed; self-accept only restores the supported self/roster workflow. -->
-<script src="./app/modules/self-accept.v502.js?v=V6.4.25-20260929-FSAGS54-94-DIRECT-EDITOR-01" id="sagsHF4SelfHandover"></script>
+<script src="./app/modules/self-accept.v502.js?v=V6.4.26-20261001-PDH-PVHK-STANDBY-01" id="sagsHF4SelfHandover"></script>
 <script id="v644SafeStorageCleanup">
 (()=>{'use strict';
   const KEY='sagsSafeStorageCleanupV644';
@@ -24783,7 +24735,7 @@ body.v38-clean-workflow #v313QuickContext{display:none!important}
   window.addEventListener('pageshow',()=>schedule(9000),{passive:true});
 })();
 </script>
-<script src="./app/core/runtime.v503hf2.bundle.js?v=V6.4.25-20260929-FSAGS54-94-DIRECT-EDITOR-01"></script>
+<script src="./app/core/runtime.v503hf2.bundle.js?v=V6.4.26-20261001-PDH-PVHK-STANDBY-01"></script>
 <script id="v460RuntimeGuard">
 (()=>{
   setTimeout(async()=>{
@@ -24861,7 +24813,7 @@ window.adminResetAccountPassword=async function(uid){
 <script src="./app/modules/quick-entry.v1.js?v=20260922-03"></script>\n<script src="./app/modules/ui-preferences.v1.js?v=V6.2.0-TVJ-QUICK-PREFS-03"></script>
 <script src="./app/modules/stability.v6.js?v=20260922-03"></script>
 <script src="./app/modules/cross-browser-entry.v1.js?v=20260923-02"></script>
-<script src="./app/modules/roster-lite.v5.js?v=V6.4.25-20260929-FSAGS54-94-DIRECT-EDITOR-01" id="v477MailboxLite"></script>
+<script src="./app/modules/roster-lite.v5.js?v=V6.4.26-20261001-PDH-PVHK-STANDBY-01" id="v477MailboxLite"></script>
 
 
 <script id="sags-v6120-all-form-render-standard">
@@ -24947,7 +24899,7 @@ window.adminResetAccountPassword=async function(uid){
 (function(root){
 'use strict';
 if(root.__SAGS_GRND_LS_V621)return;
-root.__SAGS_GRND_LS_V621='V6.4.25-20260929-FSAGS54-94-DIRECT-EDITOR-01';
+root.__SAGS_GRND_LS_V621='V6.4.26-20261001-PDH-PVHK-STANDBY-01';
 const BW=1241,BH=1755;
 const C54=[
 [.118382352941,.224431818182,.011764705882,.009659090909,.124264705882,.229261363636],[.520588235294,.224431818182,.0125,.009659090909,.526838235294,.229261363636],
@@ -25038,9 +24990,9 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 </script>
 
 
-<script src="./app/modules/fsags54-94.v622.js?v=V6.4.25-20260929-FSAGS54-94-DIRECT-EDITOR-01"></script>
-<script src="./app/modules/form-registry-runtime.v647.js?v=V6.4.25-20260929-FSAGS54-94-DIRECT-EDITOR-01"></script>
-<script src="./app/modules/form-registry-runtime.v6419.js?v=V6.4.25-20260929-FSAGS54-94-DIRECT-EDITOR-01"></script>
+<script src="./app/modules/fsags54-94.v622.js?v=V6.4.26-20261001-PDH-PVHK-STANDBY-01"></script>
+<script src="./app/modules/form-registry-runtime.v647.js?v=V6.4.26-20261001-PDH-PVHK-STANDBY-01"></script>
+<script src="./app/modules/form-registry-runtime.v6419.js?v=V6.4.26-20261001-PDH-PVHK-STANDBY-01"></script>
 
 </body>
 </html>
