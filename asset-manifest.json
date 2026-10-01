@@ -1,8 +1,8 @@
 {
   "schema": 2,
-  "version": "V6.4.29",
-  "build": "V6.4.29-20261001-RTDB-DATA-SAVER-01",
-  "strategy": "rtdb-data-saver-scoped-reads",
+  "version": "V6.4.30",
+  "build": "V6.4.30-20261001-VERSION-SYNC-01",
+  "strategy": "version-sync-rtdb-data-saver",
   "mutableMetadata": [
     "./forms/forms.registry.json"
   ],
@@ -233,8 +233,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "8314351d32e5b6b246d0082b793c2822046590dd83c6aedc335ab8077d7e3d94",
-      "bytes": 1434495
+      "sha256": "750f2d9075eea892d3431c84cd3a49a95eb29bad770e2d158911d9db14d7254a",
+      "bytes": 1434423
     },
     "./manifest.webmanifest": {
       "sha256": "b06aaccd8b182991ecbafd307a30089dec427860e59d22593e6ff7f39cf4cee2",
@@ -285,12 +285,12 @@
       "bytes": 5161
     },
     "./service-worker.js": {
-      "sha256": "2dd87a31119a9680dd4df87bed239b440397a216de47fd21e8e6d4b3d58101fa",
-      "bytes": 16191
+      "sha256": "5c5661a9a281b7d2cbd28a11a1ae1234ab2967a7932ea2be226cf0618aaab1e8",
+      "bytes": 16204
     },
     "./version.json": {
-      "sha256": "67fa6e4a6244876f6c0cc3b3c2efe063f5ec85f86a92737cd3b3d9c772fdb5fd",
-      "bytes": 731
+      "sha256": "488d8c019d5cc45a646893a69954223ccd9934421309e609fa9f548710a64374",
+      "bytes": 686
     },
     "./app/modules/form-registry-runtime.v647.js": {
       "sha256": "396c6804cb9cdb45b9aaacc5f10f6c38529385b5fa1b51d9a7a120a31917f69f",
