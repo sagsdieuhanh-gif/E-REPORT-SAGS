@@ -1,16 +1,16 @@
 {
   "schema": 2,
-  "version": "V6.4.26",
-  "build": "V6.4.26-20261001-PDH-PVHK-STANDBY-01",
-  "strategy": "immutable-entrypaths-verified-pdh-full-pvhk-standby-hidden-pvsd-removed",
+  "version": "V6.4.27",
+  "build": "V6.4.27-20261001-STABILITY-HOTFIX-01",
+  "strategy": "stability-hotfix-no-additional-cleanup",
   "mutableMetadata": [
     "./forms/forms.registry.json"
   ],
   "bootstrapChanged": true,
   "assets": {
     "./app/core/app.v503.js": {
-      "sha256": "64b54d0f66c094a550c0c8507303b0c15f435da16d0674cc035906483a5099c6",
-      "bytes": 826254
+      "sha256": "d078ea3a956a4df2c2b16c349a1931661743694ed5ea6c998c09d7c5fbea6103",
+      "bytes": 826234
     },
     "./app/core/runtime.v503hf2.bundle.js": {
       "sha256": "fb7561197ade885d58d484845b221266dc4c8c91df41f3df36514f69647a6895",
@@ -233,7 +233,7 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "32332181981615a8c46a89eede7aff8244db3f4f1fbdbe0b8a003d46566c1f0b",
+      "sha256": "8314351d32e5b6b246d0082b793c2822046590dd83c6aedc335ab8077d7e3d94",
       "bytes": 1434495
     },
     "./manifest.webmanifest": {
@@ -285,12 +285,12 @@
       "bytes": 5161
     },
     "./service-worker.js": {
-      "sha256": "a1f90e4df8e02bba69e521f622b26e193e38c369d54b8ea1095905e8af91ce57",
+      "sha256": "746d0441c0e54c8e075dd72803a9a8378844ab244bc433fa7634c605172e9506",
       "bytes": 16191
     },
     "./version.json": {
-      "sha256": "25c0b9f59cf71b836318824adf0de5f6edecf3b01b9db9ebf6e2fdb6fdc065f4",
-      "bytes": 875
+      "sha256": "2fa00a5be628eb0d6bb4dfb03cb34a2d090b5482bd1bfb908e738689094d4276",
+      "bytes": 633
     },
     "./app/modules/form-registry-runtime.v647.js": {
       "sha256": "396c6804cb9cdb45b9aaacc5f10f6c38529385b5fa1b51d9a7a120a31917f69f",

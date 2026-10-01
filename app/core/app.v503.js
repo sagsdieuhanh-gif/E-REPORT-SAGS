@@ -1103,8 +1103,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     try{group=String(meta?.initialGroup||meta?.rosterSourceColumn||appState()?.rosterFormGroup||appState()?.activeFormGroup||'').toUpperCase();}catch(_){ }
     const name=String(p.name||p.fullName||p.displayName||p.username||'').trim();
     let duty='';
-    
-    else if(accountRole==='LOSTFOUND') duty='LOST & FOUND';
+    if(accountRole==='LOSTFOUND') duty='LOST & FOUND';
     else if(/551|GRND_LD/.test(group)) duty='LOADING SUPERVISOR';
     else if(/423|421|FSAGS|GRND_COR/.test(group)) duty='CO-ORDINATOR';
     return {name,duty};
@@ -3350,8 +3349,7 @@ body.v38-clean-workflow #v38CleanNav #roleBtnActionCenter{
     try{group=text(meta?.initialGroup||meta?.rosterSourceColumn||state?.rosterFormGroup||state?.activeFormGroup).toUpperCase();}catch(_){ }
     const name=text(profile.name||profile.fullName||profile.displayName||profile.username);
     let duty='';
-    
-    else if(role==='LOSTFOUND') duty='LOST & FOUND';
+    if(role==='LOSTFOUND') duty='LOST & FOUND';
     else if(/551|GRND_LD/.test(group)) duty='LOADING SUPERVISOR';
     else if(/423|421|FSAGS|GRND_COR/.test(group)) duty='CO-ORDINATOR';
     return {name,duty};
