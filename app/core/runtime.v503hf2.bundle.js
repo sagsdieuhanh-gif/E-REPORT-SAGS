@@ -8100,6 +8100,22 @@ function deleteForm(){const f=form();if(!f||f.legacy)return;if(!confirm(`Xóa nh
 function addPage(push=true){const f=form();if(!f)return;if(push)pushHistory();const id='p'+String((f.pages?.length||0)+1);f.pages=f.pages||[];f.pages.push({id,image:'',blobKey:'',width:1241,height:1755,sha256:''});pageIndex=f.pages.length-1;saveLocal();renderAll()}
 function deletePage(){const f=form(),p=page();if(!f||!p)return;if(f.legacy)return alert('Trang của form LEGACY không xóa trong Form Manager mới.');if(!confirm('Xóa trang này và các field trên trang?'))return;pushHistory();if(p.blobKey)assetDel(p.blobKey);f.fields=(f.fields||[]).filter(x=>x.pageId!==p.id);f.pages.splice(pageIndex,1);pageIndex=Math.max(0,pageIndex-1);saveLocal();renderAll()}
 function addField(){const f=form(),p=page();if(!f||!p)return alert('Cần có trang trước.');const key=fieldKey(prompt(f.legacy?'KEY field mới trên FORM HỆ THỐNG (ví dụ extraRemark):':'KEY field, ví dụ std hoặc cargoStart:','field'+((f.fields||[]).length+1)));if(!key)return;if(f.fields.some(x=>x.key===key))return alert('KEY đã tồn tại.');pushHistory();const fld={key,label:key,type:'text',bind:key,pageId:p.id,sourcePage:Number(p.sourcePage||pageNoV45(p)||0),x:.35,y:.35,w:.20,h:.035,fontSize:14,fontWeight:700,align:'left',valign:'middle',customFieldV463:!!f.legacy,generatedFromLegacy:false,createdByFormManager:true};f.fields=f.fields||[];fmNormalizeFieldV487(fld);f.fields.push(fld);selectedKey=key;selectedMany=new Set([key]);saveLocal();renderAll();status(f.legacy?'✓ Đã thêm FIELD MỚI trong PHIÊN chỉnh hiện tại. Xuất JSON TẤT CẢ và upload forms/forms.registry.json để phát hành.':'✓ Đã thêm field mới trong phiên hiện tại.')}
+
+function addFieldPresetV2(type='text'){
+ const f=form(),p=page();if(!f||!p)return alert('Cần có trang trước.');
+ const allowed=['text','textarea','number','time','date','checkbox','select','signature'];
+ type=allowed.includes(String(type))?String(type):'text';
+ const defaults={text:'Nội dung',textarea:'Ghi chú',number:'Số lượng',time:'Giờ',date:'Ngày',checkbox:'Xác nhận',select:'Lựa chọn',signature:'Chữ ký'};
+ const label=String(prompt('Tên trường hiển thị:',defaults[type]||'Nội dung')||'').trim();if(!label)return;
+ let base=fieldKey(label)||('field'+((f.fields||[]).length+1)),key=base,n=2;while((f.fields||[]).some(x=>x.key===key))key=base+'_'+n++;
+ pushHistory();
+ const wh={text:[.20,.035],textarea:[.30,.075],number:[.16,.035],time:[.14,.035],date:[.16,.035],checkbox:[.08,.035],select:[.22,.04],signature:[.28,.065]}[type]||[.20,.035];
+ const fld={key,label,type,bind:key,pageId:p.id,sourcePage:Number(p.sourcePage||pageNoV45(p)||0),x:.35,y:.35,w:wh[0],h:wh[1],fontSize:14,fontWeight:700,align:type==='checkbox'?'center':'left',valign:'middle',customFieldV463:!!f.legacy,generatedFromLegacy:false,createdByFormManager:true};
+ if(type==='select')fld.options=['Lựa chọn 1','Lựa chọn 2'];
+ f.fields=f.fields||[];fmNormalizeFieldV487(fld);f.fields.push(fld);selectedKey=key;selectedMany=new Set([key]);saveLocal();renderAll();
+ status('✓ Đã thêm '+label+' · '+type+'. Kéo field tới đúng vị trí trên mẫu.');return clone(fld)
+}
+root.sagsV440AddFieldPreset=addFieldPresetV2;
 function duplicateField(fld){
  const f=form(),p=page();if(!f||!fld||!p)return;
  pushHistory();
@@ -8370,18 +8386,19 @@ console.info('E-REPORT/SAGS V4.8.10B Layered PDF active');
 })(typeof window!=='undefined'?window:globalThis);
 /* ===== END V6.4.31 UI ENTRY CLEANUP ===== */
 
-/* ===== FORM MANAGER GOVERNANCE LOADER V1 ===== */
+/* ===== FORM MANAGER GOVERNANCE + GUIDED UX LOADER V2 ===== */
 (function(root){
   'use strict';
-  if(root.__SAGS_FORM_GOV_LOADER_V1)return;root.__SAGS_FORM_GOV_LOADER_V1=true;
+  if(root.__SAGS_FORM_GOV_LOADER_V2)return;root.__SAGS_FORM_GOV_LOADER_V2=true;
+  function inject(src,attr,label){
+    if(document.querySelector('script['+attr+']'))return;
+    const s=document.createElement('script');s.src=src;s.async=false;s.setAttribute(attr,'1');
+    s.onerror=()=>console.warn('Không tải được '+label+'.');document.head.appendChild(s);
+  }
   function load(){
-    if(root.__SAGS_FORM_GOV_V1||document.querySelector('script[data-sags-form-gov-v1]'))return;
-    const s=document.createElement('script');
-    s.src='./app/modules/form-manager-governance.v1.js?v=20261001-01';
-    s.async=false;s.dataset.sagsFormGovV1='1';
-    s.onerror=()=>console.warn('Không tải được Form Manager Governance V1.');
-    document.head.appendChild(s);
+    if(!root.__SAGS_FORM_GOV_V1)inject('./app/modules/form-manager-governance.v1.js?v=20261001-02','data-sags-form-gov-v1','Form Manager Governance V1');
+    if(!root.__SAGS_FORM_MANAGER_UX_V2)inject('./app/modules/form-manager-ux.v2.js?v=20261001-02','data-sags-form-ux-v2','Form Manager UX V2');
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',load,{once:true});else load();
 })(typeof window!=='undefined'?window:globalThis);
-/* ===== END FORM MANAGER GOVERNANCE LOADER V1 ===== */
+/* ===== END FORM MANAGER GOVERNANCE + GUIDED UX LOADER V2 ===== */
