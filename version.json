@@ -1,12 +1,12 @@
 {
   "version": "V6.4.32",
-  "displayVersion": "V6.4.32-FMTEST1",
-  "label": "V6.4.32-FMTEST1 - FORM MANAGER BRANCH",
-  "build": "V6.4.32-20261001-FMTEST1",
-  "releasedAt": "2026-10-01T16:58:00+07:00",
-  "type": "branch-preview-form-manager-ai",
+  "displayVersion": "V6.4.32-FMTEST2",
+  "label": "V6.4.32-FMTEST2 - FORM MANAGER GUIDED BUILDER",
+  "build": "V6.4.32-20261001-FMTEST2",
+  "releasedAt": "2026-10-01T22:30:00+07:00",
+  "type": "branch-preview-form-manager-guided-ux",
   "base": "V6.4.31-20261001-UNIFIED-UI-01",
   "updatePolicy": "required",
-  "notes": "Preview branch riêng, cache/build tách khỏi production V6.4.32.",
-  "message": "Nhánh test Form Manager AI. Không phải production."
+  "notes": "Preview branch: Form Manager 4-step guided builder, simple/advanced mode, preset field palette and existing AI/Governance preserved.",
+  "message": "Nhánh test Form Manager FMTEST2. Không phải production."
 }
