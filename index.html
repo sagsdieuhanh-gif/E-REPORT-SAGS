@@ -4,7 +4,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1, maximum-scale=6, user-scalable=yes, viewport-fit=cover, interactive-widget=resizes-content" name="viewport"/>
 <title>PĐH SAGS-CXR</title>
-<link href="./manifest.webmanifest?v=V6.4.30" rel="manifest"/>
+<link href="./manifest.webmanifest?v=V6.4.31" rel="manifest"/>
 <link href="./assets/icons/favicon-16.png?v=486" rel="icon" sizes="16x16" type="image/png"/>
 <link href="./assets/icons/favicon-32.png?v=486" rel="icon" sizes="32x32" type="image/png"/>
 <link href="./assets/icons/icon-192.png?v=486" rel="icon" sizes="192x192" type="image/png"/>
@@ -2351,7 +2351,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <style id="sags-v115-clean-ui">
 #roleLoginHint,#v1014UsernameLoginNote,.templateNote,.fs09qUsageNote,.v377CreateFormNote,.v1019Hint{display:none!important}
 </style>
-<link rel="stylesheet" href="./app/styles/app.bundle.css?v=V6.4.30-20261001-VERSION-SYNC-01">
+<link rel="stylesheet" href="./app/styles/app.bundle.css?v=V6.4.31-20261001-UNIFIED-UI-01">
 <style id="v502RosterDirectStyle">#v310ShiftNav,#v1113QrFormBtn,.hf4Release{display:none!important}</style>
 <style id="v503hf1AdControlResetStyle">
 #activityMonitorModal #v503AdminResetPanel #v378ResetRecordsBtn{background:#075fb0!important;color:#fff!important;border-color:#075fb0!important;grid-column:auto!important;min-height:44px;white-space:normal!important}
@@ -2360,7 +2360,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 #activityMonitorModal #v503AdminResetPanel #v378ResetStatus{grid-column:auto!important;max-width:100%;overflow-wrap:anywhere;box-sizing:border-box;}
 @media(max-width:600px){#activityMonitorModal #v503AdminResetPanel{padding:10px!important;margin:9px 0 12px!important;}}
 </style>
-<link rel="stylesheet" href="./app/styles/new-ui-v1.css?v=V6.4.30-20261001-VERSION-SYNC-01">
+<link rel="stylesheet" href="./app/styles/new-ui-v1.css?v=V6.4.31-20261001-UNIFIED-UI-01">
 
 <script id="sags-v620-unified-form-migration">
 (function(){
@@ -2402,7 +2402,7 @@ body.role-admin #v368LayoutTuneBtn{display:block!important}
 <div id="roleLoginModal">
 <div class="roleLoginCard">
 <div class="roleLoginLogo"><img src="assets/branding/login-logo-10years.png?v=1" alt="SAGS-CXR 10 Years Anniversary"></div>
-<div class="newUiLoginEyebrow" aria-label="Giao diện NEW UI V1">SAGS / E-REPORT <span id="loginReleaseVersion">V6.2.0</span></div>
+<div class="newUiLoginEyebrow" aria-label="Giao diện NEW UI V1">SAGS / E-REPORT <span id="loginReleaseVersion">V6.4.31</span></div>
 <h2>Đăng nhập</h2>
 <div id="personalLoginFields">
 <label>Tài khoản</label>
@@ -10944,9 +10944,9 @@ try {
   if(h) h.textContent="Lỗi khởi tạo: "+err.message;
   alert("Lỗi JavaScript: "+err.message);
 }
-const APP_BUILD_VERSION="V6.4.30-20261001-VERSION-SYNC-01";
+const APP_BUILD_VERSION="V6.4.31-20261001-UNIFIED-UI-01";
 window.__SAGS_RELEASE_BUILD__=APP_BUILD_VERSION;
-const APP_DISPLAY_VERSION="V6.4.30";
+const APP_DISPLAY_VERSION="V6.4.31";
 // V1.1.103: hotfix duy nhất lỗi Firebase RTDB ancestor/descendant khi đồng bộ DAILY ROSTER; không thay đổi nghiệp vụ khác.
 // V4.21 — SAFE UPDATE SAVE
 // Before switching to a newly installed app version, force-save all current
@@ -21671,7 +21671,7 @@ refreshAccountManager=async function(){
 window.refreshAccountManager=refreshAccountManager;
 </script>
 <script type="module" src="./app/modules/ai.js?v=V4.7.6"></script>
-<script src="./app/core/app.v503.js?v=V6.4.30-20261001-VERSION-SYNC-01" data-phase="archive"></script>
+<script src="./app/core/app.v503.js?v=V6.4.31-20261001-UNIFIED-UI-01" data-phase="archive"></script>
 <script id="v120-build02-fixes">
 /* V1.20 BUILD 02 — background persistence, per-account usage detail, progress dedupe. */
 (function(){
@@ -22090,7 +22090,7 @@ window.refreshAccountManager=refreshAccountManager;
   setTimeout(()=>{ensureUi();startCloseoutListener();refreshValidation();try{window.sagsV440CleanupExpiredCloseoutEvents?.()}catch(_){}},500);
 })();
 </script>
-<script src="./app/core/app.v503.js?v=V6.4.30-20261001-VERSION-SYNC-01" data-phase="tools"></script>
+<script src="./app/core/app.v503.js?v=V6.4.31-20261001-UNIFIED-UI-01" data-phase="tools"></script>
 <script id="v173-quick-time">
 (function(){
   "use strict";
@@ -24691,14 +24691,14 @@ body.v38-clean-workflow #v313QuickContext{display:none!important}
 </script>
 
 <!-- V6.4.4: restore execution phases accidentally dropped during V6.4 directory restructuring. -->
-<script src="./app/core/app.v503.js?v=V6.4.30-20261001-VERSION-SYNC-01" data-phase="flight"></script>
-<script src="./app/core/app.v503.js?v=V6.4.30-20261001-VERSION-SYNC-01" data-phase="control"></script>
-<script src="./app/core/app.v503.js?v=V6.4.30-20261001-VERSION-SYNC-01" data-phase="postcontrol"></script>
-<script src="./app/modules/admin-reset.v503hf2.js?v=V6.4.30-20261001-VERSION-SYNC-01" id="v503AdminBackupReset"></script>
-<script src="./app/core/app.v503.js?v=V6.4.30-20261001-VERSION-SYNC-01" data-phase="performance"></script>
-<script src="./app/modules/daily-roster.v502.js?v=V6.4.30-20261001-VERSION-SYNC-01" id="dailyRosterCleanV11102"></script>
+<script src="./app/core/app.v503.js?v=V6.4.31-20261001-UNIFIED-UI-01" data-phase="flight"></script>
+<script src="./app/core/app.v503.js?v=V6.4.31-20261001-UNIFIED-UI-01" data-phase="control"></script>
+<script src="./app/core/app.v503.js?v=V6.4.31-20261001-UNIFIED-UI-01" data-phase="postcontrol"></script>
+<script src="./app/modules/admin-reset.v503hf2.js?v=V6.4.31-20261001-UNIFIED-UI-01" id="v503AdminBackupReset"></script>
+<script src="./app/core/app.v503.js?v=V6.4.31-20261001-UNIFIED-UI-01" data-phase="performance"></script>
+<script src="./app/modules/daily-roster.v502.js?v=V6.4.31-20261001-UNIFIED-UI-01" id="dailyRosterCleanV11102"></script>
 <!-- Named-person handover remains removed; self-accept only restores the supported self/roster workflow. -->
-<script src="./app/modules/self-accept.v502.js?v=V6.4.30-20261001-VERSION-SYNC-01" id="sagsHF4SelfHandover"></script>
+<script src="./app/modules/self-accept.v502.js?v=V6.4.31-20261001-UNIFIED-UI-01" id="sagsHF4SelfHandover"></script>
 <script id="v644SafeStorageCleanup">
 (()=>{'use strict';
   const KEY='sagsSafeStorageCleanupV644';
@@ -24735,7 +24735,7 @@ body.v38-clean-workflow #v313QuickContext{display:none!important}
   window.addEventListener('pageshow',()=>schedule(9000),{passive:true});
 })();
 </script>
-<script src="./app/core/runtime.v503hf2.bundle.js?v=V6.4.30-20261001-VERSION-SYNC-01"></script>
+<script src="./app/core/runtime.v503hf2.bundle.js?v=V6.4.31-20261001-UNIFIED-UI-01"></script>
 <script id="v460RuntimeGuard">
 (()=>{
   setTimeout(async()=>{
@@ -24813,7 +24813,7 @@ window.adminResetAccountPassword=async function(uid){
 <script src="./app/modules/quick-entry.v1.js?v=20260922-03"></script>\n<script src="./app/modules/ui-preferences.v1.js?v=V6.2.0-TVJ-QUICK-PREFS-03"></script>
 <script src="./app/modules/stability.v6.js?v=20260922-03"></script>
 <script src="./app/modules/cross-browser-entry.v1.js?v=20260923-02"></script>
-<script src="./app/modules/roster-lite.v5.js?v=V6.4.30-20261001-VERSION-SYNC-01" id="v477MailboxLite"></script>
+<script src="./app/modules/roster-lite.v5.js?v=V6.4.31-20261001-UNIFIED-UI-01" id="v477MailboxLite"></script>
 
 
 <script id="sags-v6120-all-form-render-standard">
@@ -24899,7 +24899,7 @@ window.adminResetAccountPassword=async function(uid){
 (function(root){
 'use strict';
 if(root.__SAGS_GRND_LS_V621)return;
-root.__SAGS_GRND_LS_V621='V6.4.30-20261001-VERSION-SYNC-01';
+root.__SAGS_GRND_LS_V621='V6.4.31-20261001-UNIFIED-UI-01';
 const BW=1241,BH=1755;
 const C54=[
 [.118382352941,.224431818182,.011764705882,.009659090909,.124264705882,.229261363636],[.520588235294,.224431818182,.0125,.009659090909,.526838235294,.229261363636],
@@ -24990,9 +24990,9 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 </script>
 
 
-<script src="./app/modules/fsags54-94.v622.js?v=V6.4.30-20261001-VERSION-SYNC-01"></script>
-<script src="./app/modules/form-registry-runtime.v647.js?v=V6.4.30-20261001-VERSION-SYNC-01"></script>
-<script src="./app/modules/form-registry-runtime.v6419.js?v=V6.4.30-20261001-VERSION-SYNC-01"></script>
+<script src="./app/modules/fsags54-94.v622.js?v=V6.4.31-20261001-UNIFIED-UI-01"></script>
+<script src="./app/modules/form-registry-runtime.v647.js?v=V6.4.31-20261001-UNIFIED-UI-01"></script>
+<script src="./app/modules/form-registry-runtime.v6419.js?v=V6.4.31-20261001-UNIFIED-UI-01"></script>
 
 </body>
 </html>
