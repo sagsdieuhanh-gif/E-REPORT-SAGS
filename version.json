@@ -1,12 +1,12 @@
 {
-  "version": "V6.4.29",
-  "displayVersion": "V6.4.29",
-  "label": "V6.4.29 - RTDB DATA SAVER",
-  "build": "V6.4.29-20261001-RTDB-DATA-SAVER-01",
-  "releasedAt": "2026-10-01T16:35:00+07:00",
-  "type": "v6.4.29-rtdb-data-saver",
-  "base": "V6.4.28-20261001-FLIGHTOPS-UI-01",
+  "version": "V6.4.30",
+  "displayVersion": "V6.4.30",
+  "label": "V6.4.30 - VERSION SYNC HOTFIX",
+  "build": "V6.4.30-20261001-VERSION-SYNC-01",
+  "releasedAt": "2026-10-01T16:45:00+07:00",
+  "type": "v6.4.30-version-sync-hotfix",
+  "base": "V6.4.29-20261001-RTDB-DATA-SAVER-01",
   "updatePolicy": "required",
-  "notes": "Giảm mạnh RTDB download bằng flight lookup nhỏ thay cho full-day Flight Hub reads; roster cleanup thông thường không còn quét toàn bộ roster_mail/roster_sessions; deep repair chuyển sang chạy thủ công. Giữ nguyên workflow nghiệp vụ và Firebase data contract hiện hữu.",
-  "message": "V6.4.29: tối ưu Realtime Database bandwidth, không thay đổi luồng nghiệp vụ."
+  "notes": "Sửa bootstrap/index và nhãn phiên bản đăng nhập: build đang chạy, version.json, Service Worker, cache-busting URL và asset manifest cùng một phiên bản. Giữ nguyên tối ưu RTDB V6.4.29 và không thay đổi luồng nghiệp vụ.",
+  "message": "V6.4.30: đồng bộ chính xác phiên bản hiển thị với bản đang chạy."
 }
