@@ -1,7 +1,71 @@
-# Form Manager Self-Service — AI Assisted Form Intake
+# Form Manager Self-Service — Guided Builder + AI Assisted Form Intake
 
 > Nhánh thử nghiệm: `feature/form-manager-ai-builder`  
 > Không merge vào `main` cho đến khi AD duyệt.
+
+> Bản giao diện thử nghiệm hiện tại: **V6.4.32-FMTEST2**.
+
+## Cách dùng giao diện FMTEST2 — 4 bước
+
+Form Manager được trình bày lại thành **TRÌNH TẠO BIỂU MẪU**. Mặc định dùng **chế độ CƠ BẢN**; các trường kỹ thuật như KEY, BIND và tọa độ được ẩn để người mới không phải xử lý ngay.
+
+### Bước 1 — THÔNG TIN
+
+1. Chọn biểu mẫu ở danh sách bên trái, hoặc bấm **＋ TẠO BIỂU MẪU MỚI**.
+2. Nhập tên biểu mẫu và mã hiển thị.
+3. Tải PDF/PNG/JPG/WebP làm nền.
+4. PDF nhiều trang vẫn tự tách thành từng trang như trước.
+
+### Bước 2 — NỘI DUNG
+
+Dùng thanh **＋ THÊM NỘI DUNG** để chọn đúng loại field:
+
+- **Ô nhập chữ**
+- **Ghi chú**
+- **Số**
+- **Ngày**
+- **Giờ**
+- **Có / Không**
+- **Danh sách chọn**
+- **Chữ ký**
+
+Sau khi thêm, kéo field tới đúng vị trí trên form và resize trực tiếp. Các công cụ font/căn chỉnh hiện hữu vẫn giữ nguyên.
+
+Có thể dùng **AI GỢI Ý FIELD**. AI chỉ tạo đề xuất; AD vẫn review từng field trước khi Apply.
+
+### Bước 3 — XEM TRƯỚC
+
+Dùng:
+
+- **TEST FORM** để nhập thử dữ liệu;
+- **PDF PREVIEW** để kiểm tra vị trí trên bản xuất;
+- dữ liệu test không được ghi vào chuyến.
+
+### Bước 4 — PHÂN QUYỀN & PHÁT HÀNH
+
+1. Bấm **PHÂN QUYỀN** để mở Integration Contract.
+2. Chọn đơn vị/role được sử dụng.
+3. Bấm **KIỂM TRA FORM**.
+4. Nếu đạt yêu cầu, bấm **XUẤT GÓI PHÁT HÀNH**.
+
+Nút này chỉ xuất package; **không tự merge/deploy main**.
+
+### Chế độ NÂNG CAO
+
+Bấm **⚙ NÂNG CAO** khi cần:
+
+- KEY/BIND;
+- tọa độ field;
+- AI Review;
+- Validate/Normalize;
+- Integration Contract;
+- JSON FORM;
+- JSON toàn registry;
+- gói form.
+
+Mục tiêu của chế độ mặc định là AD có thể tạo biểu mẫu đầu tiên mà không cần biết cấu trúc JSON hoặc Firebase path.
+
+---
 
 ## Mục tiêu
 
