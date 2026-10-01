@@ -2438,3 +2438,189 @@ html.new-ui-v1 [aria-disabled="true"]{opacity:.48}
   }
 }
 
+/* === SAGS UNIFIED SEMANTIC COLORS V6.4.31 === */
+html.new-ui-v1{
+  --sags-blue:#1769e0;
+  --sags-blue-dark:#0f56bd;
+  --sags-blue-soft:#eaf2ff;
+  --sags-flight:#1769e0;
+  --sags-multi:#0f766e;
+  --sags-shift:#b56a00;
+  --sags-sign:#6f42c1;
+  --sags-admin:#334155;
+  --sags-reassign:#be3d5d;
+  --sags-quick:#0284c7;
+  --sags-success:#14805e;
+  --sags-danger:#c53e45;
+  --sags-neutral:#64748b;
+}
+
+/* Global visual language: one surface system and one action hierarchy. */
+html.new-ui-v1 body{
+  background:#f3f6fa!important;
+  color:#132238!important;
+}
+html.new-ui-v1 :is(.panel,.templateBox,.exportBox,.formMenuBox,.flightSessionBox,.flightTypeEditBox,.finalFormsBox,.sagsAdminPanel,.fwcPanel,.fwcMultiPanel,.v310ShiftPanel,.v327Panel,.quickTimePanel){
+  border-color:#d8e1eb!important;
+  background:#fff!important;
+}
+html.new-ui-v1 :is(input:not([type=checkbox]):not([type=radio]):not([type=file]),select,textarea){
+  border-color:#c5d1dd!important;
+  background:#fff!important;
+  color:#132238!important;
+}
+
+/* Default primary/secondary/destructive states. */
+html.new-ui-v1 :is(
+  #roleLoginSubmit,#appUpdateNowBtn,
+  .sagsAdminBtn:not(.secondary):not(.danger):not(.warn),
+  .flightTypeEditBtn,.flightOpsBtn,
+  .rsBtn:not(.gray):not(.green),
+  button[class*="Btn"]:not(.secondary):not(.gray):not(.green):not(.danger):not(.red):not(.warn):not(.orange)
+){
+  background:var(--sags-blue)!important;
+  color:#fff!important;
+  border-color:var(--sags-blue)!important;
+  box-shadow:none!important;
+}
+html.new-ui-v1 :is(.secondary,.gray,.cancel,.light,button[class*="Btn"].secondary,button[class*="Btn"].gray){
+  background:#f1f5f9!important;
+  color:#334155!important;
+  border-color:#cbd5e1!important;
+  box-shadow:none!important;
+}
+html.new-ui-v1 :is(.danger,.red,.del,.dangerAccountBtn,button[class*="Btn"].danger,button[class*="Btn"].red){
+  background:var(--sags-danger)!important;
+  color:#fff!important;
+  border-color:var(--sags-danger)!important;
+  box-shadow:none!important;
+}
+html.new-ui-v1 :is(.green,.publish,.success){
+  background:var(--sags-success)!important;
+  color:#fff!important;
+  border-color:var(--sags-success)!important;
+  box-shadow:none!important;
+}
+
+/* Main navigation: each function has one stable identity color. */
+html.new-ui-v1 body.v38-clean-workflow .toolbar.compact-main-toolbar{
+  background:#0b1f33!important;
+  border-color:#18344e!important;
+  box-shadow:0 -6px 20px rgba(4,19,35,.22)!important;
+}
+html.new-ui-v1 body.v38-clean-workflow #v38CleanNav .v38NavBtn{
+  color:#fff!important;
+  border-color:transparent!important;
+  box-shadow:none!important;
+}
+html.new-ui-v1 body.v38-clean-workflow #v38CleanNav #v38NavFlights{background:var(--sags-flight)!important}
+html.new-ui-v1 body.v38-clean-workflow #v38CleanNav #v38NavMulti{background:var(--sags-multi)!important}
+html.new-ui-v1 body.v38-clean-workflow #v38CleanNav #v310ShiftNav{background:var(--sags-shift)!important}
+html.new-ui-v1 body.v38-clean-workflow #v38CleanNav #v38NavSignature{background:var(--sags-sign)!important}
+html.new-ui-v1 body.v38-clean-workflow #v38CleanNav #v38NavAdmin{background:var(--sags-admin)!important}
+html.new-ui-v1 body.v38-clean-workflow #v38CleanNav #v327ReassignNav{background:var(--sags-reassign)!important}
+html.new-ui-v1 body.v38-clean-workflow #v38CleanNav .v38NavBtn:is(.v2236-active,:active,[aria-current="page"]){
+  color:#fff!important;
+  filter:brightness(.9)!important;
+  box-shadow:0 0 0 3px rgba(255,255,255,.24) inset!important;
+}
+
+/* MY FLIGHT: outside Flights blue = inside Flights blue. */
+html.new-ui-v1 #fwcModal .fwcHead,
+html.new-ui-v1 #flightSessionModal .flightSessionHead{
+  border-top:4px solid var(--sags-flight)!important;
+}
+html.new-ui-v1 #fwcModal :is(.fwcBtn:not(.gray):not(.green),.fwcAction,.fwcReceive,.fwcClaim),
+html.new-ui-v1 #flightSessionModal :is(button:not(.gray):not(.secondary),.flightSessionCreate button){
+  background:var(--sags-flight)!important;
+  color:#fff!important;
+  border-color:var(--sags-flight)!important;
+}
+html.new-ui-v1 #fwcModal .fwcFlight.active,
+html.new-ui-v1 .flightSessionRow.active{
+  border-color:var(--sags-flight)!important;
+  background:#f2f7ff!important;
+}
+
+/* MULTI: teal outside and teal inside. */
+html.new-ui-v1 :is(#fwcMultitaskModal,.fwcMultiPanel){
+  --module-accent:var(--sags-multi);
+}
+html.new-ui-v1 .fwcMultiPanel{
+  border-top:4px solid var(--sags-multi)!important;
+}
+html.new-ui-v1 .fwcMultiPanel :is(button,.fwcBtn,.fwcMultiBtn):not(.gray):not(.secondary):not(.danger):not(.red){
+  background:var(--sags-multi)!important;
+  color:#fff!important;
+  border-color:var(--sags-multi)!important;
+}
+
+/* SHIFT / GIAO CA: amber outside and amber inside. */
+html.new-ui-v1 .v310ShiftPanel{border-top:4px solid var(--sags-shift)!important}
+html.new-ui-v1 .v310ShiftPanel .v310ShiftBtn:not(.gray):not(.secondary):not(.danger):not(.red){
+  background:var(--sags-shift)!important;
+  color:#fff!important;
+  border-color:var(--sags-shift)!important;
+}
+
+/* SIGNATURE: violet outside and violet inside. */
+html.new-ui-v1 :is(#signatureSampleModal,#signModal,.templateBox){
+  --module-accent:var(--sags-sign);
+}
+html.new-ui-v1 :is(#signatureSampleModal,#signModal,.templateBox) :is(.save,button.primary,button:not(.cancel):not(.del):not(.secondary):not(.gray):not(.danger):not(.red)){
+  background:var(--sags-sign)!important;
+  color:#fff!important;
+  border-color:var(--sags-sign)!important;
+}
+
+/* ADMIN / MENU: slate outside and slate inside. */
+html.new-ui-v1 :is(#adminHubModal,.ahPanel,.sagsAdminPanel){
+  --module-accent:var(--sags-admin);
+}
+html.new-ui-v1 #adminHubModal .ahPanel{border-top:4px solid var(--sags-admin)!important}
+html.new-ui-v1 #adminHubModal :is(.ahItem,.ahBack,.ahClose):not(.danger):not(.red){
+  background:var(--sags-admin)!important;
+  color:#fff!important;
+  border-color:var(--sags-admin)!important;
+}
+
+/* REASSIGN: rose outside and rose inside. */
+html.new-ui-v1 .v327Panel{border-top:4px solid var(--sags-reassign)!important}
+html.new-ui-v1 .v327Panel .v327Btn:not(.gray):not(.secondary):not(.danger):not(.red){
+  background:var(--sags-reassign)!important;
+  color:#fff!important;
+  border-color:var(--sags-reassign)!important;
+}
+
+/* QUICK TIME: cyan entry and matching inner action. */
+html.new-ui-v1 #roleBtnQuickTime{background:var(--sags-quick)!important;color:#fff!important;border-color:var(--sags-quick)!important}
+html.new-ui-v1 #quickTimeModal .quickTimePanel{border-top:4px solid var(--sags-quick)!important}
+html.new-ui-v1 #quickTimeModal :is(.quickTimeSave,.quickTimeTab.active){
+  background:var(--sags-quick)!important;
+  color:#fff!important;
+  border-color:var(--sags-quick)!important;
+}
+
+/* Home/drawer use the same aviation-blue primary instead of legacy lime/teal variants. */
+html.new-ui-v1 #roleLoginSubmit,
+html.new-ui-v1 #v157HomeDashboard #v157HistoryBtn,
+html.new-ui-v1 #v157HomeDashboard .v157PanelLink.primary,
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuItem.active{
+  background:var(--sags-blue)!important;
+  color:#fff!important;
+  border-color:var(--sags-blue)!important;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuItem.active .ico{
+  background:#fff!important;
+  color:var(--sags-blue)!important;
+}
+
+/* Report entry points are intentionally removed from the main UI in V6.4.31. */
+html.new-ui-v1 :is(
+  #srOpen,#v157ReportBtn,
+  [data-sags-quick-report="1"],
+  [data-v157-key="shift"],
+  [data-v157-key="night"],
+  [data-sags-report-section="1"]
+){display:none!important}
+

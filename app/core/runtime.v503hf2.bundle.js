@@ -165,10 +165,6 @@ if(typeof window!=="undefined")window.__SAGS_V450_FORM_MANAGER_LAYOUT=true;
       {key:"cross",icon:"↔",label:"Crosscheck",meta:"theo chuyến",action:()=>call("sagsV342Open")||clickExisting("finalFormsQuickBtn"),available:()=>typeof root.sagsV342Open==="function"||!!$("finalFormsQuickBtn")},
       {key:"archive",icon:"▣",label:"Hồ sơ chuyến",meta:"theo chuyến",action:()=>clickExisting("roleBtnArchive")||clickExisting("roleBtnFlights"),available:()=>!!$("roleBtnArchive")||!!$("roleBtnFlights")}
     ]},
-    {title:"BÁO CÁO ĐIỀU HÀNH",items:[
-      {key:"shift",icon:"▤",label:"Giao ban ngày",action:()=>call("v1171OpenDayReport"),available:()=>["AD","DH","ĐH"].includes(currentRole())&&typeof root.v1171OpenDayReport==="function"},
-      {key:"night",icon:"☾",label:"Báo cáo bay đêm",action:()=>call("v1171OpenNightReport"),available:()=>["AD","DH","ĐH"].includes(currentRole())&&typeof root.v1171OpenNightReport==="function"}
-    ]},
     {title:"HỆ THỐNG",items:[
       {key:"notice",icon:"●",label:"Thông báo",action:()=>call("sagsV342Open"),available:()=>typeof root.sagsV342Open==="function"}
     ]},
@@ -1244,29 +1240,7 @@ if(typeof window!=="undefined")window.__SAGS_V450_FORM_MANAGER_LAYOUT=true;
     return section;
   }
 
-  function ensureQuickMenu(){
-    const body=document.getElementById("v157MenuBody");
-    if(!body||!canQuickReport())return;
-
-    let section=[...body.querySelectorAll(".v157Section")].find(sec=>
-      normText(sec.querySelector(".v157SectionTitle")?.textContent).includes("BAO CAO DIEU HANH")
-    );
-    if(!section)section=createReportSection(body);
-
-    let btn=section.querySelector('[data-sags-quick-report="1"]');
-    if(!btn){
-      btn=document.createElement("button");
-      btn.type="button";
-      btn.className="v157MenuItem";
-      btn.dataset.sagsQuickReport="1";
-      btn.innerHTML='<span class="ico">🎤</span><span>Báo cáo nhanh</span><span class="meta">Nói · ảnh · gửi nguồn chung</span>';
-      btn.onclick=()=>{
-        try{document.getElementById("v157DrawerBackdrop")?.click()}catch(_){}
-        openQuickReport();
-      };
-      section.appendChild(btn);
-    }
-  }
+  function ensureQuickMenu(){ return; }
 
   function reconcileDrawer(){
     const shift=document.querySelector('[data-v157-key="shift"]');
@@ -8326,3 +8300,23 @@ const baseSend=root.sendReport;if(typeof baseSend==='function'&&!baseSend.__sags
 root.sagsV450PdfPerformance=()=>root.__SAGS_V450_PDF_PERF||(()=>{try{return JSON.parse(localStorage.getItem('sags.v450.pdfPerf')||'null')}catch(_){return null}})();
 console.info('E-REPORT/SAGS V4.8.10B Layered PDF active');
 })(typeof window!=='undefined'?window:globalThis);
+
+/* ===== V6.4.31 UI ENTRY CLEANUP ===== */
+(function(root){
+  'use strict';
+  if(root.__SAGS_V6431_UI_ENTRY_CLEANUP)return;
+  root.__SAGS_V6431_UI_ENTRY_CLEANUP=true;
+  const norm=v=>String(v??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[Đđ]/g,'D').toUpperCase().replace(/\s+/g,' ').trim();
+  function cleanup(){
+    try{
+      document.querySelectorAll('#srOpen,#v157ReportBtn,[data-sags-quick-report="1"],[data-v157-key="shift"],[data-v157-key="night"]').forEach(el=>el.remove());
+      document.querySelectorAll('.v157Section').forEach(sec=>{
+        const t=norm(sec.querySelector('.v157SectionTitle')?.textContent||'');
+        if(t.includes('BAO CAO DIEU HANH')||t==='BAO CAO'||t==='BAO CAO K')sec.remove();
+      });
+    }catch(e){console.warn('V6.4.31 UI cleanup',e);}
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',cleanup,{once:true});else cleanup();
+  root.addEventListener?.('pageshow',cleanup,{passive:true});
+})(typeof window!=='undefined'?window:globalThis);
+/* ===== END V6.4.31 UI ENTRY CLEANUP ===== */
