@@ -2438,184 +2438,407 @@ html.new-ui-v1 [aria-disabled="true"]{opacity:.48}
   }
 }
 
-/* === SAGS UNIFIED SEMANTIC COLORS V6.4.31 === */
+/* === SAGS OPS SLATE UI V6.4.32 === */
+/*
+  Full presentation-layer theme.
+  Business workflow, Firebase paths, IDs, event handlers, permissions and data flow stay unchanged.
+*/
 html.new-ui-v1{
-  --sags-blue:#1769e0;
-  --sags-blue-dark:#0f56bd;
-  --sags-blue-soft:#eaf2ff;
-  --sags-flight:#1769e0;
-  --sags-multi:#0f766e;
-  --sags-shift:#b56a00;
-  --sags-sign:#6f42c1;
-  --sags-admin:#334155;
-  --sags-reassign:#be3d5d;
-  --sags-quick:#0284c7;
-  --sags-success:#14805e;
-  --sags-danger:#c53e45;
-  --sags-neutral:#64748b;
-}
+  --ops-bg:#eef2f4;
+  --ops-bg-2:#f6f8f9;
+  --ops-surface:#ffffff;
+  --ops-surface-2:#f8fafb;
+  --ops-graphite:#1f2a33;
+  --ops-graphite-2:#2b3944;
+  --ops-text:#17212b;
+  --ops-muted:#667784;
+  --ops-border:#d5dee3;
+  --ops-border-strong:#becbd2;
 
-/* Global visual language: one surface system and one action hierarchy. */
+  --ops-primary:#0b7285;
+  --ops-primary-dark:#075b6b;
+  --ops-primary-soft:#e5f4f6;
+
+  --ops-flight:#0b7285;
+  --ops-multi:#237a72;
+  --ops-shift:#b7791f;
+  --ops-sign:#5367a7;
+  --ops-admin:#3a4854;
+  --ops-reassign:#a44961;
+  --ops-quick:#1685a1;
+
+  --ops-success:#2f7d63;
+  --ops-warning:#b7791f;
+  --ops-danger:#bc4b55;
+
+  --ops-radius-xs:6px;
+  --ops-radius-sm:8px;
+  --ops-radius-md:12px;
+  --ops-radius-lg:16px;
+  --ops-control-h:44px;
+
+  --ops-shadow-card:0 4px 14px rgba(31,42,51,.055);
+  --ops-shadow-float:0 18px 50px rgba(31,42,51,.18);
+
+  --fo-navy:var(--ops-graphite);
+  --fo-navy-2:var(--ops-graphite-2);
+  --fo-blue:var(--ops-primary);
+  --fo-blue-strong:var(--ops-primary-dark);
+  --fo-blue-soft:var(--ops-primary-soft);
+  --fo-bg:var(--ops-bg);
+  --fo-surface:var(--ops-surface);
+  --fo-surface-2:var(--ops-surface-2);
+  --fo-text:var(--ops-text);
+  --fo-muted:var(--ops-muted);
+  --fo-line:var(--ops-border);
+  --fo-line-strong:var(--ops-border-strong);
+  --fo-success:var(--ops-success);
+  --fo-warning:var(--ops-warning);
+  --fo-danger:var(--ops-danger);
+
+  --ui-primary:var(--ops-primary);
+  --ui-primary-strong:var(--ops-primary-dark);
+  --ui-primary-soft:var(--ops-primary-soft);
+  --ui-text:var(--ops-text);
+  --ui-text-muted:var(--ops-muted);
+  --ui-surface:var(--ops-surface);
+  --ui-surface-soft:var(--ops-surface-2);
+  --ui-border:var(--ops-border-strong);
+  --ui-border-soft:var(--ops-border);
+  --ui-danger:var(--ops-danger);
+  --ui-overlay:rgba(22,33,43,.62);
+
+  --v157-navy:var(--ops-graphite);
+  --v157-navy2:var(--ops-graphite-2);
+  --v157-blue:var(--ops-primary);
+  --v157-blue-soft:var(--ops-primary-soft);
+  --v157-bg:var(--ops-bg);
+  --v157-text:var(--ops-text);
+  --v157-muted:var(--ops-muted);
+  --v157-line:var(--ops-border);
+  --v157-card:var(--ops-surface);
+}
 html.new-ui-v1 body{
-  background:#f3f6fa!important;
-  color:#132238!important;
-}
-html.new-ui-v1 :is(.panel,.templateBox,.exportBox,.formMenuBox,.flightSessionBox,.flightTypeEditBox,.finalFormsBox,.sagsAdminPanel,.fwcPanel,.fwcMultiPanel,.v310ShiftPanel,.v327Panel,.quickTimePanel){
-  border-color:#d8e1eb!important;
-  background:#fff!important;
-}
-html.new-ui-v1 :is(input:not([type=checkbox]):not([type=radio]):not([type=file]),select,textarea){
-  border-color:#c5d1dd!important;
-  background:#fff!important;
-  color:#132238!important;
+  background:var(--ops-bg)!important;
+  color:var(--ops-text)!important;
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif!important;
 }
 
-/* Default primary/secondary/destructive states. */
+/* GLOBAL SURFACES */
 html.new-ui-v1 :is(
-  #roleLoginSubmit,#appUpdateNowBtn,
+  .panel,.templateBox,.exportBox,.formMenuBox,.flightSessionBox,.flightTypeEditBox,.finalFormsBox,
+  .roleLoginCard,.sagsAdminPanel,.v488Panel,.acls-panel,.drPanel,.ahPanel,.fwcPanel,.fwcMultiPanel,
+  .v310ShiftPanel,.v320ModalPanel,.v327Panel,.v340Panel,.v342Panel,#v1111QrPanel,#v1111QrScanPanel,
+  .sagsActionPopupCard,.quickTimePanel,.v174DataHubPanel,.v181AdminPanel
+){
+  background:var(--ops-surface)!important;
+  color:var(--ops-text)!important;
+  border:1px solid var(--ops-border)!important;
+  border-radius:var(--ops-radius-lg)!important;
+  box-shadow:var(--ops-shadow-card)!important;
+}
+html.new-ui-v1 :is(
+  input:not([type=checkbox]):not([type=radio]):not([type=file]),select,textarea
+){
+  min-height:var(--ops-control-h);
+  background:#fff!important;
+  color:var(--ops-text)!important;
+  border:1px solid var(--ops-border-strong)!important;
+  border-radius:var(--ops-radius-sm)!important;
+  box-shadow:none!important;
+}
+html.new-ui-v1 :is(
+  input:not([type=checkbox]):not([type=radio]):not([type=file]),select,textarea
+):focus{
+  border-color:var(--ops-primary)!important;
+  box-shadow:0 0 0 3px rgba(11,114,133,.12)!important;
+  outline:none!important;
+}
+
+/* LOGIN */
+html.new-ui-v1 #roleLoginModal{
+  background:
+    radial-gradient(circle at 78% 12%,rgba(11,114,133,.10),transparent 34%),
+    linear-gradient(145deg,#e9eef1 0%,#f6f8f9 55%,#edf2f4 100%)!important;
+}
+html.new-ui-v1 .roleLoginCard{
+  width:min(100%,440px)!important;
+  padding:30px!important;
+  border:1px solid var(--ops-border)!important;
+  border-radius:var(--ops-radius-lg)!important;
+  background:#fff!important;
+  box-shadow:var(--ops-shadow-float)!important;
+}
+html.new-ui-v1 .newUiLoginEyebrow{
+  color:var(--ops-primary)!important;
+  font-weight:800!important;
+  letter-spacing:.08em!important;
+}
+html.new-ui-v1 .roleLoginCard h2{color:var(--ops-text)!important}
+html.new-ui-v1 #roleLoginSubmit{
+  min-height:48px!important;
+  background:var(--ops-primary)!important;
+  color:#fff!important;
+  border:1px solid var(--ops-primary)!important;
+  border-radius:var(--ops-radius-sm)!important;
+  box-shadow:none!important;
+}
+html.new-ui-v1 #roleLoginSubmit:hover{background:var(--ops-primary-dark)!important}
+
+/* HOME */
+html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard{
+  background:var(--ops-bg)!important;
+  color:var(--ops-text)!important;
+}
+html.new-ui-v1 #v157HomeDashboard :is(.v157Welcome,.v157Metric,.v157Panel){
+  background:var(--ops-surface)!important;
+  border:1px solid var(--ops-border)!important;
+  border-radius:var(--ops-radius-md)!important;
+  box-shadow:var(--ops-shadow-card)!important;
+}
+html.new-ui-v1 #v157HomeDashboard .v157MetricIco{
+  background:var(--ops-primary-soft)!important;
+  color:var(--ops-primary)!important;
+  border-radius:var(--ops-radius-sm)!important;
+}
+html.new-ui-v1 #v157HomeDashboard .v157PanelLink{
+  background:#f2f6f7!important;
+  color:var(--ops-primary-dark)!important;
+  border:1px solid #cfe0e4!important;
+  border-radius:var(--ops-radius-sm)!important;
+}
+html.new-ui-v1 #v157HomeDashboard #v157HistoryBtn{
+  background:var(--ops-primary)!important;
+  color:#fff!important;
+  border-color:var(--ops-primary)!important;
+}
+
+/* DRAWER / MENU */
+html.new-ui-v1 body.v157-authenticated #v157Drawer{
+  background:var(--ops-graphite)!important;
+  color:#fff!important;
+  box-shadow:18px 0 42px rgba(17,26,33,.26)!important;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer :is(.v157DrawerHead,.v157MenuBody,.v157DrawerFooter){
+  background:var(--ops-graphite)!important;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuItem{
+  color:#dbe4e9!important;
+  background:transparent!important;
+  border:1px solid transparent!important;
+  border-radius:var(--ops-radius-sm)!important;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuItem .ico{
+  background:#2b3a45!important;
+  color:#b9cbd4!important;
+  border-radius:var(--ops-radius-sm)!important;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuItem.active{
+  background:#304752!important;
+  color:#fff!important;
+  border-color:#3d5965!important;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuItem.active .ico{
+  background:var(--ops-primary)!important;
+  color:#fff!important;
+}
+
+/* PRIMARY / SECONDARY / DANGER */
+html.new-ui-v1 :is(
+  #appUpdateNowBtn,
   .sagsAdminBtn:not(.secondary):not(.danger):not(.warn),
   .flightTypeEditBtn,.flightOpsBtn,
   .rsBtn:not(.gray):not(.green),
   button[class*="Btn"]:not(.secondary):not(.gray):not(.green):not(.danger):not(.red):not(.warn):not(.orange)
 ){
-  background:var(--sags-blue)!important;
+  background:var(--ops-primary)!important;
   color:#fff!important;
-  border-color:var(--sags-blue)!important;
+  border-color:var(--ops-primary)!important;
   box-shadow:none!important;
 }
 html.new-ui-v1 :is(.secondary,.gray,.cancel,.light,button[class*="Btn"].secondary,button[class*="Btn"].gray){
-  background:#f1f5f9!important;
-  color:#334155!important;
-  border-color:#cbd5e1!important;
+  background:#edf2f4!important;
+  color:#34434e!important;
+  border-color:#cbd6dc!important;
   box-shadow:none!important;
 }
 html.new-ui-v1 :is(.danger,.red,.del,.dangerAccountBtn,button[class*="Btn"].danger,button[class*="Btn"].red){
-  background:var(--sags-danger)!important;
+  background:var(--ops-danger)!important;
   color:#fff!important;
-  border-color:var(--sags-danger)!important;
+  border-color:var(--ops-danger)!important;
   box-shadow:none!important;
 }
 html.new-ui-v1 :is(.green,.publish,.success){
-  background:var(--sags-success)!important;
+  background:var(--ops-success)!important;
   color:#fff!important;
-  border-color:var(--sags-success)!important;
+  border-color:var(--ops-success)!important;
   box-shadow:none!important;
 }
 
-/* Main navigation: each function has one stable identity color. */
+/* MAIN NAVIGATION */
 html.new-ui-v1 body.v38-clean-workflow .toolbar.compact-main-toolbar{
-  background:#0b1f33!important;
-  border-color:#18344e!important;
-  box-shadow:0 -6px 20px rgba(4,19,35,.22)!important;
+  background:var(--ops-graphite)!important;
+  border-color:#334650!important;
+  border-radius:16px 16px 0 0!important;
+  box-shadow:0 -5px 18px rgba(31,42,51,.18)!important;
+}
+html.new-ui-v1 body.v38-clean-workflow #v38CleanNav{
+  gap:7px!important;
 }
 html.new-ui-v1 body.v38-clean-workflow #v38CleanNav .v38NavBtn{
+  height:62px!important;
+  min-height:62px!important;
+  border-radius:10px!important;
   color:#fff!important;
-  border-color:transparent!important;
+  border:1px solid rgba(255,255,255,.07)!important;
   box-shadow:none!important;
+  filter:none!important;
 }
-html.new-ui-v1 body.v38-clean-workflow #v38CleanNav #v38NavFlights{background:var(--sags-flight)!important}
-html.new-ui-v1 body.v38-clean-workflow #v38CleanNav #v38NavMulti{background:var(--sags-multi)!important}
-html.new-ui-v1 body.v38-clean-workflow #v38CleanNav #v310ShiftNav{background:var(--sags-shift)!important}
-html.new-ui-v1 body.v38-clean-workflow #v38CleanNav #v38NavSignature{background:var(--sags-sign)!important}
-html.new-ui-v1 body.v38-clean-workflow #v38CleanNav #v38NavAdmin{background:var(--sags-admin)!important}
-html.new-ui-v1 body.v38-clean-workflow #v38CleanNav #v327ReassignNav{background:var(--sags-reassign)!important}
+html.new-ui-v1 body.v38-clean-workflow #v38CleanNav #v38NavFlights{background:var(--ops-flight)!important}
+html.new-ui-v1 body.v38-clean-workflow #v38CleanNav #v38NavMulti{background:var(--ops-multi)!important}
+html.new-ui-v1 body.v38-clean-workflow #v38CleanNav #v310ShiftNav{background:var(--ops-shift)!important}
+html.new-ui-v1 body.v38-clean-workflow #v38CleanNav #v38NavSignature{background:var(--ops-sign)!important}
+html.new-ui-v1 body.v38-clean-workflow #v38CleanNav #v38NavAdmin{background:var(--ops-admin)!important}
+html.new-ui-v1 body.v38-clean-workflow #v38CleanNav #v327ReassignNav{background:var(--ops-reassign)!important}
 html.new-ui-v1 body.v38-clean-workflow #v38CleanNav .v38NavBtn:is(.v2236-active,:active,[aria-current="page"]){
   color:#fff!important;
-  filter:brightness(.9)!important;
-  box-shadow:0 0 0 3px rgba(255,255,255,.24) inset!important;
+  filter:brightness(.88)!important;
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.25)!important;
 }
 
-/* MY FLIGHT: outside Flights blue = inside Flights blue. */
+/* MY FLIGHT */
+html.new-ui-v1 #fwcModal{background:rgba(22,33,43,.62)!important}
+html.new-ui-v1 #fwcModal .fwcPanel{
+  border-top:4px solid var(--ops-flight)!important;
+  background:var(--ops-bg-2)!important;
+}
 html.new-ui-v1 #fwcModal .fwcHead,
-html.new-ui-v1 #flightSessionModal .flightSessionHead{
-  border-top:4px solid var(--sags-flight)!important;
-}
-html.new-ui-v1 #fwcModal :is(.fwcBtn:not(.gray):not(.green),.fwcAction,.fwcReceive,.fwcClaim),
-html.new-ui-v1 #flightSessionModal :is(button:not(.gray):not(.secondary),.flightSessionCreate button){
-  background:var(--sags-flight)!important;
-  color:#fff!important;
-  border-color:var(--sags-flight)!important;
-}
-html.new-ui-v1 #fwcModal .fwcFlight.active,
-html.new-ui-v1 .flightSessionRow.active{
-  border-color:var(--sags-flight)!important;
-  background:#f2f7ff!important;
-}
-
-/* MULTI: teal outside and teal inside. */
-html.new-ui-v1 :is(#fwcMultitaskModal,.fwcMultiPanel){
-  --module-accent:var(--sags-multi);
-}
-html.new-ui-v1 .fwcMultiPanel{
-  border-top:4px solid var(--sags-multi)!important;
-}
-html.new-ui-v1 .fwcMultiPanel :is(button,.fwcBtn,.fwcMultiBtn):not(.gray):not(.secondary):not(.danger):not(.red){
-  background:var(--sags-multi)!important;
-  color:#fff!important;
-  border-color:var(--sags-multi)!important;
-}
-
-/* SHIFT / GIAO CA: amber outside and amber inside. */
-html.new-ui-v1 .v310ShiftPanel{border-top:4px solid var(--sags-shift)!important}
-html.new-ui-v1 .v310ShiftPanel .v310ShiftBtn:not(.gray):not(.secondary):not(.danger):not(.red){
-  background:var(--sags-shift)!important;
-  color:#fff!important;
-  border-color:var(--sags-shift)!important;
-}
-
-/* SIGNATURE: violet outside and violet inside. */
-html.new-ui-v1 :is(#signatureSampleModal,#signModal,.templateBox){
-  --module-accent:var(--sags-sign);
-}
-html.new-ui-v1 :is(#signatureSampleModal,#signModal,.templateBox) :is(.save,button.primary,button:not(.cancel):not(.del):not(.secondary):not(.gray):not(.danger):not(.red)){
-  background:var(--sags-sign)!important;
-  color:#fff!important;
-  border-color:var(--sags-sign)!important;
-}
-
-/* ADMIN / MENU: slate outside and slate inside. */
-html.new-ui-v1 :is(#adminHubModal,.ahPanel,.sagsAdminPanel){
-  --module-accent:var(--sags-admin);
-}
-html.new-ui-v1 #adminHubModal .ahPanel{border-top:4px solid var(--sags-admin)!important}
-html.new-ui-v1 #adminHubModal :is(.ahItem,.ahBack,.ahClose):not(.danger):not(.red){
-  background:var(--sags-admin)!important;
-  color:#fff!important;
-  border-color:var(--sags-admin)!important;
-}
-
-/* REASSIGN: rose outside and rose inside. */
-html.new-ui-v1 .v327Panel{border-top:4px solid var(--sags-reassign)!important}
-html.new-ui-v1 .v327Panel .v327Btn:not(.gray):not(.secondary):not(.danger):not(.red){
-  background:var(--sags-reassign)!important;
-  color:#fff!important;
-  border-color:var(--sags-reassign)!important;
-}
-
-/* QUICK TIME: cyan entry and matching inner action. */
-html.new-ui-v1 #roleBtnQuickTime{background:var(--sags-quick)!important;color:#fff!important;border-color:var(--sags-quick)!important}
-html.new-ui-v1 #quickTimeModal .quickTimePanel{border-top:4px solid var(--sags-quick)!important}
-html.new-ui-v1 #quickTimeModal :is(.quickTimeSave,.quickTimeTab.active){
-  background:var(--sags-quick)!important;
-  color:#fff!important;
-  border-color:var(--sags-quick)!important;
-}
-
-/* Home/drawer use the same aviation-blue primary instead of legacy lime/teal variants. */
-html.new-ui-v1 #roleLoginSubmit,
-html.new-ui-v1 #v157HomeDashboard #v157HistoryBtn,
-html.new-ui-v1 #v157HomeDashboard .v157PanelLink.primary,
-html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuItem.active{
-  background:var(--sags-blue)!important;
-  color:#fff!important;
-  border-color:var(--sags-blue)!important;
-}
-html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuItem.active .ico{
+html.new-ui-v1 #fwcModal .fwcTools,
+html.new-ui-v1 #fwcModal .fwcFlight{
   background:#fff!important;
-  color:var(--sags-blue)!important;
+  border-color:var(--ops-border)!important;
+}
+html.new-ui-v1 #fwcModal .fwcFlight{
+  border-radius:var(--ops-radius-md)!important;
+  box-shadow:none!important;
+}
+html.new-ui-v1 #fwcModal .fwcFlight:hover{border-color:#91b9c2!important}
+html.new-ui-v1 #fwcModal :is(.fwcBtn:not(.gray):not(.green),.fwcAction,.fwcReceive,.fwcClaim){
+  background:var(--ops-flight)!important;
+  color:#fff!important;
+  border-color:var(--ops-flight)!important;
+  border-radius:var(--ops-radius-sm)!important;
 }
 
-/* Report entry points are intentionally removed from the main UI in V6.4.31. */
+/* FLIGHT SESSION */
+html.new-ui-v1 #flightSessionModal{background:rgba(22,33,43,.62)!important}
+html.new-ui-v1 .flightSessionBox{border-top:4px solid var(--ops-flight)!important}
+html.new-ui-v1 .flightSessionRow{
+  background:#fff!important;
+  border:1px solid var(--ops-border)!important;
+  border-radius:var(--ops-radius-md)!important;
+}
+html.new-ui-v1 .flightSessionRow.active{
+  background:#edf7f8!important;
+  border:2px solid var(--ops-flight)!important;
+}
+html.new-ui-v1 .flightSessionCreate button{
+  background:var(--ops-flight)!important;
+  color:#fff!important;
+  border-color:var(--ops-flight)!important;
+}
+
+/* MULTI */
+html.new-ui-v1 .fwcMultiPanel{border-top:4px solid var(--ops-multi)!important}
+html.new-ui-v1 .fwcMultiPanel :is(button,.fwcBtn,.fwcMultiBtn):not(.gray):not(.secondary):not(.danger):not(.red){
+  background:var(--ops-multi)!important;
+  color:#fff!important;
+  border-color:var(--ops-multi)!important;
+}
+
+/* SHIFT */
+html.new-ui-v1 .v310ShiftPanel{border-top:4px solid var(--ops-shift)!important}
+html.new-ui-v1 .v310ShiftPanel .v310ShiftBtn:not(.gray):not(.secondary):not(.danger):not(.red){
+  background:var(--ops-shift)!important;
+  color:#fff!important;
+  border-color:var(--ops-shift)!important;
+}
+
+/* SIGNATURE */
+html.new-ui-v1 :is(#signatureSampleModal,#signModal,.templateBox){--module-accent:var(--ops-sign)}
+html.new-ui-v1 :is(#signatureSampleModal,#signModal,.templateBox) :is(
+  .save,button.primary,button:not(.cancel):not(.del):not(.secondary):not(.gray):not(.danger):not(.red)
+){
+  background:var(--ops-sign)!important;
+  color:#fff!important;
+  border-color:var(--ops-sign)!important;
+}
+
+/* ADMIN */
+html.new-ui-v1 #adminHubModal .ahPanel,
+html.new-ui-v1 .sagsAdminPanel{border-top:4px solid var(--ops-admin)!important}
+html.new-ui-v1 #adminHubModal :is(.ahItem,.ahBack,.ahClose):not(.danger):not(.red){
+  background:var(--ops-admin)!important;
+  color:#fff!important;
+  border-color:var(--ops-admin)!important;
+}
+
+/* REASSIGN */
+html.new-ui-v1 .v327Panel{border-top:4px solid var(--ops-reassign)!important}
+html.new-ui-v1 .v327Panel .v327Btn:not(.gray):not(.secondary):not(.danger):not(.red){
+  background:var(--ops-reassign)!important;
+  color:#fff!important;
+  border-color:var(--ops-reassign)!important;
+}
+
+/* QUICK TIME */
+html.new-ui-v1 #roleBtnQuickTime{
+  background:var(--ops-quick)!important;
+  color:#fff!important;
+  border-color:var(--ops-quick)!important;
+}
+html.new-ui-v1 #quickTimeModal .quickTimePanel{border-top:4px solid var(--ops-quick)!important}
+html.new-ui-v1 #quickTimeModal :is(.quickTimeSave,.quickTimeTab.active){
+  background:var(--ops-quick)!important;
+  color:#fff!important;
+  border-color:var(--ops-quick)!important;
+}
+
+/* OPERATIONAL ACTION BAR */
+html.new-ui-v1 body.v163-operational #v163OperationNav,
+html.new-ui-v1 body.v163-operational #v324FormActions{
+  background:#fff!important;
+  border:1px solid var(--ops-border)!important;
+  border-radius:var(--ops-radius-md)!important;
+  box-shadow:0 -4px 14px rgba(31,42,51,.07)!important;
+}
+html.new-ui-v1 body.v163-operational #v163OperationNav > button,
+html.new-ui-v1 body.v163-operational #v324FormActions .v324FormAction{
+  background:#edf4f5!important;
+  color:var(--ops-primary-dark)!important;
+  border:1px solid #c9dcdf!important;
+  border-radius:var(--ops-radius-sm)!important;
+}
+html.new-ui-v1 body.v163-operational #v324FormActions .v324Export{
+  background:var(--ops-success)!important;
+  color:#fff!important;
+  border-color:var(--ops-success)!important;
+}
+
+/* TABLES / BADGES */
+html.new-ui-v1 table{
+  border-color:var(--ops-border)!important;
+  color:var(--ops-text)!important;
+}
+html.new-ui-v1 :is(th,.tableHead,.dataHead){
+  background:#edf2f4!important;
+  color:#34434e!important;
+}
+html.new-ui-v1 :is(.badge,.pill,.chip,.fwcBadge){
+  border-radius:999px!important;
+}
+
+/* Reports stay removed from the main UI. */
 html.new-ui-v1 :is(
   #srOpen,#v157ReportBtn,
   [data-sags-quick-report="1"],
@@ -2624,3 +2847,24 @@ html.new-ui-v1 :is(
   [data-sags-report-section="1"]
 ){display:none!important}
 
+/* INTERACTION */
+html.new-ui-v1 button,
+html.new-ui-v1 [role="button"]{
+  transition:background-color .14s ease,border-color .14s ease,filter .14s ease,transform .12s ease!important;
+  -webkit-tap-highlight-color:transparent;
+}
+html.new-ui-v1 button:active,
+html.new-ui-v1 [role="button"]:active{
+  transform:translateY(1px)!important;
+  filter:brightness(.92)!important;
+}
+html.new-ui-v1 :focus-visible{
+  outline:3px solid rgba(11,114,133,.28)!important;
+  outline-offset:2px!important;
+}
+@media(max-width:600px){
+  html.new-ui-v1 .roleLoginCard{padding:24px 20px!important;border-radius:14px!important}
+  html.new-ui-v1 body.v38-clean-workflow #v38CleanNav .v38NavBtn{
+    height:58px!important;min-height:58px!important;border-radius:9px!important;
+  }
+}
