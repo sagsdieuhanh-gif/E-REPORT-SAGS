@@ -1,8 +1,8 @@
 {
   "schema": 2,
-  "version": "V6.4.32-FMTEST1",
-  "build": "V6.4.32-20261001-FMTEST1",
-  "strategy": "form-manager-ai-preview-synchronized",
+  "version": "V6.4.32-FMTEST2",
+  "build": "V6.4.32-20261001-FMTEST2",
+  "strategy": "form-manager-guided-builder-preview-synchronized",
   "mutableMetadata": [
     "./forms/forms.registry.json"
   ],
@@ -13,8 +13,8 @@
       "bytes": 829463
     },
     "./app/core/runtime.v503hf2.bundle.js": {
-      "sha256": "5f71be271401b16fe1347bbb18997a2a4fe9d2240d573a78a2352241128ee172",
-      "bytes": 569899
+      "sha256": "c2b465a7944a453f16d7d17adb3d98bd5d17b2c82ce806df8540ddae523a2548",
+      "bytes": 571674
     },
     "./app/modules/admin-reset.v503hf2.js": {
       "sha256": "870c5be3c30f138098fae6231b3b5464fe675480cb8955ab9b8dd62421d4e419",
@@ -233,7 +233,7 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "9f3ab12cab4cc7c00bdb87a6f1981159b82205ceee058538bce59378fcc50e69",
+      "sha256": "42c83ba92332b0437bed9a96ebd7faac0cce863aafc4cb78b504a4a9b5d39528",
       "bytes": 1435241
     },
     "./manifest.webmanifest": {
@@ -285,12 +285,12 @@
       "bytes": 5161
     },
     "./service-worker.js": {
-      "sha256": "b817cc4b485bb1b1b1281156bab5ddaa515031fa41ca73fda80035ae59187145",
-      "bytes": 16204
+      "sha256": "53411c19b2548ad9c0fd3aa84d12c756f2573e4f7638aae84780d907486d4d01",
+      "bytes": 16288
     },
     "./version.json": {
-      "sha256": "679fd35dc5427f5d40fd7d2c96aff2f034466b168c2db36b5bf3ba12f5f996fe",
-      "bytes": 473
+      "sha256": "693b845d28e4126d6ea2a112a0bedd9a112d0d11bb6bb9ec0469e4bc4a43bc50",
+      "bytes": 558
     },
     "./app/modules/form-registry-runtime.v647.js": {
       "sha256": "396c6804cb9cdb45b9aaacc5f10f6c38529385b5fa1b51d9a7a120a31917f69f",
@@ -303,6 +303,10 @@
     "./app/modules/form-manager-governance.v1.js": {
       "sha256": "c3f20a75e1b79cc7a38abe6a23f97b9cbac1b89766967c2efee3473545251386",
       "bytes": 15984
+    },
+    "./app/modules/form-manager-ux.v2.js": {
+      "sha256": "5d5d32fd875b1cbeb4949b2c6a47473b03e18a9158a622f6a02432904fbfe507",
+      "bytes": 17568
     }
   }
 }
