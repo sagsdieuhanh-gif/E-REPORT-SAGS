@@ -1,12 +1,12 @@
 {
   "version": "V6.4.32",
-  "displayVersion": "V6.4.32",
-  "label": "V6.4.32 - OPS SLATE UI",
-  "build": "V6.4.32-20261001-OPS-SLATE-UI-01",
+  "displayVersion": "V6.4.32-FMTEST1",
+  "label": "V6.4.32-FMTEST1 - FORM MANAGER BRANCH",
+  "build": "V6.4.32-20261001-FMTEST1",
   "releasedAt": "2026-10-01T16:58:00+07:00",
-  "type": "v6.4.32-ops-slate-ui",
+  "type": "branch-preview-form-manager-ai",
   "base": "V6.4.31-20261001-UNIFIED-UI-01",
   "updatePolicy": "required",
-  "notes": "Thay toàn bộ lớp giao diện sang SAGS Ops Slate: graphite + petrol/cyan + teal, giảm gradient và màu rực, giữ màu chức năng nhất quán từ màn hình chính vào màn hình con. Giữ nguyên workflow, Firebase, RTDB Data Saver và các hotfix MyFlight.",
-  "message": "V6.4.32: giao diện Ops Slate mới, nghiệp vụ không đổi."
+  "notes": "Preview branch riêng, cache/build tách khỏi production V6.4.32.",
+  "message": "Nhánh test Form Manager AI. Không phải production."
 }
