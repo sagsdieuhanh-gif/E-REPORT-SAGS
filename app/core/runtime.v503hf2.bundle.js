@@ -7604,6 +7604,19 @@ function status(t,err=false){const e=$('v440Status');if(e){e.textContent=String(
 function open(){if(!isAD())return alert('Chỉ AD được phép quản lý biểu mẫu.');ensureUi();loadPublished(true).then(()=>{mergeRegistry();if(!currentId||!draft.forms?.some(f=>f.id===currentId))currentId=draft.forms?.[0]?.id||'';testMode=true;testEditMode=true;multiPickV626=false;maxFormV627=true;drawerV627='';root.__SAGS_V440_FORM_MANAGER_OPEN=true;$('v440Fm').classList.add('show');renderAll();renderMaxFormV627();requestAnimationFrame(()=>renderEditor());status('✓ ĐANG DÙNG forms/forms.registry.json MỚI NHẤT từ máy chủ · không dùng/merge bản nháp cũ trên máy.')}).catch(e=>alert('Không mở Form Manager vì chưa tải được forms/forms.registry.json mới nhất: '+(e?.message||e)))}
 function close(){root.__SAGS_V440_FORM_MANAGER_OPEN=false;clearUrls();$('v440Fm')?.classList.remove('show');syncLegacyToLive(true,published)}
 root.sagsV440OpenFormManager=open;
+  root.sagsV440GetDraft=()=>clone(draft);
+  root.sagsV440GetCurrentForm=()=>clone(form());
+  root.sagsV440PatchCurrentFormMeta=function(patch={}){
+    const f=form();if(!f||!patch||typeof patch!=='object')return false;
+    pushHistory();
+    f.integration={...(f.integration&&typeof f.integration==='object'?f.integration:{}),...clone(patch)};
+    f.updatedAt=new Date().toISOString();
+    saveLocal();renderAll();status('✓ Đã lưu Integration Contract cho '+(f.code||f.id)+'.');
+    return clone(f);
+  };
+  root.sagsV440OpenAiReview=aiOpenV460;
+  root.sagsV440GetAiPreview=()=>clone(aiPreviewV460);
+  root.sagsV440CurrentFormValidation=()=>fmValidateFormV487?clone(fmValidateFormV487(form())):null;
 root.sagsV628AddForm=openFormWizardV628;
 root.sagsV440CreateNewForm=function(){if(!isAD())return alert('Chỉ AD được phép tạo biểu mẫu.');ensureUi();loadPublished(true).then(()=>{mergeRegistry();testMode=true;testEditMode=true;multiPickV626=false;maxFormV627=true;drawerV627='';root.__SAGS_V440_FORM_MANAGER_OPEN=true;$('v440Fm').classList.add('show');renderAll();renderMaxFormV627();setTimeout(createForm,60)}).catch(e=>alert('Không tạo form vì chưa tải được registry mới nhất: '+(e?.message||e)))};
 function renderZoomUi(){const z=Math.round(editorZoom*100),lab=$('v451ZoomLabel'),rng=$('v451ZoomRange');if(lab)lab.textContent=z+'%';if(rng)rng.value=String(Math.max(50,Math.min(400,z)))}
@@ -7628,9 +7641,45 @@ function aiOpenV460(){if(!isAD())return alert('Chỉ AD được dùng AI nhận
 function aiCloseV460(){aiPreviewV460=[];drawBoxes();$('v460AiModal')?.classList.remove('show')}
 function aiLoadLibV460(){if(root.Tesseract?.createWorker)return Promise.resolve(root.Tesseract);if(aiLibPromiseV460)return aiLibPromiseV460;aiLibPromiseV460=new Promise((resolve,reject)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';s.async=true;s.crossOrigin='anonymous';s.onload=()=>root.Tesseract?.createWorker?resolve(root.Tesseract):reject(new Error('Tesseract chưa khởi tạo'));s.onerror=()=>reject(new Error('Không tải được engine OCR. Kiểm tra Internet/CDN.'));document.head.appendChild(s)}).catch(e=>{aiLibPromiseV460=null;throw e});return aiLibPromiseV460}
 async function aiGetWorkerV460(lang){if(aiWorkerV460&&aiWorkerLangV460===lang)return aiWorkerV460;if(aiWorkerV460)try{await aiWorkerV460.terminate()}catch(_){}aiWorkerV460=null;aiWorkerLangV460='';const T=await aiLoadLibV460();aiWorkerV460=await T.createWorker(lang,1,{logger:m=>{const p=Number(m?.progress||0),txt=String(m?.status||'Đang xử lý');aiSetV460(txt+(p?` · ${Math.round(p*100)}%`:''),Math.max(4,p*88))}});aiWorkerLangV460=lang;return aiWorkerV460}
-function aiRenderListV460(){const h=$('v460AiList');if(!h)return;if(!aiPreviewV460.length){h.style.display='none';h.innerHTML='';return}h.style.display='block';h.innerHTML=aiPreviewV460.slice(0,80).map(x=>`<div class="v460AiRow"><span class="v460AiScore ${x.aiConfidence<75?'v460AiWarn':''}">${Number(x.aiConfidence||0)}%</span><span><b>${esc(x.label||x.aiText||x.key)}</b><br><small>${esc(x.aiText||'')}</small></span><span>${esc(x.type)}</span><span>${esc(x.bind||x.key)}</span></div>`).join('')+(aiPreviewV460.length>80?`<div style="padding:8px;font-weight:800">… và ${aiPreviewV460.length-80} gợi ý khác</div>`:'')}
+function aiRenderListV460(){
+  const h=$('v460AiList');if(!h)return;
+  if(!aiPreviewV460.length){h.style.display='none';h.innerHTML='';return}
+  h.style.display='block';
+  const typeOptions=['text','textarea','number','time','date','checkbox','signature','static-text'];
+  h.innerHTML=aiPreviewV460.slice(0,120).map((x,i)=>{
+    if(x.aiInclude===undefined)x.aiInclude=true;
+    return `<div class="v460AiRow vFMaiReviewRow" data-ai-i="${i}">
+      <label class="vFMaiKeep"><input type="checkbox" data-ai-include="${i}" ${x.aiInclude===false?'':'checked'}> DÙNG</label>
+      <span class="v460AiScore ${x.aiConfidence<75?'v460AiWarn':''}">${Number(x.aiConfidence||0)}%</span>
+      <label class="vFMaiEdit"><small>LABEL</small><input data-ai-label="${i}" value="${esc(x.label||x.aiText||x.key)}"></label>
+      <label class="vFMaiEdit"><small>TYPE</small><select data-ai-type="${i}">${typeOptions.map(t=>`<option value="${t}" ${String(x.type)===t?'selected':''}>${t}</option>`).join('')}</select></label>
+      <label class="vFMaiEdit"><small>BIND</small><input data-ai-bind="${i}" value="${esc(x.bind||x.key)}"></label>
+      <span class="vFMaiOcr"><small>OCR</small>${esc(x.aiText||'')}</span>
+    </div>`;
+  }).join('')+(aiPreviewV460.length>120?`<div style="padding:8px;font-weight:800">… và ${aiPreviewV460.length-120} gợi ý khác</div>`:'');
+  h.querySelectorAll('[data-ai-include]').forEach(el=>el.onchange=()=>{const i=Number(el.dataset.aiInclude);if(aiPreviewV460[i])aiPreviewV460[i].aiInclude=!!el.checked});
+  h.querySelectorAll('[data-ai-label]').forEach(el=>el.oninput=()=>{const i=Number(el.dataset.aiLabel);if(aiPreviewV460[i])aiPreviewV460[i].label=String(el.value||'').trim()});
+  h.querySelectorAll('[data-ai-type]').forEach(el=>el.onchange=()=>{const i=Number(el.dataset.aiType);if(aiPreviewV460[i])aiPreviewV460[i].type=String(el.value||'text')});
+  h.querySelectorAll('[data-ai-bind]').forEach(el=>el.oninput=()=>{const i=Number(el.dataset.aiBind);if(!aiPreviewV460[i])return;const v=fieldKey(String(el.value||''))||aiPreviewV460[i].key;aiPreviewV460[i].bind=v;aiPreviewV460[i].key=v});
+}
 async function aiRunV460(){if(aiBusyV460)return;const f=form(),p=page();if(!f||!p)return;aiBusyV460=true;$('v460AiRun').disabled=true;try{aiPreviewV460=[];drawBoxes();const src=await pageSrc(p);if(!src)throw new Error('Trang chưa có ảnh nền.');const lang=$('v460AiLang')?.value||'eng',threshold=Math.max(40,Math.min(95,Number($('v460AiThreshold')?.value||60)));aiSetV460('Đang tải/khởi tạo OCR…',2);const w=await aiGetWorkerV460(lang);aiSetV460('Đang nhận dạng chữ và cấu trúc form…',8);const ret=await w.recognize(src);aiSetV460('Đang suy luận field + kiểu dữ liệu + bind…',92);aiPreviewV460=aiCandidatesV460(ret?.data||{},threshold);drawBoxes();aiRenderListV460();const avg=aiPreviewV460.length?Math.round(aiPreviewV460.reduce((s,x)=>s+Number(x.aiConfidence||0),0)/aiPreviewV460.length):0;aiSetV460(aiPreviewV460.length?`✓ Phát hiện ${aiPreviewV460.length} gợi ý field · độ tin cậy TB ${avg}%. Các khung nét đứt xanh là preview; chưa lưu vào form.`:'Không tìm thấy field đủ tin cậy. Thử hạ ngưỡng hoặc đổi ngôn ngữ.',100,!aiPreviewV460.length);$('v460AiApply').style.display=aiPreviewV460.length?'':'none';$('v460AiApply85').style.display=aiPreviewV460.some(x=>x.aiConfidence>=85)?'':'none'}catch(e){console.error('V4.6 AI form',e);aiSetV460('AI không chạy được: '+(e?.message||e),0,true)}finally{aiBusyV460=false;$('v460AiRun').disabled=false}}
-function aiApplyV460(minConf){const f=form(),p=page();if(!f||!p||!aiPreviewV460.length)return;const add=aiPreviewV460.filter(x=>Number(x.aiConfidence||0)>=Number(minConf||0));if(!add.length)return alert('Không có gợi ý đạt ngưỡng.');pushHistory();f.fields=Array.isArray(f.fields)?f.fields:[];for(const x0 of add){const x=clone(x0);if(f.legacy){x.customFieldV463=true;x.generatedFromLegacy=false;x.createdByFormManager=true;x.sourcePage=Number(p.sourcePage||pageNoV45(p)||0)}f.fields.push(x)}saveLocal();aiPreviewV460=[];renderAll();aiRenderListV460();$('v460AiApply').style.display='none';$('v460AiApply85').style.display='none';aiSetV460(`✓ Đã thêm ${add.length} field AI. Có thể Undo ngay nếu chưa phù hợp.`,100);status(`✓ AI đã thêm ${add.length} field trên trang ${pageIndex+1}.`)}
+function aiApplyV460(minConf){
+  const f=form(),p=page();if(!f||!p||!aiPreviewV460.length)return;
+  const add=aiPreviewV460.filter(x=>x.aiInclude!==false&&Number(x.aiConfidence||0)>=Number(minConf||0));
+  if(!add.length)return alert('Không có gợi ý đã chọn đạt ngưỡng.');
+  const used=new Set((f.fields||[]).map(x=>String(x.key)));
+  for(const x of add){if(!x.key||used.has(String(x.key)))return alert('BIND/KEY bị trùng: '+String(x.key||'')+'. Hãy sửa trước khi Apply.');used.add(String(x.key))}
+  pushHistory();f.fields=Array.isArray(f.fields)?f.fields:[];
+  for(const x0 of add){
+    const x=clone(x0);delete x.aiInclude;
+    if(f.legacy){x.customFieldV463=true;x.generatedFromLegacy=false;x.createdByFormManager=true;x.sourcePage=Number(p.sourcePage||pageNoV45(p)||0)}
+    f.fields.push(x)
+  }
+  saveLocal();aiPreviewV460=[];renderAll();aiRenderListV460();
+  $('v460AiApply').style.display='none';$('v460AiApply85').style.display='none';
+  aiSetV460(`✓ Đã thêm ${add.length} field đã duyệt. Có thể Undo ngay nếu chưa phù hợp.`,100);
+  status(`✓ AI đã thêm ${add.length} field đã được AD duyệt trên trang ${pageIndex+1}.`)
+}
 function aiClearFieldsV460(){const f=form(),p=page();if(!f||!p)return;const n=(f.fields||[]).filter(x=>x.pageId===p.id&&x.aiGenerated).length;if(!n)return alert('Trang này chưa có field do AI tạo.');if(!confirm(`Xóa ${n} field AI trên trang này? Field tạo/chỉnh tay sẽ giữ nguyên.`))return;pushHistory();f.fields=(f.fields||[]).filter(x=>!(x.pageId===p.id&&x.aiGenerated));aiPreviewV460=[];saveLocal();renderAll();aiSetV460(`✓ Đã xóa ${n} field AI.`,0)}
 
 function renderAll(){const fm=$('v440Fm');if(fm)fm.classList.toggle('v624Dense',currentId==='fsags54'||currentId==='fsags94');renderList();renderPages();renderEditor();renderInspector();$('v440Undo').disabled=!history.length;$('v440Redo').disabled=!future.length;if($('v450Test'))$('v450Test').textContent=testMode?'✕ THOÁT TEST':'👁 TEST HIỂN THỊ';renderTestModeUiV462();renderPerfV45();renderZoomUi();ensureWordRibbonV641();renderQuickBarV626();renderWordRibbonV641();renderMaxFormV627()}
