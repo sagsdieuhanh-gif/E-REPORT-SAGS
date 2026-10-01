@@ -1,8 +1,8 @@
 {
   "schema": 2,
-  "version": "V6.4.31",
-  "build": "V6.4.31-20261001-UNIFIED-UI-01",
-  "strategy": "unified-semantic-ui-version-sync",
+  "version": "V6.4.32",
+  "build": "V6.4.32-20261001-OPS-SLATE-UI-01",
+  "strategy": "ops-slate-ui-presentation-only",
   "mutableMetadata": [
     "./forms/forms.registry.json"
   ],
@@ -93,8 +93,8 @@
       "bytes": 41473
     },
     "./app/styles/new-ui-v1.css": {
-      "sha256": "f416e0aa42adee0d9f40f25f0a1378e4e914c8093ce9ad2e0b3fd9c81ae3394e",
-      "bytes": 140952
+      "sha256": "5c700107929415e07e95ced81840ae095c95877a420e42272825053671d510a2",
+      "bytes": 148510
     },
     "./assets/audio/alert-crosscheck-complete.mp3": {
       "sha256": "2291844c0abc77005a2e8800e0dc8115c373134385a31a5d3d9e5f920a5acc07",
@@ -233,8 +233,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "f847a9118d4b75c9219c77bfcc4a528078fbe2f705522826dc730f528d39e04b",
-      "bytes": 1434388
+      "sha256": "2b9da1f01294c1a4f9a479b1f961c97455d54d8d65b466efc2f5901068d6dcdb",
+      "bytes": 1434424
     },
     "./manifest.webmanifest": {
       "sha256": "b06aaccd8b182991ecbafd307a30089dec427860e59d22593e6ff7f39cf4cee2",
@@ -285,12 +285,12 @@
       "bytes": 5161
     },
     "./service-worker.js": {
-      "sha256": "bba6a04efc88355149c809f423ef179522dd2ac5e494236241510dcb43819705",
-      "bytes": 16204
+      "sha256": "f556898e1fc53e79892d2e36ad09d9256ebcf68bc775a956af0062f2deee6ee8",
+      "bytes": 16212
     },
     "./version.json": {
-      "sha256": "ca74d20a452848cfb51d00a247043ffe3691e275e9d908d1f17254960a6fcc6b",
-      "bytes": 729
+      "sha256": "0d2760194c398299cae347f7750fd65ad2afb102e1aa9246e7cc363e86adf83a",
+      "bytes": 667
     },
     "./app/modules/form-registry-runtime.v647.js": {
       "sha256": "396c6804cb9cdb45b9aaacc5f10f6c38529385b5fa1b51d9a7a120a31917f69f",
