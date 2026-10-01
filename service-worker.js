@@ -1,11 +1,11 @@
-/* E-REPORT SAGS V6.4.32 · OPS SLATE UI + VERSION SYNC + RTDB DATA SAVER + CORE STABILITY PRESERVED · IMMUTABLE EXECUTABLE PATHS / PINNED VERIFIED SHELL
+/* E-REPORT SAGS V6.4.32-FMTEST1 · OPS SLATE UI + VERSION SYNC + RTDB DATA SAVER + CORE STABILITY PRESERVED · IMMUTABLE EXECUTABLE PATHS / PINNED VERIFIED SHELL
    Base: V4.8.10B Layered PDF + HF1–HF4. Never mix navigation HTML with a different runtime.
 */
 'use strict';
-const BUILD='V6.4.32-20261001-OPS-SLATE-UI-01';
-const DISPLAY_VERSION='V6.4.32';
-const CACHE_NAME='sags-app-shell-v6432-ops-slate-ui-01';
-const META_CACHE_NAME='sags-app-meta-v6432-ops-slate-ui-01';
+const BUILD='V6.4.32-FMTEST1-20261001-FMTEST1';
+const DISPLAY_VERSION='V6.4.32-FMTEST1';
+const CACHE_NAME='sags-app-shell-v6432-fmtest1';
+const META_CACHE_NAME='sags-app-meta-v6432-fmtest1';
 const ASSET_MANIFEST_URL='./asset-manifest.json';
 const MUTABLE_METADATA=new Set(['./forms/forms.registry.json']);
 const SAGS_BOOTSTRAP=["./index.html","./app/core/app.v503.js","./app/styles/app.bundle.css","./app/core/runtime.v503hf2.bundle.js","./app/modules/daily-roster.v502.js","./app/modules/self-accept.v502.js","./app/modules/admin-reset.v503hf2.js","./app/modules/roster-lite.v5.js","./app/modules/carrier-notebook.v1.js","./app/modules/quick-entry.v1.js","./app/modules/tvj-gof-035.v630.js","./app/modules/tvj-gof-035.v631.js","./app/modules/tvj-gof-035.v632.js","./forms/fsags54/page-01.png","./forms/fsags94/page-01.png","./app/modules/fsags54-94.v622.js","./app/modules/form-registry-runtime.v647.js","./app/modules/form-registry-runtime.v6419.js","./app/modules/stability.v6.js","./app/modules/stability.v6-core.js","./app/modules/mobile-draft-recovery.v1.js","./app/modules/indexeddb-flight-store.v1.js","./app/modules/cross-browser-entry.v1.js","./app/modules/ui-preferences.v1.js","./app/styles/new-ui-v1.css","./service-worker.js","./version.json"];
