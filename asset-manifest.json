@@ -1,8 +1,8 @@
 {
   "schema": 2,
-  "version": "V6.4.27",
-  "build": "V6.4.27-20261001-STABILITY-HOTFIX-01",
-  "strategy": "stability-hotfix-no-additional-cleanup",
+  "version": "V6.4.28",
+  "build": "V6.4.28-20261001-FLIGHTOPS-UI-01",
+  "strategy": "flightops-ui-presentation-only",
   "mutableMetadata": [
     "./forms/forms.registry.json"
   ],
@@ -93,8 +93,8 @@
       "bytes": 41473
     },
     "./app/styles/new-ui-v1.css": {
-      "sha256": "569e1454d8adae702459f21a35417bc02852d197b19beb970c3ec58def458d26",
-      "bytes": 116565
+      "sha256": "3fd2e07fcb4159320c86c64ebd275cad66853ce3ef9dfb8de15709b078d2adfe",
+      "bytes": 133484
     },
     "./assets/audio/alert-crosscheck-complete.mp3": {
       "sha256": "2291844c0abc77005a2e8800e0dc8115c373134385a31a5d3d9e5f920a5acc07",
@@ -285,12 +285,12 @@
       "bytes": 5161
     },
     "./service-worker.js": {
-      "sha256": "746d0441c0e54c8e075dd72803a9a8378844ab244bc433fa7634c605172e9506",
-      "bytes": 16191
+      "sha256": "cea73730bf16d1a0a2f406e7a55e54bc45c12743851bc2b3fafc9f85f7d62966",
+      "bytes": 16179
     },
     "./version.json": {
-      "sha256": "2fa00a5be628eb0d6bb4dfb03cb34a2d090b5482bd1bfb908e738689094d4276",
-      "bytes": 633
+      "sha256": "9dec0dcc23a952f07a1c379deefc1b4e834c86a3ac9615017f3e26aad2cb33ed",
+      "bytes": 573
     },
     "./app/modules/form-registry-runtime.v647.js": {
       "sha256": "396c6804cb9cdb45b9aaacc5f10f6c38529385b5fa1b51d9a7a120a31917f69f",
