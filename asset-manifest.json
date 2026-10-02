@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V2.0.0",
-  "build": "V2.0.0-20261002-RELEASE-01",
+  "version": "V2.0.1",
+  "build": "V2.0.1-20261002-ACCOUNT-AUTH-02",
   "strategy": "atomic-v2-release",
   "mutableMetadata": [
     "./forms/forms.registry.json"
@@ -13,8 +13,8 @@
       "bytes": 673457
     },
     "./app/core/runtime.v503hf2.bundle.js": {
-      "sha256": "62d21e244ac88b3c6169cfdb24741427729e01748d387f2e082e59328b901285",
-      "bytes": 499257
+      "sha256": "129d44473ecd7701f843955ba1bcd4bc5aa6cecc737294efe98e5a389d60fff5",
+      "bytes": 499267
     },
     "./app/modules/admin-reset.v503hf2.js": {
       "sha256": "870c5be3c30f138098fae6231b3b5464fe675480cb8955ab9b8dd62421d4e419",
@@ -93,7 +93,7 @@
       "bytes": 41473
     },
     "./app/styles/new-ui-v1.css": {
-      "sha256": "1defc055b0d5f20899a14290362b913eaaab9e596891555288850f860c889135",
+      "sha256": "d76febbfe73f128d9b53d17a201209ad8c6119724955845c23c28f109aebafb5",
       "bytes": 247649
     },
     "./assets/audio/alert-crosscheck-complete.mp3": {
@@ -233,8 +233,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "47f3789fc42a1f239fea9ef6318c02bf6e0f0b22bfe2dc8a35a84d4fbf2d2e20",
-      "bytes": 79049
+      "sha256": "79fd5e0b230c1f48f3f9855d937515c0d40fe5010481c0cd92cb295f9d73585d",
+      "bytes": 79519
     },
     "./manifest.webmanifest": {
       "sha256": "406dd3d0556447797d7581678e7a48e609f05eb77e42a30ea609086154d41bf0",
@@ -285,12 +285,12 @@
       "bytes": 2993
     },
     "./service-worker.js": {
-      "sha256": "e1eaa61ba6e077b6c1f4e5ee04320e2672d731eeb6981754c7c42095ebf49084",
-      "bytes": 20819
+      "sha256": "78132830ed5b07347271d5c11601ce3e61173a5ff453f7dafd05bb45d9e503c1",
+      "bytes": 20834
     },
     "./version.json": {
-      "sha256": "92054490d4676cb07a2f09fbd7588fec44121356b251897d097882c26b33e755",
-      "bytes": 474
+      "sha256": "5cf390d700c7d89c40d9c6d841c3e8b7d8ef3f45472b670c4389c1e219eb379b",
+      "bytes": 523
     },
     "./app/modules/form-registry-runtime.v647.js": {
       "sha256": "38273ccd7794e4790c37b5a8594edeaefd412917af2c928245bf8a89b0a8a5f2",
@@ -317,8 +317,8 @@
       "bytes": 412
     },
     "./app/boot/05-legacy.js": {
-      "sha256": "b0cba47f92983a3a6556ad55542700bd1476e910976c4e633fc8a5f6c0c6da66",
-      "bytes": 293541
+      "sha256": "da5e88b3a086130429b312d7bf4685a72bc471882750b18f6141a54efbfbf009",
+      "bytes": 293546
     },
     "./app/boot/06-legacy.js": {
       "sha256": "567f8d8a4c799969b3745794233b730ca48bbd757ee2db3b95552533ed4b91c6",
@@ -353,8 +353,8 @@
       "bytes": 13279
     },
     "./app/boot/14-v18CanonicalAccountHierarchy.js": {
-      "sha256": "064f36702399ec4742fd219f9bb4a07632bdf57df30916301c278841108b2f65",
-      "bytes": 20947
+      "sha256": "abf5efb57efb2495fd058ac11a75911a9c523c307762daac39e7b6dea648db21",
+      "bytes": 22214
     },
     "./app/boot/15-v116-account-name-search.js": {
       "sha256": "b2ffc046f021ab5218cc5a5090fd7cee940451e85c6db0d332c39f9036e55eb1",
@@ -381,8 +381,8 @@
       "bytes": 20404
     },
     "./app/boot/21-v154-rtdb-first-permissions.js": {
-      "sha256": "b642a20ba370e95ce82512d50b3a7bec8f4a43637e7d0a0c37c6f6d61a3e5929",
-      "bytes": 4879
+      "sha256": "12a7c9ef1545bafd8684d3081c457d89c4de38bc7ba528e217b72050b065d19d",
+      "bytes": 4884
     },
     "./app/boot/22-v1121-ios-time-footer-script.js": {
       "sha256": "0088a2fe94374f09d95a7ed9c685010c86880d9c0c0d48f2ada57e085b21f8be",
@@ -413,16 +413,16 @@
       "bytes": 1329
     },
     "./app/boot/29-sags-v6118-carrier-lazy.js": {
-      "sha256": "e8ec3e8abd4dc8902c434e9cca22f4763d44b5eaae70be863f694ec00a88ac28",
-      "bytes": 1552
+      "sha256": "1dd0399c8529a9c711b565080d8170c1612eb40a9fc97e9d33ebd188c4cb5089",
+      "bytes": 1557
     },
     "./app/boot/30-sags-v6120-all-form-render-standard.js": {
       "sha256": "35e0834d6c2d58c1dd9d0fda6e8a9d9375de88ddaea64f7e5b24cf962e575d51",
       "bytes": 3039
     },
     "./app/boot/31-sags-grnd-ls-v621.js": {
-      "sha256": "7462bf43ed8136e5d5629ef52f0afb0a7f614e0dcbc1800bcd10a8f6715d4819",
-      "bytes": 15974
+      "sha256": "ab62396237ea19008842edc95be8906d4f9fa26738434417fbb5496d6d4d89eb",
+      "bytes": 15979
     },
     "./app/styles/boot-01-legacy.css": {
       "sha256": "fa00cde1d78de014a3c0341b9741993441fa4a8a0b8aad860f916a50613e7bb4",

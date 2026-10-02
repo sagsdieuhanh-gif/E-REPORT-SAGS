@@ -1,12 +1,12 @@
 {
-  "version": "V2.0.0",
-  "displayVersion": "V2.0.0",
+  "version": "V2.0.1",
+  "displayVersion": "V2.0.1",
   "label": "E-REPORT-SAGS V2",
-  "build": "V2.0.0-20261002-RELEASE-01",
-  "releasedAt": "2026-10-02T05:53:41.881Z",
+  "build": "V2.0.1-20261002-ACCOUNT-AUTH-02",
+  "releasedAt": "2026-10-02T06:06:33.109Z",
   "type": "release",
   "base": "V1 — bản sửa 24",
   "updatePolicy": "required",
   "notes": "V2 kế thừa toàn bộ sửa lỗi vận hành, mobile, quản lý biểu mẫu và tối ưu dữ liệu của bản V1 đã kiểm tra.",
-  "message": "E-REPORT-SAGS V2: bản chính thức mới."
+  "message": "V2.0.1: sửa AD tạo tài khoản Firebase Authentication và hồ sơ users theo UID."
 }
