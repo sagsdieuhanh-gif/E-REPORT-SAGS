@@ -1,0 +1,1128 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function activeUser() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.active == true;
+    }
+
+    function isAdmin() {
+      return activeUser()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['ADMIN','AD'];
+    }
+
+    function sharedPilotOperator() {
+      return activeUser()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role
+             in ["ADMIN", "AD", "DH", "ĐH", "CBTT", "PVHK"];
+    }
+
+    function currentRole() {
+      return activeUser()
+        ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role
+        : null;
+    }
+
+    function sharedSectionWriter(sectionId) {
+      return sharedPilotOperator()
+        && (
+          currentRole() in ["ADMIN", "AD"]
+          || (currentRole() == "CBTT" && sectionId == "CBTT")
+          || (currentRole() in ["DH", "ĐH"] && sectionId == "DH")
+          || (currentRole() == "PVHK" && sectionId == "PVHK")
+        );
+    }
+
+    function ketSoWriter() {
+      return activeUser()
+        && currentRole() in ["ADMIN", "AD", "PVHK"];
+    }
+
+    function finalWriter() {
+      return activeUser()
+        && currentRole() in ["ADMIN", "AD", "CBTT"];
+    }
+
+    function pilotAdmin() {
+      return activeUser()
+        && currentRole() in ["ADMIN", "AD"];
+    }
+
+    function dhCrosscheckStarter() {
+      return activeUser()
+        && currentRole() in ["ADMIN", "AD", "DH", "ĐH"];
+    }
+
+    function crosscheckDhActor(data) {
+      return activeUser()
+        && (
+          pilotAdmin()
+          || (
+            currentRole() in ["DH", "ĐH"]
+            && data.dhUid == request.auth.uid
+          )
+        );
+    }
+
+    function crosscheckCbttActor(data) {
+      return activeUser()
+        && (
+          pilotAdmin()
+          || (
+            currentRole() == "CBTT"
+            && data.cbttUid == request.auth.uid
+          )
+        );
+    }
+
+    function validCrosscheckImageData(dataUrl) {
+      return dataUrl is string
+        && dataUrl.matches('data:image/.*')
+        && dataUrl.size() >= 100
+        && dataUrl.size() <= 700000;
+    }
+
+    function validCrosscheckImageMeta(meta) {
+      return meta is map
+        && meta.keys().hasOnly([
+          'name',
+          'type',
+          'size',
+          'sha256',
+          'capturedAtMs'
+        ])
+        && meta.name is string
+        && meta.name.size() > 0
+        && meta.name.size() <= 160
+        && meta.type is string
+        && meta.type.matches('image/.*')
+        && meta.type.size() <= 100
+        && meta.size is int
+        && meta.size > 0
+        && meta.size <= 10485760
+        && meta.sha256 is string
+        && meta.sha256.size() == 64
+        && meta.capturedAtMs is int
+        && meta.capturedAtMs > 0;
+    }
+
+    function workflowEventRoleAllowed(type) {
+      return activeUser()
+        && (
+          currentRole() in ["ADMIN", "AD"]
+          || (type == "KET_SO_SENT" && currentRole() == "PVHK")
+          || (type == "FINAL_SENT" && currentRole() == "CBTT")
+          || (
+            type in ["DH_CHECK_STARTED", "DH_CHECK_IMAGE_SENT"]
+            && currentRole() in ["DH", "ĐH"]
+          )
+          || (
+            type in [
+              "CBTT_CHECK_STARTED",
+              "CROSSCHECK_OK",
+              "CROSSCHECK_MISMATCH"
+            ]
+            && currentRole() == "CBTT"
+          )
+        );
+    }
+
+    function validWorkflowEventId(data) {
+      return (
+        data.type == "KET_SO_SENT"
+        && data.eventId == "KS_" + data.subjectId
+      )
+      || (
+        data.type == "FINAL_SENT"
+        && data.eventId == "FN_" + data.subjectId
+      )
+      || (
+        data.type == "DH_CHECK_STARTED"
+        && data.eventId == "XC_DH_START_" + data.subjectId
+      )
+      || (
+        data.type == "DH_CHECK_IMAGE_SENT"
+        && data.eventId == "XC_DH_IMAGE_" + data.subjectId
+      )
+      || (
+        data.type == "CBTT_CHECK_STARTED"
+        && data.eventId == "XC_CBTT_START_" + data.subjectId
+      )
+      || (
+        data.type == "CROSSCHECK_OK"
+        && data.eventId == "XC_OK_" + data.subjectId
+      )
+      || (
+        data.type == "CROSSCHECK_MISMATCH"
+        && data.eventId == "XC_MISMATCH_" + data.subjectId
+      );
+    }
+
+    function workflowStageMatches(data) {
+      return (
+        data.type == "KET_SO_SENT"
+        && data.entity == "KET_SO"
+        && data.stageAfter == "KET_SO_READY"
+      )
+      || (
+        data.type == "FINAL_SENT"
+        && data.entity == "FINAL"
+        && data.stageAfter == "FINAL_READY"
+      )
+      || (
+        data.type == "DH_CHECK_STARTED"
+        && data.entity == "CROSSCHECK"
+        && data.stageAfter == "DH_CHECKING"
+      )
+      || (
+        data.type == "DH_CHECK_IMAGE_SENT"
+        && data.entity == "CROSSCHECK"
+        && data.stageAfter == "IMAGE_SENT"
+      )
+      || (
+        data.type == "CBTT_CHECK_STARTED"
+        && data.entity == "CROSSCHECK"
+        && data.stageAfter == "CBTT_CHECKING"
+      )
+      || (
+        data.type == "CROSSCHECK_OK"
+        && data.entity == "CROSSCHECK"
+        && data.stageAfter == "COMPLETE"
+      )
+      || (
+        data.type == "CROSSCHECK_MISMATCH"
+        && data.entity == "CROSSCHECK"
+        && data.stageAfter == "MISMATCH"
+      );
+    }
+
+    function workflowEventMatchesBusinessState(flightId, data) {
+      return (
+        data.type == "KET_SO_SENT"
+        && getAfter(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/business/KET_SO).data.currentRevision
+             == data.entityRevision
+        && getAfter(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/business/KET_SO).data.updatedByUid
+             == request.auth.uid
+        && getAfter(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/business/KET_SO).data.updatedAtMs
+             == data.atMs
+        && getAfter(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/business/KET_SO/revisions/$(data.subjectId)).data.revision
+             == data.entityRevision
+      )
+      || (
+        data.type == "FINAL_SENT"
+        && getAfter(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/business/FINAL).data.currentRevision
+             == data.entityRevision
+        && getAfter(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/business/FINAL).data.updatedByUid
+             == request.auth.uid
+        && getAfter(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/business/FINAL).data.updatedAtMs
+             == data.atMs
+        && getAfter(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/business/FINAL/revisions/$(data.subjectId)).data.revision
+             == data.entityRevision
+        && getAfter(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/business/FINAL).data.basisKetSoRevision
+             == data.basisKetSoRevision
+      )
+      || (
+        data.entity == "CROSSCHECK"
+        && getAfter(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/business/FINAL/crosschecks/$(data.subjectId)).data.finalRevision
+             == data.entityRevision
+        && getAfter(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/business/FINAL/crosschecks/$(data.subjectId)).data.basisKetSoRevision
+             == data.basisKetSoRevision
+        && getAfter(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/business/FINAL/crosschecks/$(data.subjectId)).data.updatedAtMs
+             == data.atMs
+        && (
+          (
+            data.type == "DH_CHECK_STARTED"
+            && getAfter(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/business/FINAL/crosschecks/$(data.subjectId)).data.status
+                 == "DH_CHECKING"
+            && getAfter(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/business/FINAL/crosschecks/$(data.subjectId)).data.lastAction
+                 == "DH_START"
+          )
+          || (
+            data.type == "DH_CHECK_IMAGE_SENT"
+            && getAfter(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/business/FINAL/crosschecks/$(data.subjectId)).data.status
+                 == "IMAGE_SENT"
+            && getAfter(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/business/FINAL/crosschecks/$(data.subjectId)).data.lastAction
+                 == "DH_IMAGE"
+          )
+          || (
+            data.type == "CBTT_CHECK_STARTED"
+            && getAfter(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/business/FINAL/crosschecks/$(data.subjectId)).data.status
+                 == "CBTT_CHECKING"
+            && getAfter(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/business/FINAL/crosschecks/$(data.subjectId)).data.lastAction
+                 == "CBTT_START"
+          )
+          || (
+            data.type == "CROSSCHECK_OK"
+            && getAfter(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/business/FINAL/crosschecks/$(data.subjectId)).data.status
+                 == "OK"
+            && getAfter(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/business/FINAL/crosschecks/$(data.subjectId)).data.lastAction
+                 == "CBTT_OK"
+          )
+          || (
+            data.type == "CROSSCHECK_MISMATCH"
+            && getAfter(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/business/FINAL/crosschecks/$(data.subjectId)).data.status
+                 == "MISMATCH"
+            && getAfter(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/business/FINAL/crosschecks/$(data.subjectId)).data.lastAction
+                 == "CBTT_MISMATCH"
+          )
+        )
+      );
+    }
+
+    function workflowProjectionMatchesEvent(flightId, data) {
+      return existsAfter(
+          /databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/workflow_events/$(data.lastEventId)
+        )
+        && getAfter(
+          /databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/workflow_events/$(data.lastEventId)
+        ).data.sequence == data.sequence
+        && getAfter(
+          /databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/workflow_events/$(data.lastEventId)
+        ).data.stageAfter == data.stage
+        && getAfter(
+          /databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/workflow_events/$(data.lastEventId)
+        ).data.type == data.lastEventType
+        && getAfter(
+          /databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/workflow_events/$(data.lastEventId)
+        ).data.entity == data.lastEntity
+        && getAfter(
+          /databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/workflow_events/$(data.lastEventId)
+        ).data.entityRevision == data.lastEntityRevision
+        && getAfter(
+          /databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/workflow_events/$(data.lastEventId)
+        ).data.actorUid == data.lastActorUid
+        && getAfter(
+          /databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/workflow_events/$(data.lastEventId)
+        ).data.atMs == data.updatedAtMs;
+    }
+
+    function validKetSoData(data) {
+      return data is map
+        && data.keys().hasOnly([
+          'adl',
+          'chd',
+          'inf',
+          'pcs',
+          'kg'
+        ])
+        && data.adl is int && data.adl >= 0
+        && data.chd is int && data.chd >= 0
+        && data.inf is int && data.inf >= 0
+        && data.pcs is int && data.pcs >= 0
+        && data.kg is int && data.kg >= 0;
+    }
+
+    match /users/{uid} {
+
+      allow read: if signedIn()
+        && (request.auth.uid == uid || isAdmin());
+
+      allow create: if isAdmin()
+        && request.resource.data.active is bool
+        && request.resource.data.email is string
+        && request.resource.data.role is string
+        && request.resource.data.username is string;
+
+      allow update: if isAdmin()
+        || (
+          activeUser()
+          && request.auth.uid == uid
+          && request.resource.data.diff(resource.data).affectedKeys()
+               .hasOnly([
+                 'mustChangePassword',
+                 'passwordChangedAtMs'
+               ])
+          && request.resource.data.active == resource.data.active
+          && request.resource.data.role == resource.data.role
+          && request.resource.data.username == resource.data.username
+          && request.resource.data.email == resource.data.email
+        );
+
+      allow delete: if isAdmin()
+        && request.auth.uid != uid;
+    }
+
+    match /sags_handovers/{document=**} {
+
+      allow read, create, update: if activeUser();
+
+      allow delete: if isAdmin();
+    }
+
+    // NEW EREPORT V1.10: minimal read-only readiness probe.
+    // Only the exact meta document can be read, only by an active signed-in user.
+    // Listing/querying the collection and all writes remain denied.
+    match /new_ereport_v1/meta {
+      allow get: if activeUser();
+      allow list, create, update, delete: if false;
+    }
+
+    // NEW EREPORT V1.11: isolated per-user sandbox write probe.
+    // No list access and no production Flight Snapshot writes.
+    match /new_ereport_v1_sandbox/{uid} {
+      allow get: if activeUser()
+        && request.auth.uid == uid;
+
+      allow list: if false;
+
+      allow create, update: if activeUser()
+        && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly([
+          'schemaVersion',
+          'kind',
+          'uid',
+          'appVersion',
+          'updatedAtMs'
+        ])
+        && request.resource.data.schemaVersion == 1
+        && request.resource.data.kind == "WRITE_PROBE"
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.appVersion is string
+        && request.resource.data.updatedAtMs is int
+        && request.resource.data.updatedAtMs > 0;
+
+      allow delete: if activeUser()
+        && request.auth.uid == uid;
+    }
+
+    // NEW EREPORT V1.12: isolated Flight Snapshot pilot per signed-in user.
+    // Pilot data is not production flight data and cannot be listed.
+    match /new_ereport_v1/pilot/users/{uid}/flights/{flightId} {
+      allow get: if activeUser()
+        && request.auth.uid == uid;
+
+      allow list: if false;
+
+      allow create, update: if activeUser()
+        && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly([
+          'kind',
+          'ownerUid',
+          'updatedAtMs',
+          'snapshot'
+        ])
+        && request.resource.data.kind == "FLIGHT_SNAPSHOT_PILOT"
+        && request.resource.data.ownerUid == request.auth.uid
+        && request.resource.data.updatedAtMs is int
+        && request.resource.data.updatedAtMs > 0
+        && request.resource.data.snapshot is map
+        && request.resource.data.snapshot.keys().hasOnly([
+          'schemaVersion',
+          'flightId',
+          'operationDate',
+          'identity',
+          'workflow',
+          'schedule',
+          'aircraft',
+          'current'
+        ])
+        && request.resource.data.snapshot.schemaVersion == 1
+        && request.resource.data.snapshot.flightId == flightId
+        && request.resource.data.snapshot.operationDate is string
+        && request.resource.data.snapshot.identity is map
+        && request.resource.data.snapshot.identity.keys().hasOnly([
+          'flightNo',
+          'origin',
+          'destination'
+        ])
+        && request.resource.data.snapshot.identity.flightNo == "TST001"
+        && request.resource.data.snapshot.identity.origin == "CXR"
+        && request.resource.data.snapshot.identity.destination == "SGN"
+        && request.resource.data.snapshot.workflow is map
+        && request.resource.data.snapshot.workflow.keys().hasOnly([
+          'step',
+          'revision'
+        ])
+        && request.resource.data.snapshot.workflow.step == "FLIGHT_OPEN"
+        && request.resource.data.snapshot.workflow.revision == 0;
+
+      allow delete: if activeUser()
+        && request.auth.uid == uid
+        && resource.data.ownerUid == request.auth.uid
+        && resource.data.kind == "FLIGHT_SNAPSHOT_PILOT";
+    }
+
+    // NEW EREPORT V1.13: one shared Flight Workspace pilot.
+    // All active users can exact-read the same TST001 record.
+    // Operational roles can create/touch/delete the shared pilot.
+    match /new_ereport_v1/shared_pilot/flights/{flightId} {
+      allow get: if activeUser();
+      allow list: if false;
+
+      allow create: if sharedPilotOperator()
+        && request.resource.data.keys().hasOnly([
+          'kind',
+          'createdByUid',
+          'updatedByUid',
+          'createdAtMs',
+          'updatedAtMs',
+          'workspaceRevision',
+          'snapshot'
+        ])
+        && request.resource.data.kind == "SHARED_FLIGHT_WORKSPACE_PILOT"
+        && request.resource.data.createdByUid == request.auth.uid
+        && request.resource.data.updatedByUid == request.auth.uid
+        && request.resource.data.createdAtMs is int
+        && request.resource.data.createdAtMs > 0
+        && request.resource.data.updatedAtMs == request.resource.data.createdAtMs
+        && request.resource.data.workspaceRevision == 0
+        && request.resource.data.snapshot is map
+        && request.resource.data.snapshot.keys().hasOnly([
+          'schemaVersion',
+          'flightId',
+          'operationDate',
+          'identity',
+          'workflow',
+          'schedule',
+          'aircraft',
+          'current'
+        ])
+        && request.resource.data.snapshot.schemaVersion == 1
+        && request.resource.data.snapshot.flightId == flightId
+        && request.resource.data.snapshot.operationDate is string
+        && request.resource.data.snapshot.identity is map
+        && request.resource.data.snapshot.identity.keys().hasOnly([
+          'flightNo',
+          'origin',
+          'destination'
+        ])
+        && request.resource.data.snapshot.identity.flightNo == "TST001"
+        && request.resource.data.snapshot.identity.origin == "CXR"
+        && request.resource.data.snapshot.identity.destination == "SGN"
+        && request.resource.data.snapshot.workflow is map
+        && request.resource.data.snapshot.workflow.keys().hasOnly([
+          'step',
+          'revision'
+        ])
+        && request.resource.data.snapshot.workflow.step == "FLIGHT_OPEN"
+        && request.resource.data.snapshot.workflow.revision == 0;
+
+      allow update: if sharedPilotOperator()
+        && request.resource.data.keys().hasOnly([
+          'kind',
+          'createdByUid',
+          'updatedByUid',
+          'createdAtMs',
+          'updatedAtMs',
+          'workspaceRevision',
+          'snapshot'
+        ])
+        && request.resource.data.kind == resource.data.kind
+        && request.resource.data.createdByUid == resource.data.createdByUid
+        && request.resource.data.createdAtMs == resource.data.createdAtMs
+        && request.resource.data.snapshot == resource.data.snapshot
+        && request.resource.data.updatedByUid == request.auth.uid
+        && request.resource.data.updatedAtMs is int
+        && request.resource.data.updatedAtMs > resource.data.updatedAtMs
+        && request.resource.data.workspaceRevision == resource.data.workspaceRevision + 1;
+
+      allow delete: if sharedPilotOperator()
+        && resource.data.kind == "SHARED_FLIGHT_WORKSPACE_PILOT";
+    }
+
+    // NEW EREPORT V1.14: role-scoped sections under the same shared workspace.
+    // Known sections are exact-read by active users; each role writes only its own section.
+    match /new_ereport_v1/shared_pilot/flights/{flightId}/sections/{sectionId} {
+      allow get: if activeUser()
+        && sectionId in ["CBTT", "DH", "PVHK"];
+
+      allow list: if false;
+
+      allow create: if sharedSectionWriter(sectionId)
+        && exists(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId))
+        && request.resource.data.keys().hasOnly([
+          'kind',
+          'sectionId',
+          'createdByUid',
+          'updatedByUid',
+          'createdAtMs',
+          'updatedAtMs',
+          'revision',
+          'lastAction'
+        ])
+        && request.resource.data.kind == "SHARED_ROLE_SECTION_PILOT"
+        && request.resource.data.sectionId == sectionId
+        && request.resource.data.createdByUid == request.auth.uid
+        && request.resource.data.updatedByUid == request.auth.uid
+        && request.resource.data.createdAtMs is int
+        && request.resource.data.createdAtMs > 0
+        && request.resource.data.updatedAtMs == request.resource.data.createdAtMs
+        && request.resource.data.revision == 0
+        && request.resource.data.lastAction == "ROLE_TOUCH";
+
+      allow update: if sharedSectionWriter(sectionId)
+        && request.resource.data.keys().hasOnly([
+          'kind',
+          'sectionId',
+          'createdByUid',
+          'updatedByUid',
+          'createdAtMs',
+          'updatedAtMs',
+          'revision',
+          'lastAction'
+        ])
+        && request.resource.data.kind == resource.data.kind
+        && request.resource.data.sectionId == resource.data.sectionId
+        && request.resource.data.createdByUid == resource.data.createdByUid
+        && request.resource.data.createdAtMs == resource.data.createdAtMs
+        && request.resource.data.updatedByUid == request.auth.uid
+        && request.resource.data.updatedAtMs is int
+        && request.resource.data.updatedAtMs > resource.data.updatedAtMs
+        && request.resource.data.revision == resource.data.revision + 1
+        && request.resource.data.lastAction == "ROLE_TOUCH";
+
+      allow delete: if sharedSectionWriter(sectionId)
+        && resource.data.kind == "SHARED_ROLE_SECTION_PILOT"
+        && resource.data.sectionId == sectionId;
+    }
+
+    // NEW EREPORT V1.16: KẾT SỔ business pilot in the shared TST001 workspace.
+    // PVHK (and AD/ADMIN for pilot administration) can send revisions.
+    // All active users can exact-read current and known revision documents.
+    match /new_ereport_v1/shared_pilot/flights/{flightId}/business/KET_SO {
+      allow get: if activeUser();
+      allow list: if false;
+
+      allow create: if ketSoWriter()
+        && exists(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId))
+        && request.resource.data.keys().hasOnly([
+          'kind',
+          'flightId',
+          'currentRevision',
+          'createdByUid',
+          'updatedByUid',
+          'createdAtMs',
+          'updatedAtMs',
+          'firstData',
+          'latestData'
+        ])
+        && request.resource.data.kind == "KET_SO_PILOT_CURRENT"
+        && request.resource.data.flightId == flightId
+        && request.resource.data.currentRevision == 1
+        && request.resource.data.createdByUid == request.auth.uid
+        && request.resource.data.updatedByUid == request.auth.uid
+        && request.resource.data.createdAtMs is int
+        && request.resource.data.createdAtMs > 0
+        && request.resource.data.updatedAtMs == request.resource.data.createdAtMs
+        && validKetSoData(request.resource.data.firstData)
+        && validKetSoData(request.resource.data.latestData)
+        && request.resource.data.firstData == request.resource.data.latestData;
+
+      allow update: if ketSoWriter()
+        && request.resource.data.keys().hasOnly([
+          'kind',
+          'flightId',
+          'currentRevision',
+          'createdByUid',
+          'updatedByUid',
+          'createdAtMs',
+          'updatedAtMs',
+          'firstData',
+          'latestData'
+        ])
+        && request.resource.data.kind == resource.data.kind
+        && request.resource.data.flightId == resource.data.flightId
+        && request.resource.data.flightId == flightId
+        && request.resource.data.currentRevision == resource.data.currentRevision + 1
+        && request.resource.data.createdByUid == resource.data.createdByUid
+        && request.resource.data.createdAtMs == resource.data.createdAtMs
+        && request.resource.data.firstData == resource.data.firstData
+        && request.resource.data.updatedByUid == request.auth.uid
+        && request.resource.data.updatedAtMs is int
+        && request.resource.data.updatedAtMs > resource.data.updatedAtMs
+        && validKetSoData(request.resource.data.latestData);
+
+      allow delete: if false;
+    }
+
+    match /new_ereport_v1/shared_pilot/flights/{flightId}/business/KET_SO/revisions/{revisionId} {
+      allow get: if activeUser();
+      allow list: if false;
+
+      allow create: if ketSoWriter()
+        && exists(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId))
+        && request.resource.data.keys().hasOnly([
+          'kind',
+          'flightId',
+          'revision',
+          'sentByUid',
+          'sentAtMs',
+          'data'
+        ])
+        && request.resource.data.kind == "KET_SO_PILOT_REVISION"
+        && request.resource.data.flightId == flightId
+        && request.resource.data.revision is int
+        && request.resource.data.revision >= 1
+        && request.resource.data.sentByUid == request.auth.uid
+        && request.resource.data.sentAtMs is int
+        && request.resource.data.sentAtMs > 0
+        && validKetSoData(request.resource.data.data);
+
+      allow update, delete: if false;
+    }
+
+    // NEW EREPORT V1.17: FINAL business pilot bound to the current KẾT SỔ revision.
+    // CBTT (and AD/ADMIN for pilot administration) can send FINAL revisions.
+    match /new_ereport_v1/shared_pilot/flights/{flightId}/business/FINAL {
+      allow get: if activeUser();
+      allow list: if false;
+
+      allow create: if finalWriter()
+        && exists(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId))
+        && exists(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/business/KET_SO)
+        && request.resource.data.keys().hasOnly([
+          'kind',
+          'flightId',
+          'currentRevision',
+          'basisKetSoRevision',
+          'createdByUid',
+          'updatedByUid',
+          'createdAtMs',
+          'updatedAtMs',
+          'latestData'
+        ])
+        && request.resource.data.kind == "FINAL_PILOT_CURRENT"
+        && request.resource.data.flightId == flightId
+        && request.resource.data.currentRevision == 1
+        && request.resource.data.basisKetSoRevision
+             == get(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/business/KET_SO).data.currentRevision
+        && request.resource.data.createdByUid == request.auth.uid
+        && request.resource.data.updatedByUid == request.auth.uid
+        && request.resource.data.createdAtMs is int
+        && request.resource.data.createdAtMs > 0
+        && request.resource.data.updatedAtMs == request.resource.data.createdAtMs
+        && validKetSoData(request.resource.data.latestData);
+
+      allow update: if finalWriter()
+        && exists(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/business/KET_SO)
+        && request.resource.data.keys().hasOnly([
+          'kind',
+          'flightId',
+          'currentRevision',
+          'basisKetSoRevision',
+          'createdByUid',
+          'updatedByUid',
+          'createdAtMs',
+          'updatedAtMs',
+          'latestData'
+        ])
+        && request.resource.data.kind == resource.data.kind
+        && request.resource.data.flightId == resource.data.flightId
+        && request.resource.data.flightId == flightId
+        && request.resource.data.currentRevision == resource.data.currentRevision + 1
+        && request.resource.data.basisKetSoRevision
+             == get(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/business/KET_SO).data.currentRevision
+        && request.resource.data.createdByUid == resource.data.createdByUid
+        && request.resource.data.createdAtMs == resource.data.createdAtMs
+        && request.resource.data.updatedByUid == request.auth.uid
+        && request.resource.data.updatedAtMs is int
+        && request.resource.data.updatedAtMs > resource.data.updatedAtMs
+        && validKetSoData(request.resource.data.latestData);
+
+      allow delete: if false;
+    }
+
+    match /new_ereport_v1/shared_pilot/flights/{flightId}/business/FINAL/revisions/{revisionId} {
+      allow get: if activeUser();
+      allow list: if false;
+
+      allow create: if finalWriter()
+        && exists(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/business/KET_SO)
+        && request.resource.data.keys().hasOnly([
+          'kind',
+          'flightId',
+          'revision',
+          'basisKetSoRevision',
+          'sentByUid',
+          'sentAtMs',
+          'data'
+        ])
+        && request.resource.data.kind == "FINAL_PILOT_REVISION"
+        && request.resource.data.flightId == flightId
+        && request.resource.data.revision is int
+        && request.resource.data.revision >= 1
+        && request.resource.data.basisKetSoRevision
+             == get(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/business/KET_SO).data.currentRevision
+        && request.resource.data.sentByUid == request.auth.uid
+        && request.resource.data.sentAtMs is int
+        && request.resource.data.sentAtMs > 0
+        && validKetSoData(request.resource.data.data)
+        && getAfter(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/business/FINAL).data.currentRevision
+             == request.resource.data.revision
+        && getAfter(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/business/FINAL).data.basisKetSoRevision
+             == request.resource.data.basisKetSoRevision
+        && getAfter(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/business/FINAL).data.latestData
+             == request.resource.data.data;
+
+      allow update, delete: if false;
+    }
+
+    // NEW EREPORT V1.18: sequential FINAL CHECK/CROSSCHECK pilot.
+    // One exact crosscheck document per FINAL revision.
+    match /new_ereport_v1/shared_pilot/flights/{flightId}/business/FINAL/crosschecks/{revisionId} {
+      allow get: if activeUser();
+      allow list: if false;
+
+      allow create: if dhCrosscheckStarter()
+        && exists(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/business/FINAL)
+        && exists(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/business/FINAL/revisions/$(revisionId))
+        && request.resource.data.keys().hasOnly([
+          'kind',
+          'flightId',
+          'finalRevision',
+          'basisKetSoRevision',
+          'status',
+          'dhUid',
+          'cbttUid',
+          'createdAtMs',
+          'updatedAtMs',
+          'dhStartedAtMs',
+          'imageSentAtMs',
+          'cbttStartedAtMs',
+          'completedAtMs',
+          'imageMeta',
+          'imageDataUrl',
+          'result',
+          'lastAction'
+        ])
+        && request.resource.data.kind == "FINAL_CROSSCHECK_PILOT"
+        && request.resource.data.flightId == flightId
+        && request.resource.data.finalRevision
+             == get(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/business/FINAL/revisions/$(revisionId)).data.revision
+        && request.resource.data.finalRevision
+             == get(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/business/FINAL).data.currentRevision
+        && request.resource.data.basisKetSoRevision
+             == get(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/business/FINAL/revisions/$(revisionId)).data.basisKetSoRevision
+        && request.resource.data.status == "DH_CHECKING"
+        && request.resource.data.dhUid == request.auth.uid
+        && request.resource.data.cbttUid
+             == get(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/business/FINAL/revisions/$(revisionId)).data.sentByUid
+        && request.resource.data.createdAtMs is int
+        && request.resource.data.createdAtMs > 0
+        && request.resource.data.updatedAtMs == request.resource.data.createdAtMs
+        && request.resource.data.dhStartedAtMs == request.resource.data.createdAtMs
+        && request.resource.data.imageSentAtMs == 0
+        && request.resource.data.cbttStartedAtMs == 0
+        && request.resource.data.completedAtMs == 0
+        && request.resource.data.imageMeta == null
+        && request.resource.data.imageDataUrl == null
+        && request.resource.data.result == null
+        && request.resource.data.lastAction == "DH_START";
+
+      allow update: if
+        get(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/business/FINAL).data.currentRevision
+             == resource.data.finalRevision
+        && request.resource.data.keys().hasOnly([
+          'kind',
+          'flightId',
+          'finalRevision',
+          'basisKetSoRevision',
+          'status',
+          'dhUid',
+          'cbttUid',
+          'createdAtMs',
+          'updatedAtMs',
+          'dhStartedAtMs',
+          'imageSentAtMs',
+          'cbttStartedAtMs',
+          'completedAtMs',
+          'imageMeta',
+          'imageDataUrl',
+          'result',
+          'lastAction'
+        ])
+        && request.resource.data.kind == resource.data.kind
+        && request.resource.data.flightId == resource.data.flightId
+        && request.resource.data.finalRevision == resource.data.finalRevision
+        && request.resource.data.basisKetSoRevision == resource.data.basisKetSoRevision
+        && request.resource.data.dhUid == resource.data.dhUid
+        && request.resource.data.cbttUid == resource.data.cbttUid
+        && request.resource.data.createdAtMs == resource.data.createdAtMs
+        && request.resource.data.dhStartedAtMs == resource.data.dhStartedAtMs
+        && request.resource.data.updatedAtMs is int
+        && request.resource.data.updatedAtMs > resource.data.updatedAtMs
+        && (
+          (
+            crosscheckDhActor(resource.data)
+            && resource.data.status == "DH_CHECKING"
+            && request.resource.data.status == "IMAGE_SENT"
+            && request.resource.data.imageSentAtMs == request.resource.data.updatedAtMs
+            && request.resource.data.cbttStartedAtMs == 0
+            && request.resource.data.completedAtMs == 0
+            && validCrosscheckImageMeta(request.resource.data.imageMeta)
+            && validCrosscheckImageData(request.resource.data.imageDataUrl)
+            && request.resource.data.result == null
+            && request.resource.data.lastAction == "DH_IMAGE"
+          )
+          ||
+          (
+            crosscheckCbttActor(resource.data)
+            && resource.data.status == "IMAGE_SENT"
+            && request.resource.data.status == "CBTT_CHECKING"
+            && request.resource.data.imageSentAtMs == resource.data.imageSentAtMs
+            && request.resource.data.imageMeta == resource.data.imageMeta
+            && request.resource.data.imageDataUrl == resource.data.imageDataUrl
+            && request.resource.data.cbttStartedAtMs == request.resource.data.updatedAtMs
+            && request.resource.data.completedAtMs == 0
+            && request.resource.data.result == null
+            && request.resource.data.lastAction == "CBTT_START"
+          )
+          ||
+          (
+            crosscheckCbttActor(resource.data)
+            && resource.data.status == "CBTT_CHECKING"
+            && request.resource.data.status in ["OK", "MISMATCH"]
+            && request.resource.data.imageSentAtMs == resource.data.imageSentAtMs
+            && request.resource.data.imageMeta == resource.data.imageMeta
+            && request.resource.data.imageDataUrl == resource.data.imageDataUrl
+            && request.resource.data.cbttStartedAtMs == resource.data.cbttStartedAtMs
+            && request.resource.data.completedAtMs == request.resource.data.updatedAtMs
+            && (
+              (
+                request.resource.data.status == "OK"
+                && request.resource.data.result == "OK"
+                && request.resource.data.lastAction == "CBTT_OK"
+              )
+              ||
+              (
+                request.resource.data.status == "MISMATCH"
+                && request.resource.data.result == "MISMATCH"
+                && request.resource.data.lastAction == "CBTT_MISMATCH"
+              )
+            )
+          )
+        );
+
+      allow delete: if false;
+    }
+
+    // NEW EREPORT V1.19: immutable workflow event log + latest projection.
+    match /new_ereport_v1/shared_pilot/flights/{flightId}/workflow_events/{eventId} {
+      allow get: if activeUser();
+      allow list: if false;
+
+      allow create: if workflowEventRoleAllowed(request.resource.data.type)
+        && request.resource.data.keys().hasOnly([
+          'kind',
+          'eventId',
+          'flightId',
+          'type',
+          'entity',
+          'entityRevision',
+          'subjectId',
+          'basisKetSoRevision',
+          'stageAfter',
+          'actorUid',
+          'sequence',
+          'atMs'
+        ])
+        && request.resource.data.kind == "WORKFLOW_EVENT_PILOT"
+        && request.resource.data.eventId == eventId
+        && request.resource.data.flightId == flightId
+        && request.resource.data.actorUid == request.auth.uid
+        && request.resource.data.entityRevision is int
+        && request.resource.data.entityRevision >= 1
+        && request.resource.data.subjectId is string
+        && request.resource.data.subjectId.size() > 1
+        && request.resource.data.basisKetSoRevision is int
+        && request.resource.data.basisKetSoRevision >= 0
+        && request.resource.data.sequence is int
+        && request.resource.data.sequence >= 1
+        && request.resource.data.atMs is int
+        && request.resource.data.atMs > 0
+        && validWorkflowEventId(request.resource.data)
+        && workflowStageMatches(request.resource.data)
+        && workflowEventMatchesBusinessState(
+          flightId,
+          request.resource.data
+        )
+        && getAfter(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/workflow/CURRENT).data.lastEventId
+             == request.resource.data.eventId
+        && getAfter(/databases/$(database)/documents/new_ereport_v1/shared_pilot/flights/$(flightId)/workflow/CURRENT).data.sequence
+             == request.resource.data.sequence;
+
+      allow update, delete: if false;
+    }
+
+    match /new_ereport_v1/shared_pilot/flights/{flightId}/workflow/CURRENT {
+      allow get: if activeUser();
+      allow list: if false;
+
+      allow create: if sharedPilotOperator()
+        && request.resource.data.keys().hasOnly([
+          'kind',
+          'flightId',
+          'sequence',
+          'stage',
+          'lastEventId',
+          'lastEventType',
+          'lastEntity',
+          'lastEntityRevision',
+          'lastActorUid',
+          'updatedAtMs'
+        ])
+        && request.resource.data.kind == "WORKFLOW_PROJECTION_PILOT"
+        && request.resource.data.flightId == flightId
+        && request.resource.data.sequence == 1
+        && request.resource.data.lastActorUid == request.auth.uid
+        && request.resource.data.lastEntityRevision is int
+        && request.resource.data.lastEntityRevision >= 1
+        && request.resource.data.updatedAtMs is int
+        && request.resource.data.updatedAtMs > 0
+        && workflowProjectionMatchesEvent(
+          flightId,
+          request.resource.data
+        );
+
+      allow update: if sharedPilotOperator()
+        && request.resource.data.keys().hasOnly([
+          'kind',
+          'flightId',
+          'sequence',
+          'stage',
+          'lastEventId',
+          'lastEventType',
+          'lastEntity',
+          'lastEntityRevision',
+          'lastActorUid',
+          'updatedAtMs'
+        ])
+        && request.resource.data.kind == resource.data.kind
+        && request.resource.data.flightId == resource.data.flightId
+        && request.resource.data.flightId == flightId
+        && request.resource.data.sequence == resource.data.sequence + 1
+        && request.resource.data.lastActorUid == request.auth.uid
+        && request.resource.data.updatedAtMs is int
+        && request.resource.data.updatedAtMs > resource.data.updatedAtMs
+        && workflowProjectionMatchesEvent(
+          flightId,
+          request.resource.data
+        );
+
+      allow delete: if false;
+    }
+
+
+    // PDH v8: isolated shared workspace; legacy rules above remain unchanged.
+    function pdhProfile() { return get(/databases/$(database)/documents/users/$(request.auth.uid)).data; }
+    function pdhRole() { let code = pdhProfile().get('roleCode', ''); return code == '' ? pdhProfile().role : code; }
+    function pdhMember() { let p = pdhProfile(); let code = p.get('roleCode', ''); let role = code == '' ? p.role : code; return signedIn() && p.active == true && p.get('mustChangePassword', false) == false && role in ['ADMIN','AD','DH','ĐH','CBTT','KH','VIEWER']; }
+    function pdhAdmin() { return pdhMember() && pdhRole() in ['ADMIN','AD']; }
+    function pdhOperator() { return pdhMember() && pdhRole() != 'VIEWER'; }
+    function pdhCanOperate(operationId) {
+      let op = get(/databases/$(database)/documents/pdh_v8_records/$('operations~' + operationId)).data.payload;
+      return pdhRole() in ['ADMIN','AD'] || (pdhRole() != 'VIEWER' && op.active == true && (pdhRole() in op.roles || (pdhRole() == 'ĐH' && 'DH' in op.roles)));
+    }
+    function pdhEnvelope() {
+      return request.resource.data.keys().hasOnly(['kind','payload','revision','updatedBy','updatedAt'])
+        && request.resource.data.updatedBy == request.auth.uid && request.resource.data.updatedAt == request.time
+        && request.resource.data.payload is map;
+    }
+    function pdhTemplateAllowed(family) { let p = pdhProfile(); let role = pdhRole(); let key = family in ['final-vj1','final-vj2','final-9g','final-vu','fsags54','fsags94'] ? 'FINAL' : family in ['fsags423','tvj_gof_035'] ? 'FSAGS423' : family == 'fsags421' ? 'FSAGS421' : family == 'fsags551' ? 'FSAGS551' : family == 'fsags208' ? 'FSAGS208' : family == 'bbbt' ? 'BBBT' : '';let baseline = key == '' || role in ['DH','ĐH'] || (role == 'CBTT' && key in ['FINAL','FSAGS208']) || (role == 'KH' && key == 'FSAGS208'); return p.get('templatePermissions', {}).get(family, p.get('featureOverridesV485', {}).get(key, baseline)) == true; }
+    function pdhAssigned(flightId, family) { return pdhRole() in ['ADMIN','AD'] || (pdhRole() != 'VIEWER' && get(/databases/$(database)/documents/pdh_v8_records/$('permissions~' + flightId)).data.payload.grants.get(request.auth.uid, {}).keys().hasAny([family, '*']) && pdhTemplateAllowed(family)); }
+    function pdhSignatureScope(old, p) { let legs = get(/databases/$(database)/documents/pdh_v8_records/$('permissions~' + old.flight.id)).data.payload.grants.get(request.auth.uid, {}).get(old.template.familyId, {'arr':false,'dep':false});let changed = p.values.diff(old.values).affectedKeys(); return pdhRole() in ['ADMIN','AD'] || ((legs.arr == true || !changed.hasAny(['sigArr','f421_sigArr','f551_sigArr'])) && (legs.dep == true || !changed.hasAny(['sigDep','f421_sigDep','f551_sigDep']))); }
+    function pdhReportCreate() {
+      let p = request.resource.data.payload;
+      let t = get(/databases/$(database)/documents/pdh_v8_records/$('templates~' + p.template.id)).data.payload;
+      return pdhCanOperate(p.operationId) && pdhAssigned(p.flight.id, p.template.familyId) && p.template == t && t.active == true
+        && p.operationId == t.operationId && p.status == 'draft' && p.created.uid == request.auth.uid;
+    }
+    function pdhReportUpdate() {
+      let p = request.resource.data.payload;
+      let old = resource.data.payload;
+      return p.id == old.id && p.template == old.template && p.flight == old.flight
+        && p.operationId == old.operationId && p.created == old.created
+        && ((old.status == 'draft' && pdhCanOperate(old.operationId) && pdhAssigned(old.flight.id,old.template.familyId) && pdhSignatureScope(old,p)
+          && p.diff(old).affectedKeys().hasOnly(['values','audit','status','completed'])
+          && p.status in ['draft','complete']
+          && (p.status == 'draft' || p.completed.uid == request.auth.uid))
+        || (old.status == 'complete' && (pdhAdmin() || pdhRole() in ['DH','ĐH'])
+          && !('dhAck' in old) && p.diff(old).affectedKeys().hasOnly(['dhAck','audit'])
+          && p.dhAck.uid == request.auth.uid));
+    }
+    function pdhConfigWriter(kind) { let overrides = pdhProfile().get('featureOverridesV485', {}); return pdhAdmin() || (pdhOperator() && ((kind == 'fleet' && overrides.get('FLEET', false) == true) || (kind in ['assignments','importBatches','permissions'] && (overrides.get('DAILY_ROSTER', false) == true || overrides.get('REASSIGN_FLIGHT', false) == true)))); }
+    function pdhConfigKind(kind) { return kind in ['operations','templates','drafts','limits','fleet','members','assignments','importBatches','permissions','directory']; }
+    match /pdh_v8_records/{id} {
+      allow read: if pdhMember();
+      allow create: if pdhMember() && pdhEnvelope() && request.resource.data.revision == 1
+        && ((pdhConfigKind(request.resource.data.kind) && pdhConfigWriter(request.resource.data.kind))
+          || (request.resource.data.kind in ['flights','audit','acks','documents','crosschecks','messages','dailySummaries'] && pdhOperator())
+          || (request.resource.data.kind == 'reports' && pdhReportCreate()));
+      allow update: if pdhMember() && pdhEnvelope() && request.resource.data.kind == resource.data.kind
+        && request.resource.data.revision == resource.data.revision + 1
+        && ((pdhConfigKind(resource.data.kind) && pdhConfigWriter(resource.data.kind)
+          && (resource.data.kind != 'templates' || request.resource.data.payload.diff(resource.data.payload).affectedKeys().hasOnly(['active'])))
+          || (resource.data.kind in ['crosschecks','messages','dailySummaries'] && pdhOperator())
+          || (resource.data.kind == 'assignments' && pdhOperator() && resource.data.payload.userId == request.auth.uid && request.resource.data.payload.diff(resource.data.payload).affectedKeys().hasOnly(['completed']) && request.resource.data.payload.completed.uid == request.auth.uid)
+          || (resource.data.kind == 'flights' && pdhOperator())
+          || (resource.data.kind == 'reports' && pdhReportUpdate()));
+      allow delete: if pdhAdmin() && resource.data.kind in ['drafts','limits'];
+    }
+    match /pdh_v8_assets/{assetId} {
+      allow read: if pdhMember();
+      allow create: if pdhOperator() && request.resource.data.keys().hasOnly(['chunks','createdBy','createdAt'])
+        && request.resource.data.createdBy == request.auth.uid && request.resource.data.createdAt == request.time
+        && request.resource.data.chunks is int && request.resource.data.chunks > 0 && request.resource.data.chunks <= 50;
+      match /chunks/{chunkId} {
+        allow read: if pdhMember();
+        allow create: if pdhOperator()
+          && getAfter(/databases/$(database)/documents/pdh_v8_assets/$(assetId)).data.createdBy == request.auth.uid
+          && request.resource.data.keys().hasOnly(['data']) && request.resource.data.data is string && request.resource.data.data.size() <= 180000;
+      }
+    }
+
+    // Guest demo uses a separate capability-addressed workspace, never real PDH records.
+    function pdhGuest(workspace) { return false; }
+    match /pdh_demo_workspaces/{workspace}/records/{id} {
+      allow read: if pdhGuest(workspace);
+      allow create: if pdhGuest(workspace) && pdhEnvelope() && request.resource.data.revision == 1
+        && request.resource.data.kind in ['operations','templates','drafts','flights','reports','limits','fleet','acks','audit','members','assignments','importBatches','permissions','documents','crosschecks','messages','dailySummaries'];
+      allow update: if pdhGuest(workspace) && pdhEnvelope() && request.resource.data.kind == resource.data.kind
+        && request.resource.data.revision == resource.data.revision + 1
+        && (resource.data.kind != 'reports'
+          || (resource.data.payload.status == 'draft'
+            && request.resource.data.payload.template == resource.data.payload.template
+            && request.resource.data.payload.flight == resource.data.payload.flight
+            && request.resource.data.payload.created == resource.data.payload.created)
+          || (resource.data.payload.status == 'complete' && !('dhAck' in resource.data.payload)
+            && request.resource.data.payload.diff(resource.data.payload).affectedKeys().hasOnly(['dhAck','audit'])));
+      allow delete: if pdhGuest(workspace) && resource.data.kind in ['drafts','limits'];
+    }
+    match /pdh_demo_workspaces/{workspace}/assets/{assetId} {
+      allow read: if pdhGuest(workspace);
+      allow create: if pdhGuest(workspace) && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.chunks is int && request.resource.data.chunks > 0 && request.resource.data.chunks <= 50;
+      match /chunks/{chunkId} {
+        allow read: if pdhGuest(workspace);
+        allow create: if pdhGuest(workspace)
+          && getAfter(/databases/$(database)/documents/pdh_demo_workspaces/$(workspace)/assets/$(assetId)).data.createdBy == request.auth.uid
+          && request.resource.data.keys().hasOnly(['data']) && request.resource.data.data is string && request.resource.data.data.size() <= 180000;
+      }
+    }
+
+    // Airline form configuration: authenticated active staff read; only AD edits.
+    match /airline_form_policies/{policyId} {
+      allow read: if policyId == 'active' && activeUser();
+      allow create, update: if policyId == 'active' && isAdmin()
+        && request.resource.data.keys().hasOnly(['schemaVersion','revision','carriers','forms','updatedBy','updatedAt'])
+        && request.resource.data.schemaVersion == 1
+        && request.resource.data.carriers is map && request.resource.data.carriers.size() <= 200
+        && (!('forms' in request.resource.data) || (request.resource.data.forms is map && request.resource.data.forms.size() <= 200))
+        && request.resource.data.updatedBy == request.auth.uid
+        && request.resource.data.updatedAt == request.time
+        && request.resource.data.revision is int
+        && ((!exists(/databases/$(database)/documents/airline_form_policies/active) && request.resource.data.revision == 1)
+          || (exists(/databases/$(database)/documents/airline_form_policies/active) && request.resource.data.revision == resource.data.revision + 1));
+    }
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

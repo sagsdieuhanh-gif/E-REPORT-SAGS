@@ -1,0 +1,66 @@
+#fs09QuickModal{
+  position:fixed;inset:0;z-index:9955;display:none;align-items:flex-end;justify-content:center;
+  background:rgba(3,8,14,.68);
+  padding:0 max(0px,env(safe-area-inset-right)) 0 max(0px,env(safe-area-inset-left));
+}
+.fs09qPanel{
+  width:min(100%,560px);max-width:100vw;height:min(96dvh,920px);
+  max-height:calc(var(--sags-vv-height,100dvh) - 4px);
+  display:flex;flex-direction:column;overflow:hidden;
+  background:#0e1824;color:#e8eef5;border-radius:20px 20px 0 0;
+  box-shadow:0 -18px 50px rgba(0,0,0,.38);font-family:Arial,sans-serif;
+}
+.fs09qHead{flex:0 0 auto;background:#0b1521;padding:9px 12px 8px;border-bottom:1px solid #263648}
+.fs09qHeadTop{display:grid;grid-template-columns:34px 1fr 34px;align-items:center;gap:6px}
+.fs09qBack,.fs09qClose{width:34px;height:34px;border:0;background:transparent;color:#b9d6dc;font:900 27px/34px Arial;padding:0}
+.fs09qCenter{text-align:center;min-width:0}
+.fs09qTitle{font:900 16px/1.15 Arial;color:#f1f5f9;letter-spacing:.25px}
+.fs09qFlight{margin-top:3px;color:#9dafc1;font:800 11px/1.2 Arial;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fs09qTabs{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:8px}
+.fs09qTab{min-height:32px;border:1px solid #304459;border-radius:9px;background:#162536;color:#9fb0c2;font:900 11px Arial;padding:0 5px}
+.fs09qTab.active{border-color:#4aa9ab;background:#17383d;color:#d9f4f2}
+.fs09qDots{display:flex;justify-content:center;gap:5px;margin-top:6px;height:5px}
+.fs09qDot{width:5px;height:5px;border-radius:50%;background:#45576a}
+.fs09qDot.active{width:16px;border-radius:5px;background:#59bfc0}
+.fs09qBody{flex:1 1 auto;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;padding:0 10px 12px;background:#0e1824;touch-action:pan-y}
+.fs09qPageTitle{padding:8px 2px 7px;color:#8193a5;font:900 10px/1 Arial;letter-spacing:.65px}
+.fs09qRows{background:#142131;border:1px solid #2b3c4e;border-radius:12px;overflow:hidden}
+.fs09qRow{min-height:60px;display:grid;grid-template-columns:minmax(108px,1fr) 112px 112px;gap:5px;align-items:center;padding:5px 7px;border-bottom:1px solid #263648}
+.fs09qRow:last-child{border-bottom:0}
+.fs09qRow.single .fs09qSingle{grid-column:2/4;justify-self:end;width:150px}
+.fs09qLabel{color:#e6edf4;font:900 11.5px/1.15 Arial;min-width:0}
+.fs09qCell,.fs09qSingle{position:relative;height:46px}
+.fs09qMini{position:absolute;left:6px;top:2px;color:#8295a8;font:900 7px Arial;z-index:2;pointer-events:none}
+.fs09qInput{
+  width:100%;height:46px;box-sizing:border-box;border:1px solid #33475b;border-radius:9px;
+  background:#0f1b29;color:#f2f5f8;font:900 16px/44px Arial;text-align:center;letter-spacing:0;
+  font-variant-numeric:tabular-nums;outline:none;padding:5px 42px 0 7px;
+}
+.fs09qInput::placeholder{color:#6f8295}
+.fs09qInput:focus{border-color:#55b8b8;box-shadow:0 0 0 1px rgba(85,184,184,.18)}
+.fs09qInput.dirty{border-color:#c5953f;background:#272116}
+.fs09qNow{
+  position:absolute;right:1px;top:3px;width:40px;height:40px;border:0;border-radius:9px;
+  background:#1b343b;color:#79d1d0;font:900 21px/40px Arial;padding:0;touch-action:manipulation;
+}
+.fs09qNow:active{background:#24505a;transform:scale(.96)}
+.fs09qHint{padding:8px 0 1px;text-align:center;color:#718497;font:800 9px Arial}
+.fs09qEmpty{margin:15px 0;padding:20px 12px;border:1px dashed #3b5065;border-radius:12px;background:#142131;color:#9dafc1;font:800 12px Arial;text-align:center}
+.fs09qFooter{flex:0 0 auto;padding:8px 12px calc(8px + env(safe-area-inset-bottom));background:#0b1521;border-top:1px solid #263648}
+.fs09qSave{width:100%;min-height:48px;border:0;border-radius:11px;background:#2f9e44;color:#f1f5f9;font:900 16px Arial}
+.fs09qStatus{min-height:14px;margin-top:4px;text-align:center;color:#8598aa;font:800 9px Arial}
+@media(max-width:390px){
+  .fs09qPanel{height:97dvh}
+  .fs09qBody{padding-left:8px;padding-right:8px}
+  .fs09qRow{grid-template-columns:minmax(84px,1fr) 100px 100px;gap:4px;padding-left:6px;padding-right:6px}
+  .fs09qLabel{font-size:10.5px}
+  .fs09qInput{font-size:15px;padding-right:40px;padding-left:6px}
+}
+@media(max-width:345px){
+  .fs09qRow{grid-template-columns:minmax(72px,1fr) 92px 92px}
+  .fs09qLabel{font-size:9.5px}
+}
+@media(min-width:700px){
+  #fs09QuickModal{align-items:center;padding:12px}
+  .fs09qPanel{height:min(90vh,880px);border-radius:20px}
+}

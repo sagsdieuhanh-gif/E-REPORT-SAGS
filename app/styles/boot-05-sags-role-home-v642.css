@@ -1,0 +1,22 @@
+/* V6.4.3: Màn chờ sau đăng nhập dùng cùng ảnh nền đăng nhập cho mọi tài khoản */
+#roleHomeIdle{
+  position:fixed;
+  inset:0;
+  z-index:0!important;
+  display:none;
+  background:
+    linear-gradient(rgba(4,20,35,.22),rgba(4,20,35,.32)),
+    linear-gradient(145deg,#eaf4f7,#f7fafc) center center / cover no-repeat;
+  pointer-events:none!important;
+  touch-action:none!important;
+}
+/* Thanh chức năng luôn nằm trên màn chờ để người dùng chọn việc cần làm */
+.toolbar.compact-main-toolbar{
+  z-index:9000!important;
+}
+/* Badge FERRY nếu có vẫn phải nhìn thấy */
+#currentFerryFlag{
+  z-index:9100!important;
+}
+/* V6.4.3 source invariant: this legacy element is state-only and can NEVER intercept HOME clicks. */
+#roleHomeIdle{pointer-events:none!important;z-index:0!important}

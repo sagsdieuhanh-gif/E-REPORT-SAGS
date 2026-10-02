@@ -68,7 +68,9 @@
     const db=await openDb();
     try{
       const tx=db.transaction([STORE_LISTS],'readwrite');
-      tx.objectStore(STORE_LISTS).put(record);
+      const store=tx.objectStore(STORE_LISTS),previous=await req(store.get(scope));
+      if(previous?.payload===payload){await txDone(tx);return {scope,bytes:record.bytes,count:list.length,unchanged:true};}
+      store.put(record);
       await txDone(tx);
       return {scope,bytes:record.bytes,count:Array.isArray(list)?list.length:0};
     }finally{db.close();}
@@ -89,7 +91,9 @@
     const db=await openDb();
     try{
       const tx=db.transaction([STORE_ENVELOPES],'readwrite');
-      tx.objectStore(STORE_ENVELOPES).put(record);
+      const store=tx.objectStore(STORE_ENVELOPES),previous=await req(store.get(key));
+      if(previous?.payload===payload){await txDone(tx);return {key,bytes:record.bytes,unchanged:true};}
+      store.put(record);
       await txDone(tx);
       return {key,bytes:record.bytes};
     }finally{db.close();}
@@ -201,21 +205,22 @@
   function fmtMb(n){return (Number(n||0)/1048576).toFixed(2)+' MB';}
   async function showStorageReport(){
     const r=await report(),local=r.localStorage||{},idb=r.indexedDb||{},est=r.storageEstimate||{};
-    const groups=Object.entries(local.groups||{}).sort((a,b)=>b[1]-a[1]).map(([k,v])=>'• '+k+': '+fmtMb(v)).join('\n');
-    const verify=lastMirrorResult?.listVerified&&!lastMirrorResult?.errors?.length?'✓ bản sao IndexedDB đã đọc kiểm tra':'Đang chờ/kiểm tra bản sao IndexedDB';
-    alert(
-      'DUNG LƯỢNG E-REPORT TRÊN THIẾT BỊ NÀY\n\n'+
-      'localStorage: '+fmtMb(local.totalBytes)+'\n'+
-      (groups?groups+'\n':'')+
-      'IndexedDB shadow: '+fmtMb(idb.totalBytes)+' · '+(idb.sessions?.length||0)+' chuyến\n'+
-      (est.supported?'Tổng storage của origin: '+fmtMb(est.usage)+' / '+fmtMb(est.quota)+'\n':'')+
-      '\n'+verify+'\n\nV6.1.26 chỉ tạo bản sao; KHÔNG tự xóa dữ liệu cũ.'
-    );
+    let modal=$('sagsStorageModal');
+    if(!modal){
+      modal=document.createElement('div');modal.id='sagsStorageModal';modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');modal.setAttribute('aria-label','Bộ nhớ thiết bị');
+      modal.style.cssText='display:none;position:fixed;inset:0;background:#07192dcc';
+      modal.innerHTML='<section class="sagsStorageCard"><h3>Bộ nhớ thiết bị</h3><p>Dung lượng E-REPORT đang lưu trên thiết bị này.</p><pre id="sagsStorageReport"></pre><button type="button" id="sagsStorageClose">Đóng</button></section>';
+      document.body.appendChild(modal);
+      const close=()=>{modal.style.display='none';};$('sagsStorageClose').onclick=close;modal.addEventListener('click',e=>{if(e.target===modal)close();});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal.style.display!=='none')close();});
+    }
+    const verified=lastMirrorResult?.listVerified&&!lastMirrorResult?.errors?.length;
+    $('sagsStorageReport').textContent='Dữ liệu lưu trên máy: '+fmtMb(local.totalBytes)+'\nBản lưu chuyến: '+fmtMb(idb.totalBytes)+'\nSố chuyến được lưu: '+(idb.sessions?.length||0)+(est.supported?'\nTổng dung lượng website: '+fmtMb(est.usage)+'\nGiới hạn trình duyệt: '+fmtMb(est.quota):'')+'\n\n'+(verified?'Đã kiểm tra bản lưu chuyến.':'Chưa có kết quả kiểm tra bản lưu chuyến.');
+    modal.style.display='flex';$('sagsStorageClose').focus({preventScroll:true});
   }
   function ensureUi(){
     if($('sagsIdbStorageBtn')||!document.body)return;
     const b=document.createElement('button');b.type='button';b.id='sagsIdbStorageBtn';b.textContent='💾 BỘ NHỚ';
-    b.style.cssText='position:fixed;left:10px;bottom:calc(76px + env(safe-area-inset-bottom));z-index:9799;border:1px solid #93c5fd;background:#eff6ff;color:#1e40af;border-radius:999px;padding:7px 10px;font:800 10px/1.2 Arial;box-shadow:0 3px 12px #0002';
+    b.hidden=true;b.className='sagsUtilityButton';
     b.title='Xem dung lượng lưu E-REPORT trên thiết bị này';
     b.addEventListener('click',()=>void showStorageReport());
     document.body.appendChild(b);

@@ -1,0 +1,8 @@
+.v485PermModal{position:fixed;inset:0;z-index:10180;background:rgba(4,18,34,.62);display:none;align-items:center;justify-content:center;padding:14px;box-sizing:border-box}
+.v485PermBox{width:min(96vw,650px);max-height:88vh;overflow:auto;background:#fff;border-radius:18px;padding:16px;box-sizing:border-box;box-shadow:0 20px 60px rgba(0,0,0,.34);font-family:Arial,sans-serif;color:#17324a}
+.v485PermTitle{font:900 20px Arial;color:#0b4d8b;margin:0 0 5px}.v485PermSub{font:700 12px/1.45 Arial;color:#617487;margin-bottom:12px}
+.v485PermGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.v485PermItem{display:flex;align-items:flex-start;gap:9px;border:1px solid #d5e0ea;border-radius:12px;padding:10px;background:#f8fbfe}
+.v485PermItem input{width:20px;height:20px;margin-top:1px;accent-color:#0b6aa9}.v485PermItem b{display:block;font-size:13px}.v485PermItem small{display:block;color:#718090;margin-top:3px;line-height:1.35}
+.v485PermActions{display:flex;gap:8px;margin-top:14px}.v485PermActions button{flex:1;border:0;border-radius:10px;padding:11px;font-weight:900;font-size:14px}.v485Save{background:#0b6aa9;color:#fff}.v485Cancel{background:#e8eef4;color:#27425a}.v485Reset{background:#fff4dd;color:#8a5700;border:1px solid #e5c675!important}
+.v485PermHint{margin-top:9px;padding:8px 10px;border-radius:10px;background:#eef7ff;color:#28587d;font:700 12px/1.4 Arial}
+@media(max-width:520px){.v485PermGrid{grid-template-columns:1fr}.v485PermBox{padding:13px}.v485PermTitle{font-size:18px}}

@@ -1,0 +1,44 @@
+/* V1 UI: đồng bộ ba nút CHỌN / GỬI FINAL / LDM trong header FINAL. */
+#finalFormsModal .finalFormsHeader .finalHeaderActions{
+  display:flex!important;
+  align-items:center!important;
+  gap:6px!important;
+  flex-wrap:nowrap!important;
+}
+#finalFormsModal .finalFormsHeader .finalHeaderBtn,
+#finalFormsModal .finalFormsHeader #ffSendBtn{
+  position:static!important;
+  width:88px!important;
+  min-width:88px!important;
+  height:40px!important;
+  min-height:40px!important;
+  margin:0!important;
+  padding:0 10px!important;
+  border:0!important;
+  border-radius:9px!important;
+  box-sizing:border-box!important;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font:900 11px/1 Arial,sans-serif!important;
+  white-space:nowrap!important;
+  box-shadow:0 2px 6px rgba(0,0,0,.16)!important;
+  transform:none!important;
+}
+#finalFormsModal .finalFormsHeader .finalHeaderBtn.choose{background:#f3f4f6!important;color:#111!important;}
+#finalFormsModal .finalFormsHeader .finalHeaderBtn.send{background:#137333!important;color:#fff!important;}
+#finalFormsModal .finalFormsHeader .finalHeaderBtn.ldm{background:#7c3aed!important;color:#fff!important;}
+#finalFormsModal .finalFormsHeader .finalHeaderBtn:active{transform:scale(.98)!important;}
+@media(max-width:520px){
+  #finalFormsModal .finalFormsHeader .finalHeaderActions{gap:4px!important;}
+  #finalFormsModal .finalFormsHeader .finalHeaderBtn,
+  #finalFormsModal .finalFormsHeader #ffSendBtn{
+    width:72px!important;
+    min-width:72px!important;
+    height:34px!important;
+    min-height:34px!important;
+    padding:0 5px!important;
+    border-radius:7px!important;
+    font-size:9.5px!important;
+  }
+}

@@ -1,14 +1,14 @@
-/* E-REPORT SAGS V6.4.32 · OPS SLATE UI + VERSION SYNC + RTDB DATA SAVER + CORE STABILITY PRESERVED · IMMUTABLE EXECUTABLE PATHS / PINNED VERIFIED SHELL
+/* E-REPORT SAGS V2.0.0 · AIRLINE GLASS UI + VERSION SYNC + RTDB DATA SAVER + CORE STABILITY PRESERVED · IMMUTABLE EXECUTABLE PATHS / PINNED VERIFIED SHELL
    Base: V4.8.10B Layered PDF + HF1–HF4. Never mix navigation HTML with a different runtime.
 */
 'use strict';
-const BUILD='V6.4.32-20261001-OPS-SLATE-UI-01';
-const DISPLAY_VERSION='V6.4.32';
-const CACHE_NAME='sags-app-shell-v6432-ops-slate-ui-01';
-const META_CACHE_NAME='sags-app-meta-v6432-ops-slate-ui-01';
+const BUILD='V2.0.0-20261002-RELEASE-01';
+const DISPLAY_VERSION='V2.0.0';
+const CACHE_NAME='sags-app-shell-v2-release-01';
+const META_CACHE_NAME='sags-app-meta-v2-release-01';
 const ASSET_MANIFEST_URL='./asset-manifest.json';
 const MUTABLE_METADATA=new Set(['./forms/forms.registry.json']);
-const SAGS_BOOTSTRAP=["./index.html","./app/core/app.v503.js","./app/styles/app.bundle.css","./app/core/runtime.v503hf2.bundle.js","./app/modules/daily-roster.v502.js","./app/modules/self-accept.v502.js","./app/modules/admin-reset.v503hf2.js","./app/modules/roster-lite.v5.js","./app/modules/carrier-notebook.v1.js","./app/modules/quick-entry.v1.js","./app/modules/tvj-gof-035.v630.js","./app/modules/tvj-gof-035.v631.js","./app/modules/tvj-gof-035.v632.js","./forms/fsags54/page-01.png","./forms/fsags94/page-01.png","./app/modules/fsags54-94.v622.js","./app/modules/form-registry-runtime.v647.js","./app/modules/form-registry-runtime.v6419.js","./app/modules/stability.v6.js","./app/modules/stability.v6-core.js","./app/modules/mobile-draft-recovery.v1.js","./app/modules/indexeddb-flight-store.v1.js","./app/modules/cross-browser-entry.v1.js","./app/modules/ui-preferences.v1.js","./app/styles/new-ui-v1.css","./service-worker.js","./version.json"];
+const SAGS_BOOTSTRAP=["./index.html","./app/core/app.v503.js","./app/styles/app.bundle.css","./app/core/runtime.v503hf2.bundle.js","./app/modules/daily-roster.v502.js","./app/modules/self-accept.v502.js","./app/modules/admin-reset.v503hf2.js","./app/modules/roster-lite.v5.js","./app/modules/carrier-notebook.v1.js","./app/modules/quick-entry.v1.js","./app/modules/tvj-gof-035.v630.js","./app/modules/tvj-gof-035.v631.js","./app/modules/tvj-gof-035.v632.js","./forms/fsags54/page-01.png","./forms/fsags94/page-01.png","./app/modules/fsags54-94.v622.js","./app/modules/form-registry-runtime.v647.js","./app/modules/form-registry-runtime.v6419.js","./app/modules/stability.v6.js","./app/modules/stability.v6-core.js","./app/modules/mobile-draft-recovery.v1.js","./app/modules/indexeddb-flight-store.v1.js","./app/modules/cross-browser-entry.v1.js","./app/modules/ui-preferences.v1.js","./app/styles/new-ui-v1.css","./service-worker.js","./version.json","./app/boot/01-sags-v620-unified-form-migration.js","./app/boot/02-sags-v611-update-alert-position.js","./app/boot/03-legacy.js","./app/boot/04-sags-v6118-firebase-config.js","./app/boot/05-legacy.js","./app/boot/06-legacy.js","./app/boot/07-legacy.js","./app/boot/08-v412-kh208-script.js","./app/boot/09-v454AccountProfileOverrides.js","./app/boot/10-v470-hybrid-core.js","./app/boot/11-v476-core.js","./app/boot/12-v484SystemDepartmentRoles.js","./app/boot/13-v485FeaturePermissions.js","./app/boot/14-v18CanonicalAccountHierarchy.js","./app/boot/15-v116-account-name-search.js","./app/boot/16-v120-build02-fixes.js","./app/boot/17-v121-closeout-validation.js","./app/boot/18-v173-quick-time.js","./app/boot/19-v183-fs09-quick.js","./app/boot/20-v163-ramp-progress-v1.js","./app/boot/21-v154-rtdb-first-permissions.js","./app/boot/22-v1121-ios-time-footer-script.js","./app/boot/23-v1122-roster-sign-script.js","./app/boot/24-v1151-zoom-entry-direct.js","./app/boot/25-v1154-update-detector-r2.js","./app/boot/26-v644SafeStorageCleanup.js","./app/boot/27-v460RuntimeGuard.js","./app/boot/28-legacy.js","./app/boot/29-sags-v6118-carrier-lazy.js","./app/boot/30-sags-v6120-all-form-render-standard.js","./app/boot/31-sags-grnd-ls-v621.js","./app/styles/boot-01-legacy.css","./app/styles/boot-02-legacy.css","./app/styles/boot-03-legacy.css","./app/styles/boot-04-sags-login-bg-v640.css","./app/styles/boot-05-sags-role-home-v642.css","./app/styles/boot-06-v110-role-backgrounds.css","./app/styles/boot-07-v15-r002-serial-mask.css","./app/styles/boot-08-v114-final-paper-check-style.css","./app/styles/boot-09-sags-personal-account-test-style.css","./app/styles/boot-10-v139-fleet-manager-style.css","./app/styles/boot-11-v49-loading208-style.css","./app/styles/boot-12-v411-activity-detail-style.css","./app/styles/boot-13-v417-ad-control-center-style.css","./app/styles/boot-14-v412-kh208-style.css","./app/styles/boot-15-v476-style.css","./app/styles/boot-16-v482-responsive-ui-style.css","./app/styles/boot-17-v377AdminFormToolsStyle.css","./app/styles/boot-18-sags-v115-clean-ui.css","./app/styles/boot-19-v502RosterDirectStyle.css","./app/styles/boot-20-v503hf1AdControlResetStyle.css","./app/styles/boot-21-legacy.css","./app/styles/boot-22-sags-v611-update-alert-style.css","./app/styles/boot-23-v1-restore-final-send-button.css","./app/styles/boot-24-v1-final-header-layout.css","./app/styles/boot-25-v1-final-actions-unified.css","./app/styles/boot-26-v2-7-mobile-final-toolbar-fix.css","./app/styles/boot-27-v484-system-dept-style.css","./app/styles/boot-28-v485-feature-permission-style.css","./app/styles/boot-29-v18-account-hierarchy-style.css","./app/styles/boot-30-v178-fs09-quick-premium-style.css","./app/styles/boot-31-v183-fs09-closeout-quick-style.css","./app/styles/boot-32-v161-progress-v2-style.css","./app/styles/boot-33-v1121-ios-time-footer-style.css","./app/styles/boot-34-v1122-roster-sign-style.css","./app/styles/boot-35-v1134-quick-time-direct-style.css","./app/modules/workflow-cleanup.v6444.js","./app/modules/airline-form-policy.v1.js","./data/airline-form-catalog.json"];
 const HOME= new URL('./index.html',self.registration.scope).href;
 const SCOPE_PATH=new URL(self.registration.scope).pathname;
 function scopeUrl(path){return new URL(path,self.registration.scope).href}
@@ -21,6 +21,24 @@ async function checksum(response,meta,path){
  if(hash!==meta.sha256)throw new Error('SHA-256 mismatch '+path);
 }
 async function readManifest(){try{const c=await caches.open(META_CACHE_NAME),r=await c.match(scopeUrl(ASSET_MANIFEST_URL));return r?await r.json():null}catch(_){return null}}
+async function assertIndexReleaseStamp(response){
+ const text=await response.clone().text();
+ const buildOk=text.includes('name="sags-release-build" content="'+BUILD+'"')||text.includes('name="sags-release-build" content="'+BUILD+'"')||text.includes('const APP_BUILD_VERSION="'+BUILD+'"')||text.includes("const APP_BUILD_VERSION='"+BUILD+"'");
+ const versionOk=text.includes('name="sags-release-version" content="'+DISPLAY_VERSION+'"')||text.includes('name="sags-release-version" content="'+DISPLAY_VERSION+'"')||text.includes('const APP_DISPLAY_VERSION="'+DISPLAY_VERSION+'"')||text.includes("const APP_DISPLAY_VERSION='"+DISPLAY_VERSION+"'");
+ const loginOk=text.includes('id="loginReleaseVersion">'+DISPLAY_VERSION+'<')||text.includes("id='loginReleaseVersion'>"+DISPLAY_VERSION+"<");
+ const runtimeOk=text.includes('runtime.v503hf2.bundle.js?v='+BUILD);
+ if(!buildOk||!versionOk||!loginOk||!runtimeOk)throw new Error('index.html release stamp mismatch for '+BUILD);
+ return true;
+}
+async function verifyReleaseContract(manifest){
+ const c=await caches.open(CACHE_NAME),prior=await sagsPriorShellNames();
+ let r=await c.match(scopeUrl('./index.html'));
+ if(!r)r=await sagsPriorAsset('./index.html',manifest?.assets?.['./index.html'],prior);
+ if(!r)throw new Error('Missing release index.html');
+ await checksum(r,manifest?.assets?.['./index.html'],'./index.html');
+ await assertIndexReleaseStamp(r);
+ return true;
+}
 async function getReleaseManifest(){
  const [vr,mr]=await Promise.all([fetchFresh('./version.json'),fetchFresh(ASSET_MANIFEST_URL)]);
  const [v,m]=await Promise.all([vr.clone().json(),mr.json()]);
@@ -80,7 +98,7 @@ async function ensureBootstrapVerified(manifest,{force=false}={}){
  }
  if(!force&&sagsVerifiedBootstrapPromise&&sagsVerifiedBootstrapKey===key)return sagsVerifiedBootstrapPromise;
  sagsVerifiedBootstrapKey=key;
- const run=(async()=>{await verifyStaged(manifest);markBootstrapVerified(manifest);return true})();
+ const run=(async()=>{await verifyStaged(manifest);await verifyReleaseContract(manifest);markBootstrapVerified(manifest);return true})();
  sagsVerifiedBootstrapPromise=run;
  try{return await run}finally{if(sagsVerifiedBootstrapPromise===run)sagsVerifiedBootstrapPromise=null}
 }
@@ -108,6 +126,7 @@ async function stageRelease(){
   if(failure)throw failure;
   // All 18 assets were byte/SHA-256 verified above; assert they remain present.
   await verifyBootstrapPresence();
+  await verifyReleaseContract(m);
   markBootstrapVerified(m);
   const mc=await caches.open(META_CACHE_NAME);
   await mc.put(scopeUrl(ASSET_MANIFEST_URL),new Response(JSON.stringify(m),{headers:{'Content-Type':'application/json','Cache-Control':'no-store'}}));
@@ -159,7 +178,7 @@ async function verifyCurrentAssets(){
   if(!good){r=await fetchFresh(p);await checksum(r,m.assets[p],p);await c.put(scopeUrl(p),r.clone())}
  }
  // Explicit diagnostics fully hash all cached bytes, including prior releases.
- await verifyBootstrapPresence();markBootstrapVerified(m);
+ await verifyBootstrapPresence();await verifyReleaseContract(m);markBootstrapVerified(m);
 }
 self.addEventListener('install',event=>event.waitUntil((async()=>{
  await stageRelease();

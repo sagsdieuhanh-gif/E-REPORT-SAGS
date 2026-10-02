@@ -1,12 +1,12 @@
 {
-  "version": "V6.4.32",
-  "displayVersion": "V6.4.32",
-  "label": "V6.4.32 - OPS SLATE UI",
-  "build": "V6.4.32-20261001-OPS-SLATE-UI-01",
-  "releasedAt": "2026-10-01T16:58:00+07:00",
-  "type": "v6.4.32-ops-slate-ui",
-  "base": "V6.4.31-20261001-UNIFIED-UI-01",
+  "version": "V2.0.0",
+  "displayVersion": "V2.0.0",
+  "label": "E-REPORT-SAGS V2",
+  "build": "V2.0.0-20261002-RELEASE-01",
+  "releasedAt": "2026-10-02T05:53:41.881Z",
+  "type": "release",
+  "base": "V1 — bản sửa 24",
   "updatePolicy": "required",
-  "notes": "Thay toàn bộ lớp giao diện sang SAGS Ops Slate: graphite + petrol/cyan + teal, giảm gradient và màu rực, giữ màu chức năng nhất quán từ màn hình chính vào màn hình con. Giữ nguyên workflow, Firebase, RTDB Data Saver và các hotfix MyFlight.",
-  "message": "V6.4.32: giao diện Ops Slate mới, nghiệp vụ không đổi."
+  "notes": "V2 kế thừa toàn bộ sửa lỗi vận hành, mobile, quản lý biểu mẫu và tối ưu dữ liệu của bản V1 đã kiểm tra.",
+  "message": "E-REPORT-SAGS V2: bản chính thức mới."
 }

@@ -1,0 +1,13 @@
+/* V6.4.0: One fixed login background for ALL accounts/roles */
+#loginScreen,
+.login-screen,
+.login-page,
+.login-wrap,
+.login-container,
+body.login-mode {
+  background-image: linear-gradient(145deg,#eaf4f7,#f7fafc) !important;
+  background-size: cover !important;
+  background-position: center center !important;
+  background-repeat: no-repeat !important;
+  background-attachment: fixed !important;
+}

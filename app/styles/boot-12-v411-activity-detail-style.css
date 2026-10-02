@@ -1,0 +1,22 @@
+.activitySummaryGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:8px 0 12px}
+.activitySummaryCard{border:1px solid #d7e1ea;border-radius:10px;padding:9px;background:#f8fbfe;text-align:center}
+.activitySummaryCard b{display:block;font-size:19px;color:#003B8E}.activitySummaryCard span{font-size:10px;font-weight:800;color:#66788a}
+.activityFilterRow{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0 12px}
+.activityFilterRow select,.activityFilterRow input{border:1px solid #b8c4cf;border-radius:8px;padding:8px;font:700 12px Arial;background:#fff}
+.activityRichRow{border:1px solid #d7e0e8;border-radius:12px;padding:10px;margin:8px 0;background:#fff}
+.activityRichTop{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.activityRichName{font:900 14px Arial;color:#18324c}.activityRichMeta{font:700 11px Arial;color:#647789;margin-top:3px}
+.activityBadge{display:inline-block;border-radius:999px;padding:4px 8px;font:900 10px Arial;background:#eaf4ff;color:#07529b;white-space:nowrap}
+.activityBadge.fresh{background:#e9f7ef;color:#087445}.activityBadge.stale{background:#fff4df;color:#8a5700}.activityBadge.old{background:#f0f0f0;color:#666}
+.activityAction{margin-top:8px;font:900 13px Arial;color:#123d64}
+.activityContext{display:grid;grid-template-columns:1fr 1fr;gap:5px 10px;margin-top:8px;padding:8px;border-radius:9px;background:#f7f9fb}
+.activityContext div{font:700 11px Arial;color:#4f6275}.activityContext b{color:#22394f}
+.activityHistory{margin-top:8px;border-top:1px dashed #d3dde5;padding-top:7px}
+.activityHistoryTitle{font:900 11px Arial;color:#52677b;margin-bottom:5px}
+.activityHistoryItem{display:grid;grid-template-columns:78px 1fr;gap:7px;font:700 10px/1.35 Arial;color:#5e7182;padding:3px 0}
+.activityHistoryItem b{color:#28455f}
+@media(max-width:600px){
+ .activitySummaryGrid{grid-template-columns:1fr 1fr}
+ .activityContext{grid-template-columns:1fr}
+ .activityFilterRow>*{flex:1 1 120px}
+}

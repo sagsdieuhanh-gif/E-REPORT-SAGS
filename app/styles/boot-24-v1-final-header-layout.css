@@ -1,0 +1,32 @@
+/* ===== V4.4 FIX FINAL HEADER + VJ HEADER TEXT =====
+   GỬI FINAL luôn nằm trong header, tuyệt đối không dùng tọa độ nổi trên biểu mẫu. */
+#finalFormsModal .finalFormsHeader #ffSendBtn{
+  position:static!important;
+  left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;
+  transform:none!important;
+  width:auto!important;
+  height:auto!important;
+  min-width:92px!important;
+  min-height:52px!important;
+  margin:0!important;
+  z-index:auto!important;
+}
+/* A/C REGN và DATE của VJ Load Summary: chữ 18px, nằm giữa vùng hiển thị. */
+#finalFormDisplay .ffValue[data-display-key="acreg"],
+#finalFormDisplay .ffValue[data-display-key="date"]{
+  font-size:18px!important;
+  line-height:1!important;
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+  padding:0 2px!important;
+  box-sizing:border-box!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+}
+@media(max-width:520px){
+  #finalFormsModal .finalFormsHeader #ffSendBtn{
+    min-width:72px!important;
+    min-height:44px!important;
+  }
+}

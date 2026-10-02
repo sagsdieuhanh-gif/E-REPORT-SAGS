@@ -9,40 +9,34 @@
     ['conveyorBefore','Conveyor belt · Trước'],['conveyorAfter','Conveyor belt · Sau'],
     ['tractorBefore','Tractor · Trước'],['tractorAfter','Tractor · Sau']
   ];
-  const BAG_PARTS = ['ADL','CHD','INF','TotalBags'];
+  const BAG_PAX_PARTS = ['ADL','CHD','INF'];
   let session=null, ui=null;
   const numberText = x => String(x??'').trim();
   function field(key) { return fields.find(f=>f.key===key && (f.type==='number'||f.type==='text')); }
   function groupFor(key) {
-    if (EQUIPMENT.some(([k])=>k===key)) {
-      return {heading:'Thiết bị · FSAGS 42.3',steps:EQUIPMENT.map(([k,label])=>({key:k,label,kind:'equipment'}))};
+    // V6.4.41: NEXT/PREV must stay inside the visual function rectangle that
+    // the operator tapped. Never walk horizontally into the neighbouring block.
+    const equipment=/^(operator|porter|passengerStep|conveyor|tractor)(Before|After)$/.exec(key);
+    if(equipment){
+      const steps=EQUIPMENT.map(([k,label])=>({key:k,label,kind:'equipment'}));
+      return {heading:'Ramp Manpower & Equipment · FSAGS 42.3',steps};
     }
-    // Both passenger lines share the native form fields; each step is identified.
     const pax=/^(f421_)?(arr|dep)Pax(TTL|C|Y|I)$/.exec(key);
     if(pax){
-      const prefix=pax[1]||'';
-      const label={arr:'ARR PAX',dep:'DEP PAX'};
-      const steps=[];
-      for(const row of ['arr','dep'])for(const part of ['TTL','C','Y','I']){
-        steps.push({key:`${prefix}${row}Pax${part}`,label:`${label[row]} · ${part}`,kind:'pax'});
-      }
-      return {heading:`Hành khách · FSAGS ${prefix?'42.1':'42.3'}`,steps};
+      const prefix=pax[1]||'',row=pax[2],label={arr:'ARR PAX',dep:'DEP PAX'}[row];
+      const steps=['TTL','C','Y','I'].map(part=>({key:`${prefix}${row}Pax${part}`,label:`${label} · ${part}`,kind:'pax'}));
+      return {heading:`Hành khách · ${label} · FSAGS ${prefix?'42.1':'42.3'}`,steps};
     }
     const m=/^(f421_)?b([123])(ADL|CHD|INF|TotalBags)$/.exec(key);
     if(!m)return null;
-    const prefix=m[1]||'';
-    const steps=[];
-    for(let n=1;n<=3;n++) {
-      const title=`Lần ${n}`;
-      for(const part of BAG_PARTS) {
-        const k=`${prefix}b${n}${part}`;
-        if(part==='TotalBags') {
-          steps.push({key:k,label:`${title} · Total Bags · Số kiện`,kind:'bag',part:'pcs'});
-          steps.push({key:k,label:`${title} · Total Bags · Số kg`,kind:'bag',part:'kg'});
-        } else steps.push({key:k,label:`${title} · ${part}`,kind:'number'});
-      }
-    }
-    return {heading:`Hành khách và hành lý · FSAGS ${prefix?'42.1':'42.3'}`,steps};
+    const prefix=m[1]||'',n=m[2],part=m[3];
+    const ordinal={1:'1ST',2:'2ND',3:'3RD'}[n]||(`Lần ${n}`);
+    // Passenger count block is vertical: ADL -> CHD -> INF. TOTAL is computed
+    // by updateBagTotals() and is intentionally never an input step.
+    const steps=BAG_PAX_PARTS.map(p=>({key:`${prefix}b${n}${p}`,label:`${ordinal} · ${p}`,kind:'number'}));
+    const k=`${prefix}b${n}TotalBags`;
+    steps.push({key:k,label:`${ordinal} · Total Bags · Số kiện`,kind:'bag',part:'pcs'},{key:k,label:`${ordinal} · Total Bags · Số kg`,kind:'bag',part:'kg'});
+    return {heading:`Số khách · ${ordinal} · FSAGS ${prefix?'42.1':'42.3'}`,steps};
   }
   function parseBag(value) {
     const old=numberText(value);
@@ -122,7 +116,7 @@
       ui.hint.textContent=draft.valid?'Total Bags giữ nguyên 1 ô: số kiện/số kg.':'Giá trị cũ "'+draft.original+'" chưa đúng mẫu. Điền đủ hai số để thay thế.';
     }else{
       ui.value.value=numberText(state[st.key]);
-      ui.hint.textContent=st.kind==='equipment'?'Có thể giữ N/A hiện có; nhập số nếu cần.':st.kind==='pax'?'Nhập số hành khách đúng dòng ARR / DEP; không tự đổi số ở ô khác.':'TOTAL tự cộng ADL + CHD + INF. Không cần nhập TOTAL.';
+      ui.hint.textContent=st.kind==='equipment'?'Đi hết vùng Ramp Manpower & Equipment, theo hàng ngang.':st.kind==='pax'?'Chỉ di chuyển trong đúng dòng ARR hoặc DEP đang chọn.':'Đi hết cột '+(session.heading.match(/1ST|2ND|3RD/)?.[0]||'đang chọn')+': ADL → CHD → INF → Total Bags. TOTAL tự cộng.';
     }
     try{const part=st.kind==='bag'?st.part:'quick',raw=root.sagsV61Draft?.read(st.key,part);
       if(raw&&raw.value===ui.value.value)root.sagsV61Draft?.forget(st.key,part);
@@ -131,7 +125,7 @@
     ui.prev.disabled=session.index===0;
     ui.next.textContent=session.index===session.steps.length-1?'Lưu & Đóng':'Tiếp ›';
     try{activeKey=st.key;draw()}catch(e){console.warn('Quick-entry highlight',e)}
-    try{ui.value.focus({preventScroll:true});ui.value.select()}catch(_){ui.value.focus()}
+    try{if(document.activeElement!==ui.value)ui.value.focus({preventScroll:true});if(!matchMedia("(pointer:coarse)").matches)ui.value.select()}catch(_){}
   }
   function saveBag(st,leaving){
     const draft=bagDraft(st.key);

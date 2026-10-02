@@ -1,12 +1,12 @@
 {
-  "name": "PĐH SAGS-CXR",
-  "short_name": "PĐH SAGS-CXR",
-  "description": "Ứng dụng Phiếu điều hành SAGS-CXR",
+  "name": "E-REPORT-SAGS V2",
+  "short_name": "SAGS V2",
+  "description": "E-REPORT-SAGS V2 — Phiếu điều hành SAGS-CXR",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#003B8E",
+  "background_color": "#04111F",
+  "theme_color": "#071A2E",
   "lang": "vi-VN",
   "icons": [
     {

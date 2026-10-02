@@ -1,0 +1,13 @@
+/* ===== V1.5 VIETJET R002 CLEAN HEADER =====
+   Ẩn số serial 017759 in sẵn trên ảnh nguồn R002 mà không thay đổi các vùng nhập. */
+#finalFormCanvas.ff-r002-form::after{
+  content:"";
+  position:absolute;
+  left:59.75%;
+  top:1.30%;
+  width:13.55%;
+  height:4.00%;
+  background:#fff;
+  z-index:4;
+  pointer-events:none;
+}

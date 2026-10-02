@@ -1,0 +1,12 @@
+/* V1 hotfix: khôi phục nút GỬI FINAL cho CBTT/AD. */
+body.role-admin #finalFormsModal #ffSendBtn,
+body.role-cbtt #finalFormsModal #ffSendBtn{
+  display:inline-flex!important;
+  visibility:visible!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+  position:static!important;
+}
+body.role-viewer #finalFormsModal #ffSendBtn,
+body.role-dh #finalFormsModal #ffSendBtn,
+body.role-pvhk #finalFormsModal #ffSendBtn{display:none!important;}

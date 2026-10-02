@@ -1,0 +1,17 @@
+#kh208SendBtn,#kh208ChooserBtn{
+ position:absolute;top:1.4%;z-index:31;min-height:42px;padding:8px 12px;border:0;border-radius:10px;
+ color:#fff;font:900 12px Arial;box-shadow:0 4px 12px rgba(0,0,0,.28)
+}
+#kh208SendBtn{right:1.8%;background:#137333}
+#kh208ChooserBtn{left:1.8%;background:#0b6aa9}
+#kh208ReadOnlyBadge{
+ position:absolute;top:1.5%;left:50%;transform:translateX(-50%);z-index:32;
+ padding:7px 10px;border-radius:999px;background:#fff3cd;border:1px solid #dfbd54;color:#755400;
+ font:900 11px Arial;box-shadow:0 2px 7px rgba(0,0,0,.18);white-space:nowrap
+}
+body.role-kh #roleBtnFlights,body.role-kh #finalFormsQuickBtn,body.role-kh #fs09QuickBtn{display:none!important}
+body.role-cbtt #roleBtnSignature,body.role-pvhk #roleBtnSignature,body.role-kh #roleBtnSignature{display:inline-flex!important}
+@media(max-width:600px){
+ #kh208SendBtn,#kh208ChooserBtn{font-size:10px;min-height:38px;padding:6px 8px}
+ #kh208ReadOnlyBadge{top:6.5%;font-size:9px}
+}

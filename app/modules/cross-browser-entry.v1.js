@@ -2,7 +2,7 @@
  * Goals:
  * - Pure-SVG live fallback for multiline values that browsers may fail to paint in SVG foreignObject.
  * - PDF-like entry preview baseline (text stays above dotted guides).
- * - Save & NEXT for nearby manual fields on the same printed page.
+ * - Save & NEXT inside bounded business regions on the printed page.
  * - Default ARR delay reason "TÀU VỀ TRỄ" when STA/ETA/actual indicates late arrival; never overwrite operator text.
  * - Dynamic release label as a safety net against stale version badges.
  * No localStorage/IndexedDB deletion is performed here.
@@ -13,7 +13,7 @@
   root.__SAGS_V6128_CROSS_BROWSER_ENTRY__=true;
 
   const SVG_NS='http://www.w3.org/2000/svg';
-  const MODULE_BASE=new URL('.',document.currentScript?.src||location.href);
+  const MODULE_BASE=new URL('.',document.baseURI||location.href);
   const DEFAULT_ARR_REASON='TÀU VỀ TRỄ';
   const report={version:'V6.1.28',fallbackRenders:0,lastFallbackKeys:[],nextMoves:0};
 
@@ -195,28 +195,85 @@
     return true;
   }
   function nextField(current){
-    if(!current)return null;
-    const ca=geom(current);if(!ca)return null;
-    const candidates=fieldList().filter(f=>f!==current&&Number(f.page)===Number(current.page)&&editableManual(f)).map(f=>({f,a:geom(f)})).filter(x=>x.a);
-    const cy=ca.y+ca.h/2,cx=ca.x+ca.w/2;
-    let best=null,bestScore=Infinity;
-    for(const x of candidates){
-      const ay=x.a.y+x.a.h/2,ax=x.a.x+x.a.w/2;
-      const overlap=Math.min(ca.y+ca.h,x.a.y+x.a.h)-Math.max(ca.y,x.a.y);
-      const sameRow=overlap>Math.min(ca.h,x.a.h)*0.25;
-      let dy=ay-cy,dx=ax-cx;
-      if(sameRow&&dx>2){
-        const score=dx;
-        if(score<bestScore){best=x.f;bestScore=score;}
-        continue;
-      }
-      if(dy>2&&dy<=100){
-        const score=1000+dy*10+Math.max(0,x.a.x-ca.x);
-        if(score<bestScore){best=x.f;bestScore=score;}
-      }
-    }
-    return best;
+    return regionNext(current);
   }
+  function regionOf(f){
+    const key=String(f.key||''),k=key.replace(/^(f421_|f551_|f09_|f208_)/,'');
+    const prefix=key.slice(0,key.length-k.length),page=Number(f.page);
+    let id='',title='';
+    const named=(name,label)=>{id=name;title=label;};
+    if(f.entryGroup)named(String(f.entryGroup),f.entryGroupLabel||String(f.entryGroup));
+    else if(/^(arr|dep)Pax/.test(k))named(k.startsWith('arr')?'arr-pax':'dep-pax',k.startsWith('arr')?'ARR PAX':'DEP PAX');
+    else if(['priorityBag','yBag','arrFCBag','arrYBag','arrCargo','arrMail'].includes(k))named('arr-bags','ARR · Hành lý / Cargo / Mail');
+    else if(['arrSpecial','transit'].includes(k))named('arr-special','ARR · Special Load / Transit');
+    else if(['depCargo','depMail','depSpecial','estimatedBag'].includes(k))named('dep-load','DEP · Cargo / Mail / Special Load / Estimated Bag');
+    else if(/^(top(WCHR|UM|INAD|STCH|VIP)|othersTop)/.test(k))named('top-special','Special information / Others');
+    else if(/^bottom(WCHR|UM|INAD|STCH|VIP)/.test(k))named('bottom-special','DEP · Special information');
+    else if(/^park\d+Arr$/.test(k))named('parking-arr','Parking Bay · ARR');
+    else if(/^park\d+Dep$/.test(k))named('parking-dep','Parking Bay · DEP');
+    else if(/^(operator|porter|passengerStep|conveyor|tractor)(Before|After)$/.test(k)||/^(driver|porter|step|belt|tractor|loader)[12]$/.test(k))named('manpower','Ramp Manpower & Equipment');
+    else if(['gpu','acu','asu','highlift','lavatory','potable','potableWater'].includes(k))named('equipment-checks','Thiết bị phục vụ');
+    else if(/^b[123](ADL|CHD|INF|TotalBags|TOTAL)$/.test(k))named('boarding-'+k[1],'Số khách / hành lý · Lần '+k[1]);
+    else if(/^(h\d+|offloadBag|offloadCargo|onloadCargo|onloadBag)(Start|Finish)$/.test(k))named('time-'+k.replace(/Start|Finish/,''),'Mốc giờ · '+k.replace(/Start|Finish/,''));
+    else if(/^(fltBefore|fltAfter|flightNo|acType|regn|bay.*|route[123])$/.test(k))named('flight-header','Thông tin chuyến');
+    else if(/^booking|^book[FCYI]$/.test(k))named('booking','Booking');
+    else if(/^(sta|eta|ata\d*)$/.test(k))named('arrival-time','Giờ chuyến đến');
+    else if(/^(std|etd|atd\d*)$/.test(k))named('departure-time','Giờ chuyến đi');
+    else if(/^(arrDelay|arrRemarks)/.test(k))named('arr-delay','ARR · Delay / Remarks');
+    else if(/^(depDelay|depRemarks)/.test(k))named('dep-delay','DEP · Delay / Remarks');
+    else if(/^FSAGS54_check_/.test(k))named('54-checklist','54 · Kiểm tra theo thứ tự');
+    else if(/^clc94_check_/.test(k))named('94-checklist','94 · Kiểm tra theo thứ tự');
+    else if(/^(FSAGS54_|clc94_)(flightDate|sector|acType|acReg)$/.test(k))named('check-header','Thông tin chuyến');
+    else if(/^bbbt(Person|Duty)[1-3]$/.test(k))named('report-personnel','Nhân sự lập biên bản');
+    else if(/^bbbt(Flight|Regn|AcType|DateText|Route|ReportAt)$/.test(k))named('report-header','Thông tin biên bản');
+    else if(/^bag[0-5]/.test(k))named('offload-list','Danh sách hành lý offload');
+    else if(/^off(?:Pcs|Dest|Tag|Notified|Uld|Completed|Reload)/.test(k))named('offload-list','Danh sách offload');
+    else if(/^(arrBaggage|arrCargo|finalCargo)/.test(k))named(k.match(/^(arrBaggage|arrCargo|finalCargo)/)[0],'Khối lượng hàng / hành lý');
+    else if(/^(baggage|cargo)(Unload|Load)/.test(k))named(k.match(/^(baggage|cargo)(Unload|Load)/)[0],'Bốc dỡ hàng / hành lý');
+    else if(/^(finalTotalPax|finalAdult|finalChild|finalInfant)$/.test(k))named('final-pax','Số khách cuối cùng');
+    else if(/^offload/.test(k))named('offload','Offload');
+    else if(/^zone0/.test(k))named('zone','Phân bố khách');
+    else if(prefix==='f09_'){
+      const m=k.match(/^(cki|transfer|transit|total|lmc|final)(TTL|ADL|CHD|INF|F|C|JMP|BagP|BagW)$/);
+      if(m)named('pax-'+m[1],m[1].toUpperCase()+' · Khách / hành lý');
+      else if(/^pax/.test(k))named('arrival-pax','ARR · Hành khách');
+      else if(/^arr(UM|WCH|NTL)|^(transferTo|transitTo)$/.test(k))named('arr-service','ARR · Khách đặc biệt / nối chuyến');
+      else if(/^dep(UM|WCH|NTL)|^(spml|transferFrom|fqtv)$/.test(k))named('dep-service','DEP · Khách đặc biệt / nối chuyến');
+      else if(/^sup[A-D]\d/.test(k))named('staff'+(k.endsWith('_2')?'2':''),'Phân công nhân sự');
+      else if(/^mon_/.test(k))named('monitor','Tiến độ phục vụ');
+      else if(/^task/.test(k))named('preparation','Chuẩn bị phục vụ');
+      else if(/^post/.test(k))named('post','Sau chuyến bay');
+      else if(/^si/.test(k))named('special-info','Thông tin đặc biệt');
+      else if(/^config/.test(k))named('config','Cấu hình ghế');
+    }else if(prefix==='f208_'){
+      const m=k.match(/^(?:uld|priority|netWeight|tareWeight|grossPieces|grossWeight)([1-5])$|^g([1-5])(?:Pieces|Weight)_r\d+$/);
+      if(m)named('uld-'+(m[1]||m[2]),'ULD '+(m[1]||m[2]));
+      else if(/^(awb|totalPieces\d|dest\d)/.test(k))named('awb','Danh sách AWB');
+      else if(/^(start|end)_r/.test(k))named('loading-times','Giờ chất xếp');
+      else if(/^(nylon|waterproof|strap|lining)/.test(k))named('supplies','Vật tư chất xếp');
+    }else if(prefix==='f551_'){
+      const m=k.match(/^(transit|actual)_/);if(m)named(m[1],m[1]==='transit'?'Transit':'Actual');
+      else if(/^(in|out|confirm|cargoDoorsClosed)/.test(k))named('handling','Tiến độ phục vụ');
+      else if(/^off/.test(k))named('offload','Offload / Reload');
+      else if(/^a[A-Z]/.test(k))named('aircraft-check','Kiểm tra tàu bay');
+      else if(/^b[A-Z]/.test(k))named('hold-check','Kiểm tra hầm hàng');
+    }
+    if(!id){const stem=k.replace(/(?:Start|Finish|Planned|Actual|Remark|[1-9])$/,'');named(stem===k?'field-'+k:'set-'+stem,f.label||k);}
+    return {id:page+':'+prefix+id,title};
+  }
+  function regionFields(current,checks=false){
+    const id=regionOf(current).id;
+    const members=fieldList().filter(f=>Number(f.page)===Number(current.page)&&regionOf(f).id===id&&(checks?f.type==='check':editableManual(f)));
+    // The boundary is semantic. Geometry only orders members inside that boundary.
+    return members.sort((a,b)=>Math.abs(a.y-b.y)<.009?a.x-b.x:a.y-b.y);
+  }
+  function regionNext(current){
+    if(!current)return null;
+    const members=regionFields(current,current.type==='check'),i=members.findIndex(f=>f.key===current.key);
+    return i<0?null:members[i+1]||null;
+  }
+  root.sagsEntryRegions={regionOf,regionFields,next:regionNext};
+
   function installNextButton(){
     const actions=document.querySelector('#entry .actions');if(!actions)return;
     let btn=document.getElementById('sagsEntryNextBtn');
@@ -247,7 +304,8 @@
     try{next=nextField(editing);}catch(_){}
     btn.disabled=!next;
     btn.style.opacity=next?'1':'.45';
-    btn.title=next?'Lưu và chuyển sang ô tiếp theo':'Không còn ô nhập tiếp theo trong trang này';
+    btn.title=next?'Lưu và chuyển ô trong '+regionOf(editing).title:'Đã đến cuối vùng nhập; lưu rồi chọn vùng tiếp theo trên biểu mẫu';
+    btn.textContent=next?'Tiếp trong nhóm ›':'Hết nhóm';
   }
 
   function installEntryPreviewCss(){

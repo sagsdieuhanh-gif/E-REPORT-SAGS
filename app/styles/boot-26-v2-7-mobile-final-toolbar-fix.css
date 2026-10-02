@@ -1,0 +1,159 @@
+/* V2.7 — Mobile FINAL toolbar: never squeeze all actions into one row. */
+@media (max-width:780px){
+  #finalFormsModal .finalFormsHeader{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) auto!important;
+    grid-template-rows:auto auto!important;
+    gap:6px!important;
+    padding:max(6px,env(safe-area-inset-top)) max(6px,env(safe-area-inset-right)) 7px max(6px,env(safe-area-inset-left))!important;
+    align-items:center!important;
+  }
+  #finalFormsModal .finalFormsHeader>span{
+    grid-column:1!important;grid-row:1!important;
+    min-width:0!important;font-size:12px!important;line-height:1.15!important;
+    white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;
+  }
+  #finalFormsModal .finalFormsHeader #ffContextBadge{
+    grid-column:2!important;grid-row:1!important;
+    max-width:44vw!important;overflow:hidden!important;text-overflow:ellipsis!important;
+  }
+  #finalFormsModal .finalFormsHeader .finalHeaderActions{
+    grid-column:1 / -1!important;grid-row:2!important;
+    width:100%!important;min-width:0!important;max-width:none!important;
+    display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:5px!important;overflow:visible!important;padding:0!important;margin:0!important;
+  }
+  #finalFormsModal .finalFormsHeader .finalHeaderBtn,
+  #finalFormsModal .finalFormsHeader #ffSendBtn,
+  #finalFormsModal .finalFormsHeader .finalFormsClose{
+    position:static!important;
+    width:100%!important;min-width:0!important;max-width:none!important;
+    height:38px!important;min-height:38px!important;
+    margin:0!important;padding:0 5px!important;
+    border-radius:8px!important;box-sizing:border-box!important;
+    font:900 10px/1.05 Arial,sans-serif!important;
+    white-space:normal!important;overflow:hidden!important;text-overflow:ellipsis!important;
+    display:flex;align-items:center;justify-content:center;text-align:center;
+  }
+  #finalFormsModal .finalFormsHeader .finalFormsClose{
+    background:#fff!important;color:#111!important;font-size:21px!important;
+  }
+}
+@media (max-width:360px){
+  #finalFormsModal .finalFormsHeader .finalHeaderActions{gap:4px!important;}
+  #finalFormsModal .finalFormsHeader .finalHeaderBtn,
+  #finalFormsModal .finalFormsHeader #ffSendBtn,
+  #finalFormsModal .finalFormsHeader .finalFormsClose{height:36px!important;min-height:36px!important;font-size:9.2px!important;padding:0 3px!important;}
+}
+/* ===== V3.5 OPERATIONAL ALERT TRAY ===== */
+#opsAlertTray{
+  position:fixed;
+  left:max(8px,env(safe-area-inset-left));
+  right:max(8px,env(safe-area-inset-right));
+  top:calc(max(8px,env(safe-area-inset-top)) + 8px);
+  z-index:95000;
+  display:none;
+  pointer-events:none;
+}
+#opsAlertTrayScroller{
+  display:flex;
+  flex-direction:row;
+  align-items:stretch;
+  gap:8px;
+  overflow-x:auto;
+  overflow-y:hidden;
+  overscroll-behavior-x:contain;
+  scroll-snap-type:x proximity;
+  padding:2px 2px 8px;
+  pointer-events:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.opsAlertCard{
+  flex:0 0 min(310px,calc(100vw - 28px));
+  max-width:360px;
+  min-height:112px;
+  box-sizing:border-box;
+  border:1px solid #c9d5e2;
+  border-radius:14px;
+  background:rgba(255,255,255,.98);
+  box-shadow:0 8px 26px rgba(17,50,77,.22);
+  padding:11px 12px 10px;
+  scroll-snap-align:start;
+}
+.opsAlertCardTitle{
+  font:900 14px/1.25 Arial,sans-serif;
+  color:#123d64;
+  margin:0 0 7px;
+}
+.opsAlertCardText{
+  font:800 13px/1.4 Arial,sans-serif;
+  color:#17324d;
+  min-height:38px;
+  white-space:normal;
+}
+.opsAlertCardActions{
+  display:flex;
+  justify-content:flex-end;
+  margin-top:9px;
+}
+.opsAlertCardAck{
+  border:0;
+  border-radius:9px;
+  padding:8px 13px;
+  background:#0067c5;
+  color:#fff;
+  font:900 12px/1 Arial,sans-serif;
+}
+.opsAlertCardCompose{
+  border:0;
+  border-radius:9px;
+  padding:8px 13px;
+  background:#d97706;
+  color:#fff;
+  font:900 12px/1 Arial,sans-serif;
+  margin-right:7px;
+}
+.opsMvaComposeText{
+  margin:10px 0 8px;
+  padding:14px;
+  border-radius:12px;
+  background:#101828;
+  color:#fff;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  font:800 19px/1.5 "Courier New",monospace;
+}
+.opsMvaComposeMeta{
+  margin:0 0 10px;
+  color:#526174;
+  font:700 12px/1.45 Arial,sans-serif;
+}
+.opsMvaCopyBtn{width:100%;background:#0b8f55!important}
+.opsAlertCard[data-type="PUSHBACK_MISSING"]{
+  border-color:#f59e0b;
+  background:#fffaf0;
+}
+@media(max-width:600px){
+  #opsAlertTray{top:calc(max(6px,env(safe-area-inset-top)) + 4px)}
+  #opsAlertTrayScroller{gap:6px}
+  .opsAlertCard{flex-basis:min(286px,calc(100vw - 24px));padding:10px 11px}
+}
+/* ===== V4.29 MESSAGE COMPOSER MODALS ===== */
+#opsMvaComposeModal,#opsMvtComposeModal,#ops9gMvtComposeModal,#opsVuMvtComposeModal{
+  z-index:120500!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:max(12px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left))!important;
+  overflow:auto!important;
+}
+#opsMvaComposeModal .sagsAdminPanel,#opsMvtComposeModal .sagsAdminPanel,#ops9gMvtComposeModal .sagsAdminPanel,#opsVuMvtComposeModal .sagsAdminPanel{
+  position:relative;max-height:min(88dvh,760px);overflow:auto;margin:auto;
+}
+.opsComposerX{position:absolute;right:10px;top:10px;width:36px;height:36px;border:0;border-radius:50%;background:#e9eef3;color:#203040;font:900 22px/36px Arial;cursor:pointer}
+.opsComposerBottomActions{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px;margin-top:10px}
+.opsComposerBottomActions .opsMvaCopyBtn{width:auto!important;min-width:0}
+.opsComposerBottomActions .opsComposerClose{min-width:90px}
+@media(max-width:520px){
+  .opsComposerBottomActions{grid-template-columns:1fr 1fr}
+  #opsMvaComposeModal .sagsAdminPanel,#opsMvtComposeModal .sagsAdminPanel,#ops9gMvtComposeModal .sagsAdminPanel,#opsVuMvtComposeModal .sagsAdminPanel{max-height:90dvh}
+}

@@ -88,7 +88,8 @@ function installCanonicalStyle(){
   .sagsRegistryCanonicalPage>svg foreignObject,
   .sagsRegistryCanonicalPage>svg g[data-sags-fm-check],
   .sagsRegistryCanonicalPage>svg g[data-export-field],
-  .sagsRegistryCanonicalPage>svg .v373-line-render{opacity:0!important}
+  .sagsRegistryCanonicalPage>svg .v373-line-render,
+  .sagsRegistryCanonicalPage>svg .sags-bbbt-flight-divider{opacity:0!important}
   #page16.sagsRegistryCanonicalPage>svg .v621Tri{display:none!important}
   #quickTimeNaBtn{display:inline-flex!important;align-items:center!important;justify-content:center!important}
   .sagsRegistryNaQuick{min-height:42px;border:1px solid #9fc7df;border-radius:10px;padding:9px 13px;background:#eef5ff;color:#16465c;font:900 12px Arial;cursor:pointer}

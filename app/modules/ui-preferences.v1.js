@@ -76,63 +76,14 @@
   root.sagsSetUiTheme=function(theme){applyTheme(theme,true)};
   root.sagsGetUiTheme=()=>readTheme();
 
-  function ensureThemeModal(){
-    if($('sagsUiPrefsModal'))return;
-    const shell=document.createElement('div');
-    shell.id='sagsUiPrefsModal';
-    shell.className='sagsUiPrefsModal';
-    shell.setAttribute('role','dialog');
-    shell.setAttribute('aria-modal','true');
-    shell.setAttribute('aria-label','Tùy chọn giao diện');
-    shell.innerHTML=`
-      <div class="sagsUiPrefsCard">
-        <div class="sagsUiPrefsHead">
-          <div><b>TÙY CHỌN GIAO DIỆN</b><small>Lưu theo tài khoản trên thiết bị này</small></div>
-          <button type="button" class="sagsUiPrefsClose" aria-label="Đóng">×</button>
-        </div>
-        <div class="sagsUiPrefsSectionTitle">MÀU GIAO DIỆN</div>
-        <div class="sagsUiThemeGrid">
-          <button type="button" data-sags-theme-choice="light"><span>☀</span><b>Sáng</b><small>Nền sáng, độ tương phản cao</small></button>
-          <button type="button" data-sags-theme-choice="dark"><span>☾</span><b>Tối</b><small>Dịu mắt khi làm việc ban đêm</small></button>
-        </div>
-        <div class="sagsUiPrefsHint">Chế độ màu chỉ đổi phần giao diện điều khiển. Biểu mẫu/PDF vẫn giữ nguyên màu gốc để bảo đảm đọc và xuất hồ sơ chính xác.</div>
-        <button type="button" class="sagsUiPrefsDone">XONG</button>
-      </div>`;
-    document.body.appendChild(shell);
-    shell.addEventListener('click',e=>{if(e.target===shell)closeThemeModal()});
-    shell.querySelector('.sagsUiPrefsClose')?.addEventListener('click',closeThemeModal);
-    shell.querySelector('.sagsUiPrefsDone')?.addEventListener('click',closeThemeModal);
-    for(const b of shell.querySelectorAll('[data-sags-theme-choice]')){
-      b.addEventListener('click',()=>applyTheme(b.dataset.sagsThemeChoice,true));
-    }
-  }
-  function openThemeModal(){
-    ensureThemeModal();
-    applyTheme(readTheme(),false);
-    $('sagsUiPrefsModal')?.classList.add('open');
-  }
-  function closeThemeModal(){$('sagsUiPrefsModal')?.classList.remove('open')}
-  root.sagsOpenUiPrefs=openThemeModal;
 
-  function toggleTheme(){
-    applyTheme(readTheme()==='dark'?'light':'dark',true);
-  }
-  root.sagsToggleUiTheme=toggleTheme;
-  function ensureThemeButton(){
-    const cluster=$('roleAccountCluster');
-    if(!cluster||$('sagsUiPrefsBtn'))return;
-    const b=document.createElement('button');
-    b.id='sagsUiPrefsBtn';
-    b.type='button';
-    b.className='roleChangePassBtn sagsUiPrefsBtn';
-    b.textContent='◐';
-    b.title='Chuyển giao diện Sáng / Tối';
-    b.setAttribute('aria-label',b.title);
-    b.addEventListener('click',toggleTheme);
-    const logout=$('roleLogoutBtn');
-    if(logout)cluster.insertBefore(b,logout);else cluster.appendChild(b);
-    applyTheme(readTheme(),false);
-  }
+
+
+
+
+
+
+
 
   function readHidden(){
     try{
@@ -529,15 +480,15 @@
     const id=identity();
     if(id!==lastIdentity){
       lastIdentity=id;
-      applyTheme(readTheme(),false);
+      applyTheme('dark',false);
       setTimeout(applyQuickVisibility,0);
     }else{
-      const t=readTheme();
+      const t='dark';
       if(t!==lastAppliedTheme)applyTheme(t,false);
     }
   }
   function install(){
-    ensureThemeModal();ensureThemeButton();ensureQuickButton();ensureQuickCustomizeModal();bindQuickObserver();bindFs09Observer();
+    ensureQuickButton();ensureQuickCustomizeModal();bindQuickObserver();bindFs09Observer();
     syncIdentityAndTheme();applyQuickVisibility();optimizeEntryFlow();
     document.addEventListener('keydown',handleEntryKeydown,true);
     document.addEventListener('focusin',e=>{
@@ -545,7 +496,7 @@
       if(is551Quick()&&el?.matches?.('#quickTimeBody .quickTimeInput[data-key]'))update551Context(el.dataset.key);
       if(el?.matches?.('#fs09qBody [data-key]'))syncFs09Context();
     },true);
-    setInterval(()=>{ensureThemeButton();ensureQuickButton();bindQuickObserver();bindFs09Observer();syncIdentityAndTheme();optimizeEntryFlow()},1200);
+    setInterval(()=>{ensureQuickButton();bindQuickObserver();bindFs09Observer();syncIdentityAndTheme();optimizeEntryFlow()},1200);
     window.addEventListener('pageshow',()=>{syncIdentityAndTheme();setTimeout(()=>{applyQuickVisibility();optimizeEntryFlow()},0)},{passive:true});
     document.addEventListener('visibilitychange',()=>{if(!document.hidden){syncIdentityAndTheme();setTimeout(()=>{applyQuickVisibility();optimizeEntryFlow()},0)}});
   }

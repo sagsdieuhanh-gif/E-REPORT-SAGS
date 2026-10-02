@@ -1,0 +1,8 @@
+/* V1.1.21 — iOS quick-time uses the VisualViewport while the keyboard is open.
+   Keep the same two actions visible as Android: CẬP NHẬT + XÓA GIỜ. */
+@media(max-width:360px){
+  @supports (-webkit-touch-callout:none){
+    #fs09QuickModal.v1121IosTimeFocus .fs09qFooterActions{grid-template-columns:minmax(0,1fr) 94px!important;gap:5px!important}
+    #fs09QuickModal.v1121IosTimeFocus .fs09qClear{font-size:9.5px!important;padding:0 5px!important}
+  }
+}

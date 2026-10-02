@@ -1,0 +1,36 @@
+/* ===== V6.3.6 FINAL HEADER COMPACT ===== */
+.finalFormsHeader{
+  grid-template-columns:minmax(0,1fr) auto!important;
+  min-height:44px!important;
+  padding:6px 8px!important;
+  gap:6px!important;
+}
+.finalFormsHeader>span{
+  min-width:0!important;
+  font:900 14px/1.1 Arial,sans-serif!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+.finalHeaderActions{gap:4px!important;flex-wrap:nowrap!important;}
+.finalHeaderBtn{
+  min-width:52px!important;
+  min-height:34px!important;
+  height:34px!important;
+  padding:0 9px!important;
+  border-radius:7px!important;
+  font:900 11px/1 Arial,sans-serif!important;
+  box-shadow:0 1px 4px rgba(0,0,0,.16)!important;
+  white-space:nowrap!important;
+}
+.finalFormsClose{
+  width:34px!important;height:34px!important;min-width:34px!important;
+  font-size:21px!important;
+}
+@media(max-width:520px){
+  .finalFormsHeader{min-height:40px!important;padding:5px 6px!important;gap:4px!important;}
+  .finalFormsHeader>span{font-size:12px!important;}
+  .finalHeaderActions{gap:3px!important;}
+  .finalHeaderBtn{min-width:43px!important;height:31px!important;min-height:31px!important;padding:0 6px!important;font-size:9.5px!important;}
+  .finalFormsClose{width:31px!important;height:31px!important;min-width:31px!important;font-size:19px!important;}
+}

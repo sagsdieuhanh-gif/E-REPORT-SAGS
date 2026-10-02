@@ -1,0 +1,30 @@
+/* ===== V6.3.6 FINAL RECEIVER SCROLL + PERFORMANCE ===== */
+#finalFormsModal{
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior-y:contain;
+  touch-action:pan-y;
+}
+#finalFormsModal .finalFormsPanel{overflow:visible!important;}
+#finalFormsModal .finalFormStage,
+#finalFormsModal .finalFormCanvas{touch-action:pan-y;}
+#finalFormsModal.received-final-view .finalFormsHeader{
+  position:sticky!important;top:0;z-index:22030!important;
+}
+#finalFormsModal.received-final-view #finalFormFields{display:none!important;}
+body:not(.role-admin):not(.role-cbtt) #finalFormsModal #ffSendBtn{display:none!important;}
+body.role-admin #finalFormsModal #ffSendBtn,
+body.role-cbtt #finalFormsModal #ffSendBtn{display:inline-flex!important;}
+/* V6.4.0: FINAL đã nhận vẫn được phép SOẠN LDM (VJ/VU/9G). */
+#finalFormsModal.received-final-view #ffLdmBtn{display:inline-flex!important;}
+#finalFormsModal.received-final-view .finalFormStage{padding-bottom:72px!important;}
+#finalFormsModal.received-final-view .finalFormCanvas img{
+  image-rendering:auto;
+  transform:translateZ(0);
+}
+@media(max-width:600px){
+  #finalFormsModal{padding:0!important;}
+  #finalFormsModal .finalFormsPanel{border-radius:0!important;min-height:100%;}
+  #finalFormsModal.received-final-view .finalFormsHeader{padding-top:max(8px,env(safe-area-inset-top))!important;}
+}

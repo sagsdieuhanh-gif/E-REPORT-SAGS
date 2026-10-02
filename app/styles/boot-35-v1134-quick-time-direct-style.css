@@ -1,0 +1,5 @@
+/* V1.1.35: N/A is integrated into NHẬP NHANH; no separate toolbar button. */
+body.v38-clean-workflow #v320NaContext,
+body.v38-clean-workflow #roleBtnNA{display:none!important}
+/* V1.1.35: NHẬP NHANH is a canonical form action, not a separate contextual lane. */
+body.v38-clean-workflow #v313QuickContext{display:none!important}

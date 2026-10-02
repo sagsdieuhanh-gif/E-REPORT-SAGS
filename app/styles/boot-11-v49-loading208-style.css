@@ -1,0 +1,7 @@
+#page13{position:relative;width:min(100%,1491px);max-width:100%;aspect-ratio:1491/1055;margin:8px auto;background:#fff;overflow:hidden}
+#page13>img,#page13>svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+#page13>img{z-index:1;object-fit:fill}
+#page13>svg{z-index:2;pointer-events:none}
+#page13>svg .hit{pointer-events:all}
+#page13.hide{display:none!important}
+@media print{#page13{width:100%;margin:0;break-after:page}}

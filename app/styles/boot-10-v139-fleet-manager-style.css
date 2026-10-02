@@ -1,0 +1,45 @@
+#fleetManagerModal{
+  position:fixed;inset:0;z-index:10220;display:none;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.55);padding:12px;box-sizing:border-box
+}
+.fleetManagerPanel{
+  width:min(96vw,820px);max-height:92vh;overflow:auto;background:#fff;border-radius:15px;
+  padding:15px;box-sizing:border-box;box-shadow:0 14px 42px rgba(0,0,0,.35);font:13px/1.4 Arial,sans-serif
+}
+.fleetManagerTop{display:flex;align-items:center;justify-content:space-between;gap:8px;position:sticky;top:-15px;background:#fff;padding:4px 0 9px;z-index:2}
+.fleetManagerTop h3{margin:0;color:#003B8E;font-size:19px}
+.fleetManagerClose{border:0;border-radius:9px;padding:8px 12px;font-weight:800;background:#e8e8e8;color:#222}
+.fleetManagerHint{margin:6px 0 10px;padding:9px 10px;border-radius:9px;background:#eef6ff;color:#294a69;font-weight:700}
+.fleetManagerCard{border:1px solid #d6dee7;border-radius:12px;padding:12px;margin:10px 0;background:#fbfcfe}
+.fleetLabel{font:800 11px Arial;color:#46576a;margin:7px 0 4px}
+.fleetInput,.fleetSelect{
+  width:100%;box-sizing:border-box;border:1px solid #aeb8c2;border-radius:8px;background:#fff;
+  padding:9px;font:700 13px Arial;color:#162536
+}
+.fleetMiniBtn{border:0;border-radius:8px;min-height:34px;padding:6px 9px;font-weight:800;background:#e8f1fb;color:#164d86}
+.fleetMiniBtn.danger{background:#fff0ef;color:#a3241b}
+.fleetMiniBtn.good{background:#e9f7ef;color:#087445}
+.fleetStatusText{min-height:20px;margin:7px 0;color:#4c5d6c;font-weight:700}
+.fleetStatusText.err{color:#b42318}
+.fleetList{display:flex;flex-direction:column;gap:8px}
+.fleetListItem{border:1px solid #d4dde6;border-radius:10px;padding:10px;background:#fff}
+.fleetListTitle{font:900 14px Arial;color:#17324d}
+.fleetListMeta{font:700 11px Arial;color:#68798a;margin-top:3px}
+.fleetListActions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.fleetSimpleGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.fleetSimpleField{min-width:0}
+.fleetSimpleField .fleetLabel{margin-top:0}
+.fleetSimpleZone{margin-top:10px;border:1px solid #d4dee8;border-radius:11px;padding:10px;background:#f8fbfe}
+.fleetSimpleZoneTop{display:grid;grid-template-columns:180px 1fr;gap:10px;align-items:end}
+.fleetSimpleZoneInputs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;margin-top:9px}
+.fleetSimpleZoneCell{border:1px solid #d7e0e8;border-radius:9px;padding:7px;background:#fff}
+.fleetSimpleZoneCell.off{display:none}
+.fleetSimpleZoneCell b{display:block;margin-bottom:5px;text-align:center;color:#174b85;font:900 12px Arial}
+.fleetSimpleActions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.fleetSimpleActions button{min-height:42px}
+@media(max-width:680px){
+  .fleetSimpleGrid{grid-template-columns:1fr}
+  .fleetSimpleZoneTop{grid-template-columns:1fr}
+  .fleetSimpleZoneInputs{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .fleetSimpleZoneCell:last-child{grid-column:1/-1}
+}

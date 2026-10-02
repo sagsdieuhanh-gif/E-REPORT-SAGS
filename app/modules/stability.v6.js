@@ -7,9 +7,9 @@
   root.__SAGS_MOBILE_DRAFT_LOADER__=true;
   const script=document.currentScript;
   const base=new URL('.',script?.src||location.href);
-  const core=new URL('app/modules/stability.v6-core.js?v=20260922-02',base).href;
-  const addon=new URL('app/modules/mobile-draft-recovery.v1.js?v=20260922-02',base).href;
-  const idb=new URL('app/modules/indexeddb-flight-store.v1.js?v=20260923-01',base).href;
+  const core=new URL('stability.v6-core.js?v=20260922-02',base).href;
+  const addon=new URL('mobile-draft-recovery.v1.js?v=20260922-02',base).href;
+  const idb=new URL('indexeddb-flight-store.v1.js?v=20260923-01',base).href;
   function load(url,done){
     const el=document.createElement('script');el.src=url;el.async=false;
     if(done)el.onload=done;

@@ -2868,3 +2868,1938 @@ html.new-ui-v1 :focus-visible{
     height:58px!important;min-height:58px!important;border-radius:9px!important;
   }
 }
+
+
+/* ==========================================================================
+   V6.4.33 · AIRLINE GLASS UI
+   Presentation layer only. Operational forms / print geometry stay untouched.
+   ========================================================================== */
+:root{
+  --glass-bg-0:#04111f;--glass-bg-1:#071a2e;--glass-bg-2:#0a2440;
+  --glass-panel:rgba(9,31,55,.76);--glass-panel-strong:rgba(8,27,48,.92);
+  --glass-line:rgba(143,199,255,.16);--glass-text:#eef8ff;--glass-muted:#91acc4;
+  --glass-cyan:#27d3ff;--glass-blue:#2d8cff;--glass-teal:#21d1bb;
+  --glass-green:#42d392;--glass-amber:#ffbf4d;--glass-red:#ff6476;
+  --glass-shadow:0 22px 60px rgba(0,8,22,.34);--glass-shadow-soft:0 12px 30px rgba(0,8,22,.22);
+}
+html.new-ui-v1 body.login-mode{
+  min-height:100dvh!important;
+  background:radial-gradient(circle at 14% 18%,rgba(45,140,255,.22),transparent 30%),radial-gradient(circle at 82% 22%,rgba(33,209,187,.15),transparent 28%),linear-gradient(145deg,#03101e 0%,#071c32 46%,#092844 100%)!important;
+  color:var(--glass-text)!important;
+}
+html.new-ui-v1 #roleLoginModal{background:linear-gradient(rgba(2,12,24,.18),rgba(2,12,24,.44)),radial-gradient(circle at 50% 0%,rgba(44,149,255,.16),transparent 50%)!important}
+html.new-ui-v1 .roleLoginCard{background:linear-gradient(150deg,rgba(14,43,72,.92),rgba(6,24,43,.88))!important;border:1px solid rgba(114,205,255,.23)!important;border-radius:26px!important;color:var(--glass-text)!important;box-shadow:0 34px 100px rgba(0,5,18,.56),inset 0 1px 0 rgba(255,255,255,.05)!important}
+@media(min-width:760px){html.new-ui-v1 .roleLoginCard{backdrop-filter:blur(20px)!important;-webkit-backdrop-filter:blur(20px)!important}}
+html.new-ui-v1 .roleLoginLogo{background:rgba(255,255,255,.94)!important;border:1px solid rgba(255,255,255,.45)!important;box-shadow:0 16px 40px rgba(0,7,20,.28)!important}
+html.new-ui-v1 .newUiLoginEyebrow,html.new-ui-v1 .roleLoginCard label{color:#9dbad2!important}
+html.new-ui-v1 .roleLoginCard h2{color:#f4fbff!important;letter-spacing:-.02em!important}
+html.new-ui-v1 .roleLoginCard input{background:rgba(5,23,41,.82)!important;color:#f5fbff!important;border:1px solid rgba(132,191,232,.22)!important;border-radius:13px!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.025)!important}
+html.new-ui-v1 .roleLoginCard input::placeholder{color:#6f8ca6!important}
+html.new-ui-v1 .roleLoginCard input:focus-visible{border-color:var(--glass-cyan)!important;box-shadow:0 0 0 3px rgba(39,211,255,.12),0 12px 28px rgba(0,15,35,.2)!important}
+html.new-ui-v1 #roleLoginSubmit{min-height:48px!important;border:1px solid rgba(119,225,255,.36)!important;border-radius:13px!important;background:linear-gradient(135deg,#1679e8 0%,#1bb8d6 100%)!important;color:white!important;box-shadow:0 14px 32px rgba(18,132,210,.3)!important}
+html.new-ui-v1 #roleLoginError{background:rgba(255,100,118,.09)!important;border-color:rgba(255,100,118,.24)!important;color:#ffb3bd!important}
+
+html.new-ui-v1 body.v157-authenticated{background:radial-gradient(circle at 78% 6%,rgba(33,209,187,.08),transparent 27%),radial-gradient(circle at 35% 14%,rgba(45,140,255,.13),transparent 31%),linear-gradient(150deg,var(--glass-bg-0),var(--glass-bg-1) 48%,#06182a)!important;color:var(--glass-text)!important}
+html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard{background:radial-gradient(circle at 88% 8%,rgba(39,211,255,.08),transparent 26%),radial-gradient(circle at 46% -6%,rgba(45,140,255,.15),transparent 34%),linear-gradient(155deg,#04111f 0%,#071a2f 52%,#061625 100%)!important;color:var(--glass-text)!important}
+html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157Welcome{position:relative!important;overflow:hidden!important;min-height:118px!important;padding:22px 24px!important;border:1px solid var(--glass-line)!important;border-radius:22px!important;background:linear-gradient(90deg,rgba(12,41,70,.94),rgba(9,32,55,.72)),radial-gradient(circle at 84% 26%,rgba(39,211,255,.14),transparent 26%)!important;box-shadow:var(--glass-shadow-soft)!important}
+html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157Welcome::before{content:"AIRPORT OPERATIONS  /  CXR";position:absolute;top:14px;right:18px;color:rgba(163,213,241,.62);font:800 10px/1 "Segoe UI",Arial,sans-serif;letter-spacing:1.5px}
+html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157Welcome::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:180px;border:1px solid rgba(39,211,255,.08);border-radius:50%;box-shadow:0 0 0 30px rgba(39,211,255,.025),0 0 0 60px rgba(39,211,255,.018);pointer-events:none}
+html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157Welcome strong{color:#f5fbff!important;font-size:clamp(22px,2.2vw,30px)!important;letter-spacing:-.035em!important}
+html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157Welcome span{color:#8faec7!important}
+html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v200WeatherCard{position:relative!important;z-index:2!important;background:rgba(6,24,43,.7)!important;border:1px solid rgba(102,201,255,.18)!important;color:#dff7ff!important;box-shadow:0 16px 36px rgba(0,7,20,.22)!important}
+html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v200WeatherCard b{color:var(--glass-cyan)!important}
+html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v200WeatherCard strong{color:#f7fcff!important}
+html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v200WeatherCard span{color:#87a6c0!important}
+
+html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157MetricGrid{gap:14px!important}
+html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157Metric{min-height:132px!important;background:linear-gradient(145deg,rgba(14,45,75,.82),rgba(7,28,49,.86))!important;border:1px solid var(--glass-line)!important;border-radius:19px!important;box-shadow:0 15px 38px rgba(0,7,20,.23),inset 0 1px 0 rgba(255,255,255,.025)!important}
+html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157Metric::after{background:radial-gradient(circle,rgba(39,211,255,.12),transparent 68%)!important}
+html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157Metric.warn::after{background:radial-gradient(circle,rgba(255,191,77,.14),transparent 68%)!important}
+html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157MetricHead{color:#a6c0d5!important}
+html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157MetricIco{background:rgba(39,211,255,.1)!important;border:1px solid rgba(39,211,255,.19)!important;color:var(--glass-cyan)!important}
+html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157Metric.warn .v157MetricIco{background:rgba(255,191,77,.09)!important;border-color:rgba(255,191,77,.2)!important;color:var(--glass-amber)!important}
+html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157MetricNum{color:#f3fbff!important;text-shadow:0 0 24px rgba(39,211,255,.12)!important}
+html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157MetricSub{color:#738fa8!important}
+html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard > .v157Panel,
+html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard > .v181AdminHomeQuick{background:linear-gradient(145deg,rgba(12,40,68,.82),rgba(7,27,47,.86))!important;border:1px solid var(--glass-line)!important;border-radius:20px!important;box-shadow:var(--glass-shadow-soft)!important;color:var(--glass-text)!important}
+html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157PanelHead{color:#eaf8ff!important}
+html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157PanelLink{color:var(--glass-cyan)!important}
+html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157Empty{background:rgba(4,20,36,.52)!important;border:1px solid rgba(126,184,222,.13)!important;color:#829fb7!important}
+html.new-ui-v1 body.v157-authenticated.v157-home #v181AdminHomeQuick{background:linear-gradient(135deg,rgba(24,93,150,.54),rgba(13,54,90,.76))!important}
+html.new-ui-v1 body.v157-authenticated.v157-home #v181AdminHomeBtn{background:rgba(235,249,255,.95)!important;color:#095b92!important}
+
+html.new-ui-v1 body.v157-authenticated #v157Drawer{background:linear-gradient(180deg,rgba(5,22,39,.985),rgba(6,25,44,.985))!important;border-right:1px solid rgba(121,194,235,.13)!important;color:var(--glass-text)!important;box-shadow:22px 0 58px rgba(0,8,22,.35)!important}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157DrawerHead{min-height:208px!important;background:radial-gradient(circle at 50% -10%,rgba(45,140,255,.2),transparent 45%),linear-gradient(180deg,rgba(10,42,72,.96),rgba(6,27,48,.96))!important;border-bottom:1px solid rgba(133,199,238,.1)!important}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157Brand{grid-template-columns:1fr!important}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157LogoBox{width:min(100%,220px)!important;margin:0 auto!important;padding:10px 14px!important;border-radius:16px!important;background:rgba(250,253,255,.96)!important;border:1px solid rgba(255,255,255,.38)!important;box-shadow:0 14px 34px rgba(0,8,22,.24)!important}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157LogoBox img{max-height:80px!important}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157BrandText{display:none!important}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157UserCard{margin-top:14px!important;padding:10px 11px!important;background:rgba(14,49,82,.62)!important;border:1px solid rgba(124,195,236,.13)!important;border-radius:14px!important}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157Avatar{background:linear-gradient(145deg,#1f8fd8,#2cc9d8)!important;color:#fff!important;box-shadow:0 8px 24px rgba(24,151,215,.22)!important}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157Avatar::after{background:var(--glass-green)!important;border-color:#09243d!important}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157UserName{color:#f5fbff!important}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157Online{color:#6ee3b6!important}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157UserRole{background:rgba(39,211,255,.08)!important;color:#9edff2!important;border:1px solid rgba(39,211,255,.15)!important}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuBody{background:transparent!important;color:var(--glass-text)!important}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157SectionTitle{color:#587b98!important}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuItem{color:#b8cada!important;background:transparent!important;border:1px solid transparent!important}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuItem .ico{background:rgba(52,104,146,.16)!important;color:#8ec9e8!important;border:1px solid rgba(124,188,226,.08)!important}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuItem .meta{color:#5f819c!important}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuItem:hover{background:rgba(37,111,164,.1)!important;border-color:rgba(86,169,219,.08)!important}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuItem.active,
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuItem[aria-current="page"]{background:linear-gradient(90deg,rgba(21,176,211,.23),rgba(26,105,165,.12))!important;color:#eafbff!important;border-color:rgba(39,211,255,.18)!important;box-shadow:inset 3px 0 0 var(--glass-cyan)!important}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuItem.active .ico,
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuItem[aria-current="page"] .ico{background:linear-gradient(145deg,#129ed4,#1cc4cf)!important;color:#fff!important;border-color:transparent!important;box-shadow:0 8px 20px rgba(23,174,210,.2)!important}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuDivider{background:rgba(132,193,228,.09)!important}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157DrawerFooter{background:linear-gradient(180deg,rgba(6,25,44,.94),#051727)!important;border-top:1px solid rgba(124,188,226,.09)!important}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157PasswordBtn{background:rgba(25,75,113,.46)!important;color:#b8dcf0!important;border:1px solid rgba(113,180,218,.13)!important}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157LogoutBtn{background:rgba(255,100,118,.1)!important;color:#ff9ca9!important;border:1px solid rgba(255,100,118,.2)!important;box-shadow:none!important}
+
+html.new-ui-v1 body.v157-authenticated.v157-home #v157BottomBar{background:rgba(4,20,35,.97)!important;border-top:1px solid rgba(115,190,232,.14)!important;box-shadow:0 -14px 36px rgba(0,7,20,.3)!important}
+html.new-ui-v1 body.v157-authenticated.v157-home #v157BottomBar .v157BottomBtn{background:transparent!important;color:#7694ad!important;border:1px solid transparent!important;box-shadow:none!important}
+html.new-ui-v1 body.v157-authenticated.v157-home #v157BottomBar .v157BottomBtn.active{background:rgba(39,211,255,.09)!important;color:#dff9ff!important;border-color:rgba(39,211,255,.16)!important;box-shadow:inset 0 2px 0 rgba(39,211,255,.62)!important}
+html.new-ui-v1 body.v157-authenticated.v157-home #v157BottomBar .v157BottomBtn.active b{color:var(--glass-cyan)!important}
+
+html.new-ui-v1 body.v157-authenticated .compact-main-toolbar,
+html.new-ui-v1 body.v157-authenticated #v38CleanNav,
+html.new-ui-v1 body.v157-authenticated #v163OperationNav,
+html.new-ui-v1 body.v157-authenticated #v324FormActions,
+html.new-ui-v1 body.v157-authenticated #ffCrosscheckFloatingWrap{background:rgba(5,23,41,.96)!important;border-color:rgba(113,186,226,.14)!important;box-shadow:0 -16px 38px rgba(0,8,22,.28)!important}
+html.new-ui-v1 body.v157-authenticated .compact-main-toolbar button,
+html.new-ui-v1 body.v157-authenticated #v38CleanNav button,
+html.new-ui-v1 body.v157-authenticated #v163OperationNav button,
+html.new-ui-v1 body.v157-authenticated #v324FormActions button{background:rgba(19,55,87,.88)!important;color:#d6e9f5!important;border:1px solid rgba(122,190,228,.14)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.025)!important}
+html.new-ui-v1 body.v157-authenticated .compact-main-toolbar button:hover,
+html.new-ui-v1 body.v157-authenticated #v38CleanNav button:hover{background:rgba(27,75,113,.94)!important;border-color:rgba(39,211,255,.22)!important}
+html.new-ui-v1 body.v157-authenticated button.green,html.new-ui-v1 body.v157-authenticated .green,html.new-ui-v1 body.v157-authenticated .save,html.new-ui-v1 body.v157-authenticated .exportPrimary{background:linear-gradient(135deg,#168a6b,#20b99d)!important;color:#fff!important;border-color:rgba(92,236,197,.24)!important}
+html.new-ui-v1 body.v157-authenticated button.danger,html.new-ui-v1 body.v157-authenticated .danger,html.new-ui-v1 body.v157-authenticated .del{background:linear-gradient(135deg,#b83d51,#d85265)!important;color:#fff!important;border-color:rgba(255,130,145,.24)!important}
+html.new-ui-v1 body.v157-authenticated button.orange,html.new-ui-v1 body.v157-authenticated .orange,html.new-ui-v1 body.v157-authenticated .warn,html.new-ui-v1 body.v157-authenticated .warning{background:linear-gradient(135deg,#a96812,#c98723)!important;color:#fff!important;border-color:rgba(255,198,95,.2)!important}
+
+html.new-ui-v1 body.v157-authenticated .sagsAdminModal,
+html.new-ui-v1 body.v157-authenticated #dailyRosterModal,
+html.new-ui-v1 body.v157-authenticated #aclAdminModal,
+html.new-ui-v1 body.v157-authenticated #aclSimpleModal,
+html.new-ui-v1 body.v157-authenticated #aclAiModal,
+html.new-ui-v1 body.v157-authenticated #fleetManagerModal,
+html.new-ui-v1 body.v157-authenticated #fwcModal,
+html.new-ui-v1 body.v157-authenticated #fwcMultitaskModal,
+html.new-ui-v1 body.v157-authenticated #finalFormsModal,
+html.new-ui-v1 body.v157-authenticated .flightTypeEditModal,
+html.new-ui-v1 body.v157-authenticated .finalPaperModal,
+html.new-ui-v1 body.v157-authenticated .vjLdmModal,
+html.new-ui-v1 body.v157-authenticated .v377CreateFormModal,
+html.new-ui-v1 body.v157-authenticated .v485PermModal{background:rgba(1,9,18,.76)!important}
+html.new-ui-v1 body.v157-authenticated .sagsAdminPanel,
+html.new-ui-v1 body.v157-authenticated .drPanel,
+html.new-ui-v1 body.v157-authenticated .aclPanel,
+html.new-ui-v1 body.v157-authenticated .acls-panel,
+html.new-ui-v1 body.v157-authenticated .fleetManagerPanel,
+html.new-ui-v1 body.v157-authenticated .fwcPanel,
+html.new-ui-v1 body.v157-authenticated .fwcMultiPanel,
+html.new-ui-v1 body.v157-authenticated .finalFormsPanel,
+html.new-ui-v1 body.v157-authenticated .rsPanel,
+html.new-ui-v1 body.v157-authenticated .ahPanel,
+html.new-ui-v1 body.v157-authenticated .v1019Panel,
+html.new-ui-v1 body.v157-authenticated .v310ShiftPanel,
+html.new-ui-v1 body.v157-authenticated .v327Panel,
+html.new-ui-v1 body.v157-authenticated .v338Panel,
+html.new-ui-v1 body.v157-authenticated .v340Panel,
+html.new-ui-v1 body.v157-authenticated .v342Panel,
+html.new-ui-v1 body.v157-authenticated .v320ModalPanel,
+html.new-ui-v1 body.v157-authenticated .v377CreateFormCard,
+html.new-ui-v1 body.v157-authenticated .v1122SignCard,
+html.new-ui-v1 body.v157-authenticated .vjLdmCard,
+html.new-ui-v1 body.v157-authenticated .drConflictPanel,
+html.new-ui-v1 body.v157-authenticated #v181AdminCenter .v181AdminPanel,
+html.new-ui-v1 body.v157-authenticated .v174DataHubPanel{background:linear-gradient(150deg,rgba(11,37,63,.97),rgba(5,23,41,.98))!important;color:var(--glass-text)!important;border:1px solid rgba(120,192,232,.16)!important;box-shadow:0 30px 90px rgba(0,6,18,.5)!important}
+@media(min-width:760px){
+  html.new-ui-v1 body.v157-authenticated .sagsAdminPanel,html.new-ui-v1 body.v157-authenticated .drPanel,html.new-ui-v1 body.v157-authenticated .aclPanel,html.new-ui-v1 body.v157-authenticated .fwcPanel,html.new-ui-v1 body.v157-authenticated .v174DataHubPanel,html.new-ui-v1 body.v157-authenticated #v181AdminCenter .v181AdminPanel{backdrop-filter:blur(18px)!important;-webkit-backdrop-filter:blur(18px)!important}
+}
+html.new-ui-v1 body.v157-authenticated .sagsAdminPanel h3,
+html.new-ui-v1 body.v157-authenticated .drHead h3,
+html.new-ui-v1 body.v157-authenticated .aclTitle,
+html.new-ui-v1 body.v157-authenticated .fwcHead h3,
+html.new-ui-v1 body.v157-authenticated .fwcMultiHead h3,
+html.new-ui-v1 body.v157-authenticated .quickTimeHead h3,
+html.new-ui-v1 body.v157-authenticated .fs09qHead h3,
+html.new-ui-v1 body.v157-authenticated .v339Head h3,
+html.new-ui-v1 body.v157-authenticated .v342Head h3,
+html.new-ui-v1 body.v157-authenticated .v327Head h3,
+html.new-ui-v1 body.v157-authenticated .v340Head h3,
+html.new-ui-v1 body.v157-authenticated .rsHead h3,
+html.new-ui-v1 body.v157-authenticated .v377CreateFormHead h3,
+html.new-ui-v1 body.v157-authenticated .vjLdmHead h3,
+html.new-ui-v1 body.v157-authenticated .adccHead h3,
+html.new-ui-v1 body.v157-authenticated .ahHead h3{color:#effaff!important}
+html.new-ui-v1 body.v157-authenticated .sagsUserRow,
+html.new-ui-v1 body.v157-authenticated .sagsAuditItem,
+html.new-ui-v1 body.v157-authenticated .aclCard,
+html.new-ui-v1 body.v157-authenticated .v488Card,
+html.new-ui-v1 body.v157-authenticated .rsCard,
+html.new-ui-v1 body.v157-authenticated .v310ShiftCard,
+html.new-ui-v1 body.v157-authenticated .v320Card,
+html.new-ui-v1 body.v157-authenticated .v327Card,
+html.new-ui-v1 body.v157-authenticated .v339Card,
+html.new-ui-v1 body.v157-authenticated .v342Card,
+html.new-ui-v1 body.v157-authenticated .flightOpsCard,
+html.new-ui-v1 body.v157-authenticated .flightTypeEditCard,
+html.new-ui-v1 body.v157-authenticated .finalPaperCard,
+html.new-ui-v1 body.v157-authenticated .ffDateCard,
+html.new-ui-v1 body.v157-authenticated .ffUpdateCard,
+html.new-ui-v1 body.v157-authenticated .adccCard,
+html.new-ui-v1 body.v157-authenticated .activitySummaryCard,
+html.new-ui-v1 body.v157-authenticated .v1019Field,
+html.new-ui-v1 body.v157-authenticated .v1009GeomCard,
+html.new-ui-v1 body.v157-authenticated .fs09qCloseoutCard,
+html.new-ui-v1 body.v157-authenticated .v181AdminCard,
+html.new-ui-v1 body.v157-authenticated .v174DataCard{background:rgba(11,39,66,.7)!important;color:#dfeff8!important;border:1px solid rgba(122,190,228,.13)!important;box-shadow:0 10px 26px rgba(0,8,22,.16)!important}
+
+html.new-ui-v1 body.v157-authenticated .sagsAdminField input,
+html.new-ui-v1 body.v157-authenticated .sagsAdminField select,
+html.new-ui-v1 body.v157-authenticated .sagsAdminField textarea,
+html.new-ui-v1 body.v157-authenticated .aclInput,
+html.new-ui-v1 body.v157-authenticated .fleetInput,
+html.new-ui-v1 body.v157-authenticated .rsInput,
+html.new-ui-v1 body.v157-authenticated .rsSelect,
+html.new-ui-v1 body.v157-authenticated .v340Field input,
+html.new-ui-v1 body.v157-authenticated .v340Field select,
+html.new-ui-v1 body.v157-authenticated .v340Field textarea,
+html.new-ui-v1 body.v157-authenticated .drPanel input,
+html.new-ui-v1 body.v157-authenticated .drPanel select,
+html.new-ui-v1 body.v157-authenticated .drPanel textarea{background:rgba(4,21,37,.72)!important;color:#f0f8fc!important;border:1px solid rgba(132,193,228,.16)!important;border-radius:11px!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.018)!important}
+html.new-ui-v1 body.v157-authenticated input::placeholder,html.new-ui-v1 body.v157-authenticated textarea::placeholder{color:#65849d!important}
+html.new-ui-v1 body.v157-authenticated .sagsAdminField input:focus,
+html.new-ui-v1 body.v157-authenticated .aclInput:focus,
+html.new-ui-v1 body.v157-authenticated .fleetInput:focus,
+html.new-ui-v1 body.v157-authenticated .rsInput:focus,
+html.new-ui-v1 body.v157-authenticated .drPanel input:focus{outline:none!important;border-color:rgba(39,211,255,.68)!important;box-shadow:0 0 0 3px rgba(39,211,255,.09)!important}
+html.new-ui-v1 body.v157-authenticated .drStatus,
+html.new-ui-v1 body.v157-authenticated .fwcStatus,
+html.new-ui-v1 body.v157-authenticated .aclai-status,
+html.new-ui-v1 body.v157-authenticated .acls-status,
+html.new-ui-v1 body.v157-authenticated .v327Status,
+html.new-ui-v1 body.v157-authenticated .v329QuickStatus,
+html.new-ui-v1 body.v157-authenticated .v342Status,
+html.new-ui-v1 body.v157-authenticated .v488Status,
+html.new-ui-v1 body.v157-authenticated .vjLdmStatus,
+html.new-ui-v1 body.v157-authenticated .exportStatus,
+html.new-ui-v1 body.v157-authenticated .templateStatus{background:rgba(28,75,111,.43)!important;color:#9fc5dc!important;border-color:rgba(124,190,228,.13)!important}
+
+@media(min-width:1100px){
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157Drawer{width:250px!important;transform:translateX(0)!important;visibility:visible!important;pointer-events:auto!important}
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157DrawerBackdrop{display:none!important}
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard{left:250px!important;padding:24px 28px 34px!important;display:grid!important;grid-template-columns:repeat(12,minmax(0,1fr))!important;gap:16px!important;align-content:start!important}
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard>.v157Welcome{grid-column:1/-1!important}
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard>.v181AdminHomeQuick{grid-column:1/-1!important;margin:0!important}
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard>.v157MetricGrid{grid-column:1/-1!important;grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard>.v157Panel{grid-column:span 6!important;margin:0!important;min-height:170px!important}
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157BottomBar{display:none!important}
+}
+@media(max-width:1099px){
+  html.new-ui-v1 body.v157-authenticated #v157Drawer{width:min(86vw,340px)!important}
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard{padding-top:14px!important}
+}
+@media(max-width:720px){
+  html.new-ui-v1 body.login-mode{background:linear-gradient(155deg,#04111f,#071d32 60%,#08233b)!important}
+  html.new-ui-v1 .roleLoginCard{border-radius:20px!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard{padding:10px 10px calc(84px + env(safe-area-inset-bottom))!important;gap:10px!important}
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157Welcome{min-height:102px!important;padding:16px!important;border-radius:17px!important}
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157Welcome::before{top:10px;right:12px;font-size:8px;letter-spacing:1px}
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157Welcome strong{font-size:20px!important}
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157Welcome span{font-size:12px!important}
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v200WeatherCard{min-width:118px!important;max-width:44%!important;border-radius:13px!important;padding:8px 9px!important}
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157MetricGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157Metric{min-height:112px!important;padding:12px!important;border-radius:15px!important}
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157MetricIco{width:36px!important;height:36px!important;border-radius:10px!important;font-size:17px!important}
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157MetricHead{font-size:11px!important}
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157MetricNum{margin-left:44px!important;font-size:30px!important}
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157MetricSub{margin-left:44px!important;font-size:10px!important}
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard>.v157Panel{padding:13px!important;border-radius:16px!important}
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157DrawerHead{min-height:192px!important;padding-left:12px!important;padding-right:12px!important}
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157LogoBox{width:min(100%,190px)!important;padding:8px 10px!important;border-radius:13px!important}
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157LogoBox img{max-height:68px!important}
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157UserCard{margin-top:10px!important}
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuBody{padding:10px 7px 16px!important}
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuItem{min-height:46px!important;border-radius:10px!important;font-size:12.5px!important}
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuItem .ico{width:34px!important;height:34px!important;border-radius:9px!important}
+  html.new-ui-v1 body.v157-authenticated .sagsAdminPanel,
+  html.new-ui-v1 body.v157-authenticated .drPanel,
+  html.new-ui-v1 body.v157-authenticated .aclPanel,
+  html.new-ui-v1 body.v157-authenticated .fwcPanel,
+  html.new-ui-v1 body.v157-authenticated .v174DataHubPanel,
+  html.new-ui-v1 body.v157-authenticated #v181AdminCenter .v181AdminPanel{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+  html.new-ui-v1 body.v157-authenticated button,html.new-ui-v1 body.v157-authenticated input,html.new-ui-v1 body.v157-authenticated select{min-height:42px}
+}
+@media(max-width:390px){
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157MetricGrid{grid-template-columns:1fr!important}
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v200Welcome{gap:8px!important}
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v200WeatherCard{min-width:108px!important}
+}
+@media(prefers-reduced-motion:reduce){html.new-ui-v1 *,html.new-ui-v1 *::before,html.new-ui-v1 *::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+html.new-ui-v1 body.v157-authenticated :focus-visible{outline:2px solid rgba(39,211,255,.85)!important;outline-offset:2px!important}
+html.new-ui-v1 ::-webkit-scrollbar{width:10px;height:10px}
+html.new-ui-v1 ::-webkit-scrollbar-track{background:#061827}
+html.new-ui-v1 ::-webkit-scrollbar-thumb{background:#244d6a;border:2px solid #061827;border-radius:999px}
+html.new-ui-v1 ::-webkit-scrollbar-thumb:hover{background:#32749b}
+@media print{html.new-ui-v1 body{background:#fff!important;color:#000!important}#v157Drawer,#v157BottomBar,.compact-main-toolbar,#v38CleanNav,#v163OperationNav,#v324FormActions,#ffCrosscheckFloatingWrap{display:none!important}}
+
+
+/* ==========================================================================
+   V6.4.34 · AIRLINE GLASS POLISH
+   Fix logo crop/background, remove legacy chrome on login, compact form actions,
+   and use the full desktop canvas.
+   ========================================================================== */
+
+/* LOGIN must be visually isolated from every legacy toolbar/action badge. */
+html.new-ui-v1 #roleLoginModal{
+  background:
+    radial-gradient(circle at 18% 12%,rgba(45,140,255,.22),transparent 32%),
+    radial-gradient(circle at 82% 18%,rgba(33,209,187,.14),transparent 28%),
+    linear-gradient(150deg,#03101d 0%,#071a2e 52%,#09243d 100%)!important;
+}
+html.new-ui-v1 #roleLoginModal .roleLoginCard{
+  background:linear-gradient(155deg,rgba(12,38,64,.96),rgba(5,22,39,.95))!important;
+  color:#eef8ff!important;
+  border:1px solid rgba(113,201,244,.22)!important;
+  box-shadow:0 34px 100px rgba(0,5,18,.58),inset 0 1px 0 rgba(255,255,255,.035)!important;
+}
+html.new-ui-v1 #roleLoginModal .roleLoginCard h2{color:#f4fbff!important}
+html.new-ui-v1 #roleLoginModal .roleLoginCard label{color:#9fbed4!important}
+html.new-ui-v1 #roleLoginModal .roleLoginCard input{
+  background:rgba(3,19,34,.78)!important;
+  color:#f5fbff!important;
+  border-color:rgba(132,193,228,.22)!important;
+}
+html.new-ui-v1 #roleLoginModal .roleLoginCard input:focus{
+  border-color:#27d3ff!important;
+  box-shadow:0 0 0 3px rgba(39,211,255,.10)!important;
+}
+html.new-ui-v1 #roleLoginModal #roleLoginSubmit{
+  background:linear-gradient(135deg,#137dcc,#18b6c8)!important;
+  color:#fff!important;
+  border-color:rgba(86,217,244,.34)!important;
+}
+html.new-ui-v1 #roleLoginModal .newUiLoginEyebrow{color:#7fa4bd!important}
+html.new-ui-v1 #roleLoginModal .newUiLoginEyebrow span{
+  background:rgba(39,211,255,.10)!important;
+  color:#8deaff!important;
+  border-color:rgba(39,211,255,.16)!important;
+}
+
+/* Modern browsers: when login is open, no operational chrome may leak through. */
+html.new-ui-v1 body:has(#roleLoginModal[style*="display: flex"]) .toolbar.compact-main-toolbar,
+html.new-ui-v1 body:has(#roleLoginModal[style*="display:flex"]) .toolbar.compact-main-toolbar,
+html.new-ui-v1 body:has(#roleLoginModal[style*="display: flex"]) #v324FormActions,
+html.new-ui-v1 body:has(#roleLoginModal[style*="display:flex"]) #v324FormActions,
+html.new-ui-v1 body:has(#roleLoginModal[style*="display: flex"]) #v163OperationNav,
+html.new-ui-v1 body:has(#roleLoginModal[style*="display:flex"]) #v163OperationNav,
+html.new-ui-v1 body:has(#roleLoginModal[style*="display: flex"]) #v38CleanNav,
+html.new-ui-v1 body:has(#roleLoginModal[style*="display:flex"]) #v38CleanNav,
+html.new-ui-v1 body:has(#roleLoginModal[style*="display: flex"]) #v22SaveBadge,
+html.new-ui-v1 body:has(#roleLoginModal[style*="display:flex"]) #v22SaveBadge,
+html.new-ui-v1 body:has(#roleLoginModal[style*="display: flex"]) #v22DepBadge,
+html.new-ui-v1 body:has(#roleLoginModal[style*="display:flex"]) #v22DepBadge{
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+
+/* Fallback because roleLoginModal is an early direct body child. */
+html.new-ui-v1 #roleLoginModal[style*="display: flex"] ~ .toolbar.compact-main-toolbar,
+html.new-ui-v1 #roleLoginModal[style*="display:flex"] ~ .toolbar.compact-main-toolbar,
+html.new-ui-v1 #roleLoginModal[style*="display: flex"] ~ #v324FormActions,
+html.new-ui-v1 #roleLoginModal[style*="display:flex"] ~ #v324FormActions,
+html.new-ui-v1 #roleLoginModal[style*="display: flex"] ~ #v163OperationNav,
+html.new-ui-v1 #roleLoginModal[style*="display:flex"] ~ #v163OperationNav,
+html.new-ui-v1 #roleLoginModal[style*="display: flex"] ~ #v22SaveBadge,
+html.new-ui-v1 #roleLoginModal[style*="display:flex"] ~ #v22SaveBadge{
+  display:none!important;
+}
+
+/* SIDEBAR LOGO: no crop and no large white slab. */
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157DrawerHead{
+  padding:14px 12px 12px!important;
+  min-height:220px!important;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157Brand{
+  display:block!important;
+  width:100%!important;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157LogoBox{
+  width:calc(100% - 4px)!important;
+  height:auto!important;
+  min-height:102px!important;
+  max-height:none!important;
+  margin:0 auto!important;
+  padding:11px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:visible!important;
+  border-radius:18px!important;
+  background:linear-gradient(145deg,rgba(24,63,96,.68),rgba(8,31,53,.78))!important;
+  border:1px solid rgba(119,194,235,.14)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035),0 12px 28px rgba(0,8,22,.20)!important;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157LogoBox img{
+  display:block!important;
+  width:100%!important;
+  height:80px!important;
+  max-width:190px!important;
+  max-height:80px!important;
+  min-height:0!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  padding:7px 10px!important;
+  margin:0!important;
+  border-radius:13px!important;
+  background:rgba(244,249,252,.94)!important;
+  box-shadow:none!important;
+}
+html.new-ui-v1 body.v157-authenticated #v157Drawer .v157UserCard{
+  margin-top:11px!important;
+}
+
+/* DESKTOP HOME: occupy the full available viewport. */
+@media(min-width:1100px){
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157Drawer{
+    width:246px!important;
+  }
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard{
+    left:246px!important;
+    right:0!important;
+    width:auto!important;
+    max-width:none!important;
+    min-width:0!important;
+    padding:22px 24px 30px!important;
+    grid-template-columns:repeat(12,minmax(0,1fr))!important;
+  }
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard > .v157Welcome,
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard > .v181AdminHomeQuick,
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard > .v157MetricGrid{
+    width:100%!important;
+    max-width:none!important;
+  }
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard > .v157Panel{
+    min-width:0!important;
+  }
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v200Welcome{
+    width:100%!important;
+  }
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v200WeatherCard{
+    min-width:190px!important;
+    max-width:260px!important;
+  }
+}
+
+/* Operational action bar: compact floating control, never a full-width strip. */
+html.new-ui-v1 body.v157-authenticated:not(.v157-home) #v324FormActions.show{
+  left:auto!important;
+  right:14px!important;
+  bottom:calc(58px + env(safe-area-inset-bottom))!important;
+  width:auto!important;
+  max-width:min(720px,calc(100vw - 28px))!important;
+  min-width:0!important;
+  padding:6px!important;
+  gap:6px!important;
+  border-radius:14px!important;
+  background:rgba(5,23,41,.94)!important;
+  border:1px solid rgba(113,186,226,.14)!important;
+  box-shadow:0 14px 36px rgba(0,8,22,.28)!important;
+}
+html.new-ui-v1 body.v157-authenticated:not(.v157-home) #v324FormActions.show.one{
+  grid-template-columns:minmax(116px,180px)!important;
+}
+html.new-ui-v1 body.v157-authenticated:not(.v157-home) #v324FormActions.show.two{
+  grid-template-columns:repeat(2,minmax(116px,180px))!important;
+}
+html.new-ui-v1 body.v157-authenticated:not(.v157-home) #v324FormActions.show.three{
+  grid-template-columns:repeat(3,minmax(112px,175px))!important;
+}
+html.new-ui-v1 body.v157-authenticated:not(.v157-home) #v324FormActions .v324FormAction{
+  min-height:38px!important;
+  padding:7px 10px!important;
+  border-radius:10px!important;
+  font-size:10px!important;
+}
+html.new-ui-v1 body.v157-authenticated:not(.v157-home) #v324ExportBtn{
+  background:linear-gradient(135deg,rgba(19,124,204,.95),rgba(24,182,200,.95))!important;
+  color:#fff!important;
+  border-color:rgba(103,219,242,.28)!important;
+}
+
+/* Mobile keeps logo contained and action controls thumb-friendly. */
+@media(max-width:720px){
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157DrawerHead{
+    min-height:204px!important;
+    padding:11px 10px 10px!important;
+  }
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157LogoBox{
+    min-height:88px!important;
+    padding:8px!important;
+    border-radius:15px!important;
+  }
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157LogoBox img{
+    height:68px!important;
+    max-height:68px!important;
+    max-width:168px!important;
+    padding:5px 8px!important;
+  }
+  html.new-ui-v1 body.v157-authenticated:not(.v157-home) #v324FormActions.show{
+    left:8px!important;
+    right:8px!important;
+    bottom:calc(56px + env(safe-area-inset-bottom))!important;
+    width:auto!important;
+    max-width:none!important;
+  }
+}
+
+
+/* ==========================================================================
+   V6.4.36 · MOBILE UI CLEANUP
+   - Universal legacy EXPORT button removed in app core.
+   - Mobile is a dedicated layout, not a scaled desktop layout.
+   ========================================================================== */
+
+/* Safety net for stale cached DOM from older builds. */
+#v324ExportBtn{display:none!important;visibility:hidden!important;pointer-events:none!important}
+#v324FormActions:not(:has(#v1134QuickTimeBtn[style*="inline-flex"])):not(:has(#v324HandoverBtn[style*="block"])):not(:has(#v324HandoverBtn[style*="inline"])) {
+  /* JS controls visibility; this selector only prevents stale export-only rows. */
+}
+
+/* Form contextual actions are compact and only appear when a real action exists. */
+html.new-ui-v1 body.v157-authenticated:not(.v157-home) #v324FormActions.show{
+  left:auto!important;
+  right:10px!important;
+  width:auto!important;
+  min-width:0!important;
+  max-width:min(390px,calc(100vw - 20px))!important;
+  padding:5px!important;
+  border-radius:13px!important;
+  background:rgba(5,23,41,.96)!important;
+  border:1px solid rgba(117,190,232,.16)!important;
+  box-shadow:0 12px 30px rgba(0,8,22,.28)!important;
+}
+html.new-ui-v1 body.v157-authenticated:not(.v157-home) #v324FormActions .v324FormAction{
+  min-width:120px!important;
+  min-height:40px!important;
+  padding:8px 12px!important;
+  font-size:10.5px!important;
+  border-radius:10px!important;
+}
+
+/* Mobile / small tablet */
+@media(max-width:767px){
+  html.new-ui-v1,html.new-ui-v1 body{
+    width:100%!important;
+    max-width:100%!important;
+    overflow-x:hidden!important;
+  }
+
+  html.new-ui-v1 body.v157-authenticated{
+    min-height:100dvh!important;
+    padding-bottom:calc(72px + env(safe-area-inset-bottom))!important;
+  }
+
+  /* Home becomes one readable mobile column. */
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard{
+    position:fixed!important;
+    inset:0 0 calc(68px + env(safe-area-inset-bottom)) 0!important;
+    left:0!important;
+    right:0!important;
+    width:100%!important;
+    max-width:none!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    -webkit-overflow-scrolling:touch!important;
+    display:block!important;
+    padding:10px 10px 18px!important;
+  }
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard>*{
+    width:100%!important;
+    max-width:100%!important;
+    box-sizing:border-box!important;
+    margin-left:0!important;
+    margin-right:0!important;
+  }
+
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157Welcome{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:12px!important;
+    min-height:0!important;
+    padding:16px!important;
+    margin-bottom:10px!important;
+    border-radius:18px!important;
+  }
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157Welcome::before{
+    position:static!important;
+    order:-1!important;
+    display:block!important;
+    margin-bottom:2px!important;
+    font-size:8px!important;
+    letter-spacing:1.2px!important;
+  }
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157Welcome::after{
+    right:-110px!important;bottom:-120px!important;opacity:.6!important;
+  }
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v200Welcome{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+  }
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v200WelcomeCopy{
+    min-width:0!important;
+  }
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157Welcome strong{
+    display:block!important;
+    font-size:21px!important;
+    line-height:1.18!important;
+  }
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157Welcome span{
+    display:block!important;
+    margin-top:5px!important;
+    font-size:12px!important;
+    line-height:1.45!important;
+  }
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v200WeatherCard{
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    display:grid!important;
+    grid-template-columns:auto 1fr!important;
+    grid-template-areas:"label main" "label sub"!important;
+    column-gap:10px!important;
+    align-items:center!important;
+    padding:10px 12px!important;
+    border-radius:14px!important;
+  }
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v200WeatherCard b{
+    grid-area:label!important;
+    font-size:11px!important;
+  }
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v200WeatherCard strong{
+    grid-area:main!important;
+    font-size:17px!important;
+    line-height:1.15!important;
+  }
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v200WeatherCard span{
+    grid-area:sub!important;
+    margin:2px 0 0!important;
+    font-size:10px!important;
+  }
+
+  /* Admin quick card is compact on phones. */
+  html.new-ui-v1 body.v157-authenticated.v157-home #v181AdminHomeQuick{
+    display:grid!important;
+    grid-template-columns:1fr auto!important;
+    align-items:center!important;
+    gap:10px!important;
+    padding:12px!important;
+    margin:0 0 10px!important;
+    border-radius:16px!important;
+  }
+  html.new-ui-v1 body.v157-authenticated.v157-home #v181AdminHomeQuick small{
+    display:block!important;
+    margin-top:3px!important;
+    font-size:10px!important;
+    line-height:1.35!important;
+  }
+  html.new-ui-v1 body.v157-authenticated.v157-home #v181AdminHomeBtn{
+    min-width:62px!important;
+    min-height:40px!important;
+    padding:8px 10px!important;
+    border-radius:11px!important;
+  }
+
+  /* Metric cards: full-width horizontal rows, easier to scan on phones. */
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157MetricGrid{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:8px!important;
+    margin-bottom:10px!important;
+  }
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157Metric{
+    min-height:84px!important;
+    padding:12px!important;
+    border-radius:15px!important;
+    display:grid!important;
+    grid-template-columns:42px 1fr auto!important;
+    grid-template-rows:auto auto!important;
+    column-gap:10px!important;
+    align-items:center!important;
+  }
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157MetricHead{
+    display:contents!important;
+  }
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157MetricIco{
+    grid-column:1!important;
+    grid-row:1/3!important;
+    width:40px!important;height:40px!important;
+    border-radius:11px!important;
+    font-size:18px!important;
+  }
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157MetricHead>span:not(.v157MetricIco){
+    grid-column:2!important;
+    grid-row:1!important;
+    font-size:11px!important;
+    line-height:1.3!important;
+  }
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157MetricNum{
+    grid-column:3!important;
+    grid-row:1/3!important;
+    margin:0!important;
+    font-size:26px!important;
+    text-align:right!important;
+  }
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157MetricSub{
+    grid-column:2!important;
+    grid-row:2!important;
+    margin:2px 0 0!important;
+    font-size:9.5px!important;
+  }
+
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard>.v157Panel{
+    min-height:0!important;
+    padding:12px!important;
+    margin:0 0 10px!important;
+    border-radius:16px!important;
+  }
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157PanelHead{
+    gap:8px!important;
+    align-items:center!important;
+    font-size:12px!important;
+  }
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157PanelLink{
+    min-height:36px!important;
+    padding:6px 8px!important;
+    font-size:10px!important;
+  }
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157Empty{
+    padding:12px!important;
+    font-size:11px!important;
+    line-height:1.45!important;
+  }
+
+  /* Bottom navigation: true mobile app bar. */
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157BottomBar{
+    position:fixed!important;
+    left:0!important;right:0!important;bottom:0!important;
+    height:calc(64px + env(safe-area-inset-bottom))!important;
+    padding:6px 8px env(safe-area-inset-bottom)!important;
+    display:grid!important;
+    grid-template-columns:repeat(4,1fr)!important;
+    gap:4px!important;
+    border-radius:0!important;
+    z-index:15020!important;
+  }
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157BottomBar .v157BottomBtn{
+    min-width:0!important;
+    min-height:50px!important;
+    padding:5px 2px!important;
+    border-radius:12px!important;
+    font-size:9px!important;
+  }
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157BottomBar .v157BottomBtn b{
+    display:block!important;
+    font-size:18px!important;
+    line-height:1!important;
+    margin-bottom:3px!important;
+  }
+
+  /* Drawer: almost full screen, no clipped logo, scrollable content and safe-area. */
+  html.new-ui-v1 body.v157-authenticated #v157Drawer{
+    width:min(88vw,360px)!important;
+    max-width:360px!important;
+    height:100dvh!important;
+    padding-bottom:env(safe-area-inset-bottom)!important;
+    overflow:hidden!important;
+  }
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157DrawerHead{
+    min-height:0!important;
+    padding:calc(10px + env(safe-area-inset-top)) 10px 10px!important;
+  }
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157LogoBox{
+    min-height:76px!important;
+    padding:7px!important;
+    border-radius:14px!important;
+  }
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157LogoBox img{
+    width:auto!important;
+    height:62px!important;
+    max-width:160px!important;
+    max-height:62px!important;
+    padding:4px 7px!important;
+  }
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157UserCard{
+    padding:9px!important;
+    border-radius:12px!important;
+  }
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuBody{
+    overflow-y:auto!important;
+    -webkit-overflow-scrolling:touch!important;
+    padding:8px 7px 12px!important;
+  }
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157SectionTitle{
+    margin:10px 7px 5px!important;
+    font-size:9px!important;
+    letter-spacing:1px!important;
+  }
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuItem{
+    min-height:46px!important;
+    padding:5px 7px!important;
+    border-radius:11px!important;
+    font-size:12px!important;
+  }
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuItem .meta{
+    font-size:9px!important;
+    white-space:normal!important;
+    line-height:1.2!important;
+  }
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157DrawerFooter{
+    padding:7px 8px!important;
+  }
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157PasswordBtn,
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157LogoutBtn{
+    min-height:42px!important;
+    font-size:10px!important;
+    border-radius:10px!important;
+  }
+
+  /* Data Hub and Admin Center use a mobile bottom-sheet layout. */
+  html.new-ui-v1 body.v157-authenticated #v174DataHub,
+  html.new-ui-v1 body.v157-authenticated #v181AdminCenter{
+    align-items:flex-end!important;
+    justify-content:center!important;
+    padding:0!important;
+    background:rgba(1,9,18,.72)!important;
+  }
+  html.new-ui-v1 body.v157-authenticated #v174DataHub .v174DataHubPanel,
+  html.new-ui-v1 body.v157-authenticated #v181AdminCenter .v181AdminPanel{
+    width:100%!important;
+    max-width:none!important;
+    max-height:92dvh!important;
+    margin:0!important;
+    padding:14px 12px calc(14px + env(safe-area-inset-bottom))!important;
+    border-radius:22px 22px 0 0!important;
+    overflow-y:auto!important;
+    -webkit-overflow-scrolling:touch!important;
+    box-shadow:0 -22px 60px rgba(0,6,18,.48)!important;
+  }
+  html.new-ui-v1 body.v157-authenticated #v174DataHub .v174DataHubHead,
+  html.new-ui-v1 body.v157-authenticated #v181AdminCenter .v181AdminHead{
+    position:sticky!important;
+    top:-14px!important;
+    z-index:3!important;
+    padding:10px 0!important;
+    background:rgba(7,27,47,.97)!important;
+    backdrop-filter:none!important;
+  }
+  html.new-ui-v1 body.v157-authenticated #v174DataHub .v174DataHubGrid,
+  html.new-ui-v1 body.v157-authenticated #v181AdminCenter .v181AdminGrid{
+    grid-template-columns:1fr!important;
+    gap:8px!important;
+  }
+  html.new-ui-v1 body.v157-authenticated #v174DataHub .v174DataCard,
+  html.new-ui-v1 body.v157-authenticated #v181AdminCenter .v181AdminCard{
+    min-height:78px!important;
+    padding:11px!important;
+    border-radius:14px!important;
+  }
+
+  /* Operational modals become full usable sheets instead of tiny desktop cards. */
+  html.new-ui-v1 body.v157-authenticated .sagsAdminModal,
+  html.new-ui-v1 body.v157-authenticated #dailyRosterModal,
+  html.new-ui-v1 body.v157-authenticated #aclAdminModal,
+  html.new-ui-v1 body.v157-authenticated #aclSimpleModal,
+  html.new-ui-v1 body.v157-authenticated #aclAiModal,
+  html.new-ui-v1 body.v157-authenticated #fleetManagerModal,
+  html.new-ui-v1 body.v157-authenticated #fwcModal,
+  html.new-ui-v1 body.v157-authenticated #fwcMultitaskModal,
+  html.new-ui-v1 body.v157-authenticated #finalFormsModal,
+  html.new-ui-v1 body.v157-authenticated .flightTypeEditModal,
+  html.new-ui-v1 body.v157-authenticated .finalPaperModal,
+  html.new-ui-v1 body.v157-authenticated .vjLdmModal,
+  html.new-ui-v1 body.v157-authenticated .v377CreateFormModal,
+  html.new-ui-v1 body.v157-authenticated .v485PermModal,
+  html.new-ui-v1 body.v157-authenticated #v2213Modal{
+    padding:0!important;
+    align-items:flex-end!important;
+  }
+  html.new-ui-v1 body.v157-authenticated .sagsAdminPanel,
+  html.new-ui-v1 body.v157-authenticated .drPanel,
+  html.new-ui-v1 body.v157-authenticated .aclPanel,
+  html.new-ui-v1 body.v157-authenticated .acls-panel,
+  html.new-ui-v1 body.v157-authenticated .fleetManagerPanel,
+  html.new-ui-v1 body.v157-authenticated .fwcPanel,
+  html.new-ui-v1 body.v157-authenticated .fwcMultiPanel,
+  html.new-ui-v1 body.v157-authenticated .finalFormsPanel,
+  html.new-ui-v1 body.v157-authenticated .flightTypeEditCard,
+  html.new-ui-v1 body.v157-authenticated .finalPaperCard,
+  html.new-ui-v1 body.v157-authenticated .vjLdmCard,
+  html.new-ui-v1 body.v157-authenticated .v377CreateFormCard,
+  html.new-ui-v1 body.v157-authenticated #v2213Modal .v2213-panel{
+    width:100%!important;
+    max-width:none!important;
+    max-height:94dvh!important;
+    margin:0!important;
+    border-radius:20px 20px 0 0!important;
+    padding-left:11px!important;
+    padding-right:11px!important;
+    padding-bottom:calc(14px + env(safe-area-inset-bottom))!important;
+    overflow-y:auto!important;
+  }
+
+  /* Prevent iOS input zoom and make touch targets consistent. */
+  html.new-ui-v1 body.v157-authenticated input,
+  html.new-ui-v1 body.v157-authenticated select,
+  html.new-ui-v1 body.v157-authenticated textarea{
+    font-size:16px!important;
+    max-width:100%!important;
+    box-sizing:border-box!important;
+  }
+  html.new-ui-v1 body.v157-authenticated button{
+    touch-action:manipulation!important;
+  }
+
+  /* Operational bottom controls leave enough room for content. */
+  html.new-ui-v1 body.v157-authenticated.v163-operational{
+    padding-bottom:calc(66px + env(safe-area-inset-bottom))!important;
+  }
+  html.new-ui-v1 body.v157-authenticated:not(.v157-home) #v163OperationNav{
+    left:0!important;
+    right:0!important;
+    bottom:0!important;
+    width:100%!important;
+    padding:6px 7px calc(6px + env(safe-area-inset-bottom))!important;
+    border-radius:0!important;
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:4px!important;
+    background:rgba(4,20,35,.98)!important;
+    border-top:1px solid rgba(115,190,232,.14)!important;
+    box-shadow:0 -12px 30px rgba(0,7,20,.28)!important;
+  }
+  html.new-ui-v1 body.v157-authenticated:not(.v157-home) #v163OperationNav button{
+    min-height:46px!important;
+    padding:5px 2px!important;
+    border-radius:10px!important;
+    font-size:9.5px!important;
+  }
+  html.new-ui-v1 body.v157-authenticated:not(.v157-home) #v324FormActions.show{
+    left:8px!important;
+    right:8px!important;
+    bottom:calc(62px + env(safe-area-inset-bottom))!important;
+    width:auto!important;
+    max-width:none!important;
+    grid-template-columns:1fr!important;
+  }
+  html.new-ui-v1 body.v157-authenticated:not(.v157-home) #v324FormActions .v324FormAction{
+    width:100%!important;
+    min-width:0!important;
+    min-height:42px!important;
+    font-size:10px!important;
+  }
+
+  /* Login card fits small phones without underlying operational UI. */
+  html.new-ui-v1 #roleLoginModal{
+    padding:12px!important;
+    align-items:center!important;
+  }
+  html.new-ui-v1 #roleLoginModal .roleLoginCard{
+    width:min(100%,420px)!important;
+    max-height:calc(100dvh - 24px)!important;
+    overflow-y:auto!important;
+    padding:18px 16px!important;
+    border-radius:20px!important;
+  }
+  html.new-ui-v1 #roleLoginModal .roleLoginLogo{
+    max-height:86px!important;
+    object-fit:contain!important;
+  }
+}
+
+/* Very narrow phones */
+@media(max-width:390px){
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard{
+    padding-left:8px!important;padding-right:8px!important;
+  }
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157Welcome{
+    padding:14px!important;
+  }
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157Welcome strong{
+    font-size:19px!important;
+  }
+  html.new-ui-v1 body.v157-authenticated #v157Drawer{
+    width:92vw!important;
+  }
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157BottomBar .v157BottomBtn span{
+    font-size:8.5px!important;
+  }
+}
+
+
+/* ==========================================================================
+   V6.4.37 · MOBILE SCROLL FIX
+   Use natural document scrolling on phones. Fixed dashboard scroll containers
+   conflicted with legacy gesture handling on some mobile browsers.
+   ========================================================================== */
+@media(max-width:767px){
+  html.new-ui-v1{
+    height:auto!important;
+    min-height:100%!important;
+    overflow-x:hidden!important;
+    overflow-y:auto!important;
+    overscroll-behavior-y:auto!important;
+    touch-action:pan-y pinch-zoom!important;
+  }
+  html.new-ui-v1 body{
+    position:relative!important;
+    height:auto!important;
+    min-height:100dvh!important;
+    overflow-x:hidden!important;
+    overflow-y:auto!important;
+    overscroll-behavior-y:auto!important;
+    -webkit-overflow-scrolling:touch!important;
+    touch-action:pan-y pinch-zoom!important;
+  }
+  html.new-ui-v1 body.v157-authenticated.v157-home{
+    height:auto!important;
+    min-height:100dvh!important;
+    overflow-y:auto!important;
+    touch-action:pan-y pinch-zoom!important;
+    padding-bottom:0!important;
+  }
+
+  /* IMPORTANT: home is back in normal document flow. */
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard{
+    position:relative!important;
+    inset:auto!important;
+    top:auto!important;
+    right:auto!important;
+    bottom:auto!important;
+    left:auto!important;
+    width:100%!important;
+    height:auto!important;
+    min-height:calc(100dvh - 64px - env(safe-area-inset-bottom))!important;
+    max-height:none!important;
+    overflow:visible!important;
+    overflow-x:hidden!important;
+    overflow-y:visible!important;
+    overscroll-behavior-y:auto!important;
+    -webkit-overflow-scrolling:touch!important;
+    touch-action:pan-y pinch-zoom!important;
+    padding:10px 10px calc(86px + env(safe-area-inset-bottom))!important;
+  }
+
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard,
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard *{
+    overscroll-behavior-y:auto;
+  }
+
+  /* Drawer and sheet content explicitly allow vertical pan. */
+  html.new-ui-v1 body.v157-authenticated #v157Drawer,
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuBody,
+  html.new-ui-v1 body.v157-authenticated #v174DataHub .v174DataHubPanel,
+  html.new-ui-v1 body.v157-authenticated #v181AdminCenter .v181AdminPanel,
+  html.new-ui-v1 body.v157-authenticated .sagsAdminPanel,
+  html.new-ui-v1 body.v157-authenticated .drPanel,
+  html.new-ui-v1 body.v157-authenticated .aclPanel,
+  html.new-ui-v1 body.v157-authenticated .acls-panel,
+  html.new-ui-v1 body.v157-authenticated .fleetManagerPanel,
+  html.new-ui-v1 body.v157-authenticated .fwcPanel,
+  html.new-ui-v1 body.v157-authenticated .fwcMultiPanel,
+  html.new-ui-v1 body.v157-authenticated .finalFormsPanel,
+  html.new-ui-v1 body.v157-authenticated #v2213Modal .v2213-panel{
+    touch-action:pan-y pinch-zoom!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuBody{
+    min-height:0!important;
+    overscroll-behavior-y:contain!important;
+  }
+
+  html.new-ui-v1 body.v157-authenticated #v174DataHub .v174DataHubPanel,
+  html.new-ui-v1 body.v157-authenticated #v181AdminCenter .v181AdminPanel,
+  html.new-ui-v1 body.v157-authenticated .sagsAdminPanel,
+  html.new-ui-v1 body.v157-authenticated .drPanel,
+  html.new-ui-v1 body.v157-authenticated .aclPanel,
+  html.new-ui-v1 body.v157-authenticated .acls-panel,
+  html.new-ui-v1 body.v157-authenticated .fleetManagerPanel,
+  html.new-ui-v1 body.v157-authenticated .fwcPanel,
+  html.new-ui-v1 body.v157-authenticated .fwcMultiPanel,
+  html.new-ui-v1 body.v157-authenticated .finalFormsPanel,
+  html.new-ui-v1 body.v157-authenticated #v2213Modal .v2213-panel{
+    overflow-y:auto!important;
+    overscroll-behavior-y:contain!important;
+  }
+
+  /* Bottom navigation remains fixed; content scrolls underneath with padding. */
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157BottomBar{
+    position:fixed!important;
+    bottom:0!important;
+    touch-action:manipulation!important;
+  }
+}
+
+
+/* ==========================================================================
+   V6.4.38 · WORK MENU FLOW
+   Post-login is a dedicated full-screen work menu. Underlying forms stay hidden.
+   Mobile home scrolls inside its own layer; only explicit OPEN/RECEIVE enters work.
+   ========================================================================== */
+html.new-ui-v1 body.v157-authenticated.v157-home{
+  overflow:hidden!important;
+}
+
+/* Home/work menu always sits above operational form canvas, below drawer/sheets/nav. */
+html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard{
+  z-index:14900!important;
+  pointer-events:auto!important;
+}
+
+/* Mobile: fixed work-menu layer + reliable vertical panning. */
+@media(max-width:767px){
+  html.new-ui-v1 body.v157-authenticated.v157-home{
+    position:relative!important;
+    height:100dvh!important;
+    min-height:100dvh!important;
+    overflow:hidden!important;
+    touch-action:auto!important;
+    padding:0!important;
+  }
+
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard{
+    position:fixed!important;
+    top:0!important;
+    right:0!important;
+    bottom:calc(64px + env(safe-area-inset-bottom))!important;
+    left:0!important;
+    inset:0 0 calc(64px + env(safe-area-inset-bottom)) 0!important;
+    width:auto!important;
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    display:block!important;
+    overflow-x:hidden!important;
+    overflow-y:scroll!important;
+    overscroll-behavior-y:contain!important;
+    -webkit-overflow-scrolling:touch!important;
+    touch-action:pan-y pinch-zoom!important;
+    scroll-behavior:smooth!important;
+    padding:10px 10px 18px!important;
+    background:
+      radial-gradient(circle at 88% 8%,rgba(39,211,255,.08),transparent 26%),
+      radial-gradient(circle at 46% -6%,rgba(45,140,255,.15),transparent 34%),
+      linear-gradient(155deg,#04111f 0%,#071a2f 52%,#061625 100%)!important;
+  }
+
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard>*{
+    touch-action:pan-y!important;
+  }
+
+  /* Buttons keep tap semantics without blocking parent vertical scroll. */
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard button{
+    touch-action:manipulation!important;
+  }
+
+  /* Navigation remains above the work menu layer. */
+  html.new-ui-v1 body.v157-authenticated.v157-home #v157BottomBar{
+    z-index:14930!important;
+  }
+  html.new-ui-v1 body.v157-authenticated #v157DrawerBackdrop{z-index:14960!important}
+  html.new-ui-v1 body.v157-authenticated #v157Drawer{z-index:14970!important}
+  html.new-ui-v1 body.v157-authenticated #v174DataHub{z-index:15920!important}
+  html.new-ui-v1 body.v157-authenticated #v181AdminCenter{z-index:15930!important}
+}
+
+/* Never expose the work menu while an operational form is active. */
+html.new-ui-v1 body.v157-authenticated:not(.v157-home) #v157HomeDashboard,
+html.new-ui-v1 body.v157-authenticated:not(.v157-home) #v157BottomBar{
+  display:none!important;
+  pointer-events:none!important;
+}
+
+
+/* ==========================================================================
+   V6.4.39 · CANONICAL WORK MENU
+   MY FLIGHT is the post-login/root workspace. Dashboard is only a hidden
+   structural backing layer while the work menu is open.
+   ========================================================================== */
+html.new-ui-v1 body:has(#fwcModal.show) #v157HomeDashboard{
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+html.new-ui-v1 body:has(#fwcModal.show) #v157BottomBar{
+  display:none!important;
+}
+html.new-ui-v1 #fwcModal.show{
+  z-index:15120!important;
+}
+html.new-ui-v1 #fwcModal.show .fwcPanel{
+  max-height:100dvh!important;
+}
+html.new-ui-v1 #fwcModal.show .fwcHead{
+  position:sticky!important;
+  top:0!important;
+  z-index:5!important;
+}
+html.new-ui-v1 #fwcModal.show #v479MyFlightHome,
+html.new-ui-v1 #fwcModal.show #v477Close,
+html.new-ui-v1 #fwcModal.show .fwcHead>.fwcBtn.gray{
+  white-space:nowrap!important;
+}
+@media(max-width:767px){
+  html.new-ui-v1 #fwcModal.show{
+    align-items:stretch!important;
+    padding:0!important;
+    background:#061625!important;
+  }
+  html.new-ui-v1 #fwcModal.show .fwcPanel{
+    width:100%!important;
+    height:100dvh!important;
+    max-width:none!important;
+    max-height:100dvh!important;
+    border-radius:0!important;
+    margin:0!important;
+    padding:10px 10px calc(14px + env(safe-area-inset-bottom))!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    overscroll-behavior-y:auto!important;
+    -webkit-overflow-scrolling:touch!important;
+    touch-action:pan-y pinch-zoom!important;
+  }
+  html.new-ui-v1 #fwcModal.show .fwcHead{
+    margin:-10px -10px 10px!important;
+    padding:calc(10px + env(safe-area-inset-top)) 10px 9px!important;
+    background:rgba(6,22,37,.97)!important;
+    border-bottom:1px solid rgba(120,192,232,.14)!important;
+  }
+  html.new-ui-v1 #fwcModal.show .fwcHead h3{
+    font-size:15px!important;
+    line-height:1.25!important;
+  }
+  html.new-ui-v1 #fwcModal.show .fwcHead .fwcBtn{
+    min-height:40px!important;
+    padding:7px 9px!important;
+    font-size:10px!important;
+  }
+}
+
+
+/* ==========================================================================
+   V6.4.39 MOBILE HOTFIX 03
+   Canonical post-login My Flight must own the viewport. Never allow a stale
+   QUICK TIME/42.3 sheet or the backing dashboard to appear above/below it.
+   ========================================================================== */
+html.new-ui-v1 body:has(#fwcModal.show){
+  overflow:hidden!important;
+  height:100dvh!important;
+  max-height:100dvh!important;
+}
+html.new-ui-v1 #fwcModal.show{
+  position:fixed!important;
+  inset:0!important;
+  width:100vw!important;
+  height:100dvh!important;
+  max-width:none!important;
+  max-height:none!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:hidden!important;
+  overscroll-behavior:none!important;
+}
+html.new-ui-v1 body:has(#fwcModal.show) :is(#quickTimeModal,#fs09QuickModal,#timeSkipModal,#entry){
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+html.new-ui-v1 #fwcModal.show .fwcHead{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto auto!important;
+  align-items:center!important;
+  gap:8px!important;
+}
+html.new-ui-v1 #fwcModal.show .fwcHead h3{
+  min-width:0!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+}
+html.new-ui-v1 #fwcModal.show #v479MyFlightHome{
+  order:2!important;
+  min-width:112px!important;
+  font-weight:900!important;
+}
+html.new-ui-v1 #fwcModal.show #v477Close{
+  order:3!important;
+}
+@media(max-width:767px){
+  html.new-ui-v1 #fwcModal.show{
+    align-items:stretch!important;
+    justify-content:stretch!important;
+    padding:0!important;
+  }
+  html.new-ui-v1 #fwcModal.show .fwcPanel{
+    position:relative!important;
+    display:flex!important;
+    flex-direction:column!important;
+    width:100vw!important;
+    height:100dvh!important;
+    min-height:100dvh!important;
+    max-height:100dvh!important;
+    margin:0!important;
+    border:0!important;
+    border-radius:0!important;
+    padding:0!important;
+    overflow:hidden!important;
+    background:#f3f8fa!important;
+  }
+  html.new-ui-v1 #fwcModal.show .fwcHead{
+    position:relative!important;
+    flex:0 0 auto!important;
+    grid-template-columns:minmax(0,1fr) auto!important;
+    grid-template-areas:
+      "title menu"
+      "back back"!important;
+    gap:7px!important;
+    margin:0!important;
+    padding:calc(10px + env(safe-area-inset-top)) 10px 9px!important;
+    background:#f3f8fa!important;
+    border-bottom:1px solid #dce8ed!important;
+  }
+  html.new-ui-v1 #fwcModal.show .fwcHead h3{grid-area:title!important;font-size:16px!important}
+  html.new-ui-v1 #fwcModal.show #v477Close{grid-area:menu!important;min-width:78px!important}
+  html.new-ui-v1 #fwcModal.show #v479MyFlightHome{
+    grid-area:back!important;
+    width:100%!important;
+    min-height:42px!important;
+    font-size:11px!important;
+  }
+  html.new-ui-v1 #fwcModal.show #fwcBody{
+    flex:1 1 auto!important;
+    min-height:0!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    overscroll-behavior-y:contain!important;
+    -webkit-overflow-scrolling:touch!important;
+    touch-action:pan-y pinch-zoom!important;
+    padding:8px 10px calc(18px + env(safe-area-inset-bottom))!important;
+  }
+  html.new-ui-v1 #fwcModal.show .fwcTools{
+    position:sticky!important;
+    top:0!important;
+    z-index:4!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) auto!important;
+    gap:7px!important;
+    margin:0 0 9px!important;
+    padding:8px!important;
+  }
+  html.new-ui-v1 #fwcModal.show .fwcTools input{
+    width:100%!important;
+    min-width:0!important;
+  }
+  html.new-ui-v1 #fwcModal.show .fwcFlight{
+    grid-template-columns:1fr!important;
+    gap:8px!important;
+    padding:12px!important;
+    border-radius:13px!important;
+  }
+  html.new-ui-v1 #fwcModal.show .fwcFlight .fwcBtn{
+    width:100%!important;
+    min-height:44px!important;
+  }
+}
+
+
+/* ==========================================================================
+   V6.4.39 MOBILE OPTIMIZATION 04
+   Stable visual viewport, full-screen operational shell, compact touch layout.
+   PC/tablet desktop rules remain unchanged.
+   ========================================================================== */
+@media(max-width:767px){
+  html.new-ui-v1,
+  html.new-ui-v1 body.v157-authenticated{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    overflow-x:hidden!important;
+    overscroll-behavior-x:none!important;
+  }
+  html.new-ui-v1 body.v157-authenticated,
+  html.new-ui-v1 body.v157-authenticated #v157UiRoot{
+    box-sizing:border-box!important;
+  }
+  html.new-ui-v1 body.v157-authenticated #v157UiRoot{
+    width:100%!important;
+    max-width:100vw!important;
+    min-width:0!important;
+  }
+
+  /* Navigation drawer: fixed visual viewport with independent menu scrolling. */
+  html.new-ui-v1 body.v157-authenticated #v157Drawer{
+    display:flex!important;
+    flex-direction:column!important;
+    width:min(92vw,360px)!important;
+    height:var(--sags-mobile-vh,100dvh)!important;
+    max-height:var(--sags-mobile-vh,100dvh)!important;
+    overflow:hidden!important;
+  }
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157DrawerHead{
+    flex:0 0 auto!important;
+    min-height:0!important;
+    padding:calc(8px + env(safe-area-inset-top)) 9px 8px!important;
+  }
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157Brand{
+    min-height:58px!important;
+    gap:8px!important;
+  }
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157LogoBox{
+    min-height:58px!important;
+    height:58px!important;
+    padding:4px!important;
+  }
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157LogoBox img{
+    height:50px!important;
+    max-height:50px!important;
+    max-width:132px!important;
+    object-fit:contain!important;
+  }
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157BrandText{
+    font-size:9px!important;
+    line-height:1.2!important;
+  }
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157UserCard{
+    margin-top:7px!important;
+    min-height:54px!important;
+    padding:8px!important;
+  }
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157MenuBody{
+    flex:1 1 auto!important;
+    min-height:0!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    overscroll-behavior-y:contain!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+  html.new-ui-v1 body.v157-authenticated #v157Drawer .v157DrawerFooter{
+    flex:0 0 auto!important;
+    padding:7px 8px calc(7px + env(safe-area-inset-bottom))!important;
+  }
+
+  /* Data Hub and AD Control Center are true full-screen mobile workspaces. */
+  html.new-ui-v1 body.v157-authenticated #v174DataHub,
+  html.new-ui-v1 body.v157-authenticated #v181AdminCenter{
+    position:fixed!important;
+    inset:0!important;
+    width:100vw!important;
+    height:var(--sags-mobile-vh,100dvh)!important;
+    max-height:var(--sags-mobile-vh,100dvh)!important;
+    align-items:stretch!important;
+    justify-content:stretch!important;
+    overflow:hidden!important;
+    padding:0!important;
+  }
+  html.new-ui-v1 body.v157-authenticated #v174DataHub .v174DataHubPanel,
+  html.new-ui-v1 body.v157-authenticated #v181AdminCenter .v181AdminPanel{
+    width:100vw!important;
+    height:var(--sags-mobile-vh,100dvh)!important;
+    max-height:var(--sags-mobile-vh,100dvh)!important;
+    min-height:0!important;
+    margin:0!important;
+    padding:0 10px calc(16px + env(safe-area-inset-bottom))!important;
+    border:0!important;
+    border-radius:0!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    overscroll-behavior-y:contain!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+  html.new-ui-v1 body.v157-authenticated #v174DataHub .v174DataHubHead,
+  html.new-ui-v1 body.v157-authenticated #v181AdminCenter .v181AdminHead{
+    position:sticky!important;
+    top:0!important;
+    z-index:5!important;
+    margin:0 -10px 10px!important;
+    padding:calc(10px + env(safe-area-inset-top)) 10px 9px!important;
+    min-height:58px!important;
+    box-sizing:border-box!important;
+  }
+  html.new-ui-v1 body.v157-authenticated #v174DataHub .v174DataHubHead>div,
+  html.new-ui-v1 body.v157-authenticated #v181AdminCenter .v181AdminHeadText{
+    min-width:0!important;
+  }
+  html.new-ui-v1 body.v157-authenticated #v174DataHub .v174DataHubHead h3,
+  html.new-ui-v1 body.v157-authenticated #v181AdminCenter .v181AdminHead h3{
+    margin:0!important;
+    font-size:16px!important;
+    line-height:1.15!important;
+    overflow-wrap:anywhere!important;
+  }
+  html.new-ui-v1 body.v157-authenticated #v174DataHub .v174DataHubHead p,
+  html.new-ui-v1 body.v157-authenticated #v181AdminCenter .v181AdminHead p{
+    margin:3px 0 0!important;
+    font-size:9px!important;
+    line-height:1.25!important;
+    white-space:normal!important;
+  }
+  html.new-ui-v1 body.v157-authenticated #v174DataHubClose,
+  html.new-ui-v1 body.v157-authenticated #v181AdminClose{
+    flex:0 0 44px!important;
+    width:44px!important;
+    height:44px!important;
+    min-width:44px!important;
+    min-height:44px!important;
+  }
+  html.new-ui-v1 body.v157-authenticated #v174DataHub .v174DataHubGrid,
+  html.new-ui-v1 body.v157-authenticated #v181AdminCenter .v181AdminGrid{
+    grid-template-columns:1fr!important;
+    gap:8px!important;
+  }
+  html.new-ui-v1 body.v157-authenticated #v174DataHub .v174DataCard,
+  html.new-ui-v1 body.v157-authenticated #v181AdminCenter .v181AdminCard{
+    width:100%!important;
+    min-width:0!important;
+    min-height:76px!important;
+    padding:10px!important;
+    box-sizing:border-box!important;
+  }
+  html.new-ui-v1 body.v157-authenticated #v174DataHub .v174DataCard small,
+  html.new-ui-v1 body.v157-authenticated #v181AdminCenter .v181AdminCard small{
+    white-space:normal!important;
+    overflow-wrap:anywhere!important;
+  }
+
+  /* MY FLIGHT owns the visual viewport; only the list body scrolls. */
+  html.new-ui-v1 #fwcModal.show,
+  html.new-ui-v1 #fwcModal.show .fwcPanel{
+    width:100vw!important;
+    height:var(--sags-mobile-vh,100dvh)!important;
+    min-height:var(--sags-mobile-vh,100dvh)!important;
+    max-height:var(--sags-mobile-vh,100dvh)!important;
+  }
+  html.new-ui-v1 #fwcModal.show .fwcHead{
+    flex:0 0 auto!important;
+    padding:calc(8px + env(safe-area-inset-top)) 9px 8px!important;
+  }
+  html.new-ui-v1 #fwcModal.show .fwcHead h3{
+    font-size:15px!important;
+  }
+  html.new-ui-v1 #fwcModal.show #v477Close{
+    min-width:76px!important;
+    min-height:42px!important;
+  }
+  html.new-ui-v1 #fwcModal.show #v479MyFlightHome{
+    min-height:42px!important;
+  }
+  html.new-ui-v1 #fwcModal.show #fwcBody{
+    min-height:0!important;
+    scroll-padding-top:68px!important;
+    padding:7px 9px calc(18px + env(safe-area-inset-bottom))!important;
+  }
+  html.new-ui-v1 #fwcModal.show .fwcTools{
+    top:0!important;
+    padding:7px!important;
+    gap:6px!important;
+    border-radius:11px!important;
+  }
+  html.new-ui-v1 #fwcModal.show .fwcTools input,
+  html.new-ui-v1 #fwcModal.show .fwcTools button{
+    min-height:44px!important;
+  }
+  html.new-ui-v1 #fwcModal.show .fwcStatus{
+    margin:0 2px 8px!important;
+    font-size:10px!important;
+    line-height:1.35!important;
+  }
+  html.new-ui-v1 #fwcModal.show .fwcFlight{
+    width:100%!important;
+    min-width:0!important;
+    margin-bottom:8px!important;
+    padding:11px!important;
+    gap:7px!important;
+  }
+  html.new-ui-v1 #fwcModal.show .fwcFlightTitle{
+    font-size:17px!important;
+    line-height:1.2!important;
+  }
+  html.new-ui-v1 #fwcModal.show .fwcMeta{
+    font-size:10px!important;
+    line-height:1.35!important;
+  }
+  html.new-ui-v1 #fwcModal.show .fwcBadge{
+    font-size:9px!important;
+    padding:5px 7px!important;
+  }
+
+  /* Touch and keyboard ergonomics on the shell only. */
+  html.new-ui-v1 body.v157-authenticated #v157UiRoot button,
+  html.new-ui-v1 body.v157-authenticated #fwcModal.show button{
+    min-height:44px;
+    touch-action:manipulation!important;
+  }
+  html.new-ui-v1 body.v157-authenticated #v157UiRoot input,
+  html.new-ui-v1 body.v157-authenticated #v157UiRoot select,
+  html.new-ui-v1 body.v157-authenticated #v157UiRoot textarea,
+  html.new-ui-v1 body.v157-authenticated #fwcModal.show input,
+  html.new-ui-v1 body.v157-authenticated #fwcModal.show select{
+    font-size:16px!important;
+  }
+
+  /* Operational nav never covers the bottom of forms. */
+  html.new-ui-v1 body.v157-authenticated:not(.v157-home) #v163OperationNav{
+    min-height:calc(58px + env(safe-area-inset-bottom))!important;
+  }
+  html.new-ui-v1 body.v157-authenticated.v163-operational{
+    padding-bottom:calc(72px + env(safe-area-inset-bottom))!important;
+  }
+}
+
+@media(max-width:420px){
+  html.new-ui-v1 #fwcModal.show .fwcHead{
+    grid-template-columns:minmax(0,1fr) 70px!important;
+  }
+  html.new-ui-v1 #fwcModal.show #v477Close{
+    min-width:70px!important;
+    padding-left:6px!important;
+    padding-right:6px!important;
+    font-size:9px!important;
+  }
+  html.new-ui-v1 #fwcModal.show .fwcTools{
+    grid-template-columns:1fr!important;
+  }
+  html.new-ui-v1 #fwcModal.show .fwcTools button{
+    width:100%!important;
+  }
+}
+
+
+/* ==========================================================================
+   V6.4.39 MY FLIGHT BACK BUTTON 05
+   Dedicated return action survives roster-lite header rewrites.
+   ========================================================================== */
+html.new-ui-v1 #fwcModal.show #v644MyFlightBack{
+  min-height:44px!important;
+  white-space:nowrap!important;
+  font-weight:900!important;
+}
+html.new-ui-v1 #fwcModal.show #v644MyFlightBack[hidden]{
+  display:none!important;
+}
+@media(max-width:767px){
+  html.new-ui-v1 #fwcModal.show .fwcHead{
+    grid-template-columns:minmax(0,1fr) auto!important;
+    grid-template-areas:
+      "title menu"
+      "back back"!important;
+  }
+  html.new-ui-v1 #fwcModal.show #v644MyFlightBack{
+    grid-area:back!important;
+    display:block!important;
+    width:100%!important;
+    min-width:0!important;
+    min-height:46px!important;
+    margin:0!important;
+    border-radius:10px!important;
+    font-size:11px!important;
+  }
+  html.new-ui-v1 #fwcModal.show #v644MyFlightBack[hidden]{
+    display:none!important;
+  }
+}
+
+
+/* ==========================================================================
+   V6.4.40 PDF + COMPACT MY FLIGHT 02
+   Compact date toolbar, direct PDF actions, and mobile-first flight visibility.
+   ========================================================================== */
+#fwcModal .v1199TaskActions{
+  display:flex!important;
+  flex:1 1 240px!important;
+  min-width:0!important;
+  gap:6px!important;
+}
+#fwcModal .v1199TaskActions .v1199TaskBtn{
+  flex:1 1 auto!important;
+  min-width:0!important;
+}
+#fwcModal .v1199PdfBtn{
+  flex:0 0 auto!important;
+  min-height:44px!important;
+  min-width:104px!important;
+  padding:7px 10px!important;
+  border:1px solid #93c9ba!important;
+  border-radius:9px!important;
+  background:#e9f8f2!important;
+  color:#12634f!important;
+  font:900 11px/1.15 Arial,sans-serif!important;
+  cursor:pointer!important;
+  touch-action:manipulation!important;
+}
+#fwcModal .v1199PdfBtn:disabled{opacity:.55!important;cursor:wait!important}
+html.new-ui-v1 body.v163-operational #v324FormActions #v324PdfBtn{
+  background:#e9f8f2!important;
+  border-color:#a8d7c9!important;
+  color:#12634f!important;
+}
+@media(max-width:767px){
+  /* Keep date + refresh on one compact row so flights are visible immediately. */
+  html.new-ui-v1 #fwcModal.show .fwcTools{
+    position:sticky!important;
+    top:0!important;
+    z-index:4!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) 84px!important;
+    align-items:center!important;
+    gap:5px!important;
+    margin:0 0 6px!important;
+    padding:5px!important;
+    min-height:46px!important;
+    border-radius:10px!important;
+  }
+  html.new-ui-v1 #fwcModal.show .fwcTools input{
+    width:100%!important;
+    min-width:0!important;
+    min-height:38px!important;
+    height:38px!important;
+    padding:4px 8px!important;
+    border-radius:8px!important;
+    font-size:16px!important;
+  }
+  html.new-ui-v1 #fwcModal.show .fwcTools .fwcBtn,
+  html.new-ui-v1 #fwcModal.show #v477Refresh{
+    width:84px!important;
+    min-width:84px!important;
+    min-height:38px!important;
+    height:38px!important;
+    padding:4px 6px!important;
+    border-radius:8px!important;
+    font-size:9px!important;
+  }
+  html.new-ui-v1 #fwcModal.show .fwcStatus{
+    margin:0 2px 5px!important;
+    font-size:9px!important;
+    line-height:1.25!important;
+  }
+  html.new-ui-v1 #fwcModal.show .v1199Tabs{
+    gap:5px!important;
+    margin:5px 0 7px!important;
+  }
+  html.new-ui-v1 #fwcModal.show .v1199Tab{
+    min-height:38px!important;
+    padding:5px 6px!important;
+    font-size:10px!important;
+    border-radius:8px!important;
+  }
+  html.new-ui-v1 #fwcModal.show .v1199Count{
+    min-width:19px!important;
+    height:19px!important;
+    margin-left:3px!important;
+    padding:0 4px!important;
+    font-size:9px!important;
+  }
+  html.new-ui-v1 #fwcModal.show .v1199OwnerNote{
+    margin:2px 0 5px!important;
+    font-size:9px!important;
+    line-height:1.3!important;
+  }
+  html.new-ui-v1 #fwcModal.show .v1199Card{
+    margin:6px 0!important;
+    padding:9px!important;
+  }
+  html.new-ui-v1 #fwcModal.show .v1199TaskActions{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) 100px!important;
+    width:100%!important;
+    flex-basis:100%!important;
+    gap:5px!important;
+  }
+  html.new-ui-v1 #fwcModal.show .v1199PdfBtn{
+    width:100%!important;
+    min-width:0!important;
+    min-height:42px!important;
+    padding:6px 5px!important;
+    font-size:10px!important;
+  }
+}
+@media(max-width:380px){
+  html.new-ui-v1 #fwcModal.show .fwcTools{grid-template-columns:minmax(0,1fr) 72px!important}
+  html.new-ui-v1 #fwcModal.show .fwcTools .fwcBtn,
+  html.new-ui-v1 #fwcModal.show #v477Refresh{width:72px!important;min-width:72px!important;font-size:8px!important}
+  html.new-ui-v1 #fwcModal.show .v1199TaskActions{grid-template-columns:minmax(0,1fr) 92px!important}
+}
+
+
+/* ==========================================================================
+   V2.0.0 COMPACT FORM ACTIONS 01
+   Keep contextual form actions on one balanced mobile row whenever practical.
+   No fixed child width; every visible action shares the available container.
+   ========================================================================== */
+@media(max-width:767px){
+  html.new-ui-v1 body.v157-authenticated:not(.v157-home) #v324FormActions.show{
+    left:4px!important;
+    right:4px!important;
+    width:auto!important;
+    max-width:none!important;
+    min-width:0!important;
+    box-sizing:border-box!important;
+    display:grid!important;
+    grid-template-columns:none!important;
+    grid-auto-flow:column!important;
+    grid-auto-columns:minmax(0,1fr)!important;
+    align-items:stretch!important;
+    gap:4px!important;
+    padding:4px!important;
+    overflow:hidden!important;
+  }
+  html.new-ui-v1 body.v157-authenticated:not(.v157-home) #v324FormActions .v324FormAction{
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    min-height:38px!important;
+    height:38px!important;
+    padding:4px 3px!important;
+    margin:0!important;
+    box-sizing:border-box!important;
+    font-size:clamp(8.5px,2.45vw,10.5px)!important;
+    line-height:1!important;
+    letter-spacing:-.12px!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:clip!important;
+  }
+  html.new-ui-v1 body.v157-authenticated.v163-operational:has(#v324FormActions.show){
+    padding-bottom:calc(108px + env(safe-area-inset-bottom))!important;
+  }
+}
+@media(max-width:340px){
+  html.new-ui-v1 body.v157-authenticated:not(.v157-home) #v324FormActions.show{
+    gap:3px!important;
+    padding:3px!important;
+  }
+  html.new-ui-v1 body.v157-authenticated:not(.v157-home) #v324FormActions .v324FormAction{
+    min-height:36px!important;
+    height:36px!important;
+    padding:3px 2px!important;
+    font-size:8.2px!important;
+    letter-spacing:-.2px!important;
+  }
+}
+
+/* Mobile form actions share one dock; its actual height reserves document space. */
+#sagsMobileFormDock{display:contents}
+@media(max-width:899px){
+ html.new-ui-v1 body.v163-operational{padding-top:calc(72px + env(safe-area-inset-top))!important;padding-bottom:calc(var(--sags-form-dock-height,180px) + 16px)!important}
+ html.new-ui-v1 body #sagsMobileFormDock{display:none}
+ html.new-ui-v1 body.v163-operational:not(.v166-overlay-open):not(.v157-home) #sagsMobileFormDock{display:flex;flex-direction:column;gap:8px;position:fixed;left:0;right:0;bottom:0;z-index:14880;padding:8px max(10px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));box-sizing:border-box;background:#092f43;border-top:1px solid #466778;box-shadow:0 -4px 18px #0003;max-height:45dvh;overflow-y:auto}
+ html.new-ui-v1 body #sagsMobileFormDock #v324FormActions,
+ html.new-ui-v1 body #sagsMobileFormDock #v163OperationNav{position:static!important;inset:auto!important;width:100%!important;max-width:none!important;margin:0!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important;transform:none!important;gap:8px!important;box-sizing:border-box}
+ html.new-ui-v1 body #sagsMobileFormDock #v324FormActions.show{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ html.new-ui-v1 body #sagsMobileFormDock #v324FormActions.show.one{grid-template-columns:minmax(0,1fr)!important}
+ html.new-ui-v1 body #sagsMobileFormDock #v324FormActions.show.three>:last-child{grid-column:1/-1}
+ html.new-ui-v1 body #sagsMobileFormDock #v163OperationNav{grid-template-columns:minmax(0,1fr)!important}
+ html.new-ui-v1 body #sagsMobileFormDock :is(.v324FormAction,#v163SignBtn){position:static!important;min-width:0!important;width:100%!important;min-height:46px!important;height:auto!important;padding:12px 10px!important;margin:0!important;box-sizing:border-box;border-radius:10px!important;font:700 14px/1.3 Arial,sans-serif!important;white-space:normal!important;overflow-wrap:anywhere;text-align:center!important;display:flex;align-items:center;justify-content:center;box-shadow:none!important}
+ html.new-ui-v1 body #sagsMobileFormDock #v163SignBtn{background:#dcecf5!important;color:#173b4c!important;border:1px solid #a2c1d2!important}
+ html.new-ui-v1 body.v163-operational #sagsIdbStorageBtn{display:none!important}
+ html.new-ui-v1 body .fwcHead{flex-wrap:wrap;gap:8px!important}
+ html.new-ui-v1 body .fwcBtn{min-height:44px!important;font-size:13px!important;white-space:normal!important}
+ html.new-ui-v1 body .formHubFooter{display:grid;grid-template-columns:1fr!important}
+ html.new-ui-v1 body .formHubFooter button{width:100%;min-height:46px!important}
+}
+/* Override inherited white button labels throughout the form catalogue. */
+html body #airlinePolicyModal .formHubRow,
+html body #airlinePolicyModal .formHubRow :is(span,strong,small,em){color:#173b4c!important;text-shadow:none!important;opacity:1!important}
+html body #airlinePolicyModal .formHubRow{background:#fff!important;min-height:80px!important;font:14px/1.4 Arial,sans-serif!important}
+html body #airlinePolicyModal .formHubRow.selected{background:#dcf2f3!important;border:2px solid #08788c!important}
+html body #airlinePolicyModal .formHubRow strong{font-size:15px!important}
+html body #airlinePolicyModal .formHubRow small{color:#425b69!important}
+html body #airlinePolicyModal .formHubRow em{color:#315a49!important;font-weight:700}
+html body #airlinePolicyModal .formHubOrder{color:#fff!important;background:#08788c!important}
+html body #airlinePolicyModal :is(input,select){color:#173b4c!important;background:#fff!important}
+html body #airlinePolicyModal input::placeholder{color:#526b79!important;opacity:1}
+html body #airlinePolicyModal :is(#airlinePolicyClose,#formHubLayout){color:#173b4c!important;background:#e1eaf0!important;border:1px solid #b5cbd5!important}
+@media(max-width:899px){
+ html.new-ui-v1 body #sagsMobileFormDock #v324FormActions.show>.v324FormAction{grid-column:auto!important;grid-row:auto!important;order:0!important}
+ html.new-ui-v1 body #sagsMobileFormDock #v324FormActions.show.three>.v324FormAction:last-child{grid-column:1/-1!important}
+ html.new-ui-v1 body #sagsMobileFormDock #v324FormActions.show{grid-auto-flow:row!important;grid-auto-columns:minmax(0,1fr)!important}
+}
+/* A clear, explicit calendar target shared by desktop and mobile. */
+html.new-ui-v1 body .sagsWorkDateControl{display:flex!important;align-items:stretch;gap:0!important;min-width:0;max-width:100%;border:2px solid #16778c;border-radius:10px;overflow:hidden;background:#fff;color:#173b4c}
+html.new-ui-v1 body .sagsWorkDateControl #fwcDate{color-scheme:light;color:#173b4c!important;background:#fff!important;border:0!important;min-width:0!important;flex:1;width:145px!important;min-height:44px!important;font-size:15px!important}
+html.new-ui-v1 body .sagsWorkDateControl #fwcDate::-webkit-calendar-picker-indicator{display:none}
+html.new-ui-v1 body #sagsWorkDatePicker{display:flex!important;align-items:center;justify-content:center;flex:0 0 48px;width:48px;min-height:44px;padding:8px!important;border:0!important;border-left:1px solid #a8c8d3!important;border-radius:0!important;background:#dceff4!important;color:#064d66!important;cursor:pointer;box-shadow:none!important}
+html.new-ui-v1 body #sagsWorkDatePicker:focus-visible{outline:3px solid #cf7500;outline-offset:-3px}
+/* A single practical layout toolbar and painted values, with no test input layer. */
+#v440Fm #v626QuickBar,#v440Fm #v450Test,#v440Fm #v462TestMode,#v440Fm #v440ExportForm,#v440Fm #v440ExportRegistry{display:none!important}
+#v440Fm .sagsLayoutToolbar{position:sticky;top:0;z-index:25;background:#f6fafc;border:1px solid #b8d0dc;border-radius:12px;padding:12px;color:#173b4c;box-sizing:border-box;flex-shrink:0}
+#v440Fm .sagsLayoutActions,#v440Fm .sagsLayoutSettings{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+#v440Fm .sagsLayoutSettings{margin-top:10px}#v440Fm .sagsLayoutToolbar label{display:flex;align-items:center;gap:6px;font:600 13px Arial}
+#v440Fm .sagsLayoutToolbar input{width:68px;min-height:38px;border:1px solid #a2bdca;border-radius:7px;background:white;color:#173b4c;padding:6px;box-sizing:border-box;font:15px Arial}
+#v440Fm .sagsLayoutToolbar #slPreview{width:min(260px,50vw)}
+#v440Fm .sagsLayoutToolbar button{min-height:40px;border:1px solid #b2cbd7;border-radius:8px;padding:8px 12px;background:#e4f0f5;color:#173b4c;font:700 13px Arial;cursor:pointer}
+#v440Fm .sagsLayoutToolbar :is(#slSave,#slExport,#slRegistry,#slApply){background:#08758a;color:white;border-color:#08758a}
+#v440Fm .sagsLayoutToolbar p{margin:8px 0 0;font:12px/1.5 Arial;color:#456370}
+#v440Fm .v440Box>span,#v440Fm .v628DragGrip{display:none!important}
+#v440Fm .v440Box{background:transparent!important;border:1px dashed #3893a1!important;box-sizing:border-box}
+#v440Fm .v440Box.sel,#v440Fm .v440Box.multi{border:2px solid #006477!important;background:#0c879510!important}
+#v440Fm .v440Box .v450TestValue{display:flex!important;position:absolute;inset:0;box-sizing:border-box;pointer-events:none;overflow:hidden}
+@media(max-width:700px){#v440Fm .sagsLayoutToolbar{padding:8px}#v440Fm .sagsLayoutToolbar button{min-height:44px}#v440Fm .sagsLayoutToolbar #slPreview{width:160px}}
+/* Prevent iOS focus zoom and keep the input itself stable while the keyboard animates. */
+@media(max-width:899px){
+  html.new-ui-v1 body #quickTimeModal .quickTimeInput,
+  html.new-ui-v1 body #fs09QuickModal .fs09qInput,
+  html.new-ui-v1 body #sqValue{font-size:16px!important;transform:none!important}
+}
+#v440Fm .v440Resize{display:none!important;width:12px!important;height:12px!important;right:-4px!important;bottom:-4px!important;border-radius:3px!important;background:#08758a!important;border:2px solid #fff!important}
+#v440Fm .v440Box.sel .v440Resize{display:block!important}
+#v440Fm :is(#v440Undo,#v440Redo,#v641ExportFormHead){display:none!important}
+
+/* Overlay dimensions use the visible viewport, including when a mobile keyboard is open. */
+html body .sagsManagedOverlay{position:fixed!important;inset:auto 0 auto 0!important;top:var(--sags-overlay-top,0px)!important;width:100%!important;height:100vh!important;height:var(--sags-overlay-height,100dvh)!important;max-height:var(--sags-overlay-height,100dvh)!important;min-height:0!important;margin:0!important;transform:none!important;box-sizing:border-box!important;z-index:var(--sags-overlay-layer,2147483000)!important;padding: max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))!important;align-items:center!important;justify-content:center!important;overflow:hidden!important;overscroll-behavior:contain}
+html body .sagsManagedOverlay:is(.show,.open,.active):not([hidden]):not([style*="display: none"]):not([style*="display:none"]),html body .sagsManagedOverlay[style*="display: block"]{display:flex!important}
+html body .sagsManagedOverlay>.sagsOverlayCard{position:relative!important;inset:auto!important;transform:none!important;margin:0!important;width:min(100%,1100px)!important;max-width:100%!important;min-width:0!important;min-height:0!important;max-height:100%!important;box-sizing:border-box!important;overflow:auto!important;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+html body .sagsManagedOverlay.sagsOverlayWorkspace{flex-direction:column!important;gap:8px}
+html body .sagsOverlayWorkspace>div{width:min(100%,1100px)!important;max-width:100%!important;min-height:0!important;box-sizing:border-box}
+html body .sagsOverlayWorkspace>div:last-child{overflow:auto!important;overscroll-behavior:contain}
+html body.sags-overlay-open{overflow:hidden!important}
+html body.sags-overlay-open :is(#sagsMobileFormDock,#v324FormActions,#v163OperationNav,#sagsNavigationHeader,#v157Drawer,#v157DrawerBackdrop,#sagsV61DraftStatus){visibility:hidden!important;pointer-events:none!important}
+html body #csgBtn{display:none!important}
+html body #sagsIdbStorageBtn{display:none!important}
+html body #sagsUtilities #sagsIdbStorageBtn{display:block!important;position:static!important;inset:auto!important;width:100%;min-height:44px;background:#e7f0f5!important;color:#173b4c!important;border:1px solid #acc4d1!important;border-radius:9px;padding:12px;text-align:left;font:700 14px Arial;box-shadow:none!important}
+html body #sagsUtilities{margin:12px 10px;color:#eaf5fa;font:14px Arial}
+html body #sagsUtilities summary{padding:14px 10px;cursor:pointer;min-height:44px;box-sizing:border-box}
+html body .sagsUtilityItems{padding:0 8px 8px}
+@media(max-width:899px){
+ html body .sagsManagedOverlay>.sagsOverlayCard{border-radius:14px!important;padding:12px!important}
+ html body .sagsManagedOverlay .sagsDialogInput{font-size:16px!important;max-width:100%;box-sizing:border-box}
+ html body .sagsManagedOverlay :is(.actions,.footerActions,.sagsAdminActions){display:flex!important;flex-wrap:wrap!important;gap:8px!important;position:static!important}
+ html body .sagsManagedOverlay .actions button{flex:1 1 100px;min-height:44px!important;white-space:normal!important;margin:0!important}
+ html body #signModal>.panel{width:min(100%,520px)!important}
+ html body #sigCanvas{width:100%!important;height:clamp(100px,38vh,280px)!important;height:clamp(100px,calc(var(--sags-overlay-height,100dvh)*.38),280px)!important;max-width:100%!important;box-sizing:border-box;touch-action:none}
+ html body #csgPanel{display:flex!important;flex-direction:column!important;overflow:hidden!important}
+ html body #csgHead{display:flex!important;flex-wrap:wrap!important;gap:8px!important;flex-shrink:0}
+ html body #csgHead b{flex:1 1 100%;font-size:16px!important}
+ html body #csgTools{display:flex!important;flex-wrap:wrap!important;gap:8px!important;flex-shrink:0}
+ html body #csgTools input{flex:1 1 100%;width:100%!important;min-width:0!important}
+ html body #csgBody{display:flex!important;flex-direction:column!important;min-height:0!important;overflow:auto!important;gap:12px!important}
+ html body #csgList{flex:0 0 auto;max-height:160px!important;overflow:auto!important;width:100%!important}
+ html body #csgDetail{width:100%!important;min-width:0!important;overflow:visible!important}
+ html body .sagsManagedOverlay table{max-width:100%}
+}
+@media print{html body .sagsManagedOverlay,#sagsUtilities{display:none!important}}
+@media(max-width:899px){
+ html.new-ui-v1 body #csgHead b{max-width:none!important;min-width:0!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;flex:1 1 100%!important}
+ html.new-ui-v1 body :is(#csgList,#csgDetail){box-sizing:border-box!important;width:100%!important;max-width:100%!important;min-width:0!important}
+ html.new-ui-v1 body #csgList{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:6px!important;padding:6px!important;overflow-x:hidden!important;overflow-y:auto!important;max-height:160px!important}
+ html.new-ui-v1 body #csgList button{width:100%!important;min-width:0!important;min-height:44px!important;padding:6px!important;font-size:13px!important;white-space:normal!important}
+ html.new-ui-v1 body .sagsManagedOverlay button{min-height:44px}
+}
+@media(max-width:899px){
+ html.new-ui-v1 body #csgCurrent{max-width:none!important;width:auto!important;min-width:0!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;font-size:13px!important;padding:8px 12px!important}
+}
+html.sags-overlay-open{overflow:hidden!important}
+html body .sagsStorageCard{width:min(100%,520px);background:#f5f9fc;color:#173b4c;padding:20px;border-radius:14px;font:15px/1.5 Arial,sans-serif}
+html body .sagsStorageCard h3{margin:0 0 10px;font-size:20px}
+html body .sagsStorageCard pre{white-space:pre-wrap;overflow-wrap:anywhere;font:14px/1.8 Arial,sans-serif;color:#173b4c}
+html body #sagsStorageClose{width:100%;min-height:44px;padding:10px;border:0;border-radius:9px;background:#08758a;color:#fff;font-weight:700}

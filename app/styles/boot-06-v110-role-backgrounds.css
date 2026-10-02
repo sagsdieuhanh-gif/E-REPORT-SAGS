@@ -1,0 +1,3 @@
+/* V1.10 AI: hậu đăng nhập dùng ảnh nền riêng theo vai trò; login trước khi xác định tài khoản vẫn dùng nền chung. */
+#roleHomeIdle{background-size:cover!important;background-position:center center!important;background-repeat:no-repeat!important;background-attachment:fixed!important;}
+@media(max-width:700px){#roleHomeIdle{background-attachment:scroll!important;background-position:center center!important;}}

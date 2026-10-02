@@ -1,0 +1,209 @@
+[
+  {
+    "code": "HAV",
+    "label": "HAV",
+    "prefixes": [
+      "HAV"
+    ]
+  },
+  {
+    "code": "VJ",
+    "label": "Vietjet Air",
+    "prefixes": [
+      "VJ",
+      "VJC"
+    ]
+  },
+  {
+    "code": "QH",
+    "label": "Bamboo Airways",
+    "prefixes": [
+      "QH"
+    ]
+  },
+  {
+    "code": "DV",
+    "label": "DV",
+    "prefixes": [
+      "DV"
+    ]
+  },
+  {
+    "code": "KC",
+    "label": "Air Astana",
+    "prefixes": [
+      "KC"
+    ]
+  },
+  {
+    "code": "C6",
+    "label": "C6",
+    "prefixes": [
+      "C6"
+    ]
+  },
+  {
+    "code": "KA",
+    "label": "KA",
+    "prefixes": [
+      "KA"
+    ]
+  },
+  {
+    "code": "N4",
+    "label": "Nordwind Airlines",
+    "prefixes": [
+      "N4"
+    ]
+  },
+  {
+    "code": "AK",
+    "label": "AK",
+    "prefixes": [
+      "AK"
+    ]
+  },
+  {
+    "code": "FD",
+    "label": "FD",
+    "prefixes": [
+      "FD"
+    ]
+  },
+  {
+    "code": "KE",
+    "label": "Korean Air",
+    "prefixes": [
+      "KE"
+    ]
+  },
+  {
+    "code": "BX",
+    "label": "Air Busan",
+    "prefixes": [
+      "BX"
+    ]
+  },
+  {
+    "code": "WE",
+    "label": "WE",
+    "prefixes": [
+      "WE"
+    ]
+  },
+  {
+    "code": "RF",
+    "label": "RF",
+    "prefixes": [
+      "RF"
+    ]
+  },
+  {
+    "code": "TW",
+    "label": "T’way Air",
+    "prefixes": [
+      "TW"
+    ]
+  },
+  {
+    "code": "OZ",
+    "label": "Asiana Airlines",
+    "prefixes": [
+      "OZ"
+    ]
+  },
+  {
+    "code": "LJ",
+    "label": "Jin Air",
+    "prefixes": [
+      "LJ"
+    ]
+  },
+  {
+    "code": "3U",
+    "label": "3U",
+    "prefixes": [
+      "3U"
+    ]
+  },
+  {
+    "code": "UQ",
+    "label": "UQ",
+    "prefixes": [
+      "UQ"
+    ]
+  },
+  {
+    "code": "DR",
+    "label": "DR",
+    "prefixes": [
+      "DR"
+    ]
+  },
+  {
+    "code": "TR",
+    "label": "Scoot",
+    "prefixes": [
+      "TR"
+    ]
+  },
+  {
+    "code": "HY",
+    "label": "Uzbekistan Airways",
+    "prefixes": [
+      "HY"
+    ]
+  },
+  {
+    "code": "HU",
+    "label": "Hainan Airlines",
+    "prefixes": [
+      "HU"
+    ]
+  },
+  {
+    "code": "VZ",
+    "label": "Thai Vietjet Air",
+    "prefixes": [
+      "VZ",
+      "TVJ"
+    ]
+  },
+  {
+    "code": "9G",
+    "label": "9G",
+    "prefixes": [
+      "9G"
+    ]
+  },
+  {
+    "code": "B2",
+    "label": "Belavia",
+    "prefixes": [
+      "B2"
+    ]
+  },
+  {
+    "code": "VU",
+    "label": "Vietravel Airlines",
+    "prefixes": [
+      "VU"
+    ]
+  },
+  {
+    "code": "VN",
+    "label": "Vietnam Airlines",
+    "prefixes": [
+      "VN",
+      "HVN"
+    ]
+  },
+  {
+    "code": "7C",
+    "label": "Jeju Air",
+    "prefixes": [
+      "7C",
+      "JJA"
+    ]
+  }
+]

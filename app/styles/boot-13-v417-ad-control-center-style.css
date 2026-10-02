@@ -1,0 +1,33 @@
+#activityMonitorModal .sagsAdminPanel{width:min(1180px,96vw);max-height:94vh;padding:12px}
+.adccTabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:8px 0 10px}
+.adccTab{border:1px solid #b8c9d9;background:#f5f9fc;color:#24445f;border-radius:9px;padding:9px 6px;font:900 11px Arial;cursor:pointer}
+.adccTab.active{background:#003B8E;color:#fff;border-color:#003B8E;box-shadow:0 2px 8px rgba(0,59,142,.18)}
+.adccTabPane{display:none}.adccTabPane.active{display:block}
+.adccSectionTitle{font:900 13px Arial;color:#183c60;margin:10px 0 6px}
+.adccGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.adccCard{border:1px solid #d5e0e9;border-radius:12px;background:#fff;padding:10px;box-shadow:0 1px 4px rgba(31,52,73,.05)}
+.adccCard.urgent{border-color:#f1aaa5;background:#fff7f6}.adccCard.warn{border-color:#efce87;background:#fffaf0}.adccCard.ok{border-color:#a8d6b9;background:#f7fcf8}
+.adccHead{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.adccFlight{font:900 15px Arial;color:#153b60}.adccSub{font:700 10.5px/1.4 Arial;color:#66798b;margin-top:3px}
+.adccPill{display:inline-flex;align-items:center;border-radius:999px;padding:4px 7px;font:900 9.5px Arial;background:#edf4fa;color:#28536f;white-space:nowrap}
+.adccPill.red{background:#fde8e7;color:#a5221b}.adccPill.orange{background:#fff0d1;color:#8b5800}.adccPill.green{background:#e6f5ea;color:#13713a}.adccPill.blue{background:#e6f1ff;color:#064f9c}
+.adccInfo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px 10px;margin-top:8px;padding:8px;border-radius:9px;background:#f7f9fb}
+.adccInfo div{font:700 10.5px/1.35 Arial;color:#53687c;min-width:0}.adccInfo b{color:#263f57}
+.adccWait{margin-top:7px;border-radius:8px;padding:7px 8px;background:#edf5ff;font:900 11px Arial;color:#214f7a}
+.adccTimeline{margin-top:8px;border-left:2px solid #c7d7e4;padding-left:9px}
+.adccTimelineItem{position:relative;padding:3px 0 5px;font:700 10.5px/1.35 Arial;color:#546b7d}
+.adccTimelineItem:before{content:"";position:absolute;left:-14px;top:6px;width:7px;height:7px;border-radius:50%;background:#5d86a9}
+.adccTimelineItem b{color:#263f57}.adccTimelineItem span{display:inline-block;min-width:62px;color:#8090a0;font-size:9.5px}
+.adccAttentionEmpty{padding:18px;border:1px dashed #b8c9d9;border-radius:12px;text-align:center;font:800 12px Arial;color:#637789;background:#fafcfe}
+.adccHistoryRow{display:grid;grid-template-columns:120px 150px 1fr;gap:8px;border-bottom:1px solid #e6edf2;padding:7px 3px;font:700 10.5px/1.35 Arial;color:#576c7e}
+.adccHistoryRow b{color:#233f58}.adccHistoryRow:last-child{border-bottom:0}
+.adccMiniLabel{font:900 9px Arial;color:#73879a;text-transform:uppercase;letter-spacing:.25px}
+.adccMetricNote{font:700 9.5px Arial;color:#7a8b9a;margin-top:3px}
+#adccFlightList,#adccAttentionList,#adccHistoryList{margin-top:7px}
+@media(max-width:760px){
+  #activityMonitorModal .sagsAdminPanel{width:98vw;max-height:96dvh}
+  .adccTabs{grid-template-columns:1fr 1fr}
+  .adccGrid{grid-template-columns:1fr}
+  .adccInfo{grid-template-columns:1fr}
+  .adccHistoryRow{grid-template-columns:88px 105px 1fr;gap:5px;font-size:9.5px}
+}
