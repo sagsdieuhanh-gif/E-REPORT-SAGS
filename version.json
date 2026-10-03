@@ -1,12 +1,12 @@
 {
-  "version": "V6.4.82",
-  "displayVersion": "V6.4.82",
-  "label": "V6.4.82 - QUICK INPUT COLLAPSE + PERSIST",
-  "build": "V6.4.82-20261003-QUICK-PREFS-COLLAPSE-PERSIST-01",
-  "releasedAt": "2026-10-03T11:27:00Z",
+  "version": "V6.4.83",
+  "displayVersion": "V6.4.83",
+  "label": "V6.4.83 - AUTO REPAIR STALE SHELL",
+  "build": "V6.4.83-20261003-AUTO-REPAIR-STALE-SHELL-01",
+  "releasedAt": "2026-10-03T11:47:00Z",
   "type": "fix",
-  "base": "V6.4.81-20261003-MOBILE-COMPACT-UPDATE-STABLE-01",
+  "base": "V6.4.82-20261003-QUICK-PREFS-COLLAPSE-PERSIST-01",
   "updatePolicy": "required",
-  "notes": "Sửa Tùy chỉnh Nhập nhanh: danh sách được gom theo nhóm và mặc định thu gọn, chỉ bấm vào nhóm mới hiện các ô để chọn; chân Lưu luôn nằm trong vùng nhìn thấy trên mobile. Lựa chọn ẩn/hiện được lưu có kiểm tra, có khóa dự phòng theo thiết bị để không mất cấu hình khi danh tính phiên đăng nhập được đồng bộ lại. Sau khi lưu, chỉ các ô đã chọn tiếp tục hiển thị trong Nhập nhanh. Đồng thời sửa bộ xác minh cập nhật để đọc version/build trực tiếp từ meta của index.",
-  "message": "V6.4.82: menu Nhập nhanh thu gọn theo nhóm, lưu lựa chọn bền vững và đồng bộ cập nhật."
+  "notes": "Sửa tình trạng mở ứng dụng nhưng bị kẹt bản cũ hoặc hiện APP SHELL NOT READY. Khi shell đã mất/hỏng cache, service worker tự chuyển sang repair.html thay vì trả trang trắng 503. Repair xóa đúng cache/service worker cũ nhưng giữ dữ liệu nghiệp vụ, sau đó chỉ mở lại khi version + manifest + index cùng một build. Vercel bổ sung no-store cho /, index.html, repair.html, version.json, asset-manifest.json và service-worker.js để giảm nguy cơ giữ shell cũ ở mobile/PWA. Giữ nguyên toàn bộ sửa Nhập nhanh của V6.4.82.",
+  "message": "V6.4.83: tự phục hồi shell cũ/hỏng và giảm cache stale trên Vercel."
 }
