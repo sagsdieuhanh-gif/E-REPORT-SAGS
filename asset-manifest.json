@@ -1,8 +1,8 @@
 {
   "schema": 2,
-  "version": "V6.4.78",
-  "build": "V6.4.78-20261003-RUNTIME-POLICY-DOSSIER-01",
-  "strategy": "verified immutable shell + visible policy applicability + direct dossier summaries + return-time update checks",
+  "version": "V6.4.79",
+  "build": "V6.4.79-20261003-UNIFIED-UPDATE-NOTICE-01",
+  "strategy": "verified immutable shell + immediate update notice + explicit user-controlled activation",
   "mutableMetadata": [
     "./forms/forms.registry.json",
     "./data/form-configuration.json"
@@ -226,8 +226,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "63bd45bb3d10244562ed881446624c8f1db260881adafe02cfb4ac1ba066d3f7",
-      "bytes": 81045
+      "sha256": "e7e82fe52b8f8679e6817ec45515ad0c3098f52df4cc8283ac387f4c422cd25d",
+      "bytes": 80950
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -278,12 +278,12 @@
       "bytes": 3133
     },
     "./service-worker.js": {
-      "sha256": "e4be830b80531cdd87ab2370f65eaad0f71d5e26bd91dba2ae6e6369698f113d",
-      "bytes": 21098
+      "sha256": "96fbea7889069c525b93a21cf0f1831f5e53a7ec4bc64bccd9cf4ec0db762e52",
+      "bytes": 21095
     },
     "./version.json": {
-      "sha256": "2dae0d2a3a9c3b40e5c5cc22b1d55053fc68350cf932f593bafd9fc94c315e81",
-      "bytes": 908
+      "sha256": "61ea505b8db188dc381a39c37fac70ea08e76b117710424594a910178d061b65",
+      "bytes": 843
     },
     "./app/modules/form-registry-runtime.v647.js": {
       "sha256": "38273ccd7794e4790c37b5a8594edeaefd412917af2c928245bf8a89b0a8a5f2",
@@ -610,8 +610,8 @@
       "bytes": 25399
     },
     "./app/generated/boot-group-4.js": {
-      "sha256": "587cfddcb071f45ba94ee404fd7ed1df8e60ca35e6981c963099a930966d3774",
-      "bytes": 9563
+      "sha256": "c0819b968efad9c76877fd7a369906f109b017a6ca1fd976b9c289b07b0e11b2",
+      "bytes": 10066
     },
     "./app/generated/boot-group-5.js": {
       "sha256": "5e63b64c8450611004cdf7983028cfef05f0c5ade6e72b2e34338f58ae048201",
