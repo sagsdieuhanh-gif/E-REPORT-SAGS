@@ -1,8 +1,8 @@
 {
   "schema": 2,
-  "version": "V6.4.82",
-  "build": "V6.4.82-20261003-QUICK-PREFS-COLLAPSE-PERSIST-01",
-  "strategy": "atomic release + collapsed quick-entry customization + verified persistent UI preferences + index-meta update verification",
+  "version": "V6.4.83",
+  "build": "V6.4.83-20261003-AUTO-REPAIR-STALE-SHELL-01",
+  "strategy": "atomic release + stale-shell auto-repair + no-store navigation metadata + persistent quick-entry preferences",
   "mutableMetadata": [
     "./forms/forms.registry.json",
     "./data/form-configuration.json"
@@ -226,8 +226,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "17631abced05ad8cadbec24732b73558fc81bf5fbbd32746e65d76b1ce4df4bc",
-      "bytes": 81868
+      "sha256": "4bae5e0a11c37a297d2ca97d4e3834f376d92f88e7f26bd80054685817156518",
+      "bytes": 81393
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -278,12 +278,12 @@
       "bytes": 4925
     },
     "./service-worker.js": {
-      "sha256": "145943536c9218373249e52bf0b44a02c3ecea7b8b80e8fdd11f062324c25ff8",
-      "bytes": 21353
+      "sha256": "d433fad8d547902ed6e9a0d2326213bdc5b30b0e0576e370537e5e141157e1f1",
+      "bytes": 21752
     },
     "./version.json": {
-      "sha256": "4e3c15491afaa525347d8bdfcf38d39a09185ae86a1e0006d5643efcf42ce02b",
-      "bytes": 1073
+      "sha256": "d7ed6093f0d75bb78df46695ed0088aa6b378e39bf903dca1eb4bc4ef945a5ba",
+      "bytes": 1027
     },
     "./app/modules/form-registry-runtime.v647.js": {
       "sha256": "38273ccd7794e4790c37b5a8594edeaefd412917af2c928245bf8a89b0a8a5f2",
