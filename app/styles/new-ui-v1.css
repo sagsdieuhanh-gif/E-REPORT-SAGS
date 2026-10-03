@@ -4922,3 +4922,63 @@ html.new-ui-v1[data-ui-theme="dark"] body #quickTimeModal .quickTimeInput.dirty:
   opacity:1!important;
 }
 
+
+
+/* ==========================================================================
+   V6.4.81 · APPROVED MOBILE COMPACT MODE
+   Visual/layout only. Desktop and document coordinates remain unchanged.
+   ========================================================================== */
+@media(max-width:767px){
+  html.new-ui-v1 #fwcModal.show .fwcPanel{padding:0 8px calc(10px + env(safe-area-inset-bottom))!important;background:#f4f8fa!important}
+  html.new-ui-v1 #fwcModal.show .fwcHead{min-height:50px!important;margin:0 -8px 7px!important;padding:calc(4px + env(safe-area-inset-top)) 9px 4px!important;display:flex!important;align-items:center!important;gap:7px!important;background:#075a73!important;border-bottom:1px solid rgba(255,255,255,.12)!important}
+  html.new-ui-v1 #fwcModal.show .fwcHead>div{min-width:0;flex:1}
+  html.new-ui-v1 #fwcModal.show .fwcHead h3{margin:0!important;color:#fff!important;font-size:16px!important;line-height:1.1!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+  html.new-ui-v1 #fwcModal.show .fwcHead .fwcSub{display:none!important}
+  html.new-ui-v1 #fwcModal.show .fwcHead>.fwcBtn.gray{width:40px!important;min-width:40px!important;height:40px!important;min-height:40px!important;padding:0!important;border-radius:10px!important;font-size:0!important;background:rgba(255,255,255,.12)!important;border-color:rgba(255,255,255,.18)!important;color:#fff!important}
+  html.new-ui-v1 #fwcModal.show .fwcHead>.fwcBtn.gray::before{content:"✕";font-size:18px;line-height:40px}
+
+  html.new-ui-v1 #fwcModal .fwcTools{display:grid!important;grid-template-columns:minmax(138px,1fr) minmax(92px,.7fr) 42px!important;gap:6px!important;padding:6px!important;margin:0 0 7px!important;border-radius:12px!important;background:#fff!important;border:1px solid #dbe7ec!important}
+  html.new-ui-v1 #fwcModal .fwcTools #fwcDate{min-width:0!important;width:100%!important;height:42px!important;min-height:42px!important;padding:0 8px!important;border-radius:9px!important;font-size:14px!important}
+  html.new-ui-v1 #fwcModal .fwcTools .sagsFlightSearchBox{min-width:0!important;margin:0!important;display:block!important}
+  html.new-ui-v1 #fwcModal .fwcTools .sagsFlightSearchBox>span{display:none!important}
+  html.new-ui-v1 #fwcModal .fwcTools #sagsFlightSearch{width:100%!important;height:42px!important;min-height:42px!important;min-width:0!important;margin:0!important;padding:0 8px!important;border-radius:9px!important;font-size:13px!important}
+  html.new-ui-v1 #fwcModal .fwcTools>.fwcBtn{min-width:0!important;height:42px!important;min-height:42px!important;padding:0 8px!important;margin:0!important;border-radius:9px!important;white-space:nowrap!important;font-size:0!important}
+  html.new-ui-v1 #fwcModal .fwcTools>.fwcBtn:not(.green)::before{content:"↻";font-size:22px;line-height:40px}
+  html.new-ui-v1 #fwcModal .fwcTools>.fwcBtn.green{grid-column:1/-1!important;height:38px!important;min-height:38px!important;font-size:11px!important}
+
+  html.new-ui-v1 #fwcModal .fwcFlight{grid-template-columns:minmax(0,1fr) auto!important;gap:6px 8px!important;padding:10px!important;margin:0 0 7px!important;border-radius:13px!important}
+  html.new-ui-v1 #fwcModal .fwcFlight .fwcDeptStatuses{display:none!important}
+  html.new-ui-v1 #fwcModal .fwcFlightTitle{font-size:20px!important;line-height:1.08!important;margin-bottom:3px!important}
+  html.new-ui-v1 #fwcModal .fwcFlight .fwcMeta{font-size:11px!important;line-height:1.35!important}
+  html.new-ui-v1 #fwcModal .fwcFlight .fwcBadges{justify-content:flex-end!important;align-content:flex-start!important;max-width:124px!important}
+  html.new-ui-v1 #fwcModal .fwcFlight .fwcBadge{padding:4px 6px!important;font-size:9px!important;line-height:1.15!important;white-space:normal!important;text-align:center!important}
+  html.new-ui-v1 #fwcModal .fwcFlight>.fwcBtn{grid-column:1/-1!important;width:100%!important;height:40px!important;min-height:40px!important;margin:1px 0 0!important;padding:0 10px!important;font-size:0!important;border-radius:10px!important}
+  html.new-ui-v1 #fwcModal .fwcFlight>.fwcBtn::before{content:"📁 HỒ SƠ ›";font-size:13px;font-weight:900}
+
+  html.new-ui-v1 #fwcModal .fwcBack{margin:0 0 5px!important}
+  html.new-ui-v1 #fwcModal .fwcBack>.fwcBtn{height:38px!important;min-height:38px!important;padding:0 10px!important}
+  html.new-ui-v1 #fwcModal .fwcWorkspaceHead{padding:10px!important;margin:5px 0 7px!important;border-radius:13px!important}
+  html.new-ui-v1 #fwcModal .fwcWorkspaceTitle{font-size:22px!important;line-height:1.08!important}
+  html.new-ui-v1 #fwcModal .fwcWorkspaceHead .fwcMeta{font-size:11px!important;line-height:1.35!important}
+  html.new-ui-v1 #fwcModal .fwcWorkspaceHead .fwcDeptStatuses{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:5px!important;margin-top:7px!important}
+  html.new-ui-v1 #fwcModal .fwcWorkspaceHead .fwcDeptStatus{min-width:0!important;justify-content:center!important;text-align:center!important;padding:5px 4px!important;font-size:9px!important;line-height:1.2!important;white-space:normal!important}
+  html.new-ui-v1 #fwcModal .fwcWorkspaceHead .fwcModules{margin-top:6px!important;gap:4px!important}
+  html.new-ui-v1 #fwcModal .fwcWorkspaceHead .fwcBadge{padding:4px 6px!important;font-size:9px!important}
+
+  html.new-ui-v1 #fwcModal .fwcUnitGrid{gap:6px!important}
+  html.new-ui-v1 #fwcModal .fwcUnit{padding:9px!important;border-radius:12px!important;display:grid!important;gap:5px!important}
+  html.new-ui-v1 #fwcModal .fwcUnit h4{margin:0!important;font-size:14px!important}
+  html.new-ui-v1 #fwcModal .fwcUnit .fwcTasks{display:none!important}
+  html.new-ui-v1 #fwcModal .fwcUnit .fwcOwner{font-size:10px!important}
+  html.new-ui-v1 #fwcModal .fwcUnit .fwcUnitState{margin:0!important;padding:4px 7px!important;font-size:10px!important}
+  html.new-ui-v1 #fwcModal .fwcUnitActions{gap:5px!important}
+  html.new-ui-v1 #fwcModal .fwcUnitActions .fwcBtn{min-height:38px!important;height:38px!important;padding:0 9px!important;font-size:10px!important}
+
+  html.new-ui-v1 body.v163-operational{padding-bottom:calc(92px + env(safe-area-inset-bottom))!important}
+  html.new-ui-v1 #v163OperationNav{left:6px!important;right:6px!important;bottom:calc(4px + env(safe-area-inset-bottom))!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:4px!important;padding:4px!important;border-radius:11px!important}
+  html.new-ui-v1 #v163OperationNav button{min-height:42px!important;height:42px!important;padding:3px 4px!important;border-radius:8px!important;font-size:10px!important;line-height:1.05!important}
+  html.new-ui-v1 #v324FormActions{left:6px!important;right:6px!important;bottom:calc(54px + env(safe-area-inset-bottom))!important;padding:3px!important;gap:3px!important;border-radius:10px!important}
+  html.new-ui-v1 #v324FormActions .v324FormAction{min-height:34px!important;height:34px!important;padding:3px 5px!important;font-size:9px!important;line-height:1!important}
+
+  html.new-ui-v1 :is(#sagsActionPopupCard,#aclAISavePopupCard,.sagsCxDoneCard){max-width:min(82vw,320px)!important;padding:10px 12px!important;border-radius:14px!important}
+}

@@ -1,12 +1,12 @@
 {
-  "version": "V6.4.80",
-  "displayVersion": "V6.4.80",
-  "label": "V6.4.80 - UNIFIED FLIGHT WORKSPACE + REPAIR",
-  "build": "V6.4.80-20261003-UNIFIED-FLIGHT-WORKSPACE-REPAIR-01",
-  "releasedAt": "2026-10-03T05:36:00Z",
+  "version": "V6.4.81",
+  "displayVersion": "V6.4.81",
+  "label": "V6.4.81 - MOBILE COMPACT + UPDATE STABLE",
+  "build": "V6.4.81-20261003-MOBILE-COMPACT-UPDATE-STABLE-01",
+  "releasedAt": "2026-10-03T05:58:00Z",
   "type": "fix",
-  "base": "V6.4.79-20261003-UNIFIED-UPDATE-NOTICE-01",
+  "base": "V6.4.80-20261003-UNIFIED-FLIGHT-WORKSPACE-REPAIR-01",
   "updatePolicy": "required",
-  "notes": "Thống nhất Flight Workspace cho AD, Điều hành, CBTT, PVHK và Kho hàng: cùng danh sách chuyến, cùng trạng thái bộ phận, cùng hồ sơ. F-54/F-94 theo cấu hình hãng được đối soát theo đúng flightId và ghi vào Flight Record. FSAGS 208 Kho hàng dùng cùng danh sách chuyến. Giữ repair để xóa SW/cache cũ nhưng repair chỉ hoàn tất khi version + manifest + index cùng một build. GitHub Pages chuyển về production Vercel để tránh hai app/cache khác nhau.",
-  "message": "V6.4.80: một Flight Workspace cho mọi bộ phận; F54/F94/208 đúng chuyến; repair chống lặp."
+  "notes": "Áp dụng giao diện mobile compact đã duyệt: header, bộ lọc Flight Workspace, card chuyến, chi tiết trạng thái và thanh thao tác form được thu gọn trên điện thoại; desktop giữ nguyên. Sửa tận gốc vòng lặp cập nhật: APP_BUILD_VERSION/APP_DISPLAY_VERSION không còn hard-code trong 05-legacy mà đọc trực tiếp meta của index đang chạy. Update detector và Repair xác minh version + manifest + meta index cùng build/version trước khi cho cập nhật hoặc mở app.",
+  "message": "V6.4.81: giao diện mobile compact; update/repair chống lặp và đồng bộ build theo index."
 }

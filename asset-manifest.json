@@ -1,8 +1,8 @@
 {
   "schema": 2,
-  "version": "V6.4.80",
-  "build": "V6.4.80-20261003-UNIFIED-FLIGHT-WORKSPACE-REPAIR-01",
-  "strategy": "atomic release + unified flight workspace + policy assignments in Flight Record + repair contract",
+  "version": "V6.4.81",
+  "build": "V6.4.81-20261003-MOBILE-COMPACT-UPDATE-STABLE-01",
+  "strategy": "atomic release + index-meta runtime version + repair contract + mobile compact UI",
   "mutableMetadata": [
     "./forms/forms.registry.json",
     "./data/form-configuration.json"
@@ -86,8 +86,8 @@
       "bytes": 41473
     },
     "./app/styles/new-ui-v1.css": {
-      "sha256": "7a665baa19553a31e8dd262d43033527013af64209fd5c396f12815a073602d9",
-      "bytes": 257398
+      "sha256": "dae5fa0e5297c005c66a932b3b9575261276b2697217f7209056ffca6705738d",
+      "bytes": 264604
     },
     "./assets/audio/alert-crosscheck-complete.mp3": {
       "sha256": "2291844c0abc77005a2e8800e0dc8115c373134385a31a5d3d9e5f920a5acc07",
@@ -226,8 +226,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "0d880c0fc12ab418d6c490c6ea6a873bc50c44f1a08be016f4227d7233770f86",
-      "bytes": 82153
+      "sha256": "ed4f00602a2cb4b2135ebf4907c4bc4d18b018076073b8369406aab6c12d100d",
+      "bytes": 81868
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -274,16 +274,16 @@
       "bytes": 465580
     },
     "./repair.html": {
-      "sha256": "2a69ca7e9853f313b7038a2643fbb9b2fa57cc98f4016fef1d7c0007ef08da37",
-      "bytes": 4445
+      "sha256": "174e7898b6a4e8414e8a8abc2007df0d4d671c18e406ce58ccea6e2914b2c962",
+      "bytes": 4925
     },
     "./service-worker.js": {
-      "sha256": "9c300b165f2e1500e7666967b09d1f97fc29a203f863f1e253854f43c4df84bd",
-      "bytes": 21362
+      "sha256": "484b38fafcbaa7d6f61bef812c60e68fdca492f83725973e9018340d63b2e625",
+      "bytes": 21353
     },
     "./version.json": {
-      "sha256": "6982ccb4e7401c7c9231bd2d7ffe33840d8db61ca38635d6f0ca6d66dbd57380",
-      "bytes": 977
+      "sha256": "a8fbc4c49bc593495e4e6be036510356bf6e4debaa9178254d11cc73de5f7f24",
+      "bytes": 989
     },
     "./app/modules/form-registry-runtime.v647.js": {
       "sha256": "38273ccd7794e4790c37b5a8594edeaefd412917af2c928245bf8a89b0a8a5f2",
@@ -302,8 +302,8 @@
       "bytes": 1253
     },
     "./app/boot/05-legacy.js": {
-      "sha256": "c3e9112625f1e595639de5eee0488e74131156561dab60f7dff995d10e89da8e",
-      "bytes": 293551
+      "sha256": "830e50190ae65f59d4def691ee81d711021dab8104ecfaa00b73510cf5ecd544",
+      "bytes": 293705
     },
     "./app/boot/06-legacy.js": {
       "sha256": "567f8d8a4c799969b3745794233b730ca48bbd757ee2db3b95552533ed4b91c6",
@@ -610,8 +610,8 @@
       "bytes": 25399
     },
     "./app/generated/boot-group-4.js": {
-      "sha256": "215e2528c72bab91a5cca291f2c3d28818ef348d362dc79db14175a1da3bf250",
-      "bytes": 10466
+      "sha256": "359491fc70beaddfc23ee82e5531f0c0b61cfe004657cc8e44d87a3504dcb9f4",
+      "bytes": 11325
     },
     "./app/generated/boot-group-5.js": {
       "sha256": "5e63b64c8450611004cdf7983028cfef05f0c5ade6e72b2e34338f58ae048201",
