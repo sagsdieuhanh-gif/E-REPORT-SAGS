@@ -1,12 +1,12 @@
 {
-  "version": "V6.4.84",
-  "displayVersion": "V6.4.84",
-  "label": "V6.4.84 - REQUIRED AUTO UPDATE",
-  "build": "V6.4.84-20261003-REQUIRED-AUTO-UPDATE-01",
-  "releasedAt": "2026-10-03T12:00:00Z",
+  "version": "V6.4.85",
+  "displayVersion": "V6.4.85",
+  "label": "V6.4.85 - REPAIR UNREGISTER FIRST",
+  "build": "V6.4.85-20261003-REPAIR-UNREGISTER-FIRST-01",
+  "releasedAt": "2026-10-03T12:09:00Z",
   "type": "fix",
-  "base": "V6.4.83-20261003-AUTO-REPAIR-STALE-SHELL-01",
+  "base": "V6.4.84-20261003-REQUIRED-AUTO-UPDATE-01",
   "updatePolicy": "required",
-  "notes": "Sửa triệt để lỗi điện thoại bị giữ ở bản cũ. Phát hiện service-worker của V6.4.83 đang khai báo sai build so với version.json/asset-manifest, khiến worker mới không thể hoàn tất install và trình duyệt tiếp tục dùng worker cũ. V6.4.84 đồng bộ lại release contract giữa index, service worker, version và manifest. Với updatePolicy=required, khi ứng dụng đang ở màn hình rảnh/chưa vào chuyến và phát hiện bản mới, hệ thống tự lưu trạng thái cục bộ, tải + xác minh worker mới, kích hoạt và reload sang bản mới mà không cần bấm CẬP NHẬT NGAY. Nếu đang có chuyến hoạt động hoặc đang nhập liệu, vẫn giữ prompt để tránh ngắt thao tác.",
-  "message": "V6.4.84: sửa mismatch service worker và tự cập nhật bản bắt buộc khi ứng dụng đang rảnh."
+  "notes": "Sửa lỗi trang Repair bị chính service worker cũ chặn trước khi kịp gỡ nó. Trước đây Repair kiểm tra version + manifest + index ngay ở stage 1, nên worker cũ có thể trả index cache cũ và làm kiểm tra thất bại. Từ V6.4.85, stage 1 gỡ service worker và cache shell cũ trước, sau đó tải lại Repair ở stage 2 rồi mới xác minh release trực tiếp từ mạng. Nếu máy chủ vừa deploy, Repair tự thử lại tối đa 8 lần. Link Repair cũ có target phiên bản cũ cũng không còn khóa việc lên bản mới nhất.",
+  "message": "V6.4.85: Repair gỡ worker/cache cũ trước rồi mới xác minh bản mới."
 }
