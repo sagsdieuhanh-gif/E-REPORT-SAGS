@@ -1,8 +1,8 @@
 {
   "schema": 2,
-  "version": "V6.4.77",
-  "build": "V6.4.77-20261003-DOSSIER-DOCS-SYNC-01",
-  "strategy": "verified immutable shell + direct flight dossier document summary + config revision 8 sync",
+  "version": "V6.4.78",
+  "build": "V6.4.78-20261003-RUNTIME-POLICY-DOSSIER-01",
+  "strategy": "verified immutable shell + visible policy applicability + direct dossier summaries + return-time update checks",
   "mutableMetadata": [
     "./forms/forms.registry.json",
     "./data/form-configuration.json"
@@ -26,8 +26,8 @@
       "bytes": 20659
     },
     "./app/modules/daily-roster.v502.js": {
-      "sha256": "37479819f8dd7ae8c8c0c596d606a22e63a4479e341ce098b78da083904b2c05",
-      "bytes": 74663
+      "sha256": "6f6c6814ed6cd6d6030add50318a4bed15b9c8212a15593840976da6dda4444a",
+      "bytes": 80369
     },
     "./app/modules/fsags54-94.v622.js": {
       "sha256": "9f39dd025b60be2791fb92e345fe9424c6b122c6546a914f53097fdb31a18ab2",
@@ -226,8 +226,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "62573c279720efcd2bf3692ee445bd27df721a280750baed122055c7e30b0117",
-      "bytes": 80570
+      "sha256": "63bd45bb3d10244562ed881446624c8f1db260881adafe02cfb4ac1ba066d3f7",
+      "bytes": 81045
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -278,12 +278,12 @@
       "bytes": 3133
     },
     "./service-worker.js": {
-      "sha256": "c5e7439160762a46f127945658aed5668f8c971fc1222fc54f973b9b1190bd24",
-      "bytes": 21083
+      "sha256": "e4be830b80531cdd87ab2370f65eaad0f71d5e26bd91dba2ae6e6369698f113d",
+      "bytes": 21098
     },
     "./version.json": {
-      "sha256": "a9f2a81df53bc52f78d4b7378471b3c9d40f55012261d7771e5d60bf89d678b9",
-      "bytes": 686
+      "sha256": "2dae0d2a3a9c3b40e5c5cc22b1d55053fc68350cf932f593bafd9fc94c315e81",
+      "bytes": 908
     },
     "./app/modules/form-registry-runtime.v647.js": {
       "sha256": "38273ccd7794e4790c37b5a8594edeaefd412917af2c928245bf8a89b0a8a5f2",
@@ -526,8 +526,8 @@
       "bytes": 2661
     },
     "./app/modules/fsags208-workspace.v1.js": {
-      "sha256": "65a077cb9bb64150c41d6cbb1d5e999546b5cd4c54120b0ef3a8ae8e8627601a",
-      "bytes": 41725
+      "sha256": "23b188b21bc3cd5cd4f96052e1523be667ba051b1559d69e7d9bf6d4f89a41bb",
+      "bytes": 41895
     },
     "./app/modules/cargo-all-flights.v1.js": {
       "sha256": "01cac72281fad8bdf5903548515fdffb92415e66f0ba541e91ec54531fd91923",
@@ -546,8 +546,8 @@
       "bytes": 85858
     },
     "./app/generated/core-flight.js": {
-      "sha256": "e1a40e003487db84abf7da869b68f4e681ff849d31dc66199825cf20a90528cd",
-      "bytes": 202039
+      "sha256": "4617799e5512e6e1fca6261b5376803afaab588b85c6a1650dc65aac57c9c9b7",
+      "bytes": 203011
     },
     "./app/generated/core-performance.js": {
       "sha256": "005c80dc9ce412f9e1c8b74d24b48e68b27ddaa05d5de203cb2029e7f93364d8",
@@ -610,8 +610,8 @@
       "bytes": 25399
     },
     "./app/generated/boot-group-4.js": {
-      "sha256": "490f087ab34cfe27ac1bfc1d519fbcb830f8c1645a32aa47c9ac9cb9987cfaca",
-      "bytes": 9156
+      "sha256": "587cfddcb071f45ba94ee404fd7ed1df8e60ca35e6981c963099a930966d3774",
+      "bytes": 9563
     },
     "./app/generated/boot-group-5.js": {
       "sha256": "5e63b64c8450611004cdf7983028cfef05f0c5ade6e72b2e34338f58ae048201",
