@@ -1,8 +1,8 @@
 {
   "schema": 2,
-  "version": "V6.4.75",
-  "build": "V6.4.75-20261003-EO-F54-POLICY-01",
-  "strategy": "verified immutable shell + policy-ready roster generation + auxiliary-form reconciliation",
+  "version": "V6.4.76",
+  "build": "V6.4.76-20261003-DOSSIER-DOCS-01",
+  "strategy": "verified immutable shell + direct flight dossier document summary",
   "mutableMetadata": [
     "./forms/forms.registry.json",
     "./data/form-configuration.json"
@@ -26,8 +26,8 @@
       "bytes": 20659
     },
     "./app/modules/daily-roster.v502.js": {
-      "sha256": "59a99d65df435d38f294e1ef9d714f5c04766d130531033914ab7be8340ed1d4",
-      "bytes": 71232
+      "sha256": "37479819f8dd7ae8c8c0c596d606a22e63a4479e341ce098b78da083904b2c05",
+      "bytes": 74663
     },
     "./app/modules/fsags54-94.v622.js": {
       "sha256": "9f39dd025b60be2791fb92e345fe9424c6b122c6546a914f53097fdb31a18ab2",
@@ -226,8 +226,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "8241b141476024f108a40af85de74b16d544360febdc8b8cc7c3abdc23396696",
-      "bytes": 80190
+      "sha256": "4f0bb73df65049db2608227c8be7085a94b8d45922383adb6e0db950708284d3",
+      "bytes": 80095
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -278,12 +278,12 @@
       "bytes": 3133
     },
     "./service-worker.js": {
-      "sha256": "93d4414075455a03b881ba2d3f1cf523f189536b03c9e2fa6f8f769b78ecb575",
-      "bytes": 21071
+      "sha256": "6e54414201d44905286b62c4bfaf9e65bd2b80f6f3e5fbee78cb8a366665819a",
+      "bytes": 21068
     },
     "./version.json": {
-      "sha256": "22ab904d91728be72c93d619af74257454ccaba265a7d2c3eb6ff60eb404deff",
-      "bytes": 760
+      "sha256": "85ec65e34a265f4327ec443b26b2a22dabef593ddc23956854a0965712bd28e3",
+      "bytes": 664
     },
     "./app/modules/form-registry-runtime.v647.js": {
       "sha256": "38273ccd7794e4790c37b5a8594edeaefd412917af2c928245bf8a89b0a8a5f2",
@@ -526,8 +526,8 @@
       "bytes": 2661
     },
     "./app/modules/fsags208-workspace.v1.js": {
-      "sha256": "46ed8313522d790ab7515de710cab42d147a0af6b821365d4482859514690679",
-      "bytes": 41504
+      "sha256": "65a077cb9bb64150c41d6cbb1d5e999546b5cd4c54120b0ef3a8ae8e8627601a",
+      "bytes": 41725
     },
     "./app/modules/cargo-all-flights.v1.js": {
       "sha256": "01cac72281fad8bdf5903548515fdffb92415e66f0ba541e91ec54531fd91923",

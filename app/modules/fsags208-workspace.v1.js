@@ -1,4 +1,4 @@
-/* E-REPORT SAGS V6.4.45 · FSAGS 208 WORKSPACE
+/* E-REPORT SAGS V6.4.76 · FSAGS 208 WORKSPACE
  * Airline policy decides whether the flight needs FSAGS 208.
  * No Cargo column is required in Daily Roster.
  * Cargo handling is sequential: last receiver owns editing, immutable receive/send history is retained.
@@ -6,7 +6,7 @@
  */
 (function(root){
 'use strict';
-const BUILD='V6.4.45-20261002-FSAGS208-WORKSPACE-01';
+const BUILD='V6.4.76-20261003-DOSSIER-DOCS-01';
 const FLIGHTS='flight_records';
 const MODULE='FSAGS208';
 const FORM='loading208';
@@ -215,6 +215,7 @@ async function sendWorkspace(){
    if(tx?.committed===false||!revision)throw new Error('Quyền xử lý đã thay đổi trước khi gửi.');
    clearTimeout(syncTimer);draftSignatures.set(date+'|'+fid,JSON.stringify(st));const list=readList(),row=list.find(x=>x.id===activeId());if(row){row.sentAtMs=now;row.revisionNo=revision;row.updatedAt=now;writeList(list)}
    try{root.writeUserActivity?.('ĐÃ GỬI FSAGS 208',flightName(rec)+' · '+date+' · R'+revision)}catch(_){}
+   try{root.dispatchEvent(new CustomEvent('sags:flight-document-published',{detail:{opDate:date,flightId:fid,code:'FSAGS208',revisionNo:revision}}))}catch(_){}
    alert('✓ Đã gửi FSAGS 208 R'+revision+' vào Flight Workspace.\n\nKhông dò lại Flight/Date/REGN. Dữ liệu nằm trực tiếp trong hồ sơ chung của chuyến.');setTimeout(()=>injectWorkspace(date,fid),80);return true;
  }catch(e){alert('Không gửi được FSAGS 208: '+S(e?.message||e));return false}
 }
@@ -251,7 +252,7 @@ async function openDossier(date,fid){
  if(role()!=='AD'&&root.sagsPersonalFlightTasks?.renderInto){try{await root.sagsPersonalFlightTasks.renderInto(own,date,fid)}catch(e){own.textContent='Chưa đọc được nhiệm vụ cá nhân: '+S(e?.message||e);}}else own.textContent=role()==='AD'?'AD quản lý hồ sơ chung của chuyến.':'Phân công cá nhân đang khởi tạo. Bấm tải lại hồ sơ.';
  if(token!==dossierPaint)return;
  const current208=rec.modules?.[MODULE];if(isHandlerRole()&&current208?.policyEnabled!==false&&current208){const task=document.createElement('article');task.className='sagsDossierDoc';const label=document.createElement('b');label.textContent='📦 NHIỆM VỤ KHO HÀNG · FSAGS 208';task.appendChild(label);const info=document.createElement('small');info.textContent=statusText(current208)+(current208.currentHandler?.username?' · '+S(current208.currentHandler.name||current208.currentHandler.username):'');task.appendChild(info);const receive=document.createElement('button');receive.textContent=norm(current208.currentHandler?.username)===me()?'MỞ / TIẾP TỤC FSAGS 208':'NHẬN XỬ LÝ FSAGS 208';receive.onclick=async()=>{closeDossier();await takeoverOpen(date,fid)};task.appendChild(receive);taskHost.appendChild(task);}
- const mod=rec.modules?.[MODULE],pub=published208(mod),card=document.createElement('article');card.className='sagsDossierDoc';const title=document.createElement('b');title.textContent='📦 FSAGS 208 · PHIẾU CHẤT XẾP CHI TIẾT';card.appendChild(title);const detail=document.createElement('small');detail.textContent=pub?'Bản đã gửi R'+pub.revisionNo+' · '+S(pub.sentBy?.name||pub.sentBy?.username)+' · '+fmt(pub.sentAtMs)+' · Chỉ xem':Number(mod?.revisionNo)>0?'Hồ sơ cũ chưa có bản đã gửi tách khỏi nháp. Kho hàng cần gửi lại để các đơn vị xem đúng bản.':'Chưa có bản gửi. Kho hàng lưu nháp sẽ chưa xuất hiện thành tài liệu đã gửi.';card.appendChild(detail);if(pub){const btn=document.createElement('button');btn.textContent='MỞ XEM FSAGS 208 · R'+pub.revisionNo;btn.onclick=()=>openView(date,fid);card.appendChild(btn);}docs.appendChild(card);
+ const mod=rec.modules?.[MODULE],pub=published208(mod),card=document.createElement('article');card.className='sagsDossierDoc';const title=document.createElement('b');title.textContent=pub?'✓ ĐÃ CÓ · FSAGS 208 · PHIẾU CHẤT XẾP CHI TIẾT':'📦 FSAGS 208 · PHIẾU CHẤT XẾP CHI TIẾT';card.appendChild(title);const detail=document.createElement('small');detail.textContent=pub?'Bản đã gửi R'+pub.revisionNo+' · '+S(pub.sentBy?.name||pub.sentBy?.username)+' · '+fmt(pub.sentAtMs)+' · Chỉ xem':Number(mod?.revisionNo)>0?'Hồ sơ cũ chưa có bản đã gửi tách khỏi nháp. Kho hàng cần gửi lại để các đơn vị xem đúng bản.':'Chưa có bản gửi. Kho hàng lưu nháp sẽ chưa xuất hiện thành tài liệu đã gửi.';card.appendChild(detail);if(pub){const btn=document.createElement('button');btn.textContent='MỞ XEM FSAGS 208 · R'+pub.revisionNo;btn.onclick=()=>openView(date,fid);card.appendChild(btn);}docs.appendChild(card);
  for(const [code,m] of Object.entries(rec.modules||{})){if(code===MODULE)continue;const row=document.createElement('article');row.className='sagsDossierDoc';row.textContent=code+' · '+S(m?.status||'Đang xử lý');docs.appendChild(row);}
  }catch(e){if(token===dossierPaint)docs.textContent='Không tải được hồ sơ: '+S(e?.message||e);}
 }
