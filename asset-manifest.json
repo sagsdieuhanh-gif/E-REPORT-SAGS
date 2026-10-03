@@ -2,7 +2,7 @@
   "schema": 2,
   "version": "V6.4.89",
   "build": "V6.4.89-20261003-MOBILE-WORK-MENU-LANDING-01",
-  "strategy": "atomic release + approved mobile work-menu landing + automatic old-cache cleanup + stale-controller repair",
+  "strategy": "atomic release + mobile work-menu landing + Firebase-auth canonical account management + automatic old-cache cleanup",
   "mutableMetadata": [
     "./forms/forms.registry.json",
     "./data/form-configuration.json"
@@ -282,8 +282,8 @@
       "bytes": 21750
     },
     "./version.json": {
-      "sha256": "7a66162180cccd67240233779d47f0e310d4c54c290602efcd0fc1059a89d7e7",
-      "bytes": 964
+      "sha256": "04027f1ba91ec95c8b0c7ec7a45e59dfd065fad49683dd0c41f4b843f32cf470",
+      "bytes": 1179
     },
     "./app/modules/form-registry-runtime.v647.js": {
       "sha256": "38273ccd7794e4790c37b5a8594edeaefd412917af2c928245bf8a89b0a8a5f2",
@@ -334,12 +334,12 @@
       "bytes": 17323
     },
     "./app/boot/13-v485FeaturePermissions.js": {
-      "sha256": "b67f52d6d7fa964dc01b406bf4678b42943fa53f2bb548a890d38131d0aa1d33",
-      "bytes": 13492
+      "sha256": "ffeedeeb7e323a334675aa1db36aa7f5bb025dc3c6bb69c0820d420998f2db3a",
+      "bytes": 13785
     },
     "./app/boot/14-v18CanonicalAccountHierarchy.js": {
-      "sha256": "064f36702399ec4742fd219f9bb4a07632bdf57df30916301c278841108b2f65",
-      "bytes": 20947
+      "sha256": "0520f5998be0c9c291e847ad340c23179dba7a61bdd8372432c827752200a22a",
+      "bytes": 22181
     },
     "./app/boot/15-v116-account-name-search.js": {
       "sha256": "b2ffc046f021ab5218cc5a5090fd7cee940451e85c6db0d332c39f9036e55eb1",

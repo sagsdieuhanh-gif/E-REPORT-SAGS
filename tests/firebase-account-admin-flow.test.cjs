@@ -1,0 +1,16 @@
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const root=path.resolve(__dirname,'..');
+const hierarchy=fs.readFileSync(path.join(root,'app/boot/14-v18CanonicalAccountHierarchy.js'),'utf8');
+const perms=fs.readFileSync(path.join(root,'app/boot/13-v485FeaturePermissions.js'),'utf8');
+const start=hierarchy.indexOf('adminCreatePersonalAccount=async function()');
+const end=hierarchy.indexOf('window.adminCreatePersonalAccount=adminCreatePersonalAccount',start);
+const create=hierarchy.slice(start,end);
+assert.match(create,/createUserWithEmailAndPassword\(email,"123456"\)/,'AD create must create Firebase Authentication');
+assert.match(create,/firebase\.firestore\(\)\.collection\("users"\)/,'AD create must use Firebase users collection');
+assert.match(create,/users\.doc\(uid\)\.set\(profile,\{merge:false\}\)/,'AD create must write users/{UID}');
+assert.match(create,/await createdUser\.delete\(\)/,'partial create must rollback Auth user');
+assert.doesNotMatch(create,/passHash|randomAccountSalt|PERSONAL_USER_KIND/,'AD create must not use legacy passHash account as source of truth');
+assert.match(hierarchy,/refreshAccountManager=async function\(\).*firebase\.firestore\(\)\.collection\("users"\)\.get\(\)/s,'Account Manager must list Firebase users');
+assert.match(perms,/firebase\.firestore\(\)\.collection\("users"\)\.doc\(v485PermEditing\.id\)/,'Permission editor must update Firebase users');
+assert.match(perms,/currentUserProfile\?\.firebaseUid/,'permission refresh must resolve current Firebase UID');
+console.log('Firebase AD account management regression checks passed');
