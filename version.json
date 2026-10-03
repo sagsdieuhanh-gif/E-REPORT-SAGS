@@ -1,12 +1,12 @@
 {
   "version": "V6.4.89",
   "displayVersion": "V6.4.89",
-  "label": "V6.4.89 - MOBILE WORK MENU LANDING",
-  "build": "V6.4.89-20261003-MOBILE-WORK-MENU-LANDING-01",
+  "label": "V6.4.89 TEST - MOBILE + FIREBASE ACCOUNT MIGRATION",
+  "build": "V6.4.89-20261003-MOBILE-ACCOUNT-MIGRATION-02",
   "releasedAt": "2026-10-03T13:36:00Z",
   "type": "fix",
   "base": "V6.4.88-20261003-AUTO-CACHE-CLEANUP-01",
   "updatePolicy": "required",
-  "notes": "Khôi phục đúng giao diện mobile đã thống nhất và sửa Account Manager về Firebase chuẩn. Trên mobile <=767px, sau đăng nhập vào thẳng MENU LÀM VIỆC toàn màn hình; desktop giữ dashboard. AD tạo tài khoản mới sẽ tạo thật Firebase Authentication bằng secondary app, ghi và xác minh users/{UID}, mật khẩu đầu 123456, rồi mới báo thành công; nếu ghi hồ sơ lỗi thì rollback Auth vừa tạo. Account Manager, sửa hồ sơ và phân quyền đều đọc/ghi users/{UID}; bỏ luồng tạo PERSONAL_USER/passHash cũ đã khiến tài khoản như Trần Phong Vũ không xuất hiện trong Firebase. Runtime version truth cũng đọc trực tiếp release meta.",
-  "message": "V6.4.89 TEST: mobile work-menu landing + sửa toàn bộ luồng AD tạo/quản lý tài khoản Firebase."
+  "notes": "Khôi phục đúng giao diện mobile đã thống nhất và sửa Account Manager về Firebase chuẩn. Trên mobile <=767px, sau đăng nhập vào thẳng MENU LÀM VIỆC toàn màn hình; desktop giữ dashboard. AD tạo tài khoản mới sẽ tạo thật Firebase Authentication bằng secondary app, ghi và xác minh users/{UID}, mật khẩu đầu 123456, rồi mới báo thành công; nếu ghi hồ sơ lỗi thì rollback Auth vừa tạo. Account Manager, sửa hồ sơ và phân quyền đều đọc/ghi users/{UID}; bỏ luồng tạo PERSONAL_USER/passHash cũ đã khiến tài khoản như Trần Phong Vũ không xuất hiện trong Firebase. Runtime version truth cũng đọc trực tiếp release meta. Bổ sung nhận diện tài khoản legacy đã tạo trước bản sửa nhưng chưa có Firebase, hiển thị riêng với trạng thái CHƯA CÓ FIREBASE AUTH và nút CHUYỂN SANG FIREBASE để tạo Authentication + users/{UID} rồi xóa record cũ sau khi xác minh.",
+  "message": "V6.4.89 TEST B2: mobile work-menu + Firebase account creation + chuyển tài khoản legacy còn sót."
 }

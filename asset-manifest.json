@@ -1,8 +1,8 @@
 {
   "schema": 2,
   "version": "V6.4.89",
-  "build": "V6.4.89-20261003-MOBILE-WORK-MENU-LANDING-01",
-  "strategy": "atomic release + mobile work-menu landing + Firebase-auth canonical account management + automatic old-cache cleanup",
+  "build": "V6.4.89-20261003-MOBILE-ACCOUNT-MIGRATION-02",
+  "strategy": "atomic test release + mobile work-menu landing + Firebase account canonicalization + legacy-account migration + automatic old-cache cleanup",
   "mutableMetadata": [
     "./forms/forms.registry.json",
     "./data/form-configuration.json"
@@ -226,7 +226,7 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "2eb23e8311fbbfdc1f9ea512da5a3b6df479b8cf76c104a7c72693b492f276f1",
+      "sha256": "75c90b9ff7ff2bd17ec594e27fa9f27ef60874ce5f0def5bb2b0196ccc49b3cd",
       "bytes": 81539
     },
     "./manifest.webmanifest": {
@@ -278,12 +278,12 @@
       "bytes": 6861
     },
     "./service-worker.js": {
-      "sha256": "b80bf87bcff193a2e351f5b2c9b906245f89472b3065ce05b5a44f9359a6dc15",
+      "sha256": "717c7d1617b89725801fda03f353b7aa805e4a135d94878b35c6af9f8a0b1ea3",
       "bytes": 21750
     },
     "./version.json": {
-      "sha256": "04027f1ba91ec95c8b0c7ec7a45e59dfd065fad49683dd0c41f4b843f32cf470",
-      "bytes": 1179
+      "sha256": "bdc984a5a946788d9ddd533a1975517d4849472e8fe29df185818ed7e3f2ebf2",
+      "bytes": 1471
     },
     "./app/modules/form-registry-runtime.v647.js": {
       "sha256": "38273ccd7794e4790c37b5a8594edeaefd412917af2c928245bf8a89b0a8a5f2",
@@ -338,8 +338,8 @@
       "bytes": 13785
     },
     "./app/boot/14-v18CanonicalAccountHierarchy.js": {
-      "sha256": "0520f5998be0c9c291e847ad340c23179dba7a61bdd8372432c827752200a22a",
-      "bytes": 22181
+      "sha256": "687a5d3626801e3892e90f5cb411f93cb0ac5d30c974de85e6fba1cc0b99e28a",
+      "bytes": 29017
     },
     "./app/boot/15-v116-account-name-search.js": {
       "sha256": "b2ffc046f021ab5218cc5a5090fd7cee940451e85c6db0d332c39f9036e55eb1",

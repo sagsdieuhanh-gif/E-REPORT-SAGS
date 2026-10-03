@@ -14,3 +14,8 @@ assert.match(hierarchy,/refreshAccountManager=async function\(\).*firebase\.fire
 assert.match(perms,/firebase\.firestore\(\)\.collection\("users"\)\.doc\(v485PermEditing\.id\)/,'Permission editor must update Firebase users');
 assert.match(perms,/currentUserProfile\?\.firebaseUid/,'permission refresh must resolve current Firebase UID');
 console.log('Firebase AD account management regression checks passed');
+
+assert.match(hierarchy,/adminMigrateLegacyAccount=async function\(id\)/,'legacy-to-Firebase migration action missing');
+assert.match(hierarchy,/CHƯA CÓ FIREBASE AUTH/,'legacy orphan warning missing');
+assert.match(hierarchy,/CHUYỂN SANG FIREBASE/,'legacy orphan migration button missing');
+assert.match(hierarchy,/legacyCol\.where\("kind","==",PERSONAL_USER_KIND\)/,'Account Manager must detect legacy orphan accounts');
