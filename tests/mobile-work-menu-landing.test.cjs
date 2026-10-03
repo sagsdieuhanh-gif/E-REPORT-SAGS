@@ -1,0 +1,13 @@
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const root=path.resolve(__dirname,'..');
+const runtime=fs.readFileSync(path.join(root,'app/generated/runtime-1.js'),'utf8');
+const css=fs.readFileSync(path.join(root,'app/styles/new-ui-v1.css'),'utf8');
+assert.match(runtime,/const mobileWorkLanding=\(\)=>/,'mobile landing detector missing');
+assert.match(runtime,/if\(mobileWorkLanding\(\)\)goHome\(\)/,'mobile login must land on work menu');
+assert.match(runtime,/setActiveMenu\("home"\);if\(mobileWorkLanding\(\)\)setTimeout\(openDrawer,20\)/,'home return must reopen mobile work menu');
+assert.match(runtime,/key==="home"/,'home state must be accepted by menu state');
+assert.doesNotMatch(runtime,/V6441_RUNNING_VERSION="V6\.4\.71"/,'runtime version truth must not be hard-coded to V6.4.71');
+assert.match(css,/V6\.4\.89 · MOBILE WORK MENU IS THE HOME SCREEN/);
+assert.match(css,/width:100vw!important;max-width:none!important/,'mobile work menu must be full width');
+assert.match(css,/content:"MENU LÀM VIỆC"!important/,'mobile work menu heading missing');
+console.log('Mobile work-menu landing regression checks passed');
