@@ -3,7 +3,7 @@
    Preferences stay local to the signed-in account/device; no form keys or business rules change. */
 (function(root){
   'use strict';
-  const BUILD='V6.2.0-20260927-TVJ-QUICK-PREFS-03';
+  const BUILD='V6.4.82-20261003-QUICK-PREFS-COLLAPSE-PERSIST-01';
   if(root.__SAGS_UI_PREFS_BUILD__===BUILD)return;
   root.__SAGS_UI_PREFS_BUILD__=BUILD;
 
@@ -85,14 +85,28 @@
 
 
 
-  function readHidden(){
+  function quickDeviceKey(){return QUICK_ROOT+':device:'+quickGroup()}
+  function readHiddenAt(key){
     try{
-      const raw=JSON.parse(localStorage.getItem(quickKey())||'[]');
+      const stored=localStorage.getItem(key);
+      if(stored===null)return null;
+      const raw=JSON.parse(stored);
       return new Set(Array.isArray(raw)?raw.map(S).filter(Boolean):[]);
-    }catch(_){return new Set()}
+    }catch(_){return null}
+  }
+  function readHidden(){
+    const own=readHiddenAt(quickKey());
+    if(own)return own;
+    const device=readHiddenAt(quickDeviceKey());
+    return device||new Set();
   }
   function writeHidden(set){
-    try{localStorage.setItem(quickKey(),JSON.stringify([...set].sort()))}catch(_){}
+    const payload=JSON.stringify([...set].sort());
+    try{
+      localStorage.setItem(quickKey(),payload);
+      localStorage.setItem(quickDeviceKey(),payload);
+      return localStorage.getItem(quickKey())===payload;
+    }catch(_){return false}
   }
   function quickItems(){
     const out=[];
@@ -112,7 +126,7 @@
       const kind=S(input.dataset.kind);
       if(kind)label=(label||key)+' · '+kind;
       if(!label)label=key;
-      out.push({key,label,input,row});
+      out.push({key,label,input,row,kind});
     }
     return out;
   }
@@ -332,7 +346,7 @@
     shell.innerHTML=`
       <div class="sagsQteCustomizeCard">
         <div class="sagsUiPrefsHead">
-          <div><b>TÙY CHỈNH NHẬP NHANH</b><small>Chọn các ô muốn nhìn thấy ở trang hiện tại</small></div>
+          <div><b>TÙY CHỈNH NHẬP NHANH</b><small>Bấm từng nhóm để mở danh sách, rồi chọn các ô cần dùng</small></div>
           <button type="button" class="sagsQteCustomizeClose" aria-label="Đóng">×</button>
         </div>
         <div id="sagsQteCustomizeList" class="sagsQteCustomizeList"></div>
@@ -340,7 +354,7 @@
           <button type="button" id="sagsQteResetPage">Mặc định trang này</button>
           <button type="button" id="sagsQteSavePrefs" class="primary">Lưu lựa chọn</button>
         </div>
-        <div class="sagsUiPrefsHint">Tùy chỉnh chỉ ẩn/hiện ô trong Nhập nhanh. Dữ liệu gốc, thứ tự nghiệp vụ và các kiểm tra an toàn vẫn giữ nguyên.</div>
+        <div class="sagsUiPrefsHint">Chỉ các ô đã chọn sẽ hiện trong Nhập nhanh. Lựa chọn được ghi nhớ trên máy này.</div>
       </div>`;
     document.body.appendChild(shell);
     shell.addEventListener('click',e=>{if(e.target===shell)closeQuickCustomize()});
@@ -348,21 +362,71 @@
     $('sagsQteSavePrefs')?.addEventListener('click',saveQuickCustomize);
     $('sagsQteResetPage')?.addEventListener('click',resetQuickCustomize);
   }
+  function quickChoiceMeta(item){
+    const label=S(item?.label),parts=label.split('·').map(S).filter(Boolean);
+    if(parts.length>=3&&/^(INBOUND|OUTBOUND)$/i.test(parts[0])){
+      return {group:parts.slice(0,2).join(' · '),choice:parts.slice(2).join(' · ')||label};
+    }
+    let rowLabel=S(item?.row?.querySelector?.('.quickTimeLabel')?.textContent);
+    if(!rowLabel&&item?.row?.classList?.contains('qte551TimeRow'))rowLabel=S(item.row.querySelector(':scope > span')?.textContent);
+    if(rowLabel){
+      let choice=label;
+      if(choice.toUpperCase().startsWith(rowLabel.toUpperCase()))choice=S(choice.slice(rowLabel.length).replace(/^[·\s-]+/,''));
+      if(!choice)choice=S(item.kind)||'Hiển thị';
+      return {group:rowLabel,choice};
+    }
+    if(parts.length>1)return {group:parts.slice(0,-1).join(' · '),choice:parts[parts.length-1]};
+    return {group:label||item.key,choice:'Hiển thị'};
+  }
+  function updateQuickGroupSummary(group){
+    if(!group)return;
+    const boxes=[...group.querySelectorAll('input[data-key]')];
+    const selected=boxes.filter(x=>x.checked).length;
+    const summary=group.querySelector('[data-sags-qte-summary]');
+    if(summary)summary.textContent=selected+'/'+boxes.length+' đã chọn';
+  }
+  function renderQuickCustomizeList(items,hidden){
+    const list=$('sagsQteCustomizeList');if(!list)return;
+    list.innerHTML='';
+    const groups=new Map();
+    for(const item of items){
+      const meta=quickChoiceMeta(item),name=S(meta.group)||item.key;
+      if(!groups.has(name))groups.set(name,[]);
+      groups.get(name).push({item,meta});
+    }
+    let index=0;
+    for(const [name,entries] of groups){
+      const group=document.createElement('section');group.className='sagsQteChoiceGroup';
+      const toggle=document.createElement('button');toggle.type='button';toggle.className='sagsQteChoiceToggle';toggle.setAttribute('aria-expanded','false');
+      const title=document.createElement('span');title.className='sagsQteChoiceToggleText';
+      const strong=document.createElement('b');strong.textContent=name;
+      const summary=document.createElement('small');summary.dataset.sagsQteSummary='1';
+      title.append(strong,summary);
+      const chevron=document.createElement('span');chevron.className='sagsQteChoiceChevron';chevron.textContent='⌄';chevron.setAttribute('aria-hidden','true');
+      toggle.append(title,chevron);
+      const body=document.createElement('div');body.className='sagsQteChoiceBody';body.hidden=true;body.id='sagsQteChoiceBody'+(++index);
+      toggle.setAttribute('aria-controls',body.id);
+      toggle.addEventListener('click',()=>{
+        const open=body.hidden;
+        body.hidden=!open;
+        toggle.setAttribute('aria-expanded',open?'true':'false');
+        group.classList.toggle('open',open);
+      });
+      for(const entry of entries){
+        const lab=document.createElement('label');lab.className='sagsQteChoice';
+        const check=document.createElement('input');check.type='checkbox';check.checked=!hidden.has(entry.item.key);check.dataset.key=entry.item.key;
+        const span=document.createElement('span');span.textContent=entry.meta.choice;
+        check.addEventListener('change',()=>updateQuickGroupSummary(group));
+        lab.append(check,span);body.appendChild(lab);
+      }
+      group.append(toggle,body);list.appendChild(group);updateQuickGroupSummary(group);
+    }
+  }
   function openQuickCustomize(){
     ensureQuickCustomizeModal();
     const items=quickItems();
     if(!items.length){root.alert?.('Trang này chưa có ô nhập nhanh để tùy chỉnh.');return}
-    const hidden=readHidden();
-    const list=$('sagsQteCustomizeList');
-    list.innerHTML='';
-    for(const item of items){
-      const lab=document.createElement('label');
-      lab.className='sagsQteChoice';
-      const check=document.createElement('input');
-      check.type='checkbox';check.checked=!hidden.has(item.key);check.dataset.key=item.key;
-      const span=document.createElement('span');span.textContent=item.label;
-      lab.append(check,span);list.appendChild(lab);
-    }
+    renderQuickCustomizeList(items,readHidden());
     $('sagsQteCustomizeModal')?.classList.add('open');
   }
   function closeQuickCustomize(){$('sagsQteCustomizeModal')?.classList.remove('open')}
@@ -377,12 +441,21 @@
       const key=S(box.dataset.key);
       if(box.checked)hidden.delete(key);else hidden.add(key);
     }
-    writeHidden(hidden);closeQuickCustomize();applyQuickVisibility();
+    if(!writeHidden(hidden)){
+      root.alert?.('Không lưu được tùy chọn trên thiết bị này. Hãy thử lại sau khi mở lại ứng dụng.');
+      return;
+    }
+    closeQuickCustomize();applyQuickVisibility();
+    try{root.showToast?.('Đã lưu tùy chọn Nhập nhanh.')}catch(_){}
   }
   function resetQuickCustomize(){
     const hidden=readHidden();
     for(const item of quickItems())hidden.delete(item.key);
-    writeHidden(hidden);closeQuickCustomize();applyQuickVisibility();
+    if(!writeHidden(hidden)){
+      root.alert?.('Không lưu được tùy chọn mặc định trên thiết bị này.');
+      return;
+    }
+    closeQuickCustomize();applyQuickVisibility();
   }
   root.sagsOpenQuickTimeCustomize=openQuickCustomize;
 
