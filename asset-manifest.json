@@ -1,8 +1,8 @@
 {
   "schema": 2,
-  "version": "V6.4.85",
-  "build": "V6.4.85-20261003-REPAIR-UNREGISTER-FIRST-01",
-  "strategy": "atomic release + unregister-first repair + release-contract consistency + required idle auto-update + persistent quick-entry preferences",
+  "version": "V6.4.86",
+  "build": "V6.4.86-20261003-SINGLE-TOGGLE-ROSTER-SWITCH-01",
+  "strategy": "atomic release + single global quick-entry toggles + roster same-worker form-switch retirement + required auto-update + repair-first stale-shell recovery",
   "mutableMetadata": [
     "./forms/forms.registry.json",
     "./data/form-configuration.json"
@@ -78,16 +78,16 @@
       "bytes": 10344
     },
     "./app/modules/ui-preferences.v1.js": {
-      "sha256": "ec3c4c4935debc275737f91b5049ab3ef5af4dd1cdbb6a62d5b5a2b7554d4378",
-      "bytes": 26315
+      "sha256": "d075ec35741763e117427e8dbfbda1f774b713eb62afb515c9752f6840d9ab95",
+      "bytes": 26338
     },
     "./app/styles/app.bundle.css": {
       "sha256": "013be6bee9f38bf79864dcab0658f438966d77172692446f698c042539601c2e",
       "bytes": 41473
     },
     "./app/styles/new-ui-v1.css": {
-      "sha256": "8b2c940db938f183ae9acfaa323502b189e62c2f050d939cc7250b049e3aa5af",
-      "bytes": 266882
+      "sha256": "3e39f27e5c06d2265aa5b439c5483b2c0866760e15bd39aadd7f7d0e0dc29ddd",
+      "bytes": 270085
     },
     "./assets/audio/alert-crosscheck-complete.mp3": {
       "sha256": "2291844c0abc77005a2e8800e0dc8115c373134385a31a5d3d9e5f920a5acc07",
@@ -226,8 +226,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "4c2c855843b9c2f9ae8732c5836f500b5822ed8b1b75c1e8dec77a28b2754fe8",
-      "bytes": 81393
+      "sha256": "0ff536f7f31d42f2647a0ca74a35b83b318c7f642b79f1ede65acf46a6946917",
+      "bytes": 81773
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -278,12 +278,12 @@
       "bytes": 4794
     },
     "./service-worker.js": {
-      "sha256": "a78bf472077b0b139da7e12b0dc8393aafe1bc2ddaf583629482a0d78afb4673",
-      "bytes": 21747
+      "sha256": "1c0de8f743ab6ac8d7d83f5eea0601d4ac95b650529ab6e60644829050e8778a",
+      "bytes": 21759
     },
     "./version.json": {
-      "sha256": "2898eea0b039c5e4714c58c724f003e94a6e77c5fcd8086161291f821bf3747c",
-      "bytes": 1012
+      "sha256": "b28a9be0e81568df312eab3c9fd8c5fc614237de0b6870fc51c3ab2b6ff08e64",
+      "bytes": 1113
     },
     "./app/modules/form-registry-runtime.v647.js": {
       "sha256": "38273ccd7794e4790c37b5a8594edeaefd412917af2c928245bf8a89b0a8a5f2",
@@ -346,8 +346,8 @@
       "bytes": 2872
     },
     "./app/boot/18-v173-quick-time.js": {
-      "sha256": "6a9b347cf12ebec81020bef90b9c274c066df7566b244e8989c91ddad19f15ed",
-      "bytes": 24770
+      "sha256": "b158f68910ade58b146cfa747f031fc24817f5705e24a5e954d205c23dacc81c",
+      "bytes": 25594
     },
     "./app/boot/19-v183-fs09-quick.js": {
       "sha256": "bfad6008b1ad14c24b5f156ad6f9cb6c3eed0be4c26fb2193f83bd56c45a2036",
@@ -546,8 +546,8 @@
       "bytes": 84928
     },
     "./app/generated/core-flight.js": {
-      "sha256": "adc6b3ff7388ef5eb7724e292a0e13f212080c8ea8d779a11c38de703b706c1e",
-      "bytes": 208656
+      "sha256": "75a71019812aecd60044761d26ea7cfb15c678391d79f5699f6042fe5c13fb95",
+      "bytes": 210203
     },
     "./app/generated/core-performance.js": {
       "sha256": "005c80dc9ce412f9e1c8b74d24b48e68b27ddaa05d5de203cb2029e7f93364d8",

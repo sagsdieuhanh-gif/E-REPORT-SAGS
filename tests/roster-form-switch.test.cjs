@@ -1,0 +1,10 @@
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const root=path.resolve(__dirname,'..');
+const flight=fs.readFileSync(path.join(root,'app/generated/core-flight.js'),'utf8');
+assert.match(flight,/const ROSTER_RAMP_FORMS=new Set\(\["FSAGS","FSAGS423","FSAGS421","FSAGS551"\]\)/,'RAMP form family missing');
+assert.match(flight,/function sameRosterWorkerFormSwitch\(a,b\)/,'same-worker form switch detector missing');
+assert.match(flight,/sameRosterWorkSlot\(x,q\)\|\|sameRosterWorkerFormSwitch\(x,q\)/,'roster replacement lookup must include form switches');
+assert.match(flight,/supersededByAssignmentId/,'old Flight Record assignment must point to successor');
+assert.match(flight,/supersededByFormGroup/,'old Flight Record assignment must record replacement form');
+assert.match(flight,/ĐÃ THU HỒI THEO ROSTER/,'old Flight Record task status must be retired');
+console.log('Roster form-switch regression checks passed');
