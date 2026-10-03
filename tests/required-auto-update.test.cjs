@@ -3,7 +3,7 @@ const root=path.resolve(__dirname,'..');
 const legacy=fs.readFileSync(path.join(root,'app/boot/05-legacy.js'),'utf8');
 const sw=fs.readFileSync(path.join(root,'service-worker.js'),'utf8');
 const version=JSON.parse(fs.readFileSync(path.join(root,'version.json'),'utf8'));
-const manifest=JSON.parse(fs.readFileSync(path.join(root,'asset-manifest.json'),'utf8');
+const manifest=JSON.parse(fs.readFileSync(path.join(root,'asset-manifest.json'),'utf8'));
 assert.equal(version.updatePolicy,'required');
 assert.match(legacy,/appUpdatePolicy=String\(data\?\.updatePolicy/);
 assert.match(legacy,/function canAutoApplyRequiredUpdate\(\)/);
