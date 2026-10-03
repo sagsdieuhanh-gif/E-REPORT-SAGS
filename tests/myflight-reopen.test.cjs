@@ -1,0 +1,7 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert/strict');
+const s=fs.readFileSync(__dirname+'/../app/modules/roster-lite.v5.js','utf8');
+const classes=new Set(),modal={hidden:true,style:{display:'none',removeProperty(key){delete this[key]}},classList:{add:x=>classes.add(x)}},status={};let refresh=0;
+const nodes={fwcBody:{},fwcDate:{},v477Refresh:{}};const c={root:{sagsOverlayLayout:{refresh:()=>refresh++}},ensureModal:()=>modal,document:{getElementById:id=>nodes[id]},sessionStorage:{setItem(){}}};vm.createContext(c);const a=s.indexOf('function drawShell('),b=s.indexOf('const baseOpen=',a);vm.runInContext(s.slice(a,b),c);
+for(let i=0;i<3;i++){modal.hidden=true;modal.style.display='none';classes.clear();assert.equal(c.drawShell('2026-10-03'),true);assert.equal(modal.hidden,false);assert.equal(modal.style.display,undefined);assert(classes.has('show'));assert.equal(nodes.fwcDate.value,'2026-10-03');}assert.equal(refresh,3);
+const home=fs.readFileSync(__dirname+'/../app/modules/workflow-cleanup.v6444.js','utf8'),h=home.slice(home.indexOf('function goStart()'),home.indexOf('root.sagsGoStart=goStart'));assert(h.includes('root.sagsFlightDossierClose?.()'));assert(h.includes('root.sagsOverlayLayout?.refresh()'));assert(!h.includes('setTimeout'));assert(h.includes("if(classDriven){e.style.removeProperty('display');}"));
+console.log('Home/My Flight reopening passed: cleared inline hidden state, repeated reopen, overlay refresh, no delayed home race');

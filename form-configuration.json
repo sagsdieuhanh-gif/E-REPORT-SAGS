@@ -1,0 +1,341 @@
+{
+  "schemaVersion": 1,
+  "revision": 3,
+  "source": "repository",
+  "carriers": {
+    "HAV": {
+      "label": "HAV",
+      "prefixes": [
+        "HAV"
+      ],
+      "fsags54": false,
+      "fsags94": false
+    },
+    "VJ": {
+      "label": "Vietjet Air",
+      "prefixes": [
+        "VJ",
+        "VJC"
+      ],
+      "fsags54": false,
+      "fsags94": true
+    },
+    "QH": {
+      "label": "Bamboo Airways",
+      "prefixes": [
+        "QH"
+      ],
+      "fsags54": false,
+      "fsags94": false
+    },
+    "DV": {
+      "label": "DV",
+      "prefixes": [
+        "DV"
+      ],
+      "fsags54": false,
+      "fsags94": false
+    },
+    "KC": {
+      "label": "Air Astana",
+      "prefixes": [
+        "KC"
+      ],
+      "fsags54": false,
+      "fsags94": false
+    },
+    "C6": {
+      "label": "C6",
+      "prefixes": [
+        "C6"
+      ],
+      "fsags54": false,
+      "fsags94": false
+    },
+    "KA": {
+      "label": "KA",
+      "prefixes": [
+        "KA"
+      ],
+      "fsags54": false,
+      "fsags94": false
+    },
+    "N4": {
+      "label": "Nordwind Airlines",
+      "prefixes": [
+        "N4"
+      ],
+      "fsags54": false,
+      "fsags94": false
+    },
+    "AK": {
+      "label": "AK",
+      "prefixes": [
+        "AK"
+      ],
+      "fsags54": false,
+      "fsags94": false
+    },
+    "FD": {
+      "label": "FD",
+      "prefixes": [
+        "FD"
+      ],
+      "fsags54": false,
+      "fsags94": false
+    },
+    "KE": {
+      "label": "Korean Air",
+      "prefixes": [
+        "KE"
+      ],
+      "fsags54": false,
+      "fsags94": false
+    },
+    "BX": {
+      "label": "Air Busan",
+      "prefixes": [
+        "BX"
+      ],
+      "fsags54": false,
+      "fsags94": false
+    },
+    "WE": {
+      "label": "WE",
+      "prefixes": [
+        "WE"
+      ],
+      "fsags54": false,
+      "fsags94": false
+    },
+    "RF": {
+      "label": "RF",
+      "prefixes": [
+        "RF"
+      ],
+      "fsags54": false,
+      "fsags94": false
+    },
+    "TW": {
+      "label": "T’way Air",
+      "prefixes": [
+        "TW"
+      ],
+      "fsags54": false,
+      "fsags94": false
+    },
+    "OZ": {
+      "label": "Asiana Airlines",
+      "prefixes": [
+        "OZ"
+      ],
+      "fsags54": false,
+      "fsags94": false
+    },
+    "LJ": {
+      "label": "Jin Air",
+      "prefixes": [
+        "LJ"
+      ],
+      "fsags54": false,
+      "fsags94": false
+    },
+    "3U": {
+      "label": "3U",
+      "prefixes": [
+        "3U"
+      ],
+      "fsags54": false,
+      "fsags94": false
+    },
+    "UQ": {
+      "label": "UQ",
+      "prefixes": [
+        "UQ"
+      ],
+      "fsags54": true,
+      "fsags94": false
+    },
+    "DR": {
+      "label": "DR",
+      "prefixes": [
+        "DR"
+      ],
+      "fsags54": false,
+      "fsags94": false
+    },
+    "TR": {
+      "label": "Scoot",
+      "prefixes": [
+        "TR"
+      ],
+      "fsags54": false,
+      "fsags94": false
+    },
+    "HY": {
+      "label": "Uzbekistan Airways",
+      "prefixes": [
+        "HY"
+      ],
+      "fsags54": false,
+      "fsags94": true
+    },
+    "HU": {
+      "label": "Hainan Airlines",
+      "prefixes": [
+        "HU"
+      ],
+      "fsags54": false,
+      "fsags94": false
+    },
+    "VZ": {
+      "label": "Thai Vietjet Air",
+      "prefixes": [
+        "VZ",
+        "TVJ"
+      ],
+      "fsags54": true,
+      "fsags94": false
+    },
+    "9G": {
+      "label": "9G",
+      "prefixes": [
+        "9G"
+      ],
+      "fsags54": false,
+      "fsags94": false
+    },
+    "B2": {
+      "label": "Belavia",
+      "prefixes": [
+        "B2"
+      ],
+      "fsags54": false,
+      "fsags94": false
+    },
+    "VU": {
+      "label": "Vietravel Airlines",
+      "prefixes": [
+        "VU"
+      ],
+      "fsags54": false,
+      "fsags94": false
+    },
+    "VN": {
+      "label": "Vietnam Airlines",
+      "prefixes": [
+        "VN",
+        "HVN"
+      ],
+      "fsags54": false,
+      "fsags94": false
+    },
+    "7C": {
+      "label": "Jeju Air",
+      "prefixes": [
+        "7C",
+        "JJA"
+      ],
+      "fsags54": false,
+      "fsags94": false
+    }
+  },
+  "forms": {
+    "fsags": {
+      "order": 1,
+      "enabled": true,
+      "allCarriers": true,
+      "carriers": [],
+      "aircraftClass": "ALL",
+      "aircraftTypes": []
+    },
+    "fsags421": {
+      "order": 2,
+      "enabled": true,
+      "allCarriers": true,
+      "carriers": [],
+      "aircraftClass": "ALL",
+      "aircraftTypes": []
+    },
+    "fsags551": {
+      "order": 3,
+      "enabled": true,
+      "allCarriers": true,
+      "carriers": [],
+      "aircraftClass": "ALL",
+      "aircraftTypes": []
+    },
+    "fsags09": {
+      "order": 4,
+      "enabled": true,
+      "allCarriers": true,
+      "carriers": [],
+      "aircraftClass": "ALL",
+      "aircraftTypes": []
+    },
+    "loading208": {
+      "order": 5,
+      "enabled": true,
+      "allCarriers": true,
+      "carriers": [],
+      "aircraftClass": "ALL",
+      "aircraftTypes": [],
+      "dispatchMode": "DEPARTMENT_QUEUE"
+    },
+    "bbbt": {
+      "order": 6,
+      "enabled": true,
+      "allCarriers": true,
+      "carriers": [],
+      "aircraftClass": "ALL",
+      "aircraftTypes": []
+    },
+    "fsags67": {
+      "order": 7,
+      "enabled": true,
+      "allCarriers": true,
+      "carriers": [],
+      "aircraftClass": "ALL",
+      "aircraftTypes": []
+    },
+    "tvjgof035": {
+      "order": 8,
+      "enabled": true,
+      "allCarriers": true,
+      "carriers": [],
+      "aircraftClass": "ALL",
+      "aircraftTypes": []
+    },
+    "fsags54": {
+      "order": 9,
+      "enabled": true,
+      "allCarriers": false,
+      "carriers": [
+        "VZ",
+        "UQ"
+      ],
+      "aircraftClass": "ALL",
+      "aircraftTypes": []
+    },
+    "fsags94": {
+      "order": 10,
+      "enabled": true,
+      "allCarriers": false,
+      "carriers": [
+        "HY",
+        "VJ"
+      ],
+      "aircraftClass": "ALL",
+      "aircraftTypes": []
+    },
+    "final": {
+      "order": 11,
+      "enabled": true,
+      "allCarriers": true,
+      "carriers": [],
+      "aircraftClass": "ALL",
+      "aircraftTypes": []
+    }
+  },
+  "updatedAt": "2026-10-03T03:08:21.170Z"
+}

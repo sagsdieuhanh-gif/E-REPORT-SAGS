@@ -4632,7 +4632,7 @@ html.new-ui-v1 body.v163-operational #v324FormActions #v324PdfBtn{
 
 
 /* ==========================================================================
-   V2.0.1 COMPACT FORM ACTIONS 01
+   V6.4.71 COMPACT FORM ACTIONS 01
    Keep contextual form actions on one balanced mobile row whenever practical.
    No fixed child width; every visible action shares the available container.
    ========================================================================== */
@@ -4689,6 +4689,25 @@ html.new-ui-v1 body.v163-operational #v324FormActions #v324PdfBtn{
 
 /* Mobile form actions share one dock; its actual height reserves document space. */
 #sagsMobileFormDock{display:contents}
+/* The desktop sidebar never needs a modal backdrop, even if an old menu handler leaves its class set. */
+@media(min-width:900px){
+ html.new-ui-v1 body #v157DrawerBackdrop{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}
+ html.new-ui-v1 body.v157-drawer-open:not(.sags-overlay-open):not(.v166-overlay-open){overflow:auto!important}
+}
+@media(max-width:899px){
+ html.new-ui-v1 body:not(.v157-drawer-open) #v157DrawerBackdrop{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}
+}
+html body #fwcModal[hidden],html body #kh208ManagerModal[hidden]{display:none!important;visibility:hidden!important;pointer-events:none!important}
+@media(min-width:900px){
+ html.new-ui-v1 body.v163-operational:not(.v157-home) #sagsMobileFormDock{display:flex;flex-direction:column;gap:8px;position:fixed;right:16px;bottom:16px;left:auto;width:min(620px,calc(100vw - 312px));z-index:14880;padding:10px;box-sizing:border-box;background:#092f43;border:1px solid #466778;border-radius:14px}
+ html.new-ui-v1 body.sags-menu-collapsed #sagsMobileFormDock{width:min(620px,calc(100vw - 32px))}
+ html.new-ui-v1 body #sagsMobileFormDock #v324FormActions,html.new-ui-v1 body #sagsMobileFormDock #v163OperationNav{position:static!important;inset:auto!important;width:100%!important;max-width:none!important;margin:0!important;padding:0!important;transform:none!important;border:0!important;background:transparent!important;box-shadow:none!important}
+ html.new-ui-v1 body #sagsMobileFormDock #v163OperationNav{display:flex!important;justify-content:center;gap:8px!important}
+ html.new-ui-v1 body #sagsMobileFormDock #v324FormActions.show.one{grid-template-columns:minmax(0,1fr)!important}
+ html.new-ui-v1 body #sagsMobileFormDock #v324FormActions.show.two{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ html.new-ui-v1 body #sagsMobileFormDock #v324FormActions.show.three{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+ html.new-ui-v1 body #sagsMobileFormDock #v163SignBtn{grid-column:auto!important;grid-row:auto!important;min-width:140px!important;min-height:44px!important;margin:0!important;padding:10px 16px!important;font:700 14px/1.3 Arial,sans-serif!important}
+}
 @media(max-width:899px){
  html.new-ui-v1 body.v163-operational{padding-top:calc(72px + env(safe-area-inset-top))!important;padding-bottom:calc(var(--sags-form-dock-height,180px) + 16px)!important}
  html.new-ui-v1 body #sagsMobileFormDock{display:none}
@@ -4803,3 +4822,103 @@ html body .sagsStorageCard{width:min(100%,520px);background:#f5f9fc;color:#173b4
 html body .sagsStorageCard h3{margin:0 0 10px;font-size:20px}
 html body .sagsStorageCard pre{white-space:pre-wrap;overflow-wrap:anywhere;font:14px/1.8 Arial,sans-serif;color:#173b4c}
 html body #sagsStorageClose{width:100%;min-height:44px;padding:10px;border:0;border-radius:9px;background:#08758a;color:#fff;font-weight:700}
+
+/* Workspace search keeps the same controls on phone and desktop. */
+#sagsFlightSearch{flex:1;min-width:160px;max-width:100%;height:44px;padding:8px 12px;border:1px solid #9db9c9;border-radius:10px;background:#fff;color:#102f42;font:16px Arial}#fwcList [hidden]{display:none!important}
+
+.sagsFlightSearchBox{display:flex;flex:1;min-width:180px;flex-direction:column;gap:4px;color:#16394b;font:700 12px Arial}.sagsFlightSearchBox #sagsFlightSearch{width:100%;box-sizing:border-box}.fwcTools{flex-wrap:wrap}#fwcModal .fwcTools{position:sticky;top:0;z-index:2;background:#fff;padding:10px 0}@media(max-width:600px){.sagsFlightSearchBox{flex-basis:100%;width:100%}}
+
+/* V6.4.71: one aligned desktop action row and a measured header clearance. */
+@media(min-width:900px){
+ html.new-ui-v1 body.v163-operational{padding-top:calc(var(--sags-navigation-height,64px) + 16px)!important;padding-bottom:calc(var(--sags-form-dock-height,76px) + 24px)!important;box-sizing:border-box}
+ html.new-ui-v1 body.v163-operational:not(.sags-overlay-open):not(.v166-overlay-open){overflow-y:auto!important}
+ html.new-ui-v1 body #page13{scroll-margin-top:calc(var(--sags-navigation-height,64px) + 16px)}
+ html.new-ui-v1 body.v163-operational:not(.v157-home) #sagsMobileFormDock{left:296px!important;right:16px!important;width:auto!important;max-width:none!important;display:flex;flex-direction:row!important;align-items:stretch!important;gap:10px!important;padding:12px!important;border-radius:14px!important;box-shadow:0 6px 24px #001b2b40}
+ html.new-ui-v1 body.sags-menu-collapsed #sagsMobileFormDock{left:16px!important;width:auto!important}
+ html.new-ui-v1 body #sagsMobileFormDock #v324FormActions{flex:3 1 0!important;width:auto!important;gap:10px!important;align-items:stretch!important}
+ html.new-ui-v1 body #sagsMobileFormDock #v324FormActions.show.two{flex:2 1 0!important}
+ html.new-ui-v1 body #sagsMobileFormDock #v324FormActions.show.one{flex:1 1 0!important}
+ html.new-ui-v1 body #sagsMobileFormDock #v163OperationNav{flex:1 1 0!important;width:auto!important;min-width:0!important;align-items:stretch!important}
+ html.new-ui-v1 body #sagsMobileFormDock #v163OperationNav:has(#v163SignBtn[style*="none"]){display:none!important}
+ html.new-ui-v1 body #sagsMobileFormDock :is(.v324FormAction,#v163SignBtn){position:static!important;width:100%!important;min-width:0!important;height:52px!important;min-height:52px!important;max-height:52px!important;margin:0!important;padding:8px 12px!important;box-sizing:border-box!important;border-radius:10px!important;font:700 14px/1.25 Arial,sans-serif!important;white-space:normal!important;text-align:center!important;align-items:center;justify-content:center;box-shadow:none!important}
+ html.new-ui-v1 body #sagsMobileFormDock #v163SignBtn{background:#dcecf5!important;color:#173b4c!important;border:1px solid #a2c1d2!important}
+}
+
+/* Flight dossiers: one responsive card per flight, no extra data downloads. */
+html body .v1199FlightGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:16px;align-items:stretch}
+html body .v1199FlightGrid .v1199Card{margin:0;padding:18px;border-radius:16px;display:flex;flex-direction:column;gap:8px;border:1px solid #c8dce4;box-shadow:0 4px 14px #123b4c0a}
+html body .v1199FlightGrid .v1199Title{font-size:22px;color:#103f54}
+html body .v1199FlightGrid .v1199Tasks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;flex:1}
+html body .v1199FormTile{border:1px solid #cedfe7;background:#eff7fb;border-radius:10px;padding:12px;color:#17465c;display:flex;flex-direction:column;gap:6px;font:14px/1.4 Arial}
+html body .v1199FormTile b{color:#17465c;font-size:13px}html body .v1199FormTile small{color:#586c78}
+html body .v1199FormTile.done{background:#edf8f1;border-color:#badfca}
+html body .v1199FlightGrid .v1199DossierBtn{margin-top:auto;min-height:48px;font-size:14px;background:#0a7184}
+#sagsFlightDossierModal #sagsDossierDocs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+#sagsFlightDossierModal .sagsDossierDoc{display:flex;flex-direction:column;gap:8px;margin-top:0}
+#sagsFlightDossierModal .sagsDossierDoc button{margin-top:auto}
+#sagsFlightDossierModal .sagsDossierPanel{width:min(1000px,100%)}
+#sagsFlightDossierModal h3{color:#17465c;border-bottom:1px solid #cedfe7;padding-bottom:10px;margin-top:24px}
+@media(max-width:600px){#sagsFlightDossierModal #sagsDossierDocs{grid-template-columns:1fr}.v1199FlightGrid{gap:12px}}
+
+#sagsFlightDossierModal .v1199Tasks{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:12px}#sagsFlightDossierModal .v1199DossierTask{display:flex;flex-direction:column;gap:14px;background:white;border:1px solid #c8dce4;border-radius:12px;padding:16px;color:#173b4c}#sagsFlightDossierModal .v1199TaskActions{display:flex;flex-wrap:wrap;gap:8px}
+
+/* ==========================================================================
+   V6.4.72 · QUICK TIME HIGH-CONTRAST SELECTED STATE
+   Fix: the generic focus row used a light background even in dark theme,
+   causing the light operational label to disappear on selection.
+   ========================================================================== */
+html.new-ui-v1 body #quickTimeModal .quickTimeRow:has(.quickTimeInput:focus),
+html.new-ui-v1 body #quickTimeModal .qte551TimeRow:has(.quickTimeInput:focus){
+  background:#eef7fb!important;
+  box-shadow:inset 3px 0 0 #0b7285!important;
+}
+html.new-ui-v1 body #quickTimeModal .quickTimeRow:has(.quickTimeInput:focus) .quickTimeLabel,
+html.new-ui-v1 body #quickTimeModal .qte551TimeRow:has(.quickTimeInput:focus)>span{
+  color:#17212b!important;
+}
+html.new-ui-v1 body #quickTimeModal .quickTimeInput:focus,
+html.new-ui-v1 body #quickTimeModal .quickTimeInput.dirty:focus{
+  background:#ffd166!important;
+  color:#17212b!important;
+  caret-color:#17212b!important;
+  -webkit-text-fill-color:#17212b!important;
+}
+html.new-ui-v1 body #quickTimeModal .quickTimeInput:focus::placeholder{
+  color:#5b4a00!important;
+  opacity:1!important;
+}
+html.new-ui-v1 body #quickTimeModal :is(.quickTimeTimeCell,.quickTimeSingleCell):has(.quickTimeInput:focus){
+  border-color:#d69b00!important;
+  box-shadow:0 0 0 2px rgba(255,209,102,.38)!important;
+}
+html.new-ui-v1 body #quickTimeModal .quickTimeTab.active{
+  background:#0b5b6b!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  border-color:#0b5b6b!important;
+  text-shadow:none!important;
+  font-weight:900!important;
+}
+html.new-ui-v1 body #quickTimeModal .quickTimeTab.active::after{
+  background:#7fe7ff!important;
+}
+html.new-ui-v1[data-ui-theme="dark"] body #quickTimeModal .quickTimeRow:has(.quickTimeInput:focus),
+html.new-ui-v1[data-ui-theme="dark"] body #quickTimeModal .qte551TimeRow:has(.quickTimeInput:focus){
+  background:#243b46!important;
+  box-shadow:inset 3px 0 0 #7fe7ff!important;
+}
+html.new-ui-v1[data-ui-theme="dark"] body #quickTimeModal .quickTimeRow:has(.quickTimeInput:focus) .quickTimeLabel,
+html.new-ui-v1[data-ui-theme="dark"] body #quickTimeModal .qte551TimeRow:has(.quickTimeInput:focus)>span{
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+}
+html.new-ui-v1[data-ui-theme="dark"] body #quickTimeModal .quickTimeInput.dirty{
+  background:#ffd166!important;
+  color:#17212b!important;
+  -webkit-text-fill-color:#17212b!important;
+}
+html.new-ui-v1[data-ui-theme="dark"] body #quickTimeModal .quickTimeInput.dirty::placeholder{
+  color:#5b4a00!important;
+  opacity:1!important;
+}
+

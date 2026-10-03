@@ -1,0 +1,1 @@
+const fs=require('fs'),path=require('path'),cp=require('child_process');for(const f of fs.readdirSync(__dirname).filter(f=>f.endsWith('.test.cjs')).sort()){const result=cp.spawnSync(process.execPath,[path.join(__dirname,f)],{stdio:'inherit'});if(result.status!==0)process.exit(result.status||1)}console.log('All regression checks passed');

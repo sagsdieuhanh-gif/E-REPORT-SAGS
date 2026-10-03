@@ -1,12 +1,12 @@
 {
-  "version": "V2.0.1",
-  "displayVersion": "V2.0.1",
-  "label": "E-REPORT-SAGS V2",
-  "build": "V2.0.1-20261002-ACCOUNT-AUTH-02",
-  "releasedAt": "2026-10-02T06:06:33.109Z",
-  "type": "release",
-  "base": "V1 — bản sửa 24",
+  "version": "V6.4.72",
+  "displayVersion": "V6.4.72",
+  "label": "V6.4.72 - QUICK TIME CONTRAST",
+  "build": "V6.4.72-20261003-QUICKTIME-CONTRAST-01",
+  "releasedAt": "2026-10-03T03:06:00Z",
+  "type": "ui-hotfix",
+  "base": "V6.4.71-20261003-FORM-CONFIG-SAVE-GUIDE-01",
   "updatePolicy": "required",
-  "notes": "V2 kế thừa toàn bộ sửa lỗi vận hành, mobile, quản lý biểu mẫu và tối ưu dữ liệu của bản V1 đã kiểm tra.",
-  "message": "V2.0.1: sửa AD tạo tài khoản Firebase Authentication và hồ sơ users theo UID."
+  "notes": "Sửa tương phản màn hình NHẬP GIỜ NHANH FSAGS 42.1/42.3/55.1: hàng đang chọn trong dark mode không còn trắng làm mất chữ; ô giờ focus/đã thay đổi dùng nền vàng chữ đen; tab đang chọn dùng nền teal đậm chữ trắng.",
+  "message": "V6.4.72: sửa trạng thái chọn để chữ và giờ luôn nhìn rõ ở light/dark theme."
 }

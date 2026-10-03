@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "scripts": {
+    "build:runtime": "node tools/build-runtime.cjs",
+    "test": "node tests/run.cjs"
+  },
+  "devDependencies": {
+    "acorn": "8.18.0",
+    "terser": "5.51.2"
+  }
+}

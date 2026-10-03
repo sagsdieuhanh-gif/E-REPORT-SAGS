@@ -1,8 +1,8 @@
 {
   "schema": 2,
-  "version": "V6.4.3",
-  "build": "V6.4.3-20260928-MYFLIGHT-LEGACY-RESTORE-01",
-  "updatedAt": "2026-09-29T05:43:14.489Z",
+  "version": "V6.4.71",
+  "build": "V6.4.71-20261003-FORM-CONFIG-SAVE-GUIDE-01",
+  "updatedAt": "2026-10-02T05:55:04.276Z",
   "note": "V6.4.19: Form Manager is the single layout source for F/SAGS-CXR/54 and 94. FSAGS94 Checked by name and Checked by Signature are now separate editable fields; PDF/live rendering use the published registry geometry.",
   "forms": [
     {
@@ -230,10 +230,10 @@
           "type": "text",
           "bind": "route3",
           "pageId": "p1",
-          "x": 0.273972602739726,
-          "y": 0.14188034188034188,
-          "w": 0.0547945205479452,
-          "h": 0.013675213675213675,
+          "x": 0.26752618855761484,
+          "y": 0.13903133903133902,
+          "w": 0.0709105560032232,
+          "h": 0.015954415954415952,
           "fontSize": 20,
           "fontWeight": "700",
           "align": "left",
@@ -5798,7 +5798,7 @@
         }
       ],
       "engine": "form-manager-v450",
-      "updatedAtMs": 1790573877801
+      "updatedAtMs": 1790920490845
     },
     {
       "id": "fsags421",
@@ -33001,5 +33001,5 @@
       "updatedAtMs": 1790660584960
     }
   ],
-  "managerVersion": "V6.4.2"
+  "managerVersion": "V6.4.71"
 }

@@ -169,12 +169,13 @@ function install(){
  const old=q('v378ResetRecordsBtn');if(old){old.textContent='⬇️ 1. SAO LƯU TRƯỚC KHI XÓA';old.onclick=beginBackup;}
  const verify=q('v503BackupVerifyFile');if(verify)verify.onchange=verifyFile;
  const execute=q('v503ResetExecuteBtn');if(execute){execute.onclick=reset;execute.disabled=true;}
- try{if(typeof root.sagsV470Ref==='function')root.sagsV470Ref('system/clean_start_v503').on('value',s=>{
+ const auth=root.firebase?.auth?.();if(!auth?.onAuthStateChanged)return;let activeRef=null,callback=null;
+ auth.onAuthStateChanged(user=>{if(activeRef&&callback)activeRef.off('value',callback);activeRef=null;callback=null;if(!user||typeof root.sagsV470Ref!=='function')return;activeRef=root.sagsV470Ref('system/clean_start_v503');callback=s=>{
   const epoch=Number(s.val()?.resetAtMs||0),prior=Number(localStorage.getItem(EPOCH_KEY)||0);
   if(!epoch||epoch<=prior||root.__SAGS_RESET_IN_PROGRESS__)return;
   try{localStorage.setItem(EPOCH_KEY,String(epoch))}catch(_){}
   clearLocal();alert('AD đã khởi tạo dự án mới. Ứng dụng sẽ tải lại; không dùng bản chuyến cũ.');location.reload();
- },e=>console.warn('V503 reset listener unavailable',e));}catch(e){console.warn('V503 reset listener',e)}
+};activeRef.on('value',callback,e=>console.warn('V503 reset listener unavailable',e));});
 }
 root.sagsV503Backup=beginBackup;root.sagsV503Verify=verifyFile;root.sagsV503Reset=reset;
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();

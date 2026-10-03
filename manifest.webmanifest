@@ -1,7 +1,7 @@
 {
-  "name": "E-REPORT-SAGS V2",
-  "short_name": "SAGS V2",
-  "description": "E-REPORT-SAGS V2 — Phiếu điều hành SAGS-CXR",
+  "name": "PĐH SAGS-CXR",
+  "short_name": "PĐH SAGS-CXR",
+  "description": "Ứng dụng Phiếu điều hành SAGS-CXR",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

@@ -1,0 +1,23 @@
+[
+  [
+    "./app/boot/03-legacy.js",
+    "./app/boot/04-sags-v6118-firebase-config.js"
+  ],
+  [
+    "./app/boot/16-v120-build02-fixes.js",
+    "./app/boot/17-v121-closeout-validation.js"
+  ],
+  [
+    "./app/boot/20-v163-ramp-progress-v1.js",
+    "./app/boot/21-v154-rtdb-first-permissions.js"
+  ],
+  [
+    "./app/boot/24-v1151-zoom-entry-direct.js",
+    "./app/boot/25-v1154-update-detector-r2.js"
+  ],
+  [
+    "./app/boot/27-v460RuntimeGuard.js",
+    "./app/boot/28-legacy.js",
+    "./app/boot/29-sags-v6118-carrier-lazy.js"
+  ]
+]
