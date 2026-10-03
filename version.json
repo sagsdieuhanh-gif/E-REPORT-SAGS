@@ -1,12 +1,12 @@
 {
-  "version": "V6.4.72",
-  "displayVersion": "V6.4.72",
-  "label": "V6.4.72 - QUICK TIME CONTRAST",
-  "build": "V6.4.72-20261003-QUICKTIME-CONTRAST-01",
-  "releasedAt": "2026-10-03T03:06:00Z",
-  "type": "ui-hotfix",
-  "base": "V6.4.71-20261003-FORM-CONFIG-SAVE-GUIDE-01",
+  "version": "V6.4.73",
+  "displayVersion": "V6.4.73",
+  "label": "V6.4.73 - CARRIER MANAGER",
+  "build": "V6.4.73-20261003-CARRIER-MANAGER-01",
+  "releasedAt": "2026-10-03T04:08:00Z",
+  "type": "feature",
+  "base": "V6.4.72-20261003-QUICKTIME-CONTRAST-01",
   "updatePolicy": "required",
-  "notes": "Sửa tương phản màn hình NHẬP GIỜ NHANH FSAGS 42.1/42.3/55.1: hàng đang chọn trong dark mode không còn trắng làm mất chữ; ô giờ focus/đã thay đổi dùng nền vàng chữ đen; tab đang chọn dùng nền teal đậm chữ trắng.",
-  "message": "V6.4.72: sửa trạng thái chọn để chữ và giờ luôn nhìn rõ ở light/dark theme."
+  "notes": "Bổ sung hãng EO vào danh mục Form Manager và thêm chức năng + THÊM HÃNG MỚI để Admin tự khai báo mã hãng, tên hiển thị, tiền tố chuyến; hãng mới được lưu trong JSON cấu hình chung. Đồng thời sửa liên kết cập nhật cấu hình sang repo E-REPORT-SAGS và đồng bộ lại build hiển thị.",
+  "message": "V6.4.73: Form Manager cho phép Admin tự thêm hãng mới, không còn phụ thuộc danh mục hãng cố định."
 }
