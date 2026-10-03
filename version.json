@@ -1,12 +1,12 @@
 {
-  "version": "V6.4.78",
-  "displayVersion": "V6.4.78",
-  "label": "V6.4.78 - RUNTIME POLICY + DOSSIER",
-  "build": "V6.4.78-20261003-RUNTIME-POLICY-DOSSIER-01",
-  "releasedAt": "2026-10-03T05:12:00Z",
+  "version": "V6.4.79",
+  "displayVersion": "V6.4.79",
+  "label": "V6.4.79 - UNIFIED UPDATE NOTICE",
+  "build": "V6.4.79-20261003-UNIFIED-UPDATE-NOTICE-01",
+  "releasedAt": "2026-10-03T05:22:00Z",
   "type": "fix",
-  "base": "V6.4.77-20261003-DOSSIER-DOCS-SYNC-01",
+  "base": "V6.4.78-20261003-RUNTIME-POLICY-DOSSIER-01",
   "updatePolicy": "required",
-  "notes": "Sửa end-to-end: FSAGS 208 hoàn tất sẽ gửi thẳng vào hồ sơ chung và tạo document summary; danh sách chuyến hiển thị FSAGS 208 đã có. Hiển thị hiệu lực F-54/F-94 theo hãng ngay ngoài chuyến, đối soát assignment CBTT theo policy khi Admin mở app/danh sách và vô hiệu policy-generated assignment khi cấu hình không còn áp dụng. PWA kiểm tra bản mới khi quay lại tab để giảm tình trạng giữ shell cũ.",
-  "message": "V6.4.78: 208 hiện thật trong hồ sơ; F-54 EO có trạng thái áp dụng/phân công rõ ràng."
+  "notes": "Khôi phục cơ chế cập nhật đã thống nhất: khi version.json và asset-manifest cùng xác nhận một build mới, ứng dụng phải hiện ngay thông báo CÓ BẢN CẬP NHẬT. Service worker chỉ tải/xác minh nền; không còn chờ worker ready mới hiện modal. Chỉ khi người dùng bấm CẬP NHẬT NGAY mới kích hoạt/reload sang bản mới.",
+  "message": "V6.4.79: báo cập nhật ngay khi phát hiện release mới; người dùng quyết định thời điểm cập nhật."
 }
