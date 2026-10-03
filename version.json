@@ -1,12 +1,12 @@
 {
-  "version": "V6.4.73",
-  "displayVersion": "V6.4.73",
-  "label": "V6.4.73 - CARRIER MANAGER",
-  "build": "V6.4.73-20261003-CARRIER-MANAGER-01",
-  "releasedAt": "2026-10-03T04:08:00Z",
+  "version": "V6.4.74",
+  "displayVersion": "V6.4.74",
+  "label": "V6.4.74 - FLIGHT CLOSEOUT",
+  "build": "V6.4.74-20261003-FLIGHT-CLOSEOUT-01",
+  "releasedAt": "2026-10-03T04:18:00Z",
   "type": "feature",
-  "base": "V6.4.72-20261003-QUICKTIME-CONTRAST-01",
+  "base": "V6.4.73-20261003-CARRIER-MANAGER-01",
   "updatePolicy": "required",
-  "notes": "Bổ sung hãng EO vào danh mục Form Manager và thêm chức năng + THÊM HÃNG MỚI để Admin tự khai báo mã hãng, tên hiển thị, tiền tố chuyến; hãng mới được lưu trong JSON cấu hình chung. Đồng thời sửa liên kết cập nhật cấu hình sang repo E-REPORT-SAGS và đồng bộ lại build hiển thị.",
-  "message": "V6.4.73: Form Manager cho phép Admin tự thêm hãng mới, không còn phụ thuộc danh mục hãng cố định."
+  "notes": "Tách Hoàn tất nhập biểu mẫu khỏi Kết thúc chuyến bay. Mỗi người dùng/đơn vị có thể bấm Kết thúc chuyến để chuyển chuyến sang CHUYẾN ĐÃ HOÀN TẤT và ẩn khỏi danh sách ĐANG LÀM; có thể Mở lại chuyến mà không thay đổi dữ liệu biểu mẫu.",
+  "message": "V6.4.74: bổ sung trạng thái Kết thúc chuyến riêng cho My Flight."
 }

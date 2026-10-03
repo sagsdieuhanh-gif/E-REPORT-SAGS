@@ -7,7 +7,7 @@
  */
 (function(root){
 'use strict';
-const BUILD='V1.1.102-OFFICIAL-20260830-DAILY-ROSTER-FINAL-PATCH-GUARD';
+const BUILD='V1.1.103-20261003-FLIGHT-CLOSEOUT';
 const DISPLAY='V1.1.102';
 const MANIFEST='roster_manifests',MAIL='roster_mail',SESSION='roster_sessions',STATUS='roster_flight_status',WORKSPACE='roster_flight_workspaces',FLIGHTS='flight_records';
 const MAP_KEY='sags_roster_workspace_map_v1197';
@@ -230,7 +230,7 @@ install();setTimeout(install,350);setTimeout(install,1100);
 
 /* ---------- V1.1.99 PERSONAL DAILY ROSTER QUEUE ----------
  * Replaces the worker-facing MY FLIGHT list with exactly two buckets:
- * CHƯA HOÀN THÀNH / ĐÃ HOÀN THÀNH.
+ * ĐANG LÀM / CHUYẾN ĐÃ HOÀN TẤT.
  * Only active assignments owned by the signed-in username are rendered.
  * Duplicate roster tickets are collapsed by canonical work-slot before display.
  * AD publishing also marks true duplicate manifest/mailbox assignments inactive.
@@ -277,7 +277,7 @@ async function clearStaleClaimIfNeeded(item){
 }
 function timeScore(x){const raw=S(x?.std||x?.sta),plus=/\+\s*$/.test(raw),s=raw.replace(/\D/g,'');if(s.length<3)return 99999;return (plus?1440:0)+Number(s.slice(0,-2))*60+Number(s.slice(-2))}
 async function readManifest(date){if(role()!=='AD'){if(typeof root.sagsV477ManifestForWorker!=='function')throw new Error('Hộp phân công đang khởi tạo; vui lòng đợi hoặc bấm UPDATE.');return await root.sagsV477ManifestForWorker(date)}return (await db(`roster_manifests/${safe(date)}`).once('value')).val()||{}}
-const QUEUE_STATUS_FIELDS=['claimStatus','workPartStatus','taskStatusV333','taskStatus','ownerUser','claimedBy','claimedAtMs','reassignedAtMs','skippedNoEform','autoSkippedByNextUser','pushbackEditReopened','pushbackEditMode','completedPushback'];
+const QUEUE_STATUS_FIELDS=['claimStatus','workPartStatus','taskStatusV333','taskStatus','ownerUser','claimedBy','claimedAtMs','reassignedAtMs','skippedNoEform','autoSkippedByNextUser','pushbackEditReopened','pushbackEditMode','completedPushback','flightCloseoutV6445','flightCloseoutAtMs','flightCloseoutBy','flightCloseoutDate','flightCloseoutFlightKey','flightCloseoutUnit'];
 const queueStatusCache=new Map();
 root.sagsV477InvalidateQueueStatus=function(){queueStatusCache.clear()};
 async function readState(aid,force=false){
@@ -290,7 +290,36 @@ async function readState(aid,force=false){
   }));return out})();queueStatusCache.set(k,{at:Date.now(),promise});
   try{return await promise}catch(e){queueStatusCache.delete(k);throw e}
 }
-function groupTasks(rows){const map=new Map();for(const r of rows){const k=flightKey(r.item);if(!map.has(k))map.set(k,{key:k,items:[],states:[],sort:timeScore(r.item)});const g=map.get(k);g.items.push(r.item);g.states.push(r.st);g.sort=Math.min(g.sort,timeScore(r.item))}return [...map.values()].map(g=>{g.completed=g.items.every((x,i)=>itemCompleted(x,g.states[i]));g.working=g.items.some((x,i)=>!itemCompleted(x,g.states[i])&&itemWorking(x,g.states[i]));const candidates=g.items.map((x,i)=>({item:x,st:g.states[i],done:itemCompleted(x,g.states[i]),working:itemWorking(x,g.states[i]),ord:Number(x?.workPartOrder||1),leg:U(x?.assignmentLeg)==='ARR'?0:U(x?.assignmentLeg)==='DEP'?2:1,rec:recency(x)})).sort((a,b)=>(a.done?1:0)-(b.done?1:0)||(b.working?1:0)-(a.working?1:0)||a.leg-b.leg||a.ord-b.ord||a.rec-b.rec);let pick=candidates[0];if(g.completed){const pb=candidates.find(c=>isPushbackSource(c.item));if(pb)pick=pb;}g.primary=pick?.item||g.items[0];g.primaryState=pick?.st||g.states[0];g.pushback=g.items.map((x,i)=>isPushbackSource(x)?pbOf(g.states[i]):'').find(Boolean)||'';return g}).sort((a,b)=>a.sort-b.sort||flightLabel(a.primary).localeCompare(flightLabel(b.primary),'vi'))}
+function groupTasks(rows){const map=new Map();for(const r of rows){const k=flightKey(r.item);if(!map.has(k))map.set(k,{key:k,items:[],states:[],sort:timeScore(r.item)});const g=map.get(k);g.items.push(r.item);g.states.push(r.st);g.sort=Math.min(g.sort,timeScore(r.item))}return [...map.values()].map(g=>{g.completed=g.items.every((x,i)=>itemCompleted(x,g.states[i]));g.flightClosed=g.states.length>0&&g.states.every(st=>st?.flightCloseoutV6445===true);g.working=g.items.some((x,i)=>!itemCompleted(x,g.states[i])&&itemWorking(x,g.states[i]));const candidates=g.items.map((x,i)=>({item:x,st:g.states[i],done:itemCompleted(x,g.states[i]),working:itemWorking(x,g.states[i]),ord:Number(x?.workPartOrder||1),leg:U(x?.assignmentLeg)==='ARR'?0:U(x?.assignmentLeg)==='DEP'?2:1,rec:recency(x)})).sort((a,b)=>(a.done?1:0)-(b.done?1:0)||(b.working?1:0)-(a.working?1:0)||a.leg-b.leg||a.ord-b.ord||a.rec-b.rec);let pick=candidates[0];if(g.completed){const pb=candidates.find(c=>isPushbackSource(c.item));if(pb)pick=pb;}g.primary=pick?.item||g.items[0];g.primaryState=pick?.st||g.states[0];g.pushback=g.items.map((x,i)=>isPushbackSource(x)?pbOf(g.states[i]):'').find(Boolean)||'';return g}).sort((a,b)=>a.sort-b.sort||flightLabel(a.primary).localeCompare(flightLabel(b.primary),'vi'))}
+function closeoutTime(g){return Math.max(0,...(g?.states||[]).map(st=>Number(st?.flightCloseoutAtMs||0)||0))}
+function closeoutUnit(){const x=session(),p=x.profile||{};return U(p.systemDepartment||p.departmentCode||p.department||p.groupCode||p.group||role()||'UNIT')}
+async function setFlightCloseout(date,fkey,closed,button=null){
+  date=syncQueueDate(queueDate(date));const owner=me();if(!owner)throw new Error('Cần đăng nhập để kết thúc chuyến.');
+  if(button)button.disabled=true;
+  try{
+    const {groups}=await personalGroups(date),g=groups.find(x=>x.key===S(fkey));if(!g)throw new Error('Chuyến không còn trong danh sách được phân của bạn.');
+    const openCount=g.items.reduce((n,x,i)=>n+(itemCompleted(x,g.states[i])?0:1),0),label=flightLabel(g.primary);
+    if(closed){
+      const warn=openCount?'KẾT THÚC CHUYẾN BAY\n\n'+label+'\n\nCòn '+openCount+' công việc/biểu mẫu chưa ở trạng thái hoàn tất nhập. Kết thúc chuyến chỉ ẩn chuyến khỏi danh sách đang làm, KHÔNG thay đổi dữ liệu biểu mẫu.\n\nBạn vẫn muốn kết thúc chuyến?':'KẾT THÚC CHUYẾN BAY\n\n'+label+'\n\nThao tác này khác với Hoàn tất nhập biểu mẫu. Chuyến sẽ được chuyển sang mục CHUYẾN ĐÃ HOÀN TẤT và ẩn khỏi danh sách ĐANG LÀM.';
+      if(!confirm(warn))return false;
+    }else if(!confirm('MỞ LẠI CHUYẾN BAY\n\n'+label+'\n\nChuyến sẽ quay lại danh sách ĐANG LÀM. Dữ liệu biểu mẫu không bị thay đổi.'))return false;
+    const t=Date.now(),patch={},unit=closeoutUnit(),seen=new Set();
+    for(const item of g.items){const aid=S(item?.assignmentId);if(!aid||seen.has(aid)||!ownedActive(item))continue;seen.add(aid);const base='roster_sessions/'+safe(aid);
+      patch[base+'/flightCloseoutV6445']=closed?true:null;
+      patch[base+'/flightCloseoutAtMs']=closed?t:null;
+      patch[base+'/flightCloseoutBy']=closed?owner:null;
+      patch[base+'/flightCloseoutDate']=closed?date:null;
+      patch[base+'/flightCloseoutFlightKey']=closed?g.key:null;
+      patch[base+'/flightCloseoutUnit']=closed?unit:null;
+      patch[base+'/updatedAtMs']=t;
+    }
+    if(!seen.size)throw new Error('Không tìm thấy assignment hợp lệ để cập nhật.');
+    await db('').update(patch);queueStatusCache.clear();
+    await renderPersonal(date);
+    alert(closed?'✓ '+label+' đã chuyển sang CHUYẾN ĐÃ HOÀN TẤT.':'↻ '+label+' đã quay lại danh sách ĐANG LÀM.');
+    return true;
+  }finally{if(button?.isConnected)button.disabled=false}
+}
 let activeTab='pending',renderToken=0,baseOpen=null,baseRefresh=null,currentQueueDate='';
 function queueDate(preferred=''){
   const d=S(preferred)||S(document.getElementById('fwcDate')?.value)||S(currentQueueDate)||S(sessionStorage.getItem('sagsV36FwcDate'))||opDate();
@@ -316,7 +345,7 @@ function resolveOwnedItem(man,aid,fid,completed=false){
   return rows[0]||null;
 }
 function installStyle(){if(document.getElementById('v1199PersonalQueueStyle'))return;const st=document.createElement('style');st.id='v1199PersonalQueueStyle';st.textContent=`
-#fwcList.v1199Queue{display:block!important}.v1199Tabs{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:8px 0 11px}.v1199Tab{min-height:44px;border:0;border-radius:10px;background:#e9eef3;color:#29445d;font:900 12px Arial}.v1199Tab.active{background:#0b5cab;color:#fff}.v1199Count{display:inline-flex;min-width:23px;height:23px;align-items:center;justify-content:center;margin-left:5px;padding:0 5px;border-radius:99px;background:#fff;color:#0b5cab}.v1199Card{border:1px solid #d4dee8;border-radius:12px;background:#fff;padding:11px;margin:8px 0;box-shadow:0 2px 7px rgba(0,0,0,.04)}.v1199Title{font:900 17px Arial;color:#0b4f91}.v1199Meta{font:12px/1.45 Arial;color:#5d6f80;margin-top:4px}.v1199Tasks{display:flex;gap:5px;flex-wrap:wrap;margin:8px 0}.v1199Task{padding:4px 7px;border-radius:999px;background:#eef4f9;color:#314a61;font:800 10px Arial}.v1199Task.done{background:#e8f6ee;color:#14713d}.v1199TaskBtn{flex:1 1 115px;min-height:44px;border:1px solid #8eb7df;border-radius:9px;background:#e9f3ff;color:#064b85;font:900 12px Arial;cursor:pointer}.v1199TaskBtn.done{background:#e8f6ee;color:#14713d;border-color:#a4d7b8}.v1199TaskBtn:disabled,.v1199Action:disabled{opacity:.55;cursor:wait}.v1199Action{width:100%;min-height:42px;border:0;border-radius:9px;background:#0b67b2;color:#fff;font:900 12px Arial}.v1199Action.reopen{background:#0b5cab}.v1199Empty{padding:22px 12px;border:1px dashed #c7d1db;border-radius:11px;background:#fafcfe;text-align:center;color:#607080;font:800 12px/1.5 Arial}.v1199OwnerNote{font:800 11px Arial;color:#52677b;margin:3px 0 8px}
+#fwcList.v1199Queue{display:block!important}.v1199Tabs{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:8px 0 11px}.v1199Tab{min-height:44px;border:0;border-radius:10px;background:#e9eef3;color:#29445d;font:900 12px Arial}.v1199Tab.active{background:#0b5cab;color:#fff}.v1199Count{display:inline-flex;min-width:23px;height:23px;align-items:center;justify-content:center;margin-left:5px;padding:0 5px;border-radius:99px;background:#fff;color:#0b5cab}.v1199Card{border:1px solid #d4dee8;border-radius:12px;background:#fff;padding:11px;margin:8px 0;box-shadow:0 2px 7px rgba(0,0,0,.04)}.v1199Title{font:900 17px Arial;color:#0b4f91}.v1199Meta{font:12px/1.45 Arial;color:#5d6f80;margin-top:4px}.v1199Tasks{display:flex;gap:5px;flex-wrap:wrap;margin:8px 0}.v1199Task{padding:4px 7px;border-radius:999px;background:#eef4f9;color:#314a61;font:800 10px Arial}.v1199Task.done{background:#e8f6ee;color:#14713d}.v1199TaskBtn{flex:1 1 115px;min-height:44px;border:1px solid #8eb7df;border-radius:9px;background:#e9f3ff;color:#064b85;font:900 12px Arial;cursor:pointer}.v1199TaskBtn.done{background:#e8f6ee;color:#14713d;border-color:#a4d7b8}.v1199TaskBtn:disabled,.v1199Action:disabled{opacity:.55;cursor:wait}.v1199Action{width:100%;min-height:42px;border:0;border-radius:9px;background:#0b67b2;color:#fff;font:900 12px Arial}.v1199Action.reopen{background:#0b5cab}.v1199Empty{padding:22px 12px;border:1px dashed #c7d1db;border-radius:11px;background:#fafcfe;text-align:center;color:#607080;font:800 12px/1.5 Arial}.v1199OwnerNote{font:800 11px Arial;color:#52677b;margin:3px 0 8px}.v1199FlightActions{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:7px;margin-top:8px}.v1199Action.finish{background:#08784f}.v1199Action.reopenFlight{background:#80591b}.v1199FlightState{margin-top:7px;padding:6px 8px;border-radius:8px;background:#e8f6ee;color:#14713d;font:900 11px Arial}.v1199FlightCloseBtn:disabled{opacity:.55;cursor:wait}
 `;document.head.appendChild(st)}
 function setHeader(date){const h=document.querySelector('#fwcModal .fwcHead h3');if(h)h.textContent='✈ MY FLIGHT · HỒ SƠ CỦA TÔI';const sub=document.querySelector('#fwcModal .fwcHead .fwcSub');if(sub)sub.textContent=`Chỉ hiển thị công việc DAILY ROSTER được phân cho ${me()||'tài khoản hiện tại'} · ${date}`;const b=document.getElementById('roleBtnRosterFlights');if(b&&role()!=='AD')b.textContent='✓ CÔNG VIỆC HÔM NAY'}
 // One physical form per flight and signed-in user: several roster entries may
@@ -355,8 +384,10 @@ function taskPills(g,date){return visibleFormTasks(g).map(({item:x,st,done})=>{
 function departmentLabel(item){const code=String(item.formGroup||'').toLowerCase();if(/loading208/.test(code))return '📦 Kho hàng';if(/ramp|423|42[._]/.test(code))return '✈ CO · Điều hành';if(/54|94|final|load|balance/.test(code))return '⚖ Cân bằng trọng tải';if(/passenger|pax|customer/.test(code))return '👥 Phục vụ khách';return '📄 '+formLabel(item);}
 function cardHtml(g,date){
  const x=g.primary,route=S(x?.route),ac=S(x?.acReg)||'—',sta=S(x?.sta)||'—',std=S(x?.std)||'—';
- const forms=visibleFormTasks(g).map(({item,st,done})=>'<div class="v1199FormTile '+(done?'done':'')+'"><b>'+esc(departmentLabel(item))+'</b><span>FSAGS '+esc(formLabel(item))+'</span><small>'+(done?'Đã hoàn thành':itemWorking(item,st)?'Đang làm':'Chờ nhận')+'</small></div>').join('');
- return '<article class="v1199Card" data-fkey="'+esc(g.key)+'"><div class="v1199Title">'+esc(flightLabel(x))+'</div><div class="v1199Meta">'+esc(route)+(route?' · ':'')+'A/C '+esc(ac)+' · STA '+esc(sta)+' · STD '+esc(std)+'</div><div class="v1199Tasks">'+forms+'</div><div class="v1199OwnerNote">Nhận công việc và xem tài liệu các đơn vị trong cùng hồ sơ chuyến.</div><button type="button" class="v1199Action v1199DossierBtn" data-dossier-fid="'+esc(x.flightId)+'" data-dossier-date="'+esc(date)+'">📁 MỞ HỒ SƠ CHUYẾN</button></article>';
+ const forms=visibleFormTasks(g).map(({item,st,done})=>'<div class="v1199FormTile '+(done?'done':'')+'"><b>'+esc(departmentLabel(item))+'</b><span>FSAGS '+esc(formLabel(item))+'</span><small>'+(done?'Đã hoàn thành nhập':itemWorking(item,st)?'Đang nhập':'Chờ nhận')+'</small></div>').join('');
+ const t=closeoutTime(g),closedNote=g.flightClosed?'<div class="v1199FlightState">✓ CHUYẾN ĐÃ HOÀN TẤT'+(t?' · '+new Date(t).toLocaleString('vi-VN',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}):'')+'</div>':'';
+ const closeBtn=g.flightClosed?'<button type="button" class="v1199Action reopenFlight v1199FlightCloseBtn" data-flight-fkey="'+esc(g.key)+'" data-flight-date="'+esc(date)+'" data-flight-close="0">↻ MỞ LẠI CHUYẾN</button>':'<button type="button" class="v1199Action finish v1199FlightCloseBtn" data-flight-fkey="'+esc(g.key)+'" data-flight-date="'+esc(date)+'" data-flight-close="1">✓ KẾT THÚC CHUYẾN</button>';
+ return '<article class="v1199Card" data-fkey="'+esc(g.key)+'"><div class="v1199Title">'+esc(flightLabel(x))+'</div><div class="v1199Meta">'+esc(route)+(route?' · ':'')+'A/C '+esc(ac)+' · STA '+esc(sta)+' · STD '+esc(std)+'</div>'+closedNote+'<div class="v1199Tasks">'+forms+'</div><div class="v1199OwnerNote">Hoàn tất nhập biểu mẫu và Kết thúc chuyến là hai trạng thái riêng biệt.</div><div class="v1199FlightActions"><button type="button" class="v1199Action v1199DossierBtn" data-dossier-fid="'+esc(x.flightId)+'" data-dossier-date="'+esc(date)+'">📁 HỒ SƠ CHUYẾN</button>'+closeBtn+'</div></article>';
 }
 async function personalGroups(date,fid=''){
  await root.sagsAirlineFormPolicy?.ready();const owner=me(),man=await readManifest(date),all=Object.values(man?.items||{}).filter(x=>x&&x.active!==false&&norm(x.user||x.targetUser)===owner&&(!fid||S(x.flightId)===S(fid))),dd=dedupeItems(date,all),states=await Promise.all(dd.items.map(x=>readState(x.assignmentId)));
@@ -374,10 +405,20 @@ root.sagsPersonalFlightTasks={async renderInto(host,date,fid){
 }};
 async function renderPersonal(date=opDate()){
   if(role()==='AD'||!me())return;date=syncQueueDate(queueDate(date));const token=++renderToken;installStyle();setHeader(date);const host=document.getElementById('fwcList');if(!host)return;const hadQueue=host.classList.contains('v1199Queue');host.classList.add('v1199Queue');if(!hadQueue&&!host.children.length)host.innerHTML='<div class="v1199Empty">Đang tải công việc được phân…</div>';
-  try{const {dd,groups}=await personalGroups(date);if(token!==renderToken)return;const pending=groups.filter(x=>!x.completed),done=groups.filter(x=>x.completed),show=activeTab==='completed'?done:pending,next=`<div class="v1199Tabs"><button class="v1199Tab ${activeTab==='pending'?'active':''}" onclick="v1199QueueTab('pending')">CHƯA HOÀN THÀNH <span class="v1199Count">${pending.length}</span></button><button class="v1199Tab ${activeTab==='completed'?'active':''}" onclick="v1199QueueTab('completed')">ĐÃ HOÀN THÀNH <span class="v1199Count">${done.length}</span></button></div><div class="v1199OwnerNote">${esc(me())} · ${esc(date)} · ${groups.length} chuyến được phân · đã loại ${dd.dupes.length} vé/bản ghi trùng khỏi màn hình</div>${show.length?'<div class="v1199FlightGrid">'+show.map(g=>cardHtml(g,date)).join('')+'</div>':`<div class="v1199Empty">${activeTab==='completed'?'Chưa có chuyến được phân cho tài khoản này đã hoàn thành.':'Không còn chuyến được phân cho tài khoản này cần làm.'}</div>`}`;if(host.innerHTML!==next){host.innerHTML=next;host.querySelectorAll('.v1199DossierBtn').forEach(btn=>btn.onclick=()=>root.sagsV338OpenDossier?.(btn.dataset.dossierDate,btn.dataset.dossierFid));
-    host.querySelectorAll('.v1199TaskBtn').forEach(btn=>btn.onclick=()=>openTask(btn.dataset.taskAid,btn.dataset.taskFid,btn.dataset.taskCompleted==='1',btn.dataset.taskDate,true,btn));
-    host.querySelectorAll('.v1199PdfBtn').forEach(btn=>btn.onclick=async()=>{btn.disabled=true;try{if(typeof root.v310ExportAssignment!=='function')throw new Error('Chức năng XUẤT PDF chưa sẵn sàng.');await root.v310ExportAssignment(btn.dataset.pdfAid)}catch(e){alert('Không mở được XUẤT PDF: '+S(e?.message||e))}finally{if(btn.isConnected)btn.disabled=false}});
-    }setHeader(date)}catch(e){if(token===renderToken){const next=`<div class="v1199Empty">Không tải được công việc DAILY ROSTER: ${esc(e?.message||e)}</div>`;if(host.innerHTML!==next)host.innerHTML=next}}}
+  try{
+    const {dd,groups}=await personalGroups(date);if(token!==renderToken)return;
+    const pending=groups.filter(x=>!x.flightClosed),done=groups.filter(x=>x.flightClosed),show=activeTab==='completed'?done:pending;
+    const next='<div class="v1199Tabs"><button class="v1199Tab '+(activeTab==='pending'?'active':'')+'" onclick="v1199QueueTab(\'pending\')">ĐANG LÀM <span class="v1199Count">'+pending.length+'</span></button><button class="v1199Tab '+(activeTab==='completed'?'active':'')+'" onclick="v1199QueueTab(\'completed\')">CHUYẾN ĐÃ HOÀN TẤT <span class="v1199Count">'+done.length+'</span></button></div><div class="v1199OwnerNote">'+esc(me())+' · '+esc(date)+' · '+groups.length+' chuyến được phân · đã loại '+dd.dupes.length+' vé/bản ghi trùng khỏi màn hình</div>'+(show.length?'<div class="v1199FlightGrid">'+show.map(g=>cardHtml(g,date)).join('')+'</div>':'<div class="v1199Empty">'+(activeTab==='completed'?'Chưa có chuyến nào bạn đã bấm Kết thúc chuyến.':'Không còn chuyến đang làm.')+'</div>');
+    if(host.innerHTML!==next){
+      host.innerHTML=next;
+      host.querySelectorAll('.v1199DossierBtn').forEach(btn=>btn.onclick=()=>root.sagsV338OpenDossier?.(btn.dataset.dossierDate,btn.dataset.dossierFid));
+      host.querySelectorAll('.v1199FlightCloseBtn').forEach(btn=>btn.onclick=()=>setFlightCloseout(btn.dataset.flightDate,btn.dataset.flightFkey,btn.dataset.flightClose==='1',btn));
+      host.querySelectorAll('.v1199TaskBtn').forEach(btn=>btn.onclick=()=>openTask(btn.dataset.taskAid,btn.dataset.taskFid,btn.dataset.taskCompleted==='1',btn.dataset.taskDate,true,btn));
+      host.querySelectorAll('.v1199PdfBtn').forEach(btn=>btn.onclick=async()=>{btn.disabled=true;try{if(typeof root.v310ExportAssignment!=='function')throw new Error('Chức năng XUẤT PDF chưa sẵn sàng.');await root.v310ExportAssignment(btn.dataset.pdfAid)}catch(e){alert('Không mở được XUẤT PDF: '+S(e?.message||e))}finally{if(btn.isConnected)btn.disabled=false}});
+    }
+    setHeader(date);
+  }catch(e){if(token===renderToken){const next='<div class="v1199Empty">Không tải được công việc DAILY ROSTER: '+esc(e?.message||e)+'</div>';if(host.innerHTML!==next)host.innerHTML=next}}
+}
 async function reopenPushback(item,date){const aid=S(item?.assignmentId),fid=S(item?.flightId);if(!aid)throw new Error('Thiếu assignmentId.');if(!confirm(`MỞ LẠI CHỈNH SỬA PUSHBACK\n\n${flightLabel(item)} · ${formLabel(item)}\n\nChuyến sẽ chuyển ngay về CHƯA HOÀN THÀNH trong lúc chỉnh sửa. Giờ PUSHBACK cũ vẫn được giữ trong biểu mẫu để sửa.`))return false;const t=Date.now(),u=me(),patch={};patch[`roster_sessions/${safe(aid)}/pushbackEditReopened`]=true;patch[`roster_sessions/${safe(aid)}/pushbackEditReopenedAtMs`]=t;patch[`roster_sessions/${safe(aid)}/completedPushback`]=null;patch[`roster_sessions/${safe(aid)}/claimStatus`]='CLAIMED';patch[`roster_sessions/${safe(aid)}/workPartStatus`]='IN_PROGRESS';patch[`roster_sessions/${safe(aid)}/taskStatusV333`]='IN_PROGRESS';patch[`roster_sessions/${safe(aid)}/completedAtMs`]=null;patch[`roster_sessions/${safe(aid)}/completedBy`]=null;patch[`roster_sessions/${safe(aid)}/updatedAtMs`]=t;if(fid){patch[`flight_records/${safe(date)}/${safe(fid)}/taskClaims/${safe(u)}/${safe(aid)}/status`]='CLAIMED';patch[`flight_records/${safe(date)}/${safe(fid)}/taskClaims/${safe(u)}/${safe(aid)}/taskStatus`]='IN_PROGRESS';patch[`flight_records/${safe(date)}/${safe(fid)}/taskClaims/${safe(u)}/${safe(aid)}/reopenedAtMs`]=t}await db('').update(patch);setTimeout(()=>renderPersonal(date),60);await root.v324ReceiveOrOpen?.(fid,aid,date);return true}
 const openingTasks=new Set();
 async function openTask(aid,fid,completed,cardDate='',exact=false,button=null){
@@ -416,7 +457,7 @@ function wrapWorkspace(){if(!baseOpen&&typeof root.flightWorkspaceOpenList==='fu
 function install(){wrapPublish();wrapWorkspace();installStyle();if(role()==='AD')setTimeout(()=>cleanupDuplicates(opDate()).catch(()=>{}),800);const b=document.getElementById('roleBtnRosterFlights');if(b&&role()!=='AD')b.textContent='✓ CÔNG VIỆC HÔM NAY'}
 install();setTimeout(install,350);setTimeout(install,1100);window.addEventListener('pageshow',()=>setTimeout(install,100),{passive:true});document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(install,100)},{passive:true});
 root.sagsV478OpenExactAssignment=(aid,fid,date)=>openTask(aid,fid,false,date,true);
-root.__SAGS_DAILY_ROSTER_FINAL_V1199={build:BUILD,dedupeItems,slotKey,flightKey,itemCompleted,itemWorking,visibleFormTasks,clearStaleClaimIfNeeded,groupTasks,cleanupDuplicates,renderPersonal,personalGroups,cardHtml,taskPills,queueDate,syncQueueDate,resolveOwnedItem};
+root.__SAGS_DAILY_ROSTER_FINAL_V1199={build:BUILD,dedupeItems,slotKey,flightKey,itemCompleted,itemWorking,visibleFormTasks,clearStaleClaimIfNeeded,groupTasks,setFlightCloseout,cleanupDuplicates,renderPersonal,personalGroups,cardHtml,taskPills,queueDate,syncQueueDate,resolveOwnedItem};
 })(typeof window!=='undefined'?window:globalThis);
 /* === IT PUBLIC 6-TIME SYNC · FREE RTDB REST · IT GET 120s === */
 (function(root){
