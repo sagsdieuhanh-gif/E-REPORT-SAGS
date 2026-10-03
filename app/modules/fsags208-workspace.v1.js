@@ -1,4 +1,4 @@
-/* E-REPORT SAGS V6.4.76 · FSAGS 208 WORKSPACE
+/* E-REPORT SAGS V6.4.78 · FSAGS 208 WORKSPACE
  * Airline policy decides whether the flight needs FSAGS 208.
  * No Cargo column is required in Daily Roster.
  * Cargo handling is sequential: last receiver owns editing, immutable receive/send history is retained.
@@ -6,7 +6,7 @@
  */
 (function(root){
 'use strict';
-const BUILD='V6.4.76-20261003-DOSSIER-DOCS-01';
+const BUILD='V6.4.78-20261003-RUNTIME-POLICY-DOSSIER-01';
 const FLIGHTS='flight_records';
 const MODULE='FSAGS208';
 const FORM='loading208';
@@ -32,6 +32,8 @@ function flightNo(rec){return S(rec?.depFlight||rec?.arrFlight||rec?.flightRaw||
 function isHandlerRole(){return role()==='AD'||['KH','CARGO'].includes(role())||root.__SAGS_CARGO_ALL_FLIGHTS?.isCargo?.()===true}
 function canReadFlight(){const p=profile();return !!me()&&!!role()&&!['GUEST','ANONYMOUS'].includes(role())&&p.active!==false;}
 function published208(mod){if(mod?.published?.state&&Number(mod.published.revisionNo)>0)return clone(mod.published);if(mod?.status==='SENT'&&Number(mod.revisionNo)>0&&mod.state)return{state:clone(mod.state),revisionNo:Number(mod.revisionNo),sentAtMs:Number(mod.lastSentAtMs||0),sentBy:clone(mod.lastSentBy||{})};return null;}
+function publishedSummary(date,fid,rec,mod,pub=published208(mod)){if(!pub)return null;const revisionNo=Number(pub.revisionNo||mod?.revisionNo||0);if(!revisionNo)return null;return {code:'FSAGS208',label:'FSAGS 208',status:'AVAILABLE',revisionNo,sentAtMs:Number(pub.sentAtMs||mod?.lastSentAtMs||0),sentBy:clone(pub.sentBy||mod?.lastSentBy||{}),opDate:S(date),flightId:S(fid),flightName:flightName(rec),updatedAtMs:Date.now()}}
+async function syncPublishedSummary(date,fid,rec,mod,pub=published208(mod)){const summary=publishedSummary(date,fid,rec,mod,pub);if(!summary)return false;await db(FLIGHTS+'/'+safe(date)+'/'+safe(fid)+'/documents/FSAGS208').set(summary);try{const patch={};for(const [aid0,a0]of Object.entries(rec?.assignments||{})){const a=a0||{},aid=S(a.assignmentId||aid0),user=norm(a.user||a.targetUser||a.ownerUser);if(!aid||a.active===false)continue;patch['roster_manifests/'+safe(date)+'/items/'+safe(aid)+'/flightDocuments/FSAGS208']=summary;if(user)patch['roster_mail/'+safe(user)+'/items/'+safe(aid)+'/flightDocuments/FSAGS208']=summary}if(Object.keys(patch).length)await db('').update(patch)}catch(e){console.info('FSAGS208 mailbox document summary',e?.message||e)}return true}
 function preservePublished(mod){if(!mod.published){const pub=published208(mod);if(pub)mod.published=pub;}return mod;}
 root.sags208CanViewPayload=p=>canReadFlight()&&p?.workspaceReadOnly===true&&!!p.workspaceBinding?.opDate&&!!p.workspaceBinding?.flightId&&Number(p.revisionNo)>0;
 function participants(rec){const set=new Set();const add=v=>{v=norm(v);if(v)set.add(v)};Object.values(rec?.unitAssignments||{}).forEach(a=>add(a?.username||a?.user));Object.values(rec?.assignments||{}).forEach(a=>{if(a?.active!==false)add(a?.user||a?.targetUser||a?.ownerUser)});return[...set]}
@@ -60,7 +62,7 @@ function reconcileDate(date=currentDate(),force=false){
  if(reconcileBusy.has(date))return reconcileBusy.get(date);
  if(!force&&Date.now()-(reconcileCompleted.get(date)||0)<15000)return Promise.resolve(true);
  const job=(async()=>{const p=await policy(force),snap=await db(FLIGHTS+'/'+safe(date)).once('value'),flights=snap.val()||{},patch={},now=Date.now();
- for(const [key,r0] of Object.entries(flights)){const rec=r0||{},fid=S(rec.flightId||key);if(!fid||rec.rosterActive===false||U(rec.rosterStatus)==='ROSTER_REMOVED')continue;const ok=eligible(rec,p),mod=rec.modules?.[MODULE],base=FLIGHTS+'/'+safe(date)+'/'+safe(fid)+'/modules/'+MODULE;let changed=false;
+ for(const [key,r0] of Object.entries(flights)){const rec=r0||{},fid=S(rec.flightId||key);if(!fid||rec.rosterActive===false||U(rec.rosterStatus)==='ROSTER_REMOVED')continue;const ok=eligible(rec,p),mod=rec.modules?.[MODULE],base=FLIGHTS+'/'+safe(date)+'/'+safe(fid)+'/modules/'+MODULE;let changed=false;const existingPub=published208(mod),existingSummary=publishedSummary(date,fid,rec,mod,existingPub);if(existingSummary)patch[FLIGHTS+'/'+safe(date)+'/'+safe(fid)+'/documents/FSAGS208']=existingSummary;
  const put=(key,value)=>{if(mod?.[key]!==value){patch[base+'/'+key]=value;changed=true}};
  if(ok){const desired={schema:1,formGroup:FORM,formCode:'FSAGS208',policyEnabled:true,dispatchMode:'DEPARTMENT_QUEUE',opDate:date,flightId:fid,flightName:flightName(rec),carrier:S(root.sagsAirlineFormPolicy?.carrier?.(rec)),policyRevision:Number(p?.revision||0)};for(const [k,v]of Object.entries(desired))put(k,v);if(!mod){put('status','WAITING_RECEIVER');put('createdAtMs',now);put('receiveCount',0);put('revisionNo',0)}}
  else if(mod){put('policyEnabled',false);put('policyRevision',Number(p?.revision||0));if(mod.policyEnabled!==false)put('policyDisabledAtMs',now)}
@@ -177,29 +179,17 @@ root.sags208OpenView=openView;
 let syncTimer=0,draftBusy=false;const draftSignatures=new Map();
 async function syncActiveDraft(force=false){const b=bindingFor();if(!b||readOnlyFlag()||draftBusy)return false;const date=S(b.opDate),fid=S(b.flightId);if(!date||!fid)return false;const st={},src=activeState();for(const[k,v]of Object.entries(src||{}))if(k.startsWith('f208_'))st[k]=clone(v);const signature=JSON.stringify(st),key=date+'|'+fid;if(!force&&draftSignatures.get(key)===signature)return true;draftBusy=true;try{const ref=db(FLIGHTS+'/'+safe(date)+'/'+safe(fid)+'/modules/'+MODULE),who=actor();const tx=await ref.transaction(mod=>{if(!mod||norm(mod.currentHandler?.username)!==who.username)return;if(JSON.stringify(mod.state||{})===signature)return;return{...preservePublished(mod),state:st,lastEditedAtMs:Date.now(),lastEditedBy:who,updatedAtMs:Date.now(),status:mod.status==='SENT'?'IN_PROGRESS':(mod.status||'IN_PROGRESS')}});if(tx?.committed!==false)draftSignatures.set(key,signature);return tx?.committed!==false}finally{draftBusy=false}}
 function scheduleSync(){clearTimeout(syncTimer);syncTimer=setTimeout(()=>syncActiveDraft().catch(e=>console.info('FSAGS208 workspace draft',e?.message||e)),650)}
-async function completeDraft(){
- if(!bindingFor()||!isHandlerRole()||readOnlyFlag())return false;
- try{
-  document.activeElement?.blur?.();
-  if(root.saveKH208Local?.()===false)throw new Error('Chưa lưu được thông tin trên máy.');
-  const deadline=Date.now()+5000;
-  while(draftBusy&&Date.now()<deadline)await new Promise(resolve=>setTimeout(resolve,50));
-  if(draftBusy)throw new Error('Nháp đang đồng bộ. Thông tin đã lưu trên máy; thử lại sau ít giây.');
-  const synced=await syncActiveDraft(true);
-  if(!synced){const b=bindingFor(),mod=(await db(FLIGHTS+'/'+safe(b.opDate)+'/'+safe(b.flightId)+'/modules/'+MODULE).once('value')).val();const st={};for(const[k,v]of Object.entries(activeState()||{}))if(k.startsWith('f208_'))st[k]=clone(v);if(!mod||norm(mod.currentHandler?.username)!==actor().username||JSON.stringify(mod.state||{})!==JSON.stringify(st))throw new Error('Chưa xác minh được dữ liệu nháp hoặc quyền xử lý đã thay đổi.');}
-  alert('✓ Đã lưu thông tin FSAGS 208.\nChưa gửi lên hồ sơ chuyến và không chuyển sang mục Đã hoàn thành.\nBấm GỬI LÊN HỒ SƠ CHUYẾN khi muốn gửi bản chính thức.');return true;
- }catch(e){alert('Chưa xác nhận đồng bộ nháp: '+S(e?.message||e)+'\nNháp đã lưu trên máy không bị xóa.');return false}
-}
+async function completeDraft(){return await sendWorkspace();}
 root.sags208CompleteDraft=completeDraft;
 root.sags208SyncFormActions=function(row){
  const send=document.getElementById('kh208SendBtn'),sign=document.getElementById('v163SignBtn');
  let group='';try{group=typeof activeFormGroup!=='undefined'?activeFormGroup:root.activeFormGroup||''}catch(_){}
  if(group!==FORM){if(send)send.style.display='none';if(sign&&sign.__sags208PreviousDisplay!==undefined){if(sign.style.display==='none')sign.style.display=sign.__sags208PreviousDisplay;delete sign.__sags208PreviousDisplay;}return false;}
  const editable=isHandlerRole()&&!readOnlyFlag()&&!!bindingFor(),done=document.getElementById('v324HandoverBtn');
- if(send){if(send.parentElement!==row)row.appendChild(send);send.classList.add('v324FormAction');send.textContent='GỬI LÊN HỒ SƠ CHUYẾN';send.title='Gửi bản FSAGS 208 vào đúng hồ sơ chuyến đang mở';send.onclick=sendWorkspace;send.style.display=editable?'inline-flex':'none';}
+ if(send){if(send.parentElement!==row)row.appendChild(send);send.classList.add('v324FormAction');send.style.display='none';send.onclick=sendWorkspace;}
  if(sign){if(readOnlyFlag()){if(sign.__sags208PreviousDisplay===undefined)sign.__sags208PreviousDisplay=sign.style.display||'';sign.style.display='none';}else if(sign.__sags208PreviousDisplay!==undefined){if(sign.style.display==='none')sign.style.display=sign.__sags208PreviousDisplay;delete sign.__sags208PreviousDisplay;}}
- if(done){done.style.display=editable?'inline-flex':'none';done.textContent='💾 LƯU BIỂU MẪU';done.title='Chỉ lưu thông tin, không chuyển sang Đã hoàn thành';done.onclick=completeDraft;}
- row.classList.remove('show','one','two','three');row.classList.add('show',editable?'three':'one');return true;
+ if(done){done.style.display=editable?'inline-flex':'none';done.textContent='✓ HOÀN TẤT & GỬI HỒ SƠ';done.title='Hoàn tất FSAGS 208 và đưa ngay bản chính thức vào HỒ SƠ CHUYẾN';done.onclick=sendWorkspace;}
+ row.classList.remove('show','one','two','three');row.classList.add('show',editable?'two':'one');return true;
 };
 const legacySave=root.saveKH208Local||(typeof saveKH208Local==='function'?saveKH208Local:null);
 if(typeof legacySave==='function'){const patched=function(){const ok=legacySave.apply(this,arguments);if(ok)scheduleSync();return ok};root.saveKH208Local=patched;try{saveKH208Local=patched}catch(_){}}
@@ -214,9 +204,10 @@ async function sendWorkspace(){
    clearTimeout(syncTimer);const tx=await ref.transaction(cur=>{cur=cur||clone(mod);if(norm(cur.currentHandler?.username)!==who.username)return;revision=Number(cur.revisionNo||0)+1;const key='S'+String(revision).padStart(4,'0')+'_'+now;cur.revisionNo=revision;cur.state=st;cur.published={state:clone(st),revisionNo:revision,sentAtMs:now,sentBy:clone(who)};cur.status='SENT';cur.lastSentAtMs=now;cur.lastSentBy=who;cur.lastRecipientSnapshot=targets;cur.sendHistory=cur.sendHistory||{};cur.sendHistory[key]={revisionNo:revision,seq:revision,username:who.username,name:who.name,role:who.role,atMs:now,recipientSnapshot:targets,action:'SEND_TO_WORKSPACE'};cur.updatedAtMs=now;return cur});
    if(tx?.committed===false||!revision)throw new Error('Quyền xử lý đã thay đổi trước khi gửi.');
    clearTimeout(syncTimer);draftSignatures.set(date+'|'+fid,JSON.stringify(st));const list=readList(),row=list.find(x=>x.id===activeId());if(row){row.sentAtMs=now;row.revisionNo=revision;row.updatedAt=now;writeList(list)}
-   try{root.writeUserActivity?.('ĐÃ GỬI FSAGS 208',flightName(rec)+' · '+date+' · R'+revision)}catch(_){}
+   const pub={state:clone(st),revisionNo:revision,sentAtMs:now,sentBy:clone(who)};await syncPublishedSummary(date,fid,rec,{...mod,state:st,status:'SENT',revisionNo:revision,lastSentAtMs:now,lastSentBy:who,published:pub},pub);
+   try{root.writeUserActivity?.('ĐÃ HOÀN TẤT FSAGS 208',flightName(rec)+' · '+date+' · R'+revision)}catch(_){}
    try{root.dispatchEvent(new CustomEvent('sags:flight-document-published',{detail:{opDate:date,flightId:fid,code:'FSAGS208',revisionNo:revision}}))}catch(_){}
-   alert('✓ Đã gửi FSAGS 208 R'+revision+' vào Flight Workspace.\n\nKhông dò lại Flight/Date/REGN. Dữ liệu nằm trực tiếp trong hồ sơ chung của chuyến.');setTimeout(()=>injectWorkspace(date,fid),80);return true;
+   alert('✓ FSAGS 208 đã HOÀN TẤT và được đưa vào HỒ SƠ CHUYẾN · R'+revision+'.');setTimeout(()=>injectWorkspace(date,fid),80);return true;
  }catch(e){alert('Không gửi được FSAGS 208: '+S(e?.message||e));return false}
 }
 root.sendKH208Sheet=sendWorkspace;try{sendKH208Sheet=sendWorkspace}catch(_){}
@@ -260,5 +251,5 @@ root.sagsV338OpenDossier=openDossier;
 root.sagsV338OpenCurrentDossier=function(){const b=bindingFor();if(b)return openDossier(b.opDate,b.flightId);const m=root.currentFlightSessionMeta?.()||{},active=root.__sags208ActiveWorkspace;const fid=S(m.rosterFlightId||m.flightId),date=S(m.opDate||m.rosterDate||m.date||currentDate());if(fid)return openDossier(date,fid);if(active?.flightId)return openDossier(active.opDate,active.flightId);return root.flightWorkspaceOpenList?.(currentDate());};
 function install(){wrapRosterPublish();wrapWorkspaceOpen();wrapWorkspaceVisibility();ensureWorkspaceStyle();ensureManagerDate()}
 install();setTimeout(install,450);setTimeout(install,1400);setTimeout(install,3200);window.addEventListener('pageshow',()=>setTimeout(install,100),{passive:true});window.addEventListener('sags:airline-forms-changed',()=>{reconcileCompleted.clear();const active=root.__sags208ActiveWorkspace;const manager=document.getElementById('kh208ManagerModal');if(active&&document.querySelector('#fwcBody .fwcWorkspaceHead')){injectWorkspace(active.opDate,active.flightId).catch(e=>console.info('FSAGS208 policy refresh',e?.message||e));}else if(manager&&getComputedStyle(manager).display!=='none'){renderManager();}});
-root.__SAGS_FSAGS208_WORKSPACE={build:BUILD,reconcileDate,takeoverOpen,openView,syncActiveDraft,published208,canReadFlight};
+root.__SAGS_FSAGS208_WORKSPACE={build:BUILD,reconcileDate,takeoverOpen,openView,syncActiveDraft,published208,syncPublishedSummary,canReadFlight};
 })(window);
