@@ -1,8 +1,8 @@
 {
   "schema": 2,
-  "version": "V6.4.84",
-  "build": "V6.4.84-20261003-REQUIRED-AUTO-UPDATE-01",
-  "strategy": "atomic release + release-contract consistency + required idle auto-update + stale-shell auto-repair + persistent quick-entry preferences",
+  "version": "V6.4.85",
+  "build": "V6.4.85-20261003-REPAIR-UNREGISTER-FIRST-01",
+  "strategy": "atomic release + unregister-first repair + release-contract consistency + required idle auto-update + persistent quick-entry preferences",
   "mutableMetadata": [
     "./forms/forms.registry.json",
     "./data/form-configuration.json"
@@ -226,8 +226,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "c98dc4689def5f0416b0896bab1bd8f5f84f15dfcca884af485cb13ed5902cca",
-      "bytes": 81108
+      "sha256": "4c2c855843b9c2f9ae8732c5836f500b5822ed8b1b75c1e8dec77a28b2754fe8",
+      "bytes": 81393
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -274,16 +274,16 @@
       "bytes": 465580
     },
     "./repair.html": {
-      "sha256": "174e7898b6a4e8414e8a8abc2007df0d4d671c18e406ce58ccea6e2914b2c962",
-      "bytes": 4925
+      "sha256": "93765c504c36074fa05c53e614a564c16af070da7e8e9ee797f0354752d09617",
+      "bytes": 4794
     },
     "./service-worker.js": {
-      "sha256": "b158cd5101487c22ce94a8b78679d206702b6750107403f1a1dc6fc38c14f2d4",
-      "bytes": 21738
+      "sha256": "a78bf472077b0b139da7e12b0dc8393aafe1bc2ddaf583629482a0d78afb4673",
+      "bytes": 21747
     },
     "./version.json": {
-      "sha256": "3c33ad75fd16638ed0e0e5295e961c1091c78ad9b42c2154165ecaab4207416e",
-      "bytes": 1223
+      "sha256": "2898eea0b039c5e4714c58c724f003e94a6e77c5fcd8086161291f821bf3747c",
+      "bytes": 1012
     },
     "./app/modules/form-registry-runtime.v647.js": {
       "sha256": "38273ccd7794e4790c37b5a8594edeaefd412917af2c928245bf8a89b0a8a5f2",
