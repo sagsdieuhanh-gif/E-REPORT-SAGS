@@ -1,12 +1,12 @@
 {
-  "version": "V6.4.86",
-  "displayVersion": "V6.4.86",
-  "label": "V6.4.86 - SINGLE TOGGLE + ROSTER FORM SWITCH",
-  "build": "V6.4.86-20261003-SINGLE-TOGGLE-ROSTER-SWITCH-01",
-  "releasedAt": "2026-10-03T12:17:00Z",
+  "version": "V6.4.87",
+  "displayVersion": "V6.4.87",
+  "label": "V6.4.87 - STALE WORKER DETACH",
+  "build": "V6.4.87-20261003-STALE-WORKER-DETACH-01",
+  "releasedAt": "2026-10-03T13:22:00Z",
   "type": "fix",
-  "base": "V6.4.85-20261003-REPAIR-UNREGISTER-FIRST-01",
+  "base": "V6.4.86-20261003-SINGLE-TOGGLE-ROSTER-SWITCH-01",
   "updatePolicy": "required",
-  "notes": "Gọn lại các danh sách dài trong Nhập nhanh: checklist FSAGS 55.1 Trang 1 chỉ mở bằng một nút HIỆN/ẨN; Tùy chỉnh Nhập nhanh cũng chỉ có một nút HIỆN DANH SÁCH/ẨN DANH SÁCH, không còn từng nhóm tự xổ riêng. Sửa đồng bộ DAILY ROSTER khi AD đổi biểu mẫu cùng nhân viên trên cùng chuyến, ví dụ A từ 42.3 sang 55.1: assignment 42.3 cũ được thu hồi khỏi manifest/mail/session và đánh dấu không còn hiệu lực trong Flight Record/taskStatus. Nếu roster hiện tại thật sự phân A cả 42.3 và 55.1 thì cả hai vẫn được giữ.",
-  "message": "V6.4.86: một nút ẩn/hiện cho danh sách Nhập nhanh và thu hồi đúng biểu mẫu roster cũ khi đổi 42.3 ↔ 55.1."
+  "notes": "Sửa trường hợp điện thoại mở đúng domain nhưng vẫn bị giữ ở V6.4.71 do service worker cũ còn điều khiển tab và tiếp tục trả index đã cache. Repair mới kiểm tra trực tiếp controller hiện tại, unregister worker cũ, xóa riêng cache shell/meta, tự reload trang repair nhiều vòng cho đến khi tab thật sự tách khỏi controller cũ rồi mới xác minh version + manifest + index và mở lại app. Vercel ép repair.html qua network cache bằng no-store + Clear-Site-Data cache; không xóa localStorage nghiệp vụ hoặc IndexedDB. Đồng thời nhãn ngày phiên bản trên trang chủ đọc từ release metadata thay vì cố định 02/10/26.",
+  "message": "V6.4.87: tách triệt để service worker cũ giữ V6.4.71 trên mobile và đồng bộ nhãn ngày phát hành."
 }
