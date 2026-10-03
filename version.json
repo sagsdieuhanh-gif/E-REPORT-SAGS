@@ -1,12 +1,12 @@
 {
-  "version": "V6.4.87",
-  "displayVersion": "V6.4.87",
-  "label": "V6.4.87 - STALE WORKER DETACH",
-  "build": "V6.4.87-20261003-STALE-WORKER-DETACH-01",
-  "releasedAt": "2026-10-03T13:22:00Z",
+  "version": "V6.4.88",
+  "displayVersion": "V6.4.88",
+  "label": "V6.4.88 - AUTO CACHE CLEANUP",
+  "build": "V6.4.88-20261003-AUTO-CACHE-CLEANUP-01",
+  "releasedAt": "2026-10-03T13:27:00Z",
   "type": "fix",
-  "base": "V6.4.86-20261003-SINGLE-TOGGLE-ROSTER-SWITCH-01",
+  "base": "V6.4.87-20261003-STALE-WORKER-DETACH-01",
   "updatePolicy": "required",
-  "notes": "Sửa trường hợp điện thoại mở đúng domain nhưng vẫn bị giữ ở V6.4.71 do service worker cũ còn điều khiển tab và tiếp tục trả index đã cache. Repair mới kiểm tra trực tiếp controller hiện tại, unregister worker cũ, xóa riêng cache shell/meta, tự reload trang repair nhiều vòng cho đến khi tab thật sự tách khỏi controller cũ rồi mới xác minh version + manifest + index và mở lại app. Vercel ép repair.html qua network cache bằng no-store + Clear-Site-Data cache; không xóa localStorage nghiệp vụ hoặc IndexedDB. Đồng thời nhãn ngày phiên bản trên trang chủ đọc từ release metadata thay vì cố định 02/10/26.",
-  "message": "V6.4.87: tách triệt để service worker cũ giữ V6.4.71 trên mobile và đồng bộ nhãn ngày phát hành."
+  "notes": "Từ bản này, sau khi ứng dụng đã chạy đúng build mới, ứng dụng tự yêu cầu service worker dọn toàn bộ cache phát hành cũ theo cơ chế an toàn. Cleanup chỉ đụng các cache app shell/meta, không xóa localStorage, IndexedDB, dữ liệu chuyến, nháp biểu mẫu hoặc dữ liệu nghiệp vụ. Nếu đang có chuyến hoạt động hoặc có nhiều cửa sổ app mở thì cleanup được hoãn và tự thử lại khi app trở về trạng thái an toàn. Giữ nguyên cơ chế V6.4.87 tách controller cũ và repair network-only cho thiết bị đang bị kẹt ở bản cũ.",
+  "message": "V6.4.88: tự dọn cache bản cũ sau cập nhật thành công, giảm nhu cầu xóa bộ nhớ đệm thủ công ở các lần update sau."
 }
