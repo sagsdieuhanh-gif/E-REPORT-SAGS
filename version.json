@@ -1,12 +1,12 @@
 {
-  "version": "V6.4.76",
-  "displayVersion": "V6.4.76",
-  "label": "V6.4.76 - DOSSIER DOCS",
-  "build": "V6.4.76-20261003-DOSSIER-DOCS-01",
-  "releasedAt": "2026-10-03T04:49:00Z",
-  "type": "feature",
-  "base": "V6.4.75-20261003-EO-F54-POLICY-01",
+  "version": "V6.4.77",
+  "displayVersion": "V6.4.77",
+  "label": "V6.4.77 - DOSSIER DOCS",
+  "build": "V6.4.77-20261003-DOSSIER-DOCS-SYNC-01",
+  "releasedAt": "2026-10-03T04:51:00Z",
+  "type": "fix",
+  "base": "V6.4.76-20261003-DOSSIER-DOCS-01",
   "updatePolicy": "required",
-  "notes": "Đưa tài liệu đã gửi ra ngay thẻ chuyến. FSAGS 208 sau khi gửi sẽ hiện ✓ FSAGS 208 · R# ngay trong mục HỒ SƠ CHUYẾN; bấm mở thẳng bản đã gửi, không cần vào workspace chuyến để tìm. Tự refresh khi Kho hàng gửi revision mới.",
-  "message": "V6.4.76: Hồ sơ chuyến hiển thị trực tiếp FSAGS 208 đã có."
+  "notes": "Giữ tính năng V6.4.76: FSAGS 208 đã gửi hiện trực tiếp ở thẻ HỒ SƠ CHUYẾN và mở thẳng bản đã gửi. Đồng bộ asset-manifest/service worker với form-configuration revision 8 vừa được upload để PWA/mobile không giữ manifest lệch.",
+  "message": "V6.4.77: Hồ sơ chuyến hiện trực tiếp FSAGS 208; đồng bộ cấu hình revision 8."
 }

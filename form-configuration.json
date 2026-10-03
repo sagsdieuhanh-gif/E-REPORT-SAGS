@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "revision": 7,
+  "revision": 8,
   "source": "repository",
   "carriers": {
     "HAV": {
@@ -368,5 +368,5 @@
       "aircraftTypes": []
     }
   },
-  "updatedAt": "2026-10-03T04:41:35.258Z"
+  "updatedAt": "2026-10-03T04:47:27.167Z"
 }

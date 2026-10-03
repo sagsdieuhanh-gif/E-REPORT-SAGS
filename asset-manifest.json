@@ -1,8 +1,8 @@
 {
   "schema": 2,
-  "version": "V6.4.76",
-  "build": "V6.4.76-20261003-DOSSIER-DOCS-01",
-  "strategy": "verified immutable shell + direct flight dossier document summary",
+  "version": "V6.4.77",
+  "build": "V6.4.77-20261003-DOSSIER-DOCS-SYNC-01",
+  "strategy": "verified immutable shell + direct flight dossier document summary + config revision 8 sync",
   "mutableMetadata": [
     "./forms/forms.registry.json",
     "./data/form-configuration.json"
@@ -226,8 +226,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "4f0bb73df65049db2608227c8be7085a94b8d45922383adb6e0db950708284d3",
-      "bytes": 80095
+      "sha256": "62573c279720efcd2bf3692ee445bd27df721a280750baed122055c7e30b0117",
+      "bytes": 80570
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -278,12 +278,12 @@
       "bytes": 3133
     },
     "./service-worker.js": {
-      "sha256": "6e54414201d44905286b62c4bfaf9e65bd2b80f6f3e5fbee78cb8a366665819a",
-      "bytes": 21068
+      "sha256": "c5e7439160762a46f127945658aed5668f8c971fc1222fc54f973b9b1190bd24",
+      "bytes": 21083
     },
     "./version.json": {
-      "sha256": "85ec65e34a265f4327ec443b26b2a22dabef593ddc23956854a0965712bd28e3",
-      "bytes": 664
+      "sha256": "a9f2a81df53bc52f78d4b7378471b3c9d40f55012261d7771e5d60bf89d678b9",
+      "bytes": 686
     },
     "./app/modules/form-registry-runtime.v647.js": {
       "sha256": "38273ccd7794e4790c37b5a8594edeaefd412917af2c928245bf8a89b0a8a5f2",
@@ -534,7 +534,7 @@
       "bytes": 3567
     },
     "./data/form-configuration.json": {
-      "sha256": "501e3495e3f2dc4cf23d5c3d915d13c57c7044ea8c2710c1cd458bc8661766e4",
+      "sha256": "b295ee323313d6639bf9a88082c39650d98e78ca054340f6c4f5b220f8e229ab",
       "bytes": 6533
     },
     "./app/generated/core-archive.js": {
