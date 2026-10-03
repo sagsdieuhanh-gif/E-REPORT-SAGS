@@ -1,8 +1,8 @@
 {
   "schema": 2,
-  "version": "V6.4.86",
-  "build": "V6.4.86-20261003-SINGLE-TOGGLE-ROSTER-SWITCH-01",
-  "strategy": "atomic release + single global quick-entry toggles + roster same-worker form-switch retirement + required auto-update + repair-first stale-shell recovery",
+  "version": "V6.4.87",
+  "build": "V6.4.87-20261003-AUTO-CACHE-CLEANUP-01",
+  "strategy": "atomic release + required idle auto-update + automatic verified old-cache cleanup + repair-first stale-shell recovery",
   "mutableMetadata": [
     "./forms/forms.registry.json",
     "./data/form-configuration.json"
@@ -226,8 +226,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "0ff536f7f31d42f2647a0ca74a35b83b318c7f642b79f1ede65acf46a6946917",
-      "bytes": 81773
+      "sha256": "6a1f012d7f227df96411af3dd9982b69e5c1ca417be67f348651463e3d9e3223",
+      "bytes": 80918
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -278,12 +278,12 @@
       "bytes": 4794
     },
     "./service-worker.js": {
-      "sha256": "1c0de8f743ab6ac8d7d83f5eea0601d4ac95b650529ab6e60644829050e8778a",
-      "bytes": 21759
+      "sha256": "b504232659f2fd8013673291d600ee9be6c093ff8d2a816cbe9f5762791186e5",
+      "bytes": 21732
     },
     "./version.json": {
-      "sha256": "b28a9be0e81568df312eab3c9fd8c5fc614237de0b6870fc51c3ab2b6ff08e64",
-      "bytes": 1113
+      "sha256": "868cccd1a13bde623139cbdc2308ccb3861a817e55db8ebf4e72e57659e7b9b4",
+      "bytes": 1102
     },
     "./app/modules/form-registry-runtime.v647.js": {
       "sha256": "38273ccd7794e4790c37b5a8594edeaefd412917af2c928245bf8a89b0a8a5f2",
@@ -302,8 +302,8 @@
       "bytes": 1253
     },
     "./app/boot/05-legacy.js": {
-      "sha256": "0cdda460110df4ebc5355b2da68f85b335be59db5def3f51cc24c89569c80c93",
-      "bytes": 294591
+      "sha256": "1c8cc425dd056a6678ea36be23a632432512f0b8498d0295443486bcd4a4eb04",
+      "bytes": 296272
     },
     "./app/boot/06-legacy.js": {
       "sha256": "567f8d8a4c799969b3745794233b730ca48bbd757ee2db3b95552533ed4b91c6",
