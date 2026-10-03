@@ -1,4 +1,4 @@
-/* E-REPORT/SAGS V1.1.102 DAILY ROSTER FINAL · RTDB PATH FIX
+/* E-REPORT/SAGS V1.1.106 DAILY ROSTER FINAL · POLICY FORM RECONCILE
  * - Same-day roster imports are cumulative MERGE updates.
  * - One canonical work-slot/workspace identity across manifest/mailbox/session/Flight Record.
  * - ARR/DEP assignments of the same roster duty share a sanitized working workspace.
@@ -7,8 +7,8 @@
  */
 (function(root){
 'use strict';
-const BUILD='V1.1.103-20261003-FLIGHT-CLOSEOUT';
-const DISPLAY='V1.1.102';
+const BUILD='V1.1.106-20261003-EO-F54-POLICY';
+const DISPLAY='V1.1.106';
 const MANIFEST='roster_manifests',MAIL='roster_mail',SESSION='roster_sessions',STATUS='roster_flight_status',WORKSPACE='roster_flight_workspaces',FLIGHTS='flight_records';
 const MAP_KEY='sags_roster_workspace_map_v1197';
 const S=v=>String(v??'').trim(),U=v=>S(v).toUpperCase();
@@ -214,16 +214,49 @@ async function syncPushbackFromActive(){
 }
 function installRampSync(){root.sagsFlightHubSyncCurrentRamp=function(){clearTimeout(pbTimer);pbTimer=setTimeout(()=>syncPushbackFromActive(),260)}}
 
+/* ---------- Policy-driven CBTT auxiliary forms ---------- */
+function isAdminSession(){try{const s=root.__sagsGetSession?.()||{},p=s.profile||{};return ['AD','ADMIN'].includes(U(s.role||p.role||root.currentRole))}catch(_){return ['AD','ADMIN'].includes(U(root.currentRole))}}
+function policyAuxAid(date,item,group){return 'RP_'+hash([S(date),flightIdentity(item),normUser(item?.user||item?.targetUser),U(group),'POLICY_AUX'].join('|'))}
+async function reconcilePolicyAuxForms(date=opDate()){
+  date=S(date)||opDate();if(!isAdminSession()||typeof root.sagsV470Ref!=='function'||!root.sagsAirlineFormPolicy?.allowed)return {ok:false,reason:'NOT_READY'};
+  await root.sagsAirlineFormPolicy.ready?.(true);
+  const man=(await root.sagsV470Ref(`${MANIFEST}/${safe(date)}`).once('value')).val()||{},items=Object.values(man.items||{}).filter(x=>x&&x.active!==false);
+  const finals=items.filter(x=>U(x.roleKey)==='CBTT'&&(U(x.formGroup)==='FINAL'||U(x.sourceColumn).includes('GRND_LS')));
+  if(!finals.length)return {ok:true,added:0};
+  const patch={},now=Date.now();let added=0;
+  for(const base of finals){
+    const user=normUser(base.user||base.targetUser),fid=S(base.flightId);if(!user||!fid)continue;
+    for(const spec of [{group:'FSAGS54',canon:'FSAGS54'},{group:'clc_checklist',canon:'FSAGS94'}]){
+      if(root.sagsAirlineFormPolicy.allowed(base,spec.group)!==true)continue;
+      const exists=items.some(x=>x.active!==false&&normUser(x.user||x.targetUser)===user&&S(x.flightId)===fid&&canonicalForm(x)===spec.canon);
+      if(exists)continue;
+      const aid=policyAuxAid(date,base,spec.group),item={...clone(base),assignmentId:aid,user,targetUser:user,originalUser:normUser(base.originalUser||base.originalTargetUser||user),originalTargetUser:normUser(base.originalUser||base.originalTargetUser||user),formGroup:spec.group,sourceColumn:'Grnd_Ls',roleKey:'CBTT',assignmentLeg:'',assignmentScope:'TURNAROUND',workPartOrder:1,workPartTotal:1,workPartSequenceSource:'Grnd_Ls',coAssigneeGroupId:'',coAssigneeMode:'',coAssigneeRank:1,coAssigneeTotal:1,coAssigneeUsers:[user],manualOverride:false,active:true,policyGenerated:true,policyGeneratedAtMs:now,updatedAtMs:now};
+      delete item.workspaceKey;delete item.rosterWorkspaceKey;delete item.rosterWorkSlotKey;
+      patch[`${MANIFEST}/${safe(date)}/items/${safe(aid)}`]=item;
+      patch[`${MAIL}/${safe(user)}/items/${safe(aid)}`]={...item,engine:'daily-roster-v2',schema:2,opDate:date,date:S(item.date||date)};
+      patch[`${SESSION}/${safe(aid)}`]={engine:'daily-roster-v2',schema:1,assignmentId:aid,ownerUser:user,formGroup:spec.group,claimStatus:'READY',taskStatusV333:'UNCLAIMED',taskAvailabilityV333:'READY',active:true,policyGenerated:true,createdAtMs:now,updatedAtMs:now};
+      added++;
+    }
+  }
+  if(!added)return {ok:true,added:0};
+  patch[`${MANIFEST}/${safe(date)}/policyAuxReconciledAtMs`]=now;patch[`${MANIFEST}/${safe(date)}/policyAuxReconciledBuild`]=BUILD;
+  await root.sagsV470Ref('').update(patch);
+  try{root.sagsV477InvalidateQueueStatus?.()}catch(_){}
+  return {ok:true,added};
+}
+root.sagsReconcilePolicyAuxForms=reconcilePolicyAuxForms;
+root.addEventListener?.('sags:airline-forms-changed',()=>{if(isAdminSession())setTimeout(()=>reconcilePolicyAuxForms(opDate()).catch(e=>console.info('Policy aux reconcile',e?.message||e)),180)});
+
 /* ---------- Entry-point hooks ---------- */
 function wrapAsync(name,before,after,tag){const fn=root[name];if(typeof fn!=='function'||fn[tag])return false;const w=async function(){try{if(before)await before(arguments)}catch(e){console.info('V1.1.99 before',name,e?.message||e)}const r=await fn.apply(this,arguments);try{if(after)await after(r,arguments)}catch(e){console.info('V1.1.99 after',name,e?.message||e)}return r};w[tag]=1;w[tag+'Base']=fn;root[name]=w;try{if(name==='dailyRosterPublish')dailyRosterPublish=w;else if(name==='v324ReceiveOrOpen')v324ReceiveOrOpen=w}catch(_){}return true}
 function installHooks(){
   const basePersist=root.persist;if(typeof basePersist==='function'&&!basePersist.__v1198){root.persist=function(){const r=basePersist.apply(this,arguments);writeWorkspaceForActive();clearTimeout(root.__v1198PbPersist);root.__v1198PbPersist=setTimeout(syncPushbackFromActive,260);return r};root.persist.__v1198=1}
-  wrapAsync('dailyRosterPublish',null,async r=>{if(r===true){try{const d=S(document.getElementById('drManageDate')?.value)||opDate();await root.sagsTaskStatusSyncDate?.(d,true)}catch(_){}}},'__v1198');
+  wrapAsync('dailyRosterPublish',async()=>{await root.sagsAirlineFormPolicy?.ready?.(true)},async r=>{if(r===true){try{const d=S(document.getElementById('drManageDate')?.value)||opDate();await reconcilePolicyAuxForms(d);await root.sagsTaskStatusSyncDate?.(d,true)}catch(e){console.info('Policy roster reconcile',e?.message||e)}}},'__v1198');
   wrapAsync('v324ReceiveOrOpen',async args=>{const fid=S(args?.[0]),aid=S(args?.[1]),date=S(args?.[2])||opDate();if(fid&&aid)await hydrateWorkspaceForFlight(date,fid,aid)},async()=>{setTimeout(writeWorkspaceForActive,120)},'__v1198');
   wrapAsync('dailyRosterReassign',null,async()=>{try{await root.sagsTaskStatusSyncDate?.(S(document.getElementById('drManageDate')?.value)||opDate(),true)}catch(_){}},'__v1198');
   wrapAsync('dailyRosterResetToRoster',null,async()=>{try{await root.sagsTaskStatusSyncDate?.(S(document.getElementById('drManageDate')?.value)||opDate(),true)}catch(_){}},'__v1198');
 }
-function install(){installRefClean();installWorkspaceApi();installRampSync();installHooks();root.__SAGS_DAILY_ROSTER_CLEAN_V1199={build:BUILD,display:DISPLAY,workspaceKey,workSlotKey,hydrateWorkspaceForFlight,syncPushbackFromActive};}
+function install(){installRefClean();installWorkspaceApi();installRampSync();installHooks();root.__SAGS_DAILY_ROSTER_CLEAN_V1199={build:BUILD,display:DISPLAY,workspaceKey,workSlotKey,hydrateWorkspaceForFlight,syncPushbackFromActive,reconcilePolicyAuxForms};if(isAdminSession())setTimeout(()=>reconcilePolicyAuxForms(opDate()).catch(()=>{}),900);}
 install();setTimeout(install,350);setTimeout(install,1100);
 })(typeof window!=='undefined'?window:globalThis);
 

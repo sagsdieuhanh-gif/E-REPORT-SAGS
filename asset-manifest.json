@@ -1,8 +1,8 @@
 {
   "schema": 2,
-  "version": "V6.4.74",
-  "build": "V6.4.74-20261003-FLIGHT-CLOSEOUT-01",
-  "strategy": "verified immutable shell + explicit per-user flight closeout + automatic update repair",
+  "version": "V6.4.75",
+  "build": "V6.4.75-20261003-EO-F54-POLICY-01",
+  "strategy": "verified immutable shell + policy-ready roster generation + auxiliary-form reconciliation",
   "mutableMetadata": [
     "./forms/forms.registry.json",
     "./data/form-configuration.json"
@@ -26,8 +26,8 @@
       "bytes": 20659
     },
     "./app/modules/daily-roster.v502.js": {
-      "sha256": "4c98eb7923f1c6890a7164c5d2ddbd94bf91c5c38ec0b845f9c33c3986b93a90",
-      "bytes": 67659
+      "sha256": "59a99d65df435d38f294e1ef9d714f5c04766d130531033914ab7be8340ed1d4",
+      "bytes": 71232
     },
     "./app/modules/fsags54-94.v622.js": {
       "sha256": "9f39dd025b60be2791fb92e345fe9424c6b122c6546a914f53097fdb31a18ab2",
@@ -226,8 +226,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "ac3b327f290520317894b8d0344208a15ffd7d1c31f5f33422ca77ce9a4fda87",
-      "bytes": 80380
+      "sha256": "8241b141476024f108a40af85de74b16d544360febdc8b8cc7c3abdc23396696",
+      "bytes": 80190
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -278,12 +278,12 @@
       "bytes": 3133
     },
     "./service-worker.js": {
-      "sha256": "48854cb8b85d4ef5ce2c3bdca26e5037e337de61c07878c42d0eb0e6a9e6ea4d",
-      "bytes": 21077
+      "sha256": "93d4414075455a03b881ba2d3f1cf523f189536b03c9e2fa6f8f769b78ecb575",
+      "bytes": 21071
     },
     "./version.json": {
-      "sha256": "e0fdc0075e18c7ff9a786310825e2d76a152322ef24ec2c11974d7cfe0ca66a0",
-      "bytes": 707
+      "sha256": "22ab904d91728be72c93d619af74257454ccaba265a7d2c3eb6ff60eb404deff",
+      "bytes": 760
     },
     "./app/modules/form-registry-runtime.v647.js": {
       "sha256": "38273ccd7794e4790c37b5a8594edeaefd412917af2c928245bf8a89b0a8a5f2",
@@ -534,8 +534,8 @@
       "bytes": 3567
     },
     "./data/form-configuration.json": {
-      "sha256": "92f0b1733e7462e18806cd75ae9dc662f9d19d82a52fdee8bbf42b5963fec200",
-      "bytes": 6520
+      "sha256": "501e3495e3f2dc4cf23d5c3d915d13c57c7044ea8c2710c1cd458bc8661766e4",
+      "bytes": 6533
     },
     "./app/generated/core-archive.js": {
       "sha256": "8c9e20707dc7a0d1510326a7b1f591e8db891054f471db336a5dafcf18d314f3",
@@ -546,8 +546,8 @@
       "bytes": 85858
     },
     "./app/generated/core-flight.js": {
-      "sha256": "a0f56b993031b42863c5f8352c27e474bd46f17aebecfd179cd95788d79ac6bc",
-      "bytes": 201873
+      "sha256": "e1a40e003487db84abf7da869b68f4e681ff849d31dc66199825cf20a90528cd",
+      "bytes": 202039
     },
     "./app/generated/core-performance.js": {
       "sha256": "005c80dc9ce412f9e1c8b74d24b48e68b27ddaa05d5de203cb2029e7f93364d8",

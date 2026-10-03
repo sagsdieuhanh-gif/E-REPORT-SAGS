@@ -1,12 +1,12 @@
 {
-  "version": "V6.4.74",
-  "displayVersion": "V6.4.74",
-  "label": "V6.4.74 - FLIGHT CLOSEOUT",
-  "build": "V6.4.74-20261003-FLIGHT-CLOSEOUT-01",
-  "releasedAt": "2026-10-03T04:18:00Z",
-  "type": "feature",
-  "base": "V6.4.73-20261003-CARRIER-MANAGER-01",
+  "version": "V6.4.75",
+  "displayVersion": "V6.4.75",
+  "label": "V6.4.75 - EO F54 POLICY FIX",
+  "build": "V6.4.75-20261003-EO-F54-POLICY-01",
+  "releasedAt": "2026-10-03T04:42:00Z",
+  "type": "fix",
+  "base": "V6.4.74-20261003-FLIGHT-CLOSEOUT-01",
   "updatePolicy": "required",
-  "notes": "Tách Hoàn tất nhập biểu mẫu khỏi Kết thúc chuyến bay. Mỗi người dùng/đơn vị có thể bấm Kết thúc chuyến để chuyển chuyến sang CHUYẾN ĐÃ HOÀN TẤT và ẩn khỏi danh sách ĐANG LÀM; có thể Mở lại chuyến mà không thay đổi dữ liệu biểu mẫu.",
-  "message": "V6.4.74: bổ sung trạng thái Kết thúc chuyến riêng cho My Flight."
+  "notes": "Sửa luồng Form Manager/Daily Roster: bắt buộc tải policy mới nhất trước khi sinh assignment; tách ID F-54/F-94 khỏi FINAL để không ghi đè; tự bổ sung F-54/F-94 còn thiếu cho các chuyến CBTT đã tồn tại theo cấu hình hiện hành. Đồng bộ file cấu hình gốc với data/form-configuration.json revision 7.",
+  "message": "V6.4.75: EO áp dụng F/SAGS-CXR/54 đúng cả chuyến mới và chuyến đã tạo."
 }
