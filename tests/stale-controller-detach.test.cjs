@@ -1,0 +1,18 @@
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const root=path.resolve(__dirname,'..');
+const repair=fs.readFileSync(path.join(root,'repair.html'),'utf8');
+const legacy=fs.readFileSync(path.join(root,'app/boot/05-legacy.js'),'utf8');
+const index=fs.readFileSync(path.join(root,'index.html'),'utf8');
+const vercel=JSON.parse(fs.readFileSync(path.join(root,'vercel.json'),'utf8'));
+assert.match(repair,/navigator\.serviceWorker\?\.controller/,'repair must inspect the current controller');
+assert.match(repair,/detachOldController/,'repair must detach a stale controller before reopening app');
+assert.match(repair,/stage','2'/,'repair must use a second network navigation stage');
+assert.match(repair,/MỞ TAB SẠCH ĐỂ HOÀN TẤT/,'repair needs a user-gesture fallback if the browser retains the old controller');
+assert.match(repair,/Server version:/,'repair should expose network release diagnostics');
+assert.match(index,/meta name="sags-release-date" content="03\/10\/26"/,'index release date metadata missing');
+assert.match(legacy,/APP_RELEASE_DATE_LABEL/,'visible release date must come from release metadata');
+assert.ok(!legacy.includes('APP_DISPLAY_VERSION+" 02/10/26"'),'legacy hardcoded release date must be removed');
+const row=vercel.headers.find(x=>x.source==='/repair.html');
+assert.ok(row,'repair Vercel header rule missing');
+assert.equal(row.headers.find(h=>String(h.key).toLowerCase()==='clear-site-data')?.value,'"cache"');
+console.log('Stale-controller detach regression checks passed');
