@@ -1,12 +1,12 @@
 {
-  "version": "V6.4.85",
-  "displayVersion": "V6.4.85",
-  "label": "V6.4.85 - REPAIR UNREGISTER FIRST",
-  "build": "V6.4.85-20261003-REPAIR-UNREGISTER-FIRST-01",
-  "releasedAt": "2026-10-03T12:09:00Z",
+  "version": "V6.4.86",
+  "displayVersion": "V6.4.86",
+  "label": "V6.4.86 - SINGLE TOGGLE + ROSTER FORM SWITCH",
+  "build": "V6.4.86-20261003-SINGLE-TOGGLE-ROSTER-SWITCH-01",
+  "releasedAt": "2026-10-03T12:17:00Z",
   "type": "fix",
-  "base": "V6.4.84-20261003-REQUIRED-AUTO-UPDATE-01",
+  "base": "V6.4.85-20261003-REPAIR-UNREGISTER-FIRST-01",
   "updatePolicy": "required",
-  "notes": "Sửa lỗi trang Repair bị chính service worker cũ chặn trước khi kịp gỡ nó. Trước đây Repair kiểm tra version + manifest + index ngay ở stage 1, nên worker cũ có thể trả index cache cũ và làm kiểm tra thất bại. Từ V6.4.85, stage 1 gỡ service worker và cache shell cũ trước, sau đó tải lại Repair ở stage 2 rồi mới xác minh release trực tiếp từ mạng. Nếu máy chủ vừa deploy, Repair tự thử lại tối đa 8 lần. Link Repair cũ có target phiên bản cũ cũng không còn khóa việc lên bản mới nhất.",
-  "message": "V6.4.85: Repair gỡ worker/cache cũ trước rồi mới xác minh bản mới."
+  "notes": "Gọn lại các danh sách dài trong Nhập nhanh: checklist FSAGS 55.1 Trang 1 chỉ mở bằng một nút HIỆN/ẨN; Tùy chỉnh Nhập nhanh cũng chỉ có một nút HIỆN DANH SÁCH/ẨN DANH SÁCH, không còn từng nhóm tự xổ riêng. Sửa đồng bộ DAILY ROSTER khi AD đổi biểu mẫu cùng nhân viên trên cùng chuyến, ví dụ A từ 42.3 sang 55.1: assignment 42.3 cũ được thu hồi khỏi manifest/mail/session và đánh dấu không còn hiệu lực trong Flight Record/taskStatus. Nếu roster hiện tại thật sự phân A cả 42.3 và 55.1 thì cả hai vẫn được giữ.",
+  "message": "V6.4.86: một nút ẩn/hiện cho danh sách Nhập nhanh và thu hồi đúng biểu mẫu roster cũ khi đổi 42.3 ↔ 55.1."
 }
