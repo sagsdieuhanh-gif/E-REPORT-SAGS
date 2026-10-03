@@ -1,8 +1,8 @@
 {
   "schema": 2,
-  "version": "V6.4.87",
-  "build": "V6.4.87-20261003-STALE-WORKER-DETACH-01",
-  "strategy": "atomic release + stale-controller detach repair + network-only repair cache reset + single global quick-entry toggles + roster form-switch retirement",
+  "version": "V6.4.88",
+  "build": "V6.4.88-20261003-AUTO-CACHE-CLEANUP-01",
+  "strategy": "atomic release + stale-controller detach repair + required idle auto-update + automatic verified old-cache cleanup",
   "mutableMetadata": [
     "./forms/forms.registry.json",
     "./data/form-configuration.json"
@@ -226,8 +226,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "e80d448c730694dff91efc0613a85310f06a5de5e6921f457129720774f5b1ee",
-      "bytes": 81064
+      "sha256": "d10bc8f6b578665e39e3c02605d55dfd5814f092e7e2b09ac3f71cf5d0ca8e7e",
+      "bytes": 80969
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -278,12 +278,12 @@
       "bytes": 6861
     },
     "./service-worker.js": {
-      "sha256": "0c1f98973b4165ba2cf4d38b249539ff24e90bd450322a58923b263ed0967ed0",
-      "bytes": 21735
+      "sha256": "d5b4b65cd70d46918223013b95feb09c11644ed200aa743fc0881eb2208e5f29",
+      "bytes": 21732
     },
     "./version.json": {
-      "sha256": "fae5f86b6caa64872942e8ec51a99f42b072c96ad58bafa71029d74354be7b78",
-      "bytes": 1173
+      "sha256": "a78bf5a3d40afcdb4f1d306523a393f332409943df7ca5ca8fdbe8a8598f1cb3",
+      "bytes": 1106
     },
     "./app/modules/form-registry-runtime.v647.js": {
       "sha256": "38273ccd7794e4790c37b5a8594edeaefd412917af2c928245bf8a89b0a8a5f2",
@@ -302,8 +302,8 @@
       "bytes": 1253
     },
     "./app/boot/05-legacy.js": {
-      "sha256": "a3d26546c166a5977bfebac132b0f0761bfe90c13f7f3124227153919b6d45cf",
-      "bytes": 294732
+      "sha256": "59b7fe970361e7b3ba8db214507ed2c382ddf427df087004c264f4727a44e4e6",
+      "bytes": 296425
     },
     "./app/boot/06-legacy.js": {
       "sha256": "567f8d8a4c799969b3745794233b730ca48bbd757ee2db3b95552533ed4b91c6",
