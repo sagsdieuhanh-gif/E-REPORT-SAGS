@@ -1,12 +1,12 @@
 {
-  "version": "V6.4.83",
-  "displayVersion": "V6.4.83",
-  "label": "V6.4.83 - AUTO REPAIR STALE SHELL",
-  "build": "V6.4.83-20261003-AUTO-REPAIR-STALE-SHELL-01",
-  "releasedAt": "2026-10-03T11:47:00Z",
+  "version": "V6.4.84",
+  "displayVersion": "V6.4.84",
+  "label": "V6.4.84 - REQUIRED AUTO UPDATE",
+  "build": "V6.4.84-20261003-REQUIRED-AUTO-UPDATE-01",
+  "releasedAt": "2026-10-03T12:00:00Z",
   "type": "fix",
-  "base": "V6.4.82-20261003-QUICK-PREFS-COLLAPSE-PERSIST-01",
+  "base": "V6.4.83-20261003-AUTO-REPAIR-STALE-SHELL-01",
   "updatePolicy": "required",
-  "notes": "Sửa tình trạng mở ứng dụng nhưng bị kẹt bản cũ hoặc hiện APP SHELL NOT READY. Khi shell đã mất/hỏng cache, service worker tự chuyển sang repair.html thay vì trả trang trắng 503. Repair xóa đúng cache/service worker cũ nhưng giữ dữ liệu nghiệp vụ, sau đó chỉ mở lại khi version + manifest + index cùng một build. Vercel bổ sung no-store cho /, index.html, repair.html, version.json, asset-manifest.json và service-worker.js để giảm nguy cơ giữ shell cũ ở mobile/PWA. Giữ nguyên toàn bộ sửa Nhập nhanh của V6.4.82.",
-  "message": "V6.4.83: tự phục hồi shell cũ/hỏng và giảm cache stale trên Vercel."
+  "notes": "Sửa triệt để lỗi điện thoại bị giữ ở bản cũ. Phát hiện service-worker của V6.4.83 đang khai báo sai build so với version.json/asset-manifest, khiến worker mới không thể hoàn tất install và trình duyệt tiếp tục dùng worker cũ. V6.4.84 đồng bộ lại release contract giữa index, service worker, version và manifest. Với updatePolicy=required, khi ứng dụng đang ở màn hình rảnh/chưa vào chuyến và phát hiện bản mới, hệ thống tự lưu trạng thái cục bộ, tải + xác minh worker mới, kích hoạt và reload sang bản mới mà không cần bấm CẬP NHẬT NGAY. Nếu đang có chuyến hoạt động hoặc đang nhập liệu, vẫn giữ prompt để tránh ngắt thao tác.",
+  "message": "V6.4.84: sửa mismatch service worker và tự cập nhật bản bắt buộc khi ứng dụng đang rảnh."
 }
