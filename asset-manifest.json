@@ -1,8 +1,8 @@
 {
   "schema": 2,
-  "version": "V6.4.81",
-  "build": "V6.4.81-20261003-MOBILE-COMPACT-UPDATE-STABLE-01",
-  "strategy": "atomic release + index-meta runtime version + repair contract + mobile compact UI",
+  "version": "V6.4.82",
+  "build": "V6.4.82-20261003-QUICK-PREFS-COLLAPSE-PERSIST-01",
+  "strategy": "atomic release + collapsed quick-entry customization + verified persistent UI preferences + index-meta update verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
     "./data/form-configuration.json"
@@ -78,16 +78,16 @@
       "bytes": 10344
     },
     "./app/modules/ui-preferences.v1.js": {
-      "sha256": "0c963ecae32f1c1726a488a2bf68c632b8a791b26fbfbe2e2eaec7e37508265c",
-      "bytes": 22544
+      "sha256": "ec3c4c4935debc275737f91b5049ab3ef5af4dd1cdbb6a62d5b5a2b7554d4378",
+      "bytes": 26315
     },
     "./app/styles/app.bundle.css": {
       "sha256": "013be6bee9f38bf79864dcab0658f438966d77172692446f698c042539601c2e",
       "bytes": 41473
     },
     "./app/styles/new-ui-v1.css": {
-      "sha256": "dae5fa0e5297c005c66a932b3b9575261276b2697217f7209056ffca6705738d",
-      "bytes": 264604
+      "sha256": "8b2c940db938f183ae9acfaa323502b189e62c2f050d939cc7250b049e3aa5af",
+      "bytes": 266882
     },
     "./assets/audio/alert-crosscheck-complete.mp3": {
       "sha256": "2291844c0abc77005a2e8800e0dc8115c373134385a31a5d3d9e5f920a5acc07",
@@ -226,7 +226,7 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "ed4f00602a2cb4b2135ebf4907c4bc4d18b018076073b8369406aab6c12d100d",
+      "sha256": "17631abced05ad8cadbec24732b73558fc81bf5fbbd32746e65d76b1ce4df4bc",
       "bytes": 81868
     },
     "./manifest.webmanifest": {
@@ -278,12 +278,12 @@
       "bytes": 4925
     },
     "./service-worker.js": {
-      "sha256": "484b38fafcbaa7d6f61bef812c60e68fdca492f83725973e9018340d63b2e625",
+      "sha256": "145943536c9218373249e52bf0b44a02c3ecea7b8b80e8fdd11f062324c25ff8",
       "bytes": 21353
     },
     "./version.json": {
-      "sha256": "a8fbc4c49bc593495e4e6be036510356bf6e4debaa9178254d11cc73de5f7f24",
-      "bytes": 989
+      "sha256": "4e3c15491afaa525347d8bdfcf38d39a09185ae86a1e0006d5643efcf42ce02b",
+      "bytes": 1073
     },
     "./app/modules/form-registry-runtime.v647.js": {
       "sha256": "38273ccd7794e4790c37b5a8594edeaefd412917af2c928245bf8a89b0a8a5f2",
@@ -302,8 +302,8 @@
       "bytes": 1253
     },
     "./app/boot/05-legacy.js": {
-      "sha256": "830e50190ae65f59d4def691ee81d711021dab8104ecfaa00b73510cf5ecd544",
-      "bytes": 293705
+      "sha256": "2d00462a7f2bc48f18df46bf146ffa504cba62dc85ef63512e7f2f53153239a9",
+      "bytes": 293755
     },
     "./app/boot/06-legacy.js": {
       "sha256": "567f8d8a4c799969b3745794233b730ca48bbd757ee2db3b95552533ed4b91c6",

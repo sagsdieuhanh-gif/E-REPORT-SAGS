@@ -1,12 +1,12 @@
 {
-  "version": "V6.4.81",
-  "displayVersion": "V6.4.81",
-  "label": "V6.4.81 - MOBILE COMPACT + UPDATE STABLE",
-  "build": "V6.4.81-20261003-MOBILE-COMPACT-UPDATE-STABLE-01",
-  "releasedAt": "2026-10-03T05:58:00Z",
+  "version": "V6.4.82",
+  "displayVersion": "V6.4.82",
+  "label": "V6.4.82 - QUICK INPUT COLLAPSE + PERSIST",
+  "build": "V6.4.82-20261003-QUICK-PREFS-COLLAPSE-PERSIST-01",
+  "releasedAt": "2026-10-03T11:27:00Z",
   "type": "fix",
-  "base": "V6.4.80-20261003-UNIFIED-FLIGHT-WORKSPACE-REPAIR-01",
+  "base": "V6.4.81-20261003-MOBILE-COMPACT-UPDATE-STABLE-01",
   "updatePolicy": "required",
-  "notes": "Áp dụng giao diện mobile compact đã duyệt: header, bộ lọc Flight Workspace, card chuyến, chi tiết trạng thái và thanh thao tác form được thu gọn trên điện thoại; desktop giữ nguyên. Sửa tận gốc vòng lặp cập nhật: APP_BUILD_VERSION/APP_DISPLAY_VERSION không còn hard-code trong 05-legacy mà đọc trực tiếp meta của index đang chạy. Update detector và Repair xác minh version + manifest + meta index cùng build/version trước khi cho cập nhật hoặc mở app.",
-  "message": "V6.4.81: giao diện mobile compact; update/repair chống lặp và đồng bộ build theo index."
+  "notes": "Sửa Tùy chỉnh Nhập nhanh: danh sách được gom theo nhóm và mặc định thu gọn, chỉ bấm vào nhóm mới hiện các ô để chọn; chân Lưu luôn nằm trong vùng nhìn thấy trên mobile. Lựa chọn ẩn/hiện được lưu có kiểm tra, có khóa dự phòng theo thiết bị để không mất cấu hình khi danh tính phiên đăng nhập được đồng bộ lại. Sau khi lưu, chỉ các ô đã chọn tiếp tục hiển thị trong Nhập nhanh. Đồng thời sửa bộ xác minh cập nhật để đọc version/build trực tiếp từ meta của index.",
+  "message": "V6.4.82: menu Nhập nhanh thu gọn theo nhóm, lưu lựa chọn bền vững và đồng bộ cập nhật."
 }

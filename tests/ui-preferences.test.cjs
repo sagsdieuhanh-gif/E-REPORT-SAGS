@@ -1,0 +1,12 @@
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const root=path.resolve(__dirname,'..');
+const js=fs.readFileSync(path.join(root,'app/modules/ui-preferences.v1.js'),'utf8');
+const css=fs.readFileSync(path.join(root,'app/styles/new-ui-v1.css'),'utf8');
+assert.match(js,/function quickDeviceKey\(\)/,'device fallback key missing');
+assert.match(js,/localStorage\.setItem\(quickDeviceKey\(\),payload\)/,'device fallback persistence missing');
+assert.match(js,/className='sagsQteChoiceGroup'/,'collapsed group renderer missing');
+assert.match(js,/body\.hidden=true/,'groups must start collapsed');
+assert.match(js,/if\(!writeHidden\(hidden\)\)/,'save must verify persistence');
+assert.match(css,/QUICK-ENTRY CUSTOMIZE: COLLAPSED GROUPS \+ PERSISTENT SAVE/);
+assert.match(css,/\.sagsQteCustomizeList\{[\s\S]*overflow-y:auto/);
+console.log('Quick-entry preference regression checks passed');
