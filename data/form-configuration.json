@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "revision": 5,
+  "revision": 6,
   "source": "repository",
   "carriers": {
     "HAV": {
@@ -244,7 +244,7 @@
       "prefixes": [
         "EO"
       ],
-      "fsags54": false,
+      "fsags54": true,
       "fsags94": false
     }
   },
@@ -325,6 +325,7 @@
         "QH",
         "B2",
         "DR",
+        "EO",
         "HU",
         "N4",
         "RF",
@@ -367,5 +368,5 @@
       "aircraftTypes": []
     }
   },
-  "updatedAt": "2026-10-03T04:08:00.000Z"
+  "updatedAt": "2026-10-03T04:33:18.753Z"
 }
