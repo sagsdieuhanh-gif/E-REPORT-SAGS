@@ -1,12 +1,12 @@
 {
-  "version": "V6.4.88",
-  "displayVersion": "V6.4.88",
-  "label": "V6.4.88 - AUTO CACHE CLEANUP",
-  "build": "V6.4.88-20261003-AUTO-CACHE-CLEANUP-01",
-  "releasedAt": "2026-10-03T13:27:00Z",
+  "version": "V6.4.89",
+  "displayVersion": "V6.4.89",
+  "label": "V6.4.89 TEST - MOBILE + FIREBASE ACCOUNT MIGRATION",
+  "build": "V6.4.89-20261003-MOBILE-ACCOUNT-MIGRATION-02",
+  "releasedAt": "2026-10-03T13:36:00Z",
   "type": "fix",
-  "base": "V6.4.87-20261003-STALE-WORKER-DETACH-01",
+  "base": "V6.4.88-20261003-AUTO-CACHE-CLEANUP-01",
   "updatePolicy": "required",
-  "notes": "Từ bản này, sau khi ứng dụng đã chạy đúng build mới, ứng dụng tự yêu cầu service worker dọn toàn bộ cache phát hành cũ theo cơ chế an toàn. Cleanup chỉ đụng các cache app shell/meta, không xóa localStorage, IndexedDB, dữ liệu chuyến, nháp biểu mẫu hoặc dữ liệu nghiệp vụ. Nếu đang có chuyến hoạt động hoặc có nhiều cửa sổ app mở thì cleanup được hoãn và tự thử lại khi app trở về trạng thái an toàn. Giữ nguyên cơ chế V6.4.87 tách controller cũ và repair network-only cho thiết bị đang bị kẹt ở bản cũ.",
-  "message": "V6.4.88: tự dọn cache bản cũ sau cập nhật thành công, giảm nhu cầu xóa bộ nhớ đệm thủ công ở các lần update sau."
+  "notes": "Khôi phục đúng giao diện mobile đã thống nhất và sửa Account Manager về Firebase chuẩn. Trên mobile <=767px, sau đăng nhập vào thẳng MENU LÀM VIỆC toàn màn hình; desktop giữ dashboard. AD tạo tài khoản mới sẽ tạo thật Firebase Authentication bằng secondary app, ghi và xác minh users/{UID}, mật khẩu đầu 123456, rồi mới báo thành công; nếu ghi hồ sơ lỗi thì rollback Auth vừa tạo. Account Manager, sửa hồ sơ và phân quyền đều đọc/ghi users/{UID}; bỏ luồng tạo PERSONAL_USER/passHash cũ đã khiến tài khoản như Trần Phong Vũ không xuất hiện trong Firebase. Runtime version truth cũng đọc trực tiếp release meta. Bổ sung nhận diện tài khoản legacy đã tạo trước bản sửa nhưng chưa có Firebase, hiển thị riêng với trạng thái CHƯA CÓ FIREBASE AUTH và nút CHUYỂN SANG FIREBASE để tạo Authentication + users/{UID} rồi xóa record cũ sau khi xác minh.",
+  "message": "V6.4.89 TEST B2: mobile work-menu + Firebase account creation + chuyển tài khoản legacy còn sót."
 }
