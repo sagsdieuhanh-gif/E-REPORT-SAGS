@@ -1,12 +1,12 @@
 {
-  "version": "V6.4.86",
-  "displayVersion": "V6.4.86",
-  "label": "V6.4.86 - SINGLE TOGGLE + ROSTER FORM SWITCH",
-  "build": "V6.4.86-20261003-SINGLE-TOGGLE-ROSTER-SWITCH-01",
-  "releasedAt": "2026-10-03T12:17:00Z",
+  "version": "V6.4.87",
+  "displayVersion": "V6.4.87",
+  "label": "V6.4.87 - AUTO CACHE CLEANUP",
+  "build": "V6.4.87-20261003-AUTO-CACHE-CLEANUP-01",
+  "releasedAt": "2026-10-03T13:27:00Z",
   "type": "fix",
-  "base": "V6.4.85-20261003-REPAIR-UNREGISTER-FIRST-01",
+  "base": "V6.4.86-20261003-SINGLE-TOGGLE-ROSTER-SWITCH-01",
   "updatePolicy": "required",
-  "notes": "Gọn lại các danh sách dài trong Nhập nhanh: checklist FSAGS 55.1 Trang 1 chỉ mở bằng một nút HIỆN/ẨN; Tùy chỉnh Nhập nhanh cũng chỉ có một nút HIỆN DANH SÁCH/ẨN DANH SÁCH, không còn từng nhóm tự xổ riêng. Sửa đồng bộ DAILY ROSTER khi AD đổi biểu mẫu cùng nhân viên trên cùng chuyến, ví dụ A từ 42.3 sang 55.1: assignment 42.3 cũ được thu hồi khỏi manifest/mail/session và đánh dấu không còn hiệu lực trong Flight Record/taskStatus. Nếu roster hiện tại thật sự phân A cả 42.3 và 55.1 thì cả hai vẫn được giữ.",
-  "message": "V6.4.86: một nút ẩn/hiện cho danh sách Nhập nhanh và thu hồi đúng biểu mẫu roster cũ khi đổi 42.3 ↔ 55.1."
+  "notes": "Từ bản này, sau khi ứng dụng cập nhật và xác minh đúng build mới, ứng dụng tự yêu cầu service worker dọn cache phát hành cũ an toàn. Cơ chế chỉ xóa cache app shell/meta cũ, không xóa localStorage, IndexedDB, dữ liệu chuyến, nháp biểu mẫu hoặc dữ liệu nghiệp vụ. Nếu có nhiều cửa sổ app đang mở hoặc đang có chuyến hoạt động thì cleanup được trì hoãn và tự thử lại khi app trở về trạng thái an toàn. Đồng thời bỏ ngày phiên bản hard-code ở footer để không còn hiển thị ngày cũ sau release mới.",
+  "message": "V6.4.87: tự dọn cache bản cũ sau cập nhật thành công, không cần xóa bộ nhớ đệm thủ công ở các lần update sau."
 }
