@@ -1,4 +1,4 @@
-/* E-REPORT SAGS V6.4.78 · FSAGS 208 WORKSPACE
+/* E-REPORT SAGS V6.4.80 · FSAGS 208 WORKSPACE
  * Airline policy decides whether the flight needs FSAGS 208.
  * No Cargo column is required in Daily Roster.
  * Cargo handling is sequential: last receiver owns editing, immutable receive/send history is retained.
@@ -6,7 +6,7 @@
  */
 (function(root){
 'use strict';
-const BUILD='V6.4.78-20261003-RUNTIME-POLICY-DOSSIER-01';
+const BUILD='V6.4.80-20261003-UNIFIED-FLIGHT-WORKSPACE-REPAIR-01';
 const FLIGHTS='flight_records';
 const MODULE='FSAGS208';
 const FORM='loading208';
@@ -249,7 +249,8 @@ async function openDossier(date,fid){
 }
 root.sagsV338OpenDossier=openDossier;
 root.sagsV338OpenCurrentDossier=function(){const b=bindingFor();if(b)return openDossier(b.opDate,b.flightId);const m=root.currentFlightSessionMeta?.()||{},active=root.__sags208ActiveWorkspace;const fid=S(m.rosterFlightId||m.flightId),date=S(m.opDate||m.rosterDate||m.date||currentDate());if(fid)return openDossier(date,fid);if(active?.flightId)return openDossier(active.opDate,active.flightId);return root.flightWorkspaceOpenList?.(currentDate());};
-function install(){wrapRosterPublish();wrapWorkspaceOpen();wrapWorkspaceVisibility();ensureWorkspaceStyle();ensureManagerDate()}
+function redirectLegacyManager(){const fn=root.openKH208Manager;if(typeof fn==='function'&&!fn.__sags208Unified){const w=function(){try{root.closeKH208Manager?.()}catch(_){}return root.flightWorkspaceOpenList?.(currentDate())};w.__sags208Unified=true;w.__base=fn;root.openKH208Manager=w;try{openKH208Manager=w}catch(_){}}}
+function install(){wrapRosterPublish();wrapWorkspaceOpen();redirectLegacyManager();wrapWorkspaceVisibility();ensureWorkspaceStyle();ensureManagerDate()}
 install();setTimeout(install,450);setTimeout(install,1400);setTimeout(install,3200);window.addEventListener('pageshow',()=>setTimeout(install,100),{passive:true});window.addEventListener('sags:airline-forms-changed',()=>{reconcileCompleted.clear();const active=root.__sags208ActiveWorkspace;const manager=document.getElementById('kh208ManagerModal');if(active&&document.querySelector('#fwcBody .fwcWorkspaceHead')){injectWorkspace(active.opDate,active.flightId).catch(e=>console.info('FSAGS208 policy refresh',e?.message||e));}else if(manager&&getComputedStyle(manager).display!=='none'){renderManager();}});
 root.__SAGS_FSAGS208_WORKSPACE={build:BUILD,reconcileDate,takeoverOpen,openView,syncActiveDraft,published208,syncPublishedSummary,canReadFlight};
 })(window);

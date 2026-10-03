@@ -1,8 +1,8 @@
 {
   "schema": 2,
-  "version": "V6.4.79",
-  "build": "V6.4.79-20261003-UNIFIED-UPDATE-NOTICE-01",
-  "strategy": "verified immutable shell + immediate update notice + explicit user-controlled activation",
+  "version": "V6.4.80",
+  "build": "V6.4.80-20261003-UNIFIED-FLIGHT-WORKSPACE-REPAIR-01",
+  "strategy": "atomic release + unified flight workspace + policy assignments in Flight Record + repair contract",
   "mutableMetadata": [
     "./forms/forms.registry.json",
     "./data/form-configuration.json"
@@ -26,8 +26,8 @@
       "bytes": 20659
     },
     "./app/modules/daily-roster.v502.js": {
-      "sha256": "6f6c6814ed6cd6d6030add50318a4bed15b9c8212a15593840976da6dda4444a",
-      "bytes": 80369
+      "sha256": "3ac72f85f18461b659d23f3be2bd94600feedf9b92278df25d5e83f7489b5155",
+      "bytes": 82164
     },
     "./app/modules/fsags54-94.v622.js": {
       "sha256": "9f39dd025b60be2791fb92e345fe9424c6b122c6546a914f53097fdb31a18ab2",
@@ -226,8 +226,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "e7e82fe52b8f8679e6817ec45515ad0c3098f52df4cc8283ac387f4c422cd25d",
-      "bytes": 80950
+      "sha256": "0d880c0fc12ab418d6c490c6ea6a873bc50c44f1a08be016f4227d7233770f86",
+      "bytes": 82153
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -274,16 +274,16 @@
       "bytes": 465580
     },
     "./repair.html": {
-      "sha256": "c3301deb79dbef700aa3966c69b9d484380521fe355e8c2d8295ca65348b89e2",
-      "bytes": 3133
+      "sha256": "2a69ca7e9853f313b7038a2643fbb9b2fa57cc98f4016fef1d7c0007ef08da37",
+      "bytes": 4445
     },
     "./service-worker.js": {
-      "sha256": "96fbea7889069c525b93a21cf0f1831f5e53a7ec4bc64bccd9cf4ec0db762e52",
-      "bytes": 21095
+      "sha256": "9c300b165f2e1500e7666967b09d1f97fc29a203f863f1e253854f43c4df84bd",
+      "bytes": 21362
     },
     "./version.json": {
-      "sha256": "61ea505b8db188dc381a39c37fac70ea08e76b117710424594a910178d061b65",
-      "bytes": 843
+      "sha256": "6982ccb4e7401c7c9231bd2d7ffe33840d8db61ca38635d6f0ca6d66dbd57380",
+      "bytes": 977
     },
     "./app/modules/form-registry-runtime.v647.js": {
       "sha256": "38273ccd7794e4790c37b5a8594edeaefd412917af2c928245bf8a89b0a8a5f2",
@@ -526,8 +526,8 @@
       "bytes": 2661
     },
     "./app/modules/fsags208-workspace.v1.js": {
-      "sha256": "23b188b21bc3cd5cd4f96052e1523be667ba051b1559d69e7d9bf6d4f89a41bb",
-      "bytes": 41895
+      "sha256": "c416c53325885ae1026fc3fcaf1154a073a1ec64c0932c8271bda5ec6436cf24",
+      "bytes": 42251
     },
     "./app/modules/cargo-all-flights.v1.js": {
       "sha256": "01cac72281fad8bdf5903548515fdffb92415e66f0ba541e91ec54531fd91923",
@@ -542,12 +542,12 @@
       "bytes": 71353
     },
     "./app/generated/core-control.js": {
-      "sha256": "85ade7ce9d7ba709d26b9e8fccce2cc12e67f9aa55d0f11fad2c9297252d2c9c",
-      "bytes": 85858
+      "sha256": "cbbb4241ab2402e73d911d07ec4059c451ff00503d17fd746b32d150014f801a",
+      "bytes": 84928
     },
     "./app/generated/core-flight.js": {
-      "sha256": "4617799e5512e6e1fca6261b5376803afaab588b85c6a1650dc65aac57c9c9b7",
-      "bytes": 203011
+      "sha256": "adc6b3ff7388ef5eb7724e292a0e13f212080c8ea8d779a11c38de703b706c1e",
+      "bytes": 208656
     },
     "./app/generated/core-performance.js": {
       "sha256": "005c80dc9ce412f9e1c8b74d24b48e68b27ddaa05d5de203cb2029e7f93364d8",
@@ -610,8 +610,8 @@
       "bytes": 25399
     },
     "./app/generated/boot-group-4.js": {
-      "sha256": "c0819b968efad9c76877fd7a369906f109b017a6ca1fd976b9c289b07b0e11b2",
-      "bytes": 10066
+      "sha256": "215e2528c72bab91a5cca291f2c3d28818ef348d362dc79db14175a1da3bf250",
+      "bytes": 10466
     },
     "./app/generated/boot-group-5.js": {
       "sha256": "5e63b64c8450611004cdf7983028cfef05f0c5ade6e72b2e34338f58ae048201",

@@ -1,4 +1,4 @@
-/* E-REPORT/SAGS V1.1.108 DAILY ROSTER FINAL · POLICY + DOSSIER RUNTIME
+/* E-REPORT/SAGS V1.1.109 DAILY ROSTER FINAL · UNIFIED FLIGHT WORKSPACE
  * - Same-day roster imports are cumulative MERGE updates.
  * - One canonical work-slot/workspace identity across manifest/mailbox/session/Flight Record.
  * - ARR/DEP assignments of the same roster duty share a sanitized working workspace.
@@ -7,8 +7,8 @@
  */
 (function(root){
 'use strict';
-const BUILD='V1.1.108-20261003-POLICY-DOSSIER-RUNTIME';
-const DISPLAY='V1.1.108';
+const BUILD='V1.1.109-20261003-UNIFIED-FLIGHT-WORKSPACE';
+const DISPLAY='V1.1.109';
 const MANIFEST='roster_manifests',MAIL='roster_mail',SESSION='roster_sessions',STATUS='roster_flight_status',WORKSPACE='roster_flight_workspaces',FLIGHTS='flight_records';
 const MAP_KEY='sags_roster_workspace_map_v1197';
 const S=v=>String(v??'').trim(),U=v=>S(v).toUpperCase();
@@ -215,30 +215,39 @@ async function syncPushbackFromActive(){
 function installRampSync(){root.sagsFlightHubSyncCurrentRamp=function(){clearTimeout(pbTimer);pbTimer=setTimeout(()=>syncPushbackFromActive(),260)}}
 
 /* ---------- Policy-driven CBTT auxiliary forms ---------- */
-function isAdminSession(){try{const s=root.__sagsGetSession?.()||{},p=s.profile||{};return ['AD','ADMIN'].includes(U(s.role||p.role||root.currentRole))}catch(_){return ['AD','ADMIN'].includes(U(root.currentRole))}}
+function policySession(){try{return root.__sagsGetSession?.()||{role:root.currentRole||'',profile:root.currentUserProfile||{}}}catch(_){return{role:root.currentRole||'',profile:root.currentUserProfile||{}}}}
+function canPolicyReconcile(){try{const x=policySession(),p=x.profile||{},r=U(x.role||p.role);return !!r&&!['GUEST','ANONYMOUS'].includes(r)&&p.active!==false}catch(_){return false}}
+function isAdminSession(){try{const x=policySession(),p=x.profile||{};return ['AD','ADMIN'].includes(U(x.role||p.role||root.currentRole))}catch(_){return ['AD','ADMIN'].includes(U(root.currentRole))}}
 function policyAuxAid(date,item,group){return 'RP_'+hash([S(date),flightIdentity(item),normUser(item?.user||item?.targetUser),U(group),'POLICY_AUX'].join('|'))}
 function policyDates(extra=''){const set=new Set(),add=v=>{v=S(v);if(/^\d{4}-\d{2}-\d{2}$/.test(v))set.add(v)};add(extra);add(opDate());add(document.getElementById('drManageDate')?.value);add(document.getElementById('fwcDate')?.value);try{add(sessionStorage.getItem('sagsV36FwcDate'))}catch(_){}return [...set]}
+function policyFlightRecord(flights,fid,base){const r=flights?.[fid]||{};return {...base,...r,user:base?.user||base?.targetUser,targetUser:base?.targetUser||base?.user,flightId:fid,arrFlight:S(r.arrFlight||base?.arrFlight),depFlight:S(r.depFlight||base?.depFlight),flightRaw:S(r.flightRaw||base?.flightRaw||base?.flightName),flightName:S(r.flightName||base?.flightName||base?.flightRaw),acType:S(r.acType||base?.acType),acReg:S(r.acReg||base?.acReg)}}
 async function reconcilePolicyAuxForms(date=opDate()){
- date=S(date)||opDate();if(!isAdminSession()||typeof root.sagsV470Ref!=='function'||!root.sagsAirlineFormPolicy?.allowed)return {ok:false,reason:'NOT_READY',date};
- const policy=await root.sagsAirlineFormPolicy.ready?.(true),man=(await root.sagsV470Ref(`${MANIFEST}/${safe(date)}`).once('value')).val()||{},allItems=Object.values(man.items||{}).filter(Boolean);
+ date=S(date)||opDate();if(!canPolicyReconcile()||typeof root.sagsV470Ref!=='function'||!root.sagsAirlineFormPolicy?.allowed)return {ok:false,reason:'NOT_READY',date};
+ const [policy,manSnap,flightSnap]=await Promise.all([root.sagsAirlineFormPolicy.ready?.(true),root.sagsV470Ref(`${MANIFEST}/${safe(date)}`).once('value'),root.sagsV470Ref(`${FLIGHTS}/${safe(date)}`).once('value')]);
+ const man=manSnap.val()||{},flights=flightSnap.val()||{},allItems=Object.values(man.items||{}).filter(Boolean);
  const bases=allItems.filter(x=>x.active!==false&&U(x.roleKey)==='CBTT'&&(U(x.formGroup)==='FINAL'||U(x.sourceColumn).includes('GRND_LS'))&&!['FSAGS54','FSAGS94'].includes(canonicalForm(x)));
  const specs=[{group:'FSAGS54',canon:'FSAGS54'},{group:'clc_checklist',canon:'FSAGS94'}],desired=new Map(),patch={},now=Date.now();let added=0,reactivated=0,deactivated=0,already=0;
- for(const base of bases){const user=normUser(base.user||base.targetUser),fid=S(base.flightId);if(!user||!fid)continue;for(const spec of specs){
-   if(root.sagsAirlineFormPolicy.allowed(base,spec.group)!==true)continue;const key=[user,fid,spec.canon].join('|');desired.set(key,{base,user,fid,spec});
-   const matches=allItems.filter(x=>normUser(x.user||x.targetUser)===user&&S(x.flightId)===fid&&canonicalForm(x)===spec.canon),active=matches.find(x=>x.active!==false);if(active){already++;continue}
-   const old=matches.find(x=>x.policyGenerated===true);if(old){const aid=S(old.assignmentId),item={...old,active:true,policyGenerated:true,policyReactivatedAtMs:now,policyRevision:Number(policy?.revision||0),updatedAtMs:now};patch[`${MANIFEST}/${safe(date)}/items/${safe(aid)}`]=item;patch[`${MAIL}/${safe(user)}/items/${safe(aid)}`]={...item,engine:item.engine||'daily-roster-v2',schema:item.schema||2,opDate:date,date:S(item.date||date)};patch[`${SESSION}/${safe(aid)}/active`]=true;patch[`${SESSION}/${safe(aid)}/policyGenerated`]=true;patch[`${SESSION}/${safe(aid)}/policyRevision`]=Number(policy?.revision||0);patch[`${SESSION}/${safe(aid)}/updatedAtMs`]=now;reactivated++;continue}
-   const aid=policyAuxAid(date,base,spec.group),item={...clone(base),assignmentId:aid,user,targetUser:user,originalUser:normUser(base.originalUser||base.originalTargetUser||user),originalTargetUser:normUser(base.originalUser||base.originalTargetUser||user),formGroup:spec.group,sourceColumn:'Grnd_Ls',roleKey:'CBTT',assignmentLeg:'',assignmentScope:'TURNAROUND',workPartOrder:1,workPartTotal:1,workPartSequenceSource:'Grnd_Ls',coAssigneeGroupId:'',coAssigneeMode:'',coAssigneeRank:1,coAssigneeTotal:1,coAssigneeUsers:[user],manualOverride:false,active:true,policyGenerated:true,policyGeneratedAtMs:now,policyRevision:Number(policy?.revision||0),updatedAtMs:now};delete item.workspaceKey;delete item.rosterWorkspaceKey;delete item.rosterWorkSlotKey;patch[`${MANIFEST}/${safe(date)}/items/${safe(aid)}`]=item;patch[`${MAIL}/${safe(user)}/items/${safe(aid)}`]={...item,engine:'daily-roster-v2',schema:2,opDate:date,date:S(item.date||date)};patch[`${SESSION}/${safe(aid)}`]={engine:'daily-roster-v2',schema:1,assignmentId:aid,ownerUser:user,formGroup:spec.group,claimStatus:'READY',taskStatusV333:'UNCLAIMED',taskAvailabilityV333:'READY',active:true,policyGenerated:true,policyRevision:Number(policy?.revision||0),createdAtMs:now,updatedAtMs:now};added++;
- }}
- for(const item of allItems){const canon=canonicalForm(item);if(item.policyGenerated!==true||!['FSAGS54','FSAGS94'].includes(canon)||item.active===false)continue;const user=normUser(item.user||item.targetUser),fid=S(item.flightId),key=[user,fid,canon].join('|');if(desired.has(key))continue;const aid=S(item.assignmentId);if(!aid)continue;const disabled={...item,active:false,policyDisabledAtMs:now,policyRevision:Number(policy?.revision||0),updatedAtMs:now};patch[`${MANIFEST}/${safe(date)}/items/${safe(aid)}`]=disabled;if(user)patch[`${MAIL}/${safe(user)}/items/${safe(aid)}`]={...disabled,engine:item.engine||'daily-roster-v2',schema:item.schema||2,opDate:date,date:S(item.date||date)};patch[`${SESSION}/${safe(aid)}/active`]=false;patch[`${SESSION}/${safe(aid)}/policyDisabledAtMs`]=now;patch[`${SESSION}/${safe(aid)}/policyRevision`]=Number(policy?.revision||0);patch[`${SESSION}/${safe(aid)}/updatedAtMs`]=now;deactivated++}
+ for(const base0 of bases){const user=normUser(base0.user||base0.targetUser),fid=S(base0.flightId);if(!user||!fid)continue;const base=policyFlightRecord(flights,fid,base0);
+   for(const spec of specs){if(root.sagsAirlineFormPolicy.allowed(base,spec.group)!==true)continue;const key=[user,fid,spec.canon].join('|');desired.set(key,{base,user,fid,spec});
+     const matches=allItems.filter(x=>normUser(x.user||x.targetUser)===user&&S(x.flightId)===fid&&canonicalForm(x)===spec.canon),active=matches.find(x=>x.active!==false);
+     if(active){const aid=S(active.assignmentId);if(aid)patch[`${FLIGHTS}/${safe(date)}/${safe(fid)}/assignments/${safe(aid)}`]={...active,active:true,opDate:date,flightId:fid,policyRevision:Number(policy?.revision||0)};already++;continue}
+     const old=matches.find(x=>x.policyGenerated===true);
+     if(old){const aid=S(old.assignmentId),item={...old,...base,assignmentId:aid,user,targetUser:user,formGroup:spec.group,sourceColumn:'Grnd_Ls',roleKey:'CBTT',active:true,policyGenerated:true,policyReactivatedAtMs:now,policyRevision:Number(policy?.revision||0),updatedAtMs:now};patch[`${MANIFEST}/${safe(date)}/items/${safe(aid)}`]=item;patch[`${MAIL}/${safe(user)}/items/${safe(aid)}`]={...item,engine:item.engine||'daily-roster-v2',schema:item.schema||2,opDate:date,date:S(item.date||date)};patch[`${SESSION}/${safe(aid)}/active`]=true;patch[`${SESSION}/${safe(aid)}/policyGenerated`]=true;patch[`${SESSION}/${safe(aid)}/policyRevision`]=Number(policy?.revision||0);patch[`${SESSION}/${safe(aid)}/updatedAtMs`]=now;patch[`${FLIGHTS}/${safe(date)}/${safe(fid)}/assignments/${safe(aid)}`]=item;reactivated++;continue}
+     const aid=policyAuxAid(date,base,spec.group),item={...clone(base),assignmentId:aid,user,targetUser:user,originalUser:normUser(base.originalUser||base.originalTargetUser||user),originalTargetUser:normUser(base.originalUser||base.originalTargetUser||user),formGroup:spec.group,sourceColumn:'Grnd_Ls',roleKey:'CBTT',assignmentLeg:'',assignmentScope:'TURNAROUND',workPartOrder:1,workPartTotal:1,workPartSequenceSource:'Grnd_Ls',coAssigneeGroupId:'',coAssigneeMode:'',coAssigneeRank:1,coAssigneeTotal:1,coAssigneeUsers:[user],manualOverride:false,active:true,policyGenerated:true,policyGeneratedAtMs:now,policyRevision:Number(policy?.revision||0),updatedAtMs:now};delete item.workspaceKey;delete item.rosterWorkspaceKey;delete item.rosterWorkSlotKey;
+     patch[`${MANIFEST}/${safe(date)}/items/${safe(aid)}`]=item;patch[`${MAIL}/${safe(user)}/items/${safe(aid)}`]={...item,engine:'daily-roster-v2',schema:2,opDate:date,date:S(item.date||date)};patch[`${SESSION}/${safe(aid)}`]={engine:'daily-roster-v2',schema:1,assignmentId:aid,ownerUser:user,formGroup:spec.group,claimStatus:'READY',taskStatusV333:'UNCLAIMED',taskAvailabilityV333:'READY',active:true,policyGenerated:true,policyRevision:Number(policy?.revision||0),createdAtMs:now,updatedAtMs:now};patch[`${FLIGHTS}/${safe(date)}/${safe(fid)}/assignments/${safe(aid)}`]=item;added++;
+   }
+ }
+ for(const item of allItems){const canon=canonicalForm(item);if(item.policyGenerated!==true||!['FSAGS54','FSAGS94'].includes(canon)||item.active===false)continue;const user=normUser(item.user||item.targetUser),fid=S(item.flightId),key=[user,fid,canon].join('|');if(desired.has(key))continue;const aid=S(item.assignmentId);if(!aid)continue;const disabled={...item,active:false,policyDisabledAtMs:now,policyRevision:Number(policy?.revision||0),updatedAtMs:now};patch[`${MANIFEST}/${safe(date)}/items/${safe(aid)}`]=disabled;if(user)patch[`${MAIL}/${safe(user)}/items/${safe(aid)}`]={...disabled,engine:item.engine||'daily-roster-v2',schema:item.schema||2,opDate:date,date:S(item.date||date)};patch[`${SESSION}/${safe(aid)}/active`]=false;patch[`${SESSION}/${safe(aid)}/policyDisabledAtMs`]=now;patch[`${SESSION}/${safe(aid)}/policyRevision`]=Number(policy?.revision||0);patch[`${SESSION}/${safe(aid)}/updatedAtMs`]=now;if(fid)patch[`${FLIGHTS}/${safe(date)}/${safe(fid)}/assignments/${safe(aid)}`]=disabled;deactivated++}
  patch[`${MANIFEST}/${safe(date)}/policyAuxReconciledAtMs`]=now;patch[`${MANIFEST}/${safe(date)}/policyAuxReconciledBuild`]=BUILD;patch[`${MANIFEST}/${safe(date)}/policyAuxRevision`]=Number(policy?.revision||0);patch[`${MANIFEST}/${safe(date)}/policyAuxExpectedCount`]=desired.size;patch[`${MANIFEST}/${safe(date)}/policyAuxAddedCount`]=added;patch[`${MANIFEST}/${safe(date)}/policyAuxReactivatedCount`]=reactivated;patch[`${MANIFEST}/${safe(date)}/policyAuxDeactivatedCount`]=deactivated;
- await root.sagsV470Ref('').update(patch);try{root.sagsV477InvalidateQueueStatus?.()}catch(_){}return {ok:true,date,policyRevision:Number(policy?.revision||0),expected:desired.size,added,reactivated,deactivated,already}
+ await root.sagsV470Ref('').update(patch);try{root.sagsV477InvalidateQueueStatus?.()}catch(_){}try{root.dispatchEvent(new CustomEvent('sags:policy-assignments-reconciled',{detail:{date,revision:Number(policy?.revision||0),added,reactivated,deactivated}}))}catch(_){}
+ return {ok:true,date,policyRevision:Number(policy?.revision||0),expected:desired.size,added,reactivated,deactivated,already}
 }
-async function reconcilePolicyDates(extra=''){if(!isAdminSession())return [];const out=[];for(const d of policyDates(extra))try{out.push(await reconcilePolicyAuxForms(d))}catch(e){console.info('Policy aux reconcile '+d,e?.message||e)}return out}
-function installPolicyEntrypoints(){const fn=root.flightWorkspaceOpenList;if(typeof fn==='function'&&!fn.__policyAux108){const w=async function(date){if(isAdminSession())await reconcilePolicyDates(S(date)||opDate());return await fn.apply(this,arguments)};w.__policyAux108=1;w.__base=fn;root.flightWorkspaceOpenList=w}}
+async function reconcilePolicyDates(extra=''){if(!canPolicyReconcile())return [];const out=[];for(const d of policyDates(extra))try{out.push(await reconcilePolicyAuxForms(d))}catch(e){console.info('Policy aux reconcile '+d,e?.message||e)}return out}
+function installPolicyEntrypoints(){const fn=root.flightWorkspaceOpenList;if(typeof fn==='function'&&!fn.__policyAux109){const w=async function(date){await reconcilePolicyDates(S(date)||opDate());return await fn.apply(this,arguments)};w.__policyAux109=1;w.__base=fn;root.flightWorkspaceOpenList=w}}
 root.sagsReconcilePolicyAuxForms=reconcilePolicyAuxForms;root.sagsReconcilePolicyDates=reconcilePolicyDates;
-root.addEventListener?.('sags:airline-forms-changed',()=>{if(isAdminSession())setTimeout(()=>reconcilePolicyDates().catch(e=>console.info('Policy aux reconcile',e?.message||e)),180)});
-root.addEventListener?.('pageshow',()=>{if(isAdminSession())setTimeout(()=>reconcilePolicyDates().catch(()=>{}),300)},{passive:true});
-document.addEventListener?.('visibilitychange',()=>{if(!document.hidden&&isAdminSession())setTimeout(()=>reconcilePolicyDates().catch(()=>{}),250)},{passive:true});
+root.addEventListener?.('sags:airline-forms-changed',()=>{if(canPolicyReconcile())setTimeout(()=>reconcilePolicyDates().catch(e=>console.info('Policy aux reconcile',e?.message||e)),180)});
+root.addEventListener?.('pageshow',()=>{if(canPolicyReconcile())setTimeout(()=>reconcilePolicyDates().catch(()=>{}),300)},{passive:true});
+document.addEventListener?.('visibilitychange',()=>{if(!document.hidden&&canPolicyReconcile())setTimeout(()=>reconcilePolicyDates().catch(()=>{}),250)},{passive:true});
 
 /* ---------- Entry-point hooks ---------- */
 function wrapAsync(name,before,after,tag){const fn=root[name];if(typeof fn!=='function'||fn[tag])return false;const w=async function(){try{if(before)await before(arguments)}catch(e){console.info('V1.1.99 before',name,e?.message||e)}const r=await fn.apply(this,arguments);try{if(after)await after(r,arguments)}catch(e){console.info('V1.1.99 after',name,e?.message||e)}return r};w[tag]=1;w[tag+'Base']=fn;root[name]=w;try{if(name==='dailyRosterPublish')dailyRosterPublish=w;else if(name==='v324ReceiveOrOpen')v324ReceiveOrOpen=w}catch(_){}return true}
@@ -249,7 +258,7 @@ function installHooks(){
   wrapAsync('dailyRosterReassign',null,async()=>{try{await root.sagsTaskStatusSyncDate?.(S(document.getElementById('drManageDate')?.value)||opDate(),true)}catch(_){}},'__v1198');
   wrapAsync('dailyRosterResetToRoster',null,async()=>{try{await root.sagsTaskStatusSyncDate?.(S(document.getElementById('drManageDate')?.value)||opDate(),true)}catch(_){}},'__v1198');
 }
-function install(){installRefClean();installWorkspaceApi();installRampSync();installHooks();installPolicyEntrypoints();root.__SAGS_DAILY_ROSTER_CLEAN_V1199={build:BUILD,display:DISPLAY,workspaceKey,workSlotKey,hydrateWorkspaceForFlight,syncPushbackFromActive,reconcilePolicyAuxForms,reconcilePolicyDates};if(isAdminSession())setTimeout(()=>reconcilePolicyDates().catch(()=>{}),900);}
+function install(){installRefClean();installWorkspaceApi();installRampSync();installHooks();installPolicyEntrypoints();root.__SAGS_DAILY_ROSTER_CLEAN_V1199={build:BUILD,display:DISPLAY,workspaceKey,workSlotKey,hydrateWorkspaceForFlight,syncPushbackFromActive,reconcilePolicyAuxForms,reconcilePolicyDates};if(canPolicyReconcile())setTimeout(()=>reconcilePolicyDates().catch(()=>{}),900);}
 install();setTimeout(install,350);setTimeout(install,1100);setTimeout(install,2600);
 })(typeof window!=='undefined'?window:globalThis);
 
@@ -263,7 +272,7 @@ install();setTimeout(install,350);setTimeout(install,1100);setTimeout(install,26
  */
 (function(root){
 'use strict';
-const BUILD='V1.1.108-20261003-POLICY-DOSSIER-RUNTIME';
+const BUILD='V1.1.109-20261003-UNIFIED-FLIGHT-WORKSPACE';
 const S=v=>String(v??'').trim(),U=v=>S(v).toUpperCase(),safe=v=>S(v).replace(/[.#$\[\]\/]/g,'_');
 const norm=v=>{try{return typeof root.normalizePersonalUsername==='function'?root.normalizePersonalUsername(v):U(v).replace(/\s+/g,'').replace(/[^A-Z0-9._-]/g,'_').slice(0,40)}catch(_){return U(v).replace(/\s+/g,'').replace(/[^A-Z0-9._-]/g,'_').slice(0,40)}};
 const esc=v=>S(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -423,7 +432,10 @@ function visibleFormTasks(g){
   }).sort((a,b)=>(root.sagsAirlineFormPolicy?.order(a.item.formGroup)||999)-(root.sagsAirlineFormPolicy?.order(b.item.formGroup)||999));
 }
 function policyAuxBadges(g){const base=(g?.items||[]).find(x=>U(x?.roleKey)==='CBTT'||U(x?.sourceColumn).includes('GRND_LS')||U(x?.formGroup)==='FINAL');if(!base||!root.sagsAirlineFormPolicy?.allowed)return [];const carrier=S(root.sagsAirlineFormPolicy?.carrier?.(base)||''),specs=[{group:'FSAGS54',canon:'FSAGS54',label:'F-54'},{group:'clc_checklist',canon:'FSAGS94',label:'F-94'}],out=[];for(const spec of specs){if(root.sagsAirlineFormPolicy.allowed(base,spec.group)!==true)continue;const assigned=(g.items||[]).some(x=>x.active!==false&&canonicalForm(x)===spec.canon);out.push({label:spec.label,carrier,status:assigned?'ĐÃ PHÂN CÔNG':'CHỜ ĐỒNG BỘ',assigned})}return out}
-function policyAuxHtml(g){const rows=policyAuxBadges(g);if(!rows.length)return '';return '<div class="v1199PolicySummary"><span class="v1199PolicyLabel">⚖ HIỆU LỰC BIỂU MẪU</span><span class="v1199PolicyChips">'+rows.map(x=>'<span class="v1199PolicyChip '+(x.assigned?'':'warn')+'">'+esc(x.label)+(x.carrier?' · '+esc(x.carrier):'')+' · '+esc(x.status)+'</span>').join('')+'</span></div>'}
+function policyAuxHtml(g){
+ const rows=policyAuxBadges(g).filter(x=>!x.assigned);if(!rows.length)return '';
+ return '<div class="v1199PolicySummary"><span class="v1199PolicyLabel">⚠ BIỂU MẪU CHƯA ĐƯỢC PHÂN CÔNG</span><span class="v1199PolicyChips">'+rows.map(x=>'<span class="v1199PolicyChip warn">'+esc(x.label)+(x.carrier?' · '+esc(x.carrier):'')+' · CHƯA PHÂN CÔNG</span>').join('')+'</span></div>';
+}
 function taskPills(g,date){return visibleFormTasks(g).map(({item:x,st,done})=>{
   const label=formLabel(x),verb=itemWorking(x,st)?'TIẾP TỤC':'NHẬN',aid=S(x.assignmentId),fid=S(x.flightId),d=S(date);
   if(done)return `<article class="v1199DossierTask"><b>${esc(departmentLabel(x))}</b><span class="v1199TaskActions"><button type="button" class="v1199TaskBtn done" data-task-aid="${esc(aid)}" data-task-fid="${esc(fid)}" data-task-date="${esc(d)}" data-task-completed="1" aria-label="${esc('Mở lại')} FSAGS ${esc(label)}">↻ MỞ LẠI ${esc(label)}</button><button type="button" class="v1199PdfBtn" data-pdf-aid="${esc(aid)}" data-pdf-fid="${esc(fid)}" data-pdf-date="${esc(d)}" aria-label="${esc('Xuất PDF')} FSAGS ${esc(label)}">📄 XUẤT PDF</button></span></article>`;
