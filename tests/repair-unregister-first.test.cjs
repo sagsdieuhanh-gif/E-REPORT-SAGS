@@ -1,0 +1,13 @@
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const root=path.resolve(__dirname,'..');
+const repair=fs.readFileSync(path.join(root,'repair.html'),'utf8');
+const version=JSON.parse(fs.readFileSync(path.join(root,'version.json'),'utf8'));
+const manifest=JSON.parse(fs.readFileSync(path.join(root,'asset-manifest.json'),'utf8'));
+const sw=fs.readFileSync(path.join(root,'service-worker.js'),'utf8');
+assert.match(repair,/if\(stage==='1'\)\{await clearOldShell\(\);/,'repair must clear stale worker before release verification');
+assert.match(repair,/await r\.unregister\(\)|r=>r\.unregister\(\)/,'repair must unregister service workers');
+assert.match(repair,/for\(let attempt=1;attempt<=8;attempt\+\+\)/,'repair should retry transient release synchronization');
+assert.ok(!repair.includes("Bản cập nhật đã đổi từ"),'stale target must not block latest repair');
+assert.equal(manifest.build,version.build);
+assert.equal(sw.match(/const BUILD='([^']+)'/)[1],version.build);
+console.log('Repair unregister-first regression checks passed: '+version.build);
