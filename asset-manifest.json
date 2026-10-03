@@ -1,8 +1,8 @@
 {
   "schema": 2,
-  "version": "V6.4.86",
-  "build": "V6.4.86-20261003-SINGLE-TOGGLE-ROSTER-SWITCH-01",
-  "strategy": "atomic release + single global quick-entry toggles + roster same-worker form-switch retirement + required auto-update + repair-first stale-shell recovery",
+  "version": "V6.4.87",
+  "build": "V6.4.87-20261003-STALE-WORKER-DETACH-01",
+  "strategy": "atomic release + stale-controller detach repair + network-only repair cache reset + single global quick-entry toggles + roster form-switch retirement",
   "mutableMetadata": [
     "./forms/forms.registry.json",
     "./data/form-configuration.json"
@@ -226,8 +226,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "0ff536f7f31d42f2647a0ca74a35b83b318c7f642b79f1ede65acf46a6946917",
-      "bytes": 81773
+      "sha256": "e80d448c730694dff91efc0613a85310f06a5de5e6921f457129720774f5b1ee",
+      "bytes": 81064
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -274,16 +274,16 @@
       "bytes": 465580
     },
     "./repair.html": {
-      "sha256": "93765c504c36074fa05c53e614a564c16af070da7e8e9ee797f0354752d09617",
-      "bytes": 4794
+      "sha256": "2c02b2a8ddcd19d70d2127130a4e552b79e5e518c79fce698318fd8df789447f",
+      "bytes": 6861
     },
     "./service-worker.js": {
-      "sha256": "1c0de8f743ab6ac8d7d83f5eea0601d4ac95b650529ab6e60644829050e8778a",
-      "bytes": 21759
+      "sha256": "0c1f98973b4165ba2cf4d38b249539ff24e90bd450322a58923b263ed0967ed0",
+      "bytes": 21735
     },
     "./version.json": {
-      "sha256": "b28a9be0e81568df312eab3c9fd8c5fc614237de0b6870fc51c3ab2b6ff08e64",
-      "bytes": 1113
+      "sha256": "fae5f86b6caa64872942e8ec51a99f42b072c96ad58bafa71029d74354be7b78",
+      "bytes": 1173
     },
     "./app/modules/form-registry-runtime.v647.js": {
       "sha256": "38273ccd7794e4790c37b5a8594edeaefd412917af2c928245bf8a89b0a8a5f2",
@@ -302,8 +302,8 @@
       "bytes": 1253
     },
     "./app/boot/05-legacy.js": {
-      "sha256": "0cdda460110df4ebc5355b2da68f85b335be59db5def3f51cc24c89569c80c93",
-      "bytes": 294591
+      "sha256": "a3d26546c166a5977bfebac132b0f0761bfe90c13f7f3124227153919b6d45cf",
+      "bytes": 294732
     },
     "./app/boot/06-legacy.js": {
       "sha256": "567f8d8a4c799969b3745794233b730ca48bbd757ee2db3b95552533ed4b91c6",
