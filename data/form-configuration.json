@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "revision": 3,
+  "revision": 4,
   "source": "repository",
   "carriers": {
     "HAV": {
@@ -25,7 +25,7 @@
       "prefixes": [
         "QH"
       ],
-      "fsags54": false,
+      "fsags54": true,
       "fsags94": false
     },
     "DV": {
@@ -34,7 +34,7 @@
         "DV"
       ],
       "fsags54": false,
-      "fsags94": false
+      "fsags94": true
     },
     "KC": {
       "label": "Air Astana",
@@ -42,7 +42,7 @@
         "KC"
       ],
       "fsags54": false,
-      "fsags94": false
+      "fsags94": true
     },
     "C6": {
       "label": "C6",
@@ -50,7 +50,7 @@
         "C6"
       ],
       "fsags54": false,
-      "fsags94": false
+      "fsags94": true
     },
     "KA": {
       "label": "KA",
@@ -58,14 +58,14 @@
         "KA"
       ],
       "fsags54": false,
-      "fsags94": false
+      "fsags94": true
     },
     "N4": {
       "label": "Nordwind Airlines",
       "prefixes": [
         "N4"
       ],
-      "fsags54": false,
+      "fsags54": true,
       "fsags94": false
     },
     "AK": {
@@ -74,7 +74,7 @@
         "AK"
       ],
       "fsags54": false,
-      "fsags94": false
+      "fsags94": true
     },
     "FD": {
       "label": "FD",
@@ -82,7 +82,7 @@
         "FD"
       ],
       "fsags54": false,
-      "fsags94": false
+      "fsags94": true
     },
     "KE": {
       "label": "Korean Air",
@@ -90,14 +90,14 @@
         "KE"
       ],
       "fsags54": false,
-      "fsags94": false
+      "fsags94": true
     },
     "BX": {
       "label": "Air Busan",
       "prefixes": [
         "BX"
       ],
-      "fsags54": false,
+      "fsags54": true,
       "fsags94": false
     },
     "WE": {
@@ -106,14 +106,14 @@
         "WE"
       ],
       "fsags54": false,
-      "fsags94": false
+      "fsags94": true
     },
     "RF": {
       "label": "RF",
       "prefixes": [
         "RF"
       ],
-      "fsags54": false,
+      "fsags54": true,
       "fsags94": false
     },
     "TW": {
@@ -121,8 +121,8 @@
       "prefixes": [
         "TW"
       ],
-      "fsags54": true,
-      "fsags94": false
+      "fsags54": false,
+      "fsags94": true
     },
     "OZ": {
       "label": "Asiana Airlines",
@@ -130,7 +130,7 @@
         "OZ"
       ],
       "fsags54": false,
-      "fsags94": false
+      "fsags94": true
     },
     "LJ": {
       "label": "Jin Air",
@@ -145,7 +145,7 @@
       "prefixes": [
         "3U"
       ],
-      "fsags54": false,
+      "fsags54": true,
       "fsags94": false
     },
     "UQ": {
@@ -153,15 +153,15 @@
       "prefixes": [
         "UQ"
       ],
-      "fsags54": true,
-      "fsags94": false
+      "fsags54": false,
+      "fsags94": true
     },
     "DR": {
       "label": "DR",
       "prefixes": [
         "DR"
       ],
-      "fsags54": false,
+      "fsags54": true,
       "fsags94": false
     },
     "TR": {
@@ -170,7 +170,7 @@
         "TR"
       ],
       "fsags54": false,
-      "fsags94": false
+      "fsags94": true
     },
     "HY": {
       "label": "Uzbekistan Airways",
@@ -185,7 +185,7 @@
       "prefixes": [
         "HU"
       ],
-      "fsags54": false,
+      "fsags54": true,
       "fsags94": false
     },
     "VZ": {
@@ -194,15 +194,15 @@
         "VZ",
         "TVJ"
       ],
-      "fsags54": true,
-      "fsags94": false
+      "fsags54": false,
+      "fsags94": true
     },
     "9G": {
       "label": "9G",
       "prefixes": [
         "9G"
       ],
-      "fsags54": false,
+      "fsags54": true,
       "fsags94": false
     },
     "B2": {
@@ -210,7 +210,7 @@
       "prefixes": [
         "B2"
       ],
-      "fsags54": false,
+      "fsags54": true,
       "fsags94": false
     },
     "VU": {
@@ -218,8 +218,8 @@
       "prefixes": [
         "VU"
       ],
-      "fsags54": false,
-      "fsags94": false
+      "fsags54": true,
+      "fsags94": true
     },
     "VN": {
       "label": "Vietnam Airlines",
@@ -311,9 +311,16 @@
       "enabled": true,
       "allCarriers": false,
       "carriers": [
-        "TW",
-        "VZ",
-        "UQ"
+        "3U",
+        "9G",
+        "BX",
+        "QH",
+        "B2",
+        "DR",
+        "HU",
+        "N4",
+        "RF",
+        "VU"
       ],
       "aircraftClass": "ALL",
       "aircraftTypes": []
@@ -323,8 +330,22 @@
       "enabled": true,
       "allCarriers": false,
       "carriers": [
+        "KC",
+        "AK",
+        "OZ",
+        "C6",
+        "DV",
+        "FD",
+        "KA",
+        "KE",
+        "TR",
+        "TW",
+        "VZ",
+        "UQ",
         "HY",
-        "VJ"
+        "VJ",
+        "VU",
+        "WE"
       ],
       "aircraftClass": "ALL",
       "aircraftTypes": []
@@ -338,5 +359,5 @@
       "aircraftTypes": []
     }
   },
-  "updatedAt": "2026-10-03T03:14:31.219Z"
+  "updatedAt": "2026-10-03T04:07:30.112Z"
 }
