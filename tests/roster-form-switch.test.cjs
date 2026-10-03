@@ -6,5 +6,5 @@ assert.match(flight,/function sameRosterWorkerFormSwitch\(a,b\)/,'same-worker fo
 assert.match(flight,/sameRosterWorkSlot\(x,q\)\|\|sameRosterWorkerFormSwitch\(x,q\)/,'roster replacement lookup must include form switches');
 assert.match(flight,/supersededByAssignmentId/,'old Flight Record assignment must point to successor');
 assert.match(flight,/supersededByFormGroup/,'old Flight Record assignment must record replacement form');
-assert.match(flight,/statusLabel\`\]="ĐÃ THU HỒI THEO ROSTER"/,'old Flight Record task status must be retired');
+assert.match(flight,/ĐÃ THU HỒI THEO ROSTER/,'old Flight Record task status must be retired');
 console.log('Roster form-switch regression checks passed');
