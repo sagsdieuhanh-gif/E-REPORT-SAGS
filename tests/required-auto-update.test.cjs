@@ -1,0 +1,14 @@
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const root=path.resolve(__dirname,'..');
+const legacy=fs.readFileSync(path.join(root,'app/boot/05-legacy.js'),'utf8');
+const sw=fs.readFileSync(path.join(root,'service-worker.js'),'utf8');
+const version=JSON.parse(fs.readFileSync(path.join(root,'version.json'),'utf8'));
+const manifest=JSON.parse(fs.readFileSync(path.join(root,'asset-manifest.json'),'utf8'));
+assert.equal(version.updatePolicy,'required');
+assert.match(legacy,/appUpdatePolicy=String\(data\?\.updatePolicy/);
+assert.match(legacy,/function canAutoApplyRequiredUpdate\(\)/);
+assert.match(legacy,/void applyAppUpdate\(\)/);
+const swBuild=sw.match(/const BUILD='([^']+)'/)[1];
+assert.equal(swBuild,version.build);
+assert.equal(manifest.build,version.build);
+console.log('Required auto-update regression checks passed: '+version.build);
