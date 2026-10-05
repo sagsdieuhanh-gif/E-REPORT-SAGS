@@ -1,12 +1,12 @@
 {
-  "version": "V6.4.88",
-  "displayVersion": "V6.4.88",
-  "label": "V6.4.88 - AUTO CACHE CLEANUP",
-  "build": "V6.4.88-20261003-AUTO-CACHE-CLEANUP-01",
-  "releasedAt": "2026-10-03T13:27:00Z",
-  "type": "fix",
-  "base": "V6.4.87-20261003-STALE-WORKER-DETACH-01",
+  "version": "V6.4.89",
+  "displayVersion": "V6.4.89",
+  "label": "V6.4.89 - AIRLINE DASHBOARD + AD CONTRAST",
+  "build": "V6.4.89-20261005-AIRLINE-DASHBOARD-AD-CONTRAST-01",
+  "releasedAt": "2026-10-05T18:23:27Z",
+  "type": "ui",
+  "base": "V6.4.88-20261003-AUTO-CACHE-CLEANUP-01",
   "updatePolicy": "required",
-  "notes": "Từ bản này, sau khi ứng dụng đã chạy đúng build mới, ứng dụng tự yêu cầu service worker dọn toàn bộ cache phát hành cũ theo cơ chế an toàn. Cleanup chỉ đụng các cache app shell/meta, không xóa localStorage, IndexedDB, dữ liệu chuyến, nháp biểu mẫu hoặc dữ liệu nghiệp vụ. Nếu đang có chuyến hoạt động hoặc có nhiều cửa sổ app mở thì cleanup được hoãn và tự thử lại khi app trở về trạng thái an toàn. Giữ nguyên cơ chế V6.4.87 tách controller cũ và repair network-only cho thiết bị đang bị kẹt ở bản cũ.",
-  "message": "V6.4.88: tự dọn cache bản cũ sau cập nhật thành công, giảm nhu cầu xóa bộ nhớ đệm thủ công ở các lần update sau."
+  "notes": "Cập nhật giao diện theo hướng airline dashboard: thêm dải hãng hàng không dưới khu vực chào mừng với mã hãng và tên đầy đủ, bổ sung nhận diện hãng trong từng thẻ chuyến, thu gọn danh sách chuyến và có nút XEM TẤT CẢ, nhấn mạnh nút NHẬN để thao tác nhanh hơn, căn đồng bộ banner/summary. Đồng thời sửa tương phản toàn bộ khu vực AD trên nền dark glass, gồm nhãn, mô tả, thẻ quản trị, ô readonly và AD CONTROL CENTER để không còn chữ tối chìm vào nền.",
+  "message": "V6.4.89: airline dashboard rõ hãng hơn, danh sách chuyến gọn hơn và sửa toàn bộ lỗi chữ AD bị chìm trên nền tối."
 }
