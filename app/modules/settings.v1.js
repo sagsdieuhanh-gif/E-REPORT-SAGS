@@ -3,7 +3,7 @@
  */
 (function(w){
 'use strict';
-var BUILD='V2.0-20261006-SETTINGS-HOME-FIX-01',TRACE_KEY='sagsSettingsTraceV23';
+var BUILD='V2.0-20261006-SETTINGS-PC-LAYOUT-FIX-02',TRACE_KEY='sagsSettingsTraceV23';
 function trace(step,data){var rec={at:new Date().toISOString(),build:BUILD,step:String(step||''),data:data||null};try{var a=JSON.parse(sessionStorage.getItem(TRACE_KEY)||'[]');if(!Array.isArray(a))a=[];a.push(rec);if(a.length>60)a=a.slice(-60);sessionStorage.setItem(TRACE_KEY,JSON.stringify(a));w.__SAGS_SETTINGS_TRACE__=a}catch(e){w.__SAGS_SETTINGS_TRACE__=(w.__SAGS_SETTINGS_TRACE__||[]).concat([rec]).slice(-60)}try{w.dispatchEvent(new CustomEvent('sags:settings-trace',{detail:rec}))}catch(e){}return rec}
 if(w.__SAGS_SETTINGS_CENTER_READY__===BUILD&&typeof w.sagsOpenSettings==='function'){trace('module:reuse-ready');return}
 w.__SAGS_SETTINGS_CENTER_LOADING__=BUILD;trace('module:start',{ready:w.__SAGS_SETTINGS_CENTER_READY__||'',prior:w.__SAGS_SETTINGS_CENTER__||''});
@@ -55,9 +55,21 @@ function shell(){
  var e=document.createElement('div');e.id='sagsSettingsCenter';e.className='sagsSettingsCenter';e.setAttribute('aria-hidden','true');
  e.innerHTML=[
  '<div class="sagsSettingsPanel" role="dialog" aria-modal="true"><header><div><small>E-REPORT SAGS</small><h2>CÀI ĐẶT</h2><p>Cá nhân hóa tài khoản, thiết bị và cách ứng dụng hoạt động.</p></div><button id="sagsSettingsClose">✕</button></header>',
- '<div class="sagsSettingsLayout"><nav class="sagsSettingsNav">',
- '<button data-tab="account">👤 <span>Tài khoản</span></button><button data-tab="appearance">◐ <span>Giao diện</span></button><button data-tab="notify">🔔 <span>Thông báo</span></button><button data-tab="sync">☁ <span>Dữ liệu & đồng bộ</span></button><button data-tab="device">📱 <span>Thiết bị & Offline</span></button><button data-tab="security">🔐 <span>Bảo mật</span></button><button data-tab="update">↻ <span>Cập nhật</span></button><button data-tab="about">ⓘ <span>Thông tin</span></button><button data-tab="diag" id="sagsDiagTab">🛠 <span>Chẩn đoán</span></button>',
- '</nav><main class="sagsSettingsContent">',
+ '<div class="sagsSettingsLayout"><aside class="sagsSettingsSidebar">',
+ '<button type="button" class="sagsSettingsBack" id="sagsSettingsBack" aria-label="Quay lại">← <span>QUAY LẠI</span></button>',
+ '<nav class="sagsSettingsNav" aria-label="Cài đặt E-REPORT">',
+ '<div class="sagsSettingsNavGroupLabel">CÀI ĐẶT CÁ NHÂN</div>',
+ '<button data-tab="account"><span class="sagsSettingsNavIcon">👤</span><span class="sagsSettingsNavCopy"><b>Tài khoản</b><small>Hồ sơ & ảnh đại diện</small></span></button>',
+ '<button data-tab="appearance"><span class="sagsSettingsNavIcon">◐</span><span class="sagsSettingsNavCopy"><b>Giao diện</b><small>Hiển thị & trải nghiệm</small></span></button>',
+ '<button data-tab="notify"><span class="sagsSettingsNavIcon">🔔</span><span class="sagsSettingsNavCopy"><b>Thông báo</b><small>Cảnh báo nghiệp vụ</small></span></button>',
+ '<div class="sagsSettingsNavGroupLabel system">HỆ THỐNG & DỮ LIỆU</div>',
+ '<button data-tab="sync"><span class="sagsSettingsNavIcon">☁</span><span class="sagsSettingsNavCopy"><b>Dữ liệu & đồng bộ</b><small>Nháp và Cloud Draft</small></span></button>',
+ '<button data-tab="device"><span class="sagsSettingsNavIcon">📱</span><span class="sagsSettingsNavCopy"><b>Thiết bị & Offline</b><small>PWA, cache, IndexedDB</small></span></button>',
+ '<button data-tab="security"><span class="sagsSettingsNavIcon">🔐</span><span class="sagsSettingsNavCopy"><b>Bảo mật</b><small>Phiên đăng nhập & tự khóa</small></span></button>',
+ '<button data-tab="update"><span class="sagsSettingsNavIcon">↻</span><span class="sagsSettingsNavCopy"><b>Cập nhật</b><small>Phiên bản & cache</small></span></button>',
+ '<button data-tab="about"><span class="sagsSettingsNavIcon">ⓘ</span><span class="sagsSettingsNavCopy"><b>Thông tin</b><small>Thông tin E-REPORT</small></span></button>',
+ '<button data-tab="diag" id="sagsDiagTab"><span class="sagsSettingsNavIcon">🛠</span><span class="sagsSettingsNavCopy"><b>Chẩn đoán</b><small>Kiểm tra hệ thống</small></span></button>',
+ '</nav></aside><main class="sagsSettingsContent">',
  '<section data-page="account"><h3>Tài khoản</h3><p class="desc">Tên hiển thị và avatar chỉ thay giao diện, không đổi tên nghiệp vụ trên roster/biểu mẫu.</p><div class="profile"><div id="sagsAvatarPreview" class="avatar">U</div><div><b id="sagsProfileName">Người dùng</b><span id="sagsProfileMeta">—</span><small id="sagsCloudBadge">Lưu trên thiết bị</small></div></div><div class="grid"><label class="wide">Tên hiển thị<input id="sagsDisplayName" maxlength="48" placeholder="Ví dụ: Đinh Duy Phương"></label><label>Họ tên nghiệp vụ<input id="sagsLegalName" readonly></label><label>Tài khoản<input id="sagsUsername" readonly></label><label>Vai trò<input id="sagsRole" readonly></label><label>Đơn vị<input id="sagsUnit" readonly></label></div><div class="actions"><label class="file">📷 Chọn ảnh<input id="sagsAvatarInput" type="file" accept="image/*"></label><button id="sagsAvatarRemove">Bỏ ảnh</button><button class="primary" id="sagsProfileSave">Lưu hồ sơ hiển thị</button></div></section>',
  '<section data-page="appearance"><h3>Giao diện & trải nghiệm</h3><p class="desc">Áp dụng riêng cho tài khoản này.</p><div class="rows"><label><span><b>Chế độ hiển thị</b><small>Theo hệ thống / Sáng / Tối</small></span><select id="sagsAppearance"><option value="system">Theo hệ thống</option><option value="light">Sáng</option><option value="dark">Tối</option></select></label><label><span><b>Cỡ chữ</b><small>Không đổi chữ trong biểu mẫu PDF</small></span><select id="sagsFont"><option value="small">Nhỏ</option><option value="normal">Tiêu chuẩn</option><option value="large">Lớn</option></select></label><label><span><b>Chế độ gọn trên điện thoại</b><small>Giảm khoảng trống, không ép biểu mẫu</small></span><input id="sagsCompact" class="sw" type="checkbox"></label><label><span><b>Âm thanh thông báo</b></span><input id="sagsSound" class="sw" type="checkbox"></label><label><span><b>Rung phản hồi</b></span><input id="sagsVibration" class="sw" type="checkbox"></label></div></section>',
  '<section data-page="notify"><h3>Thông báo</h3><p class="desc">Cấu hình các nhóm cảnh báo E-REPORT.</p><div class="actions"><button class="primary" id="sagsRequestNotify">🔔 Cho phép thông báo hệ thống</button></div><div class="rows"><label><span><b>Thông báo trên thiết bị</b><small>Công tắc tổng</small></span><input class="sw" data-notify="device" type="checkbox"></label><label><span><b>Chuyến bay mới được phân công</b></span><input class="sw" data-notify="assignment" type="checkbox"></label><label><span><b>Biểu mẫu được bàn giao</b></span><input class="sw" data-notify="handover" type="checkbox"></label><label><span><b>Biểu mẫu bị trả lại / yêu cầu sửa</b></span><input class="sw" data-notify="returned" type="checkbox"></label><label><span><b>Roster thay đổi</b></span><input class="sw" data-notify="roster" type="checkbox"></label><label><span><b>Có phiên bản mới</b></span><input class="sw" data-notify="update" type="checkbox"></label></div></section>',
@@ -70,7 +82,7 @@ function shell(){
  '</main></div></div>'
  ].join('');
  document.body.appendChild(e);
- $('sagsSettingsClose').onclick=close;e.addEventListener('click',function(x){if(x.target===e)close()});e.querySelectorAll('[data-tab]').forEach(function(b){b.onclick=function(){tab(b.dataset.tab)}});
+ $('sagsSettingsClose').onclick=close;if($('sagsSettingsBack'))$('sagsSettingsBack').onclick=close;e.addEventListener('click',function(x){if(x.target===e)close()});e.querySelectorAll('[data-tab]').forEach(function(b){b.onclick=function(){tab(b.dataset.tab)}});
  bind();tab('account')
 }
 function tab(k){var c=$('sagsSettingsCenter');if(!c)return;c.querySelectorAll('[data-tab]').forEach(function(b){b.classList.toggle('active',b.dataset.tab===k)});c.querySelectorAll('[data-page]').forEach(function(p){p.classList.toggle('active',p.dataset.page===k)});if(k==='sync'||k==='device')status();if(k==='update'||k==='about')version(false);if(k==='diag')diagnostics()}
