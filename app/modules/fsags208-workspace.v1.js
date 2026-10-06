@@ -29,6 +29,7 @@ function esc(v){return S(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'
 function hash(s){let h=2166136261>>>0;for(const ch of String(s)){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)>>>0}return h.toString(36).toUpperCase()}
 function flightName(rec){return S(rec?.flightName||rec?.flightRaw||[rec?.arrFlight,rec?.depFlight].filter(Boolean).join(' / ')||rec?.flightId||'CHUYẾN')}
 function flightNo(rec){return S(rec?.depFlight||rec?.arrFlight||rec?.flightRaw||rec?.flightName).split(/[\/\s]+/).filter(Boolean).pop()||flightName(rec)}
+function flightRoute(rec){const direct=S(rec?.route||rec?.routing);if(direct)return direct;return [rec?.route1,rec?.route2,rec?.route3].map(S).filter(Boolean).join(' - ')}
 function isHandlerRole(){return role()==='AD'||['KH','CARGO'].includes(role())||root.__SAGS_CARGO_ALL_FLIGHTS?.isCargo?.()===true}
 function canReadFlight(){const p=profile();return !!me()&&!!role()&&!['GUEST','ANONYMOUS'].includes(role())&&p.active!==false;}
 function published208(mod){if(mod?.published?.state&&Number(mod.published.revisionNo)>0)return clone(mod.published);if(mod?.status==='SENT'&&Number(mod.revisionNo)>0&&mod.state)return{state:clone(mod.state),revisionNo:Number(mod.revisionNo),sentAtMs:Number(mod.lastSentAtMs||0),sentBy:clone(mod.lastSentBy||{})};return null;}
@@ -125,7 +126,11 @@ async function openLocal(date,fid){
  else{row.flight=flightNo(rec);row.date=date;row.acRegn=S(rec.acReg||rec.acRegn||row.acRegn);row.updatedAt=now;row.workspaceDate=date;row.workspaceFlightId=fid;row.sentAtMs=Number(mod.lastSentAtMs||row.sentAtMs||0);row.revisionNo=Number(mod.revisionNo||row.revisionNo||0)}
  writeList(list);const key=sheetKey(id);let old={};try{old=JSON.parse(localStorage.getItem(key)||'{}')||{}}catch(_){}
  const incoming=mod.state&&typeof mod.state==='object'?clone(mod.state):null,state0=incoming&&Object.keys(incoming).length?incoming:(old.state||{});
- if(!S(state0.f208_flightNo))state0.f208_flightNo=flightNo(rec);if(!S(state0.f208_date))state0.f208_date=date;
+ if(!S(state0.f208_flightNo))state0.f208_flightNo=flightNo(rec);
+ if(!S(state0.f208_date))state0.f208_date=date;
+ if(!S(state0.f208_acType))state0.f208_acType=S(rec.acType||rec.aircraftType);
+ if(!S(state0.f208_etd))state0.f208_etd=S(rec.etd||rec.std);
+ if(!S(state0.f208_route))state0.f208_route=flightRoute(rec);
  localStorage.setItem(key,JSON.stringify({...old,state:state0,acRegn:S(rec.acReg||rec.acRegn||old.acRegn),mainForm:FORM,activeFormGroup:FORM,currentPage:13,workspaceBinding:{opDate:date,flightId:fid}}));
  setReadOnly(false);const open=root.openKH208Local||(typeof openKH208Local==='function'?openKH208Local:null);if(typeof open!=='function')throw new Error('Màn hình FSAGS 208 chưa sẵn sàng.');dismissWorkspaces();await open(id);if(activeId()!==id)throw new Error('Chưa mở được FSAGS 208 của chuyến đã chọn.');finishFormOpen(rec,date);watchOwner(date,fid);
 }

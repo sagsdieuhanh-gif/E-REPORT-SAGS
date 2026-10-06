@@ -124,7 +124,7 @@
     }catch(_){ui.restore.hidden=true;ui.discard.hidden=true;}
     ui.prev.disabled=session.index===0;
     ui.next.textContent=session.index===session.steps.length-1?'Lưu & Đóng':'Tiếp ›';
-    try{activeKey=st.key;draw()}catch(e){console.warn('Quick-entry highlight',e)}
+    try{activeKey=st.key}catch(e){console.warn('Quick-entry highlight',e)}
     try{if(document.activeElement!==ui.value)ui.value.focus({preventScroll:true});if(!matchMedia("(pointer:coarse)").matches)ui.value.select()}catch(_){}
   }
   function saveBag(st,leaving){

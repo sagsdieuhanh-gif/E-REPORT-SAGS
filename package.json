@@ -2,7 +2,8 @@
   "private": true,
   "scripts": {
     "build:runtime": "node tools/build-runtime.cjs",
-    "test": "node tests/run.cjs"
+    "test": "node tests/run.cjs",
+    "build:styles": "node tools/build-styles.cjs"
   },
   "devDependencies": {
     "acorn": "8.18.0",

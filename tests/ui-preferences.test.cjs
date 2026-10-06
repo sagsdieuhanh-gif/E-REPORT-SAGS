@@ -8,7 +8,7 @@ assert.match(js,/localStorage\.setItem\(quickDeviceKey\(\),payload\)/,'device fa
 assert.match(js,/id="sagsQteListToggle"/,'single quick preference list toggle missing');
 assert.match(js,/function setQuickCustomizeExpanded\(open\)/,'single-list expand controller missing');
 assert.match(js,/setQuickCustomizeExpanded\(false\)/,'quick preference list must start collapsed');
-assert.match(js,/className='sagsQteChoiceGroupHead'/,'static group heading missing');
+assert.match(js,/className='sagsQteChoiceToggle'/,'expandable group heading missing');
 assert.match(js,/if\(!writeHidden\(hidden\)\)/,'save must verify persistence');
 assert.match(quick,/window\.qte551ToggleChecklist=function/,'FSAGS 55.1 single checklist toggle missing');
 assert.match(quick,/id="qte551ChecklistBody"/,'FSAGS 55.1 checklist body missing');

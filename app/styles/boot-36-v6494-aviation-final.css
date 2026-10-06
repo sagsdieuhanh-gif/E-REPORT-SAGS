@@ -1,0 +1,113 @@
+/* E-REPORT SAGS V6.4.94 · FINAL AVIATION OPERATIONS UI
+   Loaded after every legacy stylesheet. */
+html.new-ui-v1{
+ --a-bg:#06131f;--a-bg2:#071824;--a-surface:#0c1e2c;--a-surface2:#102635;--a-surface3:#132d3d;
+ --a-border:rgba(100,190,220,.18);--a-border2:rgba(62,202,226,.34);--a-cyan:#21d4e8;--a-blue:#168fb8;
+ --a-text:#f2f7fa;--a-muted:#8fa7b7;--a-success:#24c77a;--a-warn:#e4a62a;--a-danger:#e15353;
+ --a-font:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color-scheme:dark;
+}
+html.new-ui-v1 body{background:var(--a-bg)!important;color:var(--a-text)!important;font-family:var(--a-font)!important}
+html.new-ui-v1 body :is(button,input,select,textarea){font-family:var(--a-font)!important}
+html.new-ui-v1 body.v6494-home-active{overflow:hidden!important;background:var(--a-bg)!important}
+html.new-ui-v1 body.v6494-home-active :is(#roleHomeIdle,#v157HomeDashboard,#v157BottomBar,#v157Drawer,#v157DrawerBackdrop,.toolbar.compact-main-toolbar,#sagsNavigationHeader){display:none!important;visibility:hidden!important;pointer-events:none!important}
+
+/* New authenticated landing shell */
+#v6494AviationHome{position:fixed;inset:0;z-index:12000;display:none;background:var(--a-bg);color:var(--a-text);font-family:var(--a-font)}
+#v6494AviationHome.show{display:flex}
+#v6494AviationHome *{box-sizing:border-box}
+#v6494AviationHome button{font:inherit;cursor:pointer}
+#v6494AviationHome svg{width:20px;height:20px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.v6494Side{width:238px;flex:0 0 238px;display:flex;flex-direction:column;min-height:0;border-right:1px solid var(--a-border);background:linear-gradient(180deg,#071b2b,#06131f 68%,#050f19);padding:16px 12px 12px}
+.v6494Brand{display:flex;align-items:center;gap:10px;padding:2px 5px 15px;border-bottom:1px solid var(--a-border)}
+.v6494Brand img{width:45px;height:45px;object-fit:contain;border-radius:9px;background:#f5f9fb;padding:4px}
+.v6494Brand b{display:block;color:#fff;font-size:15px;letter-spacing:.04em}.v6494Brand b span,.v6494MobileBrand b span{color:var(--a-cyan)}
+.v6494Brand small{display:block;margin-top:4px;color:#69879a;font-size:7.5px;letter-spacing:.14em}
+.v6494Profile{display:grid;grid-template-columns:42px minmax(0,1fr);gap:9px;align-items:center;margin:12px 0;padding:10px;border:1px solid var(--a-border);border-radius:11px;background:#0a2233}
+.v6494Avatar{width:42px;height:42px;display:grid;place-items:center;border-radius:50%;background:#0c526a;border:1px solid rgba(33,212,232,.35);color:#eaffff;font-weight:800}
+.v6494Profile small{display:block;color:#718ea0;font-size:9px}.v6494Profile b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#f6fbfd;font-size:12px;margin:2px 0}.v6494Profile span{color:#70d5df;font-size:9px}
+.v6494Nav{flex:1;min-height:0;overflow:auto;padding:0 2px 8px;scrollbar-width:thin}
+.v6494Nav section{margin:9px 0 13px}.v6494Nav h3,.v6494MobileGroup h3{margin:0 6px 5px;color:#627f92;font-size:8px;letter-spacing:.15em}
+.v6494Nav button{width:100%;min-height:45px;margin:2px 0;padding:6px 7px;border:1px solid transparent;border-radius:9px;background:transparent;color:#a9bfcd;display:grid;grid-template-columns:30px minmax(0,1fr) 12px;gap:7px;align-items:center;text-align:left}
+.v6494Nav button:hover{border-color:var(--a-border);background:#0a2233;color:#fff}.v6494Nav button.active{border-color:rgba(33,212,232,.27);background:linear-gradient(90deg,rgba(22,143,184,.24),rgba(12,34,51,.35));color:#fff}
+.v6494Nav button i{width:30px;height:30px;display:grid;place-items:center;border-radius:8px;background:#0b2b3e;color:#79dce6}.v6494Nav button i svg{width:17px;height:17px}
+.v6494Nav button span b{display:block;font-size:11px}.v6494Nav button span small{display:block;margin-top:2px;color:#668394;font-size:7.8px;font-weight:500}.v6494Nav button em{font-style:normal;color:#58788b}
+.v6494Account{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding-top:9px;border-top:1px solid var(--a-border)}
+.v6494Account button{min-height:40px;border:1px solid var(--a-border);border-radius:9px;background:#0a2130;color:#8ea8b7;display:flex;align-items:center;justify-content:center;gap:5px;font-size:9px;font-weight:700}.v6494Account button svg{width:15px;height:15px}
+.v6494Main{position:relative;flex:1;min-width:0;min-height:0;background:radial-gradient(circle at 80% 0,rgba(20,103,139,.16),transparent 32%),linear-gradient(180deg,#071824,#06131f);display:flex;flex-direction:column}
+.v6494Top{height:62px;flex:0 0 62px;display:flex;align-items:center;gap:10px;padding:9px 20px;border-bottom:1px solid var(--a-border);background:rgba(6,19,31,.91);backdrop-filter:blur(10px)}
+.v6494MobileBrand{display:none}.v6494MobileProfile{display:none}.v6494Search{height:42px;max-width:560px;flex:1;display:flex;align-items:center;gap:9px;padding:0 12px;border:1px solid var(--a-border);border-radius:10px;background:#0a2233;color:#718fa2}.v6494Search svg{width:17px;height:17px}.v6494Search input{min-width:0;flex:1;border:0!important;outline:0!important;background:transparent!important;color:#eef8fb!important;-webkit-text-fill-color:#eef8fb!important;font-size:12px!important}.v6494Search input::placeholder{color:#6c8798}
+.v6494Notice{width:42px;height:42px;border:1px solid var(--a-border);border-radius:10px;background:#0a2233;color:#a7bdca;display:grid;place-items:center}.v6494Notice:hover{color:#fff;border-color:var(--a-border2)}
+.v6494TopIdentity{margin-left:auto;text-align:right}.v6494TopIdentity b{display:block;color:#edf7fa;font-size:11px}.v6494TopIdentity small{display:block;margin-top:2px;color:#6d8a9c;font-size:8px}
+.v6494Scroll{flex:1;min-height:0;overflow:auto;padding:18px 22px 32px}.v6494Scroll>*{max-width:1380px;margin-inline:auto}
+.v6494Hero{min-height:205px;border:1px solid var(--a-border);border-radius:14px;overflow:hidden;background:linear-gradient(90deg,rgba(4,18,30,.94) 0%,rgba(4,18,30,.66) 48%,rgba(4,18,30,.55)),url('../../previews/final-ui/assets/ui/myflight-hero-v64101.webp') center/cover no-repeat;display:flex;align-items:center;padding:30px 34px}
+.v6494Hero>div{max-width:640px}.v6494Hero small{color:#74d9e2;font-size:9px;letter-spacing:.18em;font-weight:700}.v6494Hero h1{margin:8px 0 8px;color:#fff;font-size:clamp(25px,2.5vw,38px);line-height:1.13;letter-spacing:-.03em}.v6494Hero p{margin:0;color:#91a9b8;font-size:12px}
+.v6494Hero button{margin-top:20px;min-height:42px;padding:0 14px;border:1px solid rgba(70,215,230,.54);border-radius:9px;background:linear-gradient(135deg,#1289ad,#19b6c9);color:#fff;display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:800;box-shadow:none}.v6494Hero button svg{width:17px;height:17px}
+.v6494QuickHead{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-top:16px!important}.v6494QuickHead small,.v6494SectionHead small{color:#698798;font-size:8px;letter-spacing:.15em}.v6494QuickHead h2,.v6494SectionHead h2{margin:4px 0 0;color:#eef7fa;font-size:16px}.v6494QuickHead>span{color:#557486;font-size:8px;letter-spacing:.14em}
+.v6494QuickGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:9px!important}
+.v6494QuickGrid>button{min-height:102px;padding:14px;border:1px solid var(--a-border);border-radius:12px;background:linear-gradient(145deg,#0b2132,#081b29);color:#dcebf1;text-align:left;display:grid;grid-template-columns:42px minmax(0,1fr);gap:11px;align-items:center}.v6494QuickGrid>button:hover{border-color:var(--a-border2);background:#0c2638}.v6494QuickGrid i{width:42px;height:42px;display:grid;place-items:center;border-radius:10px;background:#0d3449;color:#77e2ec}.v6494QuickGrid span small{display:block;color:#658397;font-size:7.5px;letter-spacing:.12em}.v6494QuickGrid span b{display:block;margin:4px 0;color:#f4fafc;font-size:14px}.v6494QuickGrid span em{display:block;color:#7691a2;font-size:9px;font-style:normal}
+.v6494Work{margin-top:16px!important;padding:14px;border:1px solid var(--a-border);border-radius:13px;background:#081b29}.v6494SectionHead{display:flex;align-items:end;justify-content:space-between;gap:12px;padding-bottom:11px;border-bottom:1px solid var(--a-border)}.v6494SectionHead p{margin:0;color:#668497;font-size:9px}.v6494MobileMenu{display:none}
+.v6494Bottom{display:none}
+
+/* MY FLIGHT final owner */
+html.new-ui-v1 body #fwcModal{background:rgba(2,8,14,.88)!important;backdrop-filter:blur(6px)!important}
+html.new-ui-v1 body #fwcModal.show .fwcPanel{border:1px solid var(--a-border)!important;border-radius:14px!important;background:#071824!important;color:var(--a-text)!important;box-shadow:0 24px 65px rgba(0,0,0,.34)!important}
+html.new-ui-v1 body #fwcModal.show .fwcHead{background:#071824!important;border-bottom:1px solid var(--a-border)!important;color:#fff!important}
+html.new-ui-v1 body #fwcModal.show .fwcHead h3{color:#fff!important;font-weight:780!important}
+html.new-ui-v1 body #fwcModal.show .fwcSub{color:#7895a7!important}
+html.new-ui-v1 body #fwcModal.show .fwcTools{background:#091d2b!important;border:1px solid var(--a-border)!important;border-radius:11px!important;box-shadow:none!important}
+html.new-ui-v1 body #fwcModal.show .fwcTools :is(input,button,.fwcBtn){background:#0b2435!important;color:#eef8fb!important;-webkit-text-fill-color:#eef8fb!important;border:1px solid rgba(113,170,199,.28)!important;border-radius:9px!important;box-shadow:none!important}
+html.new-ui-v1 body #fwcModal.show .fwcTools input::placeholder{color:#6f899a!important}
+html.new-ui-v1 body #fwcModal.show .fwcStatus{background:#081c2a!important;color:#6f8c9f!important;border:1px solid var(--a-border)!important;border-radius:9px!important}
+html.new-ui-v1 body #fwcModal.show :is(.v1199Tab,.fwcTab){background:#0a2232!important;color:#89a7b8!important;border:1px solid var(--a-border)!important;border-radius:9px!important;box-shadow:none!important}
+html.new-ui-v1 body #fwcModal.show :is(.v1199Tab,.fwcTab).active{background:#0d3449!important;color:#fff!important;border-color:rgba(33,212,232,.46)!important}
+html.new-ui-v1 body #fwcModal.show :is(.fwcFlight,.v1199Card,.v478CanonicalRoleCard){background:linear-gradient(145deg,#0b2131,#091a28)!important;color:#eef8fb!important;border:1px solid var(--a-border)!important;border-radius:12px!important;box-shadow:none!important}
+html.new-ui-v1 body #fwcModal.show :is(.fwcFlightTitle,.v1199Title){color:#f4fbfd!important}
+html.new-ui-v1 body #fwcModal.show :is(.fwcMeta,.v1199Meta,.v1199OwnerNote){color:#89a4b5!important}
+html.new-ui-v1 body #fwcModal.show :is(.fwcBadge,.v1199FormTile,.v1199TaskBtn){background:#0b2a3e!important;color:#dcebf1!important;border:1px solid rgba(83,150,181,.24)!important;border-radius:9px!important;box-shadow:none!important}
+html.new-ui-v1 body #fwcModal.show :is(.fwcBtn,.v1199Action){background:#0d3449!important;color:#eaf8fb!important;border:1px solid rgba(64,171,202,.34)!important;border-radius:9px!important;box-shadow:none!important}
+html.new-ui-v1 body #fwcModal.show .v1199Action.finish{background:#0a3b31!important;color:#c6f2dc!important;border-color:rgba(36,199,122,.42)!important}
+
+/* Other post-login overlays use same dark shell without touching white paper/form canvas. */
+html.new-ui-v1 body :is(#v174DataHub,#v181AdminCenter,.sagsAdminModal,#dailyRosterModal,#aclAdminModal,#aclSimpleModal,#fleetManagerModal,#finalFormsModal){background:rgba(2,9,15,.84)!important}
+html.new-ui-v1 body :is(.v174DataHubPanel,.v181AdminPanel,.sagsAdminPanel,.drPanel,.aclPanel,.acls-panel,.fleetManagerPanel,.finalFormsPanel){background:#081b29!important;color:#eef8fb!important;border:1px solid var(--a-border)!important;box-shadow:0 22px 60px rgba(0,0,0,.3)!important}
+html.new-ui-v1 body :is(.v174DataHubPanel,.v181AdminPanel,.sagsAdminPanel,.drPanel,.aclPanel,.acls-panel,.fleetManagerPanel,.finalFormsPanel) :is(h2,h3,h4,b){color:#f0f8fb!important}
+
+/* Mobile is a separate field-operation layout */
+@media(max-width:767px){
+ #v6494AviationHome.show{display:block;overflow:hidden}
+ .v6494Side{display:none}
+ .v6494MobileProfile{display:grid;grid-template-columns:46px minmax(0,1fr);gap:9px;align-items:center;margin:8px 0 10px;padding:10px;border:1px solid var(--a-border);border-radius:12px;background:linear-gradient(145deg,rgba(13,54,75,.94),rgba(7,31,47,.96))}
+ .v6494MobileProfile .v6494Avatar{width:46px;height:46px}.v6494MobileProfile small{display:block;color:#718ea0;font-size:9px}.v6494MobileProfile b{display:block;margin:2px 0;color:#f6fbfd;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.v6494MobileProfile span{display:block;color:#70d5df;font-size:9px}
+ .v6494Main{position:static;display:block;background:linear-gradient(180deg,#06131f,#071824)}
+ .v6494Top{position:absolute;left:0;right:0;top:0;height:58px;padding:calc(7px + env(safe-area-inset-top)) 10px 7px;border-bottom:1px solid var(--a-border);background:#06131f;z-index:3}
+ .v6494MobileBrand{display:block;min-width:0;flex:1}.v6494MobileBrand b{display:block;color:#fff;font-size:14px;letter-spacing:.04em}.v6494MobileBrand small{display:block;margin-top:2px;color:#607e91;font-size:6.5px;letter-spacing:.13em}
+ .v6494Search,.v6494TopIdentity{display:none}.v6494Notice{margin-left:auto;width:40px;height:40px}
+ .v6494Scroll{position:absolute;inset:58px 0 calc(64px + env(safe-area-inset-bottom));overflow:auto;padding:0 10px 16px}
+ .v6494Hero,.v6494QuickHead,.v6494QuickGrid{display:none}
+ .v6494Work{margin:0!important;padding:0;border:0;background:transparent}
+ .v6494SectionHead{display:none}
+ .v6494MobileMenu{display:block}
+ .v6494MobileGroup{margin:8px 0 12px}.v6494MobileGroup h3{margin:0 2px 6px;color:#627f92;font-size:8px;letter-spacing:.14em}
+ .v6494MobileGroup>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+ .v6494MobileMenu button{min-height:72px;padding:9px;border:1px solid var(--a-border);border-radius:11px;background:linear-gradient(145deg,#0b2537,#081d2c);color:#d8e8ef;display:grid;grid-template-columns:36px minmax(0,1fr);gap:8px;align-items:center;text-align:left}
+ .v6494MobileMenu button.active{border-color:rgba(33,212,232,.4);background:linear-gradient(145deg,#0d3549,#092638)}
+ .v6494MobileMenu button i{width:36px;height:36px;border-radius:9px;background:#0d3449;color:#76dfe9;display:grid;place-items:center}.v6494MobileMenu button i svg{width:18px;height:18px}
+ .v6494MobileMenu button span b{display:block;color:#f0f8fa;font-size:11px;line-height:1.15}.v6494MobileMenu button span small{display:block;margin-top:4px;color:#708c9d;font-size:8px;line-height:1.2}.v6494MobileMenu button>em{display:none}
+ .v6494Bottom{position:absolute;left:0;right:0;bottom:0;height:calc(64px + env(safe-area-inset-bottom));padding:5px 8px env(safe-area-inset-bottom);display:grid;grid-template-columns:repeat(3,1fr);gap:5px;border-top:1px solid var(--a-border);background:rgba(5,18,29,.98)}
+ .v6494Bottom button{border:0;border-radius:8px;background:transparent;color:#708b9c;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:8px;font-weight:700}.v6494Bottom button svg{width:19px;height:19px}.v6494Bottom button.active{color:var(--a-cyan);background:#0a2233}
+ html.new-ui-v1 body #fwcModal.show{inset:0!important;padding:0!important;background:#06131f!important}
+ html.new-ui-v1 body #fwcModal.show .fwcPanel{width:100vw!important;height:100dvh!important;max-width:none!important;max-height:none!important;margin:0!important;padding:calc(8px + env(safe-area-inset-top)) 10px calc(12px + env(safe-area-inset-bottom))!important;border:0!important;border-radius:0!important;background:#06131f!important;overflow:auto!important}
+ html.new-ui-v1 body #fwcModal.show .fwcHead{position:sticky!important;top:calc(-8px - env(safe-area-inset-top))!important;z-index:5!important;margin:0 -10px 8px!important;padding:calc(8px + env(safe-area-inset-top)) 10px 8px!important;background:rgba(6,19,31,.98)!important}
+ html.new-ui-v1 body #fwcModal.show .fwcHead h3{font-size:18px!important}
+ html.new-ui-v1 body #fwcModal.show .fwcTools{display:grid!important;grid-template-columns:minmax(0,1fr) 44px!important;gap:6px!important;padding:7px!important;margin:0 0 7px!important}
+ html.new-ui-v1 body #fwcModal.show .fwcTools :is(input,button,.fwcBtn){height:44px!important;min-height:44px!important}
+ html.new-ui-v1 body #fwcModal.show .fwcTools input[type="search"]{grid-column:1/-1!important}
+ html.new-ui-v1 body #fwcModal.show :is(.v1199FlightGrid,.v478RoleGrid){display:grid!important;grid-template-columns:1fr!important;gap:8px!important}
+ html.new-ui-v1 body #fwcModal.show :is(.fwcFlight,.v1199Card,.v478CanonicalRoleCard){padding:10px!important}
+ html.new-ui-v1 body #fwcModal.show :is(.fwcFlightTitle,.v1199Title){font-size:19px!important}
+}
+@media(min-width:768px){
+ html.new-ui-v1 body #fwcModal.show{padding:14px!important}
+ html.new-ui-v1 body #fwcModal.show .fwcPanel{width:min(100%,1500px)!important;height:calc(100vh - 28px)!important;max-width:none!important;max-height:none!important;margin:0 auto!important;padding:15px 18px 20px!important;overflow:auto!important}
+ html.new-ui-v1 body #fwcModal.show :is(.v1199FlightGrid,.v478RoleGrid){display:grid!important;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))!important;gap:10px!important}
+}
