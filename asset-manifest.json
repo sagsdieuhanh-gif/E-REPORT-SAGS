@@ -1,8 +1,8 @@
 {
   "schema": 2,
   "version": "V2.0",
-  "build": "V2.0-20261006-SETTINGS-HOME-FIX-01",
-  "strategy": "V2.0 test: deterministic MyFlight airline logos + bounded rerender recovery",
+  "build": "V2.0-20261006-SETTINGS-PC-LAYOUT-FIX-02",
+  "strategy": "V2.0 TEST: Settings desktop two-column layout + isolated mobile navigation + immutable cache rotation",
   "mutableMetadata": [
     "./forms/forms.registry.json",
     "./data/form-configuration.json"
@@ -82,8 +82,8 @@
       "bytes": 41473
     },
     "./app/styles/new-ui-v1.css": {
-      "sha256": "fc2d86f0e8aff0ddd04d2129c5779a5ba86726cfc3d3fbe740857c5c3ef66efc",
-      "bytes": 337493
+      "sha256": "e362d3698348fcbeaa6a0141b1b24adf669ee6d907654af65038805425483aff",
+      "bytes": 343227
     },
     "./assets/audio/alert-crosscheck-complete.mp3": {
       "sha256": "2291844c0abc77005a2e8800e0dc8115c373134385a31a5d3d9e5f920a5acc07",
@@ -222,8 +222,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "c4cbf7a6662aee074366342b216373766791431890b03733df47b8d39456d6c4",
-      "bytes": 79820
+      "sha256": "18c2c1a8122051377311651481897d50b9638eb3b1de455058da0aff0a699713",
+      "bytes": 80155
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -274,12 +274,12 @@
       "bytes": 6861
     },
     "./service-worker.js": {
-      "sha256": "b81d4ff3cf2b6c961d25bec247ada6d22e294e2e53c1428b6434cf72f3be576b",
-      "bytes": 21192
+      "sha256": "e6c88d7938536e9c40bf3d53f56247703a2a568a6d353cf32849e3efcbe8b241",
+      "bytes": 21207
     },
     "./version.json": {
-      "sha256": "7b03ba1dfd1918f251562fdb6652ebe6e67708d8d1f3c2334d998d2e192dae7a",
-      "bytes": 707
+      "sha256": "7e0cc213eacd78860c24c2b5908ae0b7d992be928d42e97c9374ed999bbdc9e8",
+      "bytes": 688
     },
     "./app/modules/form-registry-runtime.v647.js": {
       "sha256": "38273ccd7794e4790c37b5a8594edeaefd412917af2c928245bf8a89b0a8a5f2",
@@ -746,8 +746,8 @@
       "bytes": 10386
     },
     "./app/modules/settings.v1.js": {
-      "sha256": "ea5f95d7695f6cadb7bd795487f36090d83f669d15cf7e96ce6f839ae7ac01b1",
-      "bytes": 37080
+      "sha256": "7c3ea2f9483ccab3795b6c01325a6f062ada2886cf6c290038a758d32a23d82d",
+      "bytes": 38588
     }
   }
 }
