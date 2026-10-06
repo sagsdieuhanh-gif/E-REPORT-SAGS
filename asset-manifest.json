@@ -1,8 +1,8 @@
 {
   "schema": 2,
-  "version": "V6.4.89",
-  "build": "V6.4.89-20261005-AIRLINE-DASHBOARD-AD-CONTRAST-01",
-  "strategy": "atomic release + verified cache cleanup + airline dashboard visual layer + compact flight list + AD contrast hardening",
+  "version": "V6.4.90",
+  "build": "V6.4.90-20261006-SETTINGS-CENTER-01",
+  "strategy": "atomic release + verified cache cleanup + Settings Center + personal avatar/display profile + adaptive theme",
   "mutableMetadata": [
     "./forms/forms.registry.json",
     "./data/form-configuration.json"
@@ -78,8 +78,8 @@
       "bytes": 10344
     },
     "./app/modules/ui-preferences.v1.js": {
-      "sha256": "d075ec35741763e117427e8dbfbda1f774b713eb62afb515c9752f6840d9ab95",
-      "bytes": 26338
+      "sha256": "e59821a332fa02d555454dbe471136c6603718c23cd10d13534d4cc1b6a64a25",
+      "bytes": 26348
     },
     "./app/styles/app.bundle.css": {
       "sha256": "013be6bee9f38bf79864dcab0658f438966d77172692446f698c042539601c2e",
@@ -226,8 +226,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "0f543ac635da382e8733514a5293b3d883342f2a423649ab6d6e9f456d38b28e",
-      "bytes": 90180
+      "sha256": "98060de8b3c558839b370417ef17ad959e7ffcbf364a5d51e7a2bec2c002dbb9",
+      "bytes": 89039
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -278,12 +278,12 @@
       "bytes": 6861
     },
     "./service-worker.js": {
-      "sha256": "f95b02d411c07fcffec11f047ac64343c2df2634f317a4401eecae5a8bcc045e",
-      "bytes": 21765
+      "sha256": "98a1fe0bfe2b55ca83a44c6e676c11e8a3b7e1046e12b4a99a92f9eabc8b2d30",
+      "bytes": 21785
     },
     "./version.json": {
-      "sha256": "d7fdb9ad71a5d8b70eaaa7f19652197488897dae7406811bc7422037277ca068",
-      "bytes": 1060
+      "sha256": "b93cf93f2146785fa2b7ae58442d79fe5e427d8e8771ada73f29c5c926c7eb38",
+      "bytes": 1173
     },
     "./app/modules/form-registry-runtime.v647.js": {
       "sha256": "38273ccd7794e4790c37b5a8594edeaefd412917af2c928245bf8a89b0a8a5f2",
@@ -616,6 +616,14 @@
     "./app/generated/boot-group-5.js": {
       "sha256": "5e63b64c8450611004cdf7983028cfef05f0c5ade6e72b2e34338f58ae048201",
       "bytes": 3559
+    },
+    "./app/modules/settings.v1.js": {
+      "sha256": "b60b0e9b1cc42dd465e415abe9ef04cc77fe1ee7b833017fc4180e23cad49e43",
+      "bytes": 28859
+    },
+    "./app/styles/settings.v1.css": {
+      "sha256": "85b4059dffc9735d26d1524cbd4dddb4a07c21cdb3c027eb7411bea6833cc542",
+      "bytes": 10234
     }
   }
 }

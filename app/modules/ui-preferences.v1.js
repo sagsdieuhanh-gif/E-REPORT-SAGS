@@ -553,10 +553,10 @@
     const id=identity();
     if(id!==lastIdentity){
       lastIdentity=id;
-      applyTheme('dark',false);
+      applyTheme(readTheme(),false);
       setTimeout(applyQuickVisibility,0);
     }else{
-      const t='dark';
+      const t=readTheme();
       if(t!==lastAppliedTheme)applyTheme(t,false);
     }
   }
