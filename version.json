@@ -1,12 +1,12 @@
 {
   "version": "V2.5",
   "displayVersion": "V2.5",
-  "label": "V2.5 - MOBILE DOCK + TVJ IDENTITY",
-  "build": "V2.5-20261006-MOBILE-DOCK-TVJ-18",
-  "releasedAt": "2026-10-06T16:31:19Z",
-  "type": "production-promotion",
-  "base": "TEST main@2b45f126faaed1ef0cb300c624156cd5cfb16300",
+  "label": "V2.5 - UNIFIED ENTRY CONTRAST",
+  "build": "V2.5-20261007-UNIFIED-ENTRY-CONTRAST-19",
+  "releasedAt": "2026-10-06T17:53:54Z",
+  "type": "ui-standard-hotfix",
+  "base": "E-REPORT-SAGS main@ad23e9dcba9788ed3ce471a76ba4346ea61c09f9",
   "updatePolicy": "required",
-  "notes": "Production V2.5 promoted from the verified TEST build. Includes the two-row mobile form dock; TVJ-GOF-035 NAME save/display/export fix; BBBT TVJ CO-ORDINATOR name/title auto-fill; Vietnamese signer Full name/PDF fix; PC Settings redesign; Quick Time mobile contrast/layout fixes; account lifecycle updates; FSAGS 208 image reader; MyFlight logo stability; and receive/open performance improvements.",
-  "message": "Production V2.5: mobile dock + TVJ identity fixes."
+  "notes": "Chuẩn hóa màu nhập liệu toàn hệ thống: trong các màn hình nhập/chỉnh sửa của 42.1, 42.3, 55.1, FSAGS 208, 54, 94, FSAGS09, TVJ và các form dùng editor chung, ô đang focus hoặc đang có dữ liệu trong phiên nhập hiển thị nền vàng #FFD166 và chữ #17212B. Sau khi LƯU/CẬP NHẬT, tờ biểu mẫu chính thức giữ nguyên nền gốc; không có nền vàng trên form và không ảnh hưởng PDF.",
+  "message": "V2.5 build 19: unified yellow/black contrast only inside data-entry editors."
 }

@@ -1,0 +1,12 @@
+const fs=require('node:fs'),assert=require('node:assert/strict');
+const mod=fs.readFileSync(__dirname+'/../app/modules/form-entry-contrast.v1.js','utf8');
+const index=fs.readFileSync(__dirname+'/../index.html','utf8');
+const sw=fs.readFileSync(__dirname+'/../service-worker.js','utf8');
+const ver=JSON.parse(fs.readFileSync(__dirname+'/../version.json','utf8'));
+assert.equal(ver.build,'V2.5-20261007-UNIFIED-ENTRY-CONTRAST-19');
+assert.match(mod,/#FFD166/);assert.match(mod,/#17212B/);
+assert.match(mod,/#entry,#quickTimeModal,#fs09QuickModal,#sagsQuickEntry,#sags5494Quick,#sags5494FieldEditor/);
+assert.doesNotMatch(mod,/svg|sags-entry-highlight|\.sheet/);
+assert.match(index,/form-entry-contrast\.v1\.js\?v=V2.5-20261007-UNIFIED-ENTRY-CONTRAST-19/);
+assert.match(sw,/\.\/app\/modules\/form-entry-contrast\.v1\.js/);
+console.log('Entry-only contrast rule passed');

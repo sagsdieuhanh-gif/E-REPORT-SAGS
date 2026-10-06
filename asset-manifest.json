@@ -1,8 +1,8 @@
 {
   "schema": 2,
   "version": "V2.5",
-  "build": "V2.5-20261006-MOBILE-DOCK-TVJ-18",
-  "strategy": "Production V2.5 · verified TEST build promoted to E-REPORT-SAGS",
+  "build": "V2.5-20261007-UNIFIED-ENTRY-CONTRAST-19",
+  "strategy": "Production V2.5 · unified yellow/black contrast inside entry editors only",
   "mutableMetadata": [
     "./forms/forms.registry.json",
     "./data/form-configuration.json"
@@ -222,8 +222,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "4b621c5c800bdca05d1fefa4d324d35e473e7bbd51640dd6d6e13e43a5c4bf20",
-      "bytes": 79960
+      "sha256": "0097946f484d171db936a33433b999db4294cff2b2217ee5009f260d273ae66d",
+      "bytes": 80585
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -274,12 +274,12 @@
       "bytes": 6937
     },
     "./service-worker.js": {
-      "sha256": "a723834902f3ac8fd7a42dc7721486ea7124719d01e7b1a5841e954fe529e73b",
-      "bytes": 21345
+      "sha256": "80c57bb1170ac6a71c2f1afa28352dc6ec33c080fee8e69d9e794c4d15f51b4d",
+      "bytes": 21408
     },
     "./version.json": {
-      "sha256": "60494947ca171f177d7942fbe15644802ae850a6e4473cbfdcedc52d4107d113",
-      "bytes": 795
+      "sha256": "56dc53d163d713740f2ff5519c1c25ae4ef27c65a983f07256b8071677a65833",
+      "bytes": 884
     },
     "./app/modules/form-registry-runtime.v647.js": {
       "sha256": "38273ccd7794e4790c37b5a8594edeaefd412917af2c928245bf8a89b0a8a5f2",
@@ -760,6 +760,10 @@
     "./forms/forms.registry.json": {
       "sha256": "3998536c68eec48684441303b63b880d150a32719abdaa14d7715487653b5895",
       "bytes": 1011923
+    },
+    "./app/modules/form-entry-contrast.v1.js": {
+      "sha256": "26dc594eaea8b0e6482ec55b709c3243aacb9f0d951b9cb403784f074d409a38",
+      "bytes": 3118
     }
   }
 }
