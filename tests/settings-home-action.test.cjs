@@ -1,0 +1,15 @@
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+const source=fs.readFileSync(__dirname+'/../app/boot/32-v6494-aviation-shell.js','utf8');
+const start=source.indexOf('function legacyButton('),end=source.indexOf('function todayText()',start);
+let opened=0,themes=0,legacy=0;
+const root={sagsOpenSettings:()=>opened++,sagsSetUiTheme:()=>themes++};
+let button={disabled:false,click(){legacy++;root.sagsOpenSettings()}};
+const context={root,console,$:()=>({click(){themes++}}),document:{querySelector:()=>button},sync(){},scheduleSync(){},setTimeout(){}};
+vm.createContext(context);vm.runInContext(source.slice(start,end),context);
+assert(context.available('settings'));
+context.trigger('settings');assert.equal(opened,1);assert.equal(legacy,1);assert.equal(themes,0);
+button=null;context.trigger('settings');assert.equal(opened,2);assert.equal(themes,0);
+button={disabled:true};context.trigger('settings');assert.equal(opened,3);
+delete root.sagsOpenSettings;button=null;assert.equal(context.available('settings'),false);
+assert.doesNotMatch(source,/sec\.group!=='HỆ THỐNG'\|\|items\.some/,'mobile settings must not be filtered out');
+console.log('Settings home actions passed: native menu, missing/disabled menu fallback, no theme side effect, mobile access');

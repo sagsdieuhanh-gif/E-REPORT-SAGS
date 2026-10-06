@@ -55,7 +55,7 @@ async function ensureMailbox(d){
       const next=compact(snap?.val?.()||{},owner,day),changed=JSON.stringify(next)!==JSON.stringify(live.items);
       live.items=next;live.loaded=true;live.local=false;if(changed)persistLocal();
       if(live.resolve){live.resolve(next);live.resolve=null;live.reject=null;live.promise=null}
-      if(changed){root.sagsV477InvalidateQueueStatus?.();repaintSoon()}
+      if(changed){root.sagsV477InvalidateQueueStatus?.();repaintSoon();try{root.dispatchEvent(new CustomEvent('sags:personal-roster-updated',{detail:{opDate:day,user:owner}}))}catch(_){}}
     };
     live.handler=handler;ref.on('value',handler,e=>{
       if(live.user!==owner||live.date!==day)return;
@@ -76,13 +76,20 @@ root.sagsV478ManifestForWorker=async function(opDate){
 };
 root.sagsV477ManifestForWorker=root.sagsV478ManifestForWorker;
 root.sagsV478MailboxStats=()=>({user:live.user,date:live.date,loaded:live.loaded,local:live.local,items:Object.keys(live.items).length,query:'opDate == selected day'});
+root.sagsV478GetAssignmentFast=function(aid,opDate){
+  const d=S(opDate)||dateNow(),u=me(),id=S(aid);
+  if(!id||!u||live.user!==u||live.date!==d||!live.loaded||live.local)return null;
+  const item=live.items[id];
+  if(!item||item.active===false||item.duplicateInactive===true||norm(item.targetUser||item.user)!==u||S(item.opDate)!==d)return null;
+  return {...item,user:u,targetUser:u};
+};
 function ensureHomeButton(modal){
   if(!modal)return;
   const head=modal.querySelector('.fwcHead');if(!head)return;
   let home=head.querySelector('#v479MyFlightHome');
   if(!home){
     home=document.createElement('button');home.id='v479MyFlightHome';
-    home.type='button';home.className='fwcBtn gray';home.textContent='← CÔNG VIỆC';
+    home.type='button';home.className='fwcBtn gray';home.textContent='← QUAY LẠI';
     const close=head.querySelector('#v477Close')||Array.from(head.querySelectorAll('button')).find(b=>/ĐÓNG/i.test(b.textContent||''));
     head.insertBefore(home,close||null);
   }
@@ -100,7 +107,7 @@ function ensureHomeButton(modal){
 function ensureModal(){
   let modal=document.getElementById('fwcModal');if(modal){ensureHomeButton(modal);return modal;}
   modal=document.createElement('div');modal.id='fwcModal';modal.className='';
-  modal.innerHTML='<div class="fwcPanel"><div class="fwcHead"><h3>✈ MY FLIGHT</h3><button class="fwcBtn gray" type="button" id="v477Close">ĐÓNG</button></div><div id="fwcBody"></div></div>';
+  modal.innerHTML='<div class="fwcPanel"><div class="fwcHead"><h3>MY FLIGHT</h3><button class="fwcBtn gray" type="button" id="v477Close">ĐÓNG</button></div><div id="fwcBody"></div></div>';
   document.body.appendChild(modal);document.getElementById('v477Close').onclick=()=>root.flightWorkspaceClose?.();ensureHomeButton(modal);return modal;
 }
 function normalizeFlightDossierCards(){
@@ -109,59 +116,197 @@ function normalizeFlightDossierCards(){
  for(const card of list.querySelectorAll('.fwcFlight')){
   const b=card.querySelector('button[onclick*="flightWorkspaceOpenFlight"]');if(!b)continue;
   const code=S(b.getAttribute('onclick')),match=code.match(/flightWorkspaceOpenFlight\(['"]([^'"]+)['"]\)/);if(!match)continue;const fid=match[1];
-  if(b.textContent!=='📁 MỞ HỒ SƠ CHUYẾN')b.textContent='📁 MỞ HỒ SƠ CHUYẾN';b.onclick=()=>root.sagsV338OpenDossier(date(),fid);
+  if(b.textContent!=='HỒ SƠ CHUYẾN')b.textContent='HỒ SƠ CHUYẾN';b.onclick=()=>root.sagsV338OpenDossier(date(),fid);
   card.querySelectorAll('.v350CardDossierBtn').forEach(x=>x.remove());
  }
 }
+function normalizeFlightSearch(v){return String(v||'').trim().toUpperCase().replace(/[^A-Z0-9]/g,'')}
 function filterFlightCards(){
-  const input=document.getElementById('sagsFlightSearch'),list=document.getElementById('fwcList');if(!input||!list)return;
-  const q=String(input.value||'').trim().toUpperCase().replace(/\s+/g,'');
+  const input=document.getElementById('sagsFlightSearch'),list=document.getElementById('fwcList');if(!input||!list)return 0;
+  const q=normalizeFlightSearch(input.value);let visible=0;
   for(const card of list.querySelectorAll('.fwcFlight,.v1199Card')){
     const title=card.querySelector('.fwcFlightTitle,.v1199Title');
-    const hay=String(title?.textContent||card.textContent||'').toUpperCase().replace(/\s+/g,'');
-    card.hidden=!!q&&!hay.includes(q);
+    const hay=normalizeFlightSearch(title?.textContent||card.textContent||'');
+    card.hidden=!!q&&!hay.includes(q);if(!card.hidden)visible++;
+  }
+  return visible;
+}
+function applyFlightSearch(){
+  const input=document.getElementById('sagsFlightSearch'),list=document.getElementById('fwcList');if(!input||!list)return;
+  const q=normalizeFlightSearch(input.value),canonical=list.classList.contains('v478CanonicalQueue');
+  if(canonical){
+    const tabs=list.querySelector(':scope > .v478RoleTabs'),owner=list.querySelector(':scope > .v478RoleOwner');
+    if(tabs)tabs.hidden=!!q;if(owner)owner.hidden=!!q;
+    if(!q){v478ApplyRoleFilter();return}
+  }
+  const visible=filterFlightCards();
+  if(canonical){
+    const empty=list.querySelector('.v478RoleEmpty');
+    if(empty){empty.hidden=visible>0;empty.textContent='Không tìm thấy chuyến phù hợp.'}
   }
 }
-document.addEventListener('input',e=>{if(e.target?.id==='sagsFlightSearch')filterFlightCards()},true);
-let flightFilterFrame=0;
-new MutationObserver(records=>{
-  if(!records.some(r=>r.type==='childList'&&r.target?.closest?.('#fwcList')))return;
-  if(flightFilterFrame)return;
-  flightFilterFrame=requestAnimationFrame(()=>{flightFilterFrame=0;normalizeFlightDossierCards();filterFlightCards()});
-}).observe(document.body,{childList:true,subtree:true});
+document.addEventListener('input',e=>{if(e.target?.id==='sagsFlightSearch')applyFlightSearch()},true);
+document.addEventListener('search',e=>{if(e.target?.id==='sagsFlightSearch')applyFlightSearch()},true);
+let flightFilterFrame=0,flightListObserver=null;
+function installFlightListObserver(){
+  const host=document.getElementById('fwcBody');if(!host)return;
+  if(flightListObserver&&flightListObserver.__host===host)return;
+  try{flightListObserver&&flightListObserver.disconnect()}catch(_){}
+  flightListObserver=new MutationObserver(records=>{
+    if(!records.some(x=>x.type==='childList'))return;
+    if(flightFilterFrame)return;
+    flightFilterFrame=requestAnimationFrame(()=>{flightFilterFrame=0;normalizeFlightDossierCards();applyFlightSearch()});
+  });
+  flightListObserver.__host=host;flightListObserver.observe(host,{childList:true,subtree:true});
+}
 function drawShell(d){
   const modal=ensureModal();modal.hidden=false;modal.style.removeProperty('display');modal.classList.add('show');root.sagsOverlayLayout?.refresh();
-  const host=document.getElementById('fwcBody');if(!host)return false;
-  host.innerHTML='<div class="fwcTools"><input id="fwcDate" type="date"><input id="sagsFlightSearch" type="search" placeholder="Tìm số hiệu chuyến bay" aria-label="Tìm số hiệu chuyến bay" autocomplete="off"><button class="fwcBtn" id="v477Refresh" type="button">LÀM MỚI</button></div><div class="fwcStatus" id="fwcStatus" role="status">Đang đọc hộp phân công của bạn…</div><div id="fwcList" class="v1199Queue"></div>';
+  const host=document.getElementById('fwcBody');if(!host)return false;installFlightListObserver();
+  host.innerHTML='<div class="fwcTools"><input id="fwcDate" type="date"><input id="sagsFlightSearch" type="search" placeholder="Tìm chuyến" aria-label="Tìm số hiệu chuyến bay" autocomplete="off"><button class="fwcBtn" id="v477Refresh" type="button" aria-label="Làm mới danh sách" title="Làm mới">↻</button></div><div class="fwcStatus" id="fwcStatus" role="status">Đang tải công việc…</div><div id="fwcList" class="v1199Queue"></div>';
   const inp=document.getElementById('fwcDate');inp.value=d;inp.onchange=()=>root.flightWorkspaceOpenList?.(inp.value);
   document.getElementById('v477Refresh').onclick=()=>root.flightWorkspaceRefresh?.();
   try{sessionStorage.setItem('sagsV36FwcDate',d)}catch(_){}
   return true;
 }
+let v478RoleTab='pending';
+function ensureCanonicalRoleViewStyle(){
+  if(document.getElementById('v478CanonicalRoleViewStyle'))return;
+  const st=document.createElement('style');st.id='v478CanonicalRoleViewStyle';
+  st.textContent=`
+#fwcList.v478CanonicalQueue{display:block!important}
+#fwcList.v478CanonicalQueue>.v1199Tabs{display:grid!important;grid-template-columns:1fr 1fr!important;gap:7px!important;margin:8px 0 9px!important}
+#fwcList.v478CanonicalQueue>.v1199OwnerNote{margin:0 2px 8px!important}
+#fwcList.v478CanonicalQueue>.v1199FlightGrid.v478RoleGrid{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))!important;gap:12px!important}
+#fwcList.v478CanonicalQueue .v478CanonicalRoleCard[hidden]{display:none!important}\n#fwcList.v478CanonicalQueue .v478CanonicalRoleCard{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:0!important;min-width:0!important;border:1px solid #d4dee8!important;border-radius:12px!important;background:#fff!important;padding:11px!important;margin:0!important;box-shadow:0 2px 7px rgba(0,0,0,.04)!important}
+#fwcList.v478CanonicalQueue .v478CanonicalRoleCard:hover{background:#fff!important}
+#fwcList.v478CanonicalQueue .v478CanonicalRoleCard .fwcFlightTitle{font:900 17px Arial!important;color:#0b4f91!important}
+#fwcList.v478CanonicalQueue .v478CanonicalRoleCard .fwcMeta{font:12px/1.45 Arial!important;color:#5d6f80!important;margin-top:4px!important}
+#fwcList.v478CanonicalQueue .v478CanonicalRoleCard .v478TechMeta,
+#fwcList.v478CanonicalQueue .v478CanonicalRoleCard .fwcDeptStatuses{display:none!important}
+#fwcList.v478CanonicalQueue .v478RoleModuleWrap{display:block!important;min-width:0!important}
+#fwcList.v478CanonicalQueue .v478RoleModules{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important;margin:9px 0!important;max-width:none!important}
+#fwcList.v478CanonicalQueue .v478RoleModules .fwcBadge{display:flex!important;flex-direction:column!important;align-items:flex-start!important;justify-content:center!important;gap:3px!important;min-height:54px!important;padding:8px!important;border:1px solid #cbdbe6!important;border-radius:10px!important;background:#eef4f9!important;color:#314a61!important;font:800 10px/1.25 Arial!important;white-space:normal!important;text-align:left!important}
+#fwcList.v478CanonicalQueue .v478RoleModules .fwcBadge b{display:block!important;color:inherit!important;font:900 11px/1.15 Arial!important}
+#fwcList.v478CanonicalQueue .v478RoleModules .fwcBadge small{display:block!important;color:inherit!important;opacity:.82!important;font:800 9px/1.25 Arial!important;overflow-wrap:anywhere!important}
+#fwcList.v478CanonicalQueue .v478RoleModules .fwcBadge.done{border-color:#4c9c76!important;background:#e7f6ed!important;color:#14633a!important}
+#fwcList.v478CanonicalQueue .v478RoleModules .fwcBadge.working{border-color:#6aaed8!important;background:#eaf6ff!important;color:#135c86!important}
+#fwcList.v478CanonicalQueue .v478RoleModules .fwcBadge.warn{border-color:#e4bd72!important;background:#fff7e6!important;color:#8a4b00!important}
+#fwcList.v478CanonicalQueue .v478RoleActions{display:grid!important;grid-template-columns:1fr!important;gap:7px!important;margin-top:auto!important}
+#fwcList.v478CanonicalQueue .v478RoleActions>.fwcBtn{width:100%!important;min-height:42px!important;margin:0!important;border-radius:9px!important}
+@media(max-width:720px){
+ #fwcList.v478CanonicalQueue>.v1199FlightGrid.v478RoleGrid{grid-template-columns:1fr!important;gap:8px!important}
+ #fwcList.v478CanonicalQueue .v478CanonicalRoleCard{padding:10px!important}
+ #fwcList.v478CanonicalQueue .v478RoleModules{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+`;document.head.appendChild(st);
+}
+function v478CardState(card){
+  const states=Array.from(card.querySelectorAll('.fwcDeptStatus'));
+  return states.length&&states.every(x=>x.classList.contains('done')||x.classList.contains('na'))?'completed':'pending';
+}
+function v478ApplyRoleFilter(){
+  const list=document.getElementById('fwcList');if(!list?.classList.contains('v478CanonicalQueue'))return;
+  let pending=0,completed=0;
+  const cards=Array.from(list.querySelectorAll('.v478CanonicalRoleCard'));
+  for(const card of cards){
+    const state=card.dataset.v478State||v478CardState(card);card.dataset.v478State=state;
+    state==='completed'?completed++:pending++;
+    card.hidden=v478RoleTab==='completed'?state!=='completed':state==='completed';
+  }
+  list.querySelectorAll('[data-v478-tab]').forEach(btn=>{
+    const active=btn.dataset.v478Tab===v478RoleTab;btn.classList.toggle('active',active);
+    btn.setAttribute('aria-pressed',active?'true':'false');
+    const count=btn.querySelector('.v1199Count');if(count)count.textContent=btn.dataset.v478Tab==='completed'?completed:pending;
+  });
+  const empty=list.querySelector('.v478RoleEmpty');
+  if(empty){empty.hidden=cards.some(card=>!card.hidden);if(!empty.hidden)empty.textContent='Không có chuyến trong trạng thái này.'}
+}function v478EnsureTabs(list){
+  let tabs=list.querySelector(':scope > .v478RoleTabs');
+  if(!tabs){
+    tabs=document.createElement('div');tabs.className='v1199Tabs v478RoleTabs';
+    tabs.innerHTML='<button type="button" class="v1199Tab" data-v478-tab="pending">ĐANG LÀM <span class="v1199Count">0</span></button><button type="button" class="v1199Tab" data-v478-tab="completed">CHUYẾN ĐÃ HOÀN TẤT <span class="v1199Count">0</span></button>';
+    tabs.querySelectorAll('[data-v478-tab]').forEach(btn=>btn.onclick=()=>{v478RoleTab=btn.dataset.v478Tab==='completed'?'completed':'pending';v478ApplyRoleFilter()});
+    list.prepend(tabs);
+  }
+  let note=list.querySelector(':scope > .v478RoleOwner');
+  if(!note){note=document.createElement('div');note.className='v1199OwnerNote v478RoleOwner';tabs.after(note)}
+  return note;
+}
+function canonicalizeRoleView(d){
+  const modal=ensureModal();ensureHomeButton(modal);ensureCanonicalRoleViewStyle();
+  const host=document.getElementById('fwcBody');if(!host)return false;
+  const existingDate=S(host.querySelector('#fwcDate')?.value)||S(d)||dateNow();
+  const h=modal.querySelector('.fwcHead h3');if(h)h.textContent='MY FLIGHT';
+  const sub=modal.querySelector('.fwcHead .fwcSub');if(sub)sub.textContent=`Công việc của tôi · ${existingDate}`;
+  const tools=host.querySelector('.fwcTools');
+  if(tools){
+    if(tools.dataset.v478Canonical!=='1'){
+      tools.innerHTML='<input id="fwcDate" type="date"><input id="sagsFlightSearch" type="search" placeholder="Tìm chuyến" aria-label="Tìm số hiệu chuyến bay" autocomplete="off"><button class="fwcBtn" id="v477Refresh" type="button" aria-label="Làm mới danh sách" title="Làm mới">↻</button>';
+      tools.dataset.v478Canonical='1';
+    }
+    const inp=tools.querySelector('#fwcDate');if(inp){inp.value=existingDate;inp.onchange=()=>root.flightWorkspaceOpenList?.(inp.value)}
+    const refresh=tools.querySelector('#v477Refresh');if(refresh)refresh.onclick=()=>root.flightWorkspaceRefresh?.();
+  }
+  const status=document.getElementById('fwcStatus');
+  if(status){status.textContent='Công việc theo quyền tài khoản';status.style.display='block'}
+  const list=document.getElementById('fwcList');
+  if(!list)return false;
+  list.classList.add('v1199Queue','v478CanonicalQueue');
+  const cards=Array.from(list.querySelectorAll('.fwcFlight'));
+  let grid=list.querySelector(':scope > .v1199FlightGrid.v478RoleGrid');
+  if(!grid){grid=document.createElement('div');grid.className='v1199FlightGrid v478RoleGrid';list.appendChild(grid)}
+  for(const card of cards){
+    if(card.parentElement!==grid)grid.appendChild(card);
+    card.classList.add('v1199Card','v478CanonicalRoleCard');
+    card.dataset.v478State=v478CardState(card);
+    const title=card.querySelector('.fwcFlightTitle');if(title)title.classList.add('v1199Title');
+    const metas=card.querySelectorAll('.fwcMeta');metas.forEach(x=>x.classList.add('v1199Meta'));if(metas[1])metas[1].classList.add('v478TechMeta');
+    const badges=card.querySelector('.fwcBadges');
+    if(badges){badges.classList.add('v478RoleModules');const wrap=badges.parentElement;if(wrap)wrap.classList.add('v478RoleModuleWrap')}
+    let actions=card.querySelector(':scope > .v478RoleActions');
+    if(!actions){actions=document.createElement('div');actions.className='v1199FlightActions v478RoleActions';Array.from(card.children).filter(x=>x.tagName==='BUTTON').forEach(x=>actions.appendChild(x));card.appendChild(actions)}
+    actions.querySelectorAll('.fwcBtn').forEach(btn=>btn.classList.add('v1199Action'));
+  }
+  normalizeFlightDossierCards();
+  grid.querySelectorAll('.v478RoleActions>.fwcBtn').forEach(btn=>btn.textContent='HỒ SƠ CHUYẾN');
+  list.querySelectorAll('.fwcEmpty').forEach(x=>x.classList.add('v1199Empty'));
+  let empty=list.querySelector(':scope > .v478RoleEmpty');
+  if(!empty){empty=list.querySelector(':scope > .fwcEmpty');if(empty)empty.classList.add('v478RoleEmpty');else{empty=document.createElement('div');empty.className='v1199Empty v478RoleEmpty';list.appendChild(empty)}}
+  if(!empty.textContent)empty.textContent='Không có chuyến trong trạng thái này.';
+  const note=v478EnsureTabs(list);note.textContent=`${me()||role()} · ${existingDate} · ${cards.length} chuyến`;
+  applyFlightSearch();root.sagsOverlayLayout?.refresh();
+  return true;
+}
+function scheduleCanonicalRoleView(d){[0,120,450,900,1900].forEach(ms=>setTimeout(()=>{if(visible())canonicalizeRoleView(d)},ms))}
 const baseOpen=root.flightWorkspaceOpenList,baseRefresh=root.flightWorkspaceRefresh;
 async function openLite(requestedDate){
-  if(role()==='AD'||isCargoRole()){const result=baseOpen?.call(root,requestedDate);ensureHomeButton(document.getElementById('fwcModal'));return result;}
-  const d=S(requestedDate)||dateNow();if(!drawShell(d))return false;
+  const d=S(requestedDate)||dateNow();
+  if(role()==='AD'||isCargoRole()){
+    const result=await baseOpen?.call(root,d);scheduleCanonicalRoleView(d);return result;
+  }
+  if(!drawShell(d))return false;
   try{
     const man=await root.sagsV478ManifestForWorker(d);
     const status=document.getElementById('fwcStatus');
-    if(status)status.textContent=man.fromDeviceCache?'Đang ngoại tuyến · danh sách phân công đã lưu trên máy; chỉ mở form khi kết nối cho phép.':'MY FLIGHT · hồ sơ các chuyến có phân công của bạn · mở hồ sơ để nhận việc và xem tài liệu';
+    if(status)status.textContent=man.fromDeviceCache?'Ngoại tuyến · đang dùng danh sách đã lưu trên máy.':'Công việc được phân theo Daily Roster';
     let renderer=root.__SAGS_DAILY_ROSTER_FINAL_V1199?.renderPersonal;
     for(let i=0;typeof renderer!=='function'&&i<20;i++){await new Promise(r=>setTimeout(r,50));renderer=root.__SAGS_DAILY_ROSTER_FINAL_V1199?.renderPersonal}
     if(typeof renderer!=='function')throw new Error('MY FLIGHT renderer mới chưa sẵn sàng; không dùng giao diện legacy.');
     await renderer(d);return true;
-  }catch(e){const el=document.getElementById('fwcStatus');if(el)el.textContent='Không đọc được MY FLIGHT: '+S(e?.message||e);return false}
+  }catch(e){console.warn('My Flight read failed',e);const el=document.getElementById('fwcStatus');if(el)el.textContent='Không tải được dữ liệu. Kiểm tra kết nối và bấm Làm mới để thử lại.';return false}
 }
 openLite.__v477MailboxLite=true;
 async function refreshLite(){
-  if(role()==='AD'||isCargoRole())return baseRefresh?.call(root);
+  if(role()==='AD'||isCargoRole()){
+    const d=date(),result=await baseRefresh?.call(root);scheduleCanonicalRoleView(d);return result;
+  }
   // A live mailbox is already current: reopening/refreshing must not download it again.
   if(live.loaded&&live.ref){root.sagsV477InvalidateQueueStatus?.();return openLite(date());}
   root.sagsV477InvalidateQueueStatus?.();if(live.ref){try{const snap=await live.ref.once('value');if(live.handler)live.handler(snap)}catch(_){}}return openLite(date());
 }
 refreshLite.__v477MailboxLite=true;
-function renderCanonicalIfVisible(){if(role()==='AD'||isCargoRole()||!visible())return;const renderer=root.__SAGS_DAILY_ROSTER_FINAL_V1199?.renderPersonal;if(typeof renderer==='function')Promise.resolve(renderer(date())).catch(e=>console.warn('V6.4.24 canonical MY FLIGHT render',e?.message||e))}
-function install(){const cargo=isCargoRole();if(cargo){if(baseOpen&&root.flightWorkspaceOpenList!==baseOpen)root.flightWorkspaceOpenList=baseOpen;if(baseRefresh&&root.flightWorkspaceRefresh!==baseRefresh)root.flightWorkspaceRefresh=baseRefresh;const b=document.getElementById('roleBtnRosterFlights');if(b)b.onclick=()=>baseOpen?.call(root,dateNow());return}if(root.flightWorkspaceOpenList!==openLite)root.flightWorkspaceOpenList=openLite;if(root.flightWorkspaceRefresh!==refreshLite)root.flightWorkspaceRefresh=refreshLite;const b=document.getElementById('roleBtnRosterFlights');if(b&&role()!=='AD')b.onclick=()=>openLite(dateNow())}
+function renderCanonicalIfVisible(){if(!visible())return;if(role()==='AD'||isCargoRole()){canonicalizeRoleView(date());return}const renderer=root.__SAGS_DAILY_ROSTER_FINAL_V1199?.renderPersonal;if(typeof renderer==='function')Promise.resolve(renderer(date())).catch(e=>console.warn('Canonical MY FLIGHT render',e?.message||e))}
+function install(){installFlightListObserver();if(root.flightWorkspaceOpenList!==openLite)root.flightWorkspaceOpenList=openLite;if(root.flightWorkspaceRefresh!==refreshLite)root.flightWorkspaceRefresh=refreshLite;const b=document.getElementById('roleBtnRosterFlights');if(b){b.textContent='MY FLIGHT';b.onclick=()=>openLite(dateNow())}}
 function assertCanonical(){if(live.user&&(me()!==live.user||role()==='AD'||isCargoRole()))teardown();install();renderCanonicalIfVisible()}
 root.sagsV478OpenMyFlightLite=openLite;root.sagsV478RefreshMyFlightLite=refreshLite;root.sagsV478InstallCanonicalMyFlight=assertCanonical;
 const baseApplyRoleUI=root.applyRoleUI;if(typeof baseApplyRoleUI==='function'&&!baseApplyRoleUI.__v6424MyFlightAuthority){const wrapped=function(){const out=baseApplyRoleUI.apply(this,arguments);[0,120,500,1400].forEach(ms=>setTimeout(assertCanonical,ms));return out};wrapped.__v6424MyFlightAuthority=true;wrapped.__v6424Base=baseApplyRoleUI;root.applyRoleUI=wrapped;try{applyRoleUI=wrapped}catch(_){}}

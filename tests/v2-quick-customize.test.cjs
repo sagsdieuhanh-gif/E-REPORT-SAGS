@@ -1,0 +1,18 @@
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const root=path.resolve(__dirname,'..');
+const ui=fs.readFileSync(path.join(root,'app/modules/ui-preferences.v1.js'),'utf8');
+const css=fs.readFileSync(path.join(root,'app/styles/new-ui-v1.css'),'utf8');
+assert.match(ui,/className='sagsQteChoiceToggle'/,'each quick-entry group must have its own accordion button');
+assert.match(ui,/body\.hidden=true/,'group choices must begin collapsed');
+assert.match(ui,/toggle\.setAttribute\('aria-expanded','false'\)/,'accordion accessibility state missing');
+assert.match(ui,/group\.classList\.toggle\('open',open\)/,'group open state missing');
+assert.match(ui,/body\.hidden=!open/,'accordion must reveal the complete group body');
+const marker=css.indexOf('V2.0 · QUICK CUSTOMIZE FULL EXPANSION');
+assert(marker>=0,'V2.0 quick customize CSS layer missing');
+const v2=css.slice(marker);
+assert.match(v2,/\.sagsQteCustomizeCard\{[\s\S]*?overflow-y:auto!important/,'modal card must own vertical scroll');
+assert.match(v2,/\.sagsQteCustomizeOptions \.sagsQteCustomizeList[\s\S]*?max-height:none!important/,'customize list must not cap height');
+assert.match(v2,/\.sagsQteChoiceGroup\{[\s\S]*?max-height:none!important/,'choice group must auto-expand');
+assert.match(v2,/\.sagsQteChoiceBody\{[\s\S]*?grid-auto-rows:minmax\(40px,auto\)!important[\s\S]*?max-height:none!important[\s\S]*?overflow:visible!important/,'choice body must show all 1-N rows');
+assert.doesNotMatch(v2,/grid-template-rows\s*:\s*repeat\(2/i,'V2 quick groups must not be limited to two rows');
+console.log('V2.0 quick-entry customize passed: per-group accordion expands all choices without clipping.');

@@ -1,0 +1,661 @@
+/* ./app/styles/boot-23-v1-restore-final-send-button.css */
+/* V1 hotfix: khôi phục nút GỬI FINAL cho CBTT/AD. */
+body.role-admin #finalFormsModal #ffSendBtn,
+body.role-cbtt #finalFormsModal #ffSendBtn{
+  display:inline-flex!important;
+  visibility:visible!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+  position:static!important;
+}
+body.role-viewer #finalFormsModal #ffSendBtn,
+body.role-dh #finalFormsModal #ffSendBtn,
+body.role-pvhk #finalFormsModal #ffSendBtn{display:none!important;}
+
+/* ./app/styles/boot-24-v1-final-header-layout.css */
+/* ===== V4.4 FIX FINAL HEADER + VJ HEADER TEXT =====
+   GỬI FINAL luôn nằm trong header, tuyệt đối không dùng tọa độ nổi trên biểu mẫu. */
+#finalFormsModal .finalFormsHeader #ffSendBtn{
+  position:static!important;
+  left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;
+  transform:none!important;
+  width:auto!important;
+  height:auto!important;
+  min-width:92px!important;
+  min-height:52px!important;
+  margin:0!important;
+  z-index:auto!important;
+}
+/* A/C REGN và DATE của VJ Load Summary: chữ 18px, nằm giữa vùng hiển thị. */
+#finalFormDisplay .ffValue[data-display-key="acreg"],
+#finalFormDisplay .ffValue[data-display-key="date"]{
+  font-size:18px!important;
+  line-height:1!important;
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+  padding:0 2px!important;
+  box-sizing:border-box!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+}
+@media(max-width:520px){
+  #finalFormsModal .finalFormsHeader #ffSendBtn{
+    min-width:72px!important;
+    min-height:44px!important;
+  }
+}
+
+/* ./app/styles/boot-25-v1-final-actions-unified.css */
+/* V1 UI: đồng bộ ba nút CHỌN / GỬI FINAL / LDM trong header FINAL. */
+#finalFormsModal .finalFormsHeader .finalHeaderActions{
+  display:flex!important;
+  align-items:center!important;
+  gap:6px!important;
+  flex-wrap:nowrap!important;
+}
+#finalFormsModal .finalFormsHeader .finalHeaderBtn,
+#finalFormsModal .finalFormsHeader #ffSendBtn{
+  position:static!important;
+  width:88px!important;
+  min-width:88px!important;
+  height:40px!important;
+  min-height:40px!important;
+  margin:0!important;
+  padding:0 10px!important;
+  border:0!important;
+  border-radius:9px!important;
+  box-sizing:border-box!important;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font:900 11px/1 Arial,sans-serif!important;
+  white-space:nowrap!important;
+  box-shadow:0 2px 6px rgba(0,0,0,.16)!important;
+  transform:none!important;
+}
+#finalFormsModal .finalFormsHeader .finalHeaderBtn.choose{background:#f3f4f6!important;color:#111!important;}
+#finalFormsModal .finalFormsHeader .finalHeaderBtn.send{background:#137333!important;color:#fff!important;}
+#finalFormsModal .finalFormsHeader .finalHeaderBtn.ldm{background:#7c3aed!important;color:#fff!important;}
+#finalFormsModal .finalFormsHeader .finalHeaderBtn:active{transform:scale(.98)!important;}
+@media(max-width:520px){
+  #finalFormsModal .finalFormsHeader .finalHeaderActions{gap:4px!important;}
+  #finalFormsModal .finalFormsHeader .finalHeaderBtn,
+  #finalFormsModal .finalFormsHeader #ffSendBtn{
+    width:72px!important;
+    min-width:72px!important;
+    height:34px!important;
+    min-height:34px!important;
+    padding:0 5px!important;
+    border-radius:7px!important;
+    font-size:9.5px!important;
+  }
+}
+
+/* ./app/styles/boot-26-v2-7-mobile-final-toolbar-fix.css */
+/* V2.7 — Mobile FINAL toolbar: never squeeze all actions into one row. */
+@media (max-width:780px){
+  #finalFormsModal .finalFormsHeader{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) auto!important;
+    grid-template-rows:auto auto!important;
+    gap:6px!important;
+    padding:max(6px,env(safe-area-inset-top)) max(6px,env(safe-area-inset-right)) 7px max(6px,env(safe-area-inset-left))!important;
+    align-items:center!important;
+  }
+  #finalFormsModal .finalFormsHeader>span{
+    grid-column:1!important;grid-row:1!important;
+    min-width:0!important;font-size:12px!important;line-height:1.15!important;
+    white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;
+  }
+  #finalFormsModal .finalFormsHeader #ffContextBadge{
+    grid-column:2!important;grid-row:1!important;
+    max-width:44vw!important;overflow:hidden!important;text-overflow:ellipsis!important;
+  }
+  #finalFormsModal .finalFormsHeader .finalHeaderActions{
+    grid-column:1 / -1!important;grid-row:2!important;
+    width:100%!important;min-width:0!important;max-width:none!important;
+    display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:5px!important;overflow:visible!important;padding:0!important;margin:0!important;
+  }
+  #finalFormsModal .finalFormsHeader .finalHeaderBtn,
+  #finalFormsModal .finalFormsHeader #ffSendBtn,
+  #finalFormsModal .finalFormsHeader .finalFormsClose{
+    position:static!important;
+    width:100%!important;min-width:0!important;max-width:none!important;
+    height:38px!important;min-height:38px!important;
+    margin:0!important;padding:0 5px!important;
+    border-radius:8px!important;box-sizing:border-box!important;
+    font:900 10px/1.05 Arial,sans-serif!important;
+    white-space:normal!important;overflow:hidden!important;text-overflow:ellipsis!important;
+    display:flex;align-items:center;justify-content:center;text-align:center;
+  }
+  #finalFormsModal .finalFormsHeader .finalFormsClose{
+    background:#fff!important;color:#111!important;font-size:21px!important;
+  }
+}
+@media (max-width:360px){
+  #finalFormsModal .finalFormsHeader .finalHeaderActions{gap:4px!important;}
+  #finalFormsModal .finalFormsHeader .finalHeaderBtn,
+  #finalFormsModal .finalFormsHeader #ffSendBtn,
+  #finalFormsModal .finalFormsHeader .finalFormsClose{height:36px!important;min-height:36px!important;font-size:9.2px!important;padding:0 3px!important;}
+}
+/* ===== V3.5 OPERATIONAL ALERT TRAY ===== */
+#opsAlertTray{
+  position:fixed;
+  left:max(8px,env(safe-area-inset-left));
+  right:max(8px,env(safe-area-inset-right));
+  top:calc(max(8px,env(safe-area-inset-top)) + 8px);
+  z-index:95000;
+  display:none;
+  pointer-events:none;
+}
+#opsAlertTrayScroller{
+  display:flex;
+  flex-direction:row;
+  align-items:stretch;
+  gap:8px;
+  overflow-x:auto;
+  overflow-y:hidden;
+  overscroll-behavior-x:contain;
+  scroll-snap-type:x proximity;
+  padding:2px 2px 8px;
+  pointer-events:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.opsAlertCard{
+  flex:0 0 min(310px,calc(100vw - 28px));
+  max-width:360px;
+  min-height:112px;
+  box-sizing:border-box;
+  border:1px solid #c9d5e2;
+  border-radius:14px;
+  background:rgba(255,255,255,.98);
+  box-shadow:0 8px 26px rgba(17,50,77,.22);
+  padding:11px 12px 10px;
+  scroll-snap-align:start;
+}
+.opsAlertCardTitle{
+  font:900 14px/1.25 Arial,sans-serif;
+  color:#123d64;
+  margin:0 0 7px;
+}
+.opsAlertCardText{
+  font:800 13px/1.4 Arial,sans-serif;
+  color:#17324d;
+  min-height:38px;
+  white-space:normal;
+}
+.opsAlertCardActions{
+  display:flex;
+  justify-content:flex-end;
+  margin-top:9px;
+}
+.opsAlertCardAck{
+  border:0;
+  border-radius:9px;
+  padding:8px 13px;
+  background:#0067c5;
+  color:#fff;
+  font:900 12px/1 Arial,sans-serif;
+}
+.opsAlertCardCompose{
+  border:0;
+  border-radius:9px;
+  padding:8px 13px;
+  background:#d97706;
+  color:#fff;
+  font:900 12px/1 Arial,sans-serif;
+  margin-right:7px;
+}
+.opsMvaComposeText{
+  margin:10px 0 8px;
+  padding:14px;
+  border-radius:12px;
+  background:#101828;
+  color:#fff;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  font:800 19px/1.5 "Courier New",monospace;
+}
+.opsMvaComposeMeta{
+  margin:0 0 10px;
+  color:#526174;
+  font:700 12px/1.45 Arial,sans-serif;
+}
+.opsMvaCopyBtn{width:100%;background:#0b8f55!important}
+.opsAlertCard[data-type="PUSHBACK_MISSING"]{
+  border-color:#f59e0b;
+  background:#fffaf0;
+}
+@media(max-width:600px){
+  #opsAlertTray{top:calc(max(6px,env(safe-area-inset-top)) + 4px)}
+  #opsAlertTrayScroller{gap:6px}
+  .opsAlertCard{flex-basis:min(286px,calc(100vw - 24px));padding:10px 11px}
+}
+/* ===== V4.29 MESSAGE COMPOSER MODALS ===== */
+#opsMvaComposeModal,#opsMvtComposeModal,#ops9gMvtComposeModal,#opsVuMvtComposeModal{
+  z-index:120500!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:max(12px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left))!important;
+  overflow:auto!important;
+}
+#opsMvaComposeModal .sagsAdminPanel,#opsMvtComposeModal .sagsAdminPanel,#ops9gMvtComposeModal .sagsAdminPanel,#opsVuMvtComposeModal .sagsAdminPanel{
+  position:relative;max-height:min(88dvh,760px);overflow:auto;margin:auto;
+}
+.opsComposerX{position:absolute;right:10px;top:10px;width:36px;height:36px;border:0;border-radius:50%;background:#e9eef3;color:#203040;font:900 22px/36px Arial;cursor:pointer}
+.opsComposerBottomActions{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px;margin-top:10px}
+.opsComposerBottomActions .opsMvaCopyBtn{width:auto!important;min-width:0}
+.opsComposerBottomActions .opsComposerClose{min-width:90px}
+@media(max-width:520px){
+  .opsComposerBottomActions{grid-template-columns:1fr 1fr}
+  #opsMvaComposeModal .sagsAdminPanel,#opsMvtComposeModal .sagsAdminPanel,#ops9gMvtComposeModal .sagsAdminPanel,#opsVuMvtComposeModal .sagsAdminPanel{max-height:90dvh}
+}
+
+/* ./app/styles/boot-27-v484-system-dept-style.css */
+.v484DeptBox{margin:7px 0 9px;padding:9px;border:1px solid #d3dee8;border-radius:10px;background:#f8fbfe}
+.v484DeptTitle{font:900 12px Arial;color:#173b5d;margin-bottom:6px}
+.v484DeptEmpty{font:700 12px Arial;color:#7a8793;padding:5px 2px}
+.v484DeptBadge{display:inline-flex;align-items:center;border-radius:999px;padding:3px 7px;background:#edf4fb;color:#194d78;font:800 11px Arial}
+
+/* ./app/styles/boot-28-v485-feature-permission-style.css */
+.v485PermModal{position:fixed;inset:0;z-index:10180;background:rgba(4,18,34,.62);display:none;align-items:center;justify-content:center;padding:14px;box-sizing:border-box}
+.v485PermBox{width:min(96vw,650px);max-height:88vh;overflow:auto;background:#fff;border-radius:18px;padding:16px;box-sizing:border-box;box-shadow:0 20px 60px rgba(0,0,0,.34);font-family:Arial,sans-serif;color:#17324a}
+.v485PermTitle{font:900 20px Arial;color:#0b4d8b;margin:0 0 5px}.v485PermSub{font:700 12px/1.45 Arial;color:#617487;margin-bottom:12px}
+.v485PermGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.v485PermItem{display:flex;align-items:flex-start;gap:9px;border:1px solid #d5e0ea;border-radius:12px;padding:10px;background:#f8fbfe}
+.v485PermItem input{width:20px;height:20px;margin-top:1px;accent-color:#0b6aa9}.v485PermItem b{display:block;font-size:13px}.v485PermItem small{display:block;color:#718090;margin-top:3px;line-height:1.35}
+.v485PermActions{display:flex;gap:8px;margin-top:14px}.v485PermActions button{flex:1;border:0;border-radius:10px;padding:11px;font-weight:900;font-size:14px}.v485Save{background:#0b6aa9;color:#fff}.v485Cancel{background:#e8eef4;color:#27425a}.v485Reset{background:#fff4dd;color:#8a5700;border:1px solid #e5c675!important}
+.v485PermHint{margin-top:9px;padding:8px 10px;border-radius:10px;background:#eef7ff;color:#28587d;font:700 12px/1.4 Arial}
+@media(max-width:520px){.v485PermGrid{grid-template-columns:1fr}.v485PermBox{padding:13px}.v485PermTitle{font-size:18px}}
+
+/* ./app/styles/boot-29-v18-account-hierarchy-style.css */
+.v18CodePill{display:inline-flex;align-items:center;padding:2px 7px;border-radius:999px;background:#eef4fa;color:#174b85;font:900 10px Arial;margin-right:3px}
+#v18ManualBBBTModal .sagsAdminField input{text-transform:uppercase}
+
+/* ./app/styles/boot-30-v178-fs09-quick-premium-style.css */
+#fs09QuickModal{
+  position:fixed;inset:0;z-index:9955;display:none;align-items:flex-end;justify-content:center;
+  background:rgba(3,8,14,.68);
+  padding:0 max(0px,env(safe-area-inset-right)) 0 max(0px,env(safe-area-inset-left));
+}
+.fs09qPanel{
+  width:min(100%,560px);max-width:100vw;height:min(96dvh,920px);
+  max-height:calc(var(--sags-vv-height,100dvh) - 4px);
+  display:flex;flex-direction:column;overflow:hidden;
+  background:#0e1824;color:#e8eef5;border-radius:20px 20px 0 0;
+  box-shadow:0 -18px 50px rgba(0,0,0,.38);font-family:Arial,sans-serif;
+}
+.fs09qHead{flex:0 0 auto;background:#0b1521;padding:9px 12px 8px;border-bottom:1px solid #263648}
+.fs09qHeadTop{display:grid;grid-template-columns:34px 1fr 34px;align-items:center;gap:6px}
+.fs09qBack,.fs09qClose{width:34px;height:34px;border:0;background:transparent;color:#b9d6dc;font:900 27px/34px Arial;padding:0}
+.fs09qCenter{text-align:center;min-width:0}
+.fs09qTitle{font:900 16px/1.15 Arial;color:#f1f5f9;letter-spacing:.25px}
+.fs09qFlight{margin-top:3px;color:#9dafc1;font:800 11px/1.2 Arial;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fs09qTabs{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:8px}
+.fs09qTab{min-height:32px;border:1px solid #304459;border-radius:9px;background:#162536;color:#9fb0c2;font:900 11px Arial;padding:0 5px}
+.fs09qTab.active{border-color:#4aa9ab;background:#17383d;color:#d9f4f2}
+.fs09qDots{display:flex;justify-content:center;gap:5px;margin-top:6px;height:5px}
+.fs09qDot{width:5px;height:5px;border-radius:50%;background:#45576a}
+.fs09qDot.active{width:16px;border-radius:5px;background:#59bfc0}
+.fs09qBody{flex:1 1 auto;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;padding:0 10px 12px;background:#0e1824;touch-action:pan-y}
+.fs09qPageTitle{padding:8px 2px 7px;color:#8193a5;font:900 10px/1 Arial;letter-spacing:.65px}
+.fs09qRows{background:#142131;border:1px solid #2b3c4e;border-radius:12px;overflow:hidden}
+.fs09qRow{min-height:60px;display:grid;grid-template-columns:minmax(108px,1fr) 112px 112px;gap:5px;align-items:center;padding:5px 7px;border-bottom:1px solid #263648}
+.fs09qRow:last-child{border-bottom:0}
+.fs09qRow.single .fs09qSingle{grid-column:2/4;justify-self:end;width:150px}
+.fs09qLabel{color:#e6edf4;font:900 11.5px/1.15 Arial;min-width:0}
+.fs09qCell,.fs09qSingle{position:relative;height:46px}
+.fs09qMini{position:absolute;left:6px;top:2px;color:#8295a8;font:900 7px Arial;z-index:2;pointer-events:none}
+.fs09qInput{
+  width:100%;height:46px;box-sizing:border-box;border:1px solid #33475b;border-radius:9px;
+  background:#0f1b29;color:#f2f5f8;font:900 16px/44px Arial;text-align:center;letter-spacing:0;
+  font-variant-numeric:tabular-nums;outline:none;padding:5px 42px 0 7px;
+}
+.fs09qInput::placeholder{color:#6f8295}
+.fs09qInput:focus{border-color:#55b8b8;box-shadow:0 0 0 1px rgba(85,184,184,.18)}
+.fs09qInput.dirty{border-color:#c5953f;background:#272116}
+.fs09qNow{
+  position:absolute;right:1px;top:3px;width:40px;height:40px;border:0;border-radius:9px;
+  background:#1b343b;color:#79d1d0;font:900 21px/40px Arial;padding:0;touch-action:manipulation;
+}
+.fs09qNow:active{background:#24505a;transform:scale(.96)}
+.fs09qHint{padding:8px 0 1px;text-align:center;color:#718497;font:800 9px Arial}
+.fs09qEmpty{margin:15px 0;padding:20px 12px;border:1px dashed #3b5065;border-radius:12px;background:#142131;color:#9dafc1;font:800 12px Arial;text-align:center}
+.fs09qFooter{flex:0 0 auto;padding:8px 12px calc(8px + env(safe-area-inset-bottom));background:#0b1521;border-top:1px solid #263648}
+.fs09qSave{width:100%;min-height:48px;border:0;border-radius:11px;background:#2f9e44;color:#f1f5f9;font:900 16px Arial}
+.fs09qStatus{min-height:14px;margin-top:4px;text-align:center;color:#8598aa;font:800 9px Arial}
+@media(max-width:390px){
+  .fs09qPanel{height:97dvh}
+  .fs09qBody{padding-left:8px;padding-right:8px}
+  .fs09qRow{grid-template-columns:minmax(84px,1fr) 100px 100px;gap:4px;padding-left:6px;padding-right:6px}
+  .fs09qLabel{font-size:10.5px}
+  .fs09qInput{font-size:15px;padding-right:40px;padding-left:6px}
+}
+@media(max-width:345px){
+  .fs09qRow{grid-template-columns:minmax(72px,1fr) 92px 92px}
+  .fs09qLabel{font-size:9.5px}
+}
+@media(min-width:700px){
+  #fs09QuickModal{align-items:center;padding:12px}
+  .fs09qPanel{height:min(90vh,880px);border-radius:20px}
+}
+
+/* ./app/styles/boot-31-v183-fs09-closeout-quick-style.css */
+.fs09qCloseoutSubTabs{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:6px;
+  margin:0 0 8px;
+}
+.fs09qCloseoutSubTab{
+  min-height:34px;
+  border:0;
+  border-radius:9px;
+  background:#152333;
+  color:#8fa1b3;
+  font:900 10px Arial;
+  letter-spacing:.2px;
+}
+.fs09qCloseoutSubTab.active{
+  background:#24545a;
+  color:#ecfbfa;
+}
+.fs09qCloseoutRowTabs{
+  display:flex;
+  gap:5px;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+  margin:0 0 9px;
+  padding-bottom:1px;
+}
+.fs09qCloseoutRowTabs::-webkit-scrollbar{display:none}
+.fs09qCloseoutRowBtn{
+  flex:0 0 auto;
+  min-height:32px;
+  border:0;
+  border-radius:8px;
+  background:#152333;
+  color:#8fa1b3;
+  font:900 9.5px Arial;
+  padding:0 10px;
+  white-space:nowrap;
+}
+.fs09qCloseoutRowBtn.active{
+  background:#2a4456;
+  color:#eff5f9;
+}
+.fs09qCloseoutRowBtn.final.active{
+  background:#5b4924;
+  color:#ffe9ad;
+}
+.fs09qCloseoutCard{
+  background:#111e2b;
+  border-radius:10px;
+  padding:10px;
+  box-shadow:inset 0 -1px 0 #213142;
+}
+.fs09qCloseoutTitle{
+  color:#f2f6f9;
+  font:900 12px Arial;
+  margin:0 0 9px;
+}
+.fs09qCloseoutGrid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:7px;
+}
+.fs09qCloseoutGrid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.fs09qCloseoutGrid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.fs09qDataField{min-width:0}
+.fs09qDataLabel{
+  display:block;
+  color:#8193a5;
+  font:900 8.5px Arial;
+  margin:0 0 4px;
+  text-align:center;
+}
+.fs09qDataInput,.fs09qTextArea{
+  width:100%;
+  box-sizing:border-box;
+  border:0;
+  outline:0;
+  background:#182736;
+  color:#f4f7fa;
+  border-radius:8px;
+  font:900 16px Arial;
+}
+.fs09qDataInput{
+  height:42px;
+  text-align:center;
+  padding:0 5px;
+  font-variant-numeric:tabular-nums;
+}
+.fs09qDataInput:focus,.fs09qTextArea:focus{background:#203442}
+.fs09qDataInput.dirty,.fs09qTextArea.dirty{
+  background:#302718;
+  color:#ffe2a3;
+}
+.fs09qDataField.wide{grid-column:1/-1}
+.fs09qCloseoutDivider{
+  height:1px;
+  background:#213142;
+  margin:10px 0;
+}
+.fs09qTextArea{
+  min-height:84px;
+  resize:vertical;
+  font:800 12px/1.4 Arial;
+  padding:10px;
+}
+.fs09qToggleGrid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:7px;
+}
+.fs09qToggle{
+  min-height:46px;
+  border:0;
+  border-radius:9px;
+  background:#172536;
+  color:#91a4b7;
+  font:900 10px/1.15 Arial;
+  padding:7px 8px;
+  text-align:left;
+}
+.fs09qToggle.on{
+  background:#24533f;
+  color:#effbf4;
+}
+.fs09qSectionLabel{
+  color:#7f92a4;
+  font:900 9px Arial;
+  letter-spacing:.4px;
+  margin:10px 1px 6px;
+}
+.fs09qTimeSection{
+  margin-bottom:10px;
+  border-radius:10px;
+  overflow:hidden;
+}
+.fs09qTimeSectionHead{
+  padding:8px 9px;
+  background:#152333;
+  color:#9eb0c1;
+  font:900 10px Arial;
+}
+.fs09qAutoNextHint{
+  color:#697d90;
+  font:800 8.5px/1.3 Arial;
+  text-align:center;
+  padding:8px 0 0;
+}
+@media(max-width:390px){
+  .fs09qCloseoutGrid{gap:5px}
+  .fs09qDataInput{height:40px;font-size:15px}
+  .fs09qDataLabel{font-size:8px}
+}
+.fs09qCloseoutMainTabs{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:6px;
+  margin:0 0 8px;
+}
+.fs09qCloseoutMainBtn{
+  min-height:38px;
+  border:0;
+  border-radius:9px;
+  background:#152333;
+  color:#91a4b7;
+  font:900 9.5px Arial;
+  padding:0 5px;
+}
+.fs09qCloseoutMainBtn.active{
+  background:#2a4456;
+  color:#eff5f9;
+}
+.fs09qCloseoutMainBtn.final.active{
+  background:#5b4924;
+  color:#ffe9ad;
+}
+.fs09qOptionalToggle{
+  width:100%;
+  min-height:34px;
+  border:0;
+  border-radius:8px;
+  background:#111e2b;
+  color:#73879a;
+  font:900 9px Arial;
+  margin:0 0 8px;
+}
+.fs09qOptionalRows{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:6px;
+  margin:-2px 0 8px;
+}
+.fs09qOptionalRowBtn{
+  min-height:34px;
+  border:0;
+  border-radius:8px;
+  background:#152333;
+  color:#91a4b7;
+  font:900 9px Arial;
+}
+.fs09qOptionalRowBtn.active{
+  background:#2a4456;
+  color:#eff5f9;
+}
+.fs09qCloseoutHeadLine{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin:0 0 9px;
+}
+.fs09qCloseoutHeadLine .fs09qCloseoutTitle{margin:0}
+.fs09qCopyBtn{
+  flex:0 0 auto;
+  min-height:32px;
+  border:0;
+  border-radius:8px;
+  background:#254137;
+  color:#bfe9d3;
+  font:900 8.5px Arial;
+  padding:0 10px;
+}
+.fs09qCorePax{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:6px;
+}
+.fs09qMiniClass{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:6px;
+}
+.fs09qBagGrid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:7px;
+}
+.fs09qQuickSection{
+  color:#7890a5;
+  font:900 8.5px Arial;
+  letter-spacing:.45px;
+  margin:10px 1px 5px;
+}
+.fs09qZonePriority{
+  display:grid;
+  grid-template-columns:minmax(0,1.5fr) minmax(70px,.65fr) minmax(70px,.65fr);
+  gap:6px;
+}
+.fs09qDataField.zone .fs09qDataInput{
+  text-align:left;
+  padding-left:10px;
+  font-size:14px;
+}
+.fs09qDataField.compact .fs09qDataInput{
+  height:36px;
+  font-size:14px;
+}
+.fs09qDataField.compact .fs09qDataLabel{
+  font-size:7.5px;
+}
+.fs09qUsageNote{
+  color:#62778b;
+  font:800 8px/1.35 Arial;
+  text-align:center;
+  margin-top:7px;
+}
+@media(max-width:390px){
+  .fs09qCloseoutMainBtn{font-size:8.7px;min-height:36px}
+  .fs09qZonePriority{grid-template-columns:minmax(0,1.35fr) 72px 72px}
+}
+
+/* ./app/styles/boot-32-v161-progress-v2-style.css */
+#activityMonitorModal #adccPaneProgress{display:block!important;overflow-x:hidden}
+#activityMonitorModal #adccProgressList{margin-top:10px}
+.p2Grid{display:grid;grid-template-columns:1fr;gap:10px}
+.p2Card{border:1px solid #d9e2ea;border-radius:14px;background:#fff;padding:12px;box-shadow:0 2px 8px rgba(16,44,72,.08)}
+.p2Head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.p2Flight{font:900 18px Arial;color:#18385d}.p2Sub{font:800 11px Arial;color:#6f8194;margin-top:4px;line-height:1.35}.p2Status{font:900 12px Arial;color:#153d6b;margin-top:7px}.p2Pct{flex:0 0 auto;border-radius:999px;background:#edf4ff;color:#245a9a;font:900 11px Arial;padding:5px 8px}
+.p2Bar{height:8px;background:#e7edf3;border-radius:999px;overflow:hidden;margin:9px 0 5px}.p2Bar i{display:block;height:100%;background:#244b4c;border-radius:999px}.p2Count{font:800 9px Arial;color:#6c7d90;margin-bottom:8px}
+.p2Steps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px}.p2Step{position:relative;min-height:48px;padding:7px 6px 6px 22px;border:1px solid #dbe4ec;border-radius:10px;background:#f8fafc;color:#78889a;box-sizing:border-box;font:900 9px Arial;line-height:1.15;display:flex;flex-direction:column;justify-content:center;overflow-wrap:anywhere}.p2Step:before{content:"";position:absolute;left:8px;top:50%;width:10px;height:10px;transform:translateY(-50%);border:2px solid #c8d3de;border-radius:50%;background:#fff;box-sizing:border-box}.p2Step.done{background:#eff9f3;border-color:#bcdcc8;color:#087445}.p2Step.done:before{background:#2ca46b;border-color:#2ca46b}.p2Step.active{background:#eef6ff;border-color:#a9cbed;color:#145f9b}.p2Step.active:before{border-color:#2978bb;box-shadow:0 0 0 3px #d9edff}.p2Step small{font:900 8px Arial;margin-top:3px;color:inherit}.p2Meta{font:800 10px Arial;color:#687b8f;margin-top:8px;line-height:1.4}.p2Empty{padding:18px 12px;border:1px dashed #cbd7e2;border-radius:12px;text-align:center;font:800 12px Arial;color:#718294;background:#fafcfe}
+@media(max-width:760px){.p2Flight{font-size:16px}.p2Steps{grid-template-columns:repeat(3,minmax(0,1fr))}.p2Step{min-height:52px}}
+@media(max-width:380px){.p2Steps{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* ./app/styles/boot-33-v1121-ios-time-footer-style.css */
+/* V1.1.21 — iOS quick-time uses the VisualViewport while the keyboard is open.
+   Keep the same two actions visible as Android: CẬP NHẬT + XÓA GIỜ. */
+@media(max-width:360px){
+  @supports (-webkit-touch-callout:none){
+    #fs09QuickModal.v1121IosTimeFocus .fs09qFooterActions{grid-template-columns:minmax(0,1fr) 94px!important;gap:5px!important}
+    #fs09QuickModal.v1121IosTimeFocus .fs09qClear{font-size:9.5px!important;padding:0 5px!important}
+  }
+}
+
+/* ./app/styles/boot-34-v1122-roster-sign-style.css */
+/* V1.1.24 — roster-aware ARR/DEP signature chooser. */
+#v1122SignChoiceModal{position:fixed;inset:0;z-index:85000;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.58);padding:14px;box-sizing:border-box;font-family:Arial,sans-serif}
+#v1122SignChoiceModal.show{display:flex}
+#v1122SignChoiceModal .v1122SignCard{width:min(94vw,430px);background:#fff;border-radius:16px;padding:16px;box-sizing:border-box;box-shadow:0 18px 48px rgba(0,0,0,.34)}
+#v1122SignChoiceModal h3{margin:0 0 8px;color:#064f9e;font:900 20px/1.2 Arial;text-align:center}
+#v1122SignChoiceModal .v1122SignStatus{min-height:20px;margin:0 0 11px;text-align:center;color:#526579;font:800 12px/1.35 Arial}
+#v1122SignChoiceModal .v1122SignGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#v1122SignChoiceModal .v1122SignChoice{min-height:54px;border:2px solid #9fb9d2;border-radius:12px;background:#eef6ff;color:#064f9e;padding:9px 8px;font:900 15px/1.15 Arial;touch-action:manipulation}
+#v1122SignChoiceModal .v1122SignChoice.both{grid-column:1/-1;background:#eaf8f1;color:#0d684d;border-color:#90ccb8}
+#v1122SignChoiceModal .v1122SignChoice:disabled{opacity:.36;filter:grayscale(.45);cursor:not-allowed}
+#v1122SignChoiceModal .v1122SignActions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+#v1122SignChoiceModal .v1122SignActions button{min-height:42px;border:0;border-radius:10px;padding:9px;font:900 12px Arial}
+#v1122SignChoiceModal .v1122Sample{background:#173f67;color:#fff}.v1122Close{background:#e5e9ee;color:#26394c}
+body.v1122-account-toolbar #roleBtnActionCenter{display:none!important}
+body.v1122-account-toolbar #roleStatusBadge{display:none!important}
+@media(max-width:390px){#v1122SignChoiceModal{padding:8px}#v1122SignChoiceModal .v1122SignCard{padding:13px}#v1122SignChoiceModal .v1122SignChoice{min-height:50px;font-size:13px}}
+
+/* ./app/styles/boot-35-v1134-quick-time-direct-style.css */
+/* V1.1.35: N/A is integrated into NHẬP NHANH; no separate toolbar button. */
+body.v38-clean-workflow #v320NaContext,
+body.v38-clean-workflow #roleBtnNA{display:none!important}
+/* V1.1.35: NHẬP NHANH is a canonical form action, not a separate contextual lane. */
+body.v38-clean-workflow #v313QuickContext{display:none!important}

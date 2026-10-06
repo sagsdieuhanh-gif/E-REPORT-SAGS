@@ -186,6 +186,13 @@
     const page=ensurePage(liveForm);
     for(let n=1;n<=14;n++){const p=document.getElementById("page"+n);if(p){p.classList.add("hide");p.style.display="none"}}
     page.classList.remove("hide");page.style.display="block";
+    // TVJ is a Ramp form: keep BBBT directly below the TVJ page, exactly like the
+    // other Ramp form families. The existing BBBT page/attachments remain canonical.
+    let showBbbt=true;try{if(typeof v485Can==="function")showBbbt=!!v485Can("BBBT")}catch(_){}
+    const p4=document.getElementById("page4"),p5=document.getElementById("page5");
+    if(showBbbt&&page.parentNode&&p4&&p5){page.insertAdjacentElement("afterend",p4);p4.insertAdjacentElement("afterend",p5)}
+    [p4,p5].forEach(p=>{if(!p)return;p.classList.toggle("hide",!showBbbt);p.style.display=showBbbt?"block":"none"});
+    try{if(showBbbt&&typeof renderBBBTAttachments==="function")renderBBBTAttachments()}catch(_){}
     try{activeFormGroup=GROUP;localStorage.setItem(sagsOwnedKey(FORM_GROUP_STORAGE_KEY),GROUP);currentPage=PAGE}catch(_){}
     seed();try{updateCurrentFerryFlag?.()}catch(_){}
     try{draw()}catch(e){console.warn("TVJ draw",e)}

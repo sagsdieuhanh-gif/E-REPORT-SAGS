@@ -17,15 +17,10 @@ function refreshAll(){relabel();return root.sagsCargoRefreshAllFlights?.()}
 function filterFlights(){const input=document.getElementById("sagsFlightSearch"),list=document.getElementById("fwcList");if(!input||!list)return;const q=U(input.value).replace(/\s+/g,"");for(const card of list.querySelectorAll(".fwcFlight,.v1199Card")){const title=card.querySelector(".fwcFlightTitle,.v1199Title");const hay=U(title?.textContent||card.textContent).replace(/\s+/g,"");card.hidden=!!q&&!hay.includes(q)}}
 document.addEventListener("input",e=>{if(e.target?.id==="sagsFlightSearch")filterFlights()});document.addEventListener("change",e=>{if(e.target?.id==="fwcDate"&&isCargo())openAll(e.target.value)});
 function install(){
- if(!isCargo()){relabel();return false}
- if(typeof root.sagsCargoOpenAllFlights==='function'){
-   root.flightWorkspaceOpenList=openAll;
-   root.flightWorkspaceRefresh=refreshAll;
- }
- for(const id of ['roleBtnRosterFlights','roleBtnFlights']){
-   const b=document.getElementById(id);if(b)b.onclick=()=>root.sagsCargoOpenAllFlights?.(dateNow());
- }
- relabel();return true;
+ if(!isCargo())return false;
+ // MY FLIGHT is owned by roster-lite. Keep cargo all-flight functions available
+ // for explicit cargo screens, but never replace the shared MY FLIGHT route/button.
+ return true;
 }
 let installTimers=[];function schedule(){installTimers.forEach(clearTimeout);installTimers=[0,250,1600].map(ms=>setTimeout(install,ms))}
 const base=root.applyRoleUI;if(typeof base==='function'&&!base.__sagsCargoAllFlights){const w=function(){const out=base.apply(this,arguments);Promise.resolve(out).finally(schedule);return out};w.__sagsCargoAllFlights=1;w.__base=base;root.applyRoleUI=w;try{applyRoleUI=w}catch(_){}}

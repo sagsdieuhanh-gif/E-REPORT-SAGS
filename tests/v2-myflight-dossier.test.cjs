@@ -1,0 +1,12 @@
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const root=path.resolve(__dirname,'..');
+const roster=fs.readFileSync(path.join(root,'app/modules/daily-roster.v502.js'),'utf8');
+assert.match(roster,/function flightOverviewForms\(g\)/,'flight-wide form overview helper missing');
+assert.match(roster,/g\.flightAssignments=manifestItems\.filter/,'personal flight group must hydrate all same-flight manifest assignments');
+assert.match(roster,/BIỂU MẪU CÁC ĐƠN VỊ TRÊN CHUYẾN/,'dossier must show unit form overview before own actions');
+assert.match(roster,/THAO TÁC BIỂU MẪU CỦA TÔI/,'dossier must keep own actionable section separate');
+assert.match(roster,/owners\.join\(' \+ '\)/,'form overview must show assigned people');
+assert.match(roster,/states=await Promise\.all\(dd\.items\.map\(x=>readState\(x\.assignmentId\)\)\)/,'state reads must remain limited to the signed-in user assignments');
+assert.doesNotMatch(roster,/manifestItems\.map\(x=>readState/,'must not read foreign assignment states for overview');
+for(const label of ["'📦 KH'","'👥 PVHK'","'⚖ CBTT'","'✈ ĐH'"])assert(roster.includes(label),'department label missing: '+label);
+console.log('V2.0 My Flight dossier passed: all units/forms/assignees visible without foreign state reads.');

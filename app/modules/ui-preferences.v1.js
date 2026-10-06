@@ -404,13 +404,19 @@
       if(!groups.has(name))groups.set(name,[]);
       groups.get(name).push({item,meta});
     }
+    let groupIndex=0;
     for(const [name,entries] of groups){
       const group=document.createElement('section');group.className='sagsQteChoiceGroup';
-      const head=document.createElement('div');head.className='sagsQteChoiceGroupHead';
+      const bodyId='sagsQteChoiceBody_'+(++groupIndex);
+      const toggle=document.createElement('button');toggle.type='button';toggle.className='sagsQteChoiceToggle';
+      toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-controls',bodyId);
+      const text=document.createElement('span');text.className='sagsQteChoiceToggleText';
       const strong=document.createElement('b');strong.textContent=name;
       const summary=document.createElement('small');summary.dataset.sagsQteSummary='1';
-      head.append(strong,summary);
-      const body=document.createElement('div');body.className='sagsQteChoiceBody';
+      text.append(strong,summary);
+      const chevron=document.createElement('span');chevron.className='sagsQteChoiceChevron';chevron.setAttribute('aria-hidden','true');chevron.textContent='⌄';
+      toggle.append(text,chevron);
+      const body=document.createElement('div');body.className='sagsQteChoiceBody';body.id=bodyId;body.hidden=true;
       for(const entry of entries){
         const lab=document.createElement('label');lab.className='sagsQteChoice';
         const check=document.createElement('input');check.type='checkbox';check.checked=!hidden.has(entry.item.key);check.dataset.key=entry.item.key;
@@ -418,7 +424,14 @@
         check.addEventListener('change',()=>updateQuickGroupSummary(group));
         lab.append(check,span);body.appendChild(lab);
       }
-      group.append(head,body);list.appendChild(group);updateQuickGroupSummary(group);
+      toggle.addEventListener('click',()=>{
+        const open=body.hidden;
+        body.hidden=!open;
+        group.classList.toggle('open',open);
+        toggle.setAttribute('aria-expanded',open?'true':'false');
+        if(open)requestAnimationFrame(()=>{try{group.scrollIntoView({block:'nearest'})}catch(_){}});
+      });
+      group.append(toggle,body);list.appendChild(group);updateQuickGroupSummary(group);
     }
   }
   function openQuickCustomize(){
@@ -540,23 +553,28 @@
   }
   function bindQuickObserver(){
     const body=$('quickTimeBody');if(!body||qteObserver)return;
-    qteObserver=new MutationObserver(()=>setTimeout(()=>{applyQuickVisibility();optimizeEntryFlow()},0));
-    qteObserver.observe(body,{childList:true,subtree:true});
+    qteObserver=new MutationObserver(scheduleEntryRefresh);
+    qteObserver.observe(body,{childList:true});
   }
   function bindFs09Observer(){
     const body=$('fs09qBody');if(!body||fs09Observer)return;
-    fs09Observer=new MutationObserver(()=>setTimeout(syncFs09Context,0));
-    fs09Observer.observe(body,{childList:true,subtree:true});
+    fs09Observer=new MutationObserver(scheduleEntryRefresh);
+    fs09Observer.observe(body,{childList:true});
+  }
+  let entryRefreshFrame=0;
+  function scheduleEntryRefresh(){
+    if(entryRefreshFrame)return;
+    entryRefreshFrame=requestAnimationFrame(()=>{entryRefreshFrame=0;applyQuickVisibility();optimizeEntryFlow();syncFs09Context()});
   }
 
   function syncIdentityAndTheme(){
     const id=identity();
     if(id!==lastIdentity){
       lastIdentity=id;
-      applyTheme('dark',false);
+      applyTheme(readTheme(),false);
       setTimeout(applyQuickVisibility,0);
     }else{
-      const t='dark';
+      const t=readTheme();
       if(t!==lastAppliedTheme)applyTheme(t,false);
     }
   }
@@ -569,9 +587,81 @@
       if(is551Quick()&&el?.matches?.('#quickTimeBody .quickTimeInput[data-key]'))update551Context(el.dataset.key);
       if(el?.matches?.('#fs09qBody [data-key]'))syncFs09Context();
     },true);
-    setInterval(()=>{ensureQuickButton();bindQuickObserver();bindFs09Observer();syncIdentityAndTheme();optimizeEntryFlow()},1200);
+    const refreshPrefs=()=>{ensureQuickButton();bindQuickObserver();bindFs09Observer();syncIdentityAndTheme();applyQuickVisibility();optimizeEntryFlow()};
+    document.addEventListener('click',e=>{if(e.target?.closest?.('#roleBtnQuickTime,.quickTimeTabs,.quickTimeFooter,#sagsQuickCustomizeModal,#fs09qTabs,#v38NavQuickTime'))scheduleEntryRefresh()},true);
+    ['sags:login','sags:logout','sags:rolechange','sags:profilechange','sags:ui-ready'].forEach(name=>window.addEventListener(name,refreshPrefs));
+    setTimeout(refreshPrefs,450);setTimeout(refreshPrefs,1500);
     window.addEventListener('pageshow',()=>{syncIdentityAndTheme();setTimeout(()=>{applyQuickVisibility();optimizeEntryFlow()},0)},{passive:true});
     document.addEventListener('visibilitychange',()=>{if(!document.hidden){syncIdentityAndTheme();setTimeout(()=>{applyQuickVisibility();optimizeEntryFlow()},0)}});
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
+})(window);
+
+
+/* V6.4.92 · Aviation Operations UI polish
+   Presentation only: line icons, login visual helpers, and copy cleanup. */
+(function(root){
+'use strict';
+if(root.__SAGS_V6492_AVIATION_UI__)return;
+root.__SAGS_V6492_AVIATION_UI__=true;
+const svg=(d)=>'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="'+d+'"/></svg>';
+const icons={
+  myflight:'M3 11l18-8-8 18-2-7-7-3 7-2z',
+  alerts:'M12 3l9 16H3L12 3zm0 6v4m0 3h.01',
+  guide:'M4 5.5A3.5 3.5 0 017.5 2H20v17H7.5A3.5 3.5 0 004 22V5.5zm0 0V22',
+  datahub:'M12 3v12m0 0l-4-4m4 4l4-4M4 18v3h16v-3',
+  closeout:'M5 12l4 4L19 6',
+  final:'M6 4h12v16H6zM9 8h6M9 12h6M9 16h4',
+  cross:'M4 7h12l-3-3m3 3l-3 3M20 17H8l3-3m-3 3l3 3',
+  archive:'M4 6h16v14H4zM7 3h10v3M8 10h8M8 14h5',
+  notice:'M18 8a6 6 0 10-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4',
+  adcontrol:'M12 3l8 4v5c0 5-3.3 8.6-8 10-4.7-1.4-8-5-8-10V7l8-4zM9 12l2 2 4-4'
+};
+function installLogin(){
+  const modal=document.getElementById('roleLoginModal'),pass=document.getElementById('roleLoginPass');
+  if(!modal||!pass)return;
+  if(!modal.querySelector('.sagsAviationLoginSub')){
+    const sub=document.createElement('div');sub.className='sagsAviationLoginSub';
+    sub.textContent='Truy cập hệ thống điều hành khai thác mặt đất';
+    const h=modal.querySelector('.roleLoginCard h2');h?.insertAdjacentElement('afterend',sub);
+  }
+  if(!pass.closest('.sagsAviationPassword')){
+    const wrap=document.createElement('div');wrap.className='sagsAviationPassword';
+    pass.parentNode.insertBefore(wrap,pass);wrap.appendChild(pass);
+    const b=document.createElement('button');b.type='button';b.className='sagsAviationPasswordToggle';b.setAttribute('aria-label','Hiện mật khẩu');
+    b.innerHTML='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="2.5"/></svg>';
+    b.onclick=()=>{const show=pass.type==='password';pass.type=show?'text':'password';b.setAttribute('aria-label',show?'Ẩn mật khẩu':'Hiện mật khẩu')};wrap.appendChild(b);
+  }
+}
+function installIcons(){
+  document.querySelectorAll('.v157MenuItem[data-v157-key]').forEach(btn=>{
+    const ico=btn.querySelector('.ico');if(!ico)return;
+    const key=String(btn.dataset.v157Key||'');const d=icons[key];if(!d||ico.dataset.v6492==='1')return;
+    ico.innerHTML=svg(d);ico.dataset.v6492='1';
+  });
+}
+function cleanMyFlight(){
+  const h=document.querySelector('#fwcModal .fwcHead h3');
+  if(h&&/MY FLIGHT|CHUYẾN HÔM NAY|DANH SÁCH CHUYẾN BAY|HỒ SƠ CHUYẾN BAY · FLIGHT WORKSPACE/i.test(h.textContent||'')&&h.textContent!=='My Flight')h.textContent='My Flight';
+  const sub=document.querySelector('#fwcModal .fwcHead .fwcSub');
+  if(h?.textContent==='My Flight'&&sub&&sub.textContent!=='Hồ sơ chuyến bay')sub.textContent='Hồ sơ chuyến bay';
+  document.querySelectorAll('#fwcModal .fwcHead button').forEach(b=>{
+    const t=String(b.textContent||'').trim();
+    if(t==='☰ MENU')b.textContent='MENU';
+    if((t==='MENU'||t==='☰ MENU')&&!b.classList.contains('sagsReferenceMenu')){
+      b.classList.add('sagsReferenceMenu');b.setAttribute('aria-label','Mở menu');
+      b.style.setProperty('font-size','11px','important');
+    }
+  });
+}
+let queued=false;
+function sync(){
+  installLogin();installIcons();cleanMyFlight();
+}
+function schedule(){if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;sync()})}
+document.addEventListener('DOMContentLoaded',schedule,{once:true});
+root.addEventListener('pageshow',schedule,{passive:true});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)schedule()},{passive:true});
+document.addEventListener('click',e=>{if(e.target?.closest?.('button,[role="button"],.v157MenuItem'))setTimeout(schedule,0)},true);
+setTimeout(schedule,250);setTimeout(schedule,1200);
 })(window);

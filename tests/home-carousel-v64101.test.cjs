@@ -1,0 +1,12 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert/strict'),path=require('path');
+const source=fs.readFileSync(__dirname+'/../app/modules/aviation-reference.v1.js','utf8');
+const guide=JSON.parse(fs.readFileSync(__dirname+'/../data/carrier-service-guide.json','utf8'));let reads=0;
+const c={fetch:async()=>{reads++;return{ok:true,json:async()=>guide}},document:{readyState:'loading',addEventListener(){}},window:{addEventListener(){}},setTimeout(){},requestAnimationFrame(){}};
+vm.createContext(c);vm.runInContext(source.replace(/\}\)\(\);\s*$/, 'globalThis.homeTest={loadCarriers,carrierStripHtml,logoUrl,airlineAlias,timeMinute};})();'),c);
+(async()=>{const api=c.homeTest;const [a,b]=await Promise.all([api.loadCarriers(),api.loadCarriers()]);assert.equal(reads,1);assert.equal(a,b);assert(a.some(x=>x.carrier==='AK'&&x.name==='AirAsia'));assert(a.some(x=>x.carrier==='FD'&&x.name==='Thai AirAsia'));assert(!a.some(x=>x.carrier==='AK/FD'));assert.equal(new Set(a.map(x=>x.carrier)).size,a.length);
+ assert.equal(a.find(x=>x.carrier==='VJ').name,'Vietjet Air');assert.equal(a.find(x=>x.carrier==='QH').name,'Bamboo Airways');assert.equal(api.airlineAlias(' VJ 123 ',a),'VJ');assert.equal(api.airlineAlias('9G1961',a),'9G');
+ const strip=api.carrierStripHtml(a);assert.match(strip,/data-ops-airlines-next/);assert.match(strip,/aria-controls="opsAirlineTrack"/);
+ for(const row of a){const logo=api.logoUrl(row.carrier);assert(logo.startsWith('./assets/airlines/'));assert(fs.existsSync(path.resolve(__dirname,'..',logo)));}assert.equal(api.logoUrl('HAV'),'./assets/airlines/HAV.png');assert.equal(api.logoUrl('KA'),'./assets/airlines/KA.svg');
+ assert(api.timeMinute({std:'09:10'})<api.timeMinute({std:'10:05'}));assert.equal(api.timeMinute({}),Infinity);
+ console.log('Home carousel passed: split aliases, official display names, local logo coverage, cached single guide fetch, time ordering.');
+})().catch(e=>{console.error(e);process.exitCode=1});

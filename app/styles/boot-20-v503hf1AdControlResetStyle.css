@@ -1,5 +1,0 @@
-#activityMonitorModal #v503AdminResetPanel #v378ResetRecordsBtn{background:#075fb0!important;color:#fff!important;border-color:#075fb0!important;grid-column:auto!important;min-height:44px;white-space:normal!important}
-#activityMonitorModal #v503AdminResetPanel #v503ResetExecuteBtn{min-height:44px;white-space:normal!important;opacity:1}
-#activityMonitorModal #v503AdminResetPanel #v503ResetExecuteBtn:disabled{opacity:.5;cursor:not-allowed}
-#activityMonitorModal #v503AdminResetPanel #v378ResetStatus{grid-column:auto!important;max-width:100%;overflow-wrap:anywhere;box-sizing:border-box;}
-@media(max-width:600px){#activityMonitorModal #v503AdminResetPanel{padding:10px!important;margin:9px 0 12px!important;}}

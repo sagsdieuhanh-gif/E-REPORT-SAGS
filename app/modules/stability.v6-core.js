@@ -93,14 +93,15 @@
     badge.hidden=!logged;if(!logged)return;
     if(storageError||root.sagsV622StorageBlocked){badge.textContent='⚠ Không lưu được nháp';badge.dataset.level='error';return;}
     const p=pending(),manual=!!currentManual(),quick=!!currentQuick();
-    badge.textContent=p.length||manual||quick?'📝 Nháp đang lưu trên máy':'✓ Nháp chuyến trên máy này';
+    const cloud=root.sagsDraftV2Status?.()||{},cloudReady=cloud.cloudCapable===true;
+    badge.textContent=p.length||manual||quick?(cloudReady?'📝 Nháp đang được bảo vệ':'📝 Nháp đang lưu trên máy'):(cloudReady?'✓ Nháp đã bảo vệ 3 lớp':'✓ Nháp chuyến trên máy này');
     badge.dataset.level=p.length||manual||quick?'pending':'local';
-    badge.title='Chỉ xác nhận lưu trên THIẾT BỊ NÀY. Bản nháp Ramp chưa tự đồng bộ sang máy khác.';
+    badge.title=cloudReady?'localStorage + IndexedDB trên máy; khi có mạng đồng bộ bản nháp roster lên server để có thể phục hồi trên thiết bị khác.':'Bản nháp đang được bảo vệ trên thiết bị này; đồng bộ server sẽ bật khi có assignment roster và Firebase sẵn sàng.';
   }
   function showPending(){
     const p=pending();alert(p.length
-      ?`Các ô có nội dung nhập dở trên máy này:\n${p.map(x=>'• '+x.field+(x.part!=='manual'?' · '+x.part:'')).join('\n')}\n\nNháp này được giữ khi cập nhật trên chính thiết bị này. Mở ô tương ứng để khôi phục khi cần. Nháp Ramp chưa tự chuyển sang điện thoại/máy tính khác.`
-      :'Biểu mẫu đang được lưu trên máy này. Bản nháp Ramp chưa tự đồng bộ sang thiết bị khác; các thao tác gửi chính thức dùng quy trình riêng.');
+      ?`Các ô có nội dung nhập dở:\n${p.map(x=>'• '+x.field+(x.part!=='manual'?' · '+x.part:'')).join('\n')}\n\nNháp được lưu tức thời trên máy. Với chuyến roster, lớp V2.0 sẽ đồng bộ dự phòng lên server khi có mạng để hỗ trợ phục hồi trên thiết bị khác.`
+      :'Biểu mẫu đang được bảo vệ cục bộ. Với chuyến roster và khi có mạng, V2.0 đồng bộ bản nháp dự phòng lên server; thao tác gửi/hoàn tất chính thức vẫn là quy trình riêng.');
   }
   function ensureUi(){
     if($('sagsV61DraftStatus'))return;
