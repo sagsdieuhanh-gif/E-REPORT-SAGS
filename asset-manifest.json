@@ -1,8 +1,8 @@
 {
   "schema": 2,
   "version": "V2.5",
-  "build": "V2.5-20261007-UNIFIED-ENTRY-CONTRAST-19",
-  "strategy": "Production V2.5 · unified yellow/black contrast inside entry editors only",
+  "build": "V2.5-20261007-UNIFIED-ENTRY-CONTRAST-20",
+  "strategy": "Production V2.5 · final unified entry-only contrast; saved forms remain uncolored",
   "mutableMetadata": [
     "./forms/forms.registry.json",
     "./data/form-configuration.json"
@@ -222,7 +222,7 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "0097946f484d171db936a33433b999db4294cff2b2217ee5009f260d273ae66d",
+      "sha256": "9734552e089fe20096ed9620e560d88bd6894d2528948d3afe2d9b7d7b7eb2cf",
       "bytes": 80585
     },
     "./manifest.webmanifest": {
@@ -274,12 +274,12 @@
       "bytes": 6937
     },
     "./service-worker.js": {
-      "sha256": "80c57bb1170ac6a71c2f1afa28352dc6ec33c080fee8e69d9e794c4d15f51b4d",
+      "sha256": "186d70a3fc9a14c091714561eac001908de7cd9186aaa68cdbdc7d637271ba1e",
       "bytes": 21408
     },
     "./version.json": {
-      "sha256": "56dc53d163d713740f2ff5519c1c25ae4ef27c65a983f07256b8071677a65833",
-      "bytes": 884
+      "sha256": "25930c4e5f908873994c20517de0f12460bf03f7d2c0e062c0c4983d053ddddd",
+      "bytes": 939
     },
     "./app/modules/form-registry-runtime.v647.js": {
       "sha256": "38273ccd7794e4790c37b5a8594edeaefd412917af2c928245bf8a89b0a8a5f2",
@@ -762,8 +762,8 @@
       "bytes": 1011923
     },
     "./app/modules/form-entry-contrast.v1.js": {
-      "sha256": "26dc594eaea8b0e6482ec55b709c3243aacb9f0d951b9cb403784f074d409a38",
-      "bytes": 3118
+      "sha256": "1621255fd3cc494f8224b92703ecabe8ffe71fc9f92429d257b64ba299411911",
+      "bytes": 3138
     }
   }
 }

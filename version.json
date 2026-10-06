@@ -2,11 +2,11 @@
   "version": "V2.5",
   "displayVersion": "V2.5",
   "label": "V2.5 - UNIFIED ENTRY CONTRAST",
-  "build": "V2.5-20261007-UNIFIED-ENTRY-CONTRAST-19",
+  "build": "V2.5-20261007-UNIFIED-ENTRY-CONTRAST-20",
   "releasedAt": "2026-10-06T17:53:54Z",
   "type": "ui-standard-hotfix",
   "base": "E-REPORT-SAGS main@ad23e9dcba9788ed3ce471a76ba4346ea61c09f9",
   "updatePolicy": "required",
-  "notes": "Chuẩn hóa màu nhập liệu toàn hệ thống: trong các màn hình nhập/chỉnh sửa của 42.1, 42.3, 55.1, FSAGS 208, 54, 94, FSAGS09, TVJ và các form dùng editor chung, ô đang focus hoặc đang có dữ liệu trong phiên nhập hiển thị nền vàng #FFD166 và chữ #17212B. Sau khi LƯU/CẬP NHẬT, tờ biểu mẫu chính thức giữ nguyên nền gốc; không có nền vàng trên form và không ảnh hưởng PDF.",
-  "message": "V2.5 build 19: unified yellow/black contrast only inside data-entry editors."
+  "notes": "Chuẩn hóa màu nhập liệu toàn hệ thống: trong các màn hình nhập/chỉnh sửa của 42.1, 42.3, 55.1, FSAGS 208, 54, 94, FSAGS09, TVJ và các form dùng editor chung, ô đang focus hoặc đang có dữ liệu trong màn hình nhập hiển thị nền vàng #FFD166 và chữ #17212B. Các giá trị có sẵn cũng lên vàng ngay khi mở editor. Sau khi LƯU/CẬP NHẬT, tờ biểu mẫu chính thức giữ nguyên nền gốc; không có nền vàng trên form và không ảnh hưởng PDF.",
+  "message": "V2.5 build 20: final unified entry-only yellow/black contrast."
 }

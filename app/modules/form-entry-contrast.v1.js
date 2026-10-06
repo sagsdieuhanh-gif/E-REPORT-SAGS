@@ -16,7 +16,7 @@ function installStyle(){
  }
  html.new-ui-v1 body :is(#entry,#quickTimeModal,#fs09QuickModal,#sagsQuickEntry,#sags5494Quick,#sags5494FieldEditor)
  :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),textarea):focus::placeholder,
- html.new-ui-v1 body :is(#entry,#quickTimeModal,#fs09QuickEntry,#sagsQuickEntry,#sags5494Quick,#sags5494FieldEditor)
+ html.new-ui-v1 body :is(#entry,#quickTimeModal,#fs09QuickModal,#sagsQuickEntry,#sags5494Quick,#sags5494FieldEditor)
  :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),textarea).sags-entry-has-value::placeholder{
    color:#5B4A00!important;opacity:.72!important;
  }
@@ -24,7 +24,7 @@ function installStyle(){
 }
 function eligible(el){return el instanceof Element&&el.matches(CONTROLS)&&!!el.closest(SCOPES)&&!el.disabled&&!el.readOnly}
 function syncOne(el){if(eligible(el))el.classList.toggle("sags-entry-has-value",String(el.value??"").trim()!=="")}
-function syncAll(){document.querySelectorAll(SCOPES+" input,"+SCOPES+" textarea").forEach(syncOne)}
+function syncAll(){document.querySelectorAll(SCOPES).forEach(scope=>scope.querySelectorAll(CONTROLS).forEach(syncOne))}
 function later(){setTimeout(syncAll,0);setTimeout(syncAll,80)}
 function wrap(name){
  const fn=root[name];if(typeof fn!=="function"||fn.__sagsUnifiedEntryContrastV1)return;
