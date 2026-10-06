@@ -1,0 +1,10 @@
+const fs=require('node:fs'),assert=require('node:assert/strict');
+const sw=fs.readFileSync(__dirname+'/../service-worker.js','utf8');
+const legacy=fs.readFileSync(__dirname+'/../app/boot/06-legacy.js','utf8');
+assert.match(sw,/await self\.skipWaiting\(\)/);
+assert.match(sw,/await self\.clients\.claim\(\)/);
+assert.match(sw,/priorHit.*c\.put\(scopeUrl\(path\),priorHit\.clone\(\)\)/s);
+assert.match(sw,/sags-app-shell-.*sags-app-meta-/s);
+assert.doesNotMatch(legacy,/adminResetAuthPassword/);
+assert.match(legacy,/function adminResetAccountPassword\(id\)/);
+console.log('Production auth cache cutover contract passed');

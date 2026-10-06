@@ -1,8 +1,8 @@
 {
   "schema": 2,
   "version": "V2.0",
-  "build": "V2.0-20261006-SETTINGS-HOME-FIX-01",
-  "strategy": "V2.3 Settings recovery + persistent click/install/open trace + visible emergency diagnostics",
+  "build": "V2.0-20261006-AUTH-CACHE-CUTOVER-02",
+  "strategy": "V2.0 production · forced verified cache cutover for stale auth-reset code",
   "mutableMetadata": [
     "./forms/forms.registry.json",
     "./data/form-configuration.json"
@@ -222,8 +222,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "c4cbf7a6662aee074366342b216373766791431890b03733df47b8d39456d6c4",
-      "bytes": 79820
+      "sha256": "915760a0fbf8152c6285f34d1ab301bf310c1534aceb048e5e21d5e58b7fecc6",
+      "bytes": 79887
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -274,12 +274,12 @@
       "bytes": 6861
     },
     "./service-worker.js": {
-      "sha256": "b81d4ff3cf2b6c961d25bec247ada6d22e294e2e53c1428b6434cf72f3be576b",
-      "bytes": 21192
+      "sha256": "1514ca636fe6cc0eda2b13445eb4d54727cae470636370116022c477aa3d65bf",
+      "bytes": 21810
     },
     "./version.json": {
-      "sha256": "7b03ba1dfd1918f251562fdb6652ebe6e67708d8d1f3c2334d998d2e192dae7a",
-      "bytes": 707
+      "sha256": "11b9ba7247237623edbe39c69d1424c2d0979bd71c4ab8884b66f3fd1621b3c5",
+      "bytes": 856
     },
     "./app/modules/form-registry-runtime.v647.js": {
       "sha256": "38273ccd7794e4790c37b5a8594edeaefd412917af2c928245bf8a89b0a8a5f2",

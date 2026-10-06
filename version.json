@@ -1,12 +1,12 @@
 {
   "version": "V2.0",
   "displayVersion": "V2.0",
-  "label": "V2.0 - E-REPORT SAGS PRODUCTION",
-  "build": "V2.0-20261006-SETTINGS-HOME-FIX-01",
-  "releasedAt": "2026-10-06T08:47:56.286Z",
-  "type": "bugfix-performance",
+  "label": "V2.0 - AUTH RESET CACHE CUTOVER",
+  "build": "V2.0-20261006-AUTH-CACHE-CUTOVER-02",
+  "releasedAt": "2026-10-06T12:40:00Z",
+  "type": "hotfix-cache-auth",
   "base": "V6.4.89-20261005-AIRLINE-DASHBOARD-AD-CONTRAST-01",
   "updatePolicy": "required",
-  "notes": "Sửa nút Cài đặt trên trang chủ và menu điện thoại; không đổi theme khi mở. Đồng nhất phiên bản, tránh mở lại cửa sổ đã đóng, giới hạn tác vụ quan sát menu và phạm vi CSS. Kiểm tra hồi quy và xác minh checksum toàn bộ tài nguyên.",
-  "message": "V2.0: corrected home Settings routing and verified static release."
+  "notes": "Production hotfix: service worker mới kích hoạt ngay sau khi release đã được xác minh; mọi bootstrap byte tái sử dụng được copy vào cache hiện tại trước khi xóa shell/meta cache cũ. Mục tiêu là loại bỏ mã quản lý tài khoản cũ còn nằm trên điện thoại và đang gọi adminResetAuthPassword. Không xóa localStorage, IndexedDB, nháp hoặc dữ liệu nghiệp vụ.",
+  "message": "V2.0 hotfix: purge stale executable cache causing obsolete adminResetAuthPassword calls."
 }
