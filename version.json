@@ -1,12 +1,12 @@
 {
-  "version": "V6.4.90",
-  "displayVersion": "V6.4.90",
-  "label": "V6.4.90 - SETTINGS CENTER + PERSONAL PROFILE",
-  "build": "V6.4.90-20261006-SETTINGS-CENTER-01",
-  "releasedAt": "2026-10-06T03:32:00Z",
-  "type": "feature",
-  "base": "V6.4.89-20261005-AIRLINE-DASHBOARD-AD-CONTRAST-01",
+  "version": "V6.4.89",
+  "displayVersion": "V6.4.89",
+  "label": "V6.4.89 - AIRLINE DASHBOARD + AD CONTRAST",
+  "build": "V6.4.89-20261005-AIRLINE-DASHBOARD-AD-CONTRAST-01",
+  "releasedAt": "2026-10-05T18:23:27Z",
+  "type": "ui",
+  "base": "V6.4.88-20261003-AUTO-CACHE-CLEANUP-01",
   "updatePolicy": "required",
-  "notes": "Hoàn thiện nút Cài đặt: tên hiển thị riêng với tên nghiệp vụ, avatar cá nhân có nén ảnh, giao diện Theo hệ thống/Sáng/Tối, cỡ chữ, chế độ gọn mobile, âm thanh, rung, nhóm thông báo, dữ liệu & đồng bộ, thiết bị/offline, tự khóa, đổi mật khẩu, kiểm tra cập nhật, xóa cache giao diện an toàn, thông tin phiên bản và chẩn đoán dành cho AD. Sửa cơ chế ui-preferences trước đây ép Dark mode định kỳ. Phần Cloud Draft hiển thị đúng trạng thái: localStorage và IndexedDB đang hoạt động; chưa báo đã đồng bộ server nếu chưa có API cloud-draft mặc định.",
-  "message": "V6.4.90: Settings Center đầy đủ, avatar + tên hiển thị cá nhân và tùy chỉnh giao diện/thiết bị/hệ thống."
+  "notes": "Cập nhật giao diện theo hướng airline dashboard: thêm dải hãng hàng không dưới khu vực chào mừng với mã hãng và tên đầy đủ, bổ sung nhận diện hãng trong từng thẻ chuyến, thu gọn danh sách chuyến và có nút XEM TẤT CẢ, nhấn mạnh nút NHẬN để thao tác nhanh hơn, căn đồng bộ banner/summary. Đồng thời sửa tương phản toàn bộ khu vực AD trên nền dark glass, gồm nhãn, mô tả, thẻ quản trị, ô readonly và AD CONTROL CENTER để không còn chữ tối chìm vào nền.",
+  "message": "V6.4.89: airline dashboard rõ hãng hơn, danh sách chuyến gọn hơn và sửa toàn bộ lỗi chữ AD bị chìm trên nền tối."
 }
