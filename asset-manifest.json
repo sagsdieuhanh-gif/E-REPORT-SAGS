@@ -78,7 +78,7 @@
       "bytes": 10344
     },
     "./app/modules/ui-preferences.v1.js": {
-      "sha256": "e59821a332fa02d555454dbe471136c6603718c23cd10d13534d4cc1b6a64a25",
+      "sha256": "45d4beb85c02574f391afe186559f573855d99da244e34eaabe2888510a169a9",
       "bytes": 26348
     },
     "./app/styles/app.bundle.css": {
@@ -226,7 +226,7 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "98060de8b3c558839b370417ef17ad959e7ffcbf364a5d51e7a2bec2c002dbb9",
+      "sha256": "de69331b134979dfb04982ab8e099cfd1770334e7aade1f263f0d572da3d794e",
       "bytes": 89039
     },
     "./manifest.webmanifest": {
@@ -278,11 +278,11 @@
       "bytes": 6861
     },
     "./service-worker.js": {
-      "sha256": "98a1fe0bfe2b55ca83a44c6e676c11e8a3b7e1046e12b4a99a92f9eabc8b2d30",
+      "sha256": "f5c41aab8a84bc07ed2bc159dfc21b59bcc3e2445eb707375af1ebb89c3c9eca",
       "bytes": 21785
     },
     "./version.json": {
-      "sha256": "b93cf93f2146785fa2b7ae58442d79fe5e427d8e8771ada73f29c5c926c7eb38",
+      "sha256": "eeb8a2286e69b0972cb98d7658e9c3708f88e8cb2d9aba8f4ede4c17b471d36e",
       "bytes": 1173
     },
     "./app/modules/form-registry-runtime.v647.js": {
@@ -618,11 +618,11 @@
       "bytes": 3559
     },
     "./app/modules/settings.v1.js": {
-      "sha256": "b60b0e9b1cc42dd465e415abe9ef04cc77fe1ee7b833017fc4180e23cad49e43",
+      "sha256": "48791ad02e8dfb3026eb189e883f296abe87a8a8bf0f1504a61de548688325df",
       "bytes": 28859
     },
     "./app/styles/settings.v1.css": {
-      "sha256": "85b4059dffc9735d26d1524cbd4dddb4a07c21cdb3c027eb7411bea6833cc542",
+      "sha256": "a775a3b27d5b5c86d2e83f6edf89c90d6e25360a0a2bb469586b4b6235f480f9",
       "bytes": 10234
     }
   }
