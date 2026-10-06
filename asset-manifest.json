@@ -270,16 +270,16 @@
       "bytes": 465580
     },
     "./repair.html": {
-      "sha256": "35766e636714a3c66a6341646f79b43f90d1e8cf92b1bf3a14bdaa83fe6a1dd8",
-      "bytes": 6935
+      "sha256": "15c3e6fdff9a8ad96151a499c111ef3e787658c930fbf6f2d6a4dede9694a417",
+      "bytes": 6937
     },
     "./service-worker.js": {
       "sha256": "a723834902f3ac8fd7a42dc7721486ea7124719d01e7b1a5841e954fe529e73b",
       "bytes": 21345
     },
     "./version.json": {
-      "sha256": "a5f4f7ddc92f6fa38a2f6653196a478f0e81f1a9d63d06b185903af1fe87e77d",
-      "bytes": 7059
+      "sha256": "60494947ca171f177d7942fbe15644802ae850a6e4473cbfdcedc52d4107d113",
+      "bytes": 795
     },
     "./app/modules/form-registry-runtime.v647.js": {
       "sha256": "38273ccd7794e4790c37b5a8594edeaefd412917af2c928245bf8a89b0a8a5f2",
