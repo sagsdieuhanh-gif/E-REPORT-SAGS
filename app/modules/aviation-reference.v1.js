@@ -1,4 +1,4 @@
-/* E-REPORT SAGS V6.4.108 · Reference home: airline identity + aligned console.
+/* E-REPORT SAGS V6.4.109 · Reference home: deterministic airline identity + aligned console.
    Existing menu buttons and Daily Roster remain the business/permission authority. */
 (function () {
   'use strict';
@@ -8,11 +8,14 @@
   // Display identity only; roster permissions continue to use the service guide.
   const AIRLINE_NAMES = {HAV:'HAV Aviation',VJ:'Vietjet Air',QH:'Bamboo Airways',DV:'SCAT Airlines',KC:'Air Astana',C6:'Centrum Air',KA:'Aero Nomad Airlines',N4:'Nordwind Airlines',AK:'AirAsia',FD:'Thai AirAsia',KE:'Korean Air',BX:'Air Busan',WE:'Parata Air',RF:'Aero K',TW:'Trinity Airways',OZ:'Asiana Airlines',LJ:'Jin Air','3U':'Sichuan Airlines',UQ:'Urumqi Air',DR:'Ruili Airlines',TR:'Scoot',HY:'Uzbekistan Airways',HU:'Hainan Airlines',VZ:'Thai Vietjet Air','9G':'Sun PhuQuoc Airways',B2:'Belavia',VU:'Vietravel Airlines'};
   let pending = false, overviewKey = '', carrierPromise = null, logoObserver = null;
-  let stripPending = false, flightView = null, showAll = false, tableFrame = 0, flightRevision = 0, lastFlightRenderKey = '', workspaceBrandTimer = 0;
+  let stripPending = false, flightView = null, showAll = false, tableFrame = 0, flightRevision = 0, lastFlightRenderKey = '', workspaceBrandTimer = 0, workspaceBrandRetryToken = 0, workspaceBrandObserver = null, workspaceBrandObservedRoot = null, workspaceBrandObserverQueued = false;
   const safe = value => String(value ?? '').replace(/[&<>"']/g, x => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]));
   const U = value => String(value ?? '').trim().toUpperCase();
   function normalizeCarrier(raw) {
     return U(raw).replace(/[^A-Z0-9/]/g,'');
+  }
+  function builtinCarriers() {
+    return Object.entries(AIRLINE_NAMES).map(([carrier,name]) => ({carrier, aliases:[carrier], name}));
   }
   async function loadCarriers() {
     if (carrierPromise) return carrierPromise;
@@ -21,12 +24,13 @@
       .then(data => {
         const carriers = Array.isArray(data?.carriers) ? data.carriers : [];
         const seen = new Set();
-        return carriers.flatMap(row => {
+        const mapped = carriers.flatMap(row => {
           const carrier = normalizeCarrier(row?.carrier);
           const aliases = [...new Set((Array.isArray(row?.aliases) ? row.aliases : carrier.split('/')).map(normalizeCarrier).filter(Boolean))];
           return (aliases.length ? aliases : [carrier]).filter(code => code && !seen.has(code) && seen.add(code)).map(code => ({carrier:code, aliases:[code], name:AIRLINE_NAMES[code] || code}));
         });
-      }).catch(() => []);
+        return mapped.length ? mapped : builtinCarriers();
+      }).catch(() => builtinCarriers());
     return carrierPromise;
   }
   function logoUrl(code) {
@@ -41,7 +45,8 @@
   function airlineAlias(flightLabel, carriers) {
     const raw = U(flightLabel).replace(/[\s-]+/g,'');
     const aliases = [];
-    for (const row of carriers || []) for (const alias of row.aliases || []) aliases.push(alias);
+    const source = Array.isArray(carriers) && carriers.length ? carriers : builtinCarriers();
+    for (const row of source) for (const alias of row.aliases || []) aliases.push(alias);
     aliases.sort((a,b) => b.length - a.length);
     return aliases.find(alias => raw.startsWith(alias)) || '';
   }
@@ -49,7 +54,7 @@
     const c = normalizeCarrier(code), src = logoUrl(c);
     if (!c) return '<span class="opsAirlineFallback '+safe(cls)+'">—</span>';
     if (!src) return '<span class="opsAirlineFallback '+safe(cls)+'">'+safe(c)+'</span>';
-    return '<span class="opsAirlineMark '+safe(cls)+'"><img class="opsAirlineLogo" src="'+safe(src)+'" alt="'+safe(c)+'" loading="lazy" decoding="async"><span class="opsAirlineFallback" hidden>'+safe(c)+'</span></span>';
+    return '<span class="opsAirlineMark '+safe(cls)+'"><img class="opsAirlineLogo" src="'+safe(src)+'" alt="'+safe(c)+'" loading="eager" decoding="async"><span class="opsAirlineFallback" hidden>'+safe(c)+'</span></span>';
   }
   function lazyLogoHtml(code) {
     const c = normalizeCarrier(code), src = logoUrl(c);
@@ -93,6 +98,25 @@
       brand.dataset.carrier=info.carrier;
       brand.innerHTML=logoHtml(info.carrier,'opsFwcLogo')+'<span class="opsFwcIdentity"><b>'+safe(info.carrier)+'</b><small>'+safe(info.name||info.carrier)+'</small></span>';
     }
+    bindWorkspaceBrandObserver();
+  }
+  function bindWorkspaceBrandObserver() {
+    const host=$('fwcList'), root=host?.parentElement || $('fwcModal');
+    if(!root || !root.isConnected)return false;
+    if(workspaceBrandObserver && workspaceBrandObservedRoot===root)return true;
+    try{workspaceBrandObserver?.disconnect()}catch(_){}
+    workspaceBrandObservedRoot=root;
+    workspaceBrandObserver=new MutationObserver(mutations=>{
+      const relevant=mutations.some(m=>m.type==='childList' && (m.addedNodes.length || m.removedNodes.length));
+      if(!relevant || workspaceBrandObserverQueued)return;
+      workspaceBrandObserverQueued=true;
+      requestAnimationFrame(()=>{
+        workspaceBrandObserverQueued=false;
+        void decorateWorkspaceFlights();
+      });
+    });
+    workspaceBrandObserver.observe(root,{childList:true,subtree:true});
+    return true;
   }
   function setupLogoObserver() {
     if (logoObserver || !('IntersectionObserver' in window)) return;
@@ -261,7 +285,26 @@
   document.addEventListener('click',e=>{
     if(e.target?.closest?.('#roleLoginSubmit,[data-v6494-key],[data-ops-route],[data-ops-retry],#v479MyFlightHome,.fwcHead button'))setTimeout(schedule,0);
   },true);
-  const refreshWorkspaceBrand=()=>{clearTimeout(workspaceBrandTimer);workspaceBrandTimer=setTimeout(async()=>{workspaceBrandTimer=0;await decorateWorkspaceFlights();const host=$('fwcList');const missing=!host||[...host.querySelectorAll('.fwcFlight,.v1199Card')].some(card=>!card.querySelector('.opsFwcBrand'));if(missing)setTimeout(()=>void decorateWorkspaceFlights(),180);},60);};
+  const workspaceBrandRetryDelays=[0,80,200,450,900,1500];
+  const refreshWorkspaceBrand=()=>{
+    const token=++workspaceBrandRetryToken;
+    clearTimeout(workspaceBrandTimer);
+    const run=async attempt=>{
+      if(token!==workspaceBrandRetryToken)return;
+      workspaceBrandTimer=0;
+      await decorateWorkspaceFlights();
+      bindWorkspaceBrandObserver();
+      const host=$('fwcList'),cards=host?[...host.querySelectorAll('.fwcFlight,.v1199Card')]:[];
+      const missing=!host || !cards.length || cards.some(card=>{
+        const title=card.querySelector('.fwcFlightTitle,.v1199Title');
+        return !!title && !card.querySelector('.opsFwcBrand');
+      });
+      if(missing && attempt<workspaceBrandRetryDelays.length-1){
+        workspaceBrandTimer=setTimeout(()=>void run(attempt+1),workspaceBrandRetryDelays[attempt+1]);
+      }
+    };
+    workspaceBrandTimer=setTimeout(()=>void run(0),workspaceBrandRetryDelays[0]);
+  };
   document.addEventListener('click',e=>{
     if(e.target?.closest?.('.v157MenuItem[data-v157-key="myflight"],#roleBtnFlights,#roleBtnRosterFlights,#fwcModal button'))refreshWorkspaceBrand();
   },true);
