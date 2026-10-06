@@ -1,12 +1,12 @@
 {
   "version": "V2.5",
   "displayVersion": "V2.5",
-  "label": "V2.5 - UNIFIED ENTRY CONTRAST",
-  "build": "V2.5-20261007-UNIFIED-ENTRY-CONTRAST-20",
-  "releasedAt": "2026-10-06T17:53:54Z",
-  "type": "ui-standard-hotfix",
-  "base": "E-REPORT-SAGS main@ad23e9dcba9788ed3ce471a76ba4346ea61c09f9",
+  "label": "V2.5 - MOBILE DOCK + FORM OPEN SPEED",
+  "build": "V2.5-20261007-MOBILE-DOCK-FORM-OPEN-PERF-21",
+  "releasedAt": "2026-10-06T18:05:45Z",
+  "type": "ui-performance-hotfix",
+  "base": "E-REPORT-SAGS main@54a4b039e778b7b0137594a883888de04f07eab6",
   "updatePolicy": "required",
-  "notes": "Chuẩn hóa màu nhập liệu toàn hệ thống: trong các màn hình nhập/chỉnh sửa của 42.1, 42.3, 55.1, FSAGS 208, 54, 94, FSAGS09, TVJ và các form dùng editor chung, ô đang focus hoặc đang có dữ liệu trong màn hình nhập hiển thị nền vàng #FFD166 và chữ #17212B. Các giá trị có sẵn cũng lên vàng ngay khi mở editor. Sau khi LƯU/CẬP NHẬT, tờ biểu mẫu chính thức giữ nguyên nền gốc; không có nền vàng trên form và không ảnh hưởng PDF.",
-  "message": "V2.5 build 20: final unified entry-only yellow/black contrast."
+  "notes": "Build 21: khóa dock mobile thành đúng 2 hàng 2 cột: NHẬP NHANH + XUẤT PDF / HOÀN TẤT + KÝ. Tối ưu mở biểu mẫu bằng cách bỏ chờ migrate chữ ký/localStorage trước khi mở; storage recovery chạy nền sau khi form đã hiển thị. Startup/pageshow cleanup cũng được defer để không tranh CPU với thao tác mở form. Không thay đổi quy tắc nghiệp vụ, dữ liệu lưu, chữ ký hoặc PDF.",
+  "message": "V2.5 build 21: final 2x2 mobile dock and non-blocking form-open storage maintenance."
 }

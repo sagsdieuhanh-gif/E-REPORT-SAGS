@@ -1,8 +1,8 @@
 {
   "schema": 2,
   "version": "V2.5",
-  "build": "V2.5-20261007-UNIFIED-ENTRY-CONTRAST-20",
-  "strategy": "Production V2.5 · final unified entry-only contrast; saved forms remain uncolored",
+  "build": "V2.5-20261007-MOBILE-DOCK-FORM-OPEN-PERF-21",
+  "strategy": "Production V2.5 · final mobile 2x2 dock + non-blocking form-open storage maintenance",
   "mutableMetadata": [
     "./forms/forms.registry.json",
     "./data/form-configuration.json"
@@ -82,8 +82,8 @@
       "bytes": 41473
     },
     "./app/styles/new-ui-v1.css": {
-      "sha256": "f24616d75f8e23f72f8920477ac5db674ec03288f611ceeb8fc9ef65da9d7802",
-      "bytes": 373438
+      "sha256": "4f89d1714128c5b58a9efe6c7ab1cfb1c72183632d6f5378c4c2bcb279f05d5d",
+      "bytes": 375569
     },
     "./assets/audio/alert-crosscheck-complete.mp3": {
       "sha256": "2291844c0abc77005a2e8800e0dc8115c373134385a31a5d3d9e5f920a5acc07",
@@ -222,8 +222,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "9734552e089fe20096ed9620e560d88bd6894d2528948d3afe2d9b7d7b7eb2cf",
-      "bytes": 80585
+      "sha256": "b0085701eb0e8f5c8f0c7dc678032c931678955cd0db9ec031248e9f96b1dccf",
+      "bytes": 80865
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -274,12 +274,12 @@
       "bytes": 6937
     },
     "./service-worker.js": {
-      "sha256": "186d70a3fc9a14c091714561eac001908de7cd9186aaa68cdbdc7d637271ba1e",
-      "bytes": 21408
+      "sha256": "5bb3d9045818c00c85beb6867293099d3a22200e3467b760fd6d255637002ba4",
+      "bytes": 21420
     },
     "./version.json": {
-      "sha256": "25930c4e5f908873994c20517de0f12460bf03f7d2c0e062c0c4983d053ddddd",
-      "bytes": 939
+      "sha256": "9e022856043ab6dbd60ea2b27fd4d0b320fbd430bf608a1d43be23c8eec4fd9d",
+      "bytes": 904
     },
     "./app/modules/form-registry-runtime.v647.js": {
       "sha256": "38273ccd7794e4790c37b5a8594edeaefd412917af2c928245bf8a89b0a8a5f2",
@@ -550,8 +550,8 @@
       "bytes": 115016
     },
     "./app/generated/runtime-2.js": {
-      "sha256": "1fa27f6f7edc2cf0004fd7fb6bc22c3b2c433e27a0c27faa44ad88b6d00206a4",
-      "bytes": 140502
+      "sha256": "2d8ff077472edd0932320bbf07a2257230389a078cf8fbb52aee33aad39c913c",
+      "bytes": 140526
     },
     "./app/generated/runtime-3.js": {
       "sha256": "27af2b0c87d29d642691d6a6aa853228c1f4ff6fdb8c4b80903e975e6a581797",

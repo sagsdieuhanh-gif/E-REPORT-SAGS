@@ -6744,3 +6744,58 @@ html.new-ui-v1 body :is(.sheet,.rsOfficialTemplatePage,.page-bg,.pdf-page,.pdfCa
    font-size:11px!important;padding-left:4px!important;padding-right:4px!important;
  }
 }
+
+
+/* ==========================================================================
+   V2.5 BUILD 21 · MOBILE FORM DOCK FINAL 2x2
+   Row 1: NHẬP NHANH | XUẤT PDF
+   Row 2: HOÀN TẤT   | KÝ
+   ========================================================================== */
+@media(max-width:899px){
+  html.new-ui-v1 body.v163-operational:not(.v166-overlay-open):not(.v157-home) #sagsMobileFormDock{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    grid-auto-rows:42px!important;
+    gap:6px!important;
+    align-items:stretch!important;
+    bottom:0!important;
+    max-height:none!important;
+    overflow:visible!important;
+    padding:5px max(8px,env(safe-area-inset-right)) max(2px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))!important;
+  }
+  html.new-ui-v1 body #sagsMobileFormDock #v324FormActions,
+  html.new-ui-v1 body #sagsMobileFormDock #v163OperationNav{
+    display:contents!important;
+  }
+  html.new-ui-v1 body #sagsMobileFormDock #v324FormActions.show.three>.v324FormAction:last-child,
+  html.new-ui-v1 body #sagsMobileFormDock #v324FormActions.show>.v324FormAction,
+  html.new-ui-v1 body #sagsMobileFormDock #v163OperationNav>button,
+  html.new-ui-v1 body #sagsMobileFormDock #v163SignBtn{
+    grid-column:auto!important;
+    grid-row:auto!important;
+    order:0!important;
+    min-width:0!important;
+    width:100%!important;
+    min-height:42px!important;
+    height:42px!important;
+    margin:0!important;
+    padding:8px 7px!important;
+    border-radius:9px!important;
+    font:800 12.5px/1.1 Arial,sans-serif!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+    align-items:center!important;
+    justify-content:center!important;
+  }
+  html.new-ui-v1 body.v163-operational{
+    padding-bottom:calc(var(--sags-form-dock-height,94px) + 6px)!important;
+  }
+}
+@media(max-width:360px){
+  html.new-ui-v1 body #sagsMobileFormDock :is(.v324FormAction,#v163OperationNav>button,#v163SignBtn){
+    font-size:11px!important;
+    padding-left:4px!important;
+    padding-right:4px!important;
+  }
+}

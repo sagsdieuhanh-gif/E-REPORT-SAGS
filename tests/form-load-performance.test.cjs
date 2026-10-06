@@ -3,7 +3,7 @@ const r1=fs.readFileSync(__dirname+'/../app/generated/runtime-1.js','utf8');
 const r2=fs.readFileSync(__dirname+'/../app/generated/runtime-2.js','utf8');
 const fl=fs.readFileSync(__dirname+'/../app/generated/core-flight.js','utf8');
 const v=JSON.parse(fs.readFileSync(__dirname+'/../version.json','utf8'));
-assert.equal(v.build,'V2.5-20261006-FORM-LOAD-PERF-17');
+assert.equal(v.build,'V2.5-20261007-MOBILE-DOCK-FORM-OPEN-PERF-21');
 assert.match(r1,/__SAGS_V222_DEP_RECEIVE_FIX\|\|root\.__SAGS_V2210_INDEPENDENT_DEP/,'legacy DEP preflight bypass missing');
 assert.match(r2,/__SAGS_RECEIVE_MANIFEST_CACHE_V17/,'receive manifest micro-cache missing');
 assert.match(r2,/const st=cand\.st\|\|await sessionState/,'duplicate DEP session read not removed');
@@ -14,3 +14,7 @@ assert.match(fl,/dbref\("roster_sessions\/"\+safe\(aid\)\)\.once\("value"\)/,'si
 assert.match(fl,/Promise\.allSettled\(\[ref\.once\("value"\),Promise\.resolve\(\)\.then\(\(\)=>root\.rosterWorkspaceLegacyRead/,'session/legacy parallel read missing');
 assert.match(fl,/Promise\.allSettled\(\[Promise\.resolve\(\)\.then\(\(\)=>root\.sagsReconcilePolicyDates/,'parallel reconcile missing');
 console.log('Receive/open performance contract passed');
+
+assert.doesNotMatch(r2,/await migrateAll\("before-my-flight"\)/,'form open must not wait for storage migration');
+assert.match(r2,/migrateAll\("after-my-flight-open"\)/,'post-open background migration missing');
+assert.match(r2,/migrateAll\("startup-idle"\)/,'startup migration must be deferred');
