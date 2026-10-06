@@ -1,0 +1,14 @@
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const root=path.resolve(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p),'utf8');
+const js=read('app/modules/settings.v1.js'),css=read('app/styles/new-ui-v1.css'),ver=JSON.parse(read('version.json'));
+assert.equal(ver.build,'V2.5-20261006-PC-SETTINGS-12');
+assert.match(js,/sagsSettingsNavTitle/);
+assert.match(js,/Hồ sơ & ảnh đại diện/);
+assert.match(js,/PWA, cache, IndexedDB/);
+assert.match(css,/PC Settings Control Center/);
+assert.match(css,/@media \(min-width:901px\)[\s\S]*grid-template-columns:292px minmax\(0,1fr\)/);
+assert.match(css,/section\[data-page="account"\]\.active[\s\S]*grid-template-columns:280px minmax\(0,1fr\)/);
+assert.match(css,/grid-template-areas:"title title" "desc desc" "profile fields" "profile actions"/);
+assert.match(css,/@media \(max-width:760px\)[\s\S]*\.sagsSettingsNavTitle\{display:none!important\}/);
+assert.match(css,/@media \(max-width:760px\)[\s\S]*button>span small\{display:none!important\}/);
+console.log('PC Settings desktop-control-center regression passed');

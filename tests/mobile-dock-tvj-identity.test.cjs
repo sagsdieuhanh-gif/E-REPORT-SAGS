@@ -1,0 +1,16 @@
+const fs=require('node:fs'),assert=require('node:assert/strict');
+const css=fs.readFileSync(__dirname+'/../app/styles/new-ui-v1.css','utf8');
+const core=fs.readFileSync(__dirname+'/../app/generated/core-flight.js','utf8');
+const reg=JSON.parse(fs.readFileSync(__dirname+'/../forms/forms.registry.json','utf8'));
+const ver=JSON.parse(fs.readFileSync(__dirname+'/../version.json','utf8'));
+assert.equal(ver.build,'V2.5-20261006-MOBILE-DOCK-TVJ-18');
+assert.match(css,/MOBILE FORM DOCK TWO ROWS 18/);
+assert.match(css,/#v163OperationNav\{[\s\S]*grid-template-columns:repeat\(2,minmax\(0,1fr\)\)!important/);
+assert.match(css,/sagsMobileFormDock\{[\s\S]*bottom:0!important/);
+const tvj=reg.forms.find(x=>x.id==='tvj_gof_035');
+const name=tvj.fields.find(x=>String(x.key).toUpperCase()==='NAME');
+assert.equal(name.type,'text');
+assert.equal(name.bind,'acuStart_copy');
+assert.match(core,/423\|421\|TVJGOF035\|FSAGS\|GRND_COR/);
+assert.match(core,/\["bbbt","fsags","fsags421","fsags551","tvjgof035"\]/);
+console.log('Mobile dock + TVJ identity contract passed');

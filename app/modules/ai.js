@@ -284,6 +284,31 @@ function render(result,pkg){
   const iss=el("cxAiIssues");if(iss&&obs.length){const extra=obs.slice(0,5).map(x=>`<div style="margin:2px 0;color:#475569">• ${escapeHtmlLocal(x)}</div>`).join("");iss.style.display="block";iss.innerHTML+=(iss.innerHTML?"<hr style='border:0;border-top:1px solid #e2e8f0;margin:6px 0'>":"")+extra;}
 }
 
+
+/* FSAGS 208 image fallback: OCR always runs first in fsags208-image-reader.v1.js. */
+let fs208ImageModel=null;
+function fs208AllowedKeysText(){
+  return 'header: f208_flightNo,f208_date,f208_acType,f208_etd,f208_route; conditions: f208_condGood,f208_condOld,f208_condBasket,f208_condDirty,f208_condWet,f208_condOther; ULD 1-5: f208_uldN,f208_priorityN,f208_netWeightN,f208_tareWeightN,f208_grossPiecesN,f208_grossWeightN; cargo rows 1-7: f208_awbN,f208_totalPiecesN,f208_destN,f208_g1Pieces_rN..f208_g5Pieces_rN,f208_g1Weight_rN..f208_g5Weight_rN,f208_start_rN,f208_end_rN; totals: f208_totalPieces,f208_totalWeight; supplies: f208_nylonSags,f208_nylonAirline,f208_nylonQty,f208_waterproofSags,f208_waterproofAirline,f208_waterproofQty,f208_strapSags,f208_strapAirline,f208_strapQty,f208_liningSags,f208_liningAirline,f208_liningQty; remarks: f208_remark and up to four _copy suffixes.';
+}
+async function initFs208ImageModel(){
+  await initModels(false);if(fs208ImageModel)return fs208ImageModel;
+  const ai=getAI(aiApp,{backend:new GoogleAIBackend()});
+  fs208ImageModel=getGenerativeModel(ai,{model:activeModelNames.fast,generationConfig:{responseMimeType:"application/json",maxOutputTokens:3600}},{timeout:ACCURATE_TIMEOUT_MS});
+  return fs208ImageModel;
+}
+function fs208ImagePrompt(ocr){
+  const txt=String(ocr?.text||"").slice(0,10000),known=ocr?.fields&&typeof ocr.fields==="object"?ocr.fields:{};
+  return 'Bạn đọc ảnh phiếu FSAGS 208. OCR miễn phí đã chạy trước; chỉ dùng ảnh để SỬA/HOÀN THIỆN chỗ OCR thiếu hoặc sai. Không đoán khi mờ. Giữ đúng thứ tự 5 ULD và 7 dòng AWB. Không tạo chữ ký, không gửi/hoàn tất biểu mẫu. Date trả YYYY-MM-DD, time HH:MM, checkbox trả boolean. Chỉ trả JSON dạng {"confidence":0..100,"summary":"...","fields":{...}} và trong fields CHỈ dùng đúng key được phép sau: '+fs208AllowedKeysText()+' Nếu không chắc một ô thì bỏ key đó. OCR text: '+txt+' OCR fields đã nhận: '+JSON.stringify(known);
+}
+async function readFs208Image(imageUrl,ocrContext){
+  const raw=String(imageUrl||"");if(!/^data:image\//i.test(raw))throw new Error("Ảnh FSAGS 208 không hợp lệ.");
+  const model=await initFs208ImageModel(),paper=await normalizeImageDataUrl(raw,1500,.78);
+  let out;try{out=await model.generateContent([fs208ImagePrompt(ocrContext),dataUrlPart(paper)]);}catch(e){throw taggedError(isTimeoutError(e)?"AI_TIMEOUT":"FSAGS208_IMAGE_AI",e);}
+  const meta=responseMeta(out?.response),text=out?.response?.text?.()||"";if(String(meta.finishReason).toUpperCase()==="MAX_TOKENS")throw taggedError("AI_OUTPUT_TRUNCATED",new Error("Gemini dừng trước khi hoàn tất dữ liệu 208."));
+  const parsed=parseAiJson(text);return {confidence:Math.max(0,Math.min(100,Number(parsed?.confidence)||0)),summary:String(parsed?.summary||"").slice(0,240),fields:parsed?.fields&&typeof parsed.fields==="object"?parsed.fields:{},model:activeModelNames.fast,finishReason:String(meta.finishReason||"")};
+}
+window.sagsAi208ReadImage=readFs208Image;
+
 window.sagsAiCrosscheckRun=run;
 window.sagsAiCrosscheckRender=render;
 window.sagsAiCrosscheckEnsure=async pkg=>{try{if(pkg?.aiCrosscheck&&String(pkg.aiCrosscheck.aiVersion||"")===AI_VERSION)return render(pkg.aiCrosscheck,pkg);await run(pkg);}catch(e){}};
@@ -306,6 +331,6 @@ window.sagsAiConfigure=async()=>{
   const site=prompt("Dán reCAPTCHA Enterprise site key của Web App trong Firebase App Check:",String(old?.appCheckSiteKey||""));if(site===null)return;
   const fast=prompt("Model AI FAST (khuyên dùng gemini-3.5-flash-lite):",names.fast);if(fast===null)return;
   const accurate=prompt("Model xác minh sâu/fallback (khuyên dùng gemini-3.6-flash):",names.accurate);if(accurate===null)return;
-  try{await window.sagsAiSaveConfig?.({enabled:true,appCheckSiteKey:site.trim(),model:(fast.trim()||FAST_MODEL),fastModel:(fast.trim()||FAST_MODEL),accurateModel:(accurate.trim()||ACCURATE_MODEL)});activeConfig=null;models=null;await loadConfig(true);alert("Đã lưu cấu hình AI V1.6. Mặc định chạy FAST; chỉ xác minh sâu khi cần.");}catch(e){alert("Không lưu được cấu hình AI: "+String(e?.message||e));}
+  try{await window.sagsAiSaveConfig?.({enabled:true,appCheckSiteKey:site.trim(),model:(fast.trim()||FAST_MODEL),fastModel:(fast.trim()||FAST_MODEL),accurateModel:(accurate.trim()||ACCURATE_MODEL)});activeConfig=null;models=null;fs208ImageModel=null;await loadConfig(true);alert("Đã lưu cấu hình AI V1.6. Mặc định chạy FAST; chỉ xác minh sâu khi cần.");}catch(e){alert("Không lưu được cấu hình AI: "+String(e?.message||e));}
 };
 setTimeout(()=>{try{const cfg=el("cxAiConfigBtn"),diag=el("cxAiDiagBtn");if(cfg)cfg.style.display=(role()==="AD")?"inline-flex":"none";if(diag)diag.style.display=(role()==="AD")?"inline-flex":"none";}catch(e){}},500);

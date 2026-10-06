@@ -83,7 +83,7 @@ function ensure(){
   '<div class="v6494Account"><button type="button" data-v6494-account="settings">'+ICONS.settings+'<span>Cài đặt</span></button><button type="button" data-v6494-account="logout">'+ICONS.logout+'<span>Đăng xuất</span></button></div>'+
  '</aside>'+
  '<section class="v6494Main">'+
-  '<header class="v6494Top"><div class="v6494MobileBrand"><b>E-REPORT <span>SAGS</span></b><small>AIRPORT GROUND OPERATIONS</small></div><label class="v6494Search">'+ICONS.search+'<input id="v6494Search" type="search" placeholder="Tìm chuyến bay, số hiệu, sân bay..." autocomplete="off"></label><button class="v6494Notice" type="button" data-v6494-key="notice" aria-label="Thông báo">'+ICONS.notice+'</button><div class="v6494TopIdentity"><b id="v6494TopName">Người dùng</b><small id="v6494TopRole">—</small></div></header>'+
+  '<header class="v6494Top"><div class="v6494MobileBrand"><b>E-REPORT <span>SAGS</span></b><small>AIRPORT GROUND OPERATIONS</small></div><label class="v6494Search">'+ICONS.search+'<input id="v6494Search" type="search" placeholder="Tìm chuyến bay, số hiệu, sân bay..." autocomplete="off"></label><button class="v6494Notice" type="button" data-v6494-key="notice" aria-label="Thông báo">'+ICONS.notice+'</button><div class="v6494TopUser"><div class="v6494TopAvatar" id="v6494TopAvatar">U</div><div class="v6494TopIdentity"><b id="v6494TopName">Người dùng</b><small id="v6494TopRole">—</small></div></div></header>'+
   '<div class="v6494Scroll">'+
    '<div class="v6494MobileProfile"><div class="v6494Avatar" id="v6494MobileAvatar">U</div><div class="v6494MobileIdentity"><small>Xin chào,</small><b id="v6494MobileName">Người dùng</b><span id="v6494MobileRole">—</span></div><button class="v6494MobileLogout" type="button" data-v6494-account="logout" aria-label="Đăng xuất">'+ICONS.logout+'<span>Đăng xuất</span></button></div>'+
    '<div class="v6494Hero"><div><small>E-REPORT SAGS</small><h1>E-REPORT <span>SAGS</span></h1><p class="v6494HeroDesktop">Đồng hành cùng<br>mỗi chuyến bay an toàn.</p><p class="v6494HeroMobile">VÌ MỘT SÂN BAY<br>AN TOÀN VÀ HIỆU QUẢ HƠN</p><button type="button" data-v6494-key="myflight">'+ICONS.myflight+'<span>Mở My Flight</span></button></div></div>'+
@@ -123,11 +123,14 @@ function renderMenus(){
  nav.innerHTML=navHtml;mobile.innerHTML=mobileHtml;
 }
 function syncIdentity(){
- const p=profile(),r=role()||'—',name=S(p.name||p.fullName||p.displayName||p.username||p.userName||r||'Người dùng');
+ const p=profile(),r=role()||'—';let pref={};try{pref=typeof root.sagsGetSettings==='function'?root.sagsGetSettings()||{}:{}}catch(_){}
+ const name=S(pref.displayName||p.name||p.fullName||p.displayName||p.username||p.userName||r||'Người dùng'),photo=S(pref.avatarData);
  const initial=(name.match(/[A-ZÀ-Ỹ0-9]/iu)?.[0]||'U').toUpperCase(),put=(id,v)=>{const e=$(id);if(e&&e.textContent!==v)e.textContent=v};
+ const avatar=id=>{const e=$(id);if(!e)return;const has=!!photo;e.dataset.sagsAvatar=has?'image':'initial';e.dataset.sagsUserAvatar='1';e.style.backgroundImage=has?'url("'+photo.replace(/"/g,'%22')+'")':'';e.textContent=has?'':initial;e.title=name};
  for(const id of['v6494Name','v6494TopName','v6494MobileName'])put(id,name);
  for(const id of['v6494Role','v6494TopRole','v6494MobileRole'])put(id,r);
- put('v6494Avatar',initial);put('v6494MobileAvatar',initial);put('v6494Date',todayText());
+ for(const id of['v6494Avatar','v6494TopAvatar','v6494MobileAvatar'])avatar(id);
+ put('v6494Date',todayText());
 }
 function sync(){
  if(syncing)return;syncing=true;
@@ -156,7 +159,7 @@ function boot(){
  ensure();sync();observeStateTargets();
  window.addEventListener('pageshow',()=>{observeStateTargets();scheduleSync()},{passive:true});
  document.addEventListener('visibilitychange',()=>{if(!document.hidden){observeStateTargets();scheduleSync()}},{passive:true});
- ['sags:login','sags:logout','sags:rolechange','sags:profilechange','sags:ui-ready'].forEach(name=>root.addEventListener?.(name,()=>{observeStateTargets();scheduleSync()}));
+ ['sags:login','sags:logout','sags:rolechange','sags:profilechange','sags:ui-ready','sags:profile-display-updated'].forEach(name=>root.addEventListener?.(name,()=>{observeStateTargets();scheduleSync()}));
  document.addEventListener('click',e=>{if(e.target?.closest?.('[data-v6494-key],[data-v6494-account],#v157LogoutBtn,.fwcHead button,.sagsAdminTopActions button'))setTimeout(scheduleSync,0)},true);
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();

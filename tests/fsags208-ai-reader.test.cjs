@@ -1,0 +1,1 @@
+const fs=require('fs'),assert=require('assert/strict');const s=fs.readFileSync(__dirname+'/../app/modules/ai.js','utf8');assert.match(s,/function readFs208Image/);assert.match(s,/OCR miễn phí đã chạy trước/);assert.match(s,/window\.sagsAi208ReadImage=readFs208Image/);assert.match(s,/Không tạo chữ ký/);console.log('FSAGS208 Gemini fallback contract passed');

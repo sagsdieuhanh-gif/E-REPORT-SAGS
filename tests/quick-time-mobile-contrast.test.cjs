@@ -1,0 +1,10 @@
+const fs=require('node:fs'),assert=require('node:assert/strict');
+const css=fs.readFileSync(__dirname+'/../app/styles/new-ui-v1.css','utf8');
+const ver=JSON.parse(fs.readFileSync(__dirname+'/../version.json','utf8'));
+assert.equal(ver.build,'V2.5-20261006-MOBILE-QT-COMPACT-15');
+assert.match(css,/QUICK TIME MOBILE COMPACT \+ DARK CONTRAST 15/);
+assert.match(css,/@media \(max-width:767px\)[\s\S]*quickTimeRow[\s\S]*min-height:46px!important/);
+assert.match(css,/quickTimeInput\.dirty[\s\S]*background:#ffd166!important[\s\S]*color:#17212b!important/);
+assert.match(css,/data-ui-theme="dark"[\s\S]*quickTimeLabel[\s\S]*color:#eef8ff!important/);
+assert.match(css,/max-height:620px[\s\S]*quickTimeSave[\s\S]*min-height:36px!important/);
+console.log('Mobile Quick Time compact/contrast contract passed');

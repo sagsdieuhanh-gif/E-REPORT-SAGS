@@ -30890,7 +30890,7 @@
         {
           "key": "Name",
           "label": "Name",
-          "type": "signature",
+          "type": "text",
           "bind": "acuStart_copy",
           "pageId": "p1",
           "x": 0.5576148267526189,
@@ -30911,7 +30911,8 @@
           "rowFit": false,
           "rowCount": 1,
           "generatedFromLegacy": false,
-          "createdByFormManager": true
+          "createdByFormManager": true,
+          "sourceType": "text"
         },
         {
           "key": "STAFF_ID",
@@ -30940,7 +30941,7 @@
           "createdByFormManager": true
         }
       ],
-      "updatedAtMs": 1790573461584
+      "updatedAtMs": 1791304279000
     },
     {
       "id": "fsags54",

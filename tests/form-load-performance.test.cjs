@@ -1,0 +1,16 @@
+const fs=require('node:fs'),assert=require('node:assert/strict');
+const r1=fs.readFileSync(__dirname+'/../app/generated/runtime-1.js','utf8');
+const r2=fs.readFileSync(__dirname+'/../app/generated/runtime-2.js','utf8');
+const fl=fs.readFileSync(__dirname+'/../app/generated/core-flight.js','utf8');
+const v=JSON.parse(fs.readFileSync(__dirname+'/../version.json','utf8'));
+assert.equal(v.build,'V2.5-20261006-FORM-LOAD-PERF-17');
+assert.match(r1,/__SAGS_V222_DEP_RECEIVE_FIX\|\|root\.__SAGS_V2210_INDEPENDENT_DEP/,'legacy DEP preflight bypass missing');
+assert.match(r2,/__SAGS_RECEIVE_MANIFEST_CACHE_V17/,'receive manifest micro-cache missing');
+assert.match(r2,/const st=cand\.st\|\|await sessionState/,'duplicate DEP session read not removed');
+assert.match(r2,/const proof=cand\?\.arr&&completed\(cand\.arr\.st\)\?cand\.arr/,'ARR proof reuse missing');
+assert.match(r2,/const out=base\.apply\(self,args\);setTimeout\(\(\)=>markIndependentEligible/,'MY FLIGHT still blocks on independent eligibility');
+assert.doesNotMatch(fl,/\["taskStatusV333","taskStatus","workPartStatus","claimStatus","completedPushback","skippedNoEform","autoSkippedByNextUser","completedAtMs"\]\.map\(async k=>/,'8 child reads still present');
+assert.match(fl,/dbref\("roster_sessions\/"\+safe\(aid\)\)\.once\("value"\)/,'single session state read missing');
+assert.match(fl,/Promise\.allSettled\(\[ref\.once\("value"\),Promise\.resolve\(\)\.then\(\(\)=>root\.rosterWorkspaceLegacyRead/,'session/legacy parallel read missing');
+assert.match(fl,/Promise\.allSettled\(\[Promise\.resolve\(\)\.then\(\(\)=>root\.sagsReconcilePolicyDates/,'parallel reconcile missing');
+console.log('Receive/open performance contract passed');

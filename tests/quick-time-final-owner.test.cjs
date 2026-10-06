@@ -1,0 +1,10 @@
+const fs=require('node:fs'),assert=require('node:assert/strict');
+const css=fs.readFileSync(__dirname+'/../app/styles/aviation-reference.v1.css','utf8');
+const v=JSON.parse(fs.readFileSync(__dirname+'/../version.json','utf8'));
+assert.equal(v.build,'V2.5-20261006-QT-FIELD-VISIBILITY-16');
+assert.match(css,/QUICK TIME FINAL MOBILE FIELD FIX 16/);
+assert.match(css,/quickTimeInput\.dirty,[\s\S]*background:#ffd166!important[\s\S]*-webkit-text-fill-color:#17212b!important/);
+assert.match(css,/quickTimeTimeCell,.quickTimeSingleCell[\s\S]*overflow:hidden!important[\s\S]*border-radius:9px!important/);
+assert.match(css,/quickTimeInput[\s\S]*border-radius:8px 0 0 8px!important/);
+assert.match(css,/quickTimeNow[\s\S]*border-radius:0 8px 8px 0!important/);
+console.log('Quick Time final-owner mobile field fix passed');

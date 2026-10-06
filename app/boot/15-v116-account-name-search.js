@@ -5,7 +5,7 @@ let v116AccountManagerItems=[];function v116NormPersonName(v){return String(v||"
   const snap=await firebase.firestore().collection("users").get(),arr=[];
   snap.forEach(doc=>{
    const d=doc.data()||{},username=normalizePersonalUsername(d.username||"");
-   if(username==="AD")return;
+   if(username==="AD"||d.deleted===true)return;
    arr.push({id:doc.id,uid:doc.id,...d,role:normalizeFirebaseOperationalRole(d.role)});
   });
   const visible=arr.filter(x=>["PĐH","ADMIN","PVHK"].includes(v18LegacyDept(x,x.role)));
