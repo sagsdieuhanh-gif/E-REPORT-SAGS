@@ -2,7 +2,7 @@ const fs=require('node:fs'),path=require('node:path'),assert=require('node:asser
 const root=path.resolve(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p),'utf8');
 const html=read('index.html'),js=read('app/modules/settings.v1.js'),css=read('app/styles/new-ui-v1.css'),sw=read('service-worker.js'),pref=read('app/modules/ui-preferences.v1.js'),runtime=read('app/core/runtime.v503hf2.bundle.js'),runtimeLive=read('app/generated/runtime-1.js'),ver=JSON.parse(read('version.json'));
 assert.equal(ver.version,'V2.0');
-assert.equal(ver.build,'V2.0-20261006-SETTINGS-HOME-FIX-01');
+assert.equal(ver.build,'V2.0-20261006-SETTINGS-PC-LAYOUT-FIX-02');
 assert.ok(html.includes('settings.v1.js?v='+ver.build),'Settings module must be pinned to current build');
 assert.doesNotMatch(html,/settings\.v1\.css/);
 assert.match(sw,/\.\/app\/modules\/settings\.v1\.js/);
@@ -19,7 +19,7 @@ assert.match(pref,/applyTheme\(readTheme\(\),false\)/);
 assert.match(pref,/const t=readTheme\(\);/);
 assert.doesNotMatch(js,/currentUserProfile\s*=/);
 assert.doesNotMatch(js,/new MutationObserver\(function\(\)\{ensureMenu\(\);applyProfile\(\)\}\)/);
-assert.match(js,/function observeSettingsMenu\(\)/);
+assert.match(js,/function observeSettingsMenu\(\)/);\nassert.match(js,/sagsSettingsSidebar/,'Desktop Settings sidebar wrapper missing');\nassert.match(js,/sagsSettingsBack/,'Desktop Settings back action missing');\nassert.match(css,/SETTINGS DESKTOP LAYOUT HOTFIX 02/,'Desktop Settings layout hotfix missing');\nassert.match(css,/grid-template-columns:300px minmax\(0,1fr\)/,'Desktop Settings must keep sidebar and content in one row');
 assert.match(js,/observer\.observe\(body,\{childList:true,subtree:true\}\)/);
 console.log('TEST V2.3 Settings Center trace/recovery contract passed');
 
