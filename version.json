@@ -1,12 +1,12 @@
 {
   "version": "V2.0",
   "displayVersion": "V2.0",
-  "label": "V2.0 - E-REPORT SAGS PRODUCTION",
-  "build": "V2.0-20261006-SETTINGS-HOME-FIX-01",
-  "releasedAt": "2026-10-06T08:47:56.286Z",
-  "type": "bugfix-performance",
+  "label": "V2.0 - SETTINGS PC LAYOUT FIX",
+  "build": "V2.0-20261006-SETTINGS-PC-LAYOUT-FIX-02",
+  "releasedAt": "2026-10-06T14:45:15Z",
+  "type": "bugfix-ui-cache",
   "base": "V6.4.89-20261005-AIRLINE-DASHBOARD-AD-CONTRAST-01",
   "updatePolicy": "required",
-  "notes": "Sửa nút Cài đặt trên trang chủ và menu điện thoại; không đổi theme khi mở. Đồng nhất phiên bản, tránh mở lại cửa sổ đã đóng, giới hạn tác vụ quan sát menu và phạm vi CSS. Kiểm tra hồi quy và xác minh checksum toàn bộ tài nguyên.",
-  "message": "V2.0: corrected home Settings routing and verified static release."
+  "notes": "Bản TEST: sửa bố cục Cài đặt trên PC bằng sidebar riêng và vùng nội dung riêng; giữ giao diện mobile độc lập. Đồng thời đổi build/cache để tránh trộn JavaScript/CSS cũ với mới sau các thay đổi MyFlight.",
+  "message": "V2.0 TEST: fix broken desktop Settings grid and force a clean immutable asset generation."
 }
