@@ -2,7 +2,7 @@
   "schema": 2,
   "version": "V2.0",
   "build": "V2.0-20261006-SETTINGS-HOME-FIX-01",
-  "strategy": "V2.3 Settings recovery + persistent click/install/open trace + visible emergency diagnostics",
+  "strategy": "V2.0 test: deterministic MyFlight airline logos + bounded rerender recovery",
   "mutableMetadata": [
     "./forms/forms.registry.json",
     "./data/form-configuration.json"
@@ -610,8 +610,8 @@
       "bytes": 53491
     },
     "./app/modules/aviation-reference.v1.js": {
-      "sha256": "ea5141c7d43986ddbcca18ec447a32dcc671917fc834cf52476af1f65bc8a294",
-      "bytes": 19958
+      "sha256": "81072b12291e9e0f7db14b4b4ac6eebc053dfd1eb03644a083312f0adeff7e25",
+      "bytes": 21843
     },
     "./assets/branding/apron-night-v6494.webp": {
       "sha256": "7a17d332d8dce854de03be8918034b378012b7fece42abc6c71ed9575bc257a0",
