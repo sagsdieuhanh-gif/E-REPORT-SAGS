@@ -6108,3 +6108,204 @@ html.new-ui-v1 body #sagsFlightDossierModal .v1199DossierOverviewTitle{
 /* E-REPORT SAGS V2.1 · Settings Center */
 .sagsSettingsCenter{position:fixed;inset:0;z-index:99000;display:none;align-items:center;justify-content:center;background:rgba(3,12,24,.76);backdrop-filter:blur(12px);padding:12px;box-sizing:border-box;font-family:Inter,Arial,sans-serif}.sagsSettingsCenter.show{display:flex}.sagsSettingsPanel{width:min(1180px,100%);height:min(900px,96dvh);display:flex;flex-direction:column;overflow:hidden;border:1px solid rgba(255,255,255,.1);border-radius:24px;background:linear-gradient(160deg,#101d2b,#0b1522 62%,#09121d);box-shadow:0 28px 90px rgba(0,0,0,.48);color:#eef6ff}.sagsSettingsPanel>header{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;padding:20px 23px 15px;border-bottom:1px solid rgba(255,255,255,.08)}.sagsSettingsPanel>header small{color:#55d9bd;font-weight:900;letter-spacing:.15em}.sagsSettingsPanel>header h2{margin:3px 0;font-size:24px}.sagsSettingsPanel>header p,.sagsSettingsContent .desc{margin:0;color:#96aabd;font-size:13px;line-height:1.45}.sagsSettingsPanel>header button{width:42px;height:42px;border:1px solid rgba(255,255,255,.1);border-radius:12px;background:#17283a;color:#fff;font-size:18px}.sagsSettingsLayout{min-height:0;flex:1;display:grid;grid-template-columns:255px minmax(0,1fr)}.sagsSettingsNav{padding:14px 11px;overflow:auto;border-right:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;gap:5px}.sagsSettingsNav button{border:0;border-radius:14px;background:transparent;color:#9fb2c6;text-align:left;padding:13px;font-weight:850;font-size:13px;cursor:pointer}.sagsSettingsNav button.active{background:linear-gradient(135deg,rgba(18,160,137,.24),rgba(29,113,180,.18));color:#eafff9;box-shadow:inset 0 0 0 1px rgba(72,220,193,.22)}.sagsSettingsNav button[hidden]{display:none}.sagsSettingsContent{overflow:auto;padding:24px}.sagsSettingsContent section{display:none;max-width:840px;margin:0 auto 36px}.sagsSettingsContent section.active{display:block}.sagsSettingsContent h3{font-size:24px;margin:0 0 6px}:where(#sagsSettingsCenter) .profile,:where(#sagsSettingsCenter) .about,:where(#sagsSettingsCenter) .release{display:flex;align-items:center;gap:14px;padding:16px;margin:17px 0;border:1px solid rgba(255,255,255,.09);border-radius:17px;background:rgba(255,255,255,.035)}:where(#sagsSettingsCenter) .profile>div:last-child,:where(#sagsSettingsCenter) .about>div{display:flex;flex-direction:column;gap:4px}:where(#sagsSettingsCenter) .profile span,:where(#sagsSettingsCenter) .profile small,:where(#sagsSettingsCenter) .about small,:where(#sagsSettingsCenter) .release small{color:#91a6ba;font-size:12px}:where(#sagsSettingsCenter) .avatar,.sagsWelcomeAvatar{background-size:cover;background-position:center;background-repeat:no-repeat}:where(#sagsSettingsCenter) .avatar{width:70px;height:70px;border-radius:50%;display:grid;place-items:center;flex:0 0 auto;background-color:#183d58;border:2px solid rgba(83,216,189,.55);font-size:28px;font-weight:950}:where(#sagsSettingsCenter) .about img{width:62px;height:62px;object-fit:contain;border-radius:13px;background:#fff;padding:5px}:where(#sagsSettingsCenter) .about b{font-size:18px}:where(#sagsSettingsCenter) .about span{font-weight:900;color:#62ddc5}:where(#sagsSettingsCenter) .grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}:where(#sagsSettingsCenter) .grid label{display:flex;flex-direction:column;gap:6px;color:#9fb4c8;font-size:11px;font-weight:900;text-transform:uppercase}:where(#sagsSettingsCenter) .grid .wide{grid-column:1/-1}:where(#sagsSettingsCenter) .grid input,:where(#sagsSettingsCenter) .rows select{min-height:44px;box-sizing:border-box;border:1px solid rgba(255,255,255,.12);border-radius:11px;background:#111f2d;color:#f4f9ff;padding:10px 12px;font:750 14px Arial}:where(#sagsSettingsCenter) .grid input[readonly]{background:#0b1722;color:#9daec0}:where(#sagsSettingsCenter) .actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:15px}:where(#sagsSettingsCenter) .actions button,:where(#sagsSettingsCenter) .file{min-height:42px;border-radius:11px;padding:10px 14px;border:1px solid rgba(255,255,255,.1);background:#1c2c3c;color:#eaf5ff;font:900 12px Arial;cursor:pointer;display:inline-flex;align-items:center;justify-content:center}:where(#sagsSettingsCenter) .actions .primary{border:0;background:linear-gradient(135deg,#18a98c,#117c92);color:#fff}:where(#sagsSettingsCenter) .actions .danger{background:#52252a;color:#ffd9dc}:where(#sagsSettingsCenter) .actions button:disabled{opacity:.45;cursor:not-allowed}:where(#sagsSettingsCenter) .file input{display:none}:where(#sagsSettingsCenter) .rows{margin-top:16px;border:1px solid rgba(255,255,255,.08);border-radius:16px;overflow:hidden}:where(#sagsSettingsCenter) .rows>label{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:14px 15px;border-bottom:1px solid rgba(255,255,255,.065)}:where(#sagsSettingsCenter) .rows>label:last-child{border:0}:where(#sagsSettingsCenter) .rows>label>span{display:flex;flex-direction:column;gap:3px}:where(#sagsSettingsCenter) .rows b{font-size:13px}:where(#sagsSettingsCenter) .rows small{color:#8fa3b7;font-size:11px}:where(#sagsSettingsCenter) .rows select{width:min(220px,44%);flex:0 0 auto}:where(#sagsSettingsCenter) .rows .locked{opacity:.72}:where(#sagsSettingsCenter) .sw{appearance:none;width:46px!important;height:26px!important;min-height:0!important;flex:0 0 46px!important;border:0!important;border-radius:99px!important;background:#314355!important;padding:0!important;position:relative}:where(#sagsSettingsCenter) .sw:after{content:"";position:absolute;width:20px;height:20px;left:3px;top:3px;border-radius:50%;background:#d9e4ed;transition:.18s}:where(#sagsSettingsCenter) .sw:checked{background:#16a184!important}:where(#sagsSettingsCenter) .sw:checked:after{left:23px;background:#fff}:where(#sagsSettingsCenter) .flow{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:stretch;gap:8px;margin:17px 0}:where(#sagsSettingsCenter) .flow>div{padding:13px 9px;border:1px solid rgba(255,255,255,.09);border-radius:14px;background:rgba(255,255,255,.035);display:grid;grid-template-columns:auto 1fr;gap:3px 7px;align-items:center}:where(#sagsSettingsCenter) .flow>div>b{grid-row:1/3;width:27px;height:27px;border-radius:50%;display:grid;place-items:center;background:#173f56;color:#65dfc7}:where(#sagsSettingsCenter) .flow span{font-size:12px;font-weight:900}:where(#sagsSettingsCenter) .flow em{font-size:10px;font-style:normal;color:#92a9bd}:where(#sagsSettingsCenter) .flow>i{align-self:center;color:#60788e}:where(#sagsSettingsCenter) .stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:12px 0}:where(#sagsSettingsCenter) .stats>div{display:flex;flex-direction:column;gap:6px;padding:13px;border-radius:13px;background:#101f2d;border:1px solid rgba(255,255,255,.075)}:where(#sagsSettingsCenter) .stats span{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#8399ad;font-weight:850}:where(#sagsSettingsCenter) .stats b{font-size:13px;color:#e9f7ff;overflow-wrap:anywhere}:where(#sagsSettingsCenter) .note{margin:14px 0;border-radius:12px;padding:12px 13px;background:rgba(37,108,143,.14);border:1px solid rgba(91,165,200,.15);color:#abc4d8;font-size:12px;line-height:1.5}:where(#sagsSettingsCenter) .release{display:grid;grid-template-columns:1fr auto;gap:4px 15px}:where(#sagsSettingsCenter) .release span{font-size:12px;color:#9cb0c4}:where(#sagsSettingsCenter) .release b{font-size:22px;color:#62ddc5}:where(#sagsSettingsCenter) .release small{grid-column:1/-1;overflow-wrap:anywhere}.sagsSettingsContent pre{white-space:pre-wrap;overflow-wrap:anywhere;min-height:220px;padding:14px;border-radius:14px;background:#07111a;border:1px solid rgba(255,255,255,.08);color:#bfe4d9;font:700 12px/1.55 ui-monospace,Consolas,monospace}.sagsWelcomeAvatar{display:inline-grid;place-items:center;vertical-align:middle;width:46px;height:46px;border-radius:50%;margin-right:10px;background-color:#173f56;border:2px solid rgba(255,255,255,.3);font-size:18px;font-weight:950;color:#fff}.sagsCustomDisplayText,.sagsCustomGreeting{font-size:0!important}.sagsCustomDisplayText:after{content:attr(data-sags-display);font-size:14px}.sagsCustomGreeting:after{content:attr(data-sags-greeting);font-size:clamp(20px,3vw,34px)}#v157DrawerAvatar[data-sags-avatar="image"]{background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important;color:transparent!important}.sagsSettingsToast{position:fixed;z-index:999999;left:50%;bottom:24px;transform:translate(-50%,14px);opacity:0;background:#142a37;color:#effffb;border:1px solid rgba(89,224,195,.3);border-radius:99px;padding:10px 16px;font:850 12px Arial;transition:.2s}.sagsSettingsToast.show{opacity:1;transform:translate(-50%,0)}html[data-sags-font-scale="small"] .v157MenuItem,html[data-sags-font-scale="small"] .sagsSettingsCenter{font-size:94%}html[data-sags-font-scale="large"] .v157MenuItem,html[data-sags-font-scale="large"] .sagsSettingsCenter{font-size:108%}html[data-ui-theme="light"] .sagsSettingsPanel{background:linear-gradient(160deg,#f8fbff,#eef4f8 62%,#e6eef4);color:#16324a;border-color:#ccd9e3}html[data-ui-theme="light"] .sagsSettingsPanel>header,html[data-ui-theme="light"] .sagsSettingsNav{border-color:#d5e0e8;background:rgba(255,255,255,.55)}html[data-ui-theme="light"] .sagsSettingsPanel>header p,html[data-ui-theme="light"] .sagsSettingsContent .desc,html[data-ui-theme="light"] :where(#sagsSettingsCenter) .rows small{color:#60778b}html[data-ui-theme="light"] .sagsSettingsNav button{color:#49657a}html[data-ui-theme="light"] .sagsSettingsNav button.active{background:#dff4eb;color:#0a6455}html[data-ui-theme="light"] :where(#sagsSettingsCenter) .profile,html[data-ui-theme="light"] :where(#sagsSettingsCenter) .about,html[data-ui-theme="light"] :where(#sagsSettingsCenter) .release,html[data-ui-theme="light"] :where(#sagsSettingsCenter) .rows,html[data-ui-theme="light"] :where(#sagsSettingsCenter) .stats>div,html[data-ui-theme="light"] :where(#sagsSettingsCenter) .flow>div{background:#fff;border-color:#d7e1e9}html[data-ui-theme="light"] :where(#sagsSettingsCenter) .grid input,html[data-ui-theme="light"] :where(#sagsSettingsCenter) .rows select{background:#fff;color:#19384f;border-color:#cbd8e2}html[data-ui-theme="light"] :where(#sagsSettingsCenter) .grid input[readonly]{background:#edf3f7;color:#597084}html[data-ui-theme="light"] :where(#sagsSettingsCenter) .stats b{color:#18384f}
 @media(max-width:760px){.sagsSettingsCenter{padding:0}.sagsSettingsPanel{height:100dvh;max-height:none;border:0;border-radius:0}.sagsSettingsPanel>header{padding:calc(11px + env(safe-area-inset-top)) 13px 11px}.sagsSettingsPanel>header h2{font-size:20px}.sagsSettingsPanel>header p{display:none}.sagsSettingsLayout{display:flex;flex-direction:column}.sagsSettingsNav{flex:0 0 auto;overflow-x:auto;overflow-y:hidden;display:flex;flex-direction:row;gap:6px;border-right:0;border-bottom:1px solid rgba(255,255,255,.08);padding:8px 9px}.sagsSettingsNav button{white-space:nowrap;min-width:max-content;padding:9px 11px}.sagsSettingsContent{padding:16px 12px calc(28px + env(safe-area-inset-bottom))}:where(#sagsSettingsCenter) .grid{grid-template-columns:1fr}:where(#sagsSettingsCenter) .grid .wide{grid-column:1}:where(#sagsSettingsCenter) .actions{display:grid;grid-template-columns:1fr 1fr}:where(#sagsSettingsCenter) .actions>*{width:100%;box-sizing:border-box}:where(#sagsSettingsCenter) .flow{grid-template-columns:1fr}:where(#sagsSettingsCenter) .flow>i{display:none}:where(#sagsSettingsCenter) .rows>label{padding:12px}:where(#sagsSettingsCenter) .rows select{width:45%}.sagsWelcomeAvatar{width:40px;height:40px;margin-right:8px}.sagsCustomGreeting:after{font-size:21px}:where(#sagsSettingsCenter) .stats{grid-template-columns:1fr 1fr}html[data-sags-compact="on"] #v157Drawer .v157MenuItem{padding-top:8px!important;padding-bottom:8px!important;min-height:44px!important}html[data-sags-compact="on"] .sagsSettingsContent{padding-top:11px}html[data-sags-compact="on"] :where(#sagsSettingsCenter) .rows>label{padding:9px 10px}}@media(max-width:430px){:where(#sagsSettingsCenter) .stats{grid-template-columns:1fr}:where(#sagsSettingsCenter) .actions{grid-template-columns:1fr}:where(#sagsSettingsCenter) .rows select{width:48%}.sagsSettingsNav button span{display:none}.sagsSettingsNav button{font-size:18px;padding:9px 12px}}
+
+
+/* ==========================================================================
+   V2.0 · SETTINGS DESKTOP LAYOUT HOTFIX 02
+   Desktop and mobile use separate layout rules. Sidebar + content are explicit
+   grid areas so an extra back control can never push content into a new row.
+   ========================================================================== */
+#sagsSettingsCenter .sagsSettingsSidebar{
+  min-width:0;
+  min-height:0;
+}
+#sagsSettingsCenter .sagsSettingsBack{
+  border:0;
+  cursor:pointer;
+  font:900 12px/1 Arial,sans-serif;
+}
+#sagsSettingsCenter .sagsSettingsNavGroupLabel{
+  padding:8px 12px 6px;
+  color:#687f96;
+  font:900 10px/1.15 Arial,sans-serif;
+  letter-spacing:.14em;
+}
+#sagsSettingsCenter .sagsSettingsNavGroupLabel.system{
+  margin-top:8px;
+}
+#sagsSettingsCenter .sagsSettingsNav button{
+  min-width:0;
+}
+#sagsSettingsCenter .sagsSettingsNavIcon{
+  display:grid;
+  place-items:center;
+  width:36px;
+  height:36px;
+  flex:0 0 36px;
+  border-radius:11px;
+  background:#17283a;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);
+  font-size:16px;
+}
+#sagsSettingsCenter .sagsSettingsNavCopy{
+  display:flex;
+  min-width:0;
+  flex-direction:column;
+  gap:3px;
+}
+#sagsSettingsCenter .sagsSettingsNavCopy b{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:inherit;
+  font:900 13px/1.15 Arial,sans-serif;
+}
+#sagsSettingsCenter .sagsSettingsNavCopy small{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:#8298ad;
+  font:700 10px/1.2 Arial,sans-serif;
+}
+#sagsSettingsCenter .sagsSettingsNav button.active .sagsSettingsNavIcon{
+  background:rgba(25,147,128,.22);
+  box-shadow:inset 0 0 0 1px rgba(92,231,204,.28);
+}
+#sagsSettingsCenter .sagsSettingsNav button.active .sagsSettingsNavCopy small{
+  color:#9ed9ce;
+}
+
+@media (min-width:761px){
+  #sagsSettingsCenter{
+    padding:16px!important;
+  }
+  #sagsSettingsCenter .sagsSettingsPanel{
+    width:min(1360px,calc(100vw - 32px))!important;
+    height:min(900px,calc(100dvh - 32px))!important;
+    max-width:none!important;
+  }
+  #sagsSettingsCenter .sagsSettingsLayout{
+    position:relative!important;
+    display:grid!important;
+    grid-template-columns:300px minmax(0,1fr)!important;
+    grid-template-rows:minmax(0,1fr)!important;
+    align-items:stretch!important;
+    min-width:0!important;
+    min-height:0!important;
+    overflow:hidden!important;
+  }
+  #sagsSettingsCenter .sagsSettingsSidebar{
+    grid-column:1!important;
+    grid-row:1!important;
+    display:flex!important;
+    flex-direction:column!important;
+    min-width:0!important;
+    min-height:0!important;
+    overflow:hidden!important;
+    border-right:1px solid rgba(255,255,255,.08)!important;
+    background:rgba(5,16,27,.22)!important;
+  }
+  #sagsSettingsCenter .sagsSettingsBack{
+    display:inline-flex!important;
+    align-items:center!important;
+    align-self:flex-start!important;
+    gap:8px!important;
+    flex:0 0 auto!important;
+    margin:14px 14px 7px!important;
+    padding:11px 14px!important;
+    border-radius:999px!important;
+    background:#247d98!important;
+    color:#fff!important;
+    box-shadow:none!important;
+  }
+  #sagsSettingsCenter .sagsSettingsNav{
+    flex:1 1 auto!important;
+    min-width:0!important;
+    min-height:0!important;
+    overflow-x:hidden!important;
+    overflow-y:auto!important;
+    border-right:0!important;
+    padding:7px 10px 16px!important;
+    display:flex!important;
+    flex-direction:column!important;
+    gap:4px!important;
+  }
+  #sagsSettingsCenter .sagsSettingsNav button{
+    display:grid!important;
+    grid-template-columns:36px minmax(0,1fr)!important;
+    align-items:center!important;
+    gap:11px!important;
+    width:100%!important;
+    min-height:54px!important;
+    padding:8px 10px!important;
+    text-align:left!important;
+    white-space:normal!important;
+  }
+  #sagsSettingsCenter .sagsSettingsContent{
+    grid-column:2!important;
+    grid-row:1!important;
+    min-width:0!important;
+    min-height:0!important;
+    width:auto!important;
+    max-width:none!important;
+    overflow-x:hidden!important;
+    overflow-y:auto!important;
+    padding:28px 32px 38px!important;
+  }
+  #sagsSettingsCenter .sagsSettingsContent section{
+    width:100%!important;
+    max-width:920px!important;
+    margin:0 auto 36px!important;
+  }
+  #sagsSettingsCenter .sagsSettingsContent .stats{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  }
+  #sagsSettingsCenter .sagsSettingsLayout > .sagsSettingsNav{
+    grid-column:1!important;
+    grid-row:1!important;
+  }
+  #sagsSettingsCenter .sagsSettingsLayout > .sagsSettingsContent{
+    grid-column:2!important;
+    grid-row:1!important;
+  }
+}
+
+@media (max-width:760px){
+  #sagsSettingsCenter .sagsSettingsSidebar{
+    display:contents!important;
+  }
+  #sagsSettingsCenter .sagsSettingsBack,
+  #sagsSettingsCenter .sagsSettingsNavGroupLabel{
+    display:none!important;
+  }
+  #sagsSettingsCenter .sagsSettingsNav button{
+    display:flex!important;
+    align-items:center!important;
+    gap:7px!important;
+  }
+  #sagsSettingsCenter .sagsSettingsNavIcon{
+    width:auto!important;
+    height:auto!important;
+    flex:0 0 auto!important;
+    border-radius:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+  }
+  #sagsSettingsCenter .sagsSettingsNavCopy{
+    display:block!important;
+  }
+  #sagsSettingsCenter .sagsSettingsNavCopy b{
+    font:inherit!important;
+  }
+  #sagsSettingsCenter .sagsSettingsNavCopy small{
+    display:none!important;
+  }
+}
+@media (max-width:430px){
+  #sagsSettingsCenter .sagsSettingsNav button .sagsSettingsNavIcon{
+    display:inline-grid!important;
+  }
+  #sagsSettingsCenter .sagsSettingsNav button .sagsSettingsNavCopy{
+    display:none!important;
+  }
+}
