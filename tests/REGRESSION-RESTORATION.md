@@ -31,6 +31,6 @@ Baseline audit: 39/65 pass, 26 fail. A=production bug; B=stale test; C=broken ha
 | v21-settings-center.test.cjs | C/D | Literal backslash-n syntax bug and double-escaped regex repaired; release query invariant replaces old build stamp. |
 | v25-settings-pc-layout.test.cjs | D | Historical build literal replaced; desktop/mobile layout contracts retained. |
 
-Additional V2.7 release-stamp failures in mobile visibility were updated to the same release invariant. During rebuilding, the old generator discarded deployed fixes and airline bootstrap assets; canonical source promotion and bootstrap preservation prevent that regression. New tests cover draft behavior (13 cases), runner aggregation, generated-source parity, manifest corruption and PWA lifecycle. Static UI checks remain contract tests, not browser layout certification.
+Additional V2.7 release-stamp failures in mobile visibility were updated to the same release invariant. During rebuilding, the old generator discarded deployed fixes and airline bootstrap assets; canonical source promotion and bootstrap preservation prevent that regression. New tests cover draft behavior (14 cases), runner aggregation, generated-source parity, manifest corruption and PWA lifecycle. Static UI checks remain contract tests, not browser layout certification.
 
 The previous report appendix accidentally named required-auto-update instead of repair-unregister-first; this table uses the saved actual baseline test results.
