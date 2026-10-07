@@ -31,6 +31,5 @@ if(!match)throw Error('Bootstrap list not found');
 const sources=new Set(groups.flatMap(g=>g.map(x=>x.path))),bootstrap=JSON.parse(match[1]).filter(p=>!sources.has(p));
 groups.forEach((_,i)=>{const p='./app/styles/boot-bundle-'+(i+1)+'.css';if(!bootstrap.includes(p))bootstrap.push(p)});
 sw=sw.replace(match[0],'const SAGS_BOOTSTRAP='+JSON.stringify(bootstrap)+';');fs.writeFileSync(path.join(root,'service-worker.js'),sw);
-for(const name of Object.keys(manifest.assets)){const bytes=fs.readFileSync(path.join(root,name));manifest.assets[name]={sha256:crypto.createHash('sha256').update(bytes).digest('hex'),bytes:bytes.length}}
 fs.writeFileSync(path.join(root,'asset-manifest.json'),JSON.stringify(manifest,null,2)+'\n');
 console.log('Styles bundled: '+groups.map(g=>g.length).join(' + ')+' source stylesheets → '+groups.length+' requests.');

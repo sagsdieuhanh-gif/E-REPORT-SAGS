@@ -1,12 +1,12 @@
 {
-  "version": "V2.6",
-  "displayVersion": "V2.6",
-  "label": "V2.6 - FORM-ONLY ACTION DOCK",
-  "build": "V2.6-20261007-FORM-DOCK-VISIBILITY-02",
+  "version": "V2.7",
+  "displayVersion": "V2.7",
+  "label": "V2.7 - DATA SAFETY / RELEASE INTEGRITY",
+  "build": "V2.7-20261007-DATA-SAFETY-RELEASE-INTEGRITY-01",
   "releasedAt": "2026-10-07T01:27:57Z",
-  "type": "ui-visibility-hotfix",
-  "base": "E-REPORT-SAGS main@5676d432c4bda0631c5f7eff3ee2c7ba33bf0445",
+  "type": "data-safety-release-integrity",
+  "base": "E-REPORT-SAGS main@5a0be6bf6ff95a57cf975dcef6e0666efe3444e4",
   "updatePolicy": "required",
-  "notes": "V2.6 build 02: bốn nút NHẬP NHANH / XUẤT PDF / HOÀN TẤT / KÝ chỉ được hiển thị khi đang thật sự ở workspace biểu mẫu có session active. Trang chủ, menu, My Flight, Hồ sơ chuyến bay, Kết sổ, FINAL, Crosscheck, Thông báo, Cài đặt, drawer và các overlay đều không được hiển thị dock. Thêm JS form-context gate và CSS fail-safe display:none để inline/legacy CSS không thể làm dock xuất hiện sai màn hình. Giữ nguyên layout 2x2, tối ưu tốc độ mở form và update guard.",
-  "message": "V2.6 build 02: show the four action buttons only inside an active form workspace."
+  "notes": "Immutable draft identity, atomic conflict resolution, reproducible release packaging and regression gates. No workflow or layout change.",
+  "message": "V2.7 data safety and release integrity candidate; production approval pending."
 }

@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V2.6",
-  "build": "V2.6-20261007-FORM-DOCK-VISIBILITY-02",
+  "version": "V2.7",
+  "build": "V2.7-20261007-DATA-SAFETY-RELEASE-INTEGRITY-01",
   "strategy": "Production V2.6 · form-only action dock visibility gate + canonical 2x2 layout",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -9,286 +9,6 @@
   ],
   "bootstrapChanged": true,
   "assets": {
-    "./app/modules/admin-reset.v503hf2.js": {
-      "sha256": "820a96f835cc27e5aa7f98eb1c2093739fdde6b4975b381accc42df4a62acc38",
-      "bytes": 14814
-    },
-    "./app/modules/ai.js": {
-      "sha256": "02cf9eea6405e5204f429b3f347168c8e815d355d89598a89fc922fb3242bc76",
-      "bytes": 36071
-    },
-    "./app/modules/carrier-notebook.v1.js": {
-      "sha256": "546da5a69ab630dafe68dee11f422324536cfd91a3d9a8be8b305b3592d66791",
-      "bytes": 42484
-    },
-    "./app/modules/cross-browser-entry.v1.js": {
-      "sha256": "e0aad85c639f7c97437dd560093f2988923fd187d06e3ba1cf3ad0db1bbf9e5e",
-      "bytes": 20659
-    },
-    "./app/modules/daily-roster.v502.js": {
-      "sha256": "fe90d12df1e27a8c0257a74648f7a241fdb7cbbfb5b7bb48789ceaa85b32df01",
-      "bytes": 87039
-    },
-    "./app/modules/fsags54-94.v622.js": {
-      "sha256": "9f39dd025b60be2791fb92e345fe9424c6b122c6546a914f53097fdb31a18ab2",
-      "bytes": 42031
-    },
-    "./app/modules/indexeddb-flight-store.v1.js": {
-      "sha256": "52c8ae561259fc408a5e3996d7864c8d82b45176d8c1d11b991e877971599b84",
-      "bytes": 12958
-    },
-    "./app/modules/mobile-draft-recovery.v1.js": {
-      "sha256": "359527bd71a2e00d57e594143016c8ff744babf71d26ac421fd0ec4dd0ad2816",
-      "bytes": 4238
-    },
-    "./app/modules/network-diagnostics.js": {
-      "sha256": "0380b14a3f024d0d95e4ff90787a64c7cb0c8eeb9f2fe19a423e88efb5df5de4",
-      "bytes": 12286
-    },
-    "./app/modules/quick-entry.v1.js": {
-      "sha256": "b57a2e6e8d359f1cffe7c955ab9f7f857a76cdab816ecb40d3bd1ded16c44a98",
-      "bytes": 14965
-    },
-    "./app/modules/roster-lite.v5.js": {
-      "sha256": "3739427db6ffc56a3a1929f7a429313e32691cd13816a3c31c024142f29ac069",
-      "bytes": 26209
-    },
-    "./app/modules/stability.v6-core.js": {
-      "sha256": "4123ae9fb477b4cd8e1d489236a17900716d544ac8decd51551ece01d987eb51",
-      "bytes": 15152
-    },
-    "./app/modules/stability.v6.js": {
-      "sha256": "507c23b9f450ee2f95af5941cf3108497d91fb37bb3eb8549fd3ca031d0d2ddd",
-      "bytes": 1283
-    },
-    "./app/modules/tvj-gof-035.v630.js": {
-      "sha256": "8a0fc5d7375c4bacde480b7baaea6f8f251699730c3019f13a1e9cf46871ec8b",
-      "bytes": 17280
-    },
-    "./app/modules/tvj-gof-035.v631.js": {
-      "sha256": "9e89b5d32de75bc395ec68685d77c4eb714a729e85c40ba144bc9585dd812d1a",
-      "bytes": 8162
-    },
-    "./app/modules/tvj-gof-035.v632.js": {
-      "sha256": "bf6d2361ebede42315fccc49feff8180797dbaf3f9f2f86b21b41f1147a5e439",
-      "bytes": 10344
-    },
-    "./app/modules/ui-preferences.v1.js": {
-      "sha256": "27a32b2c527ce2d69d8c910805c5b05e20f40c909f8d86c6f8b658e45cbab5e1",
-      "bytes": 31673
-    },
-    "./app/styles/app.bundle.css": {
-      "sha256": "013be6bee9f38bf79864dcab0658f438966d77172692446f698c042539601c2e",
-      "bytes": 41473
-    },
-    "./app/styles/new-ui-v1.css": {
-      "sha256": "87cb70bcdb841a6424d5304bf923211733fd09e4ad786216246a5c66ceae95ee",
-      "bytes": 375636
-    },
-    "./assets/audio/alert-crosscheck-complete.mp3": {
-      "sha256": "2291844c0abc77005a2e8800e0dc8115c373134385a31a5d3d9e5f920a5acc07",
-      "bytes": 28465
-    },
-    "./assets/audio/alert-ket-so-moi.mp3": {
-      "sha256": "2563bf00f263c6c57f0e33fc161902c531db95b307411e498a500b4e18a5d3ab",
-      "bytes": 35988
-    },
-    "./assets/audio/alert-ket-so-thay-doi.mp3": {
-      "sha256": "c17b5c4943fff8d4259f1e685ae02aede60192b62c50ccf67f8683ba8f9f7cd6",
-      "bytes": 25121
-    },
-    "./assets/audio/alert-mva.mp3": {
-      "sha256": "a4ef139f54b1465bc96bc7e12d7d69c4a0c7b5af48851d6df718d31e106fc23b",
-      "bytes": 36405
-    },
-    "./assets/audio/alert-mvt.mp3": {
-      "sha256": "441b0df7aba5451ea8c85df517b66fc42e2e0e538caa77d71ac06ce8492a07ae",
-      "bytes": 70260
-    },
-    "./assets/audio/alert-pushback-missing.mp3": {
-      "sha256": "9241aa52924071745dd64247291b4e09d556f2c1db3f5a605bd5635d02cba9bd",
-      "bytes": 77783
-    },
-    "./assets/audio/ket-so.wav": {
-      "sha256": "cf03e8d4021f989f61fd12249f282ae2e53588cc9d55d68393778223db8132a1",
-      "bytes": 72368
-    },
-    "./assets/branding/login-logo-10years.png": {
-      "sha256": "02bef06f4d742be09b9f8efcdf9e0ce155ee95d0008696e208dc3374acc5358c",
-      "bytes": 249729
-    },
-    "./assets/branding/logo.png": {
-      "sha256": "15f7035ba48363ef36ac7a5794427e6107c48f1353a1d2e6ae263148ed660950",
-      "bytes": 46976
-    },
-    "./assets/icons/apple-touch-icon.png": {
-      "sha256": "a190c19f9a52a40f43379917b11f84f99a2ab2fb4a3cdaedd1dad936a67c8e78",
-      "bytes": 17275
-    },
-    "./assets/icons/favicon-16.png": {
-      "sha256": "bb74deb45be89aca360f6b6f9b7d6293c14b1d7efa5f1e4fe21f4804fb05ce58",
-      "bytes": 437
-    },
-    "./assets/icons/favicon-32.png": {
-      "sha256": "1a1fd13fb978fc5422843286feeb16b821aa52f3eb15665bdc717b034b9fb613",
-      "bytes": 1151
-    },
-    "./assets/icons/icon-192.png": {
-      "sha256": "6fe324b47572ae37d711aac8affc9d7e9bf60c36e2fb810f3e948497a2981ca3",
-      "bytes": 19146
-    },
-    "./assets/icons/icon-512.png": {
-      "sha256": "90aa4e4ece11944460015926ca2aaf4271b439c06d3f808aeaaa9ba7b71f33b7",
-      "bytes": 104295
-    },
-    "./data/carrier-guide-version.json": {
-      "sha256": "a1f779d1086af8904b7ee6dd983e99df309d179552aa2c6b521298ceb28c6b23",
-      "bytes": 290
-    },
-    "./data/carrier-service-guide.json": {
-      "sha256": "518ef49eb35b3db4885e8e751e59939b396fdc93a747c3a320e075264a6ecf5b",
-      "bytes": 30731
-    },
-    "./data/fsags-display-coordinates.json": {
-      "sha256": "9ba95aab8420c74b377970e082e81a43f6402c262d6d82aa2dcc13fd7834b4be",
-      "bytes": 13254
-    },
-    "./forms/9g/page-01.png": {
-      "sha256": "8e8a65b7370ef2ec7a733e28e6df369e27a5c59fdaef44009d0b34251c87f75a",
-      "bytes": 321831
-    },
-    "./forms/bbbt/page-01.png": {
-      "sha256": "f2edeb02d4c4bf6acb96edc3ea3c5463998e5b87ed45611d46198d614ff864fe",
-      "bytes": 489595
-    },
-    "./forms/fsags09/page-01.png": {
-      "sha256": "11d83788014011aeee5abe56bb9292b7b4cd2d3186a226dbc1b7e95bb5463877",
-      "bytes": 301528
-    },
-    "./forms/fsags09/page-02.png": {
-      "sha256": "839086031a1c3f085b4cdc7196a2d9b09bde0d5752f27f330c316a6ec507a1c2",
-      "bytes": 218099
-    },
-    "./forms/fsags208/page-01.png": {
-      "sha256": "0780ba912b969d351de7be4f86d9563279e94b65beb8e6df321e05d1d9106a0b",
-      "bytes": 978212
-    },
-    "./forms/fsags42.1/page-01.png": {
-      "sha256": "e95068ef7cda07aa7f03547ba0863e334b2fb7a4b120755a20d3f63a25060af7",
-      "bytes": 304135
-    },
-    "./forms/fsags42.1/page-02.png": {
-      "sha256": "3e42ca2b99ff0bb4294ddbcec06631a2debeff1d5e051a1621496477c181a106",
-      "bytes": 148501
-    },
-    "./forms/fsags42.3/page-01.png": {
-      "sha256": "94e543f3c9da5be72fb8bbf19510e4468c1c774f246781044a5613163002acfd",
-      "bytes": 390578
-    },
-    "./forms/fsags42.3/page-02.png": {
-      "sha256": "793653dfaf5e8afc21cccb64cc72725f2c5e91cd4f090ee48d5d40daa04b5f61",
-      "bytes": 208756
-    },
-    "./forms/fsags54/page-01.png": {
-      "sha256": "6ff53598e2a1301ef8966e45ea29cd9f0b716bee62a84891e1bddcdc45175e9b",
-      "bytes": 2058067
-    },
-    "./forms/fsags55.1/page-01.png": {
-      "sha256": "7bac9fa6524e2d97a17f4919ad57d6093c9fe463e6070dfea8a3d712cf508651",
-      "bytes": 540544
-    },
-    "./forms/fsags55.1/page-02.png": {
-      "sha256": "54bd638ebc6bb79cb32608ed5f682c5b89a9d6234063f65cb97d8865045cf4a3",
-      "bytes": 461776
-    },
-    "./forms/fsags94/page-01.png": {
-      "sha256": "fd264f56961d09847d8902582dc326dad0ff278f1f3fc4377f336f6eeca0dc77",
-      "bytes": 501947
-    },
-    "./forms/tvj/page-01.png": {
-      "sha256": "1f9e4a745617d1a8e7c3fa4b465178bb38f420623802af4e8136069f0dfa7ffb",
-      "bytes": 1673628
-    },
-    "./forms/vj/vj1.png": {
-      "sha256": "cd3beed60e5864d1d294ae79b2fba08440a5897f8eb374407d756732af4ef3f6",
-      "bytes": 1362777
-    },
-    "./forms/vj/vj2.png": {
-      "sha256": "c4d915fbd2a4ffb945037352237bb4036194559edeaf1e5ccfa28467f9f64205",
-      "bytes": 615784
-    },
-    "./forms/vu/page-01.png": {
-      "sha256": "1a7372356daf61f8d25416315189ca4291b82c64407456ffe87412da9d7427ad",
-      "bytes": 284127
-    },
-    "./index.html": {
-      "sha256": "f2fe3a6246bdc6e4062db83179cd8f0a2e6320f82c42f00da780ace1a816c0a6",
-      "bytes": 80565
-    },
-    "./manifest.webmanifest": {
-      "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
-      "bytes": 565
-    },
-    "./pdf-bg/bbbt/page-01.jpg": {
-      "sha256": "cf50e0d022c213d3979ffe21f539102415bb2272a28bdd8e26c6005a451e5e9c",
-      "bytes": 385753
-    },
-    "./pdf-bg/fsags09/page-01.jpg": {
-      "sha256": "f7b1218a8502208bbaf19a3dfe9dc451ec0bc6b9e55183ec605e9da32cbe57f7",
-      "bytes": 411276
-    },
-    "./pdf-bg/fsags09/page-02.jpg": {
-      "sha256": "b706511c04d652e54571b490aec3c004566ca438b36a601b8387b8edb1a40bbb",
-      "bytes": 309775
-    },
-    "./pdf-bg/fsags208/page-01.jpg": {
-      "sha256": "e8bfdfb4fdcb12732a22967f07f55de90ae1d8a264404d6b1dad8b0ff708761b",
-      "bytes": 329263
-    },
-    "./pdf-bg/fsags42.1/page-01.jpg": {
-      "sha256": "5362f171d2e5476374cc6604889a93e73cceccaa45cb8579c7c51e7a97598de3",
-      "bytes": 556778
-    },
-    "./pdf-bg/fsags42.1/page-02.jpg": {
-      "sha256": "2c05866c78af46026b6895a93eaba6dbf9963a411884d74c48c8ad6ec32c36c2",
-      "bytes": 301949
-    },
-    "./pdf-bg/fsags42.3/page-01.jpg": {
-      "sha256": "b084715277801aacfe1a05aecead57a0f594b424c6aaa5b4ebbf32b24f683789",
-      "bytes": 549016
-    },
-    "./pdf-bg/fsags42.3/page-02.jpg": {
-      "sha256": "10378a4a02288af2bea833f3e7a9e472b8beb1eed9760d2c7eb15229a9fbebda",
-      "bytes": 434869
-    },
-    "./pdf-bg/fsags55.1/page-01.jpg": {
-      "sha256": "c7092222cded34b6f267c740f46b201d7eb20f5ef72bccba8546dfc77f1df0d8",
-      "bytes": 490633
-    },
-    "./pdf-bg/fsags55.1/page-02.jpg": {
-      "sha256": "25825374e1204fa80c7e4e89dbb6349738dd4da031bff550b43bb350bee4865e",
-      "bytes": 465580
-    },
-    "./repair.html": {
-      "sha256": "15c3e6fdff9a8ad96151a499c111ef3e787658c930fbf6f2d6a4dede9694a417",
-      "bytes": 6937
-    },
-    "./service-worker.js": {
-      "sha256": "9b93dde23d2a0673fccdfc62ee17b44055949ff74a52690806b6771c7eb84f2c",
-      "bytes": 21441
-    },
-    "./version.json": {
-      "sha256": "39eb924bf6b8cc5bd3027d343ba39e3e628667139df5b6098e9009260bffc2df",
-      "bytes": 992
-    },
-    "./app/modules/form-registry-runtime.v647.js": {
-      "sha256": "38273ccd7794e4790c37b5a8594edeaefd412917af2c928245bf8a89b0a8a5f2",
-      "bytes": 17888
-    },
-    "./app/modules/form-registry-runtime.v6419.js": {
-      "sha256": "8c33713d4b54aafd4f158659089600646003c7a1a72b0bef5718347fa4576e32",
-      "bytes": 32038
-    },
     "./app/boot/01-sags-v620-unified-form-migration.js": {
       "sha256": "4c14262d845b89002fa967ff97e3cda9723a9c7227c4af2a9c2a32ad0dd6ba65",
       "bytes": 239
@@ -368,6 +88,226 @@
     "./app/boot/31-sags-grnd-ls-v621.js": {
       "sha256": "525a59744a4e5b345bc85d60f6641f8c3c27d121fb04f557f35ba16579b9a097",
       "bytes": 15990
+    },
+    "./app/boot/32-v6494-aviation-shell.js": {
+      "sha256": "aaf96c8f68eabd15843a0896020557a960331ad508bca937ee4a8f89121ca44e",
+      "bytes": 13949
+    },
+    "./app/boot/33-v6497-dossier-enhancements.js": {
+      "sha256": "7ccc4b3372e1fc62b8658451fe98ecdc8e9d09d2ccc2041f0011e0db04d11c60",
+      "bytes": 19210
+    },
+    "./app/generated/boot-group-1.js": {
+      "sha256": "67bbcd6af335dcb6e97032a45fbee65ecff090e7f5e09314bde194074e944505",
+      "bytes": 594
+    },
+    "./app/generated/boot-group-2.js": {
+      "sha256": "044ca527398a9217539102bed1f79e92a52165572c9d0829e60bf4570710ae65",
+      "bytes": 40294
+    },
+    "./app/generated/boot-group-3.js": {
+      "sha256": "31e73d27e9389824b91e497a436c8aa2a5de36feac68b246c8523a4c362a135e",
+      "bytes": 25398
+    },
+    "./app/generated/boot-group-4.js": {
+      "sha256": "76ce0539f1804c56c82b15f31467554badcb50cd0b4866457730c9d94bb8d10d",
+      "bytes": 13792
+    },
+    "./app/generated/boot-group-5.js": {
+      "sha256": "ccd1783e679528508e00b6d1dd5ff76613a8fb75d71c1f9e42533213047e1ca9",
+      "bytes": 3558
+    },
+    "./app/generated/boot-groups.json": {
+      "sha256": "22d44f8116a21a4c08e7c7499f6d4a5e1414ede9fa68c12803581c9d55740208",
+      "bytes": 532
+    },
+    "./app/generated/core-archive.js": {
+      "sha256": "8c9e20707dc7a0d1510326a7b1f591e8db891054f471db336a5dafcf18d314f3",
+      "bytes": 71353
+    },
+    "./app/generated/core-control.js": {
+      "sha256": "01d97d1537b96685b7f110d84b485d36f0ee222eefcc13f555b1af3443289c24",
+      "bytes": 84928
+    },
+    "./app/generated/core-flight.js": {
+      "sha256": "2fc6ae1ce9fe5528e4332c76a00a22acd2956b1a8e36bdbd34620fd16b66c4f5",
+      "bytes": 218149
+    },
+    "./app/generated/core-performance.js": {
+      "sha256": "005c80dc9ce412f9e1c8b74d24b48e68b27ddaa05d5de203cb2029e7f93364d8",
+      "bytes": 5907
+    },
+    "./app/generated/core-postcontrol.js": {
+      "sha256": "604982e342da53b0e5ded6abb0a06736d6d6dbdac2be9099998801574af90253",
+      "bytes": 59876
+    },
+    "./app/generated/core-shared.js": {
+      "sha256": "2b35d056736e963d3f5a4cc4972d676bc7460aa02959322958eb1c5d44622ec7",
+      "bytes": 122363
+    },
+    "./app/generated/core-tools.js": {
+      "sha256": "3e3e9420a932366457ca80ba10cf0cbc215c8f6405462453423778380a1b7ce0",
+      "bytes": 106804
+    },
+    "./app/generated/runtime-1.js": {
+      "sha256": "2891c1f2fefdae12515716169ea02f4b2e7770de09852a8762c91647c0072d05",
+      "bytes": 115016
+    },
+    "./app/generated/runtime-2.js": {
+      "sha256": "2d8ff077472edd0932320bbf07a2257230389a078cf8fbb52aee33aad39c913c",
+      "bytes": 140526
+    },
+    "./app/generated/runtime-3.js": {
+      "sha256": "27af2b0c87d29d642691d6a6aa853228c1f4ff6fdb8c4b80903e975e6a581797",
+      "bytes": 46305
+    },
+    "./app/generated/runtime-4.js": {
+      "sha256": "d1182b828f1dee8604291df22b24c13e404ac7dd4f03347d3937139373074013",
+      "bytes": 181261
+    },
+    "./app/generated/runtime-5.js": {
+      "sha256": "03f61b9add33905fe1b1c4467a2f0895d58cb4eb11a81aa2f47a86e4af2ebfd4",
+      "bytes": 25746
+    },
+    "./app/modules/admin-account-actions.v2.js": {
+      "sha256": "6405c8a1e4dbbef6824f3266fe1e747b2b4c20e3ff4893f075854d9a878826a5",
+      "bytes": 16051
+    },
+    "./app/modules/admin-reset.v503hf2.js": {
+      "sha256": "820a96f835cc27e5aa7f98eb1c2093739fdde6b4975b381accc42df4a62acc38",
+      "bytes": 14814
+    },
+    "./app/modules/ai.js": {
+      "sha256": "02cf9eea6405e5204f429b3f347168c8e815d355d89598a89fc922fb3242bc76",
+      "bytes": 36071
+    },
+    "./app/modules/airline-form-policy.v1.js": {
+      "sha256": "d92ca37647a4697299f767983b1435f7df6cf88ee6718073bf383ab6fde2a653",
+      "bytes": 27751
+    },
+    "./app/modules/aviation-reference.v1.js": {
+      "sha256": "0dc4d416c2a21db88d45f722e65413b83ef2cf8af250fc4e2e168f066a2d6878",
+      "bytes": 20849
+    },
+    "./app/modules/cargo-all-flights.v1.js": {
+      "sha256": "b17e3fb680151066e280bb070a3d0f9b8370d7895e6970daf3489027000b6a5c",
+      "bytes": 3405
+    },
+    "./app/modules/carrier-notebook.v1.js": {
+      "sha256": "546da5a69ab630dafe68dee11f422324536cfd91a3d9a8be8b305b3592d66791",
+      "bytes": 42484
+    },
+    "./app/modules/cloud-draft-sync.v2.js": {
+      "sha256": "4224f8e05d1ee8a5e2656dcaf53f3059d2d0b7476541659be9c8823302e1ff92",
+      "bytes": 13600
+    },
+    "./app/modules/cross-browser-entry.v1.js": {
+      "sha256": "e0aad85c639f7c97437dd560093f2988923fd187d06e3ba1cf3ad0db1bbf9e5e",
+      "bytes": 20659
+    },
+    "./app/modules/daily-roster.v502.js": {
+      "sha256": "fe90d12df1e27a8c0257a74648f7a241fdb7cbbfb5b7bb48789ceaa85b32df01",
+      "bytes": 87039
+    },
+    "./app/modules/feature-loader.v1.js": {
+      "sha256": "dc738a8d7df5134fe41f208fa0a19f6624438dc3d82fc30a921e05541fbc91c9",
+      "bytes": 1778
+    },
+    "./app/modules/firebase-read-coalescer.v1.js": {
+      "sha256": "2be879e74429432ad5a6130923cc67bb9bb66b5dd4a66533c09c1842a6d035dd",
+      "bytes": 1149
+    },
+    "./app/modules/form-entry-contrast.v1.js": {
+      "sha256": "1621255fd3cc494f8224b92703ecabe8ffe71fc9f92429d257b64ba299411911",
+      "bytes": 3138
+    },
+    "./app/modules/form-registry-runtime.v6419.js": {
+      "sha256": "8c33713d4b54aafd4f158659089600646003c7a1a72b0bef5718347fa4576e32",
+      "bytes": 32038
+    },
+    "./app/modules/form-registry-runtime.v647.js": {
+      "sha256": "38273ccd7794e4790c37b5a8594edeaefd412917af2c928245bf8a89b0a8a5f2",
+      "bytes": 17888
+    },
+    "./app/modules/fsags208-image-reader.v1.js": {
+      "sha256": "56b2b7c7fb1f54c20678868f80d13f7a7d2a51350bf2a89c6742381850f75e10",
+      "bytes": 19873
+    },
+    "./app/modules/fsags208-workspace.v1.js": {
+      "sha256": "a8c8cbf7d0b2c678afc8e827ab5d24e354656b34c1d4127efb3c5345bfb713d7",
+      "bytes": 42627
+    },
+    "./app/modules/fsags54-94.v622.js": {
+      "sha256": "9f39dd025b60be2791fb92e345fe9424c6b122c6546a914f53097fdb31a18ab2",
+      "bytes": 42031
+    },
+    "./app/modules/indexeddb-flight-store.v1.js": {
+      "sha256": "52c8ae561259fc408a5e3996d7864c8d82b45176d8c1d11b991e877971599b84",
+      "bytes": 12958
+    },
+    "./app/modules/mobile-draft-recovery.v1.js": {
+      "sha256": "359527bd71a2e00d57e594143016c8ff744babf71d26ac421fd0ec4dd0ad2816",
+      "bytes": 4238
+    },
+    "./app/modules/mobile-form-dock.v1.js": {
+      "sha256": "7e2cb6f30aafaa4213f437f29d7cf9eb6bc5556b16da32100c16fd470ce718b1",
+      "bytes": 1572
+    },
+    "./app/modules/mobile-form-dock.v2.js": {
+      "sha256": "a5d3f7049c4cb74ce76fa681b788bccc2f09b144d9de0b830c4104fa3f4f25b3",
+      "bytes": 5996
+    },
+    "./app/modules/network-diagnostics.js": {
+      "sha256": "0380b14a3f024d0d95e4ff90787a64c7cb0c8eeb9f2fe19a423e88efb5df5de4",
+      "bytes": 12286
+    },
+    "./app/modules/quick-entry.v1.js": {
+      "sha256": "b57a2e6e8d359f1cffe7c955ab9f7f857a76cdab816ecb40d3bd1ded16c44a98",
+      "bytes": 14965
+    },
+    "./app/modules/roster-lite.v5.js": {
+      "sha256": "3739427db6ffc56a3a1929f7a429313e32691cd13816a3c31c024142f29ac069",
+      "bytes": 26209
+    },
+    "./app/modules/settings.v1.js": {
+      "sha256": "a691c174fb461290cb7b3365a9b9ab9c90303315d17d4846ac03e8f717e898d2",
+      "bytes": 38236
+    },
+    "./app/modules/stability.v6-core.js": {
+      "sha256": "4123ae9fb477b4cd8e1d489236a17900716d544ac8decd51551ece01d987eb51",
+      "bytes": 15152
+    },
+    "./app/modules/stability.v6.js": {
+      "sha256": "507c23b9f450ee2f95af5941cf3108497d91fb37bb3eb8549fd3ca031d0d2ddd",
+      "bytes": 1283
+    },
+    "./app/modules/tvj-gof-035.v630.js": {
+      "sha256": "8a0fc5d7375c4bacde480b7baaea6f8f251699730c3019f13a1e9cf46871ec8b",
+      "bytes": 17280
+    },
+    "./app/modules/tvj-gof-035.v631.js": {
+      "sha256": "9e89b5d32de75bc395ec68685d77c4eb714a729e85c40ba144bc9585dd812d1a",
+      "bytes": 8162
+    },
+    "./app/modules/tvj-gof-035.v632.js": {
+      "sha256": "bf6d2361ebede42315fccc49feff8180797dbaf3f9f2f86b21b41f1147a5e439",
+      "bytes": 10344
+    },
+    "./app/modules/ui-preferences.v1.js": {
+      "sha256": "27a32b2c527ce2d69d8c910805c5b05e20f40c909f8d86c6f8b658e45cbab5e1",
+      "bytes": 31673
+    },
+    "./app/modules/workflow-cleanup.v6444.js": {
+      "sha256": "1cb9dd2a3aebda66afa72522e81f11be58ef22b81ef0388a6946933e320b12a9",
+      "bytes": 23151
+    },
+    "./app/styles/app.bundle.css": {
+      "sha256": "013be6bee9f38bf79864dcab0658f438966d77172692446f698c042539601c2e",
+      "bytes": 41473
+    },
+    "./app/styles/aviation-reference.v1.css": {
+      "sha256": "521bfc0d34e6c7d77014d928e8087336c23fc18a402d199dcbaae73cbac669fe",
+      "bytes": 61010
     },
     "./app/styles/boot-01-legacy.css": {
       "sha256": "fa00cde1d78de014a3c0341b9741993441fa4a8a0b8aad860f916a50613e7bb4",
@@ -493,133 +433,9 @@
       "sha256": "96cb66b3e6ff284a2cfc7b410e183c7ca2a72fb517c6bd8935d5e81b8541fb1a",
       "bytes": 333
     },
-    "./app/modules/workflow-cleanup.v6444.js": {
-      "sha256": "1cb9dd2a3aebda66afa72522e81f11be58ef22b81ef0388a6946933e320b12a9",
-      "bytes": 23151
-    },
-    "./app/modules/airline-form-policy.v1.js": {
-      "sha256": "d92ca37647a4697299f767983b1435f7df6cf88ee6718073bf383ab6fde2a653",
-      "bytes": 27751
-    },
-    "./data/airline-form-catalog.json": {
-      "sha256": "a3b44c7947f626fcddcc9927293536afb005be40554f9ea2b272a5bff2516cfb",
-      "bytes": 2665
-    },
-    "./app/modules/fsags208-workspace.v1.js": {
-      "sha256": "a8c8cbf7d0b2c678afc8e827ab5d24e354656b34c1d4127efb3c5345bfb713d7",
-      "bytes": 42627
-    },
-    "./app/modules/cargo-all-flights.v1.js": {
-      "sha256": "b17e3fb680151066e280bb070a3d0f9b8370d7895e6970daf3489027000b6a5c",
-      "bytes": 3405
-    },
-    "./data/form-configuration.json": {
-      "sha256": "5e4b1ee52eafc97cb0bee38caed4280656409dd492e341f621b68bf943dfc609",
-      "bytes": 6533
-    },
-    "./app/generated/core-archive.js": {
-      "sha256": "8c9e20707dc7a0d1510326a7b1f591e8db891054f471db336a5dafcf18d314f3",
-      "bytes": 71353
-    },
-    "./app/generated/core-control.js": {
-      "sha256": "01d97d1537b96685b7f110d84b485d36f0ee222eefcc13f555b1af3443289c24",
-      "bytes": 84928
-    },
-    "./app/generated/core-flight.js": {
-      "sha256": "2fc6ae1ce9fe5528e4332c76a00a22acd2956b1a8e36bdbd34620fd16b66c4f5",
-      "bytes": 218149
-    },
-    "./app/generated/core-performance.js": {
-      "sha256": "005c80dc9ce412f9e1c8b74d24b48e68b27ddaa05d5de203cb2029e7f93364d8",
-      "bytes": 5907
-    },
-    "./app/generated/core-postcontrol.js": {
-      "sha256": "604982e342da53b0e5ded6abb0a06736d6d6dbdac2be9099998801574af90253",
-      "bytes": 59876
-    },
-    "./app/generated/core-shared.js": {
-      "sha256": "2b35d056736e963d3f5a4cc4972d676bc7460aa02959322958eb1c5d44622ec7",
-      "bytes": 122363
-    },
-    "./app/generated/core-tools.js": {
-      "sha256": "3e3e9420a932366457ca80ba10cf0cbc215c8f6405462453423778380a1b7ce0",
-      "bytes": 106804
-    },
-    "./app/generated/runtime-1.js": {
-      "sha256": "2891c1f2fefdae12515716169ea02f4b2e7770de09852a8762c91647c0072d05",
-      "bytes": 115016
-    },
-    "./app/generated/runtime-2.js": {
-      "sha256": "2d8ff077472edd0932320bbf07a2257230389a078cf8fbb52aee33aad39c913c",
-      "bytes": 140526
-    },
-    "./app/generated/runtime-3.js": {
-      "sha256": "27af2b0c87d29d642691d6a6aa853228c1f4ff6fdb8c4b80903e975e6a581797",
-      "bytes": 46305
-    },
-    "./app/generated/runtime-4.js": {
-      "sha256": "d1182b828f1dee8604291df22b24c13e404ac7dd4f03347d3937139373074013",
-      "bytes": 181261
-    },
-    "./app/generated/runtime-5.js": {
-      "sha256": "03f61b9add33905fe1b1c4467a2f0895d58cb4eb11a81aa2f47a86e4af2ebfd4",
-      "bytes": 25746
-    },
-    "./app/modules/feature-loader.v1.js": {
-      "sha256": "dc738a8d7df5134fe41f208fa0a19f6624438dc3d82fc30a921e05541fbc91c9",
-      "bytes": 1778
-    },
-    "./app/modules/firebase-read-coalescer.v1.js": {
-      "sha256": "2be879e74429432ad5a6130923cc67bb9bb66b5dd4a66533c09c1842a6d035dd",
-      "bytes": 1149
-    },
-    "./app/generated/boot-groups.json": {
-      "sha256": "22d44f8116a21a4c08e7c7499f6d4a5e1414ede9fa68c12803581c9d55740208",
-      "bytes": 532
-    },
-    "./app/generated/boot-group-1.js": {
-      "sha256": "67bbcd6af335dcb6e97032a45fbee65ecff090e7f5e09314bde194074e944505",
-      "bytes": 594
-    },
-    "./app/generated/boot-group-2.js": {
-      "sha256": "044ca527398a9217539102bed1f79e92a52165572c9d0829e60bf4570710ae65",
-      "bytes": 40294
-    },
-    "./app/generated/boot-group-3.js": {
-      "sha256": "31e73d27e9389824b91e497a436c8aa2a5de36feac68b246c8523a4c362a135e",
-      "bytes": 25398
-    },
-    "./app/generated/boot-group-4.js": {
-      "sha256": "76ce0539f1804c56c82b15f31467554badcb50cd0b4866457730c9d94bb8d10d",
-      "bytes": 13792
-    },
-    "./app/generated/boot-group-5.js": {
-      "sha256": "ccd1783e679528508e00b6d1dd5ff76613a8fb75d71c1f9e42533213047e1ca9",
-      "bytes": 3558
-    },
-    "./app/boot/32-v6494-aviation-shell.js": {
-      "sha256": "aaf96c8f68eabd15843a0896020557a960331ad508bca937ee4a8f89121ca44e",
-      "bytes": 13949
-    },
     "./app/styles/boot-36-v6494-aviation-final.css": {
       "sha256": "1f079062ebf4189632b83a50cafbdd6f7a274690c3fcb5c947950dbf4db61c3d",
       "bytes": 17226
-    },
-    "./app/styles/aviation-reference.v1.css": {
-      "sha256": "b5071ae0ce66a52aa74a75d75052048319f36f4300470ef6925590af8429a153",
-      "bytes": 61010
-    },
-    "./app/modules/aviation-reference.v1.js": {
-      "sha256": "0dc4d416c2a21db88d45f722e65413b83ef2cf8af250fc4e2e168f066a2d6878",
-      "bytes": 20849
-    },
-    "./assets/branding/apron-night-v6494.webp": {
-      "sha256": "7a17d332d8dce854de03be8918034b378012b7fece42abc6c71ed9575bc257a0",
-      "bytes": 223220
-    },
-    "./app/boot/33-v6497-dossier-enhancements.js": {
-      "sha256": "7ccc4b3372e1fc62b8658451fe98ecdc8e9d09d2ccc2041f0011e0db04d11c60",
-      "bytes": 19210
     },
     "./app/styles/boot-bundle-1.css": {
       "sha256": "e9f0d46c327cde83b56e70378b9a8c2c0c07205ce1fa81eb7034ccd7be8884ac",
@@ -629,149 +445,339 @@
       "sha256": "c6ddb035894bf2c231426db8c48aa9b842174d61c823a43e0687378088d82907",
       "bytes": 26603
     },
-    "./assets/airlines/DR.png": {
-      "sha256": "a293cf3973c2c8a7601ca4f2cb849ec8ca73a1b36c73167e15c580163dee01db",
-      "bytes": 2142
-    },
-    "./assets/airlines/QH.png": {
-      "sha256": "15793886d75a9509cf3a0cad4d4a0b7ff09fd4f0e5222a5daac9b4d18a063eed",
-      "bytes": 1671
-    },
-    "./assets/airlines/KA.svg": {
-      "sha256": "bfcc0b2011e6ae5f5bf66f130b1fbff059c9de5ddcefdb14644a594e9345ca0b",
-      "bytes": 7386
-    },
-    "./assets/airlines/OZ.png": {
-      "sha256": "8b1d4f3803d1e6f6a24d4a6b2c096a9607c37f396a9277af3eaf2b3d48c47fa7",
-      "bytes": 2301
-    },
-    "./assets/airlines/KE.png": {
-      "sha256": "b1c9df19b2ace983384391ebbbea036a42ccfcad6f0ddc64b1b1dff54c457463",
-      "bytes": 4105
+    "./app/styles/new-ui-v1.css": {
+      "sha256": "87cb70bcdb841a6424d5304bf923211733fd09e4ad786216246a5c66ceae95ee",
+      "bytes": 375636
     },
     "./assets/airlines/3U.png": {
       "sha256": "b32659c856f5e380669591ea4cf810ea27c8e5a03577d87f4c422e39aa96a1a6",
       "bytes": 3080
     },
-    "./assets/airlines/VU.png": {
-      "sha256": "9ec95bfcdb7c87d519cad9bf2597e52a8ffa2e86889403089724461d9d8630f7",
-      "bytes": 1799
-    },
-    "./assets/airlines/BX.png": {
-      "sha256": "1950d7c4afe31aa0849ea62e336c5590ac2b3842fb4f90544b2e65a4a2a4ecb6",
-      "bytes": 5584
-    },
-    "./assets/airlines/TR.png": {
-      "sha256": "8878dc118fb947e661339bd1dea98c80a5c12d910d10eb3e981f149269773f65",
-      "bytes": 4957
-    },
-    "./assets/airlines/LJ.png": {
-      "sha256": "23103d9a09a5c75a4d158779c5442356c266bc0f52bd390e14baced7408823c2",
-      "bytes": 4371
-    },
-    "./assets/airlines/TW.png": {
-      "sha256": "1c9ef10605814bf14b41c93189b1653d6fe10294b88058a729ec2ccb10a17943",
-      "bytes": 3900
-    },
-    "./assets/airlines/VJ.png": {
-      "sha256": "19a2e712ce37e510375766ee91c6a816dc6405fd3e9bd9901ccd5460b38d4753",
-      "bytes": 5666
-    },
     "./assets/airlines/9G.png": {
       "sha256": "ca30762ed33f3ab2bdacdbaf57c1dd16f07675c10f20940f6216ad2b3e1caf7b",
       "bytes": 2308
-    },
-    "./assets/airlines/HY.png": {
-      "sha256": "7b9c792f739c59d68ffdeb8cdf8dd7b3a31ff0da920f078cd1cb49c6dc600b53",
-      "bytes": 4854
-    },
-    "./assets/airlines/DV.png": {
-      "sha256": "994c04543022136f66c578df5ca9d136e2375d297c3e2f47d2c1be735b7efaa0",
-      "bytes": 6430
-    },
-    "./assets/airlines/C6.png": {
-      "sha256": "973b9c161b5a621442d0ce5498845489a0df7d8300b8cfb0fe6357f792d1c199",
-      "bytes": 1982
-    },
-    "./assets/airlines/N4.png": {
-      "sha256": "3a3b60a2fdb7132e35708bd7aba2bbc98de9b36572920f32cc3335c5c26bbca7",
-      "bytes": 2617
-    },
-    "./assets/airlines/UQ.png": {
-      "sha256": "a43842d5f80c4bab9457ae980cd6c723f479c22c84906b65cd3f289a48140045",
-      "bytes": 2339
-    },
-    "./assets/airlines/HU.png": {
-      "sha256": "5888cf08ec6125123c66184f6b3e24826d4421d76ece716ad2840d986cc80b1c",
-      "bytes": 6406
-    },
-    "./assets/airlines/KC.png": {
-      "sha256": "dfd2a3622ce13288acb9af8a08db27ab81b79e364b46e58892c87b8b2c7fe258",
-      "bytes": 2137
-    },
-    "./assets/airlines/WE.png": {
-      "sha256": "ffabd709586e62edf9073659ad926f77dbbfad8ce32f366df7e03c8950cb638c",
-      "bytes": 3090
-    },
-    "./assets/airlines/VZ.png": {
-      "sha256": "a55cb4b90e6f2890eae7d230ccfdc688e8995f5807a6ac1726aeb89b73fdd87a",
-      "bytes": 3160
-    },
-    "./assets/airlines/HAV.png": {
-      "sha256": "48b384338cc4e88af4d5f48fde359a3d46c65db159dd9ef58252af465423ba05",
-      "bytes": 15660
-    },
-    "./assets/airlines/RF.png": {
-      "sha256": "c63267b662a9a1bb6dfae0720ef9f6016333d60b039dbd66112285d0375cc580",
-      "bytes": 1774
-    },
-    "./assets/airlines/B2.png": {
-      "sha256": "332aa5b7ef88c41bf6dc0c7cbe4ed4d93201660a0548ac7da2c2f065e83b7368",
-      "bytes": 4464
-    },
-    "./assets/airlines/FD.png": {
-      "sha256": "172d509e686526251e3433c003a1074771c89c4ea99af2408184fd019e93645e",
-      "bytes": 3332
     },
     "./assets/airlines/AK.png": {
       "sha256": "172d509e686526251e3433c003a1074771c89c4ea99af2408184fd019e93645e",
       "bytes": 3332
     },
+    "./assets/airlines/B2.png": {
+      "sha256": "332aa5b7ef88c41bf6dc0c7cbe4ed4d93201660a0548ac7da2c2f065e83b7368",
+      "bytes": 4464
+    },
+    "./assets/airlines/BX.png": {
+      "sha256": "1950d7c4afe31aa0849ea62e336c5590ac2b3842fb4f90544b2e65a4a2a4ecb6",
+      "bytes": 5584
+    },
+    "./assets/airlines/C6.png": {
+      "sha256": "973b9c161b5a621442d0ce5498845489a0df7d8300b8cfb0fe6357f792d1c199",
+      "bytes": 1982
+    },
+    "./assets/airlines/DR.png": {
+      "sha256": "a293cf3973c2c8a7601ca4f2cb849ec8ca73a1b36c73167e15c580163dee01db",
+      "bytes": 2142
+    },
+    "./assets/airlines/DV.png": {
+      "sha256": "994c04543022136f66c578df5ca9d136e2375d297c3e2f47d2c1be735b7efaa0",
+      "bytes": 6430
+    },
+    "./assets/airlines/FD.png": {
+      "sha256": "172d509e686526251e3433c003a1074771c89c4ea99af2408184fd019e93645e",
+      "bytes": 3332
+    },
+    "./assets/airlines/HAV.png": {
+      "sha256": "48b384338cc4e88af4d5f48fde359a3d46c65db159dd9ef58252af465423ba05",
+      "bytes": 15660
+    },
+    "./assets/airlines/HU.png": {
+      "sha256": "5888cf08ec6125123c66184f6b3e24826d4421d76ece716ad2840d986cc80b1c",
+      "bytes": 6406
+    },
+    "./assets/airlines/HY.png": {
+      "sha256": "7b9c792f739c59d68ffdeb8cdf8dd7b3a31ff0da920f078cd1cb49c6dc600b53",
+      "bytes": 4854
+    },
+    "./assets/airlines/KA.svg": {
+      "sha256": "bfcc0b2011e6ae5f5bf66f130b1fbff059c9de5ddcefdb14644a594e9345ca0b",
+      "bytes": 7386
+    },
+    "./assets/airlines/KC.png": {
+      "sha256": "dfd2a3622ce13288acb9af8a08db27ab81b79e364b46e58892c87b8b2c7fe258",
+      "bytes": 2137
+    },
+    "./assets/airlines/KE.png": {
+      "sha256": "b1c9df19b2ace983384391ebbbea036a42ccfcad6f0ddc64b1b1dff54c457463",
+      "bytes": 4105
+    },
+    "./assets/airlines/LJ.png": {
+      "sha256": "23103d9a09a5c75a4d158779c5442356c266bc0f52bd390e14baced7408823c2",
+      "bytes": 4371
+    },
+    "./assets/airlines/N4.png": {
+      "sha256": "3a3b60a2fdb7132e35708bd7aba2bbc98de9b36572920f32cc3335c5c26bbca7",
+      "bytes": 2617
+    },
+    "./assets/airlines/OZ.png": {
+      "sha256": "8b1d4f3803d1e6f6a24d4a6b2c096a9607c37f396a9277af3eaf2b3d48c47fa7",
+      "bytes": 2301
+    },
+    "./assets/airlines/QH.png": {
+      "sha256": "15793886d75a9509cf3a0cad4d4a0b7ff09fd4f0e5222a5daac9b4d18a063eed",
+      "bytes": 1671
+    },
+    "./assets/airlines/RF.png": {
+      "sha256": "c63267b662a9a1bb6dfae0720ef9f6016333d60b039dbd66112285d0375cc580",
+      "bytes": 1774
+    },
+    "./assets/airlines/TR.png": {
+      "sha256": "8878dc118fb947e661339bd1dea98c80a5c12d910d10eb3e981f149269773f65",
+      "bytes": 4957
+    },
+    "./assets/airlines/TW.png": {
+      "sha256": "1c9ef10605814bf14b41c93189b1653d6fe10294b88058a729ec2ccb10a17943",
+      "bytes": 3900
+    },
     "./assets/airlines/TW.svg": {
       "sha256": "a249100efb6752377a35f134bf7eb71dfd567ca379158d6a7dbfdbc8f0afdf9d",
       "bytes": 445
     },
-    "./app/modules/cloud-draft-sync.v2.js": {
-      "sha256": "91197f24965ca0eadb2f4fd78bf6dee15f5fd3b3c1e3a68596a7cdf4d8fe122d",
-      "bytes": 10386
+    "./assets/airlines/UQ.png": {
+      "sha256": "a43842d5f80c4bab9457ae980cd6c723f479c22c84906b65cd3f289a48140045",
+      "bytes": 2339
     },
-    "./app/modules/settings.v1.js": {
-      "sha256": "a691c174fb461290cb7b3365a9b9ab9c90303315d17d4846ac03e8f717e898d2",
-      "bytes": 38236
+    "./assets/airlines/VJ.png": {
+      "sha256": "19a2e712ce37e510375766ee91c6a816dc6405fd3e9bd9901ccd5460b38d4753",
+      "bytes": 5666
     },
-    "./app/modules/fsags208-image-reader.v1.js": {
-      "sha256": "56b2b7c7fb1f54c20678868f80d13f7a7d2a51350bf2a89c6742381850f75e10",
-      "bytes": 19873
+    "./assets/airlines/VU.png": {
+      "sha256": "9ec95bfcdb7c87d519cad9bf2597e52a8ffa2e86889403089724461d9d8630f7",
+      "bytes": 1799
     },
-    "./app/modules/admin-account-actions.v2.js": {
-      "sha256": "6405c8a1e4dbbef6824f3266fe1e747b2b4c20e3ff4893f075854d9a878826a5",
-      "bytes": 16051
+    "./assets/airlines/VZ.png": {
+      "sha256": "a55cb4b90e6f2890eae7d230ccfdc688e8995f5807a6ac1726aeb89b73fdd87a",
+      "bytes": 3160
+    },
+    "./assets/airlines/WE.png": {
+      "sha256": "ffabd709586e62edf9073659ad926f77dbbfad8ce32f366df7e03c8950cb638c",
+      "bytes": 3090
+    },
+    "./assets/audio/alert-crosscheck-complete.mp3": {
+      "sha256": "2291844c0abc77005a2e8800e0dc8115c373134385a31a5d3d9e5f920a5acc07",
+      "bytes": 28465
+    },
+    "./assets/audio/alert-ket-so-moi.mp3": {
+      "sha256": "2563bf00f263c6c57f0e33fc161902c531db95b307411e498a500b4e18a5d3ab",
+      "bytes": 35988
+    },
+    "./assets/audio/alert-ket-so-thay-doi.mp3": {
+      "sha256": "c17b5c4943fff8d4259f1e685ae02aede60192b62c50ccf67f8683ba8f9f7cd6",
+      "bytes": 25121
+    },
+    "./assets/audio/alert-mva.mp3": {
+      "sha256": "a4ef139f54b1465bc96bc7e12d7d69c4a0c7b5af48851d6df718d31e106fc23b",
+      "bytes": 36405
+    },
+    "./assets/audio/alert-mvt.mp3": {
+      "sha256": "441b0df7aba5451ea8c85df517b66fc42e2e0e538caa77d71ac06ce8492a07ae",
+      "bytes": 70260
+    },
+    "./assets/audio/alert-pushback-missing.mp3": {
+      "sha256": "9241aa52924071745dd64247291b4e09d556f2c1db3f5a605bd5635d02cba9bd",
+      "bytes": 77783
+    },
+    "./assets/audio/ket-so.wav": {
+      "sha256": "cf03e8d4021f989f61fd12249f282ae2e53588cc9d55d68393778223db8132a1",
+      "bytes": 72368
+    },
+    "./assets/branding/apron-night-v6494.webp": {
+      "sha256": "7a17d332d8dce854de03be8918034b378012b7fece42abc6c71ed9575bc257a0",
+      "bytes": 223220
+    },
+    "./assets/branding/login-logo-10years.png": {
+      "sha256": "02bef06f4d742be09b9f8efcdf9e0ce155ee95d0008696e208dc3374acc5358c",
+      "bytes": 249729
+    },
+    "./assets/branding/logo.png": {
+      "sha256": "15f7035ba48363ef36ac7a5794427e6107c48f1353a1d2e6ae263148ed660950",
+      "bytes": 46976
+    },
+    "./assets/icons/apple-touch-icon.png": {
+      "sha256": "a190c19f9a52a40f43379917b11f84f99a2ab2fb4a3cdaedd1dad936a67c8e78",
+      "bytes": 17275
+    },
+    "./assets/icons/favicon-16.png": {
+      "sha256": "bb74deb45be89aca360f6b6f9b7d6293c14b1d7efa5f1e4fe21f4804fb05ce58",
+      "bytes": 437
+    },
+    "./assets/icons/favicon-32.png": {
+      "sha256": "1a1fd13fb978fc5422843286feeb16b821aa52f3eb15665bdc717b034b9fb613",
+      "bytes": 1151
+    },
+    "./assets/icons/icon-192.png": {
+      "sha256": "6fe324b47572ae37d711aac8affc9d7e9bf60c36e2fb810f3e948497a2981ca3",
+      "bytes": 19146
+    },
+    "./assets/icons/icon-512.png": {
+      "sha256": "90aa4e4ece11944460015926ca2aaf4271b439c06d3f808aeaaa9ba7b71f33b7",
+      "bytes": 104295
+    },
+    "./data/airline-form-catalog.json": {
+      "sha256": "a3b44c7947f626fcddcc9927293536afb005be40554f9ea2b272a5bff2516cfb",
+      "bytes": 2665
+    },
+    "./data/carrier-guide-version.json": {
+      "sha256": "a1f779d1086af8904b7ee6dd983e99df309d179552aa2c6b521298ceb28c6b23",
+      "bytes": 290
+    },
+    "./data/carrier-service-guide.json": {
+      "sha256": "518ef49eb35b3db4885e8e751e59939b396fdc93a747c3a320e075264a6ecf5b",
+      "bytes": 30731
+    },
+    "./data/form-configuration.json": {
+      "sha256": "d1e06667649e74aa979e6241c2c4e8e4774b744556c5260eb856fc084f6324fa",
+      "bytes": 6537
+    },
+    "./data/fsags-display-coordinates.json": {
+      "sha256": "9ba95aab8420c74b377970e082e81a43f6402c262d6d82aa2dcc13fd7834b4be",
+      "bytes": 13254
+    },
+    "./forms/9g/page-01.png": {
+      "sha256": "8e8a65b7370ef2ec7a733e28e6df369e27a5c59fdaef44009d0b34251c87f75a",
+      "bytes": 321831
+    },
+    "./forms/bbbt/page-01.png": {
+      "sha256": "f2edeb02d4c4bf6acb96edc3ea3c5463998e5b87ed45611d46198d614ff864fe",
+      "bytes": 489595
     },
     "./forms/forms.registry.json": {
       "sha256": "3998536c68eec48684441303b63b880d150a32719abdaa14d7715487653b5895",
       "bytes": 1011923
     },
-    "./app/modules/form-entry-contrast.v1.js": {
-      "sha256": "1621255fd3cc494f8224b92703ecabe8ffe71fc9f92429d257b64ba299411911",
-      "bytes": 3138
+    "./forms/fsags09/page-01.png": {
+      "sha256": "11d83788014011aeee5abe56bb9292b7b4cd2d3186a226dbc1b7e95bb5463877",
+      "bytes": 301528
     },
-    "./app/modules/mobile-form-dock.v1.js": {
-      "sha256": "7e2cb6f30aafaa4213f437f29d7cf9eb6bc5556b16da32100c16fd470ce718b1",
-      "bytes": 1572
+    "./forms/fsags09/page-02.png": {
+      "sha256": "839086031a1c3f085b4cdc7196a2d9b09bde0d5752f27f330c316a6ec507a1c2",
+      "bytes": 218099
     },
-    "./app/modules/mobile-form-dock.v2.js": {
-      "sha256": "236b2f054d0789091c89050e9b6abdba7ff4eb49eafc9403fda3f843d68e6c77",
-      "bytes": 5987
+    "./forms/fsags208/page-01.png": {
+      "sha256": "0780ba912b969d351de7be4f86d9563279e94b65beb8e6df321e05d1d9106a0b",
+      "bytes": 978212
+    },
+    "./forms/fsags42.1/page-01.png": {
+      "sha256": "e95068ef7cda07aa7f03547ba0863e334b2fb7a4b120755a20d3f63a25060af7",
+      "bytes": 304135
+    },
+    "./forms/fsags42.1/page-02.png": {
+      "sha256": "3e42ca2b99ff0bb4294ddbcec06631a2debeff1d5e051a1621496477c181a106",
+      "bytes": 148501
+    },
+    "./forms/fsags42.3/page-01.png": {
+      "sha256": "94e543f3c9da5be72fb8bbf19510e4468c1c774f246781044a5613163002acfd",
+      "bytes": 390578
+    },
+    "./forms/fsags42.3/page-02.png": {
+      "sha256": "793653dfaf5e8afc21cccb64cc72725f2c5e91cd4f090ee48d5d40daa04b5f61",
+      "bytes": 208756
+    },
+    "./forms/fsags54/page-01.png": {
+      "sha256": "6ff53598e2a1301ef8966e45ea29cd9f0b716bee62a84891e1bddcdc45175e9b",
+      "bytes": 2058067
+    },
+    "./forms/fsags55.1/page-01.png": {
+      "sha256": "7bac9fa6524e2d97a17f4919ad57d6093c9fe463e6070dfea8a3d712cf508651",
+      "bytes": 540544
+    },
+    "./forms/fsags55.1/page-02.png": {
+      "sha256": "54bd638ebc6bb79cb32608ed5f682c5b89a9d6234063f65cb97d8865045cf4a3",
+      "bytes": 461776
+    },
+    "./forms/fsags94/page-01.png": {
+      "sha256": "fd264f56961d09847d8902582dc326dad0ff278f1f3fc4377f336f6eeca0dc77",
+      "bytes": 501947
+    },
+    "./forms/tvj/page-01.png": {
+      "sha256": "1f9e4a745617d1a8e7c3fa4b465178bb38f420623802af4e8136069f0dfa7ffb",
+      "bytes": 1673628
+    },
+    "./forms/vj/vj1.png": {
+      "sha256": "cd3beed60e5864d1d294ae79b2fba08440a5897f8eb374407d756732af4ef3f6",
+      "bytes": 1362777
+    },
+    "./forms/vj/vj2.png": {
+      "sha256": "c4d915fbd2a4ffb945037352237bb4036194559edeaf1e5ccfa28467f9f64205",
+      "bytes": 615784
+    },
+    "./forms/vu/page-01.png": {
+      "sha256": "1a7372356daf61f8d25416315189ca4291b82c64407456ffe87412da9d7427ad",
+      "bytes": 284127
+    },
+    "./index.html": {
+      "sha256": "cd3f6541f23f67ea4261078fe95ccb3801b8360667fb79c7b591612b45c4a39f",
+      "bytes": 81204
+    },
+    "./manifest.webmanifest": {
+      "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
+      "bytes": 565
+    },
+    "./pdf-bg/bbbt/page-01.jpg": {
+      "sha256": "cf50e0d022c213d3979ffe21f539102415bb2272a28bdd8e26c6005a451e5e9c",
+      "bytes": 385753
+    },
+    "./pdf-bg/fsags09/page-01.jpg": {
+      "sha256": "f7b1218a8502208bbaf19a3dfe9dc451ec0bc6b9e55183ec605e9da32cbe57f7",
+      "bytes": 411276
+    },
+    "./pdf-bg/fsags09/page-02.jpg": {
+      "sha256": "b706511c04d652e54571b490aec3c004566ca438b36a601b8387b8edb1a40bbb",
+      "bytes": 309775
+    },
+    "./pdf-bg/fsags208/page-01.jpg": {
+      "sha256": "e8bfdfb4fdcb12732a22967f07f55de90ae1d8a264404d6b1dad8b0ff708761b",
+      "bytes": 329263
+    },
+    "./pdf-bg/fsags42.1/page-01.jpg": {
+      "sha256": "5362f171d2e5476374cc6604889a93e73cceccaa45cb8579c7c51e7a97598de3",
+      "bytes": 556778
+    },
+    "./pdf-bg/fsags42.1/page-02.jpg": {
+      "sha256": "2c05866c78af46026b6895a93eaba6dbf9963a411884d74c48c8ad6ec32c36c2",
+      "bytes": 301949
+    },
+    "./pdf-bg/fsags42.3/page-01.jpg": {
+      "sha256": "b084715277801aacfe1a05aecead57a0f594b424c6aaa5b4ebbf32b24f683789",
+      "bytes": 549016
+    },
+    "./pdf-bg/fsags42.3/page-02.jpg": {
+      "sha256": "10378a4a02288af2bea833f3e7a9e472b8beb1eed9760d2c7eb15229a9fbebda",
+      "bytes": 434869
+    },
+    "./pdf-bg/fsags55.1/page-01.jpg": {
+      "sha256": "c7092222cded34b6f267c740f46b201d7eb20f5ef72bccba8546dfc77f1df0d8",
+      "bytes": 490633
+    },
+    "./pdf-bg/fsags55.1/page-02.jpg": {
+      "sha256": "25825374e1204fa80c7e4e89dbb6349738dd4da031bff550b43bb350bee4865e",
+      "bytes": 465580
+    },
+    "./repair.html": {
+      "sha256": "15c3e6fdff9a8ad96151a499c111ef3e787658c930fbf6f2d6a4dede9694a417",
+      "bytes": 6937
+    },
+    "./service-worker.js": {
+      "sha256": "985adeac7aa9066761aae1ba3367839f3c782d1bb11a6704efca19d90e5bbc1e",
+      "bytes": 20711
+    },
+    "./version.json": {
+      "sha256": "4711650d5f57b4d84542ec567b2420f23368003f373a14f4307f4b039e5f078f",
+      "bytes": 598
     }
-  }
+  },
+  "mutableAssets": [
+    "./forms/forms.registry.json",
+    "./data/form-configuration.json",
+    "./data/carrier-guide-version.json",
+    "./data/carrier-service-guide.json"
+  ]
 }

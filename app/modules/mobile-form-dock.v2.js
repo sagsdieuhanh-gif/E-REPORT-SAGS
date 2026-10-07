@@ -1,5 +1,5 @@
 (function(root){"use strict";
-const BUILD="V2.6-20261007-FORM-DOCK-VISIBILITY-02";
+const BUILD="V2.7-20261007-DATA-SAFETY-RELEASE-INTEGRITY-01";
 if(root.__SAGS_MOBILE_FORM_DOCK_V26===BUILD)return;
 root.__SAGS_MOBILE_FORM_DOCK_V26=BUILD;
 const mq=root.matchMedia("(max-width:899px)");
