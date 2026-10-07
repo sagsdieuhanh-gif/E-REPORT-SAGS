@@ -1,12 +1,12 @@
 {
   "version": "V2.5",
   "displayVersion": "V2.5",
-  "label": "V2.5 - MOBILE DOCK SEMANTIC GRID",
-  "build": "V2.5-20261007-MOBILE-DOCK-SEMANTIC-GRID-22",
-  "releasedAt": "2026-10-07T00:55:44Z",
-  "type": "mobile-dock-hotfix",
-  "base": "E-REPORT-SAGS main@94a86184c9d14050e49a2114649b10be533a0fb2",
+  "label": "V2.5 - SAFE UPDATE GUARD",
+  "build": "V2.5-20261007-UPDATE-GUARD-23",
+  "releasedAt": "2026-10-07T01:07:31Z",
+  "type": "update-safety-hotfix",
+  "base": "E-REPORT-SAGS main@855b9cdc0aee2f9dc16e546f39741af735ed24cf",
   "updatePolicy": "required",
-  "notes": "Build 22: sửa dock mobile bằng vị trí grid theo đúng chức năng: NHẬP NHANH hàng 1 cột 1; XUẤT PDF hàng 1 cột 2; HOÀN TẤT hàng 2 cột 1; KÝ hàng 2 cột 2. Không còn phụ thuộc thứ tự DOM và override rule cũ làm action thứ 3 chiếm nguyên hàng. Giữ nguyên tối ưu tốc độ mở biểu mẫu của build 21.",
-  "message": "V2.5 build 22: semantic fixed 2x2 mobile dock."
+  "notes": "Build 23: giữ nguyên dock mobile 2x2 của build 22 và tối ưu tốc độ mở form của build 21. Bổ sung quy tắc an toàn cập nhật: nếu đang có biểu mẫu/chuyến đã nhận nhưng chưa bấm HOÀN TẤT thì CẬP NHẬT NGAY bị chặn. Hệ thống cũng tiếp tục chặn khi đang Nhập nhanh, còn thao tác chờ đồng bộ, hoặc dữ liệu chưa lưu an toàn. Sau khi HOÀN TẤT mới được phép cập nhật.",
+  "message": "V2.5 build 23: block app update until active work is completed."
 }

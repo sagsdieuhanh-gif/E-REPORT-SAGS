@@ -1,8 +1,8 @@
 {
   "schema": 2,
   "version": "V2.5",
-  "build": "V2.5-20261007-MOBILE-DOCK-SEMANTIC-GRID-22",
-  "strategy": "Production V2.5 · semantic fixed-position 2x2 mobile dock with runtime semantic tagging",
+  "build": "V2.5-20261007-UPDATE-GUARD-23",
+  "strategy": "Production V2.5 · strict update guard until active work is completed",
   "mutableMetadata": [
     "./forms/forms.registry.json",
     "./data/form-configuration.json"
@@ -222,8 +222,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "f22f716880faeddec0829bd02016db08ad3aaa5f088579279e1f0cf6e6de575f",
-      "bytes": 80931
+      "sha256": "8dcc0276495d15c95f55b151be8810f5841568e750b7ecba2e6020de769075e0",
+      "bytes": 79997
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -274,12 +274,12 @@
       "bytes": 6937
     },
     "./service-worker.js": {
-      "sha256": "17c7e51b7e273c20a8b39aabf09aad6bdbe53952545b6e6ce099cf27087fdce2",
-      "bytes": 21456
+      "sha256": "03869376dab7c3006b572d72c7594dbcfb604b2de5bb177158da6d975a2fcf48",
+      "bytes": 21417
     },
     "./version.json": {
-      "sha256": "f1ad714fbbee57a1c21c0907d9e46436ed15a1f544c87ec3ea983674feb97c2a",
-      "bytes": 768
+      "sha256": "1eb059ee53dafd898805ae2455ed4bca6704e62ee5f704fa6d2f658611c9ee16",
+      "bytes": 866
     },
     "./app/modules/form-registry-runtime.v647.js": {
       "sha256": "38273ccd7794e4790c37b5a8594edeaefd412917af2c928245bf8a89b0a8a5f2",
@@ -590,8 +590,8 @@
       "bytes": 25398
     },
     "./app/generated/boot-group-4.js": {
-      "sha256": "dfed695aab4e87a47e7a4a963ff79984f114c2175c793d10b2f5ec301170e580",
-      "bytes": 11325
+      "sha256": "76ce0539f1804c56c82b15f31467554badcb50cd0b4866457730c9d94bb8d10d",
+      "bytes": 13792
     },
     "./app/generated/boot-group-5.js": {
       "sha256": "ccd1783e679528508e00b6d1dd5ff76613a8fb75d71c1f9e42533213047e1ca9",
