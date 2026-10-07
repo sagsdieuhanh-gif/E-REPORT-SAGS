@@ -1,7 +1,7 @@
 {
   "schema": 2,
   "version": "V2.7",
-  "build": "V2.7-20261007-DATA-SAFETY-RELEASE-INTEGRITY-01",
+  "build": "V2.7-20261007-DATA-SAFETY-FORM-CONTRAST-02",
   "strategy": "V2.7 candidate: immutable drafts, atomic conflict arbitration, deterministic release integrity",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -218,8 +218,8 @@
       "bytes": 1149
     },
     "./app/modules/form-entry-contrast.v1.js": {
-      "sha256": "1621255fd3cc494f8224b92703ecabe8ffe71fc9f92429d257b64ba299411911",
-      "bytes": 3138
+      "sha256": "c86ec492fced4234f3e64521b9d01913ebe8176327f55f3a42f435763777d465",
+      "bytes": 2684
     },
     "./app/modules/form-performance.v1.js": {
       "sha256": "0dbc7cc63f34aaa8db0e0b51675caccd241b2f6119adea7566b32176811e4880",
@@ -258,8 +258,8 @@
       "bytes": 1572
     },
     "./app/modules/mobile-form-dock.v2.js": {
-      "sha256": "a5d3f7049c4cb74ce76fa681b788bccc2f09b144d9de0b830c4104fa3f4f25b3",
-      "bytes": 5996
+      "sha256": "2c2d87335cfbb324a7c84fdd9812a9412ae0acb73d6cd9c1b96249c6020266a0",
+      "bytes": 5992
     },
     "./app/modules/network-diagnostics.js": {
       "sha256": "0380b14a3f024d0d95e4ff90787a64c7cb0c8eeb9f2fe19a423e88efb5df5de4",
@@ -718,8 +718,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "9c171d90cab2b0ebd248d283c5976a5ea1c8ee81c55e01b883618a5929dd22ff",
-      "bytes": 81312
+      "sha256": "f97383d168d6b43a9b6adf5ea4305adeb54354db412aed835b444900f8bf32cb",
+      "bytes": 81024
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -770,12 +770,12 @@
       "bytes": 6937
     },
     "./service-worker.js": {
-      "sha256": "2bce23597e9dce0d701b7c30ca32f982cd3d36941a1dd637b86009c16c4737d0",
-      "bytes": 21507
+      "sha256": "31a40f95db85156db6104a95560cac992d9cc1a1eb33203308d3c22927de41c3",
+      "bytes": 21503
     },
     "./version.json": {
-      "sha256": "4711650d5f57b4d84542ec567b2420f23368003f373a14f4307f4b039e5f078f",
-      "bytes": 598
+      "sha256": "303ec3a21981213e13e510e038065591dc6e734b3bf8becea8e0083c597463c9",
+      "bytes": 610
     }
   },
   "mutableAssets": [

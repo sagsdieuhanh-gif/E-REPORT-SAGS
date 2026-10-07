@@ -2,11 +2,11 @@
   "version": "V2.7",
   "displayVersion": "V2.7",
   "label": "V2.7 - DATA SAFETY / RELEASE INTEGRITY",
-  "build": "V2.7-20261007-DATA-SAFETY-RELEASE-INTEGRITY-01",
+  "build": "V2.7-20261007-DATA-SAFETY-FORM-CONTRAST-02",
   "releasedAt": "2026-10-07T01:27:57Z",
   "type": "data-safety-release-integrity",
   "base": "E-REPORT-SAGS main@5a0be6bf6ff95a57cf975dcef6e0666efe3444e4",
   "updatePolicy": "required",
-  "notes": "Immutable draft identity, atomic conflict resolution, reproducible release packaging and regression gates. No workflow or layout change.",
+  "notes": "Immutable draft identity, atomic conflict resolution, deterministic release gates and unified light/dark form input contrast including Safari text fill.",
   "message": "V2.7 data safety and release integrity candidate; production approval pending."
 }

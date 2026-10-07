@@ -2,7 +2,7 @@
    Base: V4.8.10B Layered PDF + HF1–HF4. Never mix navigation HTML with a different runtime.
 */
 'use strict';
-const BUILD='V2.7-20261007-DATA-SAFETY-RELEASE-INTEGRITY-01';
+const BUILD='V2.7-20261007-DATA-SAFETY-FORM-CONTRAST-02';
 const DISPLAY_VERSION='V2.7';
 const CACHE_NAME='sags-app-shell-v2.7-20261007-data-safety-release-integrity-01';
 const META_CACHE_NAME='sags-app-meta-v2.7-20261007-data-safety-release-integrity-01';
