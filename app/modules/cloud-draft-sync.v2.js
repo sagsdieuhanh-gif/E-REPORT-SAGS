@@ -85,12 +85,13 @@
       const result=await ref.transaction(remote=>{
         if(account()!==entry.account||navigator.onLine===false)return;
         // Never rebase a queued write on a newer remote: that would make stale data win.
-        if(remote&&compare(remote,payload)>=0)return;
+        if(remote&&(!matches(remote,entry)||remote.field!==entry.field||remote.part!==entry.part||compare(remote,payload)>=0))return;
         return payload;
       },undefined,false);
       if(account()!==entry.account)return false;
       const remote=result.snapshot?.val?.();
       if(result.committed){cloudWrites++;lastCloudSyncAtMs=Date.now();lastCloudError='';await idbPut(entry,true);return true}
+      if(remote&&(!matches(remote,entry)||remote.field!==entry.field||remote.part!==entry.part)){lastCloudError="Cloud draft identity mismatch; local draft remains pending";return false}
       if(remote&&compare(remote,entry)>=0){
         if(active(i)&&matches(entry,i))await mergeRemote(remote,i);
         if(account()===entry.account)await idbPut(entry,true);
@@ -140,6 +141,6 @@
     root.addEventListener?.('pagehide',()=>{if(offsetRef){offsetRef.off('value');offsetRef=null}},{passive:true});
   }
   root.sagsDraftV2Pull=pullCloud;root.sagsDraftV2Flush=flushPending;
-  root.sagsDraftV2Status=()=>({build:'V2.7',wrapped,cloudCapable:!!baseFor(identity()),online:navigator.onLine!==false,...identity(),lastCloudSyncAtMs,lastPullAtMs,lastCloudError,cloudWrites,idbWrites});
+  root.sagsDraftV2Status=()=>({build:'V2.7',wrapped,cloudCapable:!!(baseFor(identity())&&typeof root.sagsV470Ref==='function'),online:navigator.onLine!==false,...identity(),lastCloudSyncAtMs,lastPullAtMs,lastCloudError,cloudWrites,idbWrites});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })(typeof window!=='undefined'?window:globalThis);
