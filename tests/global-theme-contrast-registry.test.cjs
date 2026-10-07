@@ -1,0 +1,16 @@
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const root=path.resolve(__dirname,'..');
+const css=fs.readFileSync(path.join(root,'app/modules/theme-contrast.v2.js'),'utf8');
+const reg=JSON.parse(fs.readFileSync(path.join(root,'forms/forms.registry.json'),'utf8'));
+assert.ok(Array.isArray(reg.forms)&&reg.forms.length>=10,'registry forms must be enumerated');
+const fields=reg.forms.flatMap(f=>f.fields||[]);
+assert.ok(fields.length>=1000,'registry field coverage unexpectedly small');
+const types=new Set(fields.map(f=>String(f.type||'').toLowerCase()));
+for(const t of ['text','number','time','date','textarea','checkbox','computed','signature'])assert.ok(types.has(t),'missing field type '+t);
+for(const rootId of ['sagsQuickEntry','quickTimeModal','fs09QuickModal','sags5494Quick','sags5494FieldEditor','entry','sagsSettingsCenter','fwcModal'])assert.match(css,new RegExp(rootId),'missing shared surface '+rootId);
+for(const token of ['--sags-ui-text-primary','--sags-ui-text-secondary','--sags-ui-text-muted'])assert.match(css,new RegExp(token),'missing theme token '+token);
+assert.match(css,/#fwcModal #fwcDate/);
+assert.match(css,/#fwcModal #sagsFlightSearch/);
+assert.match(css,/-webkit-text-fill-color/);
+assert.doesNotMatch(css,/\.sheet|entryPaperSheet|svg/i,'contrast layer must not recolor official paper/PDF');
+console.log('Global theme contrast registry coverage passed: '+reg.forms.length+' forms, '+fields.length+' fields.');
