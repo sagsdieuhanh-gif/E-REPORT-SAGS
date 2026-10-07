@@ -11,10 +11,12 @@ function server(){
  });
  return {values,writes,jobs,ref,setHold:v=>{hold=v},setReadHold:v=>{holdReads=v},releaseRead:()=>readJobs.shift()?.(),setOffset:v=>{offset=v}};
 }
+const watermarks=new WeakMap();
 function client(s,{db=new IDBFactory(),writer='tab-1',now=1000}={}){
+ if(!watermarks.has(db))watermarks.set(db,new Map());const storage=watermarks.get(db);
  let uid='USER',flight='A',assignment='A',clock=now,seq=0;const local=new Map(),events={},docEvents={},timers=new Map(),restored=[];
  const key=(field,part)=>[uid,flight,field,part].join('|');
- const c={console,Map,Set,Object,Promise,Math,JSON,indexedDB:db,navigator:{onLine:true},crypto:{randomUUID:()=>writer},Date:class extends Date{static now(){return clock}},CustomEvent:class{constructor(type,o){this.type=type;this.detail=o?.detail}},
+ const c={localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v)},console,Map,Set,Object,Promise,Math,JSON,indexedDB:db,navigator:{onLine:true},crypto:{randomUUID:()=>writer},Date:class extends Date{static now(){return clock}},CustomEvent:class{constructor(type,o){this.type=type;this.detail=o?.detail}},
   firebase:{auth:()=>({currentUser:uid?{uid}:null}),database:()=>({ref:s.ref})},
   currentFlightSessionMeta:()=>({id:flight,rosterAssignmentId:assignment}),readFlightSessionEnvelope:()=>({state:{}}),
   sagsV470Ref:s.ref,setTimeout:(fn,ms)=>{const id=++seq;timers.set(id,{fn,ms});return id},clearTimeout:id=>timers.delete(id),

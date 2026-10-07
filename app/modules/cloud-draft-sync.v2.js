@@ -37,7 +37,7 @@
   function matches(row,i){return row&&(!row.account||row.account===i.account)&&row.flightSessionId===i.flightSessionId&&row.rosterAssignmentId===i.rosterAssignmentId}
   function version(e){return {atMs:Number(e?.version?.atMs??e?.atMs)||0,counter:Number(e?.version?.counter)||0,writer:S(e?.version?.writer)}}
   function compare(a,b){const x=version(a),y=version(b);return x.atMs-y.atMs||x.counter-y.counter||(x.writer<y.writer?-1:x.writer>y.writer?1:0)||Number(!!a?.deleted)-Number(!!b?.deleted)||(String(a?.value??'')<String(b?.value??'')?-1:String(a?.value??'')>String(b?.value??'')?1:0)}
-  function observe(key,e){const prior=clocks.get(key);if(!prior||compare(e,prior)>0){clocks.set(key,e);try{localStorage.setItem("sagsDraftClockV27:"+key,JSON.stringify({version:version(e)}))}catch(_){}}}
+  function observe(key,e){const prior=clocks.get(key);if(!prior||compare(e,prior)>0){clocks.set(key,e);try{const saved=JSON.parse(localStorage.getItem("sagsDraftClockV27:"+key)||"null");if(!saved||compare(e,saved)>=0)localStorage.setItem("sagsDraftClockV27:"+key,JSON.stringify({version:version(e)}))}catch(_){}}}
   function tick(key,base){let saved=null;try{saved=JSON.parse(localStorage.getItem("sagsDraftClockV27:"+key)||"null")}catch(_){}const prior=clocks.get(key),p=version(prior),b=version(saved||base?.version&&base),wall=Math.max(1,Math.trunc(Date.now()+serverOffset));const atMs=Math.max(wall,p.atMs,b.atMs);const counter=Math.max(atMs===p.atMs?p.counter:-1,atMs===b.atMs?b.counter:-1)+1;return {atMs,counter,writer}}
   function installClock(){
     if(offsetRef)return;
@@ -63,7 +63,7 @@
     if(!active(i)||!api)return false;
     const local=api.read?.(remote.field,remote.part)||null;
     // Local input can race the IDB read. The in-memory clock is advanced synchronously.
-    const candidates=[stored,clocks.get(key),local].filter(Boolean);const newest=candidates.sort((a,b)=>compare(b,a))[0];
+    const known=[stored,clocks.get(key)].filter(Boolean);const candidates=known.length?known:[local&&{...local,atMs:Number(local.atMs)+serverOffset}].filter(Boolean);const newest=candidates.sort((a,b)=>compare(b,a))[0];
     if(newest&&compare(newest,remote)>0)return false;
     observe(key,remote);
     if(!remote.deleted&&['manual','quick','quickTime'].includes(remote.part)&&String(remote.value??'')===committed(remote.field))return false;
