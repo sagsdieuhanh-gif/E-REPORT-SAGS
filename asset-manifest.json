@@ -2,7 +2,7 @@
   "schema": 2,
   "version": "V2.7",
   "build": "V2.7-20261007-DATA-SAFETY-RELEASE-INTEGRITY-01",
-  "strategy": "Production V2.6 · form-only action dock visibility gate + canonical 2x2 layout",
+  "strategy": "V2.7 candidate: immutable drafts, atomic conflict arbitration, deterministic release integrity",
   "mutableMetadata": [
     "./forms/forms.registry.json",
     "./data/form-configuration.json"
@@ -142,8 +142,8 @@
       "bytes": 59876
     },
     "./app/generated/core-shared.js": {
-      "sha256": "2b35d056736e963d3f5a4cc4972d676bc7460aa02959322958eb1c5d44622ec7",
-      "bytes": 122363
+      "sha256": "3debf8f6beebdb6f08a723a7fa7ba837f0a3c5004e8b134320a35dccaea36e2b",
+      "bytes": 123297
     },
     "./app/generated/core-tools.js": {
       "sha256": "3e3e9420a932366457ca80ba10cf0cbc215c8f6405462453423778380a1b7ce0",
@@ -198,8 +198,8 @@
       "bytes": 42484
     },
     "./app/modules/cloud-draft-sync.v2.js": {
-      "sha256": "3a3d3fcc64fd41cf94e4a7ff79dcb661f48021f42c5fe8d0044887482fd5357f",
-      "bytes": 13807
+      "sha256": "58dcc2debc754b92679943aeb334a3b3c40b6721b59f61744da434b8a457a3cb",
+      "bytes": 14114
     },
     "./app/modules/cross-browser-entry.v1.js": {
       "sha256": "e0aad85c639f7c97437dd560093f2988923fd187d06e3ba1cf3ad0db1bbf9e5e",
@@ -220,6 +220,10 @@
     "./app/modules/form-entry-contrast.v1.js": {
       "sha256": "1621255fd3cc494f8224b92703ecabe8ffe71fc9f92429d257b64ba299411911",
       "bytes": 3138
+    },
+    "./app/modules/form-performance.v1.js": {
+      "sha256": "0dbc7cc63f34aaa8db0e0b51675caccd241b2f6119adea7566b32176811e4880",
+      "bytes": 2776
     },
     "./app/modules/form-registry-runtime.v6419.js": {
       "sha256": "8c33713d4b54aafd4f158659089600646003c7a1a72b0bef5718347fa4576e32",
@@ -714,8 +718,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "e1788bd8d51aa745597f95cfa1700603a91b1ad452834836eb904ccc1d005fd8",
-      "bytes": 81202
+      "sha256": "9c171d90cab2b0ebd248d283c5976a5ea1c8ee81c55e01b883618a5929dd22ff",
+      "bytes": 81312
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -766,8 +770,8 @@
       "bytes": 6937
     },
     "./service-worker.js": {
-      "sha256": "71a8176036d33854e5f1db26cbd9f7fe1b24f7c153322eafc10a83a9675328d7",
-      "bytes": 21468
+      "sha256": "2bce23597e9dce0d701b7c30ca32f982cd3d36941a1dd637b86009c16c4737d0",
+      "bytes": 21507
     },
     "./version.json": {
       "sha256": "4711650d5f57b4d84542ec567b2420f23368003f373a14f4307f4b039e5f078f",
