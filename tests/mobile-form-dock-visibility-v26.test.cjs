@@ -1,0 +1,18 @@
+const fs=require('node:fs'),assert=require('node:assert/strict');
+const mod=fs.readFileSync(__dirname+'/../app/modules/mobile-form-dock.v2.js','utf8');
+const css=fs.readFileSync(__dirname+'/../app/styles/new-ui-v1.css','utf8');
+const ver=JSON.parse(fs.readFileSync(__dirname+'/../version.json','utf8'));
+assert.equal(ver.version,'V2.6');
+assert.equal(ver.build,'V2.6-20261007-FORM-DOCK-VISIBILITY-02');
+assert.match(mod,/function formContextActive\(\)/);
+assert.match(mod,/v157-authenticated/);
+assert.match(mod,/v163-operational/);
+assert.match(mod,/v157-home/);
+assert.match(mod,/v166-overlay-open/);
+assert.match(mod,/v157-drawer-open/);
+assert.match(mod,/currentSessionId\(\)/);
+assert.match(mod,/if\(!active\)\{hideDock\(dock\);return\}/);
+assert.match(mod,/t===document\.body/);
+assert.match(css,/body:not\(\.sags-form-view-active\) #sagsMobileFormDock/);
+assert.match(css,/display:none!important/);
+console.log('V2.6 form-only action dock visibility contract passed');

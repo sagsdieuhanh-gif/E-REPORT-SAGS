@@ -1,5 +1,5 @@
 (function(root){"use strict";
-const BUILD="V2.6-20261007-MOBILE-DOCK-CANONICAL-01";
+const BUILD="V2.6-20261007-FORM-DOCK-VISIBILITY-02";
 if(root.__SAGS_MOBILE_FORM_DOCK_V26===BUILD)return;
 root.__SAGS_MOBILE_FORM_DOCK_V26=BUILD;
 const mq=root.matchMedia("(max-width:899px)");
@@ -28,6 +28,36 @@ function restoreAll(){
     }
   }
   originals.clear();
+}
+function currentSessionId(){
+  try{
+    if(typeof activeFlightSessionId!=="undefined"&&String(activeFlightSessionId||"").trim())return String(activeFlightSessionId).trim();
+  }catch(_){}
+  try{
+    if(String(root.activeFlightSessionId||"").trim())return String(root.activeFlightSessionId).trim();
+  }catch(_){}
+  try{
+    const meta=typeof root.currentFlightSessionMeta==="function"?root.currentFlightSessionMeta():null;
+    if(meta?.id)return String(meta.id).trim();
+  }catch(_){}
+  return"";
+}
+function formContextActive(){
+  const body=document.body;
+  if(!body)return false;
+  if(!body.classList.contains("v157-authenticated"))return false;
+  if(!body.classList.contains("v163-operational"))return false;
+  if(body.classList.contains("v157-home")||
+     body.classList.contains("v166-overlay-open")||
+     body.classList.contains("sags-overlay-open")||
+     body.classList.contains("v157-drawer-open"))return false;
+  if(!currentSessionId())return false;
+  return true;
+}
+function hideDock(dock){
+  try{document.body?.classList.remove("sags-form-view-active")}catch(_){}
+  if(dock)force(dock,"display","none");
+  try{document.documentElement.style.setProperty("--sags-form-dock-height","0px")}catch(_){}
 }
 function buttonLayout(btn,col,row){
   if(!btn)return;
@@ -58,10 +88,13 @@ function measure(dock){
 }
 function apply(){
   raf=0;
-  if(!mq.matches){restoreAll();return}
   const dock=document.getElementById("sagsMobileFormDock");
   const actions=document.getElementById("v324FormActions");
   const operation=document.getElementById("v163OperationNav");
+  const active=formContextActive();
+  try{document.body?.classList.toggle("sags-form-view-active",active)}catch(_){}
+  if(!active){hideDock(dock);return}
+  if(!mq.matches){restoreAll();return}
   if(!dock||!actions||!operation)return;
 
   const dockProps={
@@ -113,7 +146,8 @@ function start(){
   observer=new MutationObserver(list=>{
     for(const m of list){
       const t=m.target?.nodeType===1?m.target:m.target?.parentElement;
-      if(t?.closest?.("#sagsMobileFormDock,#v324FormActions,#v163OperationNav")||
+      if(t===document.body||
+         t?.closest?.("#sagsMobileFormDock,#v324FormActions,#v163OperationNav")||
          [...(m.addedNodes||[])].some(n=>n?.nodeType===1&&(n.id==="sagsMobileFormDock"||n.id==="v324FormActions"||n.id==="v163OperationNav"||n.querySelector?.("#sagsMobileFormDock,#v324FormActions,#v163OperationNav")))){
         schedule();break;
       }

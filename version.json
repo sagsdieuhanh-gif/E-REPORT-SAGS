@@ -1,12 +1,12 @@
 {
   "version": "V2.6",
   "displayVersion": "V2.6",
-  "label": "V2.6 - CANONICAL MOBILE FORM DOCK",
-  "build": "V2.6-20261007-MOBILE-DOCK-CANONICAL-01",
-  "releasedAt": "2026-10-07T01:14:23Z",
-  "type": "ui-stability-release",
-  "base": "E-REPORT-SAGS main@aaf137469dcb2bc69d1a94fb7d70b2fe4a8015b8",
+  "label": "V2.6 - FORM-ONLY ACTION DOCK",
+  "build": "V2.6-20261007-FORM-DOCK-VISIBILITY-02",
+  "releasedAt": "2026-10-07T01:27:57Z",
+  "type": "ui-visibility-hotfix",
+  "base": "E-REPORT-SAGS main@5676d432c4bda0631c5f7eff3ee2c7ba33bf0445",
   "updatePolicy": "required",
-  "notes": "V2.6: dọn toàn bộ các lớp vá dock mobile V2.5 cũ và thay bằng một layout chuẩn duy nhất. Bốn nút được khóa theo ID chức năng: NHẬP NHANH hàng 1 cột 1, XUẤT PDF hàng 1 cột 2, HOÀN TẤT hàng 2 cột 1, KÝ hàng 2 cột 2. Module V2.6 dùng inline important để các CSS động/legacy không thể đẩy HOÀN TẤT ra ngoài hoặc che dưới mép màn hình. Giữ nguyên tối ưu tốc độ mở form và quy tắc chặn update khi biểu mẫu chưa HOÀN TẤT.",
-  "message": "V2.6: canonical 2x2 mobile dock with hard functional positioning."
+  "notes": "V2.6 build 02: bốn nút NHẬP NHANH / XUẤT PDF / HOÀN TẤT / KÝ chỉ được hiển thị khi đang thật sự ở workspace biểu mẫu có session active. Trang chủ, menu, My Flight, Hồ sơ chuyến bay, Kết sổ, FINAL, Crosscheck, Thông báo, Cài đặt, drawer và các overlay đều không được hiển thị dock. Thêm JS form-context gate và CSS fail-safe display:none để inline/legacy CSS không thể làm dock xuất hiện sai màn hình. Giữ nguyên layout 2x2, tối ưu tốc độ mở form và update guard.",
+  "message": "V2.6 build 02: show the four action buttons only inside an active form workspace."
 }

@@ -6802,3 +6802,18 @@ html.new-ui-v1 body :is(.sheet,.rsOfficialTemplatePage,.page-bg,.pdf-page,.pdfCa
     padding-right:3px!important;
   }
 }
+
+
+/* ==========================================================================
+   V2.6 BUILD 02 · FORM DOCK VISIBILITY GATE
+   The four action buttons exist only while an actual form workspace is open.
+   ========================================================================== */
+html.new-ui-v1 body:not(.sags-form-view-active) #sagsMobileFormDock{
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+html.new-ui-v1 body.sags-form-view-active #sagsMobileFormDock{
+  visibility:visible!important;
+  pointer-events:auto!important;
+}

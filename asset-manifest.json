@@ -1,8 +1,8 @@
 {
   "schema": 2,
   "version": "V2.6",
-  "build": "V2.6-20261007-MOBILE-DOCK-CANONICAL-01",
-  "strategy": "Production V2.6 · canonical mobile 2x2 dock + hard functional position lock",
+  "build": "V2.6-20261007-FORM-DOCK-VISIBILITY-02",
+  "strategy": "Production V2.6 · form-only action dock visibility gate + canonical 2x2 layout",
   "mutableMetadata": [
     "./forms/forms.registry.json",
     "./data/form-configuration.json"
@@ -82,8 +82,8 @@
       "bytes": 41473
     },
     "./app/styles/new-ui-v1.css": {
-      "sha256": "82e69dd5633cf718969e91f4d07f7b9b57ff3ec3bb30d7e19acf095b3ea73185",
-      "bytes": 375060
+      "sha256": "87cb70bcdb841a6424d5304bf923211733fd09e4ad786216246a5c66ceae95ee",
+      "bytes": 375636
     },
     "./assets/audio/alert-crosscheck-complete.mp3": {
       "sha256": "2291844c0abc77005a2e8800e0dc8115c373134385a31a5d3d9e5f920a5acc07",
@@ -222,8 +222,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "4bcdfb7c30b06b315b301151d3617b72193ee6b192a5aef3a290d2ea909286cf",
-      "bytes": 80636
+      "sha256": "f2fe3a6246bdc6e4062db83179cd8f0a2e6320f82c42f00da780ace1a816c0a6",
+      "bytes": 80565
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -274,12 +274,12 @@
       "bytes": 6937
     },
     "./service-worker.js": {
-      "sha256": "0bf55d14e03b9bbaffeeeb00a51c5195200f32d7d4c215ddba2bddee56b5d565",
-      "bytes": 21444
+      "sha256": "9b93dde23d2a0673fccdfc62ee17b44055949ff74a52690806b6771c7eb84f2c",
+      "bytes": 21441
     },
     "./version.json": {
-      "sha256": "1c8009a26c30a7a89b5a04dd738d37866851b20f93ac3051cbb169f525d42d74",
-      "bytes": 943
+      "sha256": "39eb924bf6b8cc5bd3027d343ba39e3e628667139df5b6098e9009260bffc2df",
+      "bytes": 992
     },
     "./app/modules/form-registry-runtime.v647.js": {
       "sha256": "38273ccd7794e4790c37b5a8594edeaefd412917af2c928245bf8a89b0a8a5f2",
@@ -770,8 +770,8 @@
       "bytes": 1572
     },
     "./app/modules/mobile-form-dock.v2.js": {
-      "sha256": "58feadaf31c4387971f457932f6d967d28f359489bf1f9e40d2f149847273475",
-      "bytes": 4595
+      "sha256": "236b2f054d0789091c89050e9b6abdba7ff4eb49eafc9403fda3f843d68e6c77",
+      "bytes": 5987
     }
   }
 }
