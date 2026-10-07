@@ -1,12 +1,12 @@
 {
-  "version": "V2.5",
-  "displayVersion": "V2.5",
-  "label": "V2.5 - SAFE UPDATE GUARD",
-  "build": "V2.5-20261007-UPDATE-GUARD-23",
-  "releasedAt": "2026-10-07T01:07:31Z",
-  "type": "update-safety-hotfix",
-  "base": "E-REPORT-SAGS main@855b9cdc0aee2f9dc16e546f39741af735ed24cf",
+  "version": "V2.6",
+  "displayVersion": "V2.6",
+  "label": "V2.6 - CANONICAL MOBILE FORM DOCK",
+  "build": "V2.6-20261007-MOBILE-DOCK-CANONICAL-01",
+  "releasedAt": "2026-10-07T01:14:23Z",
+  "type": "ui-stability-release",
+  "base": "E-REPORT-SAGS main@aaf137469dcb2bc69d1a94fb7d70b2fe4a8015b8",
   "updatePolicy": "required",
-  "notes": "Build 23: giữ nguyên dock mobile 2x2 của build 22 và tối ưu tốc độ mở form của build 21. Bổ sung quy tắc an toàn cập nhật: nếu đang có biểu mẫu/chuyến đã nhận nhưng chưa bấm HOÀN TẤT thì CẬP NHẬT NGAY bị chặn. Hệ thống cũng tiếp tục chặn khi đang Nhập nhanh, còn thao tác chờ đồng bộ, hoặc dữ liệu chưa lưu an toàn. Sau khi HOÀN TẤT mới được phép cập nhật.",
-  "message": "V2.5 build 23: block app update until active work is completed."
+  "notes": "V2.6: dọn toàn bộ các lớp vá dock mobile V2.5 cũ và thay bằng một layout chuẩn duy nhất. Bốn nút được khóa theo ID chức năng: NHẬP NHANH hàng 1 cột 1, XUẤT PDF hàng 1 cột 2, HOÀN TẤT hàng 2 cột 1, KÝ hàng 2 cột 2. Module V2.6 dùng inline important để các CSS động/legacy không thể đẩy HOÀN TẤT ra ngoài hoặc che dưới mép màn hình. Giữ nguyên tối ưu tốc độ mở form và quy tắc chặn update khi biểu mẫu chưa HOÀN TẤT.",
+  "message": "V2.6: canonical 2x2 mobile dock with hard functional positioning."
 }

@@ -6710,143 +6710,95 @@ html.new-ui-v1 body :is(.sheet,.rsOfficialTemplatePage,.page-bg,.pdf-page,.pdfCa
   forced-color-adjust:none;
 }
 
-
 /* ==========================================================================
-   V2.5 TEST · MOBILE FORM DOCK TWO ROWS 18
-   Row 1 = NHẬP NHANH + XUẤT
-   Row 2 = HOÀN TẤT + KÝ
-   ========================================================================== */
-@media(max-width:899px){
- html.new-ui-v1 body.v163-operational{padding-bottom:calc(var(--sags-form-dock-height,104px) + 6px)!important}
- html.new-ui-v1 body.v163-operational:not(.v166-overlay-open):not(.v157-home) #sagsMobileFormDock{
-   gap:5px!important;bottom:0!important;max-height:none!important;overflow:visible!important;
-   padding:5px max(8px,env(safe-area-inset-right)) max(2px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))!important;
- }
- html.new-ui-v1 body #sagsMobileFormDock #v324FormActions{
-   display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px!important;
- }
- html.new-ui-v1 body #sagsMobileFormDock #v324FormActions.show.one{grid-template-columns:minmax(0,1fr)!important}
- html.new-ui-v1 body #sagsMobileFormDock #v163OperationNav{
-   display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;grid-template-rows:42px!important;
-   gap:6px!important;align-items:stretch!important;
- }
- html.new-ui-v1 body #sagsMobileFormDock #v163OperationNav>button{
-   grid-column:auto!important;grid-row:auto!important;min-width:0!important;width:100%!important;
- }
- html.new-ui-v1 body #sagsMobileFormDock :is(.v324FormAction,#v163OperationNav>button,#v163SignBtn){
-   min-height:42px!important;height:42px!important;padding:8px 7px!important;border-radius:9px!important;
-   font:800 12.5px/1.1 Arial,sans-serif!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;
- }
- html.new-ui-v1 body #sagsMobileFormDock #v163SignBtn{grid-column:auto!important;grid-row:auto!important}
-}
-@media(max-width:360px){
- html.new-ui-v1 body #sagsMobileFormDock :is(.v324FormAction,#v163OperationNav>button,#v163SignBtn){
-   font-size:11px!important;padding-left:4px!important;padding-right:4px!important;
- }
-}
-
-
-/* ==========================================================================
-   V2.5 BUILD 21 · MOBILE FORM DOCK FINAL 2x2
+   V2.6 · CANONICAL MOBILE FORM DOCK
+   One layout only. Exact functional IDs, no :last-child / DOM-order layout.
    Row 1: NHẬP NHANH | XUẤT PDF
    Row 2: HOÀN TẤT   | KÝ
    ========================================================================== */
 @media(max-width:899px){
-  html.new-ui-v1 body.v163-operational:not(.v166-overlay-open):not(.v157-home) #sagsMobileFormDock{
+  html.new-ui-v1 body.v163-operational:not(.v166-overlay-open):not(.sags-overlay-open):not(.v157-home) #sagsMobileFormDock{
     display:grid!important;
-    grid-template-columns:repeat(2,minmax(0,1fr))!important;
-    grid-auto-rows:42px!important;
-    gap:6px!important;
-    align-items:stretch!important;
+    position:fixed!important;
+    left:8px!important;
+    right:8px!important;
     bottom:0!important;
+    width:auto!important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+    grid-template-rows:44px 44px!important;
+    grid-auto-flow:row!important;
+    gap:6px!important;
+    padding:6px max(8px,env(safe-area-inset-right)) max(4px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))!important;
+    box-sizing:border-box!important;
     max-height:none!important;
+    height:auto!important;
     overflow:visible!important;
-    padding:5px max(8px,env(safe-area-inset-right)) max(2px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))!important;
+    border:1px solid rgba(70,152,186,.30)!important;
+    border-radius:14px 14px 0 0!important;
+    background:rgba(5,19,31,.98)!important;
+    box-shadow:0 -10px 28px rgba(0,0,0,.28)!important;
+    z-index:24880!important;
   }
-  html.new-ui-v1 body #sagsMobileFormDock #v324FormActions,
+
+  html.new-ui-v1 body #sagsMobileFormDock #v324FormActions.show,
   html.new-ui-v1 body #sagsMobileFormDock #v163OperationNav{
     display:contents!important;
   }
-  html.new-ui-v1 body #sagsMobileFormDock #v324FormActions.show.three>.v324FormAction:last-child,
-  html.new-ui-v1 body #sagsMobileFormDock #v324FormActions.show>.v324FormAction,
-  html.new-ui-v1 body #sagsMobileFormDock #v163OperationNav>button,
-  html.new-ui-v1 body #sagsMobileFormDock #v163SignBtn{
-    grid-column:auto!important;
-    grid-row:auto!important;
+  html.new-ui-v1 body #sagsMobileFormDock #v324FormActions:not(.show){
+    display:none!important;
+  }
+
+  /* Exact fixed cells. These selectors intentionally outrank legacy show.three/last-child rules. */
+  html.new-ui-v1 body.v163-operational #sagsMobileFormDock #v324FormActions.show > #v1134QuickTimeBtn{
+    grid-column:1/2!important;grid-row:1/2!important;
+  }
+  html.new-ui-v1 body.v163-operational #sagsMobileFormDock #v324FormActions.show > #v324PdfBtn{
+    grid-column:2/3!important;grid-row:1/2!important;
+  }
+  html.new-ui-v1 body.v163-operational #sagsMobileFormDock #v324FormActions.show > #v324HandoverBtn{
+    grid-column:1/2!important;grid-row:2/3!important;
+  }
+  html.new-ui-v1 body.v163-operational #sagsMobileFormDock #v163OperationNav > #v163SignBtn{
+    grid-column:2/3!important;grid-row:2/3!important;
+  }
+
+  /* Navigation lives in the top header on mobile. Only KÝ belongs in the form dock. */
+  html.new-ui-v1 body.v163-operational #sagsMobileFormDock #v163OperationNav > button:not(#v163SignBtn){
+    display:none!important;
+  }
+
+  html.new-ui-v1 body.v163-operational #sagsMobileFormDock :is(#v1134QuickTimeBtn,#v324PdfBtn,#v324HandoverBtn,#v163SignBtn){
+    position:static!important;
+    inset:auto!important;
     order:0!important;
     min-width:0!important;
     width:100%!important;
-    min-height:42px!important;
-    height:42px!important;
+    max-width:none!important;
+    min-height:44px!important;
+    height:44px!important;
+    max-height:44px!important;
     margin:0!important;
-    padding:8px 7px!important;
-    border-radius:9px!important;
-    font:800 12.5px/1.1 Arial,sans-serif!important;
+    padding:7px 6px!important;
+    box-sizing:border-box!important;
+    border-radius:10px!important;
+    font:800 12px/1.1 Arial,sans-serif!important;
     white-space:nowrap!important;
     overflow:hidden!important;
     text-overflow:ellipsis!important;
+    align-self:stretch!important;
+    justify-self:stretch!important;
     align-items:center!important;
     justify-content:center!important;
   }
+
   html.new-ui-v1 body.v163-operational{
-    padding-bottom:calc(var(--sags-form-dock-height,94px) + 6px)!important;
+    padding-bottom:calc(var(--sags-form-dock-height,104px) + 8px)!important;
   }
 }
 @media(max-width:360px){
-  html.new-ui-v1 body #sagsMobileFormDock :is(.v324FormAction,#v163OperationNav>button,#v163SignBtn){
-    font-size:11px!important;
-    padding-left:4px!important;
-    padding-right:4px!important;
+  html.new-ui-v1 body.v163-operational #sagsMobileFormDock :is(#v1134QuickTimeBtn,#v324PdfBtn,#v324HandoverBtn,#v163SignBtn){
+    font-size:10.8px!important;
+    padding-left:3px!important;
+    padding-right:3px!important;
   }
-}
-
-
-/* ==========================================================================
-   V2.5 BUILD 22 · MOBILE FORM DOCK SEMANTIC GRID
-   Functional positions, independent of DOM order.
-   ========================================================================== */
-@media(max-width:899px){
-  html.new-ui-v1 body.v163-operational:not(.v166-overlay-open):not(.v157-home) #sagsMobileFormDock{
-    display:grid!important;
-    grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
-    grid-template-rows:42px 42px!important;
-    grid-auto-flow:row!important;
-    grid-auto-rows:42px!important;
-    gap:6px!important;
-    max-height:none!important;
-    overflow:visible!important;
-  }
-  html.new-ui-v1 body #sagsMobileFormDock #v324FormActions,
-  html.new-ui-v1 body #sagsMobileFormDock #v163OperationNav{display:contents!important}
-  html.new-ui-v1 body #sagsMobileFormDock #v324FormActions>.v324FormAction:not(.v324Export):not(.v324Handover):not(.v324Qr):first-of-type{
-    grid-column:1!important;grid-row:1!important
-  }
-  html.new-ui-v1 body #sagsMobileFormDock #v324FormActions>.v324Export{
-    grid-column:2!important;grid-row:1!important
-  }
-  html.new-ui-v1 body #sagsMobileFormDock #v324FormActions>.v324Handover{
-    grid-column:1!important;grid-row:2!important
-  }
-  html.new-ui-v1 body #sagsMobileFormDock #v163SignBtn{
-    grid-column:2!important;grid-row:2!important
-  }
-  html.new-ui-v1 body #sagsMobileFormDock #v324FormActions.show.three>.v324FormAction:last-child,
-  html.new-ui-v1 body #sagsMobileFormDock #v324FormActions.show>.v324FormAction,
-  html.new-ui-v1 body #sagsMobileFormDock #v163OperationNav>button{
-    grid-column-end:auto!important
-  }
-  html.new-ui-v1 body #sagsMobileFormDock :is(.v324FormAction,#v163SignBtn){
-    min-width:0!important;width:100%!important;min-height:42px!important;height:42px!important;margin:0!important
-  }
-  html.new-ui-v1 body.v163-operational{
-    padding-bottom:calc(94px + env(safe-area-inset-bottom))!important
-  }
-}
-
-
-@media(max-width:899px){
- html.new-ui-v1 body #sagsMobileFormDock .sagsDockQuick{grid-column:1!important;grid-row:1!important}
- html.new-ui-v1 body #sagsMobileFormDock .sagsDockExport{grid-column:2!important;grid-row:1!important}
- html.new-ui-v1 body #sagsMobileFormDock .sagsDockComplete{grid-column:1!important;grid-row:2!important}
- html.new-ui-v1 body #sagsMobileFormDock .sagsDockSign{grid-column:2!important;grid-row:2!important}
 }
