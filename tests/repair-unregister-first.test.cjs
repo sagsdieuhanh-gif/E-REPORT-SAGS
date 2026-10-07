@@ -6,7 +6,7 @@ const manifest=JSON.parse(fs.readFileSync(path.join(root,'asset-manifest.json'),
 const sw=fs.readFileSync(path.join(root,'service-worker.js'),'utf8');
 assert.match(repair,/if\(stage==='1'\)\{await clearOldShell\(\);/,'repair must clear stale worker before release verification');
 assert.match(repair,/await r\.unregister\(\)|r=>r\.unregister\(\)/,'repair must unregister service workers');
-assert.match(repair,/for\(let attempt=1;attempt<=8;attempt\+\+\)/,'repair should retry transient release synchronization');
+assert.match(repair,/for\(let attempt=1;attempt<=10;attempt\+\+\)/,'repair should retry transient release synchronization');
 assert.ok(!repair.includes("Bản cập nhật đã đổi từ"),'stale target must not block latest repair');
 assert.equal(manifest.build,version.build);
 assert.equal(sw.match(/const BUILD='([^']+)'/)[1],version.build);

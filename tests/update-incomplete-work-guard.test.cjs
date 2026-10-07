@@ -1,7 +1,7 @@
 const fs=require('node:fs'),assert=require('node:assert/strict');
 const boot=fs.readFileSync(__dirname+'/../app/generated/boot-group-4.js','utf8');
 const v=JSON.parse(fs.readFileSync(__dirname+'/../version.json','utf8'));
-assert.equal(v.build,'V2.5-20261007-UPDATE-GUARD-23');
+assert.equal(v.build,JSON.parse(fs.readFileSync(__dirname+'/../asset-manifest.json','utf8')).build);
 assert.match(boot,/sagsUpdateIncompleteWorkGuard/);
 assert.match(boot,/roster_sessions\//);
 assert.match(boot,/PART_COMPLETED/);

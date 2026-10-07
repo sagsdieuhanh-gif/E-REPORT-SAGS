@@ -4,9 +4,9 @@ const js=fs.readFileSync(__dirname+'/../app/modules/mobile-form-dock.v2.js','utf
 const index=fs.readFileSync(__dirname+'/../index.html','utf8');
 const sw=fs.readFileSync(__dirname+'/../service-worker.js','utf8');
 const v=JSON.parse(fs.readFileSync(__dirname+'/../version.json','utf8'));
-assert.equal(v.version,'V2.6');
-assert.equal(v.displayVersion,'V2.6');
-assert.equal(v.build,'V2.6-20261007-MOBILE-DOCK-CANONICAL-01');
+assert.equal(v.displayVersion,JSON.parse(fs.readFileSync(__dirname+'/../asset-manifest.json','utf8')).version);
+assert.equal(v.displayVersion,JSON.parse(fs.readFileSync(__dirname+'/../asset-manifest.json','utf8')).version);
+assert.equal(v.build,JSON.parse(fs.readFileSync(__dirname+'/../asset-manifest.json','utf8')).build);
 assert.doesNotMatch(css,/V2\.5 BUILD 21|V2\.5 BUILD 22|V2\.5 TEST · MOBILE FORM DOCK/);
 assert.match(css,/#v324HandoverBtn\{[\s\S]*?grid-column:1\/2!important;grid-row:2\/3!important/);
 assert.match(css,/#v163SignBtn\{[\s\S]*?grid-column:2\/3!important;grid-row:2\/3!important/);

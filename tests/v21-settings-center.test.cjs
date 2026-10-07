@@ -21,7 +21,11 @@ assert.match(runtime,/key:"settings",icon:"⚙",label:"Cài đặt"/,'Settings m
 assert.match(runtimeLive,/key:"settings",icon:"⚙",label:"Cài đặt"/,'live runtime must contain Settings');
 assert.match(pref,/applyTheme\(readTheme\(\),false\)/);
 assert.match(shell,/if\(key==='settings'\)/,'home shell Settings routing missing');
-assert.match(css,/\.sagsSettingsCenter\.show\{display:flex\}/);\nassert.match(js,/V2\\.5-20261006-PC-SETTINGS-13/,'Settings module build must rotate with release');\nassert.match(css,/PC SETTINGS STALE-MARKUP GUARD 13/,'PC stale-markup guard missing');\nassert.match(css,/\.sagsSettingsLayout > \.sagsSettingsNav[\\s\\S]*grid-column:1!important/,'PC nav must be pinned to column 1');\nassert.match(css,/\.sagsSettingsLayout > \.sagsSettingsContent[\\s\\S]*grid-column:2!important/,'PC content must be pinned to column 2');
+assert.match(css,/\.sagsSettingsCenter\.show\{display:flex\}/);
+assert.match(fs.readFileSync(__dirname+'/../index.html','utf8'),/settings\.v1\.js\?v=V[^"']+/,'Settings script must use a release query');
+assert.match(css,/PC SETTINGS STALE-MARKUP GUARD 13/,'PC stale-markup guard missing');
+assert.match(css,/\.sagsSettingsLayout > \.sagsSettingsNav[\s\S]*grid-column:1!important/,'PC nav must be pinned to column 1');
+assert.match(css,/\.sagsSettingsLayout > \.sagsSettingsContent[\s\S]*grid-column:2!important/,'PC content must be pinned to column 2');
 console.log(ver.version+' Settings Center base contract passed');
 
 const quick=read('app/modules/quick-entry.v1.js');

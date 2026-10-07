@@ -3,10 +3,10 @@ const mod=fs.readFileSync(__dirname+'/../app/modules/form-entry-contrast.v1.js',
 const index=fs.readFileSync(__dirname+'/../index.html','utf8');
 const sw=fs.readFileSync(__dirname+'/../service-worker.js','utf8');
 const ver=JSON.parse(fs.readFileSync(__dirname+'/../version.json','utf8'));
-assert.equal(ver.build,'V2.5-20261007-UNIFIED-ENTRY-CONTRAST-20');
+assert.equal(ver.build,JSON.parse(fs.readFileSync(__dirname+'/../asset-manifest.json','utf8')).build);
 assert.match(mod,/#FFD166/);assert.match(mod,/#17212B/);
 assert.match(mod,/#entry,#quickTimeModal,#fs09QuickModal,#sagsQuickEntry,#sags5494Quick,#sags5494FieldEditor/);
 assert.doesNotMatch(mod,/sags-entry-highlight|\.sheet svg/);assert.match(mod,/querySelectorAll\(SCOPES\)\.forEach/);
-assert.match(index,/form-entry-contrast\.v1\.js\?v=V2.5-20261007-UNIFIED-ENTRY-CONTRAST-20/);
+assert(index.includes('form-entry-contrast.v1.js?v='+ver.build),'contrast module must use current release query');
 assert.match(sw,/\.\/app\/modules\/form-entry-contrast\.v1\.js/);
 console.log('Entry-only contrast rule passed');

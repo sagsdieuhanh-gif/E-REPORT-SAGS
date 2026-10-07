@@ -1,7 +1,7 @@
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
 const root=path.resolve(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p),'utf8');
 const js=read('app/modules/settings.v1.js'),css=read('app/styles/new-ui-v1.css'),ver=JSON.parse(read('version.json'));
-assert.equal(ver.build,'V2.5-20261006-PC-SETTINGS-12');
+assert.equal(ver.build,JSON.parse(fs.readFileSync(__dirname+'/../asset-manifest.json','utf8')).build);
 assert.match(js,/sagsSettingsNavTitle/);
 assert.match(js,/Hồ sơ & ảnh đại diện/);
 assert.match(js,/PWA, cache, IndexedDB/);

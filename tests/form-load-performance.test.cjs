@@ -3,7 +3,7 @@ const r1=fs.readFileSync(__dirname+'/../app/generated/runtime-1.js','utf8');
 const r2=fs.readFileSync(__dirname+'/../app/generated/runtime-2.js','utf8');
 const fl=fs.readFileSync(__dirname+'/../app/generated/core-flight.js','utf8');
 const v=JSON.parse(fs.readFileSync(__dirname+'/../version.json','utf8'));
-assert.equal(v.build,'V2.5-20261007-MOBILE-DOCK-FORM-OPEN-PERF-21');
+assert.equal(v.build,JSON.parse(fs.readFileSync(__dirname+'/../asset-manifest.json','utf8')).build);
 assert.match(r1,/__SAGS_V222_DEP_RECEIVE_FIX\|\|root\.__SAGS_V2210_INDEPENDENT_DEP/,'legacy DEP preflight bypass missing');
 assert.match(r2,/__SAGS_RECEIVE_MANIFEST_CACHE_V17/,'receive manifest micro-cache missing');
 assert.match(r2,/const st=cand\.st\|\|await sessionState/,'duplicate DEP session read not removed');
