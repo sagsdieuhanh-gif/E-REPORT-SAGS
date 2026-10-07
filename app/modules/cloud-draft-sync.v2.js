@@ -141,6 +141,6 @@
     root.addEventListener?.('pagehide',()=>{if(offsetRef){offsetRef.off('value');offsetRef=null}},{passive:true});
   }
   root.sagsDraftV2Pull=pullCloud;root.sagsDraftV2Flush=flushPending;
-  root.sagsDraftV2Status=()=>({build:'V2.7',wrapped,cloudCapable:!!(baseFor(identity())&&typeof root.sagsV470Ref==='function'),online:navigator.onLine!==false,...identity(),lastCloudSyncAtMs,lastPullAtMs,lastCloudError,cloudWrites,idbWrites});
+  root.sagsDraftV2Status=()=>({build:'V2.1',wrapped,cloudCapable:!!(baseFor(identity())&&typeof root.sagsV470Ref==='function'),online:navigator.onLine!==false,...identity(),lastCloudSyncAtMs,lastPullAtMs,lastCloudError,cloudWrites,idbWrites});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })(typeof window!=='undefined'?window:globalThis);

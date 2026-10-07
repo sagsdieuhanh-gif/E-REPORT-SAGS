@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V2.7",
-  "build": "V2.7-20261007-DATA-SAFETY-FORM-CONTRAST-02",
+  "version": "V2.1",
+  "build": "V2.1-20261007-DATA-SAFETY-FORM-CONTRAST-03",
   "strategy": "V2.7 candidate: immutable drafts, atomic conflict arbitration, deterministic release integrity",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -198,7 +198,7 @@
       "bytes": 42484
     },
     "./app/modules/cloud-draft-sync.v2.js": {
-      "sha256": "58dcc2debc754b92679943aeb334a3b3c40b6721b59f61744da434b8a457a3cb",
+      "sha256": "84a2e34ea6b183e6ffd85b29531ad0eebff9b5b4293e5e12de11ec9011e021cd",
       "bytes": 14114
     },
     "./app/modules/cross-browser-entry.v1.js": {
@@ -258,7 +258,7 @@
       "bytes": 1572
     },
     "./app/modules/mobile-form-dock.v2.js": {
-      "sha256": "2c2d87335cfbb324a7c84fdd9812a9412ae0acb73d6cd9c1b96249c6020266a0",
+      "sha256": "ed7dbfefaf0676406cfa09b015fe4fcbb837ed32ac20112bd43ec1defb889a79",
       "bytes": 5992
     },
     "./app/modules/network-diagnostics.js": {
@@ -718,7 +718,7 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "f97383d168d6b43a9b6adf5ea4305adeb54354db412aed835b444900f8bf32cb",
+      "sha256": "5f0325e56ffd99b5bfc7eec10303265b51900fe5752e745434dfaacba932175c",
       "bytes": 81024
     },
     "./manifest.webmanifest": {
@@ -770,12 +770,12 @@
       "bytes": 6937
     },
     "./service-worker.js": {
-      "sha256": "31a40f95db85156db6104a95560cac992d9cc1a1eb33203308d3c22927de41c3",
-      "bytes": 21503
+      "sha256": "0febf09995e330ba0087964f370427c44315efa5b9783e7975004f3708b5e727",
+      "bytes": 21495
     },
     "./version.json": {
-      "sha256": "303ec3a21981213e13e510e038065591dc6e734b3bf8becea8e0083c597463c9",
-      "bytes": 610
+      "sha256": "68c7374060d79f0a10f8bb075549ccbdc08dadd4b51ddea18c90b51d9e739c5c",
+      "bytes": 609
     }
   },
   "mutableAssets": [
