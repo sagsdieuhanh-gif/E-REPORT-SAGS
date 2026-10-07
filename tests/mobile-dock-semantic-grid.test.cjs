@@ -1,0 +1,12 @@
+const fs=require('node:fs'),assert=require('node:assert/strict');
+const css=fs.readFileSync(__dirname+'/../app/styles/new-ui-v1.css','utf8');
+const js=fs.readFileSync(__dirname+'/../app/modules/mobile-form-dock.v1.js','utf8');
+const v=JSON.parse(fs.readFileSync(__dirname+'/../version.json','utf8'));
+assert.equal(v.build,'V2.5-20261007-MOBILE-DOCK-SEMANTIC-GRID-22');
+assert.match(css,/sagsDockQuick\{grid-column:1!important;grid-row:1!important/);
+assert.match(css,/sagsDockExport\{grid-column:2!important;grid-row:1!important/);
+assert.match(css,/sagsDockComplete\{grid-column:1!important;grid-row:2!important/);
+assert.match(css,/sagsDockSign\{grid-column:2!important;grid-row:2!important/);
+assert.match(js,/NHAP NHANH/);assert.match(js,/XUAT/);assert.match(js,/HOAN TAT/);
+assert.match(js,/sagsDockComplete/);assert.match(js,/sagsDockSign/);
+console.log('Semantic mobile dock grid contract passed');

@@ -6799,3 +6799,54 @@ html.new-ui-v1 body :is(.sheet,.rsOfficialTemplatePage,.page-bg,.pdf-page,.pdfCa
     padding-right:4px!important;
   }
 }
+
+
+/* ==========================================================================
+   V2.5 BUILD 22 · MOBILE FORM DOCK SEMANTIC GRID
+   Functional positions, independent of DOM order.
+   ========================================================================== */
+@media(max-width:899px){
+  html.new-ui-v1 body.v163-operational:not(.v166-overlay-open):not(.v157-home) #sagsMobileFormDock{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+    grid-template-rows:42px 42px!important;
+    grid-auto-flow:row!important;
+    grid-auto-rows:42px!important;
+    gap:6px!important;
+    max-height:none!important;
+    overflow:visible!important;
+  }
+  html.new-ui-v1 body #sagsMobileFormDock #v324FormActions,
+  html.new-ui-v1 body #sagsMobileFormDock #v163OperationNav{display:contents!important}
+  html.new-ui-v1 body #sagsMobileFormDock #v324FormActions>.v324FormAction:not(.v324Export):not(.v324Handover):not(.v324Qr):first-of-type{
+    grid-column:1!important;grid-row:1!important
+  }
+  html.new-ui-v1 body #sagsMobileFormDock #v324FormActions>.v324Export{
+    grid-column:2!important;grid-row:1!important
+  }
+  html.new-ui-v1 body #sagsMobileFormDock #v324FormActions>.v324Handover{
+    grid-column:1!important;grid-row:2!important
+  }
+  html.new-ui-v1 body #sagsMobileFormDock #v163SignBtn{
+    grid-column:2!important;grid-row:2!important
+  }
+  html.new-ui-v1 body #sagsMobileFormDock #v324FormActions.show.three>.v324FormAction:last-child,
+  html.new-ui-v1 body #sagsMobileFormDock #v324FormActions.show>.v324FormAction,
+  html.new-ui-v1 body #sagsMobileFormDock #v163OperationNav>button{
+    grid-column-end:auto!important
+  }
+  html.new-ui-v1 body #sagsMobileFormDock :is(.v324FormAction,#v163SignBtn){
+    min-width:0!important;width:100%!important;min-height:42px!important;height:42px!important;margin:0!important
+  }
+  html.new-ui-v1 body.v163-operational{
+    padding-bottom:calc(94px + env(safe-area-inset-bottom))!important
+  }
+}
+
+
+@media(max-width:899px){
+ html.new-ui-v1 body #sagsMobileFormDock .sagsDockQuick{grid-column:1!important;grid-row:1!important}
+ html.new-ui-v1 body #sagsMobileFormDock .sagsDockExport{grid-column:2!important;grid-row:1!important}
+ html.new-ui-v1 body #sagsMobileFormDock .sagsDockComplete{grid-column:1!important;grid-row:2!important}
+ html.new-ui-v1 body #sagsMobileFormDock .sagsDockSign{grid-column:2!important;grid-row:2!important}
+}

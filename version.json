@@ -1,12 +1,12 @@
 {
   "version": "V2.5",
   "displayVersion": "V2.5",
-  "label": "V2.5 - MOBILE DOCK + FORM OPEN SPEED",
-  "build": "V2.5-20261007-MOBILE-DOCK-FORM-OPEN-PERF-21",
-  "releasedAt": "2026-10-06T18:05:45Z",
-  "type": "ui-performance-hotfix",
-  "base": "E-REPORT-SAGS main@54a4b039e778b7b0137594a883888de04f07eab6",
+  "label": "V2.5 - MOBILE DOCK SEMANTIC GRID",
+  "build": "V2.5-20261007-MOBILE-DOCK-SEMANTIC-GRID-22",
+  "releasedAt": "2026-10-07T00:55:44Z",
+  "type": "mobile-dock-hotfix",
+  "base": "E-REPORT-SAGS main@94a86184c9d14050e49a2114649b10be533a0fb2",
   "updatePolicy": "required",
-  "notes": "Build 21: khóa dock mobile thành đúng 2 hàng 2 cột: NHẬP NHANH + XUẤT PDF / HOÀN TẤT + KÝ. Tối ưu mở biểu mẫu bằng cách bỏ chờ migrate chữ ký/localStorage trước khi mở; storage recovery chạy nền sau khi form đã hiển thị. Startup/pageshow cleanup cũng được defer để không tranh CPU với thao tác mở form. Không thay đổi quy tắc nghiệp vụ, dữ liệu lưu, chữ ký hoặc PDF.",
-  "message": "V2.5 build 21: final 2x2 mobile dock and non-blocking form-open storage maintenance."
+  "notes": "Build 22: sửa dock mobile bằng vị trí grid theo đúng chức năng: NHẬP NHANH hàng 1 cột 1; XUẤT PDF hàng 1 cột 2; HOÀN TẤT hàng 2 cột 1; KÝ hàng 2 cột 2. Không còn phụ thuộc thứ tự DOM và override rule cũ làm action thứ 3 chiếm nguyên hàng. Giữ nguyên tối ưu tốc độ mở biểu mẫu của build 21.",
+  "message": "V2.5 build 22: semantic fixed 2x2 mobile dock."
 }
