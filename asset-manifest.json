@@ -1,8 +1,8 @@
 {
   "schema": 2,
-  "version": "V2.1",
-  "build": "V2.1-20261007-DATA-SAFETY-FORM-CONTRAST-03",
-  "strategy": "V2.7 candidate: immutable drafts, atomic conflict arbitration, deterministic release integrity",
+  "version": "V2.2",
+  "build": "V2.2-20261007-GLOBAL-THEME-CONTRAST-01",
+  "strategy": "Production V2.2 · global theme contrast pinned in verified PWA shell",
   "mutableMetadata": [
     "./forms/forms.registry.json",
     "./data/form-configuration.json"
@@ -718,8 +718,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "5f0325e56ffd99b5bfc7eec10303265b51900fe5752e745434dfaacba932175c",
-      "bytes": 81024
+      "sha256": "dc22c08b2ada6924152c8f8821d07b597c55862a4427150fc34fd8e1cf6a4646",
+      "bytes": 80865
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -770,12 +770,16 @@
       "bytes": 6937
     },
     "./service-worker.js": {
-      "sha256": "0febf09995e330ba0087964f370427c44315efa5b9783e7975004f3708b5e727",
-      "bytes": 21495
+      "sha256": "cdfbe0fe870959a1d52dbaac88377a37f081faf4f83213412b5558e30709a283",
+      "bytes": 21520
     },
     "./version.json": {
-      "sha256": "68c7374060d79f0a10f8bb075549ccbdc08dadd4b51ddea18c90b51d9e739c5c",
-      "bytes": 609
+      "sha256": "b8c5f73e5bbe1d8d33d9ec02d7e878b3d6e74b1168a46227d9d62f6aa218fc07",
+      "bytes": 889
+    },
+    "./app/modules/theme-contrast.v2.js": {
+      "sha256": "0f288337679b156e5aea0c2f4b37136d0010208167020e5a661cb3c56f919bb4",
+      "bytes": 6143
     }
   },
   "mutableAssets": [
