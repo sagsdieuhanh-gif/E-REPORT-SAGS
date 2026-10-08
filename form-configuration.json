@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "revision": 8,
+  "revision": 9,
   "source": "repository",
   "carriers": {
     "HAV": {
@@ -309,8 +309,10 @@
     "tvjgof035": {
       "order": 8,
       "enabled": true,
-      "allCarriers": true,
-      "carriers": [],
+      "allCarriers": false,
+      "carriers": [
+        "VZ"
+      ],
       "aircraftClass": "ALL",
       "aircraftTypes": []
     },

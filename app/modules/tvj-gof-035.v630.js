@@ -26,7 +26,8 @@
       st[PREFIX+"flightNumber"],meta?.name,meta?.rosterFlightId,env?.rosterFlightId,
       rs.fltBefore,rs.fltAfter,rs.arrFlight,rs.depFlight,rs.flightRaw,rs.flightName
     ];
-    return vals.some(vzText)||baseGroup(env,meta)===GROUP||String(env?.vzForm||"")===FORM_ID;
+    const roster=[rs.arrFlight,rs.depFlight,rs.flightRaw,rs.flightName,meta?.name].filter(Boolean);
+    return (roster.length?roster:vals).some(vzText);
   }
   function eligible(env=currentEnv(),meta=currentMeta()){
     if(!looksVZ(env,meta))return false;
