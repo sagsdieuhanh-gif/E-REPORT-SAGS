@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V2.2",
-  "build": "V2.2-20261008-ADMIN-ALL-FORM-VIEW-01",
+  "version": "V2.3",
+  "build": "V2.3-20261008-FLIGHT-FORMS-PDF-STABILITY-01",
   "strategy": "Production V2.2 · AD read-only all-form dossier viewer pinned in verified PWA shell",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -18,8 +18,8 @@
       "bytes": 1253
     },
     "./app/boot/05-legacy.js": {
-      "sha256": "edaecea876537ca72d68a60ccd879fda97412217ccd9c1e2fd105c02b63322c9",
-      "bytes": 296612
+      "sha256": "7329793f44bab554f2b4e62325953efe1d3a8e0c112364b9fa520899cf8a56b6",
+      "bytes": 297025
     },
     "./app/boot/06-legacy.js": {
       "sha256": "c2e0a02971adae55b30f486b5680155d31abd80534b8912dd797f01ad796bf94",
@@ -130,8 +130,8 @@
       "bytes": 84928
     },
     "./app/generated/core-flight.js": {
-      "sha256": "2fc6ae1ce9fe5528e4332c76a00a22acd2956b1a8e36bdbd34620fd16b66c4f5",
-      "bytes": 218149
+      "sha256": "aaf36ba54dbc98805e18818cce71b0da5d12bd264fa75667f110d600a24e13ee",
+      "bytes": 218670
     },
     "./app/generated/core-performance.js": {
       "sha256": "005c80dc9ce412f9e1c8b74d24b48e68b27ddaa05d5de203cb2029e7f93364d8",
@@ -162,8 +162,8 @@
       "bytes": 46305
     },
     "./app/generated/runtime-4.js": {
-      "sha256": "d1182b828f1dee8604291df22b24c13e404ac7dd4f03347d3937139373074013",
-      "bytes": 181261
+      "sha256": "57c1eee7ea3ff912f8d9117c53cc7c810fd2d724270b21aae05ef3c4a15d4fae",
+      "bytes": 181268
     },
     "./app/generated/runtime-5.js": {
       "sha256": "03f61b9add33905fe1b1c4467a2f0895d58cb4eb11a81aa2f47a86e4af2ebfd4",
@@ -172,6 +172,10 @@
     "./app/modules/admin-account-actions.v2.js": {
       "sha256": "6405c8a1e4dbbef6824f3266fe1e747b2b4c20e3ff4893f075854d9a878826a5",
       "bytes": 16051
+    },
+    "./app/modules/admin-all-form-viewer.v1.js": {
+      "sha256": "d9afff8e8fa768dbe94f3bad7ee026f1b3e8c93cb2931133952d38c0a5191629",
+      "bytes": 20618
     },
     "./app/modules/admin-reset.v503hf2.js": {
       "sha256": "820a96f835cc27e5aa7f98eb1c2093739fdde6b4975b381accc42df4a62acc38",
@@ -182,8 +186,8 @@
       "bytes": 36071
     },
     "./app/modules/airline-form-policy.v1.js": {
-      "sha256": "d92ca37647a4697299f767983b1435f7df6cf88ee6718073bf383ab6fde2a653",
-      "bytes": 27751
+      "sha256": "332951db92207a4fd81df13f4978b13678291f63bfa5e4b69827bc9ff395ac59",
+      "bytes": 27827
     },
     "./app/modules/aviation-reference.v1.js": {
       "sha256": "0dc4d416c2a21db88d45f722e65413b83ef2cf8af250fc4e2e168f066a2d6878",
@@ -206,8 +210,8 @@
       "bytes": 20659
     },
     "./app/modules/daily-roster.v502.js": {
-      "sha256": "fe90d12df1e27a8c0257a74648f7a241fdb7cbbfb5b7bb48789ceaa85b32df01",
-      "bytes": 87039
+      "sha256": "97bd952f04b51ff9629c27c8031a66af6984234c5133de870adf6b05b7b72f66",
+      "bytes": 87163
     },
     "./app/modules/feature-loader.v1.js": {
       "sha256": "dc738a8d7df5134fe41f208fa0a19f6624438dc3d82fc30a921e05541fbc91c9",
@@ -285,9 +289,13 @@
       "sha256": "507c23b9f450ee2f95af5941cf3108497d91fb37bb3eb8549fd3ca031d0d2ddd",
       "bytes": 1283
     },
+    "./app/modules/theme-contrast.v2.js": {
+      "sha256": "67dfe0ca59dd66fb3308ec90ebbf776f0a833d36d80abf581ed1cc01e419c0be",
+      "bytes": 6136
+    },
     "./app/modules/tvj-gof-035.v630.js": {
-      "sha256": "8a0fc5d7375c4bacde480b7baaea6f8f251699730c3019f13a1e9cf46871ec8b",
-      "bytes": 17280
+      "sha256": "66d190248c24e11a69bcd00d3bf1d4e50bec9dab78e62a3e8e5d9202d6c19281",
+      "bytes": 17339
     },
     "./app/modules/tvj-gof-035.v631.js": {
       "sha256": "9e89b5d32de75bc395ec68685d77c4eb714a729e85c40ba144bc9585dd812d1a",
@@ -638,8 +646,8 @@
       "bytes": 30731
     },
     "./data/form-configuration.json": {
-      "sha256": "d1e06667649e74aa979e6241c2c4e8e4774b744556c5260eb856fc084f6324fa",
-      "bytes": 6537
+      "sha256": "bb37b508f650dc51687d0456280071cab6020ad1383cb27d66556bd6df62a8d6",
+      "bytes": 6558
     },
     "./data/fsags-display-coordinates.json": {
       "sha256": "9ba95aab8420c74b377970e082e81a43f6402c262d6d82aa2dcc13fd7834b4be",
@@ -718,8 +726,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "08970ad47b527f4d752a24c56cf36a6bd44f01849cab4046e8ee26d9336cbdab",
-      "bytes": 80858
+      "sha256": "bcae7db70c406bb57555db7b7efd7478f32d5b6ec2043c19ca42601462686664",
+      "bytes": 81376
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -770,20 +778,12 @@
       "bytes": 6937
     },
     "./service-worker.js": {
-      "sha256": "dd225d6dc1a5631e50e37e9ec5c2c6f36945172ca4caf9ae093f385994a4c15a",
-      "bytes": 21558
+      "sha256": "0d35dfd3954116d7fdbad013ed265447168512f167ecc1d79972f1891749928d",
+      "bytes": 21565
     },
     "./version.json": {
-      "sha256": "0ff91b571a31030703a41e7f65250c92cce8cf30785e0ed4f07e711cb3092892",
-      "bytes": 783
-    },
-    "./app/modules/theme-contrast.v2.js": {
-      "sha256": "0f288337679b156e5aea0c2f4b37136d0010208167020e5a661cb3c56f919bb4",
-      "bytes": 6143
-    },
-    "./app/modules/admin-all-form-viewer.v1.js": {
-      "sha256": "d9afff8e8fa768dbe94f3bad7ee026f1b3e8c93cb2931133952d38c0a5191629",
-      "bytes": 20618
+      "sha256": "25e3e113cc534f3f8a83a2227a25a8fcc2eeb57b80441363e541a011ec4bc34b",
+      "bytes": 683
     }
   },
   "mutableAssets": [

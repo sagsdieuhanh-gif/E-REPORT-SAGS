@@ -52,7 +52,7 @@ html.new-ui-v1 body #fwcModal #sagsFlightSearch{
 }
 html.new-ui-v1 body #fwcModal #sagsFlightSearch::placeholder{color:#5b6b76!important;-webkit-text-fill-color:#5b6b76!important;opacity:1!important}
 
-/* Generic UI text safety net, intentionally excludes paper sheets/SVG/PDF rendering. */
+/* Generic UI text safety net, intentionally excludes official form rendering. */
 html.new-ui-v1 body :is(#sagsQuickEntry,#quickTimeModal,#fs09QuickModal,#sagsSettingsCenter,#fwcModal,#sags5494Quick,#sags5494FieldEditor,#entry) :is(input,textarea,select,button){opacity:1}
 `;document.head.appendChild(st);
 root.sagsThemeContrastV2Audit=function(){
