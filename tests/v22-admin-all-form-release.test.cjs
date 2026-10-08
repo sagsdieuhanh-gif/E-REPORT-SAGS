@@ -1,0 +1,16 @@
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const root=path.resolve(__dirname,'..');
+const index=fs.readFileSync(path.join(root,'index.html'),'utf8');
+const sw=fs.readFileSync(path.join(root,'service-worker.js'),'utf8');
+const ver=JSON.parse(fs.readFileSync(path.join(root,'version.json'),'utf8'));
+const man=JSON.parse(fs.readFileSync(path.join(root,'asset-manifest.json'),'utf8'));
+assert.equal(ver.version,'V2.2');
+assert.equal(ver.build,'V2.2-20261008-ADMIN-ALL-FORM-VIEW-01');
+assert.equal(man.version,'V2.2');
+assert.equal(man.build,'V2.2-20261008-ADMIN-ALL-FORM-VIEW-01');
+assert.match(index,/admin-all-form-viewer\.v1\.js\?v=V2\.2-20261008-ADMIN-ALL-FORM-VIEW-01/);
+assert.match(sw,/admin-all-form-viewer\.v1\.js/,'viewer must be in verified PWA bootstrap');
+assert.ok(man.assets['./app/modules/admin-all-form-viewer.v1.js']?.sha256,'viewer checksum missing');
+assert.ok(man.assets['./index.html']?.sha256);
+assert.ok(man.assets['./service-worker.js']?.sha256);
+console.log('V2.2 AD all-form release/cache contract passed');

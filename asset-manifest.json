@@ -1,8 +1,8 @@
 {
   "schema": 2,
   "version": "V2.2",
-  "build": "V2.2-20261007-GLOBAL-THEME-CONTRAST-01",
-  "strategy": "Production V2.2 · global theme contrast pinned in verified PWA shell",
+  "build": "V2.2-20261008-ADMIN-ALL-FORM-VIEW-01",
+  "strategy": "Production V2.2 · AD read-only all-form dossier viewer pinned in verified PWA shell",
   "mutableMetadata": [
     "./forms/forms.registry.json",
     "./data/form-configuration.json"
@@ -718,8 +718,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "dc22c08b2ada6924152c8f8821d07b597c55862a4427150fc34fd8e1cf6a4646",
-      "bytes": 80865
+      "sha256": "08970ad47b527f4d752a24c56cf36a6bd44f01849cab4046e8ee26d9336cbdab",
+      "bytes": 80858
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -770,16 +770,20 @@
       "bytes": 6937
     },
     "./service-worker.js": {
-      "sha256": "cdfbe0fe870959a1d52dbaac88377a37f081faf4f83213412b5558e30709a283",
-      "bytes": 21520
+      "sha256": "dd225d6dc1a5631e50e37e9ec5c2c6f36945172ca4caf9ae093f385994a4c15a",
+      "bytes": 21558
     },
     "./version.json": {
-      "sha256": "b8c5f73e5bbe1d8d33d9ec02d7e878b3d6e74b1168a46227d9d62f6aa218fc07",
-      "bytes": 889
+      "sha256": "0ff91b571a31030703a41e7f65250c92cce8cf30785e0ed4f07e711cb3092892",
+      "bytes": 783
     },
     "./app/modules/theme-contrast.v2.js": {
       "sha256": "0f288337679b156e5aea0c2f4b37136d0010208167020e5a661cb3c56f919bb4",
       "bytes": 6143
+    },
+    "./app/modules/admin-all-form-viewer.v1.js": {
+      "sha256": "d9afff8e8fa768dbe94f3bad7ee026f1b3e8c93cb2931133952d38c0a5191629",
+      "bytes": 20618
     }
   },
   "mutableAssets": [

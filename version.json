@@ -1,12 +1,12 @@
 {
   "version": "V2.2",
   "displayVersion": "V2.2",
-  "label": "V2.2 - GLOBAL THEME CONTRAST",
-  "build": "V2.2-20261007-GLOBAL-THEME-CONTRAST-01",
-  "releasedAt": "2026-10-07T03:32:01Z",
-  "type": "theme-contrast-release",
-  "base": "E-REPORT-SAGS main@da5495e72b7b5991b2fa14f19dd334f1c1dcc99f",
+  "label": "V2.2 - AD ALL FORM VIEW",
+  "build": "V2.2-20261008-ADMIN-ALL-FORM-VIEW-01",
+  "releasedAt": "2026-10-08T03:40:11Z",
+  "type": "admin-readonly-dossier",
+  "base": "E-REPORT-SAGS main@bb37185714816d65ee723725236e49964317a253",
   "updatePolicy": "required",
-  "notes": "V2.2 phát hành lại lớp contrast/theme toàn hệ thống như một release hoàn chỉnh. theme-contrast.v2.js được pin vào Service Worker bootstrap, thêm checksum vào asset-manifest, đổi toàn bộ cache-busting query và cache namespace để thiết bị không giữ shell V2.1 cũ. Giữ nguyên data-safety fixes; chuẩn hóa light/dark contrast cho shared editors, Settings và My Flight mà không đổi màu biểu mẫu/PDF đã lưu.",
-  "message": "V2.2: force a complete cache-safe rollout of global theme contrast."
+  "notes": "AD xem được toàn bộ biểu mẫu theo từng assignment/người thực hiện trong Hồ sơ chuyến, gồm dữ liệu đang làm, hoàn tất và bàn giao. Viewer dùng forms.registry để dựng biểu mẫu ở chế độ chỉ xem; FSAGS208 giữ viewer chuyên dụng. Không nhận việc, không đổi owner và không ghi dữ liệu nghiệp vụ.",
+  "message": "V2.2: add cache-safe AD read-only access to all flight forms."
 }
