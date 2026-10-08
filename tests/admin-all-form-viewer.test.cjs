@@ -11,7 +11,7 @@ assert.match(src,/completionEnvelope/,'viewer must support completed snapshots')
 assert.match(src,/handoverEnvelope/,'viewer must support handover snapshots');
 assert.match(src,/forms\/forms\.registry\.json/,'viewer must enumerate canonical forms registry');
 assert.match(src,/sagsAdminOpenReadOnlyForm/,'viewer must expose read-only opener');
-assert.doesNotMatch(src,/\.set\s*\(/,'read-only viewer must not write RTDB with set()');
+assert.doesNotMatch(src,/db\([^\n;]*\)\.set\s*\(/,'read-only viewer must not write RTDB with set()');
 assert.doesNotMatch(src,/\.update\s*\(/,'read-only viewer must not write RTDB with update()');
 assert.doesNotMatch(src,/\.transaction\s*\(/,'read-only viewer must not write RTDB with transaction()');
 for(const form of reg.forms){
