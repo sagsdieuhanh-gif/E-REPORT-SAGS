@@ -270,8 +270,8 @@
       "bytes": 12286
     },
     "./app/modules/quick-entry.v1.js": {
-      "sha256": "b2a3db220867fc4f0bbee82aaf6b93f76e3b3985b3c61e915a45d0a812c6a3fb",
-      "bytes": 18314
+      "sha256": "931d093e9902ae1f924c070709e5f2944fc9bc5b2254dcbeef2dba20d9f40202",
+      "bytes": 18346
     },
     "./app/modules/roster-lite.v5.js": {
       "sha256": "3739427db6ffc56a3a1929f7a429313e32691cd13816a3c31c024142f29ac069",
