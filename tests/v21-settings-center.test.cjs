@@ -1,7 +1,7 @@
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
 const root=path.resolve(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p),'utf8');
 const html=read('index.html'),js=read('app/modules/settings.v1.js'),css=read('app/styles/new-ui-v1.css'),sw=read('service-worker.js'),pref=read('app/modules/ui-preferences.v1.js'),runtime=read('app/core/runtime.v503hf2.bundle.js'),runtimeLive=read('app/generated/runtime-1.js'),shell=read('app/boot/32-v6494-aviation-shell.js'),ver=JSON.parse(read('version.json'));
-assert.match(ver.version,/^V2\.\d+$/,'Settings contract requires a V2 release');
+assert.match(ver.version,/^V2\.\d+(?:\.\d+)?$/,'Settings contract requires a V2 release');
 assert.ok(ver.build.startsWith(ver.version+'-'),'Settings contract requires build/version alignment');
 assert.ok(html.includes('settings.v1.js?v='+ver.build),'Settings module must be pinned to current build');
 assert.match(sw,/\.\/app\/modules\/settings\.v1\.js/);

@@ -15,9 +15,9 @@ assert.match(quick,/quickTimeNow" type="button" tabindex="-1"/,'clock buttons mu
 
 const quickNextHtml=fs.readFileSync(__dirname+'/../index.html','utf8');
 const quickNextJs=fs.readFileSync(__dirname+'/../app/boot/18-v173-quick-time.js','utf8');
-assert.match(quickNextHtml,/id="quickTimeNextBtn"[^>]*onclick="qteMoveNextInput\\(\\)"/,'visible NEXT button must be present and wired');
-assert.match(quickNextJs,/window\\.qteMoveNextInput=function/,'on-screen NEXT must have a navigation handler');
-assert.match(quickNextJs,/qteEditableInputs\\(\\)/,'NEXT must target input fields and skip clock buttons');
-assert.match(quickNextJs,/qteHandleNextKey=function\\(e,el\\)/,'keyboard and visible NEXT must share navigation logic');
-assert.match(css,/V2\\.4\\.1 · Visible NEXT navigation/,'NEXT button must have responsive layout and contrast styles');
+assert.ok(quickNextHtml.includes('id="quickTimeNextBtn"')&&quickNextHtml.includes('onclick="qteMoveNextInput()"'),'visible NEXT button must be present and wired');
+assert.ok(quickNextJs.includes('window.qteMoveNextInput=function'),'on-screen NEXT must have a navigation handler');
+assert.ok(quickNextJs.includes('qteEditableInputs()'),'NEXT must target input fields and skip clock buttons');
+assert.ok(quickNextJs.includes('qteHandleNextKey=function(e,el)'),'keyboard and visible NEXT must share navigation logic');
+assert.ok(css.includes('V2.4.1 · Visible NEXT navigation'),'NEXT must have responsive layout and contrast styles');
 console.log('Quick Time final-owner mobile field fix passed');
