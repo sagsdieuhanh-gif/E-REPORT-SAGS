@@ -16,6 +16,7 @@ const GROUP_TO_ID={
   fsags54:'fsags54',clc_checklist:'fsags94',fsags94:'fsags94',fsags94_clc:'fsags94'
 };
 let registry=null,paintQueued=false,drawWrapped=false,exportWrapped=false,observer=null;
+const observedSvgs=new WeakSet();
 
 const S=v=>String(v??'').trim();
 const U=v=>S(v).toLowerCase().replace(/[\s./-]+/g,'_').replace(/^_+|_+$/g,'');
@@ -65,7 +66,7 @@ function paintPage(pageNo){
   const ctx=c.getContext('2d');if(!ctx)return false;ctx.clearRect(0,0,c.width,c.height);
   root.sagsV495PaintCanonicalPage?.(ctx,pageNo);
   if(Number(pageNo)===16){
-    document.querySelectorAll('#svg16 .v621Tri').forEach(el=>{el.style.display='none'});
+    document.querySelectorAll('#svg16 .v621Tri').forEach(el=>{if(el.style.display!=='none')el.style.display='none'});
   }
   return true;
 }
@@ -101,8 +102,8 @@ function wrapDraw(){
   w.__sagsRegistryUnifiedV647=true;w.__sagsRegistryUnifiedBase=base;root.draw=w;try{draw=w}catch(_){}drawWrapped=true;return true;
 }
 function observeSvg(){
-  if(observer)return;observer=new MutationObserver(()=>queuePaint());
-  for(const n of managedPages()){const svg=document.getElementById('svg'+n);if(svg)observer.observe(svg,{subtree:true,childList:true,attributes:true,attributeFilter:['style','class','x','y','font-size','transform']})}
+  if(!observer)observer=new MutationObserver(()=>queuePaint());
+  for(const n of managedPages()){const svg=document.getElementById('svg'+n);if(svg&&!observedSvgs.has(svg)){observer.observe(svg,{subtree:true,childList:true,attributes:true,attributeFilter:['style','class','x','y','font-size','transform']});observedSvgs.add(svg)}}
 }
 
 function isMobileLike(){
@@ -243,7 +244,18 @@ async function boot(){
   wrapDraw();wrapExportChoice();patchPreparedButtons();ensureQuickNA();observeSvg();queuePaint();
   setTimeout(async()=>{try{await applyPublishedRegistry();observeSvg();queuePaint()}catch(_){}},900);
 }
-const uiObserver=new MutationObserver(()=>{ensureQuickNA();if(registry){if(!drawWrapped)wrapDraw();if(!G('openExportChoiceMenu')?.__sagsRegistryUnifiedV647)wrapExportChoice();if(root.sags5494ExportCurrentPdf!==root.sagsRegistryExport5494)root.sags5494ExportCurrentPdf=root.sagsRegistryExport5494;queuePaint()}});
+// SVG changes already have a dedicated observer. Status text, download links and
+// unrelated dialogs must never repaint every visible form during PDF export.
+const registryUiSelector='[id^="page"],#fs09QuickModal,#sags5494Quick,#bbbtQuickEntryModal';
+function registryUiChanged(changes){
+  return changes.some(change=>[...change.addedNodes,...change.removedNodes].some(node=>
+    node.nodeType===1&&(node.matches?.(registryUiSelector)||node.querySelector?.(registryUiSelector))));
+}
+let uiQueued=false;
+const uiObserver=new MutationObserver(changes=>{
+  if(uiQueued||!registryUiChanged(changes))return;
+  uiQueued=true;requestAnimationFrame(()=>{uiQueued=false;ensureQuickNA();if(registry){if(!drawWrapped)wrapDraw();if(!G('openExportChoiceMenu')?.__sagsRegistryUnifiedV647)wrapExportChoice();if(root.sags5494ExportCurrentPdf!==root.sagsRegistryExport5494)root.sags5494ExportCurrentPdf=root.sagsRegistryExport5494;observeSvg();queuePaint()}});
+});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{uiObserver.observe(document.documentElement,{subtree:true,childList:true});setTimeout(boot,420)},{once:true});
 else{uiObserver.observe(document.documentElement,{subtree:true,childList:true});setTimeout(boot,420)}
 root.addEventListener('pageshow',()=>setTimeout(async()=>{try{await applyPublishedRegistry();ensureQuickNA();queuePaint()}catch(_){}},250),{passive:true});

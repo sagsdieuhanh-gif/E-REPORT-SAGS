@@ -305,15 +305,20 @@
   function patchQuickButton(){
     const b=document.getElementById('v1134QuickTimeBtn'),g=activeGroup();
     if(!b||!DEF[g])return;
-    b.style.display=canUse(g)?'inline-flex':'none';
-    b.title='Nhập nhanh '+DEF[g].code;
+    const display=canUse(g)?'inline-flex':'none';if(b.style.display!==display)b.style.display=display;
+    const title='Nhập nhanh '+DEF[g].code;if(b.title!==title)b.title=title;
     b.onclick=()=>root.sags5494OpenQuickEntry?.(g);
   }
   function sync(){
     patchExport();
     patchQuickButton();
   }
-  const mo=new MutationObserver(()=>setTimeout(sync,0));
+  let syncQueued=false;
+  const syncSelector='#v1134QuickTimeBtn,#page16,#page17';
+  const mo=new MutationObserver(changes=>{
+    const relevant=changes.some(c=>c.type==='attributes'?c.target.matches?.('#page16,#page17'):[...c.addedNodes,...c.removedNodes].some(n=>n.nodeType===1&&(n.matches?.(syncSelector)||n.querySelector?.(syncSelector))));
+    if(!relevant||syncQueued)return;syncQueued=true;requestAnimationFrame(()=>{syncQueued=false;sync()});
+  });
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{mo.observe(document.documentElement,{subtree:true,childList:true});sync()},{once:true});
   else{mo.observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['class','style']});sync()}
   [120,450,1000,2200,4200].forEach(ms=>setTimeout(sync,ms));
