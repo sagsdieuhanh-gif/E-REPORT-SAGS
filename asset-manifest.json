@@ -130,8 +130,8 @@
       "bytes": 84928
     },
     "./app/generated/core-flight.js": {
-      "sha256": "aaf36ba54dbc98805e18818cce71b0da5d12bd264fa75667f110d600a24e13ee",
-      "bytes": 218670
+      "sha256": "471db307795d381d7b77e6143c7fa2ffa40297fd9cd0f92f8a7a9a98136f40bf",
+      "bytes": 224132
     },
     "./app/generated/core-performance.js": {
       "sha256": "005c80dc9ce412f9e1c8b74d24b48e68b27ddaa05d5de203cb2029e7f93364d8",
