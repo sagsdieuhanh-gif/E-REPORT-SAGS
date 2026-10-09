@@ -1,12 +1,12 @@
 {
-  "version": "V2.4.7",
-  "displayVersion": "V2.4.7",
-  "label": "V2.4.7 - GLOBAL CONTRAST CONTRACT",
-  "build": "V2.4.7-20261009-GLOBAL-CONTRAST-01",
+  "version": "V2.4.8",
+  "displayVersion": "V2.4.8",
+  "label": "V2.4.8 - ROSTER MAILBOX & MY FLIGHT INTEGRITY",
+  "build": "V2.4.8-20261009-ROSTER-MAILBOX-INTEGRITY-01",
   "releasedAt": "2026-10-09",
-  "type": "global-contrast-ui",
+  "type": "roster-mailbox-integrity",
   "base": "E-REPORT-SAGS branch@49dc5800553fc7e7ff996ae799432fa3c74465e6",
   "updatePolicy": "required",
-  "notes": "Sửa chữ chìm nền tối tại Driver/Porter/Operator Quick Entry 42.1/42.3/55.1; chuẩn hóa cặp màu cho ô nhập, nút, My Flight, Settings, 54/94, FSAGS09, Quick Time và menu mobile. Tương phản >=4.5:1 cho các cặp chính; không đổi giấy biểu mẫu/PDF/chữ ký.",
-  "message": "V2.4.7: cross-form high-contrast text and background pairs on mobile and desktop."
+  "notes": "Kiểm tra các trường owner/opDate/flightId/formGroup/active của hộp phân công nhân viên trước khi bỏ qua roster không đổi; ghi lại hộp phân công lỗi; đọc lại Firebase sau khi ghi; chức danh giám sát vẫn thấy các nhiệm vụ của mình trong MY FLIGHT. Giữ nguyên dữ liệu biểu mẫu và chữ ký.",
+  "message": "V2.4.8: verify employee roster mailbox after publishing."
 }
