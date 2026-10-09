@@ -1,12 +1,12 @@
 {
-  "version": "V2.4.6",
-  "displayVersion": "V2.4.6",
-  "label": "V2.4.6 - UNIFIED QUICK ENTRY NEXT FOR FSAGS 42.1 / 55.1",
-  "build": "V2.4.6-20261009-UNIFIED-QUICK-NEXT-421-551-01",
+  "version": "V2.4.7",
+  "displayVersion": "V2.4.7",
+  "label": "V2.4.7 - GLOBAL CONTRAST CONTRACT",
+  "build": "V2.4.7-20261009-GLOBAL-CONTRAST-01",
   "releasedAt": "2026-10-09",
-  "type": "quick-entry-unify",
+  "type": "global-contrast-ui",
   "base": "E-REPORT-SAGS branch@49dc5800553fc7e7ff996ae799432fa3c74465e6",
   "updatePolicy": "required",
-  "notes": "Nhập nhanh cho nhóm Ramp Manpower & Equipment của FSAGS 55.1 (porter1, driver, step, belt, tractor, loader) và các nhóm liên quan FSAGS 42.1 dùng cùng giao diện từng trường + nút Trước/Tiếp của 42.3. Enter = Tiếp. Giữ nguyên mã trường, dữ liệu cũ và persist hiện tại.",
-  "message": "V2.4.6: 42.1 and 55.1 now share the 42.3-style quick-entry Next workflow."
+  "notes": "Sửa chữ chìm nền tối tại Driver/Porter/Operator Quick Entry 42.1/42.3/55.1; chuẩn hóa cặp màu cho ô nhập, nút, My Flight, Settings, 54/94, FSAGS09, Quick Time và menu mobile. Tương phản >=4.5:1 cho các cặp chính; không đổi giấy biểu mẫu/PDF/chữ ký.",
+  "message": "V2.4.7: cross-form high-contrast text and background pairs on mobile and desktop."
 }
