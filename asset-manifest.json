@@ -778,8 +778,8 @@
       "bytes": 6937
     },
     "./service-worker.js": {
-      "sha256": "7197ad159474aa2645427fcbbc553f6ee22feb3b8a5accee691bae1ea7e5f0de",
-      "bytes": 21575
+      "sha256": "b579652547f8daf59b71bd9f3fee1d3814a76ef8fa10cbfaa54fd0dd8a577ddb",
+      "bytes": 21559
     },
     "./version.json": {
       "sha256": "2d33adb6529a9e4c55d0b809f4604efd5533799415d3d6efb2b35907aa4f938c",
