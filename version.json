@@ -1,12 +1,12 @@
 {
-  "version": "V2.4.5",
-  "displayVersion": "V2.4.5",
-  "label": "V2.4.5 - ROSTER BLOCKER DETAILS",
-  "build": "V2.4.5-20261009-ROSTER-BLOCKER-DIAGNOSTICS-01",
+  "version": "V2.4.6",
+  "displayVersion": "V2.4.6",
+  "label": "V2.4.6 - UNIFIED QUICK ENTRY NEXT FOR FSAGS 42.1 / 55.1",
+  "build": "V2.4.6-20261009-UNIFIED-QUICK-NEXT-421-551-01",
   "releasedAt": "2026-10-09",
-  "type": "roster-blocker-diagnostics",
+  "type": "quick-entry-unify",
   "base": "E-REPORT-SAGS branch@49dc5800553fc7e7ff996ae799432fa3c74465e6",
   "updatePolicy": "required",
-  "notes": "Nêu rõ chuyến bị chặn do mở lại sau hoàn tất hay nhận bàn giao QR, phân biệt với trạng thái Đang nhập. Không tự hủy biểu mẫu có lịch sử nghiệp vụ.",
-  "message": "V2.4.5: safe precise roster blocker diagnostics."
+  "notes": "Nhập nhanh cho nhóm Ramp Manpower & Equipment của FSAGS 55.1 (porter1, driver, step, belt, tractor, loader) và các nhóm liên quan FSAGS 42.1 dùng cùng giao diện từng trường + nút Trước/Tiếp của 42.3. Enter = Tiếp. Giữ nguyên mã trường, dữ liệu cũ và persist hiện tại.",
+  "message": "V2.4.6: 42.1 and 55.1 now share the 42.3-style quick-entry Next workflow."
 }

@@ -1,8 +1,8 @@
 {
   "schema": 2,
-  "version": "V2.4.5",
-  "build": "V2.4.5-20261009-ROSTER-BLOCKER-DIAGNOSTICS-01",
-  "strategy": "Release V2.4.5 - precise roster safety blocker explanation, no unsafe historical reassignment",
+  "version": "V2.4.6",
+  "build": "V2.4.6-20261009-UNIFIED-QUICK-NEXT-421-551-01",
+  "strategy": "V2.4.6 release: 42.1 and 55.1 quick-entry Next/Prev parity with 42.3, no schema changes",
   "mutableMetadata": [
     "./forms/forms.registry.json",
     "./data/form-configuration.json"
@@ -270,8 +270,8 @@
       "bytes": 12286
     },
     "./app/modules/quick-entry.v1.js": {
-      "sha256": "b57a2e6e8d359f1cffe7c955ab9f7f857a76cdab816ecb40d3bd1ded16c44a98",
-      "bytes": 14965
+      "sha256": "b2a3db220867fc4f0bbee82aaf6b93f76e3b3985b3c61e915a45d0a812c6a3fb",
+      "bytes": 18314
     },
     "./app/modules/roster-lite.v5.js": {
       "sha256": "3739427db6ffc56a3a1929f7a429313e32691cd13816a3c31c024142f29ac069",
@@ -726,7 +726,7 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "3148fcddb845a799431b9b7366101575c53153f328ebe4dc200b479eaf93da8d",
+      "sha256": "c6402cf188b37a9d4c537c9d9e0ae94071edc9545df477cac45c9f7056203ee1",
       "bytes": 81736
     },
     "./manifest.webmanifest": {
@@ -778,12 +778,12 @@
       "bytes": 6937
     },
     "./service-worker.js": {
-      "sha256": "54334ceee66963527ec7fba3cf5a4a076381d9567c40419917e69f2e7b57b7c1",
+      "sha256": "fa613f7d990c4a3158d3e8f725203ffb71d6ecf0d9abfe5ba0650946145298af",
       "bytes": 21589
     },
     "./version.json": {
-      "sha256": "eb90e13b08de6599bd9d468b6fcf4d5a77d847b515b97dcc9c13a4014ca0f0d3",
-      "bytes": 610
+      "sha256": "7d84540811656eb9b60cc9843f43174fb140f330499037a0af928e2dc090235e",
+      "bytes": 769
     }
   },
   "mutableAssets": [
