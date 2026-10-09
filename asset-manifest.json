@@ -726,8 +726,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "9b2a6df303700d0a0303bde622219260d9237a9a78dd532708f976cd19a16722",
-      "bytes": 81292
+      "sha256": "56fc954e9f6fc981d729c8f7af09f25c45256bf7fff16b9d78c523c7179f0de1",
+      "bytes": 81144
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -778,8 +778,8 @@
       "bytes": 6937
     },
     "./service-worker.js": {
-      "sha256": "3103e74ccb96907b8f7a9fa9d8f3e7d9b10f2396f9a27b8dcb9169b36776935a",
-      "bytes": 21567
+      "sha256": "44ca8dd12a79e0564a4a7a638e06db006321face8e01c0e7709c0a5f3017c099",
+      "bytes": 21565
     },
     "./version.json": {
       "sha256": "eea6267a88332bbff448764589010f044c4675ea698978d3d52c17fbed517918",
