@@ -1,12 +1,12 @@
 {
-  "version": "V2.4",
-  "displayVersion": "V2.4",
-  "label": "V2.4 - QUICK ENTRY NEXT NAVIGATION",
-  "build": "V2.4-20261009-QUICK-NEXT-NAVIGATION-01",
-  "releasedAt": "2026-10-09T04:30:00Z",
-  "type": "quick-entry-navigation",
-  "base": "E-REPORT-SAGS main@71d6f68ed15a40293a03c186b083a6dfece0c55e",
+  "version": "V2.4.1",
+  "displayVersion": "V2.4.1",
+  "label": "V2.4.1 - VISIBLE QUICK NEXT BUTTON",
+  "build": "V2.4.1-20261009-QUICK-VISIBLE-NEXT-01",
+  "releasedAt": "2026-10-09T04:45:20Z",
+  "type": "quick-next-visible",
+  "base": "E-REPORT-SAGS main@f11fd8b70c22a8d935bc33cbb016fa1d9476033c",
   "updatePolicy": "required",
-  "notes": "NHẬP GIỜ NHANH: phím Tiếp/Enter đi thẳng sang ô nhập liệu kế tiếp, tự bỏ qua nút đồng hồ ◷. Nút đồng hồ vẫn bấm tay bình thường. Đồng bộ cache PWA, manifest và version để thiết bị nhận đúng V2.4.",
-  "message": "V2.4: Quick-entry Next skips clock controls and focuses the next data input."
+  "notes": "Thêm nút TIẾP → hiển thị trong thanh dưới của NHẬP GIỜ NHANH. Bấm đi thẳng tới ô nhập tiếp theo, bỏ qua đồng hồ; tự chuyển trang khi cần. PC một hàng 4 nút, mobile 2 hàng. Giữ nguyên CẬP NHẬT, N/A và XÓA GIỜ.",
+  "message": "V2.4.1: Visible NEXT button in Quick Time, with focus-safe form navigation."
 }

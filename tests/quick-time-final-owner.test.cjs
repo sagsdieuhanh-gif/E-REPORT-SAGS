@@ -12,4 +12,12 @@ const quick=fs.readFileSync(__dirname+'/../app/boot/18-v173-quick-time.js','utf8
 assert.match(quick,/enterkeyhint="next"/,'quick-time keyboard action must advertise Next');
 assert.match(quick,/qteHandleNextKey\(event,this\)/,'quick-time inputs must route Enter/Next to the next input');
 assert.match(quick,/quickTimeNow" type="button" tabindex="-1"/,'clock buttons must be skipped by keyboard Next/Tab navigation');
+
+const quickNextHtml=fs.readFileSync(__dirname+'/../index.html','utf8');
+const quickNextJs=fs.readFileSync(__dirname+'/../app/boot/18-v173-quick-time.js','utf8');
+assert.match(quickNextHtml,/id="quickTimeNextBtn"[^>]*onclick="qteMoveNextInput\\(\\)"/,'visible NEXT button must be present and wired');
+assert.match(quickNextJs,/window\\.qteMoveNextInput=function/,'on-screen NEXT must have a navigation handler');
+assert.match(quickNextJs,/qteEditableInputs\\(\\)/,'NEXT must target input fields and skip clock buttons');
+assert.match(quickNextJs,/qteHandleNextKey=function\\(e,el\\)/,'keyboard and visible NEXT must share navigation logic');
+assert.match(css,/V2\\.4\\.1 · Visible NEXT navigation/,'NEXT button must have responsive layout and contrast styles');
 console.log('Quick Time final-owner mobile field fix passed');

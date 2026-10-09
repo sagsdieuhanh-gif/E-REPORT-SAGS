@@ -1,8 +1,8 @@
 {
   "schema": 2,
-  "version": "V2.4",
-  "build": "V2.4-20261009-QUICK-NEXT-NAVIGATION-01",
-  "strategy": "Production V2.4 · Quick-entry Next skips clock controls · verified PWA shell",
+  "version": "V2.4.1",
+  "build": "V2.4.1-20261009-QUICK-VISIBLE-NEXT-01",
+  "strategy": "Production V2.4.1 · visible Next field navigation, consistent manifest/SW release contract",
   "mutableMetadata": [
     "./forms/forms.registry.json",
     "./data/form-configuration.json"
@@ -62,8 +62,8 @@
       "bytes": 3097
     },
     "./app/boot/18-v173-quick-time.js": {
-      "sha256": "00b919ec210838d867708c7fe590ed74c42f6eb4aaf00fb22dc05f4232efa96c",
-      "bytes": 27221
+      "sha256": "d529d9c80b1c9eb103ef86333c0b2adad68c4c2ad8a1e77cc9d1447c1f491ab8",
+      "bytes": 27646
     },
     "./app/boot/19-v183-fs09-quick.js": {
       "sha256": "bfad6008b1ad14c24b5f156ad6f9cb6c3eed0be4c26fb2193f83bd56c45a2036",
@@ -318,8 +318,8 @@
       "bytes": 41473
     },
     "./app/styles/aviation-reference.v1.css": {
-      "sha256": "521bfc0d34e6c7d77014d928e8087336c23fc18a402d199dcbaae73cbac669fe",
-      "bytes": 61010
+      "sha256": "5b257aa9d13f5d7616c63b87c10c3c1583a2d2fff1d109c36a45975d9261d538",
+      "bytes": 63124
     },
     "./app/styles/boot-01-legacy.css": {
       "sha256": "fa00cde1d78de014a3c0341b9741993441fa4a8a0b8aad860f916a50613e7bb4",
@@ -726,8 +726,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "30240782364d233af75746e280f7423933f05e35c2a4bd5c1f2a9830d23d478d",
-      "bytes": 81006
+      "sha256": "9b2a6df303700d0a0303bde622219260d9237a9a78dd532708f976cd19a16722",
+      "bytes": 81292
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -778,12 +778,12 @@
       "bytes": 6937
     },
     "./service-worker.js": {
-      "sha256": "aeca7f8b1e4433f69090f0096c11ddc4890d83dc822df17a339f30695f10a932",
-      "bytes": 21564
+      "sha256": "3103e74ccb96907b8f7a9fa9d8f3e7d9b10f2396f9a27b8dcb9169b36776935a",
+      "bytes": 21567
     },
     "./version.json": {
-      "sha256": "461fa239c791764fbe1e7a42209930e6923cdc7167103b850ce42dd2937f97df",
-      "bytes": 698
+      "sha256": "eea6267a88332bbff448764589010f044c4675ea698978d3d52c17fbed517918",
+      "bytes": 707
     }
   },
   "mutableAssets": [
