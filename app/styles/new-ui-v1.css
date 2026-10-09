@@ -6313,32 +6313,15 @@ html.new-ui-v1 body.v157-authenticated #v181AdminCenter .v181AdminCard em{
   color:#8ff0d8!important;
 }
 
-/* Nhập nhanh generic sheet — explicit foreground/background pairs block
-   dark-theme inheritance from making values or labels disappear. */
-html.new-ui-v1 body #sagsQuickEntry .sq-card{
-  background:#f8fbfd!important;
-  color:#12364a!important;
-}
-html.new-ui-v1 body #sagsQuickEntry :is(.sq-title,.sq-input){
-  color:#102f42!important;
-}
-html.new-ui-v1 body #sagsQuickEntry :is(.sq-overline,.sq-count,.sq-hint,.sq-close){
-  color:#405f70!important;
-}
-html.new-ui-v1 body #sagsQuickEntry .sq-input{
-  background:#fff!important;
-  border-color:#176b87!important;
-}
-html.new-ui-v1 body #sagsQuickEntry button:not(.sq-next):not(.sq-close){
-  background:#e3f1f6!important;
-  color:#103f55!important;
-  border-color:#8ebccc!important;
-}
-html.new-ui-v1 body #sagsQuickEntry button.sq-next{
-  background:#0b5872!important;
-  color:#fff!important;
-  border-color:#0b5872!important;
-}
+/* V2.4.7: Quick Entry ALWAYS navy on PC/mobile. The old #102f42 text
+   paired with the dark card caused invisible Driver / Porter labels. */
+html.new-ui-v1 body #sagsQuickEntry>.sq-card{background:#0b1e2c!important;color:#f4fbff!important;color-scheme:dark!important}
+html.new-ui-v1 body #sagsQuickEntry :is(.sq-title,.sq-error){color:#f4fbff!important;-webkit-text-fill-color:#f4fbff!important}
+html.new-ui-v1 body #sagsQuickEntry :is(.sq-overline,.sq-count,.sq-hint,.sq-close){color:#bfd3e2!important;-webkit-text-fill-color:#bfd3e2!important}
+html.new-ui-v1 body #sagsQuickEntry .sq-input{background:#081c2b!important;color:#f4fbff!important;-webkit-text-fill-color:#f4fbff!important;caret-color:#f4fbff!important;border-color:#4daac7!important}
+html.new-ui-v1 body #sagsQuickEntry button:not(.sq-next):not(.sq-close){background:#173b50!important;color:#eef8ff!important;-webkit-text-fill-color:#eef8ff!important;border-color:#46667b!important}
+html.new-ui-v1 body #sagsQuickEntry button.sq-next{background:#116b84!important;color:#fff!important;-webkit-text-fill-color:#fff!important;border-color:#2c96b3!important}
+html.new-ui-v1 body #sagsQuickEntry button:disabled{opacity:1!important;background:#173242!important;color:#bdd2df!important;-webkit-text-fill-color:#bdd2df!important}
 
 /* 42.1 / 42.3 / 55.1 quick-time sheet is intentionally light even while the
    surrounding application is dark. Preserve readable dark text on its fields. */

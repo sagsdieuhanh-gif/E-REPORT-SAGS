@@ -52,6 +52,34 @@ html.new-ui-v1 body #fwcModal #sagsFlightSearch{
 }
 html.new-ui-v1 body #fwcModal #sagsFlightSearch::placeholder{color:#5b6b76!important;-webkit-text-fill-color:#5b6b76!important;opacity:1!important}
 
+/* V2.4.7 · Contrast pairs across operational UI.
+   Double-ID input selectors defeat historical broad entry overrides.
+   Exclude official scanned pages, PDF, form coordinates, and signature canvas. */
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #sagsQuickEntry>.sq-card{background:#0b1e2c!important;color:#f4fbff!important;color-scheme:dark!important}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #sagsQuickEntry :is(.sq-title,.sq-error){color:#f4fbff!important;-webkit-text-fill-color:#f4fbff!important;opacity:1!important}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #sagsQuickEntry :is(.sq-overline,.sq-count,.sq-hint,.sq-close){color:#bfd3e2!important;-webkit-text-fill-color:#bfd3e2!important;opacity:1!important}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #sagsQuickEntry #sqValue{--sags-entry-bg:#081c2b;--sags-entry-fg:#f4fbff;background:#081c2b!important;color:#f4fbff!important;-webkit-text-fill-color:#f4fbff!important;caret-color:#f4fbff!important;border-color:#4daac7!important;color-scheme:dark!important}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #sagsQuickEntry #sqValue:focus{background:#081c2b!important;color:#f4fbff!important;-webkit-text-fill-color:#f4fbff!important;outline:2px solid #67cbe8!important;outline-offset:1px!important}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #sagsQuickEntry #sqValue::placeholder{color:#b2c9d8!important;-webkit-text-fill-color:#b2c9d8!important;opacity:1!important}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #sagsQuickEntry :is(#sqPrev,#sqNA,#sqRestoreDraft,#sqDiscardDraft){background:#173b50!important;color:#eef8ff!important;-webkit-text-fill-color:#eef8ff!important;border-color:#46667b!important}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #sagsQuickEntry #sqNext{background:#116b84!important;color:#fff!important;-webkit-text-fill-color:#fff!important;border-color:#2c96b3!important}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #sagsQuickEntry #sqClose{background:transparent!important;color:#bfd3e2!important;-webkit-text-fill-color:#bfd3e2!important}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #sagsQuickEntry :is(#sqPrev,#sqNext,#sqNA):disabled{background:#173242!important;color:#bdd2df!important;-webkit-text-fill-color:#bdd2df!important;opacity:1!important}
+/* MY FLIGHT date is dark; search is white. */
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #fwcModal #fwcDate{--sags-entry-bg:#102838;--sags-entry-fg:#f4f7fa;background:#102838!important;color:#f4f7fa!important;-webkit-text-fill-color:#f4f7fa!important;caret-color:#f4f7fa!important;color-scheme:dark!important}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #fwcModal #sagsFlightSearch{--sags-entry-bg:#fff;--sags-entry-fg:#17212b;background:#fff!important;color:#17212b!important;-webkit-text-fill-color:#17212b!important;caret-color:#17212b!important;color-scheme:light!important}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #fwcModal #sagsFlightSearch::placeholder{color:#5b6b76!important;-webkit-text-fill-color:#5b6b76!important;opacity:1!important}
+/* Settings controls follow the actual theme. */
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme="dark"] body #sagsSettingsCenter :is(#sagsContrastControl,input,select,textarea){--sags-entry-bg:#102230;--sags-entry-fg:#f4f7fa;background:#102230!important;color:#f4f7fa!important;-webkit-text-fill-color:#f4f7fa!important;caret-color:#f4f7fa!important;color-scheme:dark!important}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme="light"] body #sagsSettingsCenter :is(#sagsContrastControl,input,select,textarea){--sags-entry-bg:#fff;--sags-entry-fg:#17212b;background:#fff!important;color:#17212b!important;-webkit-text-fill-color:#17212b!important;caret-color:#17212b!important;color-scheme:light!important}
+/* FSAGS54/94 editors and native popup are light. Never recolor PDF/paper surfaces. */
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body :is(#sags5494Quick,#sags5494FieldEditor,#entry) :is(#sagsContrastControl,input,textarea,select){--sags-entry-bg:#fff;--sags-entry-fg:#17212b;background:#fff!important;color:#17212b!important;-webkit-text-fill-color:#17212b!important;caret-color:#17212b!important;color-scheme:light!important}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body :is(#sags5494Quick,#sags5494FieldEditor,#entry) :is(#sagsContrastControl,input,textarea,select)::placeholder{color:#5b6b76!important;-webkit-text-fill-color:#5b6b76!important;opacity:1!important}
+/* Consistent light labels on other dark operational panels. */
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #quickTimeModal :is(.quickTimeTitle,.quickTimePageTitle,.quickTimeLabel){color:#eef8ff!important;-webkit-text-fill-color:#eef8ff!important}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #fs09QuickModal :is(.fs09qPageTitle,.fs09qLabel,.fs09qDataLabel,.fs09qCloseoutTitle){color:#eef8ff!important;-webkit-text-fill-color:#eef8ff!important}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #v6494AviationHome :is(.v6494MobileGroup h3,.v6494MobileBrand small,.v6494MobileProfile small){color:#b5d0df!important;-webkit-text-fill-color:#b5d0df!important}
+
 /* Generic UI text safety net, intentionally excludes official form rendering. */
 html.new-ui-v1 body :is(#sagsQuickEntry,#quickTimeModal,#fs09QuickModal,#sagsSettingsCenter,#fwcModal,#sags5494Quick,#sags5494FieldEditor,#entry) :is(input,textarea,select,button){opacity:1}
 `;document.head.appendChild(st);
