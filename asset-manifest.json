@@ -1,8 +1,8 @@
 {
   "schema": 2,
-  "version": "V2.3",
-  "build": "V2.3-20261008-FLIGHT-FORMS-PDF-STABILITY-01",
-  "strategy": "Production V2.2 · AD read-only all-form dossier viewer pinned in verified PWA shell",
+  "version": "V2.4",
+  "build": "V2.4-20261009-QUICK-NEXT-NAVIGATION-01",
+  "strategy": "Production V2.4 · Quick-entry Next skips clock controls · verified PWA shell",
   "mutableMetadata": [
     "./forms/forms.registry.json",
     "./data/form-configuration.json"
@@ -62,8 +62,8 @@
       "bytes": 3097
     },
     "./app/boot/18-v173-quick-time.js": {
-      "sha256": "6cc7d80f26a0237e90c8be4fb39b300122fd5c839293f6875e84f4329994d263",
-      "bytes": 26266
+      "sha256": "00b919ec210838d867708c7fe590ed74c42f6eb4aaf00fb22dc05f4232efa96c",
+      "bytes": 27221
     },
     "./app/boot/19-v183-fs09-quick.js": {
       "sha256": "bfad6008b1ad14c24b5f156ad6f9cb6c3eed0be4c26fb2193f83bd56c45a2036",
@@ -726,8 +726,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "bcae7db70c406bb57555db7b7efd7478f32d5b6ec2043c19ca42601462686664",
-      "bytes": 81376
+      "sha256": "30240782364d233af75746e280f7423933f05e35c2a4bd5c1f2a9830d23d478d",
+      "bytes": 81006
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -778,12 +778,12 @@
       "bytes": 6937
     },
     "./service-worker.js": {
-      "sha256": "c093c84aaf594e8f25851e18cf169cadd87774766770491806c8b0d45dcd2d0e",
-      "bytes": 21579
+      "sha256": "aeca7f8b1e4433f69090f0096c11ddc4890d83dc822df17a339f30695f10a932",
+      "bytes": 21564
     },
     "./version.json": {
-      "sha256": "25e3e113cc534f3f8a83a2227a25a8fcc2eeb57b80441363e541a011ec4bc34b",
-      "bytes": 683
+      "sha256": "461fa239c791764fbe1e7a42209930e6923cdc7167103b850ce42dd2937f97df",
+      "bytes": 698
     }
   },
   "mutableAssets": [

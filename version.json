@@ -1,12 +1,12 @@
 {
-  "version": "V2.3",
-  "displayVersion": "V2.3",
-  "label": "V2.3 - FLIGHT FORMS / PDF / MOBILE",
-  "build": "V2.3-20261008-FLIGHT-FORMS-PDF-STABILITY-01",
-  "releasedAt": "2026-10-08T07:40:00Z",
-  "type": "flight-form-stability",
-  "base": "E-REPORT-SAGS main@bb37185714816d65ee723725236e49964317a253",
+  "version": "V2.4",
+  "displayVersion": "V2.4",
+  "label": "V2.4 - QUICK ENTRY NEXT NAVIGATION",
+  "build": "V2.4-20261009-QUICK-NEXT-NAVIGATION-01",
+  "releasedAt": "2026-10-09T04:30:00Z",
+  "type": "quick-entry-navigation",
+  "base": "E-REPORT-SAGS main@71d6f68ed15a40293a03c186b083a6dfece0c55e",
   "updatePolicy": "required",
-  "notes": "TVJ chỉ áp dụng VZ. BBBT tách số hiệu trên/dưới và giữ gạch ngang. My Flight giữ các thẻ không đổi khi cập nhật. PDF tái sử dụng lớp SVG có nội dung giống hệt, giới hạn bộ nhớ.",
-  "message": "V2.3: VZ-only TVJ, BBBT flight layout, PDF overlay cache and stable My Flight cards."
+  "notes": "NHẬP GIỜ NHANH: phím Tiếp/Enter đi thẳng sang ô nhập liệu kế tiếp, tự bỏ qua nút đồng hồ ◷. Nút đồng hồ vẫn bấm tay bình thường. Đồng bộ cache PWA, manifest và version để thiết bị nhận đúng V2.4.",
+  "message": "V2.4: Quick-entry Next skips clock controls and focuses the next data input."
 }

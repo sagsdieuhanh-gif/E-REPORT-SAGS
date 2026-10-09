@@ -7,4 +7,9 @@ assert.match(css,/quickTimeInput\.dirty,[\s\S]*background:#ffd166!important[\s\S
 assert.match(css,/quickTimeTimeCell,.quickTimeSingleCell[\s\S]*overflow:hidden!important[\s\S]*border-radius:9px!important/);
 assert.match(css,/quickTimeInput[\s\S]*border-radius:8px 0 0 8px!important/);
 assert.match(css,/quickTimeNow[\s\S]*border-radius:0 8px 8px 0!important/);
+
+const quick=fs.readFileSync(__dirname+'/../app/boot/18-v173-quick-time.js','utf8');
+assert.match(quick,/enterkeyhint="next"/,'quick-time keyboard action must advertise Next');
+assert.match(quick,/qteHandleNextKey\(event,this\)/,'quick-time inputs must route Enter/Next to the next input');
+assert.match(quick,/quickTimeNow" type="button" tabindex="-1"/,'clock buttons must be skipped by keyboard Next/Tab navigation');
 console.log('Quick Time final-owner mobile field fix passed');
