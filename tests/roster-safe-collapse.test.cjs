@@ -21,4 +21,11 @@ assert.equal(guard({signedAtMs:1},old,'2026-10-09'),true);
 assert.equal(guard({taskStatusV333:'COMPLETED'},old,'2026-10-09'),true);
 assert.ok(s.includes('else if(!x.collapseWarnings?.length)setStatus'),'blocked warning must not be hidden by a success toast');
 assert.ok(s.includes('preview?.collapseWarnings?.length'),'blocked warning must persist after publish');
+const explain=new Function('S','parseDate','seedFor','sessionIsCompleted','rosterValueHasData',part+';return rosterSafeCollapseProtectionReason')(
+ x=>String(x??'').trim(),()=>({display:'09/10/2026'}),()=>({}),()=>false,
+ v=>v===true||v!==false&&v!==null&&v!==undefined&&JSON.stringify(v)!=='""');
+assert.match(explain({reopenedAtMs:123},old,'2026-10-09'),/MỞ LẠI/,'reopened completion must show distinct reason');
+assert.match(explain({handoverQrClaimedAtMs:456},old,'2026-10-09'),/BÀN GIAO qua QR/,'QR handover must show distinct reason');
+assert.equal(explain({taskStatusV333:'IN_PROGRESS'},old,'2026-10-09'),'','claim-only status is not entered data');
+assert.ok(s.includes('Trạng thái đang nhập không tự chứng minh đã nhập tay'),'the warning must distinguish a claim from typed data');
 console.log('Safe roster-collapse regression passed');

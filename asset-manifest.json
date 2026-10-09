@@ -1,8 +1,8 @@
 {
   "schema": 2,
-  "version": "V2.4.4",
-  "build": "V2.4.4-20261009-ROSTER-ACTIVE-RECONCILE-01",
-  "strategy": "V2.4.4 production · retire stale unedited Loading, snapshot originals, verify new 42.3 after Firebase writes",
+  "version": "V2.4.5",
+  "build": "V2.4.5-20261009-ROSTER-BLOCKER-DIAGNOSTICS-01",
+  "strategy": "Release V2.4.5 - precise roster safety blocker explanation, no unsafe historical reassignment",
   "mutableMetadata": [
     "./forms/forms.registry.json",
     "./data/form-configuration.json"
@@ -130,8 +130,8 @@
       "bytes": 84928
     },
     "./app/generated/core-flight.js": {
-      "sha256": "470f339f7ec63dfd3fe4c8223b66dbb35196a04a1e9c4a584a7cec98605f981f",
-      "bytes": 230689
+      "sha256": "df4ebcff4fd9842a2956bb2700253245da5fc33be0c81b350de0ae7010aae4b2",
+      "bytes": 230983
     },
     "./app/generated/core-performance.js": {
       "sha256": "005c80dc9ce412f9e1c8b74d24b48e68b27ddaa05d5de203cb2029e7f93364d8",
@@ -726,8 +726,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "ffb5ba9443ef377376b1b5570a8fff1ac4b1ff529e5b5e7bdc32d022e528e2c3",
-      "bytes": 81514
+      "sha256": "3148fcddb845a799431b9b7366101575c53153f328ebe4dc200b479eaf93da8d",
+      "bytes": 81736
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -778,12 +778,12 @@
       "bytes": 6937
     },
     "./service-worker.js": {
-      "sha256": "8ee018ee46149ba4092fab4b4b774f5aaa89067192d496cee5009aff6a66ee34",
-      "bytes": 21580
+      "sha256": "54334ceee66963527ec7fba3cf5a4a076381d9567c40419917e69f2e7b57b7c1",
+      "bytes": 21589
     },
     "./version.json": {
-      "sha256": "181f39cc8d8fbaed2076f05e5743f98836cd2cc30b4fb7175e65215ca7c2a0c1",
-      "bytes": 696
+      "sha256": "eb90e13b08de6599bd9d468b6fcf4d5a77d847b515b97dcc9c13a4014ca0f0d3",
+      "bytes": 610
     }
   },
   "mutableAssets": [
