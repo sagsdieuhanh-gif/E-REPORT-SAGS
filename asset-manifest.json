@@ -1,8 +1,8 @@
 {
   "schema": 2,
-  "version": "V2.4.3",
-  "build": "V2.4.3-20261009-ROSTER-COLLAPSE-SEED-GUARD-01",
-  "strategy": "V2.4.3 production · safe roster no-data fallback, explicit warnings, historical archive on conversion",
+  "version": "V2.4.4",
+  "build": "V2.4.4-20261009-ROSTER-ACTIVE-RECONCILE-01",
+  "strategy": "V2.4.4 production · retire stale unedited Loading, snapshot originals, verify new 42.3 after Firebase writes",
   "mutableMetadata": [
     "./forms/forms.registry.json",
     "./data/form-configuration.json"
@@ -130,8 +130,8 @@
       "bytes": 84928
     },
     "./app/generated/core-flight.js": {
-      "sha256": "9dcc62cd8f1d0f10c9ca1401cdba40901966461df6ba05c63464263253144b27",
-      "bytes": 226315
+      "sha256": "470f339f7ec63dfd3fe4c8223b66dbb35196a04a1e9c4a584a7cec98605f981f",
+      "bytes": 230689
     },
     "./app/generated/core-performance.js": {
       "sha256": "005c80dc9ce412f9e1c8b74d24b48e68b27ddaa05d5de203cb2029e7f93364d8",
@@ -726,8 +726,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "7b0c9036e8464762bdd7aab4c95361a0a40f3417a03cffc9d1fbaf8dbaf010dc",
-      "bytes": 81736
+      "sha256": "ffb5ba9443ef377376b1b5570a8fff1ac4b1ff529e5b5e7bdc32d022e528e2c3",
+      "bytes": 81514
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -778,12 +778,12 @@
       "bytes": 6937
     },
     "./service-worker.js": {
-      "sha256": "e950d1d84e3bdc2f6e3bb4b219e9b34397c0b4777e63ea5b529968e84dd0e0cf",
-      "bytes": 21589
+      "sha256": "8ee018ee46149ba4092fab4b4b774f5aaa89067192d496cee5009aff6a66ee34",
+      "bytes": 21580
     },
     "./version.json": {
-      "sha256": "0d4ff6861903254453154521a0050351dd2d56afa28caf3afaa9d19dda8eb945",
-      "bytes": 691
+      "sha256": "181f39cc8d8fbaed2076f05e5743f98836cd2cc30b4fb7175e65215ca7c2a0c1",
+      "bytes": 696
     }
   },
   "mutableAssets": [
