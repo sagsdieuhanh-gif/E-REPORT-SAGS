@@ -1,12 +1,12 @@
 {
-  "version": "V2.4.1",
-  "displayVersion": "V2.4.1",
-  "label": "V2.4.1 - VISIBLE QUICK NEXT BUTTON",
-  "build": "V2.4.1-20261009-QUICK-VISIBLE-NEXT-01",
-  "releasedAt": "2026-10-09T04:45:20Z",
-  "type": "quick-next-visible",
-  "base": "E-REPORT-SAGS main@f11fd8b70c22a8d935bc33cbb016fa1d9476033c",
+  "version": "V2.4.2",
+  "displayVersion": "V2.4.2",
+  "label": "V2.4.2 - SAFE ROSTER COLLAPSE",
+  "build": "V2.4.2-20261009-ROSTER-SAFE-COLLAPSE-01",
+  "releasedAt": "2026-10-09T05:13:15.363Z",
+  "type": "roster-safe-collapse",
+  "base": "E-REPORT-SAGS branch@49dc5800553fc7e7ff996ae799432fa3c74465e6",
   "updatePolicy": "required",
-  "notes": "Thêm nút TIẾP → hiển thị trong thanh dưới của NHẬP GIỜ NHANH. Bấm đi thẳng tới ô nhập tiếp theo, bỏ qua đồng hồ; tự chuyển trang khi cần. PC một hàng 4 nút, mobile 2 hàng. Giữ nguyên CẬP NHẬT, N/A và XÓA GIỜ.",
-  "message": "V2.4.1: Visible NEXT button in Quick Time, with focus-safe form navigation."
+  "notes": "Gộp 42.1 + 55.1 thành 42.3 khi cập nhật roster còn một COR và không có dữ liệu/chữ ký đã lưu. Giữ nguyên 2 mẫu nếu đã nhập/ký hoặc không xác minh được. Snapshot manifest/mail/session trước thay thế; tạo ID kế nhiệm riêng, bảo toàn dữ liệu cũ.",
+  "message": "V2.4.2: guarded roster reduction 42.1 + 55.1 → 42.3; never auto-convert edited or signed work."
 }

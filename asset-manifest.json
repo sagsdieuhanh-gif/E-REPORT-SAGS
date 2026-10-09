@@ -1,8 +1,8 @@
 {
   "schema": 2,
-  "version": "V2.4.1",
-  "build": "V2.4.1-20261009-QUICK-VISIBLE-NEXT-01",
-  "strategy": "Production V2.4.1 · visible Next field navigation, consistent manifest/SW release contract",
+  "version": "V2.4.2",
+  "build": "V2.4.2-20261009-ROSTER-SAFE-COLLAPSE-01",
+  "strategy": "Production V2.4.2 · guarded roster collapse, immutable session/mail snapshot and verified PWA release",
   "mutableMetadata": [
     "./forms/forms.registry.json",
     "./data/form-configuration.json"
@@ -726,8 +726,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "56fc954e9f6fc981d729c8f7af09f25c45256bf7fff16b9d78c523c7179f0de1",
-      "bytes": 81144
+      "sha256": "384d682f80f4d2b9c3108505c8953b7edbc80272c80f194060e86e221b1280e8",
+      "bytes": 81292
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -778,12 +778,12 @@
       "bytes": 6937
     },
     "./service-worker.js": {
-      "sha256": "44ca8dd12a79e0564a4a7a638e06db006321face8e01c0e7709c0a5f3017c099",
-      "bytes": 21565
+      "sha256": "69c279f3acf67680bb44731787ca2fb7c2689d8ad790cf4b7c93f2b334c7406c",
+      "bytes": 21571
     },
     "./version.json": {
-      "sha256": "eea6267a88332bbff448764589010f044c4675ea698978d3d52c17fbed517918",
-      "bytes": 707
+      "sha256": "08039b29039db5dbfe6c1ef6a718e36049f020d765ba2b02b716841d87ef67e3",
+      "bytes": 770
     }
   },
   "mutableAssets": [
