@@ -9,11 +9,68 @@
     ['conveyorBefore','Conveyor belt · Trước'],['conveyorAfter','Conveyor belt · Sau'],
     ['tractorBefore','Tractor · Trước'],['tractorAfter','Tractor · Sau']
   ];
+  // FSAGS 55.1 uses text keys for the equipment counts. Route its complete
+  // visual block through the same wizard as FSAGS 42.3 without renaming fields.
+  const EQUIPMENT_551 = [
+    ['f551_driver1','Driver · 1'],['f551_driver2','Driver · 2'],
+    ['f551_porter1','Porter · 1'],['f551_porter2','Porter · 2'],
+    ['f551_step1','Passenger step · 1'],['f551_step2','Passenger step · 2'],
+    ['f551_belt1','Conveyor belt · 1'],['f551_belt2','Conveyor belt · 2'],
+    ['f551_tractor1','Tractor · 1'],['f551_tractor2','Tractor · 2'],
+    ['f551_loader1','Loader · 1'],['f551_loader2','Loader · 2']
+  ];
+  // FSAGS 42.1 has a different form layout (no Operator/Porter row).
+  // Each visual block navigates only within its own related fields.
+  // Do not include signatures, computed cells, time cells or long remarks.
+  const FS421_QUICK_GROUPS = [
+    {heading:'Thông tin chuyến bay · FSAGS 42.1',items:[
+      ['f421_fltBefore','Chuyến đến'],['f421_fltAfter','Chuyến đi'],
+      ['f421_acType','Loại tàu bay'],['f421_regn','Số đăng ký tàu bay'],
+      ['f421_bayBefore','Vị trí đỗ · Đến'],['f421_bayAfter','Vị trí đỗ · Đi'],
+      ['f421_route1','Hành trình · Trước CXR'],['f421_route3','Hành trình · Sau CXR']
+    ]},
+    {heading:'Booking · FSAGS 42.1',items:[
+      ['f421_bookingF','Booking · F'],['f421_bookingC','Booking · C'],['f421_bookingY','Booking · Y']
+    ]},
+    {heading:'Special Info · Đến · FSAGS 42.1',items:[
+      ['f421_topWCHR','WCHR'],['f421_topUM','UM'],['f421_topINAD','INAD'],
+      ['f421_topSTCH','STCH'],['f421_topVIP','VIP']
+    ]},
+    {heading:'Special Info · Đi · FSAGS 42.1',items:[
+      ['f421_bottomWCHR','WCHR'],['f421_bottomUM','UM'],
+      ['f421_bottomINAD','INAD'],['f421_bottomSTCH','STCH'],['f421_bottomVIP','VIP']
+    ]},
+    {heading:'Delay · FSAGS 42.1',items:[
+      ['f421_depDelayMins','Số phút chậm'],['f421_depDelayReason','Nguyên nhân chậm']
+    ]},
+    {heading:'Offload · FSAGS 42.1',items:Array.from({length:6},(_,i)=>{
+      const n=i+1;
+      return [
+        ['f421_offPcs'+n,'Lần '+n+' · Số kiện'],
+        ['f421_offDest'+n,'Lần '+n+' · Điểm đến'],
+        ['f421_offTag'+n,'Lần '+n+' · Số thẻ'],
+        ['f421_offUld'+n,'Lần '+n+' · ULD / Vị trí'],
+        ['f421_offReloadPos'+n,'Lần '+n+' · Vị trí reload']
+      ];
+    }).flat()}
+  ];
+  function configuredGroup(key){
+    if(EQUIPMENT_551.some(([k])=>k===key)){
+      return {heading:'Ramp Manpower & Equipment · FSAGS 55.1',
+        steps:EQUIPMENT_551.map(([k,label])=>({key:k,label,kind:'text'}))};
+    }
+    const section=FS421_QUICK_GROUPS.find(g=>g.items.some(([k])=>k===key));
+    if(!section)return null;
+    return {heading:section.heading,steps:section.items.map(([k,label])=>({
+      key:k,label,kind:field(k)?.type==='number'?'number':'text'
+    }))};
+  }
   const BAG_PAX_PARTS = ['ADL','CHD','INF'];
   let session=null, ui=null;
   const numberText = x => String(x??'').trim();
   function field(key) { return fields.find(f=>f.key===key && (f.type==='number'||f.type==='text')); }
   function groupFor(key) {
+    const custom=configuredGroup(key);if(custom)return custom;
     // V6.4.41: NEXT/PREV must stay inside the visual function rectangle that
     // the operator tapped. Never walk horizontally into the neighbouring block.
     const equipment=/^(operator|porter|passengerStep|conveyor|tractor)(Before|After)$/.exec(key);
@@ -96,8 +153,10 @@
     });
     ui.value.addEventListener('keydown',e=>{
       if(e.isComposing)return;
-      if(e.key==='Enter'||e.key==='ArrowRight'){e.preventDefault();move(1)}
-      if(e.key==='ArrowLeft'){e.preventDefault();move(-1)}
+      if(e.key==='Enter'){e.preventDefault();move(1)}
+      // Text fields must retain native caret movement with arrow keys.
+      if(e.key==='ArrowRight'&&session?.steps[session.index]?.kind!=='text'){e.preventDefault();move(1)}
+      if(e.key==='ArrowLeft'&&session?.steps[session.index]?.kind!=='text'){e.preventDefault();move(-1)}
       if(e.key==='Escape'){e.preventDefault();close()}
     });
     return ui;
@@ -107,6 +166,7 @@
     if(!session)return;
     ensureUi();const st=session.steps[session.index];
     ui.heading.textContent=session.heading;
+    ui.value.inputMode=st.kind==='text'?'text':'numeric';
     ui.title.textContent=st.label;
     ui.count.textContent=`Trường ${session.index+1}/${session.steps.length}`;
     ui.error.textContent='';
@@ -116,7 +176,7 @@
       ui.hint.textContent=draft.valid?'Total Bags giữ nguyên 1 ô: số kiện/số kg.':'Giá trị cũ "'+draft.original+'" chưa đúng mẫu. Điền đủ hai số để thay thế.';
     }else{
       ui.value.value=numberText(state[st.key]);
-      ui.hint.textContent=st.kind==='equipment'?'Đi hết vùng Ramp Manpower & Equipment, theo hàng ngang.':st.kind==='pax'?'Chỉ di chuyển trong đúng dòng ARR hoặc DEP đang chọn.':'Đi hết cột '+(session.heading.match(/1ST|2ND|3RD/)?.[0]||'đang chọn')+': ADL → CHD → INF → Total Bags. TOTAL tự cộng.';
+      ui.hint.textContent=st.kind==='text'?'Bấm Tiếp để lưu và chuyển sang trường kế tiếp trong cùng nhóm.':st.kind==='equipment'?'Đi hết vùng Ramp Manpower & Equipment, theo hàng ngang.':st.kind==='pax'?'Chỉ di chuyển trong đúng dòng ARR hoặc DEP đang chọn.':'Đi hết cột '+(session.heading.match(/1ST|2ND|3RD/)?.[0]||'đang chọn')+': ADL → CHD → INF → Total Bags. TOTAL tự cộng.';
     }
     try{const part=st.kind==='bag'?st.part:'quick',raw=root.sagsV61Draft?.read(st.key,part);
       if(raw&&raw.value===ui.value.value)root.sagsV61Draft?.forget(st.key,part);
@@ -167,7 +227,7 @@
     const st=session.steps[session.index];
     if(st.kind==='bag')return saveBag(st,leaving);
     const value=numberText(ui.value.value);
-    if(value && !/^\d+$/.test(value) && value.toUpperCase()!=='N/A'){
+    if(st.kind!=='text' && value && !/^\d+$/.test(value) && value.toUpperCase()!=='N/A'){
       ui.error.textContent=st.kind==='equipment'?'Nhập số hoặc N/A.':'Chỉ nhập số nguyên không âm.';return false;
     }
     const canonical=value.toUpperCase()==='N/A'?'N/A':value;
