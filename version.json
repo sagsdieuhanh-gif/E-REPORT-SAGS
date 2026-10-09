@@ -1,12 +1,12 @@
 {
-  "version": "V2.4.8",
-  "displayVersion": "V2.4.8",
-  "label": "V2.4.8 - ROSTER MAILBOX & MY FLIGHT INTEGRITY",
-  "build": "V2.4.8-20261009-ROSTER-MAILBOX-INTEGRITY-01",
+  "version": "V2.4.9",
+  "displayVersion": "V2.4.9",
+  "label": "V2.4.9 - EXPORT STABILITY & PERFORMANCE",
+  "build": "V2.4.9-20261009-EXPORT-STABILITY-01",
   "releasedAt": "2026-10-09",
-  "type": "roster-mailbox-integrity",
-  "base": "E-REPORT-SAGS branch@49dc5800553fc7e7ff996ae799432fa3c74465e6",
+  "type": "export-stability",
+  "base": "E-REPORT-SAGS main@99ae202",
   "updatePolicy": "required",
-  "notes": "Kiểm tra các trường owner/opDate/flightId/formGroup/active của hộp phân công nhân viên trước khi bỏ qua roster không đổi; ghi lại hộp phân công lỗi; đọc lại Firebase sau khi ghi; chức danh giám sát vẫn thấy các nhiệm vụ của mình trong MY FLIGHT. Giữ nguyên dữ liệu biểu mẫu và chữ ký.",
-  "message": "V2.4.8: verify employee roster mailbox after publishing."
+  "notes": "Giảm giật nháy khi xuất: bỏ vẽ lại biểu mẫu do trạng thái PDF và DOM không liên quan; chặn vòng lặp style SVG; chỉ cập nhật vị trí hộp xuất khi thay đổi; chống xuất trùng; giải phóng canvas khi thành công/lỗi; giới hạn cache chữ ký. Giữ nguyên các tối ưu My Flight và kiểm tra hộp phân công V2.4.8.",
+  "message": "V2.4.9: ổn định xuất PDF và giảm công việc giao diện không cần thiết."
 }

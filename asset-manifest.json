@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V2.4.8",
-  "build": "V2.4.8-20261009-ROSTER-MAILBOX-INTEGRITY-01",
+  "version": "V2.4.9",
+  "build": "V2.4.9-20261009-EXPORT-STABILITY-01",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -18,8 +18,8 @@
       "bytes": 1253
     },
     "./app/boot/05-legacy.js": {
-      "sha256": "7329793f44bab554f2b4e62325953efe1d3a8e0c112364b9fa520899cf8a56b6",
-      "bytes": 297025
+      "sha256": "7826ce85cbbd1ff725348d5f9524e230abd108aba29ec89066a784da50b614e0",
+      "bytes": 297555
     },
     "./app/boot/06-legacy.js": {
       "sha256": "c2e0a02971adae55b30f486b5680155d31abd80534b8912dd797f01ad796bf94",
@@ -230,12 +230,12 @@
       "bytes": 2776
     },
     "./app/modules/form-registry-runtime.v6419.js": {
-      "sha256": "8c33713d4b54aafd4f158659089600646003c7a1a72b0bef5718347fa4576e32",
-      "bytes": 32038
+      "sha256": "a26f7173328b7c086dba9b6e99e8aef103923a297be4f081d9082d908484a0d1",
+      "bytes": 32424
     },
     "./app/modules/form-registry-runtime.v647.js": {
-      "sha256": "38273ccd7794e4790c37b5a8594edeaefd412917af2c928245bf8a89b0a8a5f2",
-      "bytes": 17888
+      "sha256": "c356daeef926201912829a2fd80cb3af04ea182a4990a028b031fbca60ad43e9",
+      "bytes": 18630
     },
     "./app/modules/fsags208-image-reader.v1.js": {
       "sha256": "56b2b7c7fb1f54c20678868f80d13f7a7d2a51350bf2a89c6742381850f75e10",
@@ -246,8 +246,8 @@
       "bytes": 42627
     },
     "./app/modules/fsags54-94.v622.js": {
-      "sha256": "9f39dd025b60be2791fb92e345fe9424c6b122c6546a914f53097fdb31a18ab2",
-      "bytes": 42031
+      "sha256": "64c8368b15c659436ba7fe121ee037192d06c71530bab11310d7429bb35c21ac",
+      "bytes": 42519
     },
     "./app/modules/indexeddb-flight-store.v1.js": {
       "sha256": "52c8ae561259fc408a5e3996d7864c8d82b45176d8c1d11b991e877971599b84",
@@ -726,8 +726,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "2089a8e57bd7537ea691ad0d26fc774931f32af4c27f6e1d65cca3eddaa32cf0",
-      "bytes": 81588
+      "sha256": "52896477c02be3631d6918a1482a1ed53306bc3e987638645ba8fd1fcf927f04",
+      "bytes": 80996
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -778,11 +778,11 @@
       "bytes": 6937
     },
     "./service-worker.js": {
-      "sha256": "82f059b0813e4b7f5f697f6737c60231e3cd1d4860e968e37a60d4b48b5f3d32",
-      "bytes": 21583
+      "sha256": "b579652547f8daf59b71bd9f3fee1d3814a76ef8fa10cbfaa54fd0dd8a577ddb",
+      "bytes": 21559
     },
     "./version.json": {
-      "sha256": "5275d83c0cefe01676f3a4f332705315aba4ae845ff4075c7b056faa3dcc24fa",
+      "sha256": "2d33adb6529a9e4c55d0b809f4604efd5533799415d3d6efb2b35907aa4f938c",
       "bytes": 786
     }
   },

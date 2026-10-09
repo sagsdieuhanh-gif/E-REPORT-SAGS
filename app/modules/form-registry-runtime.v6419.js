@@ -166,13 +166,16 @@ function installCss(){
   .sagsV6419SignBtn.primary{background:#0b6aa9;color:#fff}.sagsV6419SignBtn.manual{background:#137333;color:#fff}.sagsV6419SignBtn.supervisor{background:#8a4d14;color:#fff}.sagsV6419SignBtn:disabled{background:#e5eaee!important;color:#61727b!important;cursor:not-allowed;opacity:1}.sagsV6419SignBtn.danger{background:#f8e9e7;color:#a52a20}.sagsV6419SignClose{width:100%;margin-top:11px;min-height:44px;border:0;border-radius:10px;background:#e7edf1;color:#334b58;font-weight:900}
   `;document.head.appendChild(e);
 }
+function exportStyle(el,key,value){
+  if(el.style.getPropertyValue(key)!==value||el.style.getPropertyPriority(key)!=='important')el.style.setProperty(key,value,'important');
+}
 function centerExport(){
   const vv=root.visualViewport,vw=Math.max(280,Number(vv?.width||root.innerWidth||document.documentElement.clientWidth||360)),vh=Math.max(320,Number(vv?.height||root.innerHeight||document.documentElement.clientHeight||640)),cx=Number(vv?.offsetLeft||0)+vw/2,cy=Number(vv?.offsetTop||0)+vh/2;
   for(const id of ['exportChoiceModal','exportModal']){
-    const m=document.getElementById(id);if(!m)continue;
-    m.style.setProperty('position','fixed','important');m.style.setProperty('inset','0','important');m.style.setProperty('align-items','center','important');m.style.setProperty('justify-content','center','important');m.style.setProperty('padding','0','important');m.style.setProperty('z-index','2147482500','important');
+    const m=document.getElementById(id);if(!m||m.style.display==='none')continue;
+    exportStyle(m,'position','fixed');exportStyle(m,'inset','0');exportStyle(m,'align-items','center');exportStyle(m,'justify-content','center');exportStyle(m,'padding','0');exportStyle(m,'z-index','2147482500');
     const card=m.firstElementChild;if(!card)continue;
-    card.style.setProperty('position','fixed','important');card.style.setProperty('left',cx+'px','important');card.style.setProperty('top',cy+'px','important');card.style.setProperty('right','auto','important');card.style.setProperty('bottom','auto','important');card.style.setProperty('transform','translate(-50%,-50%)','important');card.style.setProperty('margin','0','important');card.style.setProperty('width',Math.min(560,Math.max(280,vw-24))+'px','important');card.style.setProperty('max-height',Math.max(260,vh-28)+'px','important');card.style.setProperty('overflow-y','auto','important');
+    exportStyle(card,'position','fixed');exportStyle(card,'left',cx+'px');exportStyle(card,'top',cy+'px');exportStyle(card,'right','auto');exportStyle(card,'bottom','auto');exportStyle(card,'transform','translate(-50%,-50%)');exportStyle(card,'margin','0');exportStyle(card,'width',Math.min(560,Math.max(280,vw-24))+'px');exportStyle(card,'max-height',Math.max(260,vh-28)+'px');exportStyle(card,'overflow-y','auto');
   }
 }
 function patchExportOpeners(){
@@ -254,7 +257,7 @@ function patchGlobalSignButton(){
 const imageCache=new Map();
 function loadImageCached(src){
   src=S(src);if(!src)return Promise.resolve(null);if(imageCache.has(src))return imageCache.get(src);
-  const p=new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=()=>reject(new Error('Không đọc được chữ ký.'));im.src=src});imageCache.set(src,p);p.catch(()=>imageCache.delete(src));return p;
+  const p=new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=()=>reject(new Error('Không đọc được chữ ký.'));im.src=src});imageCache.set(src,p);while(imageCache.size>24)imageCache.delete(imageCache.keys().next().value);p.catch(()=>{if(imageCache.get(src)===p)imageCache.delete(src)});return p;
 }
 function drawImageFit(ctx,im,x,y,w,h,padX=6,padY=5){if(!im||!(w>0&&h>0))return;const bw=Math.max(1,w-padX*2),bh=Math.max(1,h-padY*2),iw=im.naturalWidth||im.width,ih=im.naturalHeight||im.height,r=Math.min(bw/iw,bh/ih),dw=iw*r,dh=ih*r;ctx.drawImage(im,x+padX+(bw-dw)/2,y+padY+(bh-dh)/2,dw,dh)}
 async function drawSignatures(ctx,id,w,h){
@@ -367,7 +370,9 @@ function hookShow(){
 }
 function boot(){installCss();patchExportOpeners();patchCleanOpenSignature();patchCleanSignaturePad();installSignaturePointerGuard();patchGlobalSignButton();ensureSignChooser();hookShow();installUnifiedExport();patchCompleteToHome();centerExport();sanitizeSignatureScope();syncLiveSignatureUi();prewarmFastExport();setTimeout(()=>{patchExportOpeners();patchCleanOpenSignature();patchCleanSignaturePad();installSignaturePointerGuard();hookShow();installUnifiedExport();patchCompleteToHome();sanitizeSignatureScope();syncLiveSignatureUi();centerExport();prewarmFastExport()},700)}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(boot,150),{once:true});else setTimeout(boot,150);
-let maintainQueued=false;const mo=new MutationObserver(()=>{if(maintainQueued)return;maintainQueued=true;requestAnimationFrame(()=>{maintainQueued=false;patchExportOpeners();patchCleanOpenSignature();patchCleanSignaturePad();installSignaturePointerGuard();if(!root.v324ConfirmRosterHandover?.__sagsV6419Home)patchCompleteToHome();sanitizeSignatureScope();syncLiveSignatureUi();centerExport()})});
+const maintenanceSelector='#sigCanvas,#page16,#page17,#exportChoiceModal,#exportModal,#sagsV6419SignModal';
+function maintenanceChanged(changes){return changes.some(change=>[...change.addedNodes,...change.removedNodes].some(node=>node.nodeType===1&&(node.matches?.(maintenanceSelector)||node.querySelector?.(maintenanceSelector))))}
+let maintainQueued=false;const mo=new MutationObserver(changes=>{if(maintainQueued||!maintenanceChanged(changes))return;maintainQueued=true;requestAnimationFrame(()=>{maintainQueued=false;patchExportOpeners();patchCleanOpenSignature();patchCleanSignaturePad();installSignaturePointerGuard();if(!root.v324ConfirmRosterHandover?.__sagsV6419Home)patchCompleteToHome();sanitizeSignatureScope();syncLiveSignatureUi();centerExport()})});
 if(document.documentElement)mo.observe(document.documentElement,{subtree:true,childList:true});
 root.visualViewport?.addEventListener('resize',centerExport,{passive:true});root.visualViewport?.addEventListener('scroll',centerExport,{passive:true});root.addEventListener('resize',centerExport,{passive:true});root.addEventListener('pageshow',()=>setTimeout(()=>{boot();sanitizeSignatureScope();syncLiveSignatureUi();centerExport()},180),{passive:true});
 })(window);
