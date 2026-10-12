@@ -1,0 +1,1 @@
+{"functions":[{"source":"functions","codebase":"sags-retention","runtime":"nodejs22"}],"firestore":{"rules":"firestore.rules","indexes":"retention.indexes.json"}}

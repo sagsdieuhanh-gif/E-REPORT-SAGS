@@ -1,0 +1,1 @@
+{"indexes":[{"collectionGroup":"sags_flight_retention_v1","queryScope":"COLLECTION","fields":[{"fieldPath":"status","order":"ASCENDING"},{"fieldPath":"expiresAtMs","order":"ASCENDING"}]}],"fieldOverrides":[]}
