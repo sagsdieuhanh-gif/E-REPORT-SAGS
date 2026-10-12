@@ -349,6 +349,12 @@ service cloud.firestore {
         && request.auth.uid != uid;
     }
 
+    // Written only by the trusted 48h scheduled worker; clients cannot forge deletion receipts.
+    match /sags_flight_retention_v1/{id} {
+      allow read: if activeUser();
+      allow write: if false;
+    }
+
     match /sags_handovers/{document=**} {
 
       allow read, create, update: if activeUser();
