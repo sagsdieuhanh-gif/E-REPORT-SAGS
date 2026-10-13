@@ -141,6 +141,7 @@
       if(!session)return;const st=session.steps[session.index];
       try{root.sagsV61Draft?.forget(st.key,st.kind==='bag'?st.part:'quick')}catch(_){}
       ui.restore.hidden=true;ui.discard.hidden=true;
+      if(st.kind==='bag'){session.bags.delete(st.key);}display();
     });
     ui.restore.addEventListener('click',()=>{
       if(!session)return;const st=session.steps[session.index];
@@ -161,7 +162,14 @@
     });
     return ui;
   }
-  function bagDraft(key){if(!session.bags.has(key))session.bags.set(key,parseBag(state[key]));return session.bags.get(key)}
+  function bagDraft(key){
+    if(!session.bags.has(key)){
+      const bag=parseBag(state[key]);
+      for(const part of ['pcs','kg']){const saved=root.sagsV61Draft?.read(key,part);if(saved&&saved.value!==bag[part]){bag[part]=saved.value;bag.dirty=true;}}
+      session.bags.set(key,bag);
+    }
+    return session.bags.get(key);
+  }
   function display(){
     if(!session)return;
     ensureUi();const st=session.steps[session.index];
@@ -179,8 +187,11 @@
       ui.hint.textContent=st.kind==='text'?'Bấm Tiếp để lưu và chuyển sang trường kế tiếp trong cùng nhóm.':st.kind==='equipment'?'Đi hết vùng Ramp Manpower & Equipment, theo hàng ngang.':st.kind==='pax'?'Chỉ di chuyển trong đúng dòng ARR hoặc DEP đang chọn.':'Đi hết cột '+(session.heading.match(/1ST|2ND|3RD/)?.[0]||'đang chọn')+': ADL → CHD → INF → Total Bags. TOTAL tự cộng.';
     }
     try{const part=st.kind==='bag'?st.part:'quick',raw=root.sagsV61Draft?.read(st.key,part);
-      if(raw&&raw.value===ui.value.value)root.sagsV61Draft?.forget(st.key,part);
-      ui.restore.hidden=ui.discard.hidden=!(raw&&raw.value!==ui.value.value);
+      if(raw){
+        ui.value.value=raw.value;
+        if(st.kind==='bag'){const bag=bagDraft(st.key);bag[st.part]=raw.value;}
+      }
+      ui.restore.hidden=true;ui.discard.hidden=!raw;
     }catch(_){ui.restore.hidden=true;ui.discard.hidden=true;}
     ui.prev.disabled=session.index===0;
     ui.next.textContent=session.index===session.steps.length-1?'Lưu & Đóng':'Tiếp ›';
@@ -270,9 +281,16 @@
     const steps=group.steps.filter(st=>!!field(st.key));
     const ix=steps.findIndex(st=>st.key===f.key);
     if(ix<0)return false;
-    session={heading:group.heading,steps,index:ix,bags:new Map()};
+    session={heading:group.heading,steps,index:ix,bags:new Map(),draftScope:root.sagsV61Draft?.contextKey?.()};
     ensureUi();ui.shell.classList.add('open');display();return true;
   };
   root.sagsQuickEntryStatus=()=>session?{field:session.steps[session.index].label,step:session.index+1,total:session.steps.length}:null;
-  window.addEventListener('pagehide',()=>{if(session){try{const st=session.steps[session.index];root.sagsV61Draft?.record(st.key,ui.value.value,st.kind==='bag'?st.part:'quick');saveCurrent(st.kind==='bag'&&st.part==='kg')}catch(_){}}});
+  root.sagsQuickEntrySnapshot=function(){
+    if(!session||!ui||session.draftScope!==root.sagsV61Draft?.contextKey?.())return;
+    const st=session.steps[session.index];
+    if(st.kind==='bag'){const bag=bagDraft(st.key);if(bag[st.part]!==ui.value.value){bag[st.part]=ui.value.value;bag.dirty=true;}}
+    root.sagsV61Draft?.record(st.key,ui.value.value,st.kind==='bag'?st.part:'quick');
+    for(const [key,bag] of session.bags)if(bag.dirty)for(const part of ['pcs','kg'])root.sagsV61Draft?.record(key,bag[part],part);
+  };
+  window.addEventListener('pagehide',()=>root.sagsQuickEntrySnapshot());
 })(window);
