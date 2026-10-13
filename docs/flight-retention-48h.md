@@ -1,5 +1,7 @@
 # 48-hour retention for completed flights
 
+For the current Firebase Spark requirement, use [the GitHub Actions path](flight-retention-spark.md). The Functions deployment below is an optional Blaze-only alternative, not the active setup.
+
 This change is a deployment candidate, not proof that a live Firebase scheduler exists.
 
 ## Policy

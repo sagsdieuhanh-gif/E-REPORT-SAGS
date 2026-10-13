@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.0",
-  "displayVersion": "V2.5.0",
-  "label": "V2.5.0 - COMPLETED FLIGHT RETENTION 48H",
-  "build": "V2.5.0-20261012-RETENTION-48H-01",
-  "releasedAt": "2026-10-12",
-  "type": "retention-48h",
-  "base": "E-REPORT-SAGS main@d747609",
+  "version": "V2.5.1",
+  "displayVersion": "V2.5.1",
+  "label": "V2.5.1 - FIREBASE SPARK RETENTION",
+  "build": "V2.5.1-20261013-SPARK-RETENTION-01",
+  "releasedAt": "2026-10-13",
+  "type": "spark-retention",
+  "base": "E-REPORT-SAGS main@48d77a4",
   "updatePolicy": "required",
-  "notes": "Chuẩn bị chính sách dọn từng chuyến sau 48 giờ từ Door Close; giữ phần chưa đồng bộ và chỉ dọn trên máy khi Firebase xác nhận. Cần triển khai và bật tác vụ Firebase trước khi áp dụng.",
-  "message": "V2.5.0: cơ chế lưu giữ 48 giờ cho chuyến hoàn tất; bảo vệ dữ liệu chưa đồng bộ."
+  "notes": "Tác vụ dọn 48 giờ qua GitHub Actions phù hợp Firebase Spark; đọc dữ liệu tăng dần có giới hạn, bảo vệ nháp chưa gửi. Chỉ hoạt động sau khi kết nối quyền Firebase cho GitHub; không yêu cầu triển khai Firebase Functions.",
+  "message": "V2.5.1: chuẩn bị dọn chuyến 48 giờ qua GitHub Actions cho Firebase miễn phí."
 }
