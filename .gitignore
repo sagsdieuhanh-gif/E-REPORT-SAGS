@@ -1,3 +1,6 @@
 node_modules/
 demo/dist/
 previews/final-ui/
+gha-creds-*.json
+.env*
+firebase-debug.log

@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V2.5.0",
-  "build": "V2.5.0-20261012-RETENTION-48H-01",
+  "version": "V2.5.1",
+  "build": "V2.5.1-20261013-SPARK-RETENTION-01",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -734,8 +734,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "501f63f33c6f0fa1b708b442eba485907de246ed1f49555bf69626b7ef0c0433",
-      "bytes": 80973
+      "sha256": "624756f027d0255dfcee8df229430a4867aa9fb9e8438c8f91055ba1db0b7348",
+      "bytes": 81125
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -786,12 +786,12 @@
       "bytes": 6937
     },
     "./service-worker.js": {
-      "sha256": "faa3a4fa3dbfa36fda8bb0fe29b6b22e2567cf2bb96a01b8998f4dfa0155ba8d",
-      "bytes": 21854
+      "sha256": "7862fddebdaf228e71d875738526e1aca116600fea87647ba6183727389604fe",
+      "bytes": 21860
     },
     "./version.json": {
-      "sha256": "cdd84f1cb35ef748d1829c605c63413ad7c449a8b4f9b3f196698e9e21ab1297",
-      "bytes": 657
+      "sha256": "abeffe97f7385d55fa22403d3662a9e4928458d05ad489ccfe3a4c7d34fe4fb4",
+      "bytes": 673
     }
   },
   "mutableAssets": [

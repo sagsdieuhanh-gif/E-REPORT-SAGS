@@ -1,0 +1,78 @@
+name: Flight retention 48h (Firebase Spark)
+on:
+  schedule:
+    - cron: '7,22,37,52 * * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Check without deleting data'
+        type: boolean
+        default: true
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/flight-retention-48h.yml'
+      - 'firebase/functions/actions-worker.js'
+permissions:
+  contents: read
+  id-token: write
+concurrency:
+  group: firebase-flight-retention
+  cancel-in-progress: false
+jobs:
+  cleanup:
+    if: github.repository == 'sagsdieuhanh-gif/E-REPORT-SAGS' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      FIREBASE_PROJECT_ID: e-report-sags
+      FIREBASE_DATABASE_URL: https://e-report-sags-default-rtdb.asia-southeast1.firebasedatabase.app
+    steps:
+      - name: Check Firebase connection
+        id: connection
+        env:
+          PROVIDER: ${{ vars.FIREBASE_WIF_PROVIDER }}
+          HAS_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON != '' }}
+        run: |
+          if [ -z "$PROVIDER" ] && [ "$HAS_KEY" != 'true' ]; then
+            echo 'ready=false' >> "$GITHUB_OUTPUT"
+            echo '::warning::NOT ACTIVE: Firebase credentials have not been connected.'
+            echo '## NOT ACTIVE' >> "$GITHUB_STEP_SUMMARY"
+            echo 'Connect a dedicated Firebase service account; no data was read or deleted.' >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo 'ready=true' >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@v4
+        if: steps.connection.outputs.ready == 'true'
+      - uses: actions/setup-node@v4
+        if: steps.connection.outputs.ready == 'true'
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: firebase/functions/package-lock.json
+      - name: Authenticate with short-lived Google identity
+        if: steps.connection.outputs.ready == 'true' && vars.FIREBASE_WIF_PROVIDER != ''
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093
+        with:
+          workload_identity_provider: ${{ vars.FIREBASE_WIF_PROVIDER }}
+          service_account: sags-retention@e-report-sags.iam.gserviceaccount.com
+          project_id: e-report-sags
+      - name: Authenticate Firebase Spark service account
+        if: steps.connection.outputs.ready == 'true' && vars.FIREBASE_WIF_PROVIDER == ''
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+          project_id: e-report-sags
+      - name: Install worker
+        if: steps.connection.outputs.ready == 'true'
+        run: npm ci --ignore-scripts --prefix firebase/functions
+      - name: Run guarded 48h cleanup
+        if: steps.connection.outputs.ready == 'true'
+        env:
+          DRY_RUN: ${{ github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.dry_run) }}
+        run: |
+          if [ "$DRY_RUN" = 'true' ]; then
+            node firebase/functions/actions-worker.js --dry-run
+          else
+            node firebase/functions/actions-worker.js --apply
+          fi
