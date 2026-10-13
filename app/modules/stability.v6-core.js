@@ -125,11 +125,11 @@
         textarea.value=r.value;root.sagsV622EntryDraftRestored?.(r.value);
         box.style.display='none';textarea.focus();
       });
-      $('sagsV61RestoreNo').addEventListener('click',()=>{const f=currentManual();if(f)forget(f.key);box.style.display='none';textarea.focus();});
+      $('sagsV61RestoreNo').addEventListener('click',()=>{const f=currentManual();if(f)root.sagsV61Draft.forget(f.key);box.style.display='none';textarea.focus();});
       textarea.addEventListener('focusin',()=>{
         const f=currentManual();if(!f)return;
         const r=read(f.key),committed=text(readFlightSessionEnvelope(activeFlightSessionId)?.state?.[f.key]);
-        if(r&&r.value===committed){forget(f.key);box.style.display='none';return;}
+        if(r&&r.value===committed){root.sagsV61Draft.forget(f.key);box.style.display='none';return;}
         if(r&&textarea.value===committed){
           textarea.value=r.value;root.sagsV622EntryDraftRestored?.(r.value);
           try{textarea.setSelectionRange(r.value.length,r.value.length);}catch(_e){}
@@ -138,11 +138,18 @@
         // Different unsaved text is already in the editor: never overwrite it.
         box.style.display=r&&r.value!==textarea.value?'block':'none';
       });
-      textarea.addEventListener('input',()=>{const f=currentManual();if(f)record(f.key,textarea.value);});
+      for(const event of ['input','change','compositionend'])textarea.addEventListener(event,()=>{const f=currentManual();if(f)root.sagsV61Draft.record(f.key,textarea.value);});
     }
     status();
   }
-  function saveManualNow(){const f=currentManual(),v=$('entryText')?.value;if(f&&typeof v==='string')record(f.key,v);}
+  function saveManualNow(){const f=currentManual(),v=$('entryText')?.value;if(f&&typeof v==='string')root.sagsV61Draft.record(f.key,v);}
+  function snapshotAllEditors(){
+    saveManualNow();
+    try{root.sagsQuickEntrySnapshot?.();}catch(e){console.warn('Quick entry snapshot failed',e);}
+    try{root.SAGSFS09DraftSnapshot?.();}catch(e){console.warn('PVHK draft snapshot failed',e);}
+    try{root.SAGSMobileDraftRecovery?.snapshotVisibleDirty();}catch(e){console.warn('Mobile draft snapshot failed',e);}
+    persistChangedCore();
+  }
   function persistChangedCore(){
     try{
       if(!activeFlightSessionId)return;
@@ -223,15 +230,17 @@
       };
     }
   }
-  root.sagsV61Draft={read,record,forget,pending,verifyPending,blockReason,status,saveManualNow,persistChangedCore};
+  root.sagsV61Draft={read,record,forget,pending,verifyPending,blockReason,status,saveManualNow,persistChangedCore,snapshotAllEditors,contextKey:scope};
   // SAVE clears a verified draft; closing an unfinished editor retains it.
-  root.sagsStabilityForgetManualDraft=function(field){if(field)forget(field);const b=$('sagsV61Restore');if(b)b.style.display='none';};
+  root.sagsStabilityForgetManualDraft=function(field){if(field)root.sagsV61Draft.forget(field);const b=$('sagsV61Restore');if(b)b.style.display='none';};
   try{lastCore=JSON.stringify(state);}catch(_){lastCore='';}
   function boot(){ensureUi();patchUpdates();status();
     statusTimer=setInterval(()=>{persistChangedCore();status();},2000);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
-  document.addEventListener('visibilitychange',()=>{if(document.hidden){saveManualNow();persistChangedCore();}else status();});
-  window.addEventListener('pagehide',()=>{saveManualNow();persistChangedCore();});
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)snapshotAllEditors();else status();});
+  window.addEventListener('pagehide',snapshotAllEditors);
+  window.addEventListener('blur',snapshotAllEditors);
+  document.addEventListener('freeze',snapshotAllEditors,{capture:true});
   window.addEventListener('online',status);window.addEventListener('offline',status);
 })(window);

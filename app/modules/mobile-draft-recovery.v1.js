@@ -11,7 +11,7 @@
     '#fs09QuickModal input.fs09qDataInput[data-key],'+
     '#fs09QuickModal textarea.fs09qTextArea[data-key]';
   const watched=el=>el&&el.matches&&el.matches(SELECTOR);
-  const part=el=>el.closest('#quickTimeModal')?'mobile-quick-time':'mobile-fs09';
+  const part=el=>el.closest('#quickTimeModal')?'quickTime':'mobile-fs09';
   const value=el=>String(el.value??'');
   const field=el=>String(el.dataset.key||'');
   const draft=()=>root.sagsV61Draft;
@@ -32,11 +32,11 @@
     if(!watched(el)||!field(el)||!draft())return;
     const k=field(el),v=value(el),p=part(el);
     if(sameValue(v,canonical(k),el))draft().forget(k,p);
-    else draft().record(k,v,p);
+    else if(draft().read(k,p)?.value!==v)draft().record(k,v,p);
   }
   function restoreOnFocus(el){
     if(!watched(el)||!field(el)||!draft())return;
-    const k=field(el),p=part(el),saved=draft().read(k,p);
+    const k=field(el),p=part(el),saved=draft().read(k,p)||(p==='quickTime'?draft().read(k,'mobile-quick-time'):null);
     if(!saved)return;
     if(sameValue(saved.value,canonical(k),el)){
       draft().forget(k,p);return;
@@ -54,19 +54,28 @@
   function snapshotVisibleDirty(){
     document.querySelectorAll(SELECTOR).forEach(el=>{
       const modal=el.closest('#quickTimeModal,#fs09QuickModal');
-      if(modal&&getComputedStyle(modal).display!=='none'&&el.classList.contains('dirty'))store(el);
+      if(modal&&getComputedStyle(modal).display!=='none'){
+        // Synchronize the panel's internal draft map with the last visible
+        // IME/autofill value before storing it, even if input was not delivered.
+        if(draft()?.read(field(el),part(el))?.value!==value(el)){
+          if(part(el)==='quickTime')root.qteInputChanged?.(el);
+          else if(el.classList.contains('fs09qInput'))root.fs09qTimeInput?.(el);
+          else root.fs09qDataChanged?.(el);
+        }
+        store(el);
+      }
     });
   }
   function cleanCommitted(){
     if(!draft())return;
     for(const r of draft().pending()){
-      if(r.part!=='mobile-quick-time'&&r.part!=='mobile-fs09')continue;
-      const selector=r.part==='mobile-quick-time'?'#quickTimeModal':'#fs09QuickModal';
+      if(r.part!=='quickTime'&&r.part!=='mobile-quick-time'&&r.part!=='mobile-fs09')continue;
+      const selector=r.part==='mobile-fs09'?'#fs09QuickModal':'#quickTimeModal';
       const el=Array.from(document.querySelectorAll(selector+' [data-key]')).find(x=>watched(x)&&field(x)===r.field);
       if(el&&sameValue(r.value,canonical(r.field),el))draft().forget(r.field,r.part);
     }
   }
-  document.addEventListener('input',event=>{
+  for(const type of ['input','change','compositionend'])document.addEventListener(type,event=>{
     const el=event.target;if(watched(el))store(el);
   });
   document.addEventListener('focusin',event=>restoreOnFocus(event.target));

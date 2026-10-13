@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V2.5.2",
-  "build": "V2.5.2-20261013-DIRECT-TOUCH-01",
+  "version": "V2.5.3",
+  "build": "V2.5.3-20261013-MULTITASK-DRAFT-01",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -66,8 +66,8 @@
       "bytes": 27646
     },
     "./app/boot/19-v183-fs09-quick.js": {
-      "sha256": "bfad6008b1ad14c24b5f156ad6f9cb6c3eed0be4c26fb2193f83bd56c45a2036",
-      "bytes": 17764
+      "sha256": "b7b8ba0a28363d1258a368578a12671952e560d78106c03d886849ada7538bfc",
+      "bytes": 18758
     },
     "./app/boot/22-v1121-ios-time-footer-script.js": {
       "sha256": "0088a2fe94374f09d95a7ed9c685010c86880d9c0c0d48f2ada57e085b21f8be",
@@ -262,8 +262,8 @@
       "bytes": 12958
     },
     "./app/modules/mobile-draft-recovery.v1.js": {
-      "sha256": "359527bd71a2e00d57e594143016c8ff744babf71d26ac421fd0ec4dd0ad2816",
-      "bytes": 4238
+      "sha256": "1db1ca30cc6f4fb4fe6e8815d272d14330815d97bad87956c628ecae4bcb9127",
+      "bytes": 4798
     },
     "./app/modules/mobile-form-dock.v1.js": {
       "sha256": "7e2cb6f30aafaa4213f437f29d7cf9eb6bc5556b16da32100c16fd470ce718b1",
@@ -278,8 +278,8 @@
       "bytes": 12286
     },
     "./app/modules/quick-entry.v1.js": {
-      "sha256": "931d093e9902ae1f924c070709e5f2944fc9bc5b2254dcbeef2dba20d9f40202",
-      "bytes": 18346
+      "sha256": "5c53fe87c622cc83752b36769c8ae41e29f8cf37f088c24cad60dc42e8051e86",
+      "bytes": 19055
     },
     "./app/modules/roster-lite.v5.js": {
       "sha256": "3739427db6ffc56a3a1929f7a429313e32691cd13816a3c31c024142f29ac069",
@@ -290,8 +290,8 @@
       "bytes": 38236
     },
     "./app/modules/stability.v6-core.js": {
-      "sha256": "4123ae9fb477b4cd8e1d489236a17900716d544ac8decd51551ece01d987eb51",
-      "bytes": 15152
+      "sha256": "109f582b58b1371812316addc430f6ee4ba36076de1a5b8496d923bcdcd2aeb4",
+      "bytes": 15813
     },
     "./app/modules/stability.v6.js": {
       "sha256": "507c23b9f450ee2f95af5941cf3108497d91fb37bb3eb8549fd3ca031d0d2ddd",
@@ -734,8 +734,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "f170bbf261d3cd27bc2f3324815eeb3d7fad669d0aeb86758dc1465d11a794b5",
-      "bytes": 80897
+      "sha256": "9f0d539a89ccd04b88adeb20e4770eaadf1c3faddca486825ec8454cc7c2fde2",
+      "bytes": 81125
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -786,12 +786,12 @@
       "bytes": 6937
     },
     "./service-worker.js": {
-      "sha256": "3bd6f634318bf87ca4ffefd84826b00bd9e81f6c315064d1a8adf78c018b1eda",
-      "bytes": 21851
+      "sha256": "48e495ce312ba5839f5212beefcc461b1216fbe209d6496ee460dba83dd52ef9",
+      "bytes": 21860
     },
     "./version.json": {
-      "sha256": "fab9ad01d10980b27f8c234846daf53ebf2440cfea7d3970142ae407b4552b6a",
-      "bytes": 553
+      "sha256": "84878aeac47952998cd7d017258a56c5c6d8860dc1930898c0f620c53d84e5c7",
+      "bytes": 637
     }
   },
   "mutableAssets": [
