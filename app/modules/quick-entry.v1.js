@@ -136,7 +136,7 @@
     ui.prev.addEventListener('click',()=>move(-1));ui.next.addEventListener('click',()=>move(1));
     ui.na.addEventListener('click',()=>{if(!session)return;ui.value.value='N/A';ui.value.dispatchEvent(new Event('input',{bubbles:true}));move(1)});
     ui.close.addEventListener('click',close);
-    ui.value.addEventListener('input',()=>{if(!session)return;ui.error.textContent='';const st=session.steps[session.index];if(st.kind==='bag'){const draft=bagDraft(st.key);draft[st.part]=ui.value.value;draft.dirty=true;}try{root.sagsV61Draft?.record(st.key,ui.value.value,st.kind==='bag'?st.part:'quick');}catch(_){}});
+    ui.value.addEventListener('input',()=>{if(!session||session.draftScope!==root.sagsV61Draft?.contextKey?.())return;ui.error.textContent='';const st=session.steps[session.index];if(st.kind==='bag'){const draft=bagDraft(st.key);draft[st.part]=ui.value.value;draft.dirty=true;}try{root.sagsV61Draft?.record(st.key,ui.value.value,st.kind==='bag'?st.part:'quick');}catch(_){}});
     ui.discard.addEventListener('click',()=>{
       if(!session)return;const st=session.steps[session.index];
       try{root.sagsV61Draft?.forget(st.key,st.kind==='bag'?st.part:'quick')}catch(_){}
@@ -235,6 +235,7 @@
   }
   function saveCurrent(leaving){
     if(!session)return true;
+    if(session.draftScope!==root.sagsV61Draft?.contextKey?.()){ui.error.textContent="Chuyến đang mở đã thay đổi. Mở lại ô của chuyến cần nhập.";return false;}
     const st=session.steps[session.index];
     if(st.kind==='bag')return saveBag(st,leaving);
     const value=numberText(ui.value.value);
@@ -283,6 +284,12 @@
     if(ix<0)return false;
     session={heading:group.heading,steps,index:ix,bags:new Map(),draftScope:root.sagsV61Draft?.contextKey?.()};
     ensureUi();ui.shell.classList.add('open');display();return true;
+  };
+  root.sagsQuickEntrySuspend=function(){
+    root.sagsQuickEntrySnapshot?.();
+    session=null;
+    if(ui)ui.shell.classList.remove('open');
+    activeKey=null;
   };
   root.sagsQuickEntryStatus=()=>session?{field:session.steps[session.index].label,step:session.index+1,total:session.steps.length}:null;
   root.sagsQuickEntrySnapshot=function(){

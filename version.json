@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.3",
-  "displayVersion": "V2.5.3",
-  "label": "V2.5.3 - MULTITASK DRAFT RECOVERY",
-  "build": "V2.5.3-20261013-MULTITASK-DRAFT-01",
+  "version": "V2.5.4",
+  "displayVersion": "V2.5.4",
+  "label": "V2.5.4 - FLIGHT SWITCH ISOLATION",
+  "build": "V2.5.4-20261013-FLIGHT-SWITCH-01",
   "releasedAt": "2026-10-13",
-  "type": "multitask-draft-recovery",
-  "base": "E-REPORT-SAGS main@9d1719f",
+  "type": "flight-switch-isolation",
+  "base": "E-REPORT-SAGS main@2f15c90",
   "updatePolicy": "required",
-  "notes": "Lưu dự phòng nội dung nhập dở khi đa nhiệm, khóa màn hình hoặc chuyển ứng dụng. Tự khôi phục nháp Nhập nhanh và PVHK theo tài khoản/chuyến; giữ nháp nếu lưu chính thức thất bại.",
-  "message": "V2.5.3: bảo vệ và khôi phục dữ liệu đang nhập khi chuyển đa nhiệm."
+  "notes": "Lưu và xác minh nháp trước khi đổi chuyến, đóng phiên nhập của chuyến cũ, đặt lại trạng thái chạm và ngăn Nhập nhanh ghi sang chuyến khác.",
+  "message": "V2.5.4: bảo vệ dữ liệu và phiên nhập khi chuyển giữa nhiều chuyến bay."
 }
