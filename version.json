@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.1",
-  "displayVersion": "V2.5.1",
-  "label": "V2.5.1 - FIREBASE SPARK RETENTION",
-  "build": "V2.5.1-20261013-SPARK-RETENTION-01",
+  "version": "V2.5.2",
+  "displayVersion": "V2.5.2",
+  "label": "V2.5.2 - DIRECT TOUCH ENTRY FIX",
+  "build": "V2.5.2-20261013-DIRECT-TOUCH-01",
   "releasedAt": "2026-10-13",
-  "type": "spark-retention",
-  "base": "E-REPORT-SAGS main@48d77a4",
+  "type": "direct-touch-fix",
+  "base": "E-REPORT-SAGS main@46f9fca",
   "updatePolicy": "required",
-  "notes": "Tác vụ dọn 48 giờ qua GitHub Actions phù hợp Firebase Spark; đọc dữ liệu tăng dần có giới hạn, bảo vệ nháp chưa gửi. Chỉ hoạt động sau khi kết nối quyền Firebase cho GitHub; không yêu cầu triển khai Firebase Functions.",
-  "message": "V2.5.1: chuẩn bị dọn chuyến 48 giờ qua GitHub Actions cho Firebase miễn phí."
+  "notes": "Sửa trạng thái chạm bị kẹt sau khi giữ tay, phóng to hoặc vẽ lại biểu mẫu; khôi phục bấm trực tiếp vào ô nhập trên điện thoại.",
+  "message": "V2.5.2: sửa lỗi bấm ô trên biểu mẫu không mở nhập liệu."
 }

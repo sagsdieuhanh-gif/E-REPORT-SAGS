@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V2.5.1",
-  "build": "V2.5.1-20261013-SPARK-RETENTION-01",
+  "version": "V2.5.2",
+  "build": "V2.5.2-20261013-DIRECT-TOUCH-01",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -18,8 +18,8 @@
       "bytes": 1253
     },
     "./app/boot/05-legacy.js": {
-      "sha256": "cc6ee771bd45d623fc8e1219eb0c3c5bfac3941f431daf85b17cd4109d5cb641",
-      "bytes": 297879
+      "sha256": "cf8d1e754be986173d6f0a9728bad010beb361e29d0f8254937a2a8059383227",
+      "bytes": 299511
     },
     "./app/boot/06-legacy.js": {
       "sha256": "c228e3f40af3a5bbf67815fb3727ce698f58fea356f8606e68a2c1ef3c397932",
@@ -734,8 +734,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "624756f027d0255dfcee8df229430a4867aa9fb9e8438c8f91055ba1db0b7348",
-      "bytes": 81125
+      "sha256": "f170bbf261d3cd27bc2f3324815eeb3d7fad669d0aeb86758dc1465d11a794b5",
+      "bytes": 80897
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -786,12 +786,12 @@
       "bytes": 6937
     },
     "./service-worker.js": {
-      "sha256": "7862fddebdaf228e71d875738526e1aca116600fea87647ba6183727389604fe",
-      "bytes": 21860
+      "sha256": "3bd6f634318bf87ca4ffefd84826b00bd9e81f6c315064d1a8adf78c018b1eda",
+      "bytes": 21851
     },
     "./version.json": {
-      "sha256": "abeffe97f7385d55fa22403d3662a9e4928458d05ad489ccfe3a4c7d34fe4fb4",
-      "bytes": 673
+      "sha256": "fab9ad01d10980b27f8c234846daf53ebf2440cfea7d3970142ae407b4552b6a",
+      "bytes": 553
     }
   },
   "mutableAssets": [
