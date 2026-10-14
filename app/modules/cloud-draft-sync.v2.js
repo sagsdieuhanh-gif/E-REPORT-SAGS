@@ -106,6 +106,7 @@
   }
   function scheduleCloud(entry,delay=320){
     if(!valid(entry))return;
+    if(document.hidden||document.visibilityState==='hidden'){void enqueue(entry);return;}
     clearTimeout(timers.get(entry.key));timers.set(entry.key,setTimeout(()=>{timers.delete(entry.key);void enqueue(entry)},Math.max(0,delay)));
   }
   async function flushPending(){
@@ -136,9 +137,9 @@
     installWrap();wake(700);
     root.addEventListener?.('online',()=>wake(40),{passive:true});root.addEventListener?.('pageshow',()=>wake(180),{passive:true});
     ['sags:login','sags:logout','sags:rolechange','sags:profilechange','sags:personal-roster-updated','sags:flightchange'].forEach(name=>root.addEventListener?.(name,()=>{epoch++;wake(250)}));
-    document.addEventListener('visibilitychange',()=>{if(!document.hidden)wake(80)},{passive:true});
+    document.addEventListener('visibilitychange',()=>{if(document.hidden){void flushPending();}else wake(80)},{passive:true});
     document.addEventListener('click',e=>{if(e.target?.closest?.('.v1199TaskBtn,[data-task-aid],#roleBtnQuickTime,#roleBtnFlights,#roleBtnRosterFlights,.v157MenuItem[data-v157-key="myflight"]')){epoch++;wake(650)}},true);
-    root.addEventListener?.('pagehide',()=>{if(offsetRef){offsetRef.off('value');offsetRef=null}},{passive:true});
+    root.addEventListener?.('pagehide',()=>{void flushPending();if(offsetRef){offsetRef.off('value');offsetRef=null}},{passive:true});
   }
   root.sagsDraftV2Pull=pullCloud;root.sagsDraftV2Flush=flushPending;
   root.sagsDraftV2Status=()=>({build:'V2.1',wrapped,cloudCapable:!!(baseFor(identity())&&typeof root.sagsV470Ref==='function'),online:navigator.onLine!==false,...identity(),lastCloudSyncAtMs,lastPullAtMs,lastCloudError,cloudWrites,idbWrites});
