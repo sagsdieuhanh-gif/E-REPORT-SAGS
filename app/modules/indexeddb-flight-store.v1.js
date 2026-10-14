@@ -138,6 +138,27 @@
     return {scope,sessionCount:list.length,mirrored,totalBytes,listVerified,errors,deletedLocalStorage:false};
   }
 
+  // iOS can suspend JavaScript before a 0/250ms timeout ever runs.
+  // Capture the just-committed active flight and start IndexedDB writes
+  // synchronously from the current event; localStorage remains authoritative.
+  function activeSessionId(){
+    try{return S(typeof activeFlightSessionId!=='undefined'?activeFlightSessionId:root.activeFlightSessionId);}catch(_){return '';}
+  }
+  function mirrorActiveImmediately(reason='lifecycle'){
+    if(!loggedIn())return Promise.resolve({skipped:true,reason});
+    const id=activeSessionId(),scope=accountScope();
+    try{
+      const list=root.readFlightSessionList()||[];
+      if(!id||!list.some(x=>S(x?.id)===id))return Promise.resolve({skipped:true,reason});
+      const envelope=clone(root.readFlightSessionEnvelope(id)||{});
+      const tasks=[putEnvelope(id,envelope,scope),putSessionList(list,scope)];
+      return Promise.allSettled(tasks).then(rows=>{
+        const errors=rows.filter(x=>x.status==='rejected').map(x=>S(x.reason?.message||x.reason));
+        if(errors.length)console.warn('iOS IndexedDB active flight backup incomplete',errors);
+        return {reason,id,scope,ok:!errors.length,errors};
+      });
+    }catch(e){console.warn('iOS immediate mirror unavailable',e);return Promise.resolve({reason,ok:false});}
+  }
   function categoryForKey(key){
     const k=S(key).toLowerCase();
     if(/flight|session|workspace|roster/.test(k))return 'flight/session';
@@ -195,7 +216,8 @@
     if(typeof original!=='function'||original.__sagsIdbShadow)return false;
     const wrapped=function(list){
       const result=original.apply(this,arguments);
-      scheduleMirror('session-list-write',250);
+      void mirrorActiveImmediately('session-list-write');
+      scheduleMirror('session-list-write',700);
       return result;
     };
     wrapped.__sagsIdbShadow=true;wrapped.__sagsOriginal=original;root.writeFlightSessionList=wrapped;hookInstalled=true;
@@ -229,12 +251,13 @@
     const attempt=()=>{installShadowWriteHook();ensureUi();if(loggedIn())scheduleMirror('startup',800);};
     attempt();setTimeout(attempt,1200);setTimeout(attempt,3500);
     root.addEventListener?.('pageshow',()=>{attempt();scheduleMirror('pageshow',900)},{passive:true});
-    document.addEventListener?.('visibilitychange',()=>{if(document.visibilityState==='hidden')scheduleMirror('visibility-hidden',0)});
+    document.addEventListener?.('visibilitychange',()=>{if(document.visibilityState==='hidden')void mirrorActiveImmediately('visibility-hidden');});
+    root.addEventListener?.('pagehide',()=>{void mirrorActiveImmediately('pagehide');},{passive:true});
     setInterval(()=>{installShadowWriteHook();if(loggedIn()&&Date.now()-lastMirrorAt>30000)scheduleMirror('periodic',0)},30000);
   }
 
   root.sagsIndexedDbFlightStoreV1={
-    DB_NAME,DB_VERSION,accountScope,openDb,putSessionList,getSessionList,putEnvelope,getEnvelope,
+    DB_NAME,DB_VERSION,accountScope,openDb,putSessionList,getSessionList,putEnvelope,getEnvelope,mirrorActiveImmediately,
     listEnvelopeMeta,mirrorCurrentLocalStorage,inventoryLocalStorage,storageEstimate,report,mirrorNow,
     scheduleMirror,installShadowWriteHook,showStorageReport
   };

@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.4",
-  "displayVersion": "V2.5.4",
-  "label": "V2.5.4 - FLIGHT SWITCH ISOLATION",
-  "build": "V2.5.4-20261013-FLIGHT-SWITCH-01",
-  "releasedAt": "2026-10-13",
-  "type": "flight-switch-isolation",
-  "base": "E-REPORT-SAGS main@2f15c90",
+  "version": "V2.5.5",
+  "displayVersion": "V2.5.5",
+  "label": "V2.5.5 - iOS DRAFT DURABILITY TEST",
+  "build": "V2.5.5-20261014-IOS-DRAFT-DURABILITY-01",
+  "releasedAt": "2026-10-14",
+  "type": "ios-safari-draft-durability",
+  "base": "E-REPORT-SAGS V2.5.4",
   "updatePolicy": "required",
-  "notes": "Lưu và xác minh nháp trước khi đổi chuyến, đóng phiên nhập của chuyến cũ, đặt lại trạng thái chạm và ngăn Nhập nhanh ghi sang chuyến khác.",
-  "message": "V2.5.4: bảo vệ dữ liệu và phiên nhập khi chuyển giữa nhiều chuyến bay."
+  "notes": "Bản TEST: iPhone chuyển đa nhiệm sao lưu IndexedDB ngay khi lưu/ẩn trang; nháp đang gõ có nút khôi phục, giữ cách ly tài khoản/chuyến, yêu cầu đồng bộ Firebase khi rời ứng dụng nếu có mạng. Không tự ghi nội dung nhập dở vào biểu mẫu chính thức.",
+  "message": "V2.5.5 TEST: iOS background draft safety and recovery."
 }

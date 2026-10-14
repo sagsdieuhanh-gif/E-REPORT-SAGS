@@ -7,7 +7,7 @@
   const PREFIX='sagsV61Uncommitted:';
   const $=id=>document.getElementById(id);
   const text=x=>String(x??'');
-  let storageError=false, lastCore='', statusTimer=0, reloading=false, warnedStorage=false;
+  let storageError=false, lastCore='', lastCoreFlight='', statusTimer=0, reloading=false, warnedStorage=false;
   function scope(){
     try{return sagsOwnedPrefix(PREFIX)+String(activeFlightSessionId||'')+':';}
     catch(_){return PREFIX+'NO_ACCOUNT:NO_FLIGHT:';}
@@ -94,14 +94,34 @@
     if(storageError||root.sagsV622StorageBlocked){badge.textContent='⚠ Không lưu được nháp';badge.dataset.level='error';return;}
     const p=pending(),manual=!!currentManual(),quick=!!currentQuick();
     const cloud=root.sagsDraftV2Status?.()||{},cloudReady=cloud.cloudCapable===true;
-    badge.textContent=p.length||manual||quick?(cloudReady?'📝 Nháp đang được bảo vệ':'📝 Nháp đang lưu trên máy'):(cloudReady?'✓ Nháp đã bảo vệ 3 lớp':'✓ Nháp chuyến trên máy này');
+    badge.textContent=p.length||manual||quick?'📝 CÓ NHÁP CHƯA LƯU · CHẠM ĐỂ KHÔI PHỤC':'✓ Dữ liệu đã lưu trên máy';
     badge.dataset.level=p.length||manual||quick?'pending':'local';
-    badge.title=cloudReady?'localStorage + IndexedDB trên máy; khi có mạng đồng bộ bản nháp roster lên server để có thể phục hồi trên thiết bị khác.':'Bản nháp đang được bảo vệ trên thiết bị này; đồng bộ server sẽ bật khi có assignment roster và Firebase sẵn sàng.';
+    badge.title=cloudReady?'Dữ liệu chưa bấm LƯU được giữ ngay trên máy; IndexedDB và Firebase chỉ đồng bộ khi xác nhận thành công. Chạm để mở nháp.':'Dữ liệu đang nhập dở được giữ trên máy này. Chạm để mở nháp; không xóa cache hay dữ liệu trang web.';
   }
   function showPending(){
-    const p=pending();alert(p.length
-      ?`Các ô có nội dung nhập dở:\n${p.map(x=>'• '+x.field+(x.part!=='manual'?' · '+x.part:'')).join('\n')}\n\nNháp được lưu tức thời trên máy. Với chuyến roster, lớp V2.0 sẽ đồng bộ dự phòng lên server khi có mạng để hỗ trợ phục hồi trên thiết bị khác.`
-      :'Biểu mẫu đang được bảo vệ cục bộ. Với chuyến roster và khi có mạng, V2.0 đồng bộ bản nháp dự phòng lên server; thao tác gửi/hoàn tất chính thức vẫn là quy trình riêng.');
+    const p=pending().sort((a,b)=>Number(b.atMs||0)-Number(a.atMs||0));
+    if(!p.length){
+      alert('Hiện không có ô nhập dở cần khôi phục trên chuyến này. Các ô đã bấm LƯU nằm trong biểu mẫu.');
+      return;
+    }
+    // Never silently commit partially typed text. Only reopen an editor for
+    // the CURRENT account, active flight and current form page.
+    const manual=p.filter(x=>(x.part||'manual')==='manual');
+    const current=manual.find(x=>{
+      try{return typeof fields!=='undefined'&&fields.some(f=>f.key===x.field&&Number(f.page)===Number(currentPage))}catch(_){return false}
+    });
+    if(current&&!currentManual()&&typeof activate==='function'){
+      const f=fields.find(x=>x.key===current.field&&Number(x.page)===Number(currentPage));
+      const label=String(f?.label||current.field);
+      if(confirm('Có '+p.length+' ô đang nhập dở trên máy.\n\nMở ô '+label+' để khôi phục nội dung chưa bấm LƯU?')){
+        activate(f);
+        return;
+      }
+    }
+    alert('E-REPORT đã giữ '+p.length+' bản nháp nhập dở trên máy cho chuyến hiện tại.\n\n'+
+      p.slice(0,8).map(x=>'• '+x.field+' · '+(x.part||'manual')).join('\n')+
+      (p.length>8?'\n…':'')+
+      '\n\nMở đúng ô trên biểu mẫu hoặc Nhập nhanh để phục hồi. Đừng xóa dữ liệu trình duyệt. Bản nháp chưa phải dữ liệu chính thức.');
   }
   function ensureUi(){
     if($('sagsV61DraftStatus'))return;
@@ -154,12 +174,12 @@
     try{
       if(!activeFlightSessionId)return;
       const serialized=JSON.stringify(state);
-      if(serialized===lastCore)return;
+      if(serialized===lastCore&&String(activeFlightSessionId)===lastCoreFlight)return;
       // Only persist when this tab's in-memory state changes, not when another tab edits storage.
       persist();
       const saved=readFlightSessionEnvelope(activeFlightSessionId);
       if(JSON.stringify(saved.state)!==serialized)throw new Error('Lưu nháp chuyến không khớp');
-      lastCore=serialized;storageError=false;
+      lastCore=serialized;lastCoreFlight=String(activeFlightSessionId);storageError=false;
     }catch(e){storageError=true;console.warn('V6.1 local persist failed',e);}
     status();
   }
@@ -233,13 +253,15 @@
   root.sagsV61Draft={read,record,forget,pending,verifyPending,blockReason,status,saveManualNow,persistChangedCore,snapshotAllEditors,contextKey:scope};
   // SAVE clears a verified draft; closing an unfinished editor retains it.
   root.sagsStabilityForgetManualDraft=function(field){if(field)root.sagsV61Draft.forget(field);const b=$('sagsV61Restore');if(b)b.style.display='none';};
-  try{lastCore=JSON.stringify(state);}catch(_){lastCore='';}
+  try{lastCore=JSON.stringify(state);lastCoreFlight=String(activeFlightSessionId||'');}catch(_){lastCore='';lastCoreFlight='';}
   function boot(){ensureUi();patchUpdates();status();
     statusTimer=setInterval(()=>{persistChangedCore();status();},2000);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
-  document.addEventListener('visibilitychange',()=>{if(document.hidden)snapshotAllEditors();else status();});
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)snapshotAllEditors();else{status();saveManualNow();}});
   window.addEventListener('pagehide',snapshotAllEditors);
+  window.addEventListener('beforeunload',snapshotAllEditors);
+  window.addEventListener('pageshow',()=>{saveManualNow();status();},{passive:true});
   window.addEventListener('blur',snapshotAllEditors);
   document.addEventListener('freeze',snapshotAllEditors,{capture:true});
   window.addEventListener('online',status);window.addEventListener('offline',status);
