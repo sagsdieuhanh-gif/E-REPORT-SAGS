@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V2.5.4",
-  "build": "V2.5.4-20261013-FLIGHT-SWITCH-01",
+  "version": "V2.5.5",
+  "build": "V2.5.5-20261014-IOS-DRAFT-DURABILITY-01",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -202,8 +202,8 @@
       "bytes": 42484
     },
     "./app/modules/cloud-draft-sync.v2.js": {
-      "sha256": "84a2e34ea6b183e6ffd85b29531ad0eebff9b5b4293e5e12de11ec9011e021cd",
-      "bytes": 14114
+      "sha256": "60d79ae6de0d4d2d7b008ea30d9986ba077571726e9b5d8999523512c4d0d85f",
+      "bytes": 14250
     },
     "./app/modules/cross-browser-entry.v1.js": {
       "sha256": "e0aad85c639f7c97437dd560093f2988923fd187d06e3ba1cf3ad0db1bbf9e5e",
@@ -258,8 +258,8 @@
       "bytes": 42519
     },
     "./app/modules/indexeddb-flight-store.v1.js": {
-      "sha256": "52c8ae561259fc408a5e3996d7864c8d82b45176d8c1d11b991e877971599b84",
-      "bytes": 12958
+      "sha256": "275be0509867d760ab83ad7d820bd042e25b15da7d237518e308ab3feb9a42d7",
+      "bytes": 14443
     },
     "./app/modules/mobile-draft-recovery.v1.js": {
       "sha256": "1db1ca30cc6f4fb4fe6e8815d272d14330815d97bad87956c628ecae4bcb9127",
@@ -290,12 +290,12 @@
       "bytes": 38236
     },
     "./app/modules/stability.v6-core.js": {
-      "sha256": "109f582b58b1371812316addc430f6ee4ba36076de1a5b8496d923bcdcd2aeb4",
-      "bytes": 15813
+      "sha256": "8939ea5a2db8fe309fc83f50b876614eb7a657be3abc80b1f10eb86420a5836f",
+      "bytes": 16927
     },
     "./app/modules/stability.v6.js": {
-      "sha256": "507c23b9f450ee2f95af5941cf3108497d91fb37bb3eb8549fd3ca031d0d2ddd",
-      "bytes": 1283
+      "sha256": "91a1cf0ee17a4c91af4971ff2430a6174d2d161e1c0c3136ac8a0fd35d192cff",
+      "bytes": 1423
     },
     "./app/modules/theme-contrast.v2.js": {
       "sha256": "81d04129814c8c5d3ca24efb575a276cc04a6bb38a54c99eecf09febd97a7540",
@@ -734,8 +734,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "a70e321e5ddf1d760504cde52ed61e46636406cc3abb559caf1ef618f8aebb9e",
-      "bytes": 80973
+      "sha256": "55694b041559c1d69770c9b2ebf16a8fa77cc3b5e651ac1a7375d45ce95a6764",
+      "bytes": 81505
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -786,12 +786,12 @@
       "bytes": 6937
     },
     "./service-worker.js": {
-      "sha256": "13f2431705b10f6b128c8b66d3bbb537a9d8d1bdfd45ad8818122896cff8093e",
-      "bytes": 21854
+      "sha256": "6865af4b1f01b4a83d3880dd2004c918826583d73312dfcbf434afc641a9666e",
+      "bytes": 21875
     },
     "./version.json": {
-      "sha256": "7712c960205dbd58f8c934f5e320ce13388d613bc7be5db606bc8cca8f6807de",
-      "bytes": 586
+      "sha256": "212052753ca76502134d312e5995bd95466119f46d7114a51f40a10b3bcfb80d",
+      "bytes": 687
     }
   },
   "mutableAssets": [
