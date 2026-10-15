@@ -23,13 +23,14 @@ for(const file of [...scripts,...extra]){if(seen.has(file)||!fs.existsSync(file)
 (async()=>{
  const browser=await chromium.launch({executablePath:process.env.AUDIT_CHROME||undefined,headless:true,args:['--no-sandbox','--disable-dev-shm-usage','--single-process','--no-zygote','--in-process-gpu']});const page=await browser.newPage({viewport:{width:Number(process.env.AUDIT_WIDTH||1200),height:900}});
  await page.route('**/*',route=>route.abort());
+ await page.evaluate(enabled=>{window.__auditUppercase=enabled},process.env.AUDIT_UPPERCASE==='1');
  let markup=index.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,'').replace(/<link[^>]*>/gi,'').replace(/<style[^>]*>[\s\S]*?<\/style>/gi,'');
  await page.setContent(markup);
  const cssFiles=[...index.matchAll(/<link[^>]+href="([^"?]+\.css)[^"]*"/g)].map(x=>x[1]).filter(x=>x.startsWith('./'));
  for(const f of cssFiles)await page.addStyleTag({content:fs.readFileSync(f.slice(2),'utf8')});
  for(const x of css)await page.addStyleTag({content:x.css});
  await page.evaluate(items=>{for(const x of items){if(x.id&&!document.getElementById(x.id)){const n=document.createElement('div');n.id=x.id;n.innerHTML=x.html;document.body.appendChild(n)}}},html);
- for(const file of ['app/modules/form-entry-contrast.v1.js','app/modules/theme-contrast.v2.js'])await page.addScriptTag({content:read(file)});
+ for(const file of ['app/modules/business-text.v1.js','app/modules/form-entry-contrast.v1.js','app/modules/theme-contrast.v2.js'])await page.addScriptTag({content:read(file)});
  await page.evaluate(()=>{document.body.classList.add('v157-authenticated');window.__auditTemplates=[...document.querySelectorAll('[id]')].filter(e=>/Modal$|Center$|Drawer$|Toast$|^sagsQuickEntry$|^entry$|^sags5494(?:Quick|FieldEditor)$|^v6494AviationHome$/.test(e.id)&&!e.closest('.sheet,svg')).filter(e=>!e.parentElement?.closest('[id$="Modal"],[id$="Center"],[id$="Drawer"],[id$="Toast"]')).map(e=>({id:e.id,html:e.outerHTML}));});
  await page.evaluate(blocks=>{window.root=window;window.canManageDailyRoster=()=>true;window.manifestDate=()=> '2026-10-15';window.S=v=>String(v??'').trim();window.upper=v=>S(v).toUpperCase();window.rosterFlightKey=v=>upper(v).replace(/[^A-Z0-9]/g,'');window.esc=v=>S(v);window.formLabel=()=> '42.3';window.setStatus=()=>{};window.loadManifest=async()=>({items:{bx:{flightRaw:'BX787 / BX788',user:'NV001',sourceColumn:'Grnd_Cor',formGroup:'fsags',assignmentId:'bx'},ke:{flightRaw:'KE468 / KE469',user:'NV002',sourceColumn:'Grnd_Cor',formGroup:'fsags',assignmentId:'ke',manualOverride:true,originalUser:'NV001'}}});for(const b of blocks)(0,eval)(b);},roster);
  await page.addStyleTag({content:'*{animation:none!important;transition:none!important}'});
@@ -74,6 +75,7 @@ for(const file of [...scripts,...extra]){if(seen.has(file)||!fs.existsSync(file)
     let opacity=1;for(let p=e;p;p=p.parentElement)opacity*=Number(getComputedStyle(p).opacity);if(opacity<.01)continue;
     const text=[...e.childNodes].filter(n=>n.nodeType===3).map(n=>n.textContent).join('').trim();const input=e.matches('input:not([type=hidden]):not([type=checkbox]):not([type=radio]),textarea,select');if(!text&&!input)continue;
     count++;const background=bg(e),fg=rgba(st.webkitTextFillColor||st.color);fg[3]*=opacity;const actual=mix(fg,background);const threshold=(parseFloat(st.fontSize)>=24||parseFloat(st.fontSize)>=18.66&&parseInt(st.fontWeight)>=700)?3:4.5;
+    if(window.__auditUppercase&&/\p{L}/u.test(text||e.value||e.placeholder||'')&&!e.matches('input[type=password],input[type=email],input[type=url],input[autocomplete=username],[data-sags-case=preserve]')&&!e.closest('[data-sags-original-form],[data-sags-case=preserve]')&&st.textTransform!=='uppercase')out.push({id:e.id,tag:e.tagName,text:(text||e.value||e.placeholder).slice(0,80),problem:'UI text is not uppercase',transform:st.textTransform});
     const value=ratio(actual,background);if(value<threshold)out.push({id:e.id,tag:e.tagName,cls:typeof e.className==='string'?e.className:'',text:(text||e.value||e.placeholder||'[control]').slice(0,80),parents:(()=>{const a=[];for(let p=e;p&&a.length<5;p=p.parentElement)a.push(p.tagName+'#'+p.id+'.'+p.className+' '+getComputedStyle(p).backgroundColor+' '+p.getAttribute('style'));return a})(),fg:st.webkitTextFillColor||st.color,bg:background,ratio:+value.toFixed(2),threshold});
     if(input&&e.placeholder){const ph=getComputedStyle(e,'::placeholder'),pf=rgba(ph.webkitTextFillColor||ph.color);pf[3]*=Number(ph.opacity);const pr=ratio(mix(pf,background),background);if(pr<4.5)out.push({id:e.id,tag:'PLACEHOLDER',text:e.placeholder,fg:ph.webkitTextFillColor||ph.color,bg:background,ratio:+pr.toFixed(2),threshold:4.5});}
    }return {count,issues:out};

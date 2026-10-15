@@ -54,7 +54,7 @@
   async function pendingFor(user){try{const db=await openDb();return await new Promise((res,rej)=>{const q=db.transaction(STORE,'readonly').objectStore(STORE).getAll();q.onsuccess=()=>res((q.result||[]).filter(e=>e.account===user&&e.pendingSync&&valid(e)));q.onerror=()=>rej(q.error)})}catch(_){return[]}}
   function makeEntry(i,field,value,part,base,deleted=false){
     const key=keyFor(i,field,part),v=tick(key,base);
-    const entry=Object.freeze({schema:3,key,scope:i.account+'|'+i.flightSessionId+'|',account:i.account,flightSessionId:i.flightSessionId,rosterAssignmentId:i.rosterAssignmentId,field:S(field),part:S(part||'manual'),value:String(value??''),atMs:v.atMs,version:Object.freeze(v),deleted:!!deleted,pendingSync:!!i.rosterAssignmentId,updatedAtMs:Date.now()});observe(key,entry);return entry;
+    const entry=Object.freeze({schema:3,key,scope:i.account+'|'+i.flightSessionId+'|',account:i.account,flightSessionId:i.flightSessionId,rosterAssignmentId:i.rosterAssignmentId,field:S(field),part:S(part||'manual'),value:root.SAGSBusinessText?.draft(field,String(value??''))??String(value??''),atMs:v.atMs,version:Object.freeze(v),deleted:!!deleted,pendingSync:!!i.rosterAssignmentId,updatedAtMs:Date.now()});observe(key,entry);return entry;
   }
   function committed(field){try{const m=meta();return String(root.readFlightSessionEnvelope?.(m?.id)?.state?.[field]??'')}catch(_){return''}}
   async function mergeRemote(remote,i){
@@ -69,7 +69,7 @@
     if(!remote.deleted&&['manual','quick','quickTime'].includes(remote.part)&&String(remote.value??'')===committed(remote.field))return false;
     if(!active(i))return false;
     suppress=true;try{if(remote.deleted)wrapState.originalForget?.(remote.field,remote.part);else wrapState.originalRecord?.(remote.field,String(remote.value??''),remote.part)}finally{suppress=false}
-    const entry={...remote,key,scope:i.account+'|'+i.flightSessionId+'|',account:i.account,pendingSync:false,cloudAtMs:Number(remote.atMs)};
+    const entry={...remote,value:root.SAGSBusinessText?.draft(remote.field,remote.value)??remote.value,key,scope:i.account+'|'+i.flightSessionId+'|',account:i.account,pendingSync:false,cloudAtMs:Number(remote.atMs)};
     await idbPut(entry);
     if(!active(i))return false;
     try{root.dispatchEvent?.(new CustomEvent('sags:draft-cloud-restored',{detail:{field:remote.field,part:remote.part,atMs:remote.atMs}}))}catch(_){}
@@ -122,6 +122,7 @@
     installClock();const api=root.sagsV61Draft;if(!api||typeof api.record!=='function'||api.record.__sagsV2)return false;
     wrapState.originalRecord=api.record.bind(api);wrapState.originalForget=api.forget.bind(api);
     const record=function(field,value,part='manual'){
+      value=root.SAGSBusinessText?.draft(field,value)??value;
       const i=capture(),ok=wrapState.originalRecord(field,value,part);if(!ok||suppress)return ok;
       const local=api.read?.(field,part),entry=makeEntry(i,field,value,part,local,!local);
       void idbPut(entry).then(()=>scheduleCloud(entry));return ok;

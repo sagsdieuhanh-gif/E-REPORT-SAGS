@@ -208,7 +208,7 @@
     document.getElementById('sags5494Clear').onclick=()=>body.querySelectorAll('[data-q-check]').forEach(x=>x.value='');
     document.getElementById('sags5494QuickSave').onclick=()=>{
       const st=stateObj();
-      body.querySelectorAll('[data-q-field]').forEach(el=>{st[el.dataset.qField]=el.value});
+      body.querySelectorAll('[data-q-field]').forEach(el=>{st[el.dataset.qField]=root.SAGSBusinessText?.upper(el.value)??el.value.toLocaleUpperCase("vi-VN")});
       body.querySelectorAll('[data-q-check]').forEach(el=>{st[el.dataset.qCheck]=d.tri?el.value:(el.value==='1')});
       try{root.persist?.()}catch(_){try{persist?.()}catch(__){}}
       try{root.draw?.()}catch(_){try{draw?.()}catch(__){}}
@@ -461,7 +461,7 @@ function openDirectEditor(g,f,synthetic){
   const el=document.createElement(multiline?'textarea':'input');el.id='sags5494FieldEditorInput';el.value=S(s[f.key]);
   if(!multiline){el.type='text';el.inputMode=t==='number'?'decimal':(synthetic?.inputMode||'text');el.autocomplete='off';el.enterKeyHint='done'}
   host.replaceChildren(el);
-  const commit=()=>{s[f.key]=String(el.value??'').toUpperCase();saveDraw();m.classList.remove('show')};
+  const commit=()=>{s[f.key]=root.SAGSBusinessText?.upper(String(el.value??''))??String(el.value??'').toLocaleUpperCase('vi-VN');saveDraw();m.classList.remove('show')};
   document.getElementById('sags5494FieldEditorSave').onclick=commit;
   el.onkeydown=e=>{if(e.key==='Escape'){m.classList.remove('show');return}if(e.key==='Enter'&&!multiline){e.preventDefault();commit()}};
   m.classList.add('show');

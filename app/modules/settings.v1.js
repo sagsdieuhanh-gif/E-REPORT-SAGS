@@ -19,9 +19,9 @@ function safe(v){try{return S(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'')
 function identity(){var s=session(),p=s.profile||{};return safe(p.username||p.userName||p.email||s.username||role()||'device')}
 function key(){return 'sagsSettingsV1:'+identity()}
 function read(){try{return merge(D,JSON.parse(localStorage.getItem(key())||'{}'))}catch(e){return clone(D)}}
-function persist(next,noCloud){P=merge(D,next||P);P.updatedAtMs=Date.now();try{localStorage.setItem(key(),JSON.stringify(P))}catch(e){}apply();render();if(!noCloud)scheduleCloud();return P}
-function legalName(){var p=profile();return S(p.name||p.fullName||p.displayName||p.username||p.userName||role()||'Người dùng')}
-function shownName(){return S(P.displayName)||legalName()}
+function persist(next,noCloud){P=merge(D,next||P);P.displayName=w.SAGSBusinessText?.upper(P.displayName)??P.displayName;P.updatedAtMs=Date.now();try{localStorage.setItem(key(),JSON.stringify(P))}catch(e){}apply();render();if(!noCloud)scheduleCloud();return P}
+function legalName(){var p=profile();return S(p.name||p.fullName||p.displayName||p.username||p.userName||role()||'Người dùng').toLocaleUpperCase('vi-VN')}
+function shownName(){return S(P.displayName).toLocaleUpperCase('vi-VN')||legalName()}
 function firebaseUid(){var p=profile();try{return S((w.firebase&&w.firebase.auth&&w.firebase.auth().currentUser||{}).uid||p.firebaseUid||p.uid)}catch(e){return S(p.firebaseUid||p.uid)}}
 function cloudDoc(){var id=firebaseUid();try{return id&&w.firebase&&w.firebase.firestore?w.firebase.firestore().collection('users').doc(id):null}catch(e){return null}}
 function scheduleCloud(){clearTimeout(saveTimer);if(P.autoSync&&navigator.onLine)saveTimer=setTimeout(function(){saveCloud()},650)}
