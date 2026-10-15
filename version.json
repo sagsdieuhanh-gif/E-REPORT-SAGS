@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.6",
-  "displayVersion": "V2.5.6",
-  "label": "V2.5.6 - UI CONTRAST AUDIT",
-  "build": "V2.5.6-20261015-UI-CONTRAST-AUDIT-01",
+  "version": "V2.5.7",
+  "displayVersion": "V2.5.7",
+  "label": "V2.5.7 - RULED ENTRY CONTRAST",
+  "build": "V2.5.7-20261015-RULED-ENTRY-CONTRAST-01",
   "releasedAt": "2026-10-15",
-  "type": "ui-contrast-audit",
-  "base": "E-REPORT-SAGS main@b370281",
+  "type": "ruled-entry-contrast",
+  "base": "E-REPORT-SAGS main@86ecb27",
   "updatePolicy": "required",
-  "notes": "Rà soát và sửa tương phản chữ/nền trong roster, quản trị, Fleet, A/C Limits, popup nghiệp vụ, nhập nhanh và cài đặt. Ghép màu chữ, nền và Safari text fill; kiểm tra chế độ sáng/tối trên desktop và mobile.",
-  "message": "V2.5.6: sửa chữ bị chìm màu nền trên các nhóm giao diện."
+  "notes": "Sửa chữ nhập bị chìm trong Handling Notes và các ô ghi chú nhiều dòng: ghép nền trắng của lớp kẻ hàng với chữ tối, màu con trỏ và placeholder. Kiểm tra thêm chữ đã nhập, đang chọn ô, chỉ đọc, vô hiệu hóa và khung kẻ hàng tải muộn, ở giao diện sáng/tối.",
+  "message": "V2.5.7: sửa chữ nhập bị chìm trong ô ghi chú có kẻ hàng."
 }

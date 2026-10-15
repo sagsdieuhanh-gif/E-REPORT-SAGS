@@ -186,6 +186,22 @@ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #v181AdminCenter#v181AdminCent
 
 /* Generic UI text safety net, intentionally excludes official form rendering. */
 html.new-ui-v1 body :is(#sagsQuickEntry,#quickTimeModal,#fs09QuickModal,#sagsSettingsCenter,#fwcModal,#sags5494Quick,#sags5494FieldEditor,#entry) :is(input,textarea,select,button){opacity:1}
+/* V2.5.7: the ruled PDF preview has its own painted background. Pair it
+   with the textarea fill even after the asynchronous guide is installed. */
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #entry#entry #entryPaperSheet{
+ background:#ffffff!important;color:#17212b!important;color-scheme:light!important;
+}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #entry#entry #entryText#entryText{
+ --sags-entry-bg:#ffffff;--sags-entry-fg:#17212b;--sags-entry-placeholder:#5b6b76;
+ background:#ffffff!important;color:#17212b!important;-webkit-text-fill-color:#17212b!important;
+ caret-color:#17212b!important;color-scheme:light!important;opacity:1!important;
+}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #entry#entry #entryPaperSheet.sags-ruled #entryText#entryText{
+ background:transparent!important;
+}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #entry#entry #entryText#entryText::placeholder{
+ color:#5b6b76!important;-webkit-text-fill-color:#5b6b76!important;opacity:1!important;
+}
 `;document.head.appendChild(st);
 root.sagsThemeContrastV2Audit=function(){
  const forms=(root.SAGS_FORMS_REGISTRY?.forms||root.formsRegistry?.forms||[]);
