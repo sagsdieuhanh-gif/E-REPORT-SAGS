@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.5",
-  "displayVersion": "V2.5.5",
-  "label": "V2.5.5 - TRANSFER FLIGHT SEARCH",
-  "build": "V2.5.5-20261015-TRANSFER-FLIGHT-SEARCH-01",
+  "version": "V2.5.6",
+  "displayVersion": "V2.5.6",
+  "label": "V2.5.6 - UI CONTRAST AUDIT",
+  "build": "V2.5.6-20261015-UI-CONTRAST-AUDIT-01",
   "releasedAt": "2026-10-15",
-  "type": "transfer-flight-search",
-  "base": "E-REPORT-SAGS main@d6c1830",
+  "type": "ui-contrast-audit",
+  "base": "E-REPORT-SAGS main@b370281",
   "updatePolicy": "required",
-  "notes": "Thêm tìm chuyến bay tại AD · Chuyển người phụ trách trực tiếp; lọc số hiệu đến/đi tương tự My Flight và giữ bộ lọc khi tải lại phân công.",
-  "message": "V2.5.5: tìm chuyến bay nhanh khi chuyển người phụ trách."
+  "notes": "Rà soát và sửa tương phản chữ/nền trong roster, quản trị, Fleet, A/C Limits, popup nghiệp vụ, nhập nhanh và cài đặt. Ghép màu chữ, nền và Safari text fill; kiểm tra chế độ sáng/tối trên desktop và mobile.",
+  "message": "V2.5.6: sửa chữ bị chìm màu nền trên các nhóm giao diện."
 }
