@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.8",
-  "displayVersion": "V2.5.8",
-  "label": "V2.5.8 - UPPERCASE BUSINESS TEXT",
-  "build": "V2.5.8-20261015-UPPERCASE-01",
+  "version": "V2.5.9",
+  "displayVersion": "V2.5.9",
+  "label": "V2.5.9 - DRAFT STORAGE RECOVERY",
+  "build": "V2.5.9-20261015-DRAFT-RECOVERY-01",
   "releasedAt": "2026-10-15",
-  "type": "uppercase-business-text",
-  "base": "E-REPORT-SAGS main@5eb5416",
+  "type": "draft-storage-recovery",
+  "base": "E-REPORT-SAGS main@1878b33",
   "updatePolicy": "required",
-  "notes": "Thống nhất IN HOA tên người, nội dung nghiệp vụ và chữ trên giao diện ứng dụng. Chuẩn hóa khi nhập, dán, khôi phục nháp, lưu và dựng biểu mẫu. Giữ nguyên chữ gốc trên mẫu có sẵn; bảo toàn mật khẩu, email, đường dẫn, mã định danh, checkbox, chữ ký và ảnh.",
-  "message": "V2.5.8: thống nhất IN HOA dữ liệu nghiệp vụ, tên và chữ trên giao diện."
+  "notes": "Bảo vệ nháp bằng IndexedDB và cloud khi localStorage ghi thất bại; khôi phục nháp IndexedDB khi tải lại kể cả offline. Kiểm tra ghi hồ sơ chuyến trước khi công bố trong danh sách; báo đúng lỗi lưu trữ và thử thu gọn chữ ký cũ khi vượt quota.",
+  "message": "V2.5.9: sửa dự phòng nháp khi localStorage lỗi và khởi tạo hồ sơ My Flight."
 }

@@ -7,6 +7,7 @@
   const PREFIX='sagsV61Uncommitted:';
   const $=id=>document.getElementById(id);
   const text=x=>String(x??'');
+  const failedDrafts=new Set();
   let storageError=false, lastCore='', statusTimer=0, reloading=false, warnedStorage=false;
   function scope(){
     try{return sagsOwnedPrefix(PREFIX)+String(activeFlightSessionId||'')+':';}
@@ -25,10 +26,12 @@
       // Compare to the durable envelope, NOT mutable in-memory state: a failed
       // SAVE must never trick the recovery layer into deleting its only copy.
       const committed=part==='manual'?text(readFlightSessionEnvelope(activeFlightSessionId)?.state?.[field]):'';
-      if(part==='manual'&&v===committed){localStorage.removeItem(k);status();return true;}
-      localStorage.setItem(k,JSON.stringify({field,part,value:v,atMs:Date.now()}));
-      storageError=false;status();return true;
-    }catch(e){storageError=true;status();if(!warnedStorage){warnedStorage=true;
+      if(part==='manual'&&v===committed){localStorage.removeItem(k);failedDrafts.delete(k);storageError=failedDrafts.size>0;status();return true;}
+      const encoded=JSON.stringify({field,part,value:v,atMs:Date.now()});
+      localStorage.setItem(k,encoded);
+      if(localStorage.getItem(k)!==encoded)throw new Error('DRAFT_WRITE_VERIFY');
+      failedDrafts.delete(k);storageError=failedDrafts.size>0;status();return true;
+    }catch(e){failedDrafts.add(key(field,part));storageError=true;status();if(!warnedStorage){warnedStorage=true;
       alert('Bộ nhớ trình duyệt không ghi được bản nháp. Hãy giữ màn hình này và báo quản trị; KHÔNG cập nhật hoặc xóa dữ liệu trình duyệt.');
     }console.warn('V6.1 draft write failed',e);return false;}
   }
@@ -159,7 +162,7 @@
       persist();
       const saved=readFlightSessionEnvelope(activeFlightSessionId);
       if(JSON.stringify(saved.state)!==serialized)throw new Error('Lưu nháp chuyến không khớp');
-      lastCore=serialized;storageError=false;
+      lastCore=serialized;storageError=failedDrafts.size>0;
     }catch(e){storageError=true;console.warn('V6.1 local persist failed',e);}
     status();
   }

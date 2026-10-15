@@ -12,7 +12,7 @@ function server(){
  return {values,writes,jobs,ref,setHold:v=>{hold=v},setReadHold:v=>{holdReads=v},releaseRead:()=>readJobs.shift()?.(),setOffset:v=>{offset=v}};
 }
 const watermarks=new WeakMap();
-function client(s,{db=new IDBFactory(),writer='tab-1',now=1000}={}){
+function client(s,{db=new IDBFactory(),writer='tab-1',now=1000,failLocal=false}={}){
  if(!watermarks.has(db))watermarks.set(db,new Map());const storage=watermarks.get(db);
  let uid='USER',flight='A',assignment='A',clock=now,seq=0;const local=new Map(),events={},docEvents={},timers=new Map(),restored=[];
  const key=(field,part)=>[uid,flight,field,part].join('|');
@@ -22,7 +22,7 @@ function client(s,{db=new IDBFactory(),writer='tab-1',now=1000}={}){
   sagsV470Ref:s.ref,setTimeout:(fn,ms)=>{const id=++seq;timers.set(id,{fn,ms});return id},clearTimeout:id=>timers.delete(id),
   addEventListener:(name,fn)=>(events[name]??=[]).push(fn),dispatchEvent:e=>restored.push(e),
   document:{readyState:'loading',hidden:false,addEventListener:(name,fn)=>(docEvents[name]??=[]).push(fn)},
-  sagsV61Draft:{read:(f,p)=>clone(local.get(key(f,p))||null),record:(f,v,p)=>{local.set(key(f,p),{field:f,part:p,value:String(v),atMs:clock});return true},forget:(f,p)=>local.delete(key(f,p))}
+  sagsV61Draft:{read:(f,p)=>clone(local.get(key(f,p))||null),record:(f,v,p)=>{if(failLocal)return false;local.set(key(f,p),{field:f,part:p,value:String(v),atMs:clock});return true},forget:(f,p)=>local.delete(key(f,p))}
  };Object.defineProperty(c,'activeFlightSessionId',{get:()=>flight});c.window=c;vm.createContext(c);vm.runInContext(fs.readFileSync(__dirname+'/../../app/modules/cloud-draft-sync.v2.js','utf8'),c);docEvents.DOMContentLoaded[0]();
  return {c,db,local,restored,setFlight:(f,a=f)=>{flight=f;assignment=a},setUser:u=>{uid=u;(events['sags:login']||[]).forEach(fn=>fn())},setClock:n=>{clock=n},record:(v,f='field')=>c.sagsV61Draft.record(f,v,'quickTime'),forget:()=>c.sagsV61Draft.forget('field','quickTime'),read:()=>c.sagsV61Draft.read('field','quickTime'),flush:()=>c.sagsDraftV2Flush(),pull:()=>c.sagsDraftV2Pull(),runTimers:async max=>{await settle();for(const [id,t]of [...timers])if(t.ms<=max){timers.delete(id);t.fn()}await settle()},rows:async()=>{const db=await new Promise((res,rej)=>{const q=c.indexedDB.open('sags-draft-recovery-v2',1);q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)});const rows=await new Promise(res=>{const q=db.transaction('drafts').objectStore('drafts').getAll();q.onsuccess=()=>res(q.result)});db.close();return rows;}};
 }

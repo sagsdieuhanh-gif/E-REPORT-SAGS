@@ -16,6 +16,8 @@
   let dbPromise=null,offsetRef=null,serverOffset=0,epoch=0,lastContext='',wrapped=false,suppress=false;
   let lastCloudSyncAtMs=0,lastCloudError='',lastPullAtMs=0,cloudWrites=0,idbWrites=0;
   const wrapState={originalRecord:null,originalForget:null};
+  const fallback=new Map();
+  let lastLocalBackupError="",localBackupWrites=0;
   function account(){
     try{if(typeof root.firebase?.auth==='function')return safe(root.firebase.auth().currentUser?.uid||'')}catch(_){}
     const p=root.__sagsGetSession?.()?.profile||root.currentUserProfile||{};
@@ -52,6 +54,38 @@
   }
   async function idbGet(key){try{const db=await openDb();return await new Promise((res,rej)=>{const q=db.transaction(STORE,'readonly').objectStore(STORE).get(key);q.onsuccess=()=>res(q.result||null);q.onerror=()=>rej(q.error)})}catch(_){return null}}
   async function pendingFor(user){try{const db=await openDb();return await new Promise((res,rej)=>{const q=db.transaction(STORE,'readonly').objectStore(STORE).getAll();q.onsuccess=()=>res((q.result||[]).filter(e=>e.account===user&&e.pendingSync&&valid(e)));q.onerror=()=>rej(q.error)})}catch(_){return[]}}
+  // A localStorage quota failure must not disable the independent IDB/cloud layers.
+  async function protect(entry){
+    const saved=await idbPut(entry);
+    if(saved){localBackupWrites++;lastLocalBackupError='';}
+    else lastLocalBackupError='IndexedDB chưa xác nhận bản nháp';
+    scheduleCloud(entry);
+    return saved;
+  }
+  async function restoreLocal(){
+    const i=capture();if(!i.account||!i.flightSessionId)return false;
+    try{
+      const db=await openDb();
+      const rows=await new Promise((resolve,reject)=>{
+        const q=db.transaction(STORE,'readonly').objectStore(STORE).getAll();
+        q.onsuccess=()=>resolve(q.result||[]);q.onerror=()=>reject(q.error);
+      });
+      for(const row of rows){
+        if(!active(i))return false;
+        if(!matches(row,i)||row.account!==i.account||row.key!==keyFor(i,row.field,row.part))continue;
+        const known=clocks.get(row.key);
+        if(known&&compare(known,row)>0)continue;
+        const local=wrapState.originalRead?.(row.field,row.part);
+        // Legacy local-only input may be newer than the IDB mirror.
+        if(local&&Number(local.atMs)+serverOffset>version(row).atMs)continue;
+        observe(row.key,row);
+        if(row.deleted){wrapState.originalForget?.(row.field,row.part);fallback.delete(row.key);continue;}
+        if(wrapState.originalRecord?.(row.field,row.value,row.part))fallback.delete(row.key);
+        else fallback.set(row.key,row);
+      }
+      return true;
+    }catch(e){lastLocalBackupError=S(e?.message||e);return false;}
+  }
   function makeEntry(i,field,value,part,base,deleted=false){
     const key=keyFor(i,field,part),v=tick(key,base);
     const entry=Object.freeze({schema:3,key,scope:i.account+'|'+i.flightSessionId+'|',account:i.account,flightSessionId:i.flightSessionId,rosterAssignmentId:i.rosterAssignmentId,field:S(field),part:S(part||'manual'),value:root.SAGSBusinessText?.draft(field,String(value??''))??String(value??''),atMs:v.atMs,version:Object.freeze(v),deleted:!!deleted,pendingSync:!!i.rosterAssignmentId,updatedAtMs:Date.now()});observe(key,entry);return entry;
@@ -68,7 +102,7 @@
     observe(key,remote);
     if(!remote.deleted&&['manual','quick','quickTime'].includes(remote.part)&&String(remote.value??'')===committed(remote.field))return false;
     if(!active(i))return false;
-    suppress=true;try{if(remote.deleted)wrapState.originalForget?.(remote.field,remote.part);else wrapState.originalRecord?.(remote.field,String(remote.value??''),remote.part)}finally{suppress=false}
+    suppress=true;try{if(remote.deleted){wrapState.originalForget?.(remote.field,remote.part);fallback.delete(key)}else if(wrapState.originalRecord?.(remote.field,String(remote.value??''),remote.part))fallback.delete(key);else fallback.set(key,{...remote,key,account:i.account})}finally{suppress=false}
     const entry={...remote,value:root.SAGSBusinessText?.draft(remote.field,remote.value)??remote.value,key,scope:i.account+'|'+i.flightSessionId+'|',account:i.account,pendingSync:false,cloudAtMs:Number(remote.atMs)};
     await idbPut(entry);
     if(!active(i))return false;
@@ -121,18 +155,26 @@
   function installWrap(){
     installClock();const api=root.sagsV61Draft;if(!api||typeof api.record!=='function'||api.record.__sagsV2)return false;
     wrapState.originalRecord=api.record.bind(api);wrapState.originalForget=api.forget.bind(api);
+    wrapState.originalRead=api.read.bind(api);
+    api.read=function(field,part='manual'){
+      const row=fallback.get(keyFor(identity(),field,part));
+      return row&&!row.deleted?{field:row.field,part:row.part,value:row.value,atMs:row.atMs}:wrapState.originalRead(field,part);
+    };
     const record=function(field,value,part='manual'){
       value=root.SAGSBusinessText?.draft(field,value)??value;
-      const i=capture(),ok=wrapState.originalRecord(field,value,part);if(!ok||suppress)return ok;
-      const local=api.read?.(field,part),entry=makeEntry(i,field,value,part,local,!local);
-      void idbPut(entry).then(()=>scheduleCloud(entry));return ok;
+      const i=capture(),ok=wrapState.originalRecord(field,value,part);if(suppress)return ok;
+      const local=wrapState.originalRead(field,part),entry=makeEntry(i,field,value,part,local,ok&&!local);
+      if(!ok)fallback.set(entry.key,entry);else fallback.delete(entry.key);
+      // Return the synchronous local result honestly; protection continues even on failure.
+      if(i.account&&i.flightSessionId)void protect(entry);
+      return ok;
     };record.__sagsV2=true;
     const forget=function(field,part='manual'){
       const i=capture(),before=api.read?.(field,part),out=wrapState.originalForget(field,part);if(suppress)return out;
-      const entry=makeEntry(i,field,'',part,before,true);void idbPut(entry).then(()=>scheduleCloud(entry,40));return out;
+      const entry=makeEntry(i,field,'',part,before,true);fallback.delete(entry.key);void idbPut(entry).then(()=>scheduleCloud(entry,40));return out;
     };forget.__sagsV2=true;api.record=record;api.forget=forget;wrapped=true;return true;
   }
-  function wake(delay=0){setTimeout(()=>{installWrap();void pullCloud();void flushPending()},delay)}
+  function wake(delay=0){setTimeout(()=>{installWrap();void restoreLocal().then(()=>{void pullCloud();void flushPending()})},delay)}
   function start(){
     installWrap();wake(700);
     root.addEventListener?.('online',()=>wake(40),{passive:true});root.addEventListener?.('pageshow',()=>wake(180),{passive:true});
@@ -141,7 +183,7 @@
     document.addEventListener('click',e=>{if(e.target?.closest?.('.v1199TaskBtn,[data-task-aid],#roleBtnQuickTime,#roleBtnFlights,#roleBtnRosterFlights,.v157MenuItem[data-v157-key="myflight"]')){epoch++;wake(650)}},true);
     root.addEventListener?.('pagehide',()=>{if(offsetRef){offsetRef.off('value');offsetRef=null}},{passive:true});
   }
-  root.sagsDraftV2Pull=pullCloud;root.sagsDraftV2Flush=flushPending;
-  root.sagsDraftV2Status=()=>({build:'V2.1',wrapped,cloudCapable:!!(baseFor(identity())&&typeof root.sagsV470Ref==='function'),online:navigator.onLine!==false,...identity(),lastCloudSyncAtMs,lastPullAtMs,lastCloudError,cloudWrites,idbWrites});
+  root.sagsDraftV2RestoreLocal=restoreLocal;root.sagsDraftV2Pull=pullCloud;root.sagsDraftV2Flush=flushPending;
+  root.sagsDraftV2Status=()=>({build:'V2.1',wrapped,cloudCapable:!!(baseFor(identity())&&typeof root.sagsV470Ref==='function'),online:navigator.onLine!==false,...identity(),lastCloudSyncAtMs,lastPullAtMs,lastCloudError,cloudWrites,idbWrites,lastLocalBackupError,localBackupWrites});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })(typeof window!=='undefined'?window:globalThis);
