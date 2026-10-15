@@ -15,13 +15,13 @@
   function key(field,part='manual'){return scope()+encodeURIComponent(text(field))+':'+part;}
   function read(field,part='manual'){
     try{const x=JSON.parse(localStorage.getItem(key(field,part))||'null');
-      return x&&x.field===field&&x.part===part&&typeof x.value==='string'?x:null;
+      return x&&x.field===field&&x.part===part&&typeof x.value==='string'?{...x,value:root.SAGSBusinessText?.draft(field,x.value)??x.value}:null;
     }catch(_){return null;}
   }
   function record(field,value,part='manual'){
     if(!field)return false;
     try{
-      const k=key(field,part),v=text(value);
+      const k=key(field,part),v=root.SAGSBusinessText?.draft(field,text(value))??text(value);
       // Compare to the durable envelope, NOT mutable in-memory state: a failed
       // SAVE must never trick the recovery layer into deleting its only copy.
       const committed=part==='manual'?text(readFlightSessionEnvelope(activeFlightSessionId)?.state?.[field]):'';

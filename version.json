@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.7",
-  "displayVersion": "V2.5.7",
-  "label": "V2.5.7 - RULED ENTRY CONTRAST",
-  "build": "V2.5.7-20261015-RULED-ENTRY-CONTRAST-01",
+  "version": "V2.5.8",
+  "displayVersion": "V2.5.8",
+  "label": "V2.5.8 - UPPERCASE BUSINESS TEXT",
+  "build": "V2.5.8-20261015-UPPERCASE-01",
   "releasedAt": "2026-10-15",
-  "type": "ruled-entry-contrast",
-  "base": "E-REPORT-SAGS main@86ecb27",
+  "type": "uppercase-business-text",
+  "base": "E-REPORT-SAGS main@5eb5416",
   "updatePolicy": "required",
-  "notes": "Sửa chữ nhập bị chìm trong Handling Notes và các ô ghi chú nhiều dòng: ghép nền trắng của lớp kẻ hàng với chữ tối, màu con trỏ và placeholder. Kiểm tra thêm chữ đã nhập, đang chọn ô, chỉ đọc, vô hiệu hóa và khung kẻ hàng tải muộn, ở giao diện sáng/tối.",
-  "message": "V2.5.7: sửa chữ nhập bị chìm trong ô ghi chú có kẻ hàng."
+  "notes": "Thống nhất IN HOA tên người, nội dung nghiệp vụ và chữ trên giao diện ứng dụng. Chuẩn hóa khi nhập, dán, khôi phục nháp, lưu và dựng biểu mẫu. Giữ nguyên chữ gốc trên mẫu có sẵn; bảo toàn mật khẩu, email, đường dẫn, mã định danh, checkbox, chữ ký và ảnh.",
+  "message": "V2.5.8: thống nhất IN HOA dữ liệu nghiệp vụ, tên và chữ trên giao diện."
 }

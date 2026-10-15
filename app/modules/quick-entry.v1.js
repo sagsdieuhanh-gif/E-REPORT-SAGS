@@ -147,7 +147,7 @@
       if(!session)return;const st=session.steps[session.index];
       const raw=root.sagsV61Draft?.read(st.key,st.kind==='bag'?st.part:'quick');
       if(!raw)return;
-      ui.value.value=raw.value;
+      ui.value.value=root.SAGSBusinessText?.upper(raw.value)??raw.value;
       ui.restore.hidden=true;ui.discard.hidden=true;
       ui.value.dispatchEvent(new Event('input',{bubbles:true}));
       try{ui.value.focus({preventScroll:true})}catch(_){}
@@ -183,7 +183,7 @@
       ui.value.value=draft[st.part];
       ui.hint.textContent=draft.valid?'Total Bags giữ nguyên 1 ô: số kiện/số kg.':'Giá trị cũ "'+draft.original+'" chưa đúng mẫu. Điền đủ hai số để thay thế.';
     }else{
-      ui.value.value=numberText(state[st.key]);
+      ui.value.value=root.SAGSBusinessText?.upper(numberText(state[st.key]))??numberText(state[st.key]);
       ui.hint.textContent=st.kind==='text'?'Bấm Tiếp để lưu và chuyển sang trường kế tiếp trong cùng nhóm.':st.kind==='equipment'?'Đi hết vùng Ramp Manpower & Equipment, theo hàng ngang.':st.kind==='pax'?'Chỉ di chuyển trong đúng dòng ARR hoặc DEP đang chọn.':'Đi hết cột '+(session.heading.match(/1ST|2ND|3RD/)?.[0]||'đang chọn')+': ADL → CHD → INF → Total Bags. TOTAL tự cộng.';
     }
     try{const part=st.kind==='bag'?st.part:'quick',raw=root.sagsV61Draft?.read(st.key,part);
@@ -242,7 +242,7 @@
     if(st.kind!=='text' && value && !/^\d+$/.test(value) && value.toUpperCase()!=='N/A'){
       ui.error.textContent=st.kind==='equipment'?'Nhập số hoặc N/A.':'Chỉ nhập số nguyên không âm.';return false;
     }
-    const canonical=value.toUpperCase()==='N/A'?'N/A':value;
+    const canonical=root.SAGSBusinessText?.upper(value)??value.toLocaleUpperCase('vi-VN');
     if(canonical!==numberText(state[st.key])){
       const hadOld=Object.prototype.hasOwnProperty.call(state,st.key),old=state[st.key];
       if(canonical)state[st.key]=canonical;else delete state[st.key];
