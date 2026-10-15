@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.4",
-  "displayVersion": "V2.5.4",
-  "label": "V2.5.4 - FLIGHT SWITCH ISOLATION",
-  "build": "V2.5.4-20261013-FLIGHT-SWITCH-01",
-  "releasedAt": "2026-10-13",
-  "type": "flight-switch-isolation",
-  "base": "E-REPORT-SAGS main@2f15c90",
+  "version": "V2.5.5",
+  "displayVersion": "V2.5.5",
+  "label": "V2.5.5 - TRANSFER FLIGHT SEARCH",
+  "build": "V2.5.5-20261015-TRANSFER-FLIGHT-SEARCH-01",
+  "releasedAt": "2026-10-15",
+  "type": "transfer-flight-search",
+  "base": "E-REPORT-SAGS main@d6c1830",
   "updatePolicy": "required",
-  "notes": "Lưu và xác minh nháp trước khi đổi chuyến, đóng phiên nhập của chuyến cũ, đặt lại trạng thái chạm và ngăn Nhập nhanh ghi sang chuyến khác.",
-  "message": "V2.5.4: bảo vệ dữ liệu và phiên nhập khi chuyển giữa nhiều chuyến bay."
+  "notes": "Thêm tìm chuyến bay tại AD · Chuyển người phụ trách trực tiếp; lọc số hiệu đến/đi tương tự My Flight và giữ bộ lọc khi tải lại phân công.",
+  "message": "V2.5.5: tìm chuyến bay nhanh khi chuyển người phụ trách."
 }
