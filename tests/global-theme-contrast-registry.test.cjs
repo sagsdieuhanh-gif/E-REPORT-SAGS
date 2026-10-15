@@ -14,5 +14,15 @@ for(const token of ['--sags-ui-text-primary','--sags-ui-text-secondary','--sags-
 assert.match(css,/#fwcModal #fwcDate/);
 assert.match(css,/#fwcModal #sagsFlightSearch/);
 assert.match(css,/-webkit-text-fill-color/);
-assert.doesNotMatch(css,/\.sheet|entryPaperSheet|svg/i,'contrast layer must not recolor official paper/PDF');
+assert.doesNotMatch(css,/\.sheet|svg/i,'contrast layer must not recolor official paper/PDF');
+// entryPaperSheet is an HTML input preview, not a printed form. Permit only
+// rules scoped inside its native editor; keep the actual paper/SVG guard above.
+let emitted='';require('node:vm').runInNewContext(css,{window:{},document:{createElement:()=>({}),head:{appendChild:s=>{emitted=s.textContent}}}});
+let previewRules=0;
+for(const [,selector]of emitted.matchAll(/([^{}]+)\{[^{}]*\}/g)){
+ if(!selector.includes('#entryPaperSheet'))continue;
+ for(const part of selector.split(','))if(part.includes('#entryPaperSheet'))assert.match(part,/#entry#entry\s+#entryPaperSheet/,'preview override must stay inside native editor');
+ previewRules++;
+}
+assert.equal(previewRules,2,'cover ruled preview background and transparent textarea');
 console.log('Global theme contrast coverage: '+reg.forms.length+' registry forms, '+fields.length+' fields, '+formDirs.length+' project form directories.');
