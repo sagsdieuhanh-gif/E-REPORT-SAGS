@@ -6806,7 +6806,7 @@ html.new-ui-v1 body.sags-form-view-active #sagsMobileFormDock{
 html.new-ui-v1.new-ui-v1 :is(body,#sagsUppercaseUI#sagsUppercaseUI#sagsUppercaseUI) :not(.sheet,.sheet *,svg,svg *,[data-sags-original-form],[data-sags-original-form] *){
  text-transform:uppercase!important;
 }
-html.new-ui-v1.new-ui-v1 :is(body,#sagsUppercaseUI#sagsUppercaseUI#sagsUppercaseUI) :is(input[type="password"],input[type="email"],input[type="url"],input[autocomplete="username"],[data-sags-case="preserve"],[data-sags-case="preserve"] *){
+html.new-ui-v1.new-ui-v1 :is(body,#sagsUppercaseUI#sagsUppercaseUI#sagsUppercaseUI) :is(input[type="password"],input[type="email"],input[type="url"],input[autocomplete="username"],input[autocomplete="current-password"],input[autocomplete="new-password"],#roleLoginModal input,[data-sags-case="preserve"],[data-sags-case="preserve"] *){
  text-transform:none!important;
 }
 html.new-ui-v1.new-ui-v1 :is(body,#sagsUppercaseUI#sagsUppercaseUI#sagsUppercaseUI) :is(.sheet,svg,[data-sags-original-form]){text-transform:none!important}

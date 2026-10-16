@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.9",
-  "displayVersion": "V2.5.9",
-  "label": "V2.5.9 - DRAFT STORAGE RECOVERY",
-  "build": "V2.5.9-20261015-DRAFT-RECOVERY-01",
-  "releasedAt": "2026-10-15",
-  "type": "draft-storage-recovery",
-  "base": "E-REPORT-SAGS main@1878b33",
+  "version": "V2.5.10",
+  "displayVersion": "V2.5.10",
+  "label": "V2.5.10 - LOGIN CASE PRESERVATION",
+  "build": "V2.5.10-20261016-LOGIN-CASE-01",
+  "releasedAt": "2026-10-16",
+  "type": "login-case-preservation",
+  "base": "E-REPORT-SAGS main@3445ead",
   "updatePolicy": "required",
-  "notes": "Bảo vệ nháp bằng IndexedDB và cloud khi localStorage ghi thất bại; khôi phục nháp IndexedDB khi tải lại kể cả offline. Kiểm tra ghi hồ sơ chuyến trước khi công bố trong danh sách; báo đúng lỗi lưu trữ và thử thu gọn chữ ký cũ khi vượt quota.",
-  "message": "V2.5.9: sửa dự phòng nháp khi localStorage lỗi và khởi tạo hồ sơ My Flight."
+  "notes": "Giữ nguyên chữ hoa/thường tại ô đăng nhập và mật khẩu kể cả khi bật hiện mật khẩu. Tắt tự viết hoa và tự sửa của bàn phím ở các ô thông tin đăng nhập. Nội dung nghiệp vụ vẫn IN HOA.",
+  "message": "V2.5.10: sửa tự viết hoa tại ô đăng nhập và hiện mật khẩu."
 }
