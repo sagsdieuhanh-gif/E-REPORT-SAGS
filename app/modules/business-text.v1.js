@@ -9,7 +9,7 @@
  function technical(el){
   const type=String(el.type||'text').toLowerCase();
   if(!['text','search','tel'].includes(type)&&el.tagName!=='TEXTAREA'&&!el.isContentEditable)return true;
-  if(el.closest?.('[data-sags-case="preserve"],[data-code-editor]'))return true;
+  if(el.closest?.('[data-sags-case="preserve"],[data-code-editor],#roleLoginModal'))return true;
   if(/(?:^|\s)(?:username|current-password|new-password)(?:\s|$)/.test(el.autocomplete||''))return true;
   return /password|passwd|credential|secret|token|api.?key|(?:^|[_-])(?:uid|json|url|email)(?:$|[_-])|json|(?:email|url|docid)$/i.test([el.id,el.name].filter(Boolean).join('_'));
  }

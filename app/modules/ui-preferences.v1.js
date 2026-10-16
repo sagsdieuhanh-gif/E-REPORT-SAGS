@@ -620,6 +620,10 @@ const icons={
 function installLogin(){
   const modal=document.getElementById('roleLoginModal'),pass=document.getElementById('roleLoginPass');
   if(!modal||!pass)return;
+  for(const input of modal.querySelectorAll('input')){
+    input.setAttribute('data-sags-case','preserve');input.setAttribute('autocapitalize','none');
+    input.setAttribute('autocorrect','off');input.setAttribute('spellcheck','false');
+  }
   if(!modal.querySelector('.sagsAviationLoginSub')){
     const sub=document.createElement('div');sub.className='sagsAviationLoginSub';
     sub.textContent='Truy cập hệ thống điều hành khai thác mặt đất';
