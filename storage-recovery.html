@@ -1,0 +1,640 @@
+<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Khôi phục dung lượng E-REPORT</title>
+<script id="sags-storage-capacity-bootstrap">
+// Copyright (c) 2013 Pieroxy <pieroxy@pieroxy.net>
+// This work is free. You can redistribute it and/or modify it
+// under the terms of the WTFPL, Version 2
+// For more information see LICENSE.txt or http://www.wtfpl.net/
+//
+// For more information, the home page:
+// http://pieroxy.net/blog/pages/lz-string/testing.html
+//
+// LZ-based compression algorithm, version 1.4.5
+var LZString = (function() {
+
+// private property
+var f = String.fromCharCode;
+var keyStrBase64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+var keyStrUriSafe = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$";
+var baseReverseDic = {};
+
+function getBaseValue(alphabet, character) {
+  if (!baseReverseDic[alphabet]) {
+    baseReverseDic[alphabet] = {};
+    for (var i=0 ; i<alphabet.length ; i++) {
+      baseReverseDic[alphabet][alphabet.charAt(i)] = i;
+    }
+  }
+  return baseReverseDic[alphabet][character];
+}
+
+var LZString = {
+  compressToBase64 : function (input) {
+    if (input == null) return "";
+    var res = LZString._compress(input, 6, function(a){return keyStrBase64.charAt(a);});
+    switch (res.length % 4) { // To produce valid Base64
+    default: // When could this happen ?
+    case 0 : return res;
+    case 1 : return res+"===";
+    case 2 : return res+"==";
+    case 3 : return res+"=";
+    }
+  },
+
+  decompressFromBase64 : function (input) {
+    if (input == null) return "";
+    if (input == "") return null;
+    return LZString._decompress(input.length, 32, function(index) { return getBaseValue(keyStrBase64, input.charAt(index)); });
+  },
+
+  compressToUTF16 : function (input) {
+    if (input == null) return "";
+    return LZString._compress(input, 15, function(a){return f(a+32);}) + " ";
+  },
+
+  decompressFromUTF16: function (compressed) {
+    if (compressed == null) return "";
+    if (compressed == "") return null;
+    return LZString._decompress(compressed.length, 16384, function(index) { return compressed.charCodeAt(index) - 32; });
+  },
+
+  //compress into uint8array (UCS-2 big endian format)
+  compressToUint8Array: function (uncompressed) {
+    var compressed = LZString.compress(uncompressed);
+    var buf=new Uint8Array(compressed.length*2); // 2 bytes per character
+
+    for (var i=0, TotalLen=compressed.length; i<TotalLen; i++) {
+      var current_value = compressed.charCodeAt(i);
+      buf[i*2] = current_value >>> 8;
+      buf[i*2+1] = current_value % 256;
+    }
+    return buf;
+  },
+
+  //decompress from uint8array (UCS-2 big endian format)
+  decompressFromUint8Array:function (compressed) {
+    if (compressed===null || compressed===undefined){
+        return LZString.decompress(compressed);
+    } else {
+        var buf=new Array(compressed.length/2); // 2 bytes per character
+        for (var i=0, TotalLen=buf.length; i<TotalLen; i++) {
+          buf[i]=compressed[i*2]*256+compressed[i*2+1];
+        }
+
+        var result = [];
+        buf.forEach(function (c) {
+          result.push(f(c));
+        });
+        return LZString.decompress(result.join(''));
+
+    }
+
+  },
+
+
+  //compress into a string that is already URI encoded
+  compressToEncodedURIComponent: function (input) {
+    if (input == null) return "";
+    return LZString._compress(input, 6, function(a){return keyStrUriSafe.charAt(a);});
+  },
+
+  //decompress from an output of compressToEncodedURIComponent
+  decompressFromEncodedURIComponent:function (input) {
+    if (input == null) return "";
+    if (input == "") return null;
+    input = input.replace(/ /g, "+");
+    return LZString._decompress(input.length, 32, function(index) { return getBaseValue(keyStrUriSafe, input.charAt(index)); });
+  },
+
+  compress: function (uncompressed) {
+    return LZString._compress(uncompressed, 16, function(a){return f(a);});
+  },
+  _compress: function (uncompressed, bitsPerChar, getCharFromInt) {
+    if (uncompressed == null) return "";
+    var i, value,
+        context_dictionary= {},
+        context_dictionaryToCreate= {},
+        context_c="",
+        context_wc="",
+        context_w="",
+        context_enlargeIn= 2, // Compensate for the first entry which should not count
+        context_dictSize= 3,
+        context_numBits= 2,
+        context_data=[],
+        context_data_val=0,
+        context_data_position=0,
+        ii;
+
+    for (ii = 0; ii < uncompressed.length; ii += 1) {
+      context_c = uncompressed.charAt(ii);
+      if (!Object.prototype.hasOwnProperty.call(context_dictionary,context_c)) {
+        context_dictionary[context_c] = context_dictSize++;
+        context_dictionaryToCreate[context_c] = true;
+      }
+
+      context_wc = context_w + context_c;
+      if (Object.prototype.hasOwnProperty.call(context_dictionary,context_wc)) {
+        context_w = context_wc;
+      } else {
+        if (Object.prototype.hasOwnProperty.call(context_dictionaryToCreate,context_w)) {
+          if (context_w.charCodeAt(0)<256) {
+            for (i=0 ; i<context_numBits ; i++) {
+              context_data_val = (context_data_val << 1);
+              if (context_data_position == bitsPerChar-1) {
+                context_data_position = 0;
+                context_data.push(getCharFromInt(context_data_val));
+                context_data_val = 0;
+              } else {
+                context_data_position++;
+              }
+            }
+            value = context_w.charCodeAt(0);
+            for (i=0 ; i<8 ; i++) {
+              context_data_val = (context_data_val << 1) | (value&1);
+              if (context_data_position == bitsPerChar-1) {
+                context_data_position = 0;
+                context_data.push(getCharFromInt(context_data_val));
+                context_data_val = 0;
+              } else {
+                context_data_position++;
+              }
+              value = value >> 1;
+            }
+          } else {
+            value = 1;
+            for (i=0 ; i<context_numBits ; i++) {
+              context_data_val = (context_data_val << 1) | value;
+              if (context_data_position ==bitsPerChar-1) {
+                context_data_position = 0;
+                context_data.push(getCharFromInt(context_data_val));
+                context_data_val = 0;
+              } else {
+                context_data_position++;
+              }
+              value = 0;
+            }
+            value = context_w.charCodeAt(0);
+            for (i=0 ; i<16 ; i++) {
+              context_data_val = (context_data_val << 1) | (value&1);
+              if (context_data_position == bitsPerChar-1) {
+                context_data_position = 0;
+                context_data.push(getCharFromInt(context_data_val));
+                context_data_val = 0;
+              } else {
+                context_data_position++;
+              }
+              value = value >> 1;
+            }
+          }
+          context_enlargeIn--;
+          if (context_enlargeIn == 0) {
+            context_enlargeIn = Math.pow(2, context_numBits);
+            context_numBits++;
+          }
+          delete context_dictionaryToCreate[context_w];
+        } else {
+          value = context_dictionary[context_w];
+          for (i=0 ; i<context_numBits ; i++) {
+            context_data_val = (context_data_val << 1) | (value&1);
+            if (context_data_position == bitsPerChar-1) {
+              context_data_position = 0;
+              context_data.push(getCharFromInt(context_data_val));
+              context_data_val = 0;
+            } else {
+              context_data_position++;
+            }
+            value = value >> 1;
+          }
+
+
+        }
+        context_enlargeIn--;
+        if (context_enlargeIn == 0) {
+          context_enlargeIn = Math.pow(2, context_numBits);
+          context_numBits++;
+        }
+        // Add wc to the dictionary.
+        context_dictionary[context_wc] = context_dictSize++;
+        context_w = String(context_c);
+      }
+    }
+
+    // Output the code for w.
+    if (context_w !== "") {
+      if (Object.prototype.hasOwnProperty.call(context_dictionaryToCreate,context_w)) {
+        if (context_w.charCodeAt(0)<256) {
+          for (i=0 ; i<context_numBits ; i++) {
+            context_data_val = (context_data_val << 1);
+            if (context_data_position == bitsPerChar-1) {
+              context_data_position = 0;
+              context_data.push(getCharFromInt(context_data_val));
+              context_data_val = 0;
+            } else {
+              context_data_position++;
+            }
+          }
+          value = context_w.charCodeAt(0);
+          for (i=0 ; i<8 ; i++) {
+            context_data_val = (context_data_val << 1) | (value&1);
+            if (context_data_position == bitsPerChar-1) {
+              context_data_position = 0;
+              context_data.push(getCharFromInt(context_data_val));
+              context_data_val = 0;
+            } else {
+              context_data_position++;
+            }
+            value = value >> 1;
+          }
+        } else {
+          value = 1;
+          for (i=0 ; i<context_numBits ; i++) {
+            context_data_val = (context_data_val << 1) | value;
+            if (context_data_position == bitsPerChar-1) {
+              context_data_position = 0;
+              context_data.push(getCharFromInt(context_data_val));
+              context_data_val = 0;
+            } else {
+              context_data_position++;
+            }
+            value = 0;
+          }
+          value = context_w.charCodeAt(0);
+          for (i=0 ; i<16 ; i++) {
+            context_data_val = (context_data_val << 1) | (value&1);
+            if (context_data_position == bitsPerChar-1) {
+              context_data_position = 0;
+              context_data.push(getCharFromInt(context_data_val));
+              context_data_val = 0;
+            } else {
+              context_data_position++;
+            }
+            value = value >> 1;
+          }
+        }
+        context_enlargeIn--;
+        if (context_enlargeIn == 0) {
+          context_enlargeIn = Math.pow(2, context_numBits);
+          context_numBits++;
+        }
+        delete context_dictionaryToCreate[context_w];
+      } else {
+        value = context_dictionary[context_w];
+        for (i=0 ; i<context_numBits ; i++) {
+          context_data_val = (context_data_val << 1) | (value&1);
+          if (context_data_position == bitsPerChar-1) {
+            context_data_position = 0;
+            context_data.push(getCharFromInt(context_data_val));
+            context_data_val = 0;
+          } else {
+            context_data_position++;
+          }
+          value = value >> 1;
+        }
+
+
+      }
+      context_enlargeIn--;
+      if (context_enlargeIn == 0) {
+        context_enlargeIn = Math.pow(2, context_numBits);
+        context_numBits++;
+      }
+    }
+
+    // Mark the end of the stream
+    value = 2;
+    for (i=0 ; i<context_numBits ; i++) {
+      context_data_val = (context_data_val << 1) | (value&1);
+      if (context_data_position == bitsPerChar-1) {
+        context_data_position = 0;
+        context_data.push(getCharFromInt(context_data_val));
+        context_data_val = 0;
+      } else {
+        context_data_position++;
+      }
+      value = value >> 1;
+    }
+
+    // Flush the last char
+    while (true) {
+      context_data_val = (context_data_val << 1);
+      if (context_data_position == bitsPerChar-1) {
+        context_data.push(getCharFromInt(context_data_val));
+        break;
+      }
+      else context_data_position++;
+    }
+    return context_data.join('');
+  },
+
+  decompress: function (compressed) {
+    if (compressed == null) return "";
+    if (compressed == "") return null;
+    return LZString._decompress(compressed.length, 32768, function(index) { return compressed.charCodeAt(index); });
+  },
+
+  _decompress: function (length, resetValue, getNextValue) {
+    var dictionary = [],
+        next,
+        enlargeIn = 4,
+        dictSize = 4,
+        numBits = 3,
+        entry = "",
+        result = [],
+        i,
+        w,
+        bits, resb, maxpower, power,
+        c,
+        data = {val:getNextValue(0), position:resetValue, index:1};
+
+    for (i = 0; i < 3; i += 1) {
+      dictionary[i] = i;
+    }
+
+    bits = 0;
+    maxpower = Math.pow(2,2);
+    power=1;
+    while (power!=maxpower) {
+      resb = data.val & data.position;
+      data.position >>= 1;
+      if (data.position == 0) {
+        data.position = resetValue;
+        data.val = getNextValue(data.index++);
+      }
+      bits |= (resb>0 ? 1 : 0) * power;
+      power <<= 1;
+    }
+
+    switch (next = bits) {
+      case 0:
+          bits = 0;
+          maxpower = Math.pow(2,8);
+          power=1;
+          while (power!=maxpower) {
+            resb = data.val & data.position;
+            data.position >>= 1;
+            if (data.position == 0) {
+              data.position = resetValue;
+              data.val = getNextValue(data.index++);
+            }
+            bits |= (resb>0 ? 1 : 0) * power;
+            power <<= 1;
+          }
+        c = f(bits);
+        break;
+      case 1:
+          bits = 0;
+          maxpower = Math.pow(2,16);
+          power=1;
+          while (power!=maxpower) {
+            resb = data.val & data.position;
+            data.position >>= 1;
+            if (data.position == 0) {
+              data.position = resetValue;
+              data.val = getNextValue(data.index++);
+            }
+            bits |= (resb>0 ? 1 : 0) * power;
+            power <<= 1;
+          }
+        c = f(bits);
+        break;
+      case 2:
+        return "";
+    }
+    dictionary[3] = c;
+    w = c;
+    result.push(c);
+    while (true) {
+      if (data.index > length) {
+        return "";
+      }
+
+      bits = 0;
+      maxpower = Math.pow(2,numBits);
+      power=1;
+      while (power!=maxpower) {
+        resb = data.val & data.position;
+        data.position >>= 1;
+        if (data.position == 0) {
+          data.position = resetValue;
+          data.val = getNextValue(data.index++);
+        }
+        bits |= (resb>0 ? 1 : 0) * power;
+        power <<= 1;
+      }
+
+      switch (c = bits) {
+        case 0:
+          bits = 0;
+          maxpower = Math.pow(2,8);
+          power=1;
+          while (power!=maxpower) {
+            resb = data.val & data.position;
+            data.position >>= 1;
+            if (data.position == 0) {
+              data.position = resetValue;
+              data.val = getNextValue(data.index++);
+            }
+            bits |= (resb>0 ? 1 : 0) * power;
+            power <<= 1;
+          }
+
+          dictionary[dictSize++] = f(bits);
+          c = dictSize-1;
+          enlargeIn--;
+          break;
+        case 1:
+          bits = 0;
+          maxpower = Math.pow(2,16);
+          power=1;
+          while (power!=maxpower) {
+            resb = data.val & data.position;
+            data.position >>= 1;
+            if (data.position == 0) {
+              data.position = resetValue;
+              data.val = getNextValue(data.index++);
+            }
+            bits |= (resb>0 ? 1 : 0) * power;
+            power <<= 1;
+          }
+          dictionary[dictSize++] = f(bits);
+          c = dictSize-1;
+          enlargeIn--;
+          break;
+        case 2:
+          return result.join('');
+      }
+
+      if (enlargeIn == 0) {
+        enlargeIn = Math.pow(2, numBits);
+        numBits++;
+      }
+
+      if (dictionary[c]) {
+        entry = dictionary[c];
+      } else {
+        if (c === dictSize) {
+          entry = w + w.charAt(0);
+        } else {
+          return null;
+        }
+      }
+      result.push(entry);
+
+      // Add w+entry[0] to the dictionary.
+      dictionary[dictSize++] = w + entry.charAt(0);
+      enlargeIn--;
+
+      w = entry;
+
+      if (enlargeIn == 0) {
+        enlargeIn = Math.pow(2, numBits);
+        numBits++;
+      }
+
+    }
+  }
+};
+  return LZString;
+})();
+
+if (typeof define === 'function' && define.amd) {
+  define(function () { return LZString; });
+} else if( typeof module !== 'undefined' && module != null ) {
+  module.exports = LZString
+} else if( typeof angular !== 'undefined' && angular != null ) {
+  angular.module('LZString', [])
+  .factory('LZString', function () {
+    return LZString;
+  });
+}
+
+;
+/* Lossless localStorage capacity recovery. Embedded with its codec BEFORE boot.
+ * The original storage key and logical value never change. No flight is deleted.
+ * First conversion requires the current SW to confirm this is the only app window. */
+(function(root){
+ 'use strict';
+ if(root.SAGSStorageCapacity||typeof Storage==='undefined')return;
+ const proto=Storage.prototype,get=proto.getItem,set=proto.setItem;
+ const MAGIC='~SAGS-LZ1~',codec=root.LZString;
+ if(!codec)throw Error('Storage codec unavailable');
+ const allowed=/^(?:sagsFlightSessionV1:|sagsV22LocalCheckpoint::|sagsFS09StandaloneV11:|sagsKH208SheetV1:|sagsFinalSheetDataV10:|sagsV61Uncommitted:|sagsCrosscheckV3Cache|sagsDynamicFleetCacheV1|sags_ac_limits_catalog_cache_v1|sags_aircraft_cleaning_cache_v2211|sags_v\d+_action_cache_|rampFullTestV17Data)/;
+ const cache=new Map();let cachedChars=0,enabled=false,checking=null,migrating=false;
+ let converted=0,savedChars=0,lastError='',clientCount=null;
+ function isLocal(store){try{return store===root.localStorage}catch(_){return false}}
+ function quota(e){return /QuotaExceeded|NS_ERROR_DOM_QUOTA_REACHED/i.test(String(e?.name))||/quota|storage.*exceed/i.test(String(e?.message))}
+ function checksum(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16)}
+ function remember(k,raw,value){
+  const old=cache.get(k);if(old){cachedChars-=old.value.length;cache.delete(k)}
+  if(value.length>1000000)return;
+  while(cache.size>=4||cachedChars+value.length>1000000){const key=cache.keys().next().value;if(key===undefined)break;cachedChars-=cache.get(key).value.length;cache.delete(key)}
+  cache.set(k,{raw,value});cachedChars+=value.length;
+ }
+ function unpack(raw){
+  if(typeof raw!=='string'||!raw.startsWith(MAGIC))return raw;
+  const a=raw.indexOf(':',MAGIC.length),b=raw.indexOf(':',a+1);
+  const length=Number.parseInt(raw.slice(MAGIC.length,a),16),hash=raw.slice(a+1,b);
+  if(a<0||b<0||!Number.isSafeInteger(length)||length<0||length>32000000)throw Error('SAGS_STORAGE_DAMAGED');
+  const value=codec.decompressFromUTF16(raw.slice(b+1));
+  if(typeof value!=='string'||value.length!==length||checksum(value)!==hash)throw Error('SAGS_STORAGE_DAMAGED');
+  return value;
+ }
+ function pack(value){
+  if(value.length<1024)return value;
+  const encoded=MAGIC+value.length.toString(16)+':'+checksum(value)+':'+codec.compressToUTF16(value);
+  if(encoded.length>=value.length*.9)return value;
+  if(unpack(encoded)!==value)throw Error('SAGS_STORAGE_CODEC_VERIFY');
+  return encoded;
+ }
+ proto.getItem=function(key){
+  const raw=get.call(this,key);if(!isLocal(this)||!allowed.test(String(key))||typeof raw!=='string'||!raw.startsWith(MAGIC))return raw;
+  const k=String(key),hit=cache.get(k);if(hit?.raw===raw)return hit.value;
+  try{const value=unpack(raw);remember(k,raw,value);return value}catch(e){lastError=String(e.message);throw e}
+ };
+ function candidates(){
+  const rows=[];for(let i=0;i<root.localStorage.length;i++){const key=root.localStorage.key(i);if(!allowed.test(key))continue;const raw=get.call(root.localStorage,key);if(raw&&raw.length>=1024&&!raw.startsWith(MAGIC))rows.push({key,size:raw.length})}
+  return rows.sort((a,b)=>b.size-a.size);
+ }
+ function compactOne(key){
+  if(!enabled)return false;
+  const raw=get.call(root.localStorage,key);if(!raw||raw.startsWith(MAGIC)||!allowed.test(key))return false;
+  const encoded=pack(raw);if(encoded===raw)return false;
+  // No asynchronous gap between reading, verifying and replacing this exact value.
+  set.call(root.localStorage,key,encoded);
+  if(get.call(root.localStorage,key)!==encoded)throw Error('SAGS_STORAGE_WRITE_VERIFY');
+  remember(key,encoded,raw);converted++;savedChars+=raw.length-encoded.length;return true;
+ }
+ proto.setItem=function(key,value){
+  if(!isLocal(this))return set.call(this,key,value);
+  const k=String(key),v=String(value),previous=get.call(this,k);
+  // A damaged record must not be silently replaced by an empty/default envelope.
+  const packedBefore=allowed.test(k)&&previous?.startsWith(MAGIC);
+  if(packedBefore)unpack(previous);
+  const hit=cache.get(k);
+  const encoded=hit?.raw===previous&&hit.value===v?previous:(enabled||packedBefore)&&allowed.test(k)?pack(v):v;
+  try{set.call(this,k,encoded)}catch(e){
+   if(!enabled||!quota(e))throw e;
+   // A shrinking overwrite is atomic and does not need a second storage copy.
+   for(const row of candidates().slice(0,8)){if(row.key===k)continue;try{compactOne(row.key)}catch(_){} }
+   set.call(this,k,encoded);
+  }
+  if(get.call(this,k)!==encoded)throw Error('SAGS_STORAGE_WRITE_VERIFY');
+  if(allowed.test(k))remember(k,encoded,v);
+ };
+ async function compact(){
+  if(!enabled||migrating)return false;migrating=true;
+  try{for(const row of candidates()){compactOne(row.key);await new Promise(r=>setTimeout(r,0))}lastError='';return true}
+  catch(e){lastError=String(e?.message||e);return false}finally{migrating=false}
+ }
+ function checkClients(){
+  if(checking)return checking;
+  checking=(async()=>{
+   const reg=await root.navigator?.serviceWorker?.getRegistration?.();
+   const controller=root.navigator?.serviceWorker?.controller||reg?.active;
+   if(!controller){lastError='WAIT_FOR_SERVICE_WORKER';return false;}
+   const result=await new Promise(resolve=>{
+    const channel=new MessageChannel();let finished=false;
+    const finish=x=>{if(finished)return;finished=true;clearTimeout(timer);channel.port1.close();resolve(x)};
+    const timer=setTimeout(()=>finish(null),3000);
+    channel.port1.onmessage=e=>finish(e.data);
+    try{controller.postMessage({type:'SAGS_STORAGE_CLIENT_COUNT'},[channel.port2])}catch(_){finish(null)}
+   });
+   clientCount=result?.ok===true?Number(result.count):null;
+   enabled=clientCount===1;
+   if(!enabled){lastError=clientCount>1?'CLOSE_OTHER_APP_WINDOWS':'WAIT_FOR_SERVICE_WORKER';return false;}
+   await compact();
+   try{root.sagsV61Draft?.retryFailed?.();root.dispatchEvent(new CustomEvent('sags:storage-capacity-ready'))}catch(_){}
+   return true;
+  })().finally(()=>{checking=null});return checking;
+ }
+ root.SAGSStorageCapacity=Object.freeze({check:checkClients,compact,status:()=>({enabled,clientCount,converted,savedChars,lastError,cacheChars:cachedChars})});
+ // Count all windows first; never auto-convert while another old shell may be running.
+ root.navigator?.serviceWorker?.addEventListener?.('controllerchange',checkClients);
+ root.addEventListener('pageshow',checkClients);
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden)void checkClients()});
+ void checkClients();
+})(window);
+
+</script>
+<style>[hidden]{display:none!important}body{margin:0;background:#071b28;color:#142c3c;font:16px/1.5 Arial;padding:24px}main{max-width:620px;margin:30px auto;background:#fff;border-radius:16px;padding:24px}h1{font-size:23px}button,a{display:block;padding:14px;border-radius:10px;margin-top:15px;font-weight:bold;text-align:center}button{border:0;background:#075a80;color:#fff;width:100%;font-size:16px}a{color:#075a80;border:1px solid}#status{white-space:pre-wrap;background:#eef5f8;padding:16px;border-radius:10px}small{display:block;margin-top:20px}</style></head><body><main><h1>KHÔI PHỤC DUNG LƯỢNG</h1><p>Mở trang này bằng đúng trình duyệt đang gặp lỗi. Đóng các tab/cửa sổ E-REPORT khác trước khi tiếp tục.</p><p>Thu gọn bản lưu trên máy bằng nén không mất dữ liệu, giữ nguyên chuyến bay, ảnh và chữ ký.</p><div id="status" role="status">SẴN SÀNG KIỂM TRA.</div><button id="run">KIỂM TRA VÀ THU GỌN</button><a id="back" href="./index.html" hidden>QUAY LẠI E-REPORT</a><small>Không cần xóa dữ liệu trình duyệt. Nếu bộ nhớ vẫn không cho ghi sau khi thu gọn, trang sẽ báo rõ; không tự xóa hồ sơ.</small></main><script>
+(function(){
+ const button=document.getElementById('run'),status=document.getElementById('status'),back=document.getElementById('back');
+ button.onclick=async()=>{
+  button.disabled=true;back.hidden=true;status.textContent='ĐANG KIỂM TRA BẢN CẬP NHẬT VÀ DỮ LIỆU TRÊN MÁY…';
+  try{
+   const reg=await navigator.serviceWorker.register('./service-worker.js',{updateViaCache:'none'});await reg.update();
+   const start=Date.now();let ready=false;
+   while(Date.now()-start<60000){
+    if(reg.waiting)reg.waiting.postMessage({type:'SKIP_WAITING'});
+    ready=await SAGSStorageCapacity.check();const result=SAGSStorageCapacity.status();
+    if(result.clientCount>1)throw Error('CÒN '+result.clientCount+' CỬA SỔ E-REPORT. HÃY ĐÓNG CÁC CỬA SỔ KHÁC, GIỮ TRANG NÀY VÀ BẤM THỬ LẠI.');
+    if(ready)break;await new Promise(resolve=>setTimeout(resolve,500));
+   }
+   if(!ready)throw Error('CHƯA THỂ XÁC MINH BẢN CẬP NHẬT. KIỂM TRA MẠNG VÀ THỬ LẠI.');
+   const k='sagsCapacityProbe:'+Date.now();try{localStorage.setItem(k,'x'.repeat(32768));if(localStorage.getItem(k)?.length!==32768)throw Error('VERIFY')}finally{localStorage.removeItem(k)}
+   const result=SAGSStorageCapacity.status();status.textContent='ĐÃ KIỂM TRA GHI THÀNH CÔNG.\nĐÃ GIẢM KHOẢNG '+Math.round(result.savedChars*2/1024)+' KB BẢN LƯU.\nDỮ LIỆU NGHIỆP VỤ ĐƯỢC GIỮ NGUYÊN. QUAY LẠI VÀ THỬ MỞ CHUYẾN.';
+   back.hidden=false;
+  }catch(e){status.textContent=/QuotaExceeded|quota/i.test(String(e?.name)+' '+String(e?.message))?'BỘ NHỚ VẪN CHƯA ĐỦ SAU KHI THU GỌN. DỮ LIỆU CŨ ĐƯỢC GIỮ NGUYÊN. BÁO QUẢN TRỊ VÀ KHÔNG XÓA DỮ LIỆU TRÌNH DUYỆT.':String(e?.message||e)}
+  finally{button.disabled=false;button.textContent='THỬ LẠI'}
+ };
+})();
+</script></body></html>

@@ -7,7 +7,7 @@
   const PREFIX='sagsV61Uncommitted:';
   const $=id=>document.getElementById(id);
   const text=x=>String(x??'');
-  const failedDrafts=new Set();
+  const failedDrafts=new Map();
   let storageError=false, lastCore='', statusTimer=0, reloading=false, warnedStorage=false;
   function scope(){
     try{return sagsOwnedPrefix(PREFIX)+String(activeFlightSessionId||'')+':';}
@@ -31,12 +31,12 @@
       localStorage.setItem(k,encoded);
       if(localStorage.getItem(k)!==encoded)throw new Error('DRAFT_WRITE_VERIFY');
       failedDrafts.delete(k);storageError=failedDrafts.size>0;status();return true;
-    }catch(e){failedDrafts.add(key(field,part));storageError=true;status();if(!warnedStorage){warnedStorage=true;
+    }catch(e){failedDrafts.set(key(field,part),{field,value:text(value),part,scope:scope()});storageError=true;status();if(!warnedStorage){warnedStorage=true;
       alert('Bộ nhớ trình duyệt không ghi được bản nháp. Hãy giữ màn hình này và báo quản trị; KHÔNG cập nhật hoặc xóa dữ liệu trình duyệt.');
     }console.warn('V6.1 draft write failed',e);return false;}
   }
   function forget(field,part='manual'){
-    if(!field)return;try{localStorage.removeItem(key(field,part));}catch(e){storageError=true;}
+    if(!field)return;try{localStorage.removeItem(key(field,part));failedDrafts.delete(key(field,part));storageError=failedDrafts.size>0;}catch(e){storageError=true;}
     status();
   }
   function pending(){
@@ -233,7 +233,11 @@
       };
     }
   }
-  root.sagsV61Draft={read,record,forget,pending,verifyPending,blockReason,status,saveManualNow,persistChangedCore,snapshotAllEditors,contextKey:scope};
+  function retryFailed(){
+    for(const item of [...failedDrafts.values()])if(item.scope===scope())root.sagsV61Draft.record(item.field,item.value,item.part);
+    persistChangedCore();status();return !storageError;
+  }
+  root.sagsV61Draft={retryFailed,hasStorageError:()=>storageError||failedDrafts.size>0,read,record,forget,pending,verifyPending,blockReason,status,saveManualNow,persistChangedCore,snapshotAllEditors,contextKey:scope};
   // SAVE clears a verified draft; closing an unfinished editor retains it.
   root.sagsStabilityForgetManualDraft=function(field){if(field)root.sagsV61Draft.forget(field);const b=$('sagsV61Restore');if(b)b.style.display='none';};
   try{lastCore=JSON.stringify(state);}catch(_){lastCore='';}

@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.10",
-  "displayVersion": "V2.5.10",
-  "label": "V2.5.10 - LOGIN CASE PRESERVATION",
-  "build": "V2.5.10-20261016-LOGIN-CASE-01",
-  "releasedAt": "2026-10-16",
-  "type": "login-case-preservation",
-  "base": "E-REPORT-SAGS main@3445ead",
+  "version": "V2.5.11",
+  "displayVersion": "V2.5.11",
+  "label": "V2.5.11 - STORAGE CAPACITY RECOVERY",
+  "build": "V2.5.11-20261017-STORAGE-CAPACITY-01",
+  "releasedAt": "2026-10-17",
+  "type": "storage-capacity-recovery",
+  "base": "E-REPORT-SAGS main@cead606",
   "updatePolicy": "required",
-  "notes": "Giữ nguyên chữ hoa/thường tại ô đăng nhập và mật khẩu kể cả khi bật hiện mật khẩu. Tắt tự viết hoa và tự sửa của bàn phím ở các ô thông tin đăng nhập. Nội dung nghiệp vụ vẫn IN HOA.",
-  "message": "V2.5.10: sửa tự viết hoa tại ô đăng nhập và hiện mật khẩu."
+  "notes": "Thu gọn không mất dữ liệu các bản lưu nghiệp vụ lớn trên máy; kiểm tra nội dung trước và sau ghi. Chỉ chuyển đổi khi không còn cửa sổ E-REPORT khác. Thêm trang khôi phục dung lượng cho máy đang bị chặn My Flight, thử lưu lại nháp lỗi và tránh báo ĐÃ LƯU khi nháp còn lỗi.",
+  "message": "V2.5.11: khôi phục dung lượng lưu hồ sơ trên máy, không xóa dữ liệu chuyến."
 }

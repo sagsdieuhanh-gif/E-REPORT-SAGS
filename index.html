@@ -2,12 +2,628 @@
 <html lang="vi" class="new-ui-v1">
 <head><script id="sagsCanonicalProduction">(function(){try{if(/(^|\.)github\.io$/i.test(location.hostname)){const u=new URL("https://e-report-sags.vercel.app/");u.search=location.search;u.hash=location.hash;location.replace(u.href)}}catch(_){}})();</script>
 <meta charset="utf-8"/>
+<script id="sags-storage-capacity-bootstrap">
+// Copyright (c) 2013 Pieroxy <pieroxy@pieroxy.net>
+// This work is free. You can redistribute it and/or modify it
+// under the terms of the WTFPL, Version 2
+// For more information see LICENSE.txt or http://www.wtfpl.net/
+//
+// For more information, the home page:
+// http://pieroxy.net/blog/pages/lz-string/testing.html
+//
+// LZ-based compression algorithm, version 1.4.5
+var LZString = (function() {
+
+// private property
+var f = String.fromCharCode;
+var keyStrBase64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+var keyStrUriSafe = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$";
+var baseReverseDic = {};
+
+function getBaseValue(alphabet, character) {
+  if (!baseReverseDic[alphabet]) {
+    baseReverseDic[alphabet] = {};
+    for (var i=0 ; i<alphabet.length ; i++) {
+      baseReverseDic[alphabet][alphabet.charAt(i)] = i;
+    }
+  }
+  return baseReverseDic[alphabet][character];
+}
+
+var LZString = {
+  compressToBase64 : function (input) {
+    if (input == null) return "";
+    var res = LZString._compress(input, 6, function(a){return keyStrBase64.charAt(a);});
+    switch (res.length % 4) { // To produce valid Base64
+    default: // When could this happen ?
+    case 0 : return res;
+    case 1 : return res+"===";
+    case 2 : return res+"==";
+    case 3 : return res+"=";
+    }
+  },
+
+  decompressFromBase64 : function (input) {
+    if (input == null) return "";
+    if (input == "") return null;
+    return LZString._decompress(input.length, 32, function(index) { return getBaseValue(keyStrBase64, input.charAt(index)); });
+  },
+
+  compressToUTF16 : function (input) {
+    if (input == null) return "";
+    return LZString._compress(input, 15, function(a){return f(a+32);}) + " ";
+  },
+
+  decompressFromUTF16: function (compressed) {
+    if (compressed == null) return "";
+    if (compressed == "") return null;
+    return LZString._decompress(compressed.length, 16384, function(index) { return compressed.charCodeAt(index) - 32; });
+  },
+
+  //compress into uint8array (UCS-2 big endian format)
+  compressToUint8Array: function (uncompressed) {
+    var compressed = LZString.compress(uncompressed);
+    var buf=new Uint8Array(compressed.length*2); // 2 bytes per character
+
+    for (var i=0, TotalLen=compressed.length; i<TotalLen; i++) {
+      var current_value = compressed.charCodeAt(i);
+      buf[i*2] = current_value >>> 8;
+      buf[i*2+1] = current_value % 256;
+    }
+    return buf;
+  },
+
+  //decompress from uint8array (UCS-2 big endian format)
+  decompressFromUint8Array:function (compressed) {
+    if (compressed===null || compressed===undefined){
+        return LZString.decompress(compressed);
+    } else {
+        var buf=new Array(compressed.length/2); // 2 bytes per character
+        for (var i=0, TotalLen=buf.length; i<TotalLen; i++) {
+          buf[i]=compressed[i*2]*256+compressed[i*2+1];
+        }
+
+        var result = [];
+        buf.forEach(function (c) {
+          result.push(f(c));
+        });
+        return LZString.decompress(result.join(''));
+
+    }
+
+  },
+
+
+  //compress into a string that is already URI encoded
+  compressToEncodedURIComponent: function (input) {
+    if (input == null) return "";
+    return LZString._compress(input, 6, function(a){return keyStrUriSafe.charAt(a);});
+  },
+
+  //decompress from an output of compressToEncodedURIComponent
+  decompressFromEncodedURIComponent:function (input) {
+    if (input == null) return "";
+    if (input == "") return null;
+    input = input.replace(/ /g, "+");
+    return LZString._decompress(input.length, 32, function(index) { return getBaseValue(keyStrUriSafe, input.charAt(index)); });
+  },
+
+  compress: function (uncompressed) {
+    return LZString._compress(uncompressed, 16, function(a){return f(a);});
+  },
+  _compress: function (uncompressed, bitsPerChar, getCharFromInt) {
+    if (uncompressed == null) return "";
+    var i, value,
+        context_dictionary= {},
+        context_dictionaryToCreate= {},
+        context_c="",
+        context_wc="",
+        context_w="",
+        context_enlargeIn= 2, // Compensate for the first entry which should not count
+        context_dictSize= 3,
+        context_numBits= 2,
+        context_data=[],
+        context_data_val=0,
+        context_data_position=0,
+        ii;
+
+    for (ii = 0; ii < uncompressed.length; ii += 1) {
+      context_c = uncompressed.charAt(ii);
+      if (!Object.prototype.hasOwnProperty.call(context_dictionary,context_c)) {
+        context_dictionary[context_c] = context_dictSize++;
+        context_dictionaryToCreate[context_c] = true;
+      }
+
+      context_wc = context_w + context_c;
+      if (Object.prototype.hasOwnProperty.call(context_dictionary,context_wc)) {
+        context_w = context_wc;
+      } else {
+        if (Object.prototype.hasOwnProperty.call(context_dictionaryToCreate,context_w)) {
+          if (context_w.charCodeAt(0)<256) {
+            for (i=0 ; i<context_numBits ; i++) {
+              context_data_val = (context_data_val << 1);
+              if (context_data_position == bitsPerChar-1) {
+                context_data_position = 0;
+                context_data.push(getCharFromInt(context_data_val));
+                context_data_val = 0;
+              } else {
+                context_data_position++;
+              }
+            }
+            value = context_w.charCodeAt(0);
+            for (i=0 ; i<8 ; i++) {
+              context_data_val = (context_data_val << 1) | (value&1);
+              if (context_data_position == bitsPerChar-1) {
+                context_data_position = 0;
+                context_data.push(getCharFromInt(context_data_val));
+                context_data_val = 0;
+              } else {
+                context_data_position++;
+              }
+              value = value >> 1;
+            }
+          } else {
+            value = 1;
+            for (i=0 ; i<context_numBits ; i++) {
+              context_data_val = (context_data_val << 1) | value;
+              if (context_data_position ==bitsPerChar-1) {
+                context_data_position = 0;
+                context_data.push(getCharFromInt(context_data_val));
+                context_data_val = 0;
+              } else {
+                context_data_position++;
+              }
+              value = 0;
+            }
+            value = context_w.charCodeAt(0);
+            for (i=0 ; i<16 ; i++) {
+              context_data_val = (context_data_val << 1) | (value&1);
+              if (context_data_position == bitsPerChar-1) {
+                context_data_position = 0;
+                context_data.push(getCharFromInt(context_data_val));
+                context_data_val = 0;
+              } else {
+                context_data_position++;
+              }
+              value = value >> 1;
+            }
+          }
+          context_enlargeIn--;
+          if (context_enlargeIn == 0) {
+            context_enlargeIn = Math.pow(2, context_numBits);
+            context_numBits++;
+          }
+          delete context_dictionaryToCreate[context_w];
+        } else {
+          value = context_dictionary[context_w];
+          for (i=0 ; i<context_numBits ; i++) {
+            context_data_val = (context_data_val << 1) | (value&1);
+            if (context_data_position == bitsPerChar-1) {
+              context_data_position = 0;
+              context_data.push(getCharFromInt(context_data_val));
+              context_data_val = 0;
+            } else {
+              context_data_position++;
+            }
+            value = value >> 1;
+          }
+
+
+        }
+        context_enlargeIn--;
+        if (context_enlargeIn == 0) {
+          context_enlargeIn = Math.pow(2, context_numBits);
+          context_numBits++;
+        }
+        // Add wc to the dictionary.
+        context_dictionary[context_wc] = context_dictSize++;
+        context_w = String(context_c);
+      }
+    }
+
+    // Output the code for w.
+    if (context_w !== "") {
+      if (Object.prototype.hasOwnProperty.call(context_dictionaryToCreate,context_w)) {
+        if (context_w.charCodeAt(0)<256) {
+          for (i=0 ; i<context_numBits ; i++) {
+            context_data_val = (context_data_val << 1);
+            if (context_data_position == bitsPerChar-1) {
+              context_data_position = 0;
+              context_data.push(getCharFromInt(context_data_val));
+              context_data_val = 0;
+            } else {
+              context_data_position++;
+            }
+          }
+          value = context_w.charCodeAt(0);
+          for (i=0 ; i<8 ; i++) {
+            context_data_val = (context_data_val << 1) | (value&1);
+            if (context_data_position == bitsPerChar-1) {
+              context_data_position = 0;
+              context_data.push(getCharFromInt(context_data_val));
+              context_data_val = 0;
+            } else {
+              context_data_position++;
+            }
+            value = value >> 1;
+          }
+        } else {
+          value = 1;
+          for (i=0 ; i<context_numBits ; i++) {
+            context_data_val = (context_data_val << 1) | value;
+            if (context_data_position == bitsPerChar-1) {
+              context_data_position = 0;
+              context_data.push(getCharFromInt(context_data_val));
+              context_data_val = 0;
+            } else {
+              context_data_position++;
+            }
+            value = 0;
+          }
+          value = context_w.charCodeAt(0);
+          for (i=0 ; i<16 ; i++) {
+            context_data_val = (context_data_val << 1) | (value&1);
+            if (context_data_position == bitsPerChar-1) {
+              context_data_position = 0;
+              context_data.push(getCharFromInt(context_data_val));
+              context_data_val = 0;
+            } else {
+              context_data_position++;
+            }
+            value = value >> 1;
+          }
+        }
+        context_enlargeIn--;
+        if (context_enlargeIn == 0) {
+          context_enlargeIn = Math.pow(2, context_numBits);
+          context_numBits++;
+        }
+        delete context_dictionaryToCreate[context_w];
+      } else {
+        value = context_dictionary[context_w];
+        for (i=0 ; i<context_numBits ; i++) {
+          context_data_val = (context_data_val << 1) | (value&1);
+          if (context_data_position == bitsPerChar-1) {
+            context_data_position = 0;
+            context_data.push(getCharFromInt(context_data_val));
+            context_data_val = 0;
+          } else {
+            context_data_position++;
+          }
+          value = value >> 1;
+        }
+
+
+      }
+      context_enlargeIn--;
+      if (context_enlargeIn == 0) {
+        context_enlargeIn = Math.pow(2, context_numBits);
+        context_numBits++;
+      }
+    }
+
+    // Mark the end of the stream
+    value = 2;
+    for (i=0 ; i<context_numBits ; i++) {
+      context_data_val = (context_data_val << 1) | (value&1);
+      if (context_data_position == bitsPerChar-1) {
+        context_data_position = 0;
+        context_data.push(getCharFromInt(context_data_val));
+        context_data_val = 0;
+      } else {
+        context_data_position++;
+      }
+      value = value >> 1;
+    }
+
+    // Flush the last char
+    while (true) {
+      context_data_val = (context_data_val << 1);
+      if (context_data_position == bitsPerChar-1) {
+        context_data.push(getCharFromInt(context_data_val));
+        break;
+      }
+      else context_data_position++;
+    }
+    return context_data.join('');
+  },
+
+  decompress: function (compressed) {
+    if (compressed == null) return "";
+    if (compressed == "") return null;
+    return LZString._decompress(compressed.length, 32768, function(index) { return compressed.charCodeAt(index); });
+  },
+
+  _decompress: function (length, resetValue, getNextValue) {
+    var dictionary = [],
+        next,
+        enlargeIn = 4,
+        dictSize = 4,
+        numBits = 3,
+        entry = "",
+        result = [],
+        i,
+        w,
+        bits, resb, maxpower, power,
+        c,
+        data = {val:getNextValue(0), position:resetValue, index:1};
+
+    for (i = 0; i < 3; i += 1) {
+      dictionary[i] = i;
+    }
+
+    bits = 0;
+    maxpower = Math.pow(2,2);
+    power=1;
+    while (power!=maxpower) {
+      resb = data.val & data.position;
+      data.position >>= 1;
+      if (data.position == 0) {
+        data.position = resetValue;
+        data.val = getNextValue(data.index++);
+      }
+      bits |= (resb>0 ? 1 : 0) * power;
+      power <<= 1;
+    }
+
+    switch (next = bits) {
+      case 0:
+          bits = 0;
+          maxpower = Math.pow(2,8);
+          power=1;
+          while (power!=maxpower) {
+            resb = data.val & data.position;
+            data.position >>= 1;
+            if (data.position == 0) {
+              data.position = resetValue;
+              data.val = getNextValue(data.index++);
+            }
+            bits |= (resb>0 ? 1 : 0) * power;
+            power <<= 1;
+          }
+        c = f(bits);
+        break;
+      case 1:
+          bits = 0;
+          maxpower = Math.pow(2,16);
+          power=1;
+          while (power!=maxpower) {
+            resb = data.val & data.position;
+            data.position >>= 1;
+            if (data.position == 0) {
+              data.position = resetValue;
+              data.val = getNextValue(data.index++);
+            }
+            bits |= (resb>0 ? 1 : 0) * power;
+            power <<= 1;
+          }
+        c = f(bits);
+        break;
+      case 2:
+        return "";
+    }
+    dictionary[3] = c;
+    w = c;
+    result.push(c);
+    while (true) {
+      if (data.index > length) {
+        return "";
+      }
+
+      bits = 0;
+      maxpower = Math.pow(2,numBits);
+      power=1;
+      while (power!=maxpower) {
+        resb = data.val & data.position;
+        data.position >>= 1;
+        if (data.position == 0) {
+          data.position = resetValue;
+          data.val = getNextValue(data.index++);
+        }
+        bits |= (resb>0 ? 1 : 0) * power;
+        power <<= 1;
+      }
+
+      switch (c = bits) {
+        case 0:
+          bits = 0;
+          maxpower = Math.pow(2,8);
+          power=1;
+          while (power!=maxpower) {
+            resb = data.val & data.position;
+            data.position >>= 1;
+            if (data.position == 0) {
+              data.position = resetValue;
+              data.val = getNextValue(data.index++);
+            }
+            bits |= (resb>0 ? 1 : 0) * power;
+            power <<= 1;
+          }
+
+          dictionary[dictSize++] = f(bits);
+          c = dictSize-1;
+          enlargeIn--;
+          break;
+        case 1:
+          bits = 0;
+          maxpower = Math.pow(2,16);
+          power=1;
+          while (power!=maxpower) {
+            resb = data.val & data.position;
+            data.position >>= 1;
+            if (data.position == 0) {
+              data.position = resetValue;
+              data.val = getNextValue(data.index++);
+            }
+            bits |= (resb>0 ? 1 : 0) * power;
+            power <<= 1;
+          }
+          dictionary[dictSize++] = f(bits);
+          c = dictSize-1;
+          enlargeIn--;
+          break;
+        case 2:
+          return result.join('');
+      }
+
+      if (enlargeIn == 0) {
+        enlargeIn = Math.pow(2, numBits);
+        numBits++;
+      }
+
+      if (dictionary[c]) {
+        entry = dictionary[c];
+      } else {
+        if (c === dictSize) {
+          entry = w + w.charAt(0);
+        } else {
+          return null;
+        }
+      }
+      result.push(entry);
+
+      // Add w+entry[0] to the dictionary.
+      dictionary[dictSize++] = w + entry.charAt(0);
+      enlargeIn--;
+
+      w = entry;
+
+      if (enlargeIn == 0) {
+        enlargeIn = Math.pow(2, numBits);
+        numBits++;
+      }
+
+    }
+  }
+};
+  return LZString;
+})();
+
+if (typeof define === 'function' && define.amd) {
+  define(function () { return LZString; });
+} else if( typeof module !== 'undefined' && module != null ) {
+  module.exports = LZString
+} else if( typeof angular !== 'undefined' && angular != null ) {
+  angular.module('LZString', [])
+  .factory('LZString', function () {
+    return LZString;
+  });
+}
+
+;
+/* Lossless localStorage capacity recovery. Embedded with its codec BEFORE boot.
+ * The original storage key and logical value never change. No flight is deleted.
+ * First conversion requires the current SW to confirm this is the only app window. */
+(function(root){
+ 'use strict';
+ if(root.SAGSStorageCapacity||typeof Storage==='undefined')return;
+ const proto=Storage.prototype,get=proto.getItem,set=proto.setItem;
+ const MAGIC='~SAGS-LZ1~',codec=root.LZString;
+ if(!codec)throw Error('Storage codec unavailable');
+ const allowed=/^(?:sagsFlightSessionV1:|sagsV22LocalCheckpoint::|sagsFS09StandaloneV11:|sagsKH208SheetV1:|sagsFinalSheetDataV10:|sagsV61Uncommitted:|sagsCrosscheckV3Cache|sagsDynamicFleetCacheV1|sags_ac_limits_catalog_cache_v1|sags_aircraft_cleaning_cache_v2211|sags_v\d+_action_cache_|rampFullTestV17Data)/;
+ const cache=new Map();let cachedChars=0,enabled=false,checking=null,migrating=false;
+ let converted=0,savedChars=0,lastError='',clientCount=null;
+ function isLocal(store){try{return store===root.localStorage}catch(_){return false}}
+ function quota(e){return /QuotaExceeded|NS_ERROR_DOM_QUOTA_REACHED/i.test(String(e?.name))||/quota|storage.*exceed/i.test(String(e?.message))}
+ function checksum(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16)}
+ function remember(k,raw,value){
+  const old=cache.get(k);if(old){cachedChars-=old.value.length;cache.delete(k)}
+  if(value.length>1000000)return;
+  while(cache.size>=4||cachedChars+value.length>1000000){const key=cache.keys().next().value;if(key===undefined)break;cachedChars-=cache.get(key).value.length;cache.delete(key)}
+  cache.set(k,{raw,value});cachedChars+=value.length;
+ }
+ function unpack(raw){
+  if(typeof raw!=='string'||!raw.startsWith(MAGIC))return raw;
+  const a=raw.indexOf(':',MAGIC.length),b=raw.indexOf(':',a+1);
+  const length=Number.parseInt(raw.slice(MAGIC.length,a),16),hash=raw.slice(a+1,b);
+  if(a<0||b<0||!Number.isSafeInteger(length)||length<0||length>32000000)throw Error('SAGS_STORAGE_DAMAGED');
+  const value=codec.decompressFromUTF16(raw.slice(b+1));
+  if(typeof value!=='string'||value.length!==length||checksum(value)!==hash)throw Error('SAGS_STORAGE_DAMAGED');
+  return value;
+ }
+ function pack(value){
+  if(value.length<1024)return value;
+  const encoded=MAGIC+value.length.toString(16)+':'+checksum(value)+':'+codec.compressToUTF16(value);
+  if(encoded.length>=value.length*.9)return value;
+  if(unpack(encoded)!==value)throw Error('SAGS_STORAGE_CODEC_VERIFY');
+  return encoded;
+ }
+ proto.getItem=function(key){
+  const raw=get.call(this,key);if(!isLocal(this)||!allowed.test(String(key))||typeof raw!=='string'||!raw.startsWith(MAGIC))return raw;
+  const k=String(key),hit=cache.get(k);if(hit?.raw===raw)return hit.value;
+  try{const value=unpack(raw);remember(k,raw,value);return value}catch(e){lastError=String(e.message);throw e}
+ };
+ function candidates(){
+  const rows=[];for(let i=0;i<root.localStorage.length;i++){const key=root.localStorage.key(i);if(!allowed.test(key))continue;const raw=get.call(root.localStorage,key);if(raw&&raw.length>=1024&&!raw.startsWith(MAGIC))rows.push({key,size:raw.length})}
+  return rows.sort((a,b)=>b.size-a.size);
+ }
+ function compactOne(key){
+  if(!enabled)return false;
+  const raw=get.call(root.localStorage,key);if(!raw||raw.startsWith(MAGIC)||!allowed.test(key))return false;
+  const encoded=pack(raw);if(encoded===raw)return false;
+  // No asynchronous gap between reading, verifying and replacing this exact value.
+  set.call(root.localStorage,key,encoded);
+  if(get.call(root.localStorage,key)!==encoded)throw Error('SAGS_STORAGE_WRITE_VERIFY');
+  remember(key,encoded,raw);converted++;savedChars+=raw.length-encoded.length;return true;
+ }
+ proto.setItem=function(key,value){
+  if(!isLocal(this))return set.call(this,key,value);
+  const k=String(key),v=String(value),previous=get.call(this,k);
+  // A damaged record must not be silently replaced by an empty/default envelope.
+  const packedBefore=allowed.test(k)&&previous?.startsWith(MAGIC);
+  if(packedBefore)unpack(previous);
+  const hit=cache.get(k);
+  const encoded=hit?.raw===previous&&hit.value===v?previous:(enabled||packedBefore)&&allowed.test(k)?pack(v):v;
+  try{set.call(this,k,encoded)}catch(e){
+   if(!enabled||!quota(e))throw e;
+   // A shrinking overwrite is atomic and does not need a second storage copy.
+   for(const row of candidates().slice(0,8)){if(row.key===k)continue;try{compactOne(row.key)}catch(_){} }
+   set.call(this,k,encoded);
+  }
+  if(get.call(this,k)!==encoded)throw Error('SAGS_STORAGE_WRITE_VERIFY');
+  if(allowed.test(k))remember(k,encoded,v);
+ };
+ async function compact(){
+  if(!enabled||migrating)return false;migrating=true;
+  try{for(const row of candidates()){compactOne(row.key);await new Promise(r=>setTimeout(r,0))}lastError='';return true}
+  catch(e){lastError=String(e?.message||e);return false}finally{migrating=false}
+ }
+ function checkClients(){
+  if(checking)return checking;
+  checking=(async()=>{
+   const reg=await root.navigator?.serviceWorker?.getRegistration?.();
+   const controller=root.navigator?.serviceWorker?.controller||reg?.active;
+   if(!controller){lastError='WAIT_FOR_SERVICE_WORKER';return false;}
+   const result=await new Promise(resolve=>{
+    const channel=new MessageChannel();let finished=false;
+    const finish=x=>{if(finished)return;finished=true;clearTimeout(timer);channel.port1.close();resolve(x)};
+    const timer=setTimeout(()=>finish(null),3000);
+    channel.port1.onmessage=e=>finish(e.data);
+    try{controller.postMessage({type:'SAGS_STORAGE_CLIENT_COUNT'},[channel.port2])}catch(_){finish(null)}
+   });
+   clientCount=result?.ok===true?Number(result.count):null;
+   enabled=clientCount===1;
+   if(!enabled){lastError=clientCount>1?'CLOSE_OTHER_APP_WINDOWS':'WAIT_FOR_SERVICE_WORKER';return false;}
+   await compact();
+   try{root.sagsV61Draft?.retryFailed?.();root.dispatchEvent(new CustomEvent('sags:storage-capacity-ready'))}catch(_){}
+   return true;
+  })().finally(()=>{checking=null});return checking;
+ }
+ root.SAGSStorageCapacity=Object.freeze({check:checkClients,compact,status:()=>({enabled,clientCount,converted,savedChars,lastError,cacheChars:cachedChars})});
+ // Count all windows first; never auto-convert while another old shell may be running.
+ root.navigator?.serviceWorker?.addEventListener?.('controllerchange',checkClients);
+ root.addEventListener('pageshow',checkClients);
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden)void checkClients()});
+ void checkClients();
+})(window);
+
+</script>
 <meta content="width=device-width, initial-scale=1, maximum-scale=6, user-scalable=yes, viewport-fit=cover, interactive-widget=resizes-content" name="viewport"/>
 <title>PĐH SAGS-CXR</title>
-<meta name="sags-release-build" content="V2.5.10-20261016-LOGIN-CASE-01">
-<meta name="sags-release-version" content="V2.5.10">
+<meta name="sags-release-build" content="V2.5.11-20261017-STORAGE-CAPACITY-01">
+<meta name="sags-release-version" content="V2.5.11">
 <meta name="sags-release-date" content="09/10/26">
-<link href="./manifest.webmanifest?v=V2.5.10-20261016-LOGIN-CASE-01" rel="manifest"/>
+<link href="./manifest.webmanifest?v=V2.5.11-20261017-STORAGE-CAPACITY-01" rel="manifest"/>
 <link href="./assets/icons/favicon-16.png?v=486" rel="icon" sizes="16x16" type="image/png"/>
 <link href="./assets/icons/favicon-32.png?v=486" rel="icon" sizes="32x32" type="image/png"/>
 <link href="./assets/icons/icon-192.png?v=486" rel="icon" sizes="192x192" type="image/png"/>
@@ -18,7 +634,7 @@
 <meta content="#06131F" name="theme-color"/>
 <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
 <link rel="dns-prefetch" href="//www.gstatic.com">
-<link rel="stylesheet" href="./app/styles/boot-bundle-1.css?v=V2.5.10-20261016-LOGIN-CASE-01">
+<link rel="stylesheet" href="./app/styles/boot-bundle-1.css?v=V2.5.11-20261017-STORAGE-CAPACITY-01">
 
 
 
@@ -37,10 +653,10 @@
 <style id="v482-responsive-ui-style" data-sags-css-source="./app/styles/boot-16-v482-responsive-ui-style.css"></style>
 <style id="v377AdminFormToolsStyle" data-sags-css-source="./app/styles/boot-17-v377AdminFormToolsStyle.css"></style>
 <style id="sags-v115-clean-ui" data-sags-css-source="./app/styles/boot-18-sags-v115-clean-ui.css"></style>
-<link rel="stylesheet" href="./app/styles/app.bundle.css?v=V2.5.10-20261016-LOGIN-CASE-01">
-<link rel="stylesheet" href="./app/styles/new-ui-v1.css?v=V2.5.10-20261016-LOGIN-CASE-01">
+<link rel="stylesheet" href="./app/styles/app.bundle.css?v=V2.5.11-20261017-STORAGE-CAPACITY-01">
+<link rel="stylesheet" href="./app/styles/new-ui-v1.css?v=V2.5.11-20261017-STORAGE-CAPACITY-01">
 
-<script id="sags-v620-unified-form-migration" src="./app/boot/01-sags-v620-unified-form-migration.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
+<script id="sags-v620-unified-form-migration" src="./app/boot/01-sags-v620-unified-form-migration.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
 
 </head>
 <body>
@@ -48,7 +664,7 @@
 <div id="roleLoginModal">
 <div class="roleLoginCard">
 <div class="roleLoginLogo"><img src="assets/branding/login-logo-10years.png?v=1" alt="SAGS-CXR 10 Years Anniversary"></div>
-<div class="newUiLoginEyebrow" aria-label="Giao diện NEW UI V1">SAGS / E-REPORT <span id="loginReleaseVersion">V2.5.10</span></div>
+<div class="newUiLoginEyebrow" aria-label="Giao diện NEW UI V1">SAGS / E-REPORT <span id="loginReleaseVersion">V2.5.11</span></div>
 <h2>Đăng nhập</h2>
 <div id="personalLoginFields">
 <label>Tài khoản</label>
@@ -316,7 +932,7 @@
 <button type="button" id="appUpdateNowBtn" onclick="return window.sagsApplyUpdateFromButton(event)" style="border:0;background:#0067c5;color:#fff;border-radius:11px;padding:11px 16px;font-weight:900;font-size:15px;min-height:48px;touch-action:manipulation;pointer-events:auto;position:relative;z-index:2">CẬP NHẬT NGAY</button>
 </div></div></div>
 <button id="sagsDeferredUpdate" type="button" hidden onclick="showDeferredAppUpdate()" aria-label="Có bản cập nhật mới, bấm để chọn thời điểm cập nhật" title="Có bản cập nhật mới · Nhấn để cập nhật khi đã lưu xong" style="position:fixed;right:12px;bottom:128px;z-index:65000;border:2px solid #b45309;background:#fff1c1;color:#713f12;border-radius:99px;padding:10px 14px;font:900 12px Arial;box-shadow:0 5px 18px #0002">⚠ CÓ BẢN CẬP NHẬT</button>
-<script id="sags-v611-update-alert-position" src="./app/boot/02-sags-v611-update-alert-position.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
+<script id="sags-v611-update-alert-position" src="./app/boot/02-sags-v611-update-alert-position.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
 <div id="flightSessionModal">
 <div class="flightSessionBox">
 <h3>Chuyến đang làm</h3>
@@ -857,24 +1473,24 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-functions-compat.js"></script>
 <script></script>
 <script id="sags-v6118-firebase-config"></script>
-<script src="./app/modules/flight-retention-policy.v1.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
-<script src="./app/generated/boot-group-1.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
-<script src="./app/modules/business-text.v1.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
-<script src="./app/boot/05-legacy.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
-<script src="./app/boot/06-legacy.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
-<link rel="stylesheet" href="./app/styles/boot-bundle-2.css?v=V2.5.10-20261016-LOGIN-CASE-01">
+<script src="./app/modules/flight-retention-policy.v1.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
+<script src="./app/generated/boot-group-1.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
+<script src="./app/modules/business-text.v1.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
+<script src="./app/boot/05-legacy.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
+<script src="./app/boot/06-legacy.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
+<link rel="stylesheet" href="./app/styles/boot-bundle-2.css?v=V2.5.11-20261017-STORAGE-CAPACITY-01">
 <style id="v1-restore-final-send-button" data-sags-css-source="./app/styles/boot-23-v1-restore-final-send-button.css"></style>
 <style id="v1-final-header-layout" data-sags-css-source="./app/styles/boot-24-v1-final-header-layout.css"></style>
 <style id="v1-final-actions-unified" data-sags-css-source="./app/styles/boot-25-v1-final-actions-unified.css"></style>
 <style id="v2-7-mobile-final-toolbar-fix" data-sags-css-source="./app/styles/boot-26-v2-7-mobile-final-toolbar-fix.css"></style>
-<script src="./app/boot/07-legacy.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
-<script id="v412-kh208-script" src="./app/boot/08-v412-kh208-script.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
+<script src="./app/boot/07-legacy.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
+<script id="v412-kh208-script" src="./app/boot/08-v412-kh208-script.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
 
-<script id="v454AccountProfileOverrides" src="./app/boot/09-v454AccountProfileOverrides.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
+<script id="v454AccountProfileOverrides" src="./app/boot/09-v454AccountProfileOverrides.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
 
-<script id="v470-hybrid-core" src="./app/boot/10-v470-hybrid-core.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>\n
+<script id="v470-hybrid-core" src="./app/boot/10-v470-hybrid-core.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>\n
 
-<script id="v476-core" src="./app/boot/11-v476-core.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>\n
+<script id="v476-core" src="./app/boot/11-v476-core.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>\n
 <button id="v476ThreeUQuick" type="button" onclick="v479Open3UActions()">3U REPORT</button>
 <div class="sagsAdminModal" id="v479ThreeUActionModal" onclick="if(event.target===this)v479Close3UActions()">
   <div class="v479ThreeUActionPanel">
@@ -899,22 +1515,22 @@
   </div>
 </div>
 <style id="v484-system-dept-style" data-sags-css-source="./app/styles/boot-27-v484-system-dept-style.css"></style>
-<script id="v484SystemDepartmentRoles" src="./app/boot/12-v484SystemDepartmentRoles.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
+<script id="v484SystemDepartmentRoles" src="./app/boot/12-v484SystemDepartmentRoles.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
 <style id="v485-feature-permission-style" data-sags-css-source="./app/styles/boot-28-v485-feature-permission-style.css"></style>
 <div id="v485FeaturePermissionModal" class="v485PermModal" aria-hidden="true"><div class="v485PermBox"><div class="v485PermTitle">AD · PHÂN QUYỀN CHỨC NĂNG</div><div id="v485PermSub" class="v485PermSub"></div><div id="v485PermGrid" class="v485PermGrid"></div><div class="v485PermHint">AD có thể bật/tắt <b>quyền nghiệp vụ theo từng tài khoản</b>, không phụ thuộc vai trò/chức danh nếu AD chủ động chọn. Mặc định vẫn lấy theo vai trò; quyền AD chọn sẽ ghi đè mặc định. Các quyền bảo mật hệ thống như quản lý tài khoản/phân quyền/Audit vẫn chỉ AD và không nằm trong danh sách này.</div><div id="v485PermStatus" class="v485PermSub" style="margin-top:9px"></div><div class="v485PermActions"><button class="v485Reset" onclick="v485ResetPermissionEditor()">MẶC ĐỊNH VAI TRÒ</button><button class="v485Cancel" onclick="v485ClosePermissionEditor()">ĐÓNG</button><button class="v485Save" onclick="v485SavePermissionEditor()">LƯU QUYỀN</button></div></div></div>
-<script id="v485FeaturePermissions" src="./app/boot/13-v485FeaturePermissions.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
+<script id="v485FeaturePermissions" src="./app/boot/13-v485FeaturePermissions.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
 <style id="v18-account-hierarchy-style" data-sags-css-source="./app/styles/boot-29-v18-account-hierarchy-style.css"></style>
-<script id="v18CanonicalAccountHierarchy" src="./app/boot/14-v18CanonicalAccountHierarchy.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
-<script id="v116-account-name-search" src="./app/boot/15-v116-account-name-search.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
-<script src="./app/modules/feature-loader.v1.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
-<script src="./app/modules/form-performance.v1.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
-<script src="./app/generated/core-shared.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
-<script src="./app/generated/core-archive.js?v=V2.5.10-20261016-LOGIN-CASE-01" data-phase="archive"></script>
+<script id="v18CanonicalAccountHierarchy" src="./app/boot/14-v18CanonicalAccountHierarchy.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
+<script id="v116-account-name-search" src="./app/boot/15-v116-account-name-search.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
+<script src="./app/modules/feature-loader.v1.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
+<script src="./app/modules/form-performance.v1.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
+<script src="./app/generated/core-shared.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
+<script src="./app/generated/core-archive.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01" data-phase="archive"></script>
 <script id="v120-build02-fixes"></script>
 <script id="v121-closeout-validation"></script>
-<script src="./app/generated/boot-group-2.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
-<script src="./app/generated/core-tools.js?v=V2.5.10-20261016-LOGIN-CASE-01" data-phase="tools"></script>
-<script id="v173-quick-time" src="./app/boot/18-v173-quick-time.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
+<script src="./app/generated/boot-group-2.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
+<script src="./app/generated/core-tools.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01" data-phase="tools"></script>
+<script id="v173-quick-time" src="./app/boot/18-v173-quick-time.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
 <style id="v178-fs09-quick-premium-style" data-sags-css-source="./app/styles/boot-30-v178-fs09-quick-premium-style.css"></style>
 <style id="v183-fs09-closeout-quick-style" data-sags-css-source="./app/styles/boot-31-v183-fs09-closeout-quick-style.css"></style>
 <div id="fs09QuickModal" onclick="if(event.target===this)closeFS09QuickPanel()">
@@ -942,79 +1558,79 @@
     </div>
   </div>
 </div>
-<script id="v183-fs09-quick" src="./app/boot/19-v183-fs09-quick.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
+<script id="v183-fs09-quick" src="./app/boot/19-v183-fs09-quick.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
 <style id="v161-progress-v2-style" data-sags-css-source="./app/styles/boot-32-v161-progress-v2-style.css"></style>
 <script id="v163-ramp-progress-v1"></script>
 <script id="v154-rtdb-first-permissions"></script>
-<script src="./app/generated/boot-group-3.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
+<script src="./app/generated/boot-group-3.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
 
 <style id="v1121-ios-time-footer-style" data-sags-css-source="./app/styles/boot-33-v1121-ios-time-footer-style.css"></style>
-<script id="v1121-ios-time-footer-script" src="./app/boot/22-v1121-ios-time-footer-script.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
+<script id="v1121-ios-time-footer-script" src="./app/boot/22-v1121-ios-time-footer-script.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
 
 <style id="v1122-roster-sign-style" data-sags-css-source="./app/styles/boot-34-v1122-roster-sign-style.css"></style>
-<script id="v1122-roster-sign-script" src="./app/boot/23-v1122-roster-sign-script.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
+<script id="v1122-roster-sign-script" src="./app/boot/23-v1122-roster-sign-script.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
 <style id="v1134-quick-time-direct-style" data-sags-css-source="./app/styles/boot-35-v1134-quick-time-direct-style.css"></style>
-<link id="v6494-aviation-final-style" rel="stylesheet" href="./app/styles/boot-36-v6494-aviation-final.css?v=V2.5.10-20261016-LOGIN-CASE-01">
+<link id="v6494-aviation-final-style" rel="stylesheet" href="./app/styles/boot-36-v6494-aviation-final.css?v=V2.5.11-20261017-STORAGE-CAPACITY-01">
 
 <script id="v1151-zoom-entry-direct"></script>
 <script id="v1154-update-detector-r2"></script>
-<script src="./app/generated/boot-group-4.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
+<script src="./app/generated/boot-group-4.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
 
 <!-- V6.4.4: restore execution phases accidentally dropped during V6.4 directory restructuring. -->
-<script src="./app/generated/core-flight.js?v=V2.5.10-20261016-LOGIN-CASE-01" data-phase="flight"></script>
-<script src="./app/generated/core-control.js?v=V2.5.10-20261016-LOGIN-CASE-01" data-phase="control"></script>
-<script src="./app/generated/core-postcontrol.js?v=V2.5.10-20261016-LOGIN-CASE-01" data-phase="postcontrol"></script>
-<script src="./app/modules/admin-reset.v503hf2.js?v=V2.5.10-20261016-LOGIN-CASE-01" id="v503AdminBackupReset"></script>
-<script src="./app/generated/core-performance.js?v=V2.5.10-20261016-LOGIN-CASE-01" data-phase="performance"></script>
-<script src="./app/modules/firebase-read-coalescer.v1.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
-<script src="./app/modules/daily-roster.v502.js?v=V2.5.10-20261016-LOGIN-CASE-01" id="dailyRosterCleanV11102"></script>
+<script src="./app/generated/core-flight.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01" data-phase="flight"></script>
+<script src="./app/generated/core-control.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01" data-phase="control"></script>
+<script src="./app/generated/core-postcontrol.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01" data-phase="postcontrol"></script>
+<script src="./app/modules/admin-reset.v503hf2.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01" id="v503AdminBackupReset"></script>
+<script src="./app/generated/core-performance.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01" data-phase="performance"></script>
+<script src="./app/modules/firebase-read-coalescer.v1.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
+<script src="./app/modules/daily-roster.v502.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01" id="dailyRosterCleanV11102"></script>
 <!-- Named-person handover remains removed; self-accept only restores the supported self/roster workflow. -->
-<script id="v644SafeStorageCleanup" src="./app/boot/26-v644SafeStorageCleanup.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
-<script src="./app/generated/runtime-1.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
-<script src="./app/generated/runtime-2.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
-<script src="./app/generated/runtime-3.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
-<script src="./app/generated/runtime-4.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
-<script src="./app/generated/runtime-5.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
+<script id="v644SafeStorageCleanup" src="./app/boot/26-v644SafeStorageCleanup.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
+<script src="./app/generated/runtime-1.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
+<script src="./app/generated/runtime-2.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
+<script src="./app/generated/runtime-3.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
+<script src="./app/generated/runtime-4.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
+<script src="./app/generated/runtime-5.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
 <script id="v460RuntimeGuard"></script>
 <script></script>
 <script id="sags-v6118-carrier-lazy"></script>
-<script src="./app/generated/boot-group-5.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
-<script src="./app/modules/quick-entry.v1.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
-<script src="./app/modules/ui-preferences.v1.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
-<script src="./app/modules/settings.v1.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
-<script src="./app/modules/stability.v6.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
-<script src="./app/modules/flight-retention.v1.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
-<script src="./app/modules/cross-browser-entry.v1.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
-<script src="./app/modules/roster-lite.v5.js?v=V2.5.10-20261016-LOGIN-CASE-01" id="v477MailboxLite"></script>
+<script src="./app/generated/boot-group-5.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
+<script src="./app/modules/quick-entry.v1.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
+<script src="./app/modules/ui-preferences.v1.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
+<script src="./app/modules/settings.v1.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
+<script src="./app/modules/stability.v6.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
+<script src="./app/modules/flight-retention.v1.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
+<script src="./app/modules/cross-browser-entry.v1.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
+<script src="./app/modules/roster-lite.v5.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01" id="v477MailboxLite"></script>
 
 
-<script id="sags-v6120-all-form-render-standard" src="./app/boot/30-sags-v6120-all-form-render-standard.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
+<script id="sags-v6120-all-form-render-standard" src="./app/boot/30-sags-v6120-all-form-render-standard.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
 
-<script src="./app/modules/tvj-gof-035.v630.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
-<script src="./app/modules/tvj-gof-035.v631.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
-<script src="./app/modules/tvj-gof-035.v632.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
-
-
-<script id="sags-grnd-ls-v621" src="./app/boot/31-sags-grnd-ls-v621.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
+<script src="./app/modules/tvj-gof-035.v630.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
+<script src="./app/modules/tvj-gof-035.v631.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
+<script src="./app/modules/tvj-gof-035.v632.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
 
 
-<script src="./app/modules/fsags54-94.v622.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
-<script src="./app/modules/form-registry-runtime.v647.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
-<script src="./app/modules/form-registry-runtime.v6419.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
+<script id="sags-grnd-ls-v621" src="./app/boot/31-sags-grnd-ls-v621.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
 
-<script src="./app/modules/airline-form-policy.v1.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
-<script src="./app/modules/workflow-cleanup.v6444.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
-<script id="sags-fsags208-workspace-v1" src="./app/modules/fsags208-workspace.v1.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
-<script id="sags-fsags208-image-reader-v1" src="./app/modules/fsags208-image-reader.v1.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
-<script id="v6494-aviation-shell" src="./app/boot/32-v6494-aviation-shell.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
 
-<link rel="stylesheet" href="./app/styles/aviation-reference.v1.css?v=V2.5.10-20261016-LOGIN-CASE-01">
-<script src="./app/modules/aviation-reference.v1.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
-<script id="v6497-dossier-enhancements" src="./app/boot/33-v6497-dossier-enhancements.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
-<script id="sags-admin-all-form-viewer-v1" src="./app/modules/admin-all-form-viewer.v1.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
-<script id="sags-admin-account-actions-v2" src="./app/modules/admin-account-actions.v2.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
-<script id="sags-unified-entry-contrast-v1" src="./app/modules/form-entry-contrast.v1.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
-<script id="sags-theme-contrast-v2" src="./app/modules/theme-contrast.v2.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
-<script id="sags-mobile-form-dock-v2" src="./app/modules/mobile-form-dock.v2.js?v=V2.5.10-20261016-LOGIN-CASE-01"></script>
+<script src="./app/modules/fsags54-94.v622.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
+<script src="./app/modules/form-registry-runtime.v647.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
+<script src="./app/modules/form-registry-runtime.v6419.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
+
+<script src="./app/modules/airline-form-policy.v1.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
+<script src="./app/modules/workflow-cleanup.v6444.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
+<script id="sags-fsags208-workspace-v1" src="./app/modules/fsags208-workspace.v1.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
+<script id="sags-fsags208-image-reader-v1" src="./app/modules/fsags208-image-reader.v1.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
+<script id="v6494-aviation-shell" src="./app/boot/32-v6494-aviation-shell.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
+
+<link rel="stylesheet" href="./app/styles/aviation-reference.v1.css?v=V2.5.11-20261017-STORAGE-CAPACITY-01">
+<script src="./app/modules/aviation-reference.v1.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
+<script id="v6497-dossier-enhancements" src="./app/boot/33-v6497-dossier-enhancements.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
+<script id="sags-admin-all-form-viewer-v1" src="./app/modules/admin-all-form-viewer.v1.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
+<script id="sags-admin-account-actions-v2" src="./app/modules/admin-account-actions.v2.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
+<script id="sags-unified-entry-contrast-v1" src="./app/modules/form-entry-contrast.v1.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
+<script id="sags-theme-contrast-v2" src="./app/modules/theme-contrast.v2.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
+<script id="sags-mobile-form-dock-v2" src="./app/modules/mobile-form-dock.v2.js?v=V2.5.11-20261017-STORAGE-CAPACITY-01"></script>
 </body>
 </html>

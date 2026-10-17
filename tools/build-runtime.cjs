@@ -7,3 +7,14 @@ for(const phase of ['shared','archive','tools','flight','control','postcontrol',
 const runtime=read('app/core/runtime.v503hf2.bundle.js').split(/\/\* SAGS_RUNTIME_CHUNK:\d+ \*\/\n/).slice(1);if(runtime.length!==5)throw Error('Expected five canonical runtime chunks');runtime.forEach((s,i)=>emit('app/generated/runtime-'+(i+1)+'.js',s));
 const groups=JSON.parse(read('app/generated/boot-groups.json'));groups.forEach((files,i)=>emit('app/generated/boot-group-'+(i+1)+'.js',files.map(p=>'/* '+p+' */\n'+read(p).trimEnd()+'\n').join('\n;\n')));
 console.log('Canonical runtime built: 7 phases, '+runtime.length+' chunks, '+groups.length+' boot groups');
+
+// Inline the storage decoder and codec together so old executable assets cannot
+// run before the reader is available, including on an offline launch.
+const storageBoot=read('app/vendor/lz-string-1.5.0.js')+'\n;\n'+read('app/modules/storage-capacity.v1.js');
+const storageTag='<script id="sags-storage-capacity-bootstrap">\n'+storageBoot.replace(/<\/script/gi,'<\\/script')+'\n</script>';
+for(const file of ['index.html','storage-recovery.html']){
+ const index=read(file);
+ const next=index.replace(/<script id="sags-storage-capacity-bootstrap">[\s\S]*?<\/script>/,()=>storageTag);
+ if(next===index&&!index.includes(storageTag))throw Error('Missing storage bootstrap slot: '+file);
+ emit(file,next);
+}
