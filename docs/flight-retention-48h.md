@@ -1,3 +1,5 @@
+> Cập nhật V2.5.12 (18/10/2026): thời hạn hiện hành là **24 giờ kể từ Door Close**, thay cho 48 giờ trong tài liệu gốc bên dưới. Tên trường `retention48h` và tên workflow được giữ để tương thích dữ liệu cũ. Firebase chỉ hoạt động sau khi kết nối xác thực và kiểm tra bước `--apply` thực sự chạy.
+
 # 48-hour retention for completed flights
 
 For the current Firebase Spark requirement, use [the GitHub Actions path](flight-retention-spark.md). The Functions deployment below is an optional Blaze-only alternative, not the active setup.

@@ -19,12 +19,10 @@ exports.observeFlightRetention=onDocumentWritten({...options,document:'sags_hand
   if(parent){const rows=await fs.collection(R.LEDGER).where('documentIds','array-contains',String(parent)).get();rows.docs.forEach(d=>receipts.set(d.id,d.data()));}
   if([...receipts.values()].some(x=>['deleting','purged'].includes(x.status)))await fs.runTransaction(async tx=>{const latest=await tx.get(after.ref);if(!latest.exists)return;const current=latest.data();if([...receipts.values()].some(x=>['deleting','purged'].includes(x.status)&&R.related(current,x,new Set(x.documentIds||[]))))tx.delete(after.ref);});
 });
+// Keep the deployed function name to avoid creating a second scheduler during upgrades.
+// Both deployment options use the same bounded 24h worker and legacy-ledger migration.
 exports.cleanupCompletedFlights48h=onSchedule({...options,schedule:'every 15 minutes',timeZone:'Asia/Ho_Chi_Minh'},async()=>{
-  const fs=getFirestore(),now=Date.now();
-  for(const status of ['waiting','deleting']){
-    const rows=await fs.collection(R.LEDGER).where('status','==',status).where('expiresAtMs','<=',now).orderBy('expiresAtMs').limit(25).get();
-    for(const doc of rows.docs){if(!enabled.value()){console.info('48h retention dry-run',{archiveId:doc.id,expiresAtMs:doc.data().expiresAtMs});continue;}
-      try{await R.purge(fs,getDatabase(),{...doc.data(),archiveId:doc.id},now);}catch(error){console.error('48h cleanup postponed',{archiveId:doc.id,error:String(error?.message||error)});}
-    }
-  }
+  const out=await require('./actions-worker').runWorker(getFirestore(),getDatabase(),{dryRun:!enabled.value()});
+  console.info('24h retention',out);
+  if(out.failed)throw Error('Some completed flights could not be cleaned; retry scheduled');
 });

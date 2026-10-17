@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V2.5.11",
-  "build": "V2.5.11-20261017-STORAGE-CAPACITY-01",
+  "version": "V2.5.12",
+  "build": "V2.5.12-20261018-RETENTION-24H-01",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -226,11 +226,11 @@
       "bytes": 1149
     },
     "./app/modules/flight-retention-policy.v1.js": {
-      "sha256": "2d8c4048c8c2c4eac884ca27e9456cf4e87842234dcbd6bc7b47c7ef5d65dd30",
-      "bytes": 2068
+      "sha256": "b54d87ce41d1aa9302d75cf8bfbb7c191f9170e1903f73b60a07e44d91375825",
+      "bytes": 2289
     },
     "./app/modules/flight-retention.v1.js": {
-      "sha256": "89e6c291524744df38872bdafd0f2241447bb66937b5e8b06a3e67624519ad5b",
+      "sha256": "8840a95b54ee36d0555249cc3b16b200f9a4f3024c184bcd863dcce2cbeb766d",
       "bytes": 9917
     },
     "./app/modules/form-entry-contrast.v1.js": {
@@ -750,8 +750,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "848250152c8c034805d95d6b8fdc6a08ad856e10d0b8b5033e667907ba0f8d8a",
-      "bytes": 104438
+      "sha256": "1d35d216e3f684de9808fc84e94fa804e43c73ad0b68d437d83cc9decd8e6f10",
+      "bytes": 104207
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -802,16 +802,16 @@
       "bytes": 6937
     },
     "./service-worker.js": {
-      "sha256": "ee43f2064ab1ff915d9c0e578a6000e412354069989fdccfe7ded9594fd28347",
-      "bytes": 22355
+      "sha256": "a163f6964480fbe584cea9e5d0a8c877a4abb2bfb30748898875ed0fab300f14",
+      "bytes": 22346
     },
     "./storage-recovery.html": {
       "sha256": "fb864ac28bf98fda1522a266c657260c6b3c93b9ee850f343bed8d969297af44",
       "bytes": 25937
     },
     "./version.json": {
-      "sha256": "f0116a382b51fd76072a0870b25c16ddaac120eaf95ac409cbbfd26761c72da5",
-      "bytes": 770
+      "sha256": "99d7019ee59f43d25a84d670a5224b3f610abf6e0cac7e2ba96f41c3173ab4e6",
+      "bytes": 741
     }
   },
   "mutableAssets": [

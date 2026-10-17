@@ -1,3 +1,5 @@
+> Cập nhật V2.5.12 (18/10/2026): thời hạn hiện hành là **24 giờ kể từ Door Close**, thay cho 48 giờ trong tài liệu gốc bên dưới. Tên trường `retention48h` và tên workflow được giữ để tương thích dữ liệu cũ. Firebase chỉ hoạt động sau khi kết nối xác thực và kiểm tra bước `--apply` thực sự chạy.
+
 # Firebase Spark: scheduled 48h retention through GitHub Actions
 
 No Firebase Functions deployment, Cloud Scheduler, billing-account link or plan upgrade is required for the service-account mode. The public repository uses standard GitHub-hosted runners. Firebase API reads/writes/deletions/downloads still consume the project's Spark quotas. GitHub cron is best-effort and can be delayed or disabled after 60 days without repository activity; this is not an exact 48h deletion guarantee.
