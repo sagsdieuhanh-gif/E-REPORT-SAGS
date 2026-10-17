@@ -50,7 +50,16 @@ async function runWorker(fs,db,{now=Date.now(),dryRun=true}={}){
     let rows=await query.limit(25).get();
     if(!rows.docs.length&&cursor)rows=await fs.collection(R.LEDGER).where('status','==',status).orderBy('__name__').limit(25).get();
     const queue={...state.queues||{},[status]:rows.docs.length===25?rows.docs.at(-1).id:''};state.queues=queue;
-    for(const row of rows.docs){const job=row.data();if(!P.due(job,now))continue;eligible++;
+    for(const row of rows.docs){let job=row.data();
+      if(!dryRun&&status==='waiting'){
+        const parent=await fs.collection(R.COLLECTION).doc(row.id).get();
+        if(parent.exists){
+          const refreshed=await R.markArchive(fs,{...parent.data(),id:row.id},now);
+          if(!refreshed)continue;
+          job=refreshed;
+        }
+      }
+      if(!P.due(job,now))continue;eligible++;
       if(dryRun)continue;
       try{const out=await R.purge(fs,db,{...job,archiveId:row.id},now);if(!out.skipped)purged++;}catch(_){failed++;}
     }

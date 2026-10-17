@@ -46,7 +46,7 @@ async function markArchive(fs,data,now){
     // Triggers may arrive out of order or more than once: use the current durable archive.
     const next=lifecycle({...archive.data(),id:data.id},old,now);
     if(!next){if(old)tx.delete(ref);return null;}
-    if(old&&old.status==='waiting'&&old.doorSignature===next.doorSignature&&old.completedAtMs===next.completedAtMs&&JSON.stringify(old.matchKeys)===JSON.stringify(next.matchKeys)&&JSON.stringify(old.links||{})===JSON.stringify(next.links||{}))return old;
+    if(old&&old.status==='waiting'&&old.doorSignature===next.doorSignature&&old.completedAtMs===next.completedAtMs&&old.expiresAtMs===next.expiresAtMs&&JSON.stringify(old.matchKeys)===JSON.stringify(next.matchKeys)&&JSON.stringify(old.links||{})===JSON.stringify(next.links||{}))return old;
     tx.set(ref,next);return next;
   });
 }

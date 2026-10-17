@@ -1,4 +1,4 @@
-name: Flight retention 48h (Firebase Spark)
+name: Flight retention 24h (Firebase Spark)
 on:
   schedule:
     - cron: '7,22,37,52 * * * *'
@@ -12,7 +12,7 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/flight-retention-48h.yml'
-      - 'firebase/functions/actions-worker.js'
+      - 'firebase/functions/**'
 permissions:
   contents: read
   id-token: write
@@ -36,9 +36,10 @@ jobs:
         run: |
           if [ -z "$PROVIDER" ] && [ "$HAS_KEY" != 'true' ]; then
             echo 'ready=false' >> "$GITHUB_OUTPUT"
-            echo '::warning::NOT ACTIVE: Firebase credentials have not been connected.'
+            echo '::error::NOT ACTIVE: Firebase credentials have not been connected.'
             echo '## NOT ACTIVE' >> "$GITHUB_STEP_SUMMARY"
             echo 'Connect a dedicated Firebase service account; no data was read or deleted.' >> "$GITHUB_STEP_SUMMARY"
+            exit 1
           else
             echo 'ready=true' >> "$GITHUB_OUTPUT"
           fi
@@ -66,7 +67,7 @@ jobs:
       - name: Install worker
         if: steps.connection.outputs.ready == 'true'
         run: npm ci --ignore-scripts --prefix firebase/functions
-      - name: Run guarded 48h cleanup
+      - name: Run guarded 24h cleanup
         if: steps.connection.outputs.ready == 'true'
         env:
           DRY_RUN: ${{ github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.dry_run) }}

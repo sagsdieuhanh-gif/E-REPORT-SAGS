@@ -105,7 +105,7 @@
         const updated={...env,retention48h:next};
         sagsV622VerifiedWrite(flightSessionStorageKey(meta.id),updated);
       }
-      // Retry until the server archive acknowledges this lifecycle; old snapshots get a 48h grace period.
+      // Retry until the server archive acknowledges this lifecycle; old snapshots get a 24h grace period.
       const ackKey=sagsOwnedKey('sagsRetentionAckV1:'+meta.id),signature=JSON.stringify(next);
       if(localStorage.getItem(ackKey)!==signature&&await root.sagsRetentionSnapshot(meta,'RETENTION_LIFECYCLE'))localStorage.setItem(ackKey,signature);
     }
@@ -128,7 +128,7 @@
       }
       if(deleted)root.renderFlightSessionList?.();
       return {deleted};
-    }catch(error){console.info('48h cleanup postponed',error?.message||error);return {deleted,error:String(error?.message||error)};}
+    }catch(error){console.info('24h cleanup postponed',error?.message||error);return {deleted,error:String(error?.message||error)};}
     finally{running=false;}
   }
   root.SAGSFlightRetention={stamp,run,purgeLocal,hasPendingIdb,publishLifecycle};

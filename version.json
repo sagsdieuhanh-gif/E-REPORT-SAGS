@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.11",
-  "displayVersion": "V2.5.11",
-  "label": "V2.5.11 - STORAGE CAPACITY RECOVERY",
-  "build": "V2.5.11-20261017-STORAGE-CAPACITY-01",
-  "releasedAt": "2026-10-17",
-  "type": "storage-capacity-recovery",
-  "base": "E-REPORT-SAGS main@cead606",
+  "version": "V2.5.12",
+  "displayVersion": "V2.5.12",
+  "label": "V2.5.12 - COMPLETED FLIGHT RETENTION 24H",
+  "build": "V2.5.12-20261018-RETENTION-24H-01",
+  "releasedAt": "2026-10-18",
+  "type": "retention-24h",
+  "base": "E-REPORT-SAGS main@abf49fa",
   "updatePolicy": "required",
-  "notes": "Thu gọn không mất dữ liệu các bản lưu nghiệp vụ lớn trên máy; kiểm tra nội dung trước và sau ghi. Chỉ chuyển đổi khi không còn cửa sổ E-REPORT khác. Thêm trang khôi phục dung lượng cho máy đang bị chặn My Flight, thử lưu lại nháp lỗi và tránh báo ĐÃ LƯU khi nháp còn lỗi.",
-  "message": "V2.5.11: khôi phục dung lượng lưu hồ sơ trên máy, không xóa dữ liệu chuyến."
+  "notes": "Đổi thời hạn lưu chuyến hoàn tất từ 48 giờ xuống 24 giờ kể từ Door Close. Giữ nguyên bảo vệ chuyến đang mở và bản nháp chưa đồng bộ. Tác vụ Firebase báo lỗi rõ ràng khi chưa được kết nối xác thực; không coi lịch chạy đã tạo là đã xóa thành công.",
+  "message": "V2.5.12: chính sách lưu chuyến hoàn tất 24 giờ; bảo vệ dữ liệu đang nhập."
 }
