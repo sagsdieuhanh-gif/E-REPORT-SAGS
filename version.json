@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.12",
-  "displayVersion": "V2.5.12",
-  "label": "V2.5.12 - COMPLETED FLIGHT RETENTION 24H",
-  "build": "V2.5.12-20261018-RETENTION-24H-01",
+  "version": "V2.5.13",
+  "displayVersion": "V2.5.13",
+  "label": "V2.5.13 - MY FLIGHT OPEN FEEDBACK",
+  "build": "V2.5.13-20261018-ROSTER-OPEN-01",
   "releasedAt": "2026-10-18",
-  "type": "retention-24h",
-  "base": "E-REPORT-SAGS main@abf49fa",
+  "type": "roster-open-guard",
+  "base": "E-REPORT-SAGS main@0ea3326",
   "updatePolicy": "required",
-  "notes": "Đổi thời hạn lưu chuyến hoàn tất từ 48 giờ xuống 24 giờ kể từ Door Close. Giữ nguyên bảo vệ chuyến đang mở và bản nháp chưa đồng bộ. Tác vụ Firebase báo lỗi rõ ràng khi chưa được kết nối xác thực; không coi lịch chạy đã tạo là đã xóa thành công.",
-  "message": "V2.5.12: chính sách lưu chuyến hoàn tất 24 giờ; bảo vệ dữ liệu đang nhập."
+  "notes": "Hiển thị tiến trình mở MY FLIGHT; chặn bấm lặp khi yêu cầu chưa xong. Giới hạn chờ đọc Firebase 12 giây và không dùng kết quả đọc lỗi để nhận việc hoặc ghi đè dữ liệu chuyến. Giữ chờ xác nhận đối với lệnh ghi đã gửi.",
+  "message": "V2.5.13: xử lý mở MY FLIGHT không phản hồi khi chờ Firebase."
 }
