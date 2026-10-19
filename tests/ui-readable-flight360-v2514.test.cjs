@@ -1,0 +1,11 @@
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const root=path.resolve(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p),'utf8');
+const html=read('index.html'),css=read('app/styles/boot-36-v6494-aviation-final.css'),sw=read('service-worker.js'),m=JSON.parse(read('asset-manifest.json')),v=JSON.parse(read('version.json'));
+assert.equal(v.version,'V2.5.14');assert.equal(v.build,'V2.5.14-20261019-READABLE-TYPE-01');
+assert(html.includes('app/styles/boot-36-v6494-aviation-final.css?v=V2.5.14-20261019-READABLE-TYPE-01'),'aviation CSS not in HTML');
+assert(!html.includes('ui-readable-flight360.v1.css'),'extra stylesheet request not allowed');
+assert(sw.includes('./app/styles/boot-36-v6494-aviation-final.css'),'worker must precache aviation CSS');
+assert(m.assets['./app/styles/boot-36-v6494-aviation-final.css'],'aviation stylesheet must be protected by release hash');
+assert.match(css,/Inter/);assert.match(css,/\.v6494Nav button span small/);assert.match(css,/#fwcModal\.show/);
+assert.doesNotMatch(css,/\.sheet\b|#entryPaperSheet|@media\s+print/i,'paper forms must not be restyled');
+console.log('V2.5.14 Inter readable UI smoke checks passed');
