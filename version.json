@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.15",
-  "displayVersion": "V2.5.15",
-  "label": "V2.5.15 - READABLE TYPOGRAPHY, ORIGINAL LAYOUT",
-  "build": "V2.5.15-20261019-LEGIBLE-TYPE-01",
+  "version": "V2.5.16",
+  "displayVersion": "V2.5.16",
+  "label": "V2.5.16 - SEARCH BAR SINGLE SURFACE",
+  "build": "V2.5.16-20261019-SEARCH-INPUT-01",
   "releasedAt": "2026-10-19",
-  "type": "text-legibility-only",
-  "base": "E-REPORT-SAGS main@a9427df",
+  "type": "search-field-style-fix",
+  "base": "E-REPORT-SAGS main@f2c8ea3",
   "updatePolicy": "required",
-  "notes": "Chữ phụ rõ hơn: tăng nhẹ cỡ chữ nhỏ, độ tương phản và font-weight ở aviation dashboard, MY FLIGHT. Giữ nguyên mọi thuộc tính bố cục/menu/ô nhập/mẫu giấy/PDF.",
-  "message": "V2.5.15: làm rõ chữ trên giao diện, giữ nguyên bố cục và nghiệp vụ."
+  "notes": "Sửa ô tìm kiếm trên thanh trên cùng: bỏ giao diện native/viền nền riêng của input, giữ một lớp nền và viền ngoài. Không thay đổi thao tác tìm kiếm, bố cục khác hoặc dữ liệu.",
+  "message": "V2.5.16: sửa ô tìm chuyến bay hiển thị liền mạch, không còn vùng input đậm màu chồng lên thanh ngoài."
 }

@@ -60,6 +60,40 @@ html.new-ui-v1.new-ui-v1.new-ui-v1 body #v6494AviationHome .v6494Nav button.acti
 html.new-ui-v1.new-ui-v1.new-ui-v1 body #v6494AviationHome .v6494Bottom button{font-size:10px!important;background:none!important;color:#94a9b8!important}
 html.new-ui-v1.new-ui-v1.new-ui-v1 body #v6494AviationHome .v6494Bottom button.active{color:#24d4e5!important;background:none!important}
 html.new-ui-v1.new-ui-v1.new-ui-v1 body #v6494AviationHome .v6494Search input{background:transparent!important;border:0!important;box-shadow:none!important;color:#f4f7fa!important;-webkit-text-fill-color:#f4f7fa!important;font-size:13px!important;height:40px!important}
+/* V2.5.16: single search-bar surface, native search-field chrome removed.
+   Only the aviation-home search input is affected. */
+html.new-ui-v1.new-ui-v1.new-ui-v1 body #v6494AviationHome label.v6494Search{
+ overflow:hidden;
+}
+html.new-ui-v1.new-ui-v1.new-ui-v1 body #v6494AviationHome label.v6494Search input#v6494Search{
+ -webkit-appearance:none!important;
+ appearance:none!important;
+ display:block!important;
+ flex:1 1 0%!important;
+ width:0!important;
+ min-width:0!important;
+ box-sizing:border-box!important;
+ height:100%!important;
+ min-height:0!important;
+ max-height:100%!important;
+ margin:0!important;
+ padding:0!important;
+ border:0!important;
+ border-radius:0!important;
+ outline:0!important;
+ box-shadow:none!important;
+ background:transparent!important;
+ background-color:transparent!important;
+ background-image:none!important;
+ color:#f4f7fa!important;
+ -webkit-text-fill-color:#f4f7fa!important;
+ caret-color:#24d4e5!important;
+}
+html.new-ui-v1.new-ui-v1.new-ui-v1 body #v6494AviationHome label.v6494Search input#v6494Search::-webkit-search-decoration{
+ -webkit-appearance:none;
+ appearance:none;
+}
+html.new-ui-v1.new-ui-v1.new-ui-v1 body #v6494AviationHome label.v6494Search svg{flex-shrink:0}
 html.new-ui-v1.new-ui-v1.new-ui-v1 body #fwcModal .sagsReferenceMenu{text-indent:0!important;color:#f4f7fa!important;-webkit-text-fill-color:#f4f7fa!important;overflow:visible!important}
 html.new-ui-v1.new-ui-v1.new-ui-v1 body #fwcModal .sagsWorkDateControl{min-width:0!important;max-width:100%!important;width:100%!important}
 html.new-ui-v1.new-ui-v1.new-ui-v1 body #fwcModal #v477Refresh{width:44px!important;min-width:44px!important;max-width:44px!important;padding:0!important;margin:0!important}
