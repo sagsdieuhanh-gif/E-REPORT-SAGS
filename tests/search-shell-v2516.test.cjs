@@ -1,0 +1,13 @@
+const fs=require('node:fs'),assert=require('node:assert/strict');
+const root=require('node:path').resolve(__dirname,'..');
+const read=p=>fs.readFileSync(root+'/'+p,'utf8');
+const css=read('app/styles/aviation-reference.v1.css'),html=read('index.html'),worker=read('service-worker.js'),view=read('app/boot/32-v6494-aviation-shell.js'),v=JSON.parse(read('version.json')),m=JSON.parse(read('asset-manifest.json'));
+assert.equal(v.version,'V2.5.16');assert.equal(m.build,v.build);
+assert(view.includes('id="v6494Search" type="search"'),'flight search DOM ID must remain');
+assert(view.includes("search?.addEventListener('keydown'"),'search Enter handler intact');
+assert.match(css,/label\.v6494Search input#v6494Search\s*\{/);
+for(const token of ['-webkit-appearance:none!important','background:transparent!important','background-color:transparent!important','border:0!important','border-radius:0!important','box-shadow:none!important','padding:0!important','height:100%!important'])assert(css.includes(token),'missing search reset: '+token);
+assert(!html.includes('ui-readable-flight360.v1.css'),'do not restore extra CSS file');
+assert.equal([...html.matchAll(/<link[^>]+rel="stylesheet"/g)].length,6,'CSS request count must not grow');
+assert(worker.includes(v.build));assert(m.assets['./app/styles/aviation-reference.v1.css'],'updated stylesheet must be integrity pinned');
+console.log('V2.5.16 aviation-home search CSS regression passed');
