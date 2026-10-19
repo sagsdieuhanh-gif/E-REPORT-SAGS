@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.14",
-  "displayVersion": "V2.5.14",
-  "label": "V2.5.14 - FLIGHT360 INSPIRED READABLE UI",
-  "build": "V2.5.14-20261019-READABLE-TYPE-01",
-  "releasedAt": "2026-10-19",
-  "type": "visual-typography-only",
-  "base": "E-REPORT-SAGS main@b0bd527",
+  "version": "V2.5.13",
+  "displayVersion": "V2.5.13",
+  "label": "V2.5.13 - MY FLIGHT OPEN FEEDBACK",
+  "build": "V2.5.13-20261018-ROSTER-OPEN-01",
+  "releasedAt": "2026-10-18",
+  "type": "roster-open-guard",
+  "base": "E-REPORT-SAGS main@0ea3326",
   "updatePolicy": "required",
-  "notes": "Font Inter và cỡ chữ dễ đọc hơn trên trang chủ, menu, MY FLIGHT và đăng nhập; không đổi nghiệp vụ, dữ liệu hoặc biểu mẫu giấy.",
-  "message": "V2.5.14: giao diện chữ rõ và dễ đọc hơn; biểu mẫu và thao tác giữ nguyên."
+  "notes": "Hiển thị tiến trình mở MY FLIGHT; chặn bấm lặp khi yêu cầu chưa xong. Giới hạn chờ đọc Firebase 12 giây và không dùng kết quả đọc lỗi để nhận việc hoặc ghi đè dữ liệu chuyến. Giữ chờ xác nhận đối với lệnh ghi đã gửi.",
+  "message": "V2.5.13: xử lý mở MY FLIGHT không phản hồi khi chờ Firebase."
 }
