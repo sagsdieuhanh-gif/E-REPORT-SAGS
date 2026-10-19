@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.13",
-  "displayVersion": "V2.5.13",
-  "label": "V2.5.13 - MY FLIGHT OPEN FEEDBACK",
-  "build": "V2.5.13-20261018-ROSTER-OPEN-01",
-  "releasedAt": "2026-10-18",
-  "type": "roster-open-guard",
-  "base": "E-REPORT-SAGS main@0ea3326",
+  "version": "V2.5.15",
+  "displayVersion": "V2.5.15",
+  "label": "V2.5.15 - READABLE TYPOGRAPHY, ORIGINAL LAYOUT",
+  "build": "V2.5.15-20261019-LEGIBLE-TYPE-01",
+  "releasedAt": "2026-10-19",
+  "type": "text-legibility-only",
+  "base": "E-REPORT-SAGS main@a9427df",
   "updatePolicy": "required",
-  "notes": "Hiển thị tiến trình mở MY FLIGHT; chặn bấm lặp khi yêu cầu chưa xong. Giới hạn chờ đọc Firebase 12 giây và không dùng kết quả đọc lỗi để nhận việc hoặc ghi đè dữ liệu chuyến. Giữ chờ xác nhận đối với lệnh ghi đã gửi.",
-  "message": "V2.5.13: xử lý mở MY FLIGHT không phản hồi khi chờ Firebase."
+  "notes": "Chữ phụ rõ hơn: tăng nhẹ cỡ chữ nhỏ, độ tương phản và font-weight ở aviation dashboard, MY FLIGHT. Giữ nguyên mọi thuộc tính bố cục/menu/ô nhập/mẫu giấy/PDF.",
+  "message": "V2.5.15: làm rõ chữ trên giao diện, giữ nguyên bố cục và nghiệp vụ."
 }
