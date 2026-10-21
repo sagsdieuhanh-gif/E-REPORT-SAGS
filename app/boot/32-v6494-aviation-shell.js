@@ -11,6 +11,7 @@ const esc=v=>S(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':
 const ICONS={
  home:'<svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5V21h-6v-6H9v6H3z"/></svg>',
  myflight:'<svg viewBox="0 0 24 24"><path d="M3 11l18-8-8 18-2-7-7-3 7-2z"/></svg>',
+ history:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2M3 12H1m2-5H1"/></svg>',
  archive:'<svg viewBox="0 0 24 24"><path d="M4 6h16v14H4zM7 3h10v3M8 10h8M8 14h5"/></svg>',
  guide:'<svg viewBox="0 0 24 24"><path d="M4 5.5A3.5 3.5 0 0 1 7.5 2H20v17H7.5A3.5 3.5 0 0 0 4 22V5.5zm0 0V22"/></svg>',
  closeout:'<svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg>',
@@ -28,6 +29,7 @@ const DEF=[
  {group:'KHAI THÁC',items:[
   {key:'home',label:'Trang chủ',meta:'Tổng quan hoạt động'},
   {key:'myflight',label:'My Flight',meta:'Công việc của tôi'},
+  {key:'history',label:'Lịch sử thay đổi',meta:'Ai sửa · thời gian · trước/sau'},
   {key:'archive',label:'Hồ sơ chuyến bay',meta:'Hồ sơ theo chuyến'},
   {key:'guide',label:'Sổ tay hãng',meta:'Tài liệu khai thác'}
  ]},
@@ -59,11 +61,13 @@ function homeState(){return auth()&&document.body.classList.contains('v157-home'
 function legacyButton(key){return document.querySelector('.v157MenuItem[data-v157-key="'+key+'"]')}
 function available(key){
  if(key==='home')return true;
+ if(key==='history')return typeof root.SAGSFormEditHistoryV1?.open==='function';
  if(key==='settings')return typeof root.sagsOpenSettings==='function'||!!legacyButton('settings');
  const b=legacyButton(key);return !!b&&!b.disabled&&!b.hidden;
 }
 function trigger(key){
  if(key==='home'){try{root.sagsV479GoHome?.()}catch(_){}sync();return}
+ if(key==='history'){try{root.SAGSFormEditHistoryV1?.open?.()}catch(e){console.warn('History UI unavailable',e)}return}
  if(key==='notice'&&typeof root.sagsFlightNoticeOpen==='function'){root.sagsFlightNoticeOpen();return}
  if(key==='settings'){
    const b=legacyButton('settings');
