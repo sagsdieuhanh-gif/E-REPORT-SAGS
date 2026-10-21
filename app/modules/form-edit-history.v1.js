@@ -149,14 +149,16 @@ async function entriesFor(m){
  const scope=scopeFor(m),local=(await localList()).filter(x=>x.scope===scope).slice(0,MAX_ROWS);
  const remote=await remoteList(m?.rosterAssignmentId);
  const merged=new Map();
- for(const e of remote){if(S(e.sessionId)===S(m.id)&&(U(e.actor?.username)===user().username||U(e.actor?.role)==='SYSTEM'||['AD','ADMIN'].includes(user().role)))merged.set(e.id,{...e,synced:true})}
+ // Only roster-assignment records the signed-in account is authorized to read are returned by Firebase.
+ // Within that assigned flight, show the edits of all participating roles, not only the current author.
+ for(const e of remote){if(S(e.sessionId)===S(m.id)&&S(e.assignmentId)===S(m.rosterAssignmentId))merged.set(e.id,{...e,synced:true})}
  for(const e of local){const old=merged.get(e.id);merged.set(e.id,old||e)}
  return [...merged.values()].sort((a,b)=>b.atMs-a.atMs).slice(0,MAX_ROWS);
 }
 function paintStyle(){
  if($('sagsHistoryStyle'))return;
  const t=document.createElement('style');t.id='sagsHistoryStyle';
- t.textContent='#sagsHistoryOverlay{position:fixed;inset:0;z-index:29999;background:#091827cc;display:none;align-items:center;justify-content:center;padding:12px;box-sizing:border-box;font-family:system-ui,Arial,sans-serif}#sagsHistoryOverlay.open{display:flex}#sagsHistoryPanel{width:min(100%,780px);max-height:92dvh;overflow:auto;background:#fff;color:#17324d;border-radius:16px;padding:17px;box-shadow:0 12px 42px #0006}#sagsHistoryPanel h3{margin:0;color:#17324d;font-size:18px}#sagsHistoryPanel label,#sagsHistoryPanel small{color:#4b6073;font-size:12px}#sagsHistoryPanel select{width:100%;padding:10px;background:#fff;border:1px solid #9bb1c0;border-radius:8px;color:#17324d;margin:6px 0}#sagsHistoryPanel .hHead{display:flex;justify-content:space-between;gap:10px;align-items:center}#sagsHistoryPanel button{border:1px solid #93b2ca;background:#e9f2fa;color:#17324d;border-radius:9px;font-weight:800;min-height:38px;padding:8px 12px;cursor:pointer}#sagsHistoryPanel .hActions{display:flex;gap:8px;align-items:center;margin:7px 0}#sagsHistoryRows{max-height:58dvh;overflow:auto}#sagsHistoryRows .hEvent{background:#f7fafc;border:1px solid #d4e2eb;border-radius:10px;margin-top:9px;padding:11px}#sagsHistoryRows .hMeta{font-size:12px;color:#40576c;margin-bottom:6px}#sagsHistoryRows .hDiff{display:grid;grid-template-columns:minmax(92px,1fr) minmax(0,1fr) minmax(0,1fr);gap:5px;border-top:1px solid #e1e8ef;padding-top:7px;margin-top:7px;font-size:12px;overflow-wrap:anywhere}#sagsHistoryRows .hOld{color:#903c1e}#sagsHistoryRows .hNew{color:#155c3a}#sagsHistoryPanel .hNote{margin-top:10px;font-size:12px;color:#485e70;line-height:1.5}#sagsHistoryShortcut,#sagsHistoryDossierShortcut,#sagsHistoryFormShortcut{border:1px solid #77a7c6;background:#e5f2ff;color:#153c5e;border-radius:9px;padding:9px;font:800 12px Arial;cursor:pointer;white-space:nowrap}#sagsHistoryShortcut:focus-visible,#sagsHistoryDossierShortcut:focus-visible,#sagsHistoryFormShortcut:focus-visible{outline:2px solid #126b9c}@media(max-width:640px){#sagsHistoryPanel{padding:12px}#sagsHistoryRows .hDiff{grid-template-columns:1fr}#sagsHistoryRows .hDiff>*{display:block}}';
+ t.textContent='#sagsHistoryOverlay{position:fixed;inset:0;z-index:29999;background:#091827cc;display:none;align-items:center;justify-content:center;padding:12px;box-sizing:border-box;font-family:system-ui,Arial,sans-serif}#sagsHistoryOverlay.open{display:flex}#sagsHistoryPanel{width:min(100%,780px);max-height:92dvh;overflow:auto;background:#fff;color:#17324d;border-radius:16px;padding:17px;box-shadow:0 12px 42px #0006}#sagsHistoryPanel h3{margin:0;color:#17324d;font-size:18px}#sagsHistoryPanel label,#sagsHistoryPanel small{color:#4b6073;font-size:12px}#sagsHistoryPanel select{width:100%;padding:10px;background:#fff;border:1px solid #9bb1c0;border-radius:8px;color:#17324d;margin:6px 0}#sagsHistoryPanel .hHead{display:flex;justify-content:space-between;gap:10px;align-items:center}#sagsHistoryPanel button{border:1px solid #93b2ca;background:#e9f2fa;color:#17324d;border-radius:9px;font-weight:800;min-height:38px;padding:8px 12px;cursor:pointer}#sagsHistoryPanel .hActions{display:flex;gap:8px;align-items:center;margin:7px 0}#sagsHistoryRows{max-height:58dvh;overflow:auto}#sagsHistoryRows .hEvent{background:#f7fafc;border:1px solid #d4e2eb;border-radius:10px;margin-top:9px;padding:11px}#sagsHistoryRows .hMeta{font-size:12px;color:#40576c;margin-bottom:6px}#sagsHistoryRows .hDiff{display:grid;grid-template-columns:minmax(92px,1fr) minmax(0,1fr) minmax(0,1fr);gap:5px;border-top:1px solid #e1e8ef;padding-top:7px;margin-top:7px;font-size:12px;overflow-wrap:anywhere}#sagsHistoryRows .hOld{color:#903c1e}#sagsHistoryRows .hNew{color:#155c3a}#sagsHistoryPanel .hNote{margin-top:10px;font-size:12px;color:#485e70;line-height:1.5}#v157Drawer .v157DrawerHead #sagsHistoryShortcut{display:flex!important;align-items:center;justify-content:center;gap:8px;width:calc(100% - 28px)!important;margin:12px 14px 15px!important;min-height:42px!important;box-sizing:border-box!important;flex-shrink:0;background:#e6f4ff!important;color:#153d59!important;-webkit-text-fill-color:#153d59!important;border:1px solid #9ac6e5!important;border-radius:11px!important;font:800 13px system-ui,Arial,sans-serif!important;box-shadow:0 2px 6px #06182618!important}#fwcModal .fwcHead{flex-wrap:wrap}#fwcModal .fwcHead #sagsHistoryDossierShortcut{min-height:38px;background:#e6f4ff!important;color:#153d59!important;border:1px solid #83b5d8!important}#sagsHistoryShortcut,#sagsHistoryDossierShortcut,#sagsHistoryFormShortcut{border:1px solid #77a7c6;background:#e5f2ff;color:#153c5e;border-radius:9px;padding:9px;font:800 12px Arial;cursor:pointer;white-space:nowrap}#sagsHistoryShortcut:focus-visible,#sagsHistoryDossierShortcut:focus-visible,#sagsHistoryFormShortcut:focus-visible{outline:2px solid #126b9c}@media(max-width:640px){#sagsHistoryPanel{padding:12px}#sagsHistoryRows .hDiff{grid-template-columns:1fr}#sagsHistoryRows .hDiff>*{display:block}}';
  document.head.appendChild(t);
 }
 function panel(){
@@ -199,15 +201,42 @@ function open(sessionId){
  if(sid&&list.some(m=>S(m.id)===sid))select.value=sid;
  el.classList.add('open');uiOpen=true;void refresh();
 }
+
+function actionButton(id,title){
+ let b=$(id);
+ if(!b){b=document.createElement('button');b.type='button';b.id=id;b.textContent=title;}
+ if(!b.dataset.sagsHistoryBound){
+  b.dataset.sagsHistoryBound='1';
+  b.addEventListener('click',e=>{
+   e.preventDefault();e.stopPropagation();
+   document.body?.classList?.remove('v157-drawer-open');
+   open();
+  });
+ }
+ return b;
+}
 function installButtons(){
- paintStyle();
- const targets=[['v157Drawer','sagsHistoryShortcut','🕘 LỊCH SỬ CHỈNH SỬA'],['fwcModal','sagsHistoryDossierShortcut','🕘 LỊCH SỬ'],['v324FormActions','sagsHistoryFormShortcut','🕘 LỊCH SỬ']];
- for(const [parent,id,title] of targets){
-  const host=$(parent);if(!host||$(id))continue;
-  const btn=document.createElement('button');btn.type='button';btn.id=id;btn.textContent=title;
-  btn.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();open()});
-  if(parent==='fwcModal'){const head=host.querySelector('.fwcHead');(head||host).appendChild(btn)}
-  else host.appendChild(btn);
+ const account=user();if(!account.username)return;
+ // Stable drawer HEAD is never replaced by renderMenu(). The old V2.5.22
+ // shortcut was appended after the footer and clipped by the drawer.
+ const head=document.querySelector('#v157Drawer .v157DrawerHead');
+ if(head){
+  const b=actionButton('sagsHistoryShortcut','🕘 LỊCH SỬ THAY ĐỔI');
+  b.title='Xem lịch sử thay đổi của các biểu mẫu bạn được quyền xem';
+  if(b.parentElement!==head)head.appendChild(b);
+ }
+ // Independent entry inside My Flight / flight workspace.
+ const workspace=document.querySelector('#fwcModal .fwcHead');
+ if(workspace){
+  const b=actionButton('sagsHistoryDossierShortcut','🕘 LỊCH SỬ');
+  const close=workspace.querySelector('button[onclick*="flightWorkspaceClose"],#v477Close');
+  if(b.parentElement!==workspace)workspace.insertBefore(b,close||null);
+ }
+ // Optional toolbar entry: never add an overlay or second mobile bottom dock.
+ const formActions=$('v324FormActions');
+ if(formActions){
+  const b=actionButton('sagsHistoryFormShortcut','🕘 LỊCH SỬ');
+  if(b.parentElement!==formActions)formActions.appendChild(b);
  }
 }
 function trustedInput(e){
@@ -222,7 +251,8 @@ root.SAGSFormEditHistoryV1={changesOf,scrub,open,refresh,install,capture,flushBa
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install,50),{once:true});
 else setTimeout(install,50);
 root.addEventListener?.('pageshow',()=>setTimeout(install,100),{passive:true});
-document.addEventListener('click',e=>{if(e.target?.closest?.('[data-v157-key="myflight"],#roleBtnFlights,#roleBtnRosterFlights,#v324FormActions,#fwcModal'))setTimeout(installButtons,50)},true);
+['sags:login','sags:profilechange','sags:rolechange'].forEach(ev=>root.addEventListener?.(ev,()=>setTimeout(installButtons,80)));
+document.addEventListener('click',e=>{if(e.target?.closest?.('[data-v157-key="myflight"],#roleBtnFlights,#roleBtnRosterFlights,#v324FormActions,#fwcModal,#v157Drawer,.v157MenuToggle,#v157MenuBtn,[aria-controls="v157Drawer"]'))setTimeout(installButtons,70)},true);
 root.addEventListener?.('online',()=>{if(uiOpen)void refresh(true)},{passive:true});
 root.addEventListener?.('pagehide',()=>{for(const scope of [...batches.keys()])void flushBatch(scope)},{passive:true});
 })(window);
