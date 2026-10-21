@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V2.5.19",
-  "build": "V2.5.19-20261021-CARRIER-QUICKVIEW-01",
+  "version": "V2.5.20",
+  "build": "V2.5.20-20261021-UNIFIED-CONTRAST-01",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -481,6 +481,10 @@
       "sha256": "e0882469c033cb2de486993e710918eb345eb6df00b6e61663ace0ce6e97f11b",
       "bytes": 376938
     },
+    "./app/styles/unified-contrast.v1.css": {
+      "sha256": "14487dc4266e3ddaab1a856f965b498c9bbbee520c93b2598d681043164b84b5",
+      "bytes": 10013
+    },
     "./app/vendor/lz-string-1.5.0.js": {
       "sha256": "550034b821027008776cb9bcd1700bb5d31e8b3de224cb130fc966a75dab0e5e",
       "bytes": 16032
@@ -758,8 +762,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "b16299e85f7e7c855d0315c7290ecea9f09a7f7747a39f5a86d694602f64a60a",
-      "bytes": 104617
+      "sha256": "3a44da5829111e02a880039bd8b063fcb8b116953b69fa2ef54ca9b10012837a",
+      "bytes": 104676
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -810,16 +814,16 @@
       "bytes": 6937
     },
     "./service-worker.js": {
-      "sha256": "294000873e2262051a19dbfee6d051166d01453b343e1fadcb1b0b89767b846f",
-      "bytes": 22425
+      "sha256": "ce305611b4f939856a9807701469c10aaaaaafee1c9958e0e2e930280d54b5ed",
+      "bytes": 22461
     },
     "./storage-recovery.html": {
       "sha256": "fb864ac28bf98fda1522a266c657260c6b3c93b9ee850f343bed8d969297af44",
       "bytes": 25937
     },
     "./version.json": {
-      "sha256": "175480c772efba43dd1db6212fa7d7bdf9672230658b70fef869882a026b35a3",
-      "bytes": 692
+      "sha256": "3192aa21ba93cd416c7d2667ce9e3da3eaf63cd8bb7b206cf1db88ab05e38178",
+      "bytes": 678
     }
   },
   "mutableAssets": [
