@@ -21,8 +21,18 @@ assert.match(src,/S\(e\.sessionId\)===S\(m\.id\)&&S\(e\.assignmentId\)===S\(m\.r
 assert.match(src,/root\.sagsV470Ref\?\./,'backend authorization remains responsible for remote access');
 assert.match(src,/sags:login/,'late login should re-install shortcuts');
 assert.match(runtime,/v157MenuItem/,'native menu styling applies equally on PC and mobile');
+
+const shell=fs.readFileSync(path.join(root,'app/boot/32-v6494-aviation-shell.js'),'utf8');
+assert.match(shell,/\{key:'history',label:'Lịch sử thay đổi',meta:'Ai sửa · thời gian · trước\/sau'\}/,'actual aviation-shell menu must contain history');
+assert.match(shell,/if\(key==='history'\)return typeof root\.SAGSFormEditHistoryV1\?\.open==='function'/,'available on any authenticated role, without admin restriction');
+assert.match(shell,/if\(key==='history'\)\{try\{root\.SAGSFormEditHistoryV1\?\.open\?\.\(\)/,'click must open the history panel');
+assert.match(shell,/const items=sec\.items\.filter\(x=>available\(x\.key\)\)/,'same availability for desktop and mobile');
+assert.match(shell,/mobileHtml\+='<div class="v6494MobileGroup"/,'history must render in mobile menu as well');
+assert.match(shell,/navHtml\+='<section>/,'history must render in desktop menu as well');
+assert.ok(shell.indexOf("{key:'history'")>shell.indexOf("{key:'myflight'")&&shell.indexOf("{key:'history'")<shell.indexOf("{key:'archive'"),'history immediately follows My Flight in actual sidebar');
+
 const index=fs.readFileSync(path.join(root,'index.html'),'utf8');
 assert.match(index,/app\/modules\/form-edit-history\.v1\.js/,'source must load in every role');
 const version=JSON.parse(fs.readFileSync(path.join(root,'version.json'),'utf8'));
-assert.match(version.version,/^V2\.5\.24$/);
+assert.match(version.version,/^V2\.5\.25$/);
 console.log('PASS visible all-role history entry in stable menu header + workspace and authorized flight filter');
