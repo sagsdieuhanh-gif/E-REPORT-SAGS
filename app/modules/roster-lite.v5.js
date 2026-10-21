@@ -308,8 +308,13 @@ refreshLite.__v477MailboxLite=true;
 function renderCanonicalIfVisible(){if(!visible())return;if(role()==='AD'||isCargoRole()){canonicalizeRoleView(date());return}const renderer=root.__SAGS_DAILY_ROSTER_FINAL_V1199?.renderPersonal;if(typeof renderer==='function')Promise.resolve(renderer(date())).catch(e=>console.warn('Canonical MY FLIGHT render',e?.message||e))}
 function install(){installFlightListObserver();if(root.flightWorkspaceOpenList!==openLite)root.flightWorkspaceOpenList=openLite;if(root.flightWorkspaceRefresh!==refreshLite)root.flightWorkspaceRefresh=refreshLite;const b=document.getElementById('roleBtnRosterFlights');if(b){b.textContent='MY FLIGHT';b.onclick=()=>openLite(dateNow())}}
 function assertCanonical(){if(live.user&&(me()!==live.user||role()==='AD'||isCargoRole()))teardown();install();renderCanonicalIfVisible()}
+let canonicalCheckTimer=0;
+function scheduleCanonicalCheck(delay=80){
+  if(canonicalCheckTimer)clearTimeout(canonicalCheckTimer);
+  canonicalCheckTimer=setTimeout(()=>{canonicalCheckTimer=0;assertCanonical()},delay);
+}
 root.sagsV478OpenMyFlightLite=openLite;root.sagsV478RefreshMyFlightLite=refreshLite;root.sagsV478InstallCanonicalMyFlight=assertCanonical;
-const baseApplyRoleUI=root.applyRoleUI;if(typeof baseApplyRoleUI==='function'&&!baseApplyRoleUI.__v6424MyFlightAuthority){const wrapped=function(){const out=baseApplyRoleUI.apply(this,arguments);[0,120,500,1400].forEach(ms=>setTimeout(assertCanonical,ms));return out};wrapped.__v6424MyFlightAuthority=true;wrapped.__v6424Base=baseApplyRoleUI;root.applyRoleUI=wrapped;try{applyRoleUI=wrapped}catch(_){}}
-install();setTimeout(assertCanonical,350);setTimeout(assertCanonical,1100);setTimeout(assertCanonical,3600);root.addEventListener?.('pageshow',()=>setTimeout(assertCanonical,60),{passive:true});root.addEventListener?.('focus',()=>setTimeout(assertCanonical,60),{passive:true});document.addEventListener?.('visibilitychange',()=>{if(!document.hidden)setTimeout(assertCanonical,80)},{passive:true});
+const baseApplyRoleUI=root.applyRoleUI;if(typeof baseApplyRoleUI==='function'&&!baseApplyRoleUI.__v6424MyFlightAuthority){const wrapped=function(){const out=baseApplyRoleUI.apply(this,arguments);scheduleCanonicalCheck(90);return out};wrapped.__v6424MyFlightAuthority=true;wrapped.__v6424Base=baseApplyRoleUI;root.applyRoleUI=wrapped;try{applyRoleUI=wrapped}catch(_){}}
+install();scheduleCanonicalCheck(150);setTimeout(()=>scheduleCanonicalCheck(80),1200);root.addEventListener?.('pageshow',()=>scheduleCanonicalCheck(70),{passive:true});root.addEventListener?.('focus',()=>scheduleCanonicalCheck(70),{passive:true});document.addEventListener?.('visibilitychange',()=>{if(!document.hidden)scheduleCanonicalCheck(80)},{passive:true});
 root.sagsV477MailboxStats=root.sagsV478MailboxStats;
 })(typeof window!=='undefined'?window:globalThis);
