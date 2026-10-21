@@ -12,7 +12,7 @@ const EXCLUDE=/signature|sigcanvas|sigimage|signpad|attachment|image|photo|pictu
 const INTERNAL=/^(?:v\d+(?:Local|Remote|Last)|roster|createdAt|updatedAt|audit|version|__)/i;
 const LONG='[Nội dung dài hoặc tệp đính kèm: không lưu giá trị]';
 const MAX_VALUE=140, MAX_CHANGES=80, MAX_ROWS=200;
-let dbPromise=null,patching=false,uiOpen=false,activeScope='',pending=new Set(),saving=false,lastError='';
+let dbPromise=null,patching=false,uiOpen=false,lastError='';const batches=new Map();
 function user(){
  const sess=root.__sagsGetSession?.()||{},p=sess.profile||root.currentUserProfile||{};
  let uid='';try{uid=S(root.firebase?.auth?.()?.currentUser?.uid)}catch(_){}
@@ -90,15 +90,33 @@ async function send(item){
   return true;
  }catch(e){lastError=S(e?.message||e);return false}
 }
+
+async function flushBatch(scope){
+ const batch=batches.get(scope);if(!batch)return;
+ clearTimeout(batch.timer);batches.delete(scope);
+ try{await batch.written;await send(batch.event)}catch(e){lastError=S(e?.message||e)}
+}
 function capture(m,prev,next,reason){
  if(!m?.id||!scopeFor(m))return;
  const diff=changesOf(prev?.state,next?.state);
  if(!diff.length)return;
- const actor=user(),at=Date.now(),sid=S(m.id),aid=S(m.rosterAssignmentId||next?.rosterAssignmentId);
- const id='h'+at.toString(36)+'_'+Math.random().toString(36).slice(2,13);
- const event={schema:1,id,scope:scopeFor(m),sessionId:sid,assignmentId:aid,flightLabel:S(m.name||m.flightName||m.flightRaw||sid).slice(0,100),formGroup:S(m.initialGroup||next?.mainForm||next?.activeFormGroup).slice(0,40),atMs:at,reason:S(reason||'Lưu biểu mẫu').slice(0,75),actor:{username:actor.username,name:actor.name.slice(0,90),role:actor.role,uid:actor.uid},changes:diff,synced:false};
- pending.add(id);
- void saveLocal(event).then(ok=>{if(!ok){console.warn('E-Report history: storage unavailable');return;}return send(event)}).catch(e=>console.warn('E-Report history',e?.message||e)).finally(()=>pending.delete(id));
+ const actor=user(),at=Date.now(),sid=S(m.id),aid=S(m.rosterAssignmentId||next?.rosterAssignmentId),scope=scopeFor(m);
+ let batch=batches.get(scope);
+ if(batch&&(at-batch.lastAt>1800||batch.event.sessionId!==sid)){void flushBatch(scope);batch=null}
+ if(batch){
+  const map=new Map(batch.event.changes.map(c=>[c.field,{...c}]));
+  for(const c of diff){const old=map.get(c.field);if(old){old.after=c.after;if(old.before===old.after)map.delete(c.field)}else map.set(c.field,c)}
+  batch.event.changes=[...map.values()].slice(0,MAX_CHANGES);
+  batch.event.atMs=at;batch.lastAt=at;
+ }else{
+  const id='h'+at.toString(36)+'_'+Math.random().toString(36).slice(2,13);
+  const event={schema:1,id,scope,sessionId:sid,assignmentId:aid,flightLabel:S(m.name||m.flightName||m.flightRaw||sid).slice(0,100),formGroup:S(m.initialGroup||next?.mainForm||next?.activeFormGroup).slice(0,40),atMs:at,reason:S(reason||'Lưu biểu mẫu').slice(0,75),actor:{username:actor.username,name:actor.name.slice(0,90),role:actor.role,uid:actor.uid},changes:diff,synced:false};
+  batch={event,lastAt:at,timer:null,written:Promise.resolve()};batches.set(scope,batch);
+ }
+ const curr=batch;
+ curr.written=curr.written.then(()=>saveLocal(curr.event));
+ clearTimeout(curr.timer);
+ curr.timer=setTimeout(()=>{void flushBatch(scope)},1800);
 }
 function wrap(name){
  const fn=root[name];if(typeof fn!=='function'||fn.__sagsHistoryWrapped)return false;
@@ -191,10 +209,11 @@ function installButtons(){
   else host.appendChild(btn);
  }
 }
-root.SAGSFormEditHistoryV1={changesOf,scrub,open,refresh,install,capture,entriesFor};
+root.SAGSFormEditHistoryV1={changesOf,scrub,open,refresh,install,capture,flushBatch,entriesFor};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install,50),{once:true});
 else setTimeout(install,50);
 root.addEventListener?.('pageshow',()=>setTimeout(install,100),{passive:true});
 document.addEventListener('click',e=>{if(e.target?.closest?.('[data-v157-key="myflight"],#roleBtnFlights,#roleBtnRosterFlights,#v324FormActions,#fwcModal'))setTimeout(installButtons,50)},true);
 root.addEventListener?.('online',()=>{if(uiOpen)void refresh(true)},{passive:true});
+root.addEventListener?.('pagehide',()=>{for(const scope of [...batches.keys()])void flushBatch(scope)},{passive:true});
 })(window);
