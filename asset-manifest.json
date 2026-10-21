@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V2.5.22",
-  "build": "V2.5.22-20261021-HISTORY-ACTOR-FIX-01",
+  "version": "V2.5.23",
+  "build": "V2.5.23-20261021-HISTORY-VISIBLE-ALL-ROLES-01",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -234,8 +234,8 @@
       "bytes": 9917
     },
     "./app/modules/form-edit-history.v1.js": {
-      "sha256": "a259c258522833896e87eab4e49c1ecc55a82af6f62739eff2322ab98e232255",
-      "bytes": 17156
+      "sha256": "e6d7307c9f772660ed304bed3f083ceccbc23d2523258c4557b121892383a093",
+      "bytes": 19086
     },
     "./app/modules/form-entry-contrast.v1.js": {
       "sha256": "c86ec492fced4234f3e64521b9d01913ebe8176327f55f3a42f435763777d465",
@@ -762,8 +762,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "86e63f2df64d9df4503219ea36fa86d2efef3465932fb4c15f21bfb5a9c83c5f",
-      "bytes": 104750
+      "sha256": "28d7d709f3e64d0cbe1be767b631be09b4b5ea39473086a437f67b726e820323",
+      "bytes": 105382
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -814,16 +814,16 @@
       "bytes": 6937
     },
     "./service-worker.js": {
-      "sha256": "f0e0927347187effaf7b2f2ea6a2a957357a9658c596a2738b43fb7cd0d91d51",
-      "bytes": 22465
+      "sha256": "032792f9d2d4106f0b219330f8f479036008359122d77f9f2cd2851035a9db11",
+      "bytes": 22489
     },
     "./storage-recovery.html": {
       "sha256": "fb864ac28bf98fda1522a266c657260c6b3c93b9ee850f343bed8d969297af44",
       "bytes": 25937
     },
     "./version.json": {
-      "sha256": "833f8f35177922c6e1a5e65400ebb7b7c49af7dcb0d3d71775fd7f60e7c9b3f8",
-      "bytes": 713
+      "sha256": "c88b859ce607baa539eb91b7b22cc66c7f9ea0623f5bfb15aff7b2c76e84dd90",
+      "bytes": 728
     }
   },
   "mutableAssets": [
