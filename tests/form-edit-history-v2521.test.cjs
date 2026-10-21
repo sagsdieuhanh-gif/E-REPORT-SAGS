@@ -22,7 +22,7 @@ vm.runInNewContext(src,{window:win,document:doc,navigator:nav,localStorage,conso
 const api=win.SAGSFormEditHistoryV1;assert.ok(api);
 const changes=api.changesOf({h24Start:'14:35',fltBefore:'LJ087',signatureImage:'data:image/png;base64,foo',password:'x',photo:'image'},{h24Start:'14:38',fltBefore:'LJ087',signatureImage:'data:image/png;base64,bar',password:'y',photo:'other'});
 assert.equal(changes.length,1,'sensitive and unchanged fields must be excluded');assert.equal(changes[0].before,'14:35');assert.equal(changes[0].after,'14:38');
-assert.deepEqual(JSON.parse(JSON.stringify(api.changesOf({h24Start:'14:38'},{h24Start:'14:38'})),[]);
+assert.deepEqual(JSON.parse(JSON.stringify(api.changesOf({h24Start:'14:38'},{h24Start:'14:38'}))),[]);
 assert.equal(api.scrub('note','x'.repeat(200)),'[Nội dung dài hoặc tệp đính kèm: không lưu giá trị]');
 assert.equal(api.scrub('text','abc@example.com'),'[Nội dung dài hoặc tệp đính kèm: không lưu giá trị]');
 api.capture(win.currentFlightSessionMeta(),{state:{h24Start:'14:35',signatureImage:'x'}},{state:{h24Start:'14:38',signatureImage:'secret'}},'Lưu biểu mẫu');
