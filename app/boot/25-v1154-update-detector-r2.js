@@ -42,9 +42,9 @@ window.applyAppUpdate=async function(){if(navigator.onLine===false){alert("Máy 
 window.sagsApplyUpdateFromButton=function(ev){try{ev?.preventDefault?.();ev?.stopPropagation?.()}catch(_e){}Promise.resolve(window.applyAppUpdate?.()).catch(e=>alert("Không thể khởi động cập nhật.\n"+String(e?.message||e)));return false};
 function sagsUpdateFinishedOnce(){
  try{
-  const key='sags-repair-ready',build=localStorage.getItem(key);
+  const key='sags-repair-ready',mark='sags-update-complete-v1',build=sessionStorage.getItem(mark)||localStorage.getItem(key);
   if(!build||build!==APP_BUILD_VERSION)return;
-  localStorage.removeItem(key);localStorage.removeItem('sags-repair-target');localStorage.removeItem('pdh-update-applying');localStorage.removeItem('sags-v6-deferred-build');
+  sessionStorage.removeItem(mark);localStorage.removeItem(key);localStorage.removeItem('sags-repair-target');localStorage.removeItem('pdh-update-applying');localStorage.removeItem('sags-v6-deferred-build');
   const show=()=>{
    if(document.getElementById('sagsUpdateSuccessNotice'))return;
    const el=document.createElement('div');el.id='sagsUpdateSuccessNotice';

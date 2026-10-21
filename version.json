@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.26",
-  "displayVersion": "V2.5.26",
-  "label": "V2.5.26 - CẬP NHẬT 3 GIAI ĐOẠN VÀ TỰ TẢI LẠI",
-  "build": "V2.5.26-20261021-UPDATE-PROGRESS-AUTOREFRESH-01",
+  "version": "V2.5.27",
+  "displayVersion": "V2.5.27",
+  "label": "V2.5.27 - TIẾN TRÌNH CẬP NHẬT 3 BƯỚC HIỂN THỊ RÕ",
+  "build": "V2.5.27-20261021-UPDATE-PROGRESS-VISIBLE-01",
   "releasedAt": "2026-10-21",
-  "type": "verified-update-progress-and-auto-refresh",
-  "base": "E-REPORT-SAGS main@V2.5.25",
+  "type": "visible-three-stage-update-and-auto-refresh",
+  "base": "E-REPORT-SAGS main@V2.5.26",
   "updatePolicy": "required",
-  "notes": "Thông báo rõ ĐANG TẢI BẢN CẬP NHẬT, ĐANG CẬP NHẬT, CẬP NHẬT HOÀN TẤT; xác minh trước khi dọn SW/cache, tự tải lại trang vào build mới; không ép cập nhật khi biểu mẫu chưa hoàn tất hoặc còn đồng bộ nháp.",
-  "message": "V2.5.26: Hiển thị tiến trình cập nhật thực tế và tự mở bản mới sau khi hoàn tất."
+  "notes": "Mỗi trạng thái ĐANG TẢI BẢN CẬP NHẬT, ĐANG CẬP NHẬT, CẬP NHẬT HOÀN TẤT hiển thị đủ lâu; hoàn tất tự mở lại index mới và toast chỉ xuất hiện một lần. Giữ nguyên an toàn nháp và kiểm tra phiên bản/caches.",
+  "message": "V2.5.27: Cập nhật 3 bước rõ ràng và tự tải phiên bản mới."
 }
