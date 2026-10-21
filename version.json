@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.17",
-  "displayVersion": "V2.5.17",
-  "label": "V2.5.17 - GRND LS ROSTER AND VZ TVJ",
-  "build": "V2.5.17-20261021-ROSTER-LS-TVJ-01",
+  "version": "V2.5.18",
+  "displayVersion": "V2.5.18",
+  "label": "V2.5.18 - MY FLIGHT ACTIVE ASSIGNMENTS",
+  "build": "V2.5.18-20261021-FLIGHT-MANIFEST-01",
   "releasedAt": "2026-10-21",
-  "type": "roster-grnd-ls-tvj-fix",
-  "base": "E-REPORT-SAGS main@7cc483b",
+  "type": "myflight-stale-assignment-fix",
+  "base": "E-REPORT-SAGS main@5c721bd",
   "updatePolicy": "required",
-  "notes": "Tách mã phân công FINAL/54/94 của Grnd_Ls; chấp nhận Grnd_LS; không thu hồi chéo các mẫu CBTT; TVJ chỉ hiện và mở cho chuyến VZ, kể cả AD.",
-  "message": "V2.5.17: sửa đổ roster Grnd_LS và giới hạn TVJ đúng chuyến VZ."
+  "notes": "Mở biểu mẫu bằng manifest đúng chuyến; bỏ phân công đã thu hồi, giữ đủ người mới và kiểm tra lại quyền của người đang mở.",
+  "message": "V2.5.18: sửa lỗi phân công cũ chặn mở MY FLIGHT và biểu mẫu."
 }
