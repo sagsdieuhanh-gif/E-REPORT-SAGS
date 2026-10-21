@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.22",
-  "displayVersion": "V2.5.22",
-  "label": "V2.5.22 - LỊCH SỬ PHÂN BIỆT NGƯỜI SỬA VÀ HỆ THỐNG",
-  "build": "V2.5.22-20261021-HISTORY-ACTOR-FIX-01",
+  "version": "V2.5.23",
+  "displayVersion": "V2.5.23",
+  "label": "V2.5.23 - NÚT LỊCH SỬ CHO MỌI TÀI KHOẢN",
+  "build": "V2.5.23-20261021-HISTORY-VISIBLE-ALL-ROLES-01",
   "releasedAt": "2026-10-21",
-  "type": "form-edit-history-actor-hardening",
-  "base": "E-REPORT-SAGS main@V2.5.21",
+  "type": "history-accessible-navigation",
+  "base": "E-REPORT-SAGS main@V2.5.22",
   "updatePolicy": "required",
-  "notes": "Phân biệt thao tác nhập thực sự của người dùng và tự động cập nhật; tránh gán nhầm người sửa. Không lưu giá trị mã nhân viên/tên riêng ở ô nhận diện; giữ lịch sử trước/sau, tránh tải nặng.",
-  "message": "V2.5.22: Lịch sử chỉnh sửa chính xác hơn, bảo vệ định danh nhân viên."
+  "notes": "Đưa nút lịch sử vào vị trí cố định ngay đầu menu sau đăng nhập và trên My Flight; mọi vai trò xem lịch sử trong phạm vi chuyến được quyền truy cập. Không mở rộng quyền Firebase hoặc hiển thị dữ liệu chuyến không liên quan.",
+  "message": "V2.5.23: Lịch sử dễ tìm cho AD/ĐH/CBTT/KH/PVHK trên PC và điện thoại."
 }
