@@ -2,7 +2,7 @@ const fs=require('node:fs'),assert=require('node:assert/strict');
 const root=require('node:path').resolve(__dirname,'..');
 const read=p=>fs.readFileSync(root+'/'+p,'utf8');
 const css=read('app/styles/aviation-reference.v1.css'),html=read('index.html'),worker=read('service-worker.js'),view=read('app/boot/32-v6494-aviation-shell.js'),v=JSON.parse(read('version.json')),m=JSON.parse(read('asset-manifest.json'));
-assert.equal(v.version,'V2.5.16');assert.equal(m.build,v.build);
+assert.equal(m.version,v.version);assert.equal(v.displayVersion,v.version);assert.equal(m.build,v.build);
 assert(view.includes('id="v6494Search" type="search"'),'flight search DOM ID must remain');
 assert(view.includes("search?.addEventListener('keydown'"),'search Enter handler intact');
 assert.match(css,/label\.v6494Search input#v6494Search\s*\{/);
