@@ -90,7 +90,7 @@
       "bytes": 15990
     },
     "./app/boot/32-v6494-aviation-shell.js": {
-      "sha256": "e6dae273891bb5fc2ae00255dbd14fd43ee8868c67e4db85961824f0dc8ffee0",
+      "sha256": "0829ba151af3e7fa1125a6a0932851efd034aca15ee0ee2a7bef10a52674e305",
       "bytes": 14359
     },
     "./app/boot/33-v6497-dossier-enhancements.js": {
@@ -762,7 +762,7 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "eab2db18d4e0b8885241cc4240fffb28cbfce5a6be97e15b3445b13898156ec7",
+      "sha256": "e0bf560ee0c01c86b20ad852fb6232e1eaf942afca9708fcffa98f28d68c8453",
       "bytes": 105145
     },
     "./manifest.webmanifest": {
@@ -814,7 +814,7 @@
       "bytes": 6937
     },
     "./service-worker.js": {
-      "sha256": "e706ce68e9125e9126fe75f7c7585d9a0474ef46f543b3756859f873f1fe3497",
+      "sha256": "b6f2916d4fa026e445d94c1c603d7871a72bdf4cb2a2933ae43344302fb495ff",
       "bytes": 22480
     },
     "./storage-recovery.html": {
@@ -822,7 +822,7 @@
       "bytes": 25937
     },
     "./version.json": {
-      "sha256": "96df3a00286d78d20aff2935cfc81ea5a8f2f8572fb4164d8a7dd165ce24ecaa",
+      "sha256": "524d8c6fa28bd476155e51448b1e3cb0cd582cc4c6b677855a95fc988931fc93",
       "bytes": 694
     }
   },
