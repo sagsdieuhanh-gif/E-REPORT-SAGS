@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V2.5.26",
-  "build": "V2.5.26-20261021-UPDATE-PROGRESS-AUTOREFRESH-01",
+  "version": "V2.5.27",
+  "build": "V2.5.27-20261021-UPDATE-PROGRESS-VISIBLE-01",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -110,8 +110,8 @@
       "bytes": 25398
     },
     "./app/generated/boot-group-4.js": {
-      "sha256": "3252932b684aa6601503cf061a370413c167a3f0b0f4a9b6665f20082eafc510",
-      "bytes": 16175
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "bytes": 16268
     },
     "./app/generated/boot-group-5.js": {
       "sha256": "ccd1783e679528508e00b6d1dd5ff76613a8fb75d71c1f9e42533213047e1ca9",
@@ -762,8 +762,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "01b3cdb9f16e8072998b517bd96ea53a1efe67c843b576e3a3c27aeee8225475",
-      "bytes": 105540
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "bytes": 105224
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -810,20 +810,20 @@
       "bytes": 465580
     },
     "./repair.html": {
-      "sha256": "e7117a2a1d55626b018c6f0bb53e59a0b76fbdca18c34435a1c13f77fa02b78c",
-      "bytes": 8768
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "e23ec3c9c46f7042dc4c70b646b4ebd50623a5eb74ecba221fce164d494c1240",
-      "bytes": 22495
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "bytes": 22483
     },
     "./storage-recovery.html": {
       "sha256": "fb864ac28bf98fda1522a266c657260c6b3c93b9ee850f343bed8d969297af44",
       "bytes": 25937
     },
     "./version.json": {
-      "sha256": "c6130e151d273b34ebf967e10eed0d3372e4bea43f3c13bdd3b8f6d3bec70bc0",
-      "bytes": 751
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "bytes": 728
     }
   },
   "mutableAssets": [
