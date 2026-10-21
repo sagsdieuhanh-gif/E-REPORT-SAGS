@@ -15,7 +15,10 @@ assert.match(page,/if\(stage==='1'\)\{await clearOldShell\(\);/,'keep unregister
 assert.match(page,/step\(2,'Đang cập nhật/,'updating phase must be driven by real lifecycle');
 assert.match(page,/step\(3,'Cập nhật hoàn tất:/,'must only show success after release contract verified');
 assert.ok(page.indexOf('const confirmed=await contract()')<page.indexOf("step(3,'Cập nhật hoàn tất:"),'do not claim success before verifying new release');
-assert.match(page,/setTimeout\(\(\)=>location\.replace\(u\.href\),1200\)/,'launch new index automatically after visible success');
+assert.match(page,/setTimeout\(\(\)=>location\.replace\(u\.href\),1900\)/,'keep completion visible before fresh launch');
+assert.match(page,/if\(stage==='1'\)await sleep\(1400\)/,'download stage must be visible long enough for users');
+assert.match(page,/sessionStorage\.setItem\('sags-update-complete-v1',confirmed\.build\)/,'success toast marker persists across page navigation');
+assert.match(src,/sessionStorage\.getItem\(mark\)\|\|localStorage\.getItem\(key\)/,'completion toast must survive legacy background metadata checks');
 assert.match(page,/__sags_release/,'index re-open should be cache-busted to new build');
 assert.match(page,/if\(detach>=4\)/,'old service worker detach must be bounded to prevent reload loops');
 assert.match(page,/btn\.hidden=false;btn\.disabled=false/,'failed update must show retry without automatically destroying current work');
