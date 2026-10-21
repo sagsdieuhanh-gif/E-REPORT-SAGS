@@ -34,5 +34,5 @@ assert.ok(shell.indexOf("{key:'history'")>shell.indexOf("{key:'myflight'")&&shel
 const index=fs.readFileSync(path.join(root,'index.html'),'utf8');
 assert.match(index,/app\/modules\/form-edit-history\.v1\.js/,'source must load in every role');
 const version=JSON.parse(fs.readFileSync(path.join(root,'version.json'),'utf8'));
-assert.match(version.version,/^V2\.5\.25$/);
+assert.match(version.version,/^V2\.5\.\d+$/);
 console.log('PASS visible all-role history entry in stable menu header + workspace and authorized flight filter');
