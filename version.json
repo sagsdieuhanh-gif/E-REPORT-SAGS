@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.18",
-  "displayVersion": "V2.5.18",
-  "label": "V2.5.18 - MY FLIGHT ACTIVE ASSIGNMENTS",
-  "build": "V2.5.18-20261021-FLIGHT-MANIFEST-01",
+  "version": "V2.5.19",
+  "displayVersion": "V2.5.19",
+  "label": "V2.5.19 - SỔ TAY HÃNG QUICK VIEW + EXCEL MỞ RỘNG",
+  "build": "V2.5.19-20261021-CARRIER-QUICKVIEW-01",
   "releasedAt": "2026-10-21",
-  "type": "myflight-stale-assignment-fix",
-  "base": "E-REPORT-SAGS main@5c721bd",
+  "type": "carrier-quickview-import-and-local-performance",
+  "base": "E-REPORT-SAGS main@V2.5.18",
   "updatePolicy": "required",
-  "notes": "Mở biểu mẫu bằng manifest đúng chuyến; bỏ phân công đã thu hồi, giữ đủ người mới và kiểm tra lại quyền của người đang mở.",
-  "message": "V2.5.18: sửa lỗi phân công cũ chặn mở MY FLIGHT và biểu mẫu."
+  "notes": "Sổ tay hãng hiển thị DOOR/KÝ TẢI/thợ máy/xăng dầu/suất ăn/đại diện tức thì; lưu ý quan trọng; nhập Excel HANG/LUU_Y/BO_SUNG không xóa dữ liệu cũ. Giảm thao tác nền của Sổ tay.",
+  "message": "V2.5.19: Sổ tay hãng trực quan và Excel linh hoạt, giảm tác vụ cập nhật thừa."
 }
