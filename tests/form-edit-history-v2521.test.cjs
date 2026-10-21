@@ -15,16 +15,18 @@ const win={
  addEventListener(){},
  readFlightSessionEnvelope:()=>({state:{h24Start:'14:38'},rosterAssignmentId:'aid1'})
 };
-const doc={readyState:'loading',addEventListener(){},getElementById(){return null}};
+const listeners={};const doc={readyState:'loading',body:{classList:{contains:()=>true}},addEventListener(n,fn){listeners[n]=fn},getElementById(){return null}};
 const nav={onLine:true};
 const localStorage={getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v)};
 vm.runInNewContext(src,{window:win,document:doc,navigator:nav,localStorage,console,indexedDB:undefined,setTimeout,clearTimeout},{filename:'form-edit-history.v1.js'});
 const api=win.SAGSFormEditHistoryV1;assert.ok(api);
 const changes=api.changesOf({h24Start:'14:35',fltBefore:'LJ087',signatureImage:'data:image/png;base64,foo',password:'x',photo:'image'},{h24Start:'14:38',fltBefore:'LJ087',signatureImage:'data:image/png;base64,bar',password:'y',photo:'other'});
-assert.equal(changes.length,1,'sensitive and unchanged fields must be excluded');assert.equal(changes[0].before,'14:35');assert.equal(changes[0].after,'14:38');
+assert.equal(changes.length,1,'sensitive and unchanged fields must be excluded');
+assert.deepEqual(JSON.parse(JSON.stringify(api.changesOf({staffId:'1234',Name_copy:'CXR-2310'},{staffId:'4321',Name_copy:'CXR-9999'}))),[],'employee identifiers must never be logged');assert.equal(changes[0].before,'14:35');assert.equal(changes[0].after,'14:38');
 assert.deepEqual(JSON.parse(JSON.stringify(api.changesOf({h24Start:'14:38'},{h24Start:'14:38'}))),[]);
 assert.equal(api.scrub('note','x'.repeat(200)),'[Nội dung dài hoặc tệp đính kèm: không lưu giá trị]');
 assert.equal(api.scrub('text','abc@example.com'),'[Nội dung dài hoặc tệp đính kèm: không lưu giá trị]');
+listeners.input({isTrusted:true,target:{tagName:'INPUT',type:'text',closest:()=>null}});
 api.capture(win.currentFlightSessionMeta(),{state:{h24Start:'14:35',signatureImage:'x'}},{state:{h24Start:'14:38',signatureImage:'secret'}},'Lưu biểu mẫu');
 api.flushBatch('uid1|flight1').then(async()=>{
  try{
