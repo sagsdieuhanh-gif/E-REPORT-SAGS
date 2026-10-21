@@ -338,8 +338,8 @@
       "bytes": 41473
     },
     "./app/styles/aviation-reference.v1.css": {
-      "sha256": "cc1dc1f16266ec498fe90a9e7594b00777c1efa9efcffc3c8dac4c3c357879f9",
-      "bytes": 64338
+      "sha256": "30a78ada501efcce4a92cb78a275aa9129f4d7a6d4b9b908625fffda5a15c8ab",
+      "bytes": 74352
     },
     "./app/styles/boot-01-legacy.css": {
       "sha256": "fa00cde1d78de014a3c0341b9741993441fa4a8a0b8aad860f916a50613e7bb4",
@@ -480,10 +480,6 @@
     "./app/styles/new-ui-v1.css": {
       "sha256": "e0882469c033cb2de486993e710918eb345eb6df00b6e61663ace0ce6e97f11b",
       "bytes": 376938
-    },
-    "./app/styles/unified-contrast.v1.css": {
-      "sha256": "14487dc4266e3ddaab1a856f965b498c9bbbee520c93b2598d681043164b84b5",
-      "bytes": 10013
     },
     "./app/vendor/lz-string-1.5.0.js": {
       "sha256": "550034b821027008776cb9bcd1700bb5d31e8b3de224cb130fc966a75dab0e5e",
@@ -762,8 +758,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "3a44da5829111e02a880039bd8b063fcb8b116953b69fa2ef54ca9b10012837a",
-      "bytes": 104676
+      "sha256": "a0116af973ea8a7c7530cb4ab05df5db7d07f10760a26167cc028736043867ca",
+      "bytes": 104539
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -814,8 +810,8 @@
       "bytes": 6937
     },
     "./service-worker.js": {
-      "sha256": "ce305611b4f939856a9807701469c10aaaaaafee1c9958e0e2e930280d54b5ed",
-      "bytes": 22461
+      "sha256": "0a8550436b03393481541bf60502d0a22854decd059c5edd5c0784b3a9c09b7c",
+      "bytes": 22422
     },
     "./storage-recovery.html": {
       "sha256": "fb864ac28bf98fda1522a266c657260c6b3c93b9ee850f343bed8d969297af44",
