@@ -217,14 +217,8 @@ function actionButton(id,title){
 }
 function installButtons(){
  const account=user();if(!account.username)return;
- // Stable drawer HEAD is never replaced by renderMenu(). The old V2.5.22
- // shortcut was appended after the footer and clipped by the drawer.
- const head=document.querySelector('#v157Drawer .v157DrawerHead');
- if(head){
-  const b=actionButton('sagsHistoryShortcut','🕘 LỊCH SỬ THAY ĐỔI');
-  b.title='Xem lịch sử thay đổi của các biểu mẫu bạn được quyền xem';
-  if(b.parentElement!==head)head.appendChild(b);
- }
+ // Native KHAI THÁC menu item is registered in the canonical runtime menuDefs.
+ // Do not append buttons to drawer: the menu is re-rendered on every open.
  // Independent entry inside My Flight / flight workspace.
  const workspace=document.querySelector('#fwcModal .fwcHead');
  if(workspace){
