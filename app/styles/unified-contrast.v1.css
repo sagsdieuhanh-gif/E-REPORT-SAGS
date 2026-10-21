@@ -1,0 +1,250 @@
+/* E-REPORT-SAGS V2.5.20 · shared contrast contract.
+   Screen-only; never repaint official forms, PDF canvases, signatures or print layouts.
+   CSS-only: no observers, timers, extra fonts, images or layout measurement. */
+@media screen {
+html.new-ui-v1 {
+  --ec-dark-bg:#071824;
+  --ec-dark-card:#0c2537;
+  --ec-dark-control:#102d40;
+  --ec-dark-fg:#f2f8fc;
+  --ec-dark-sub:#c5d8e5;
+  --ec-light-bg:#f7fafc;
+  --ec-light-card:#ffffff;
+  --ec-light-soft:#edf5fb;
+  --ec-light-fg:#17324d;
+  --ec-light-sub:#435c73;
+  --ec-light-label:#4b6479;
+  --ec-line:#c6d8e6;
+  --ec-action:#125b85;
+  --ec-action-fg:#ffffff;
+  --ec-warning-fg:#794711;
+  --ec-warning-bg:#fff3d9;
+  --ec-warning-line:#efc577;
+  --ec-focus:#1475ba;
+  --sags-ui-input-light-ph:#52697e;
+  --sags-ui-input-dark-ph:#c5d8e5;
+}
+html.new-ui-v1[data-ui-theme="light"] {
+  --sags-ui-text-primary:var(--ec-light-fg);
+  --sags-ui-text-secondary:var(--ec-light-sub);
+  --sags-ui-text-muted:var(--ec-light-label);
+}
+html.new-ui-v1[data-ui-theme="dark"] {
+  --sags-ui-text-primary:var(--ec-dark-fg);
+  --sags-ui-text-secondary:var(--ec-dark-sub);
+  --sags-ui-text-muted:var(--ec-dark-sub);
+}
+html.new-ui-v1 body :is(button,input,textarea,select,[role="button"],[tabindex]):focus-visible {
+  outline:2px solid var(--ec-focus);
+  outline-offset:2px;
+}
+html.new-ui-v1 body :is(#v157HomeDashboard,#roleLoginModal) :is(.v157Welcome span,.v157MetricSub,.v157MetricLabel,.v157Panel small,.roleLoginCard label,.roleLoginCard small) {
+  color:var(--ec-light-sub)!important;
+  opacity:1!important;
+}
+html.new-ui-v1 body #roleLoginModal .roleLoginCard :is(input,select,textarea) {
+  color:var(--ec-light-fg)!important;
+  -webkit-text-fill-color:var(--ec-light-fg)!important;
+  background:var(--ec-light-bg)!important;
+  border-color:var(--ec-line)!important;
+  color-scheme:light;
+}
+html.new-ui-v1 body #roleLoginModal .roleLoginCard :is(input,textarea)::placeholder {
+  color:var(--ec-light-sub)!important;
+  -webkit-text-fill-color:var(--ec-light-sub)!important;
+  opacity:1!important;
+}
+/* Primary aviation dashboard and navigation stay dark in both themes. */
+html.new-ui-v1 body #v6494AviationHome :is(.v6494Hero,.v6494QuickHead,.v6494SectionHead,.v6494MobileProfile,.v6494Brand,.v6494TopIdentity) {
+  color:var(--ec-dark-fg)!important;
+}
+html.new-ui-v1 body #v6494AviationHome :is(.v6494Hero small,.v6494MobileProfile small,.v6494QuickHead small,.v6494SectionHead small,.v6494TopIdentity small) {
+  color:var(--ec-dark-sub)!important;
+  opacity:1!important;
+}
+html.new-ui-v1 body #v6494AviationHome :is(.v6494Search input,.v6494Search select) {
+  color:var(--ec-dark-fg)!important;
+  -webkit-text-fill-color:var(--ec-dark-fg)!important;
+  background:var(--ec-dark-control)!important;
+  border-color:#63869c!important;
+  color-scheme:dark;
+}
+html.new-ui-v1 body #v6494AviationHome .v6494Search input::placeholder {
+  color:var(--ec-dark-sub)!important;
+  -webkit-text-fill-color:var(--ec-dark-sub)!important;
+  opacity:1!important;
+}
+/* Light operations cards: never inherit the dark shell's pale foreground. */
+html.new-ui-v1 body :is(#opsHomeMetrics,#opsHomeFlights,#opsHomeQueue,#opsAirlineStrip) :is(.opsMetricBody,.opsMetricCard,.opsQueueHead,.opsAirlineChip) {
+  --ec-on-card:var(--ec-light-fg);
+}
+html.new-ui-v1 body :is(#opsHomeMetrics,#opsHomeFlights,#opsHomeQueue,#opsAirlineStrip) :is(.opsMetricBody,.opsMetricCard,.opsQueueHead,.opsAirlineChip) :is(small,span,em) {
+  opacity:1;
+}
+html.new-ui-v1 body :is(#fwcModal,#v479MyFlightHome,#sagsFlightDossierModal) :is(input,select,textarea)::placeholder {
+  opacity:1!important;
+}
+/* The airline notebook is a deliberately LIGHT surface, even inside dark E-Report. */
+html.new-ui-v1 body #csgModal #csgPanel,
+html.new-ui-v1 body #csgModal #csgBody,
+html.new-ui-v1 body #csgModal #csgDetail,
+html.new-ui-v1 body #csgModal #csgList {
+  color:var(--ec-light-fg)!important;
+}
+html.new-ui-v1 body #csgModal #csgHead,
+html.new-ui-v1 body #csgModal #csgHead :is(b,.csgHeadBtn) {
+  color:var(--ec-dark-fg)!important;
+  -webkit-text-fill-color:var(--ec-dark-fg)!important;
+}
+html.new-ui-v1 body #csgModal #csgHead .csgHeadBtn {
+  background:#275e7e!important;
+}
+html.new-ui-v1 body #csgModal #csgHead #csgManage {
+  color:#593707!important;
+  -webkit-text-fill-color:#593707!important;
+  background:#ffedbd!important;
+}
+html.new-ui-v1 body #csgModal #csgTools #csgSearch {
+  background:#0b2232!important;
+  color:#f3f8fc!important;
+  -webkit-text-fill-color:#f3f8fc!important;
+  border-color:#577b96!important;
+  color-scheme:dark;
+}
+html.new-ui-v1 body #csgModal #csgTools #csgSearch::placeholder {
+  color:#d0e0ec!important;
+  -webkit-text-fill-color:#d0e0ec!important;
+  opacity:1!important;
+}
+html.new-ui-v1 body #csgModal #csgTools #csgCurrent {
+  background:#eff6ff!important;
+  color:#174d86!important;
+  -webkit-text-fill-color:#174d86!important;
+  border-color:#79a9dc!important;
+}
+html.new-ui-v1 body #csgModal #csgList .csgCarrier {
+  color:var(--ec-light-fg)!important;
+  background:var(--ec-light-card)!important;
+}
+html.new-ui-v1 body #csgModal #csgList .csgCarrier.sel {
+  color:var(--ec-light-fg)!important;
+  background:#dfedfc!important;
+  border-color:#73ade2!important;
+}
+html.new-ui-v1 body #csgModal #csgList .csgCarrier :is(b,.csgCarrierText b) {
+  color:var(--ec-light-fg)!important;
+  -webkit-text-fill-color:var(--ec-light-fg)!important;
+}
+html.new-ui-v1 body #csgModal #csgList .csgCarrier :is(small,.csgCarrierText small) {
+  color:var(--ec-light-sub)!important;
+  -webkit-text-fill-color:var(--ec-light-sub)!important;
+  opacity:1!important;
+}
+html.new-ui-v1 body #csgModal #csgDetail .csgHero {
+  background:var(--ec-light-soft)!important;
+  border-color:var(--ec-line)!important;
+}
+html.new-ui-v1 body #csgModal #csgDetail .csgHero :is(h3,.csgBrandName) {
+  color:var(--ec-light-fg)!important;
+  -webkit-text-fill-color:var(--ec-light-fg)!important;
+}
+html.new-ui-v1 body #csgModal #csgDetail .csgMeta,
+html.new-ui-v1 body #csgModal #csgDetail .csgFoot {
+  color:var(--ec-light-sub)!important;
+  -webkit-text-fill-color:var(--ec-light-sub)!important;
+  opacity:1!important;
+}
+html.new-ui-v1 body #csgModal #csgDetail .csgMeta b {
+  color:var(--ec-light-fg)!important;
+}
+html.new-ui-v1 body #csgModal #csgDetail .csgQuick {
+  background:var(--ec-light-card)!important;
+  color:var(--ec-light-fg)!important;
+  border-color:var(--ec-line)!important;
+}
+html.new-ui-v1 body #csgModal #csgDetail .csgQuickTitle {
+  color:var(--ec-light-fg)!important;
+  -webkit-text-fill-color:var(--ec-light-fg)!important;
+}
+html.new-ui-v1 body #csgModal #csgDetail .csgPrimaryCard {
+  background:var(--ec-light-soft)!important;
+  border-color:var(--ec-line)!important;
+}
+html.new-ui-v1 body #csgModal #csgDetail :is(.csgKey,.csgService span) {
+  color:var(--ec-light-label)!important;
+  -webkit-text-fill-color:var(--ec-light-label)!important;
+  opacity:1!important;
+}
+html.new-ui-v1 body #csgModal #csgDetail :is(.csgMainValue,.csgService strong,.csgExtraItem b) {
+  color:var(--ec-light-fg)!important;
+  -webkit-text-fill-color:var(--ec-light-fg)!important;
+  opacity:1!important;
+}
+html.new-ui-v1 body #csgModal #csgDetail :is(.csgMainValue,.csgService strong).csgUnset {
+  color:var(--ec-light-sub)!important;
+  -webkit-text-fill-color:var(--ec-light-sub)!important;
+  opacity:1!important;
+}
+html.new-ui-v1 body #csgModal #csgDetail .csgQuickNote {
+  background:#f0f5f9!important;
+  color:var(--ec-light-fg)!important;
+  -webkit-text-fill-color:var(--ec-light-fg)!important;
+}
+html.new-ui-v1 body #csgModal #csgDetail .csgQuickNote.important,
+html.new-ui-v1 body #csgModal #csgDetail .csgQuickReview {
+  background:var(--ec-warning-bg)!important;
+  color:var(--ec-warning-fg)!important;
+  -webkit-text-fill-color:var(--ec-warning-fg)!important;
+  border-color:var(--ec-warning-line)!important;
+}
+html.new-ui-v1 body #csgModal #csgDetail .csgQuickNote.important b,
+html.new-ui-v1 body #csgModal #csgDetail .csgQuickReview b {
+  color:var(--ec-warning-fg)!important;
+}
+html.new-ui-v1 body #csgModal #csgDetail .csgSection>summary {
+  background:#edf3f8!important;
+  color:var(--ec-light-fg)!important;
+  -webkit-text-fill-color:var(--ec-light-fg)!important;
+}
+html.new-ui-v1 body #csgModal #csgDetail .csgNote {
+  background:var(--ec-light-card)!important;
+  color:var(--ec-light-fg)!important;
+  -webkit-text-fill-color:var(--ec-light-fg)!important;
+}
+html.new-ui-v1 body #csgModal #csgDetail .csgNote.csgNil {
+  color:var(--ec-light-sub)!important;
+  -webkit-text-fill-color:var(--ec-light-sub)!important;
+  opacity:1!important;
+}
+/* AD manager is also a light sheet; avoid the opposite-theme inherited text. */
+html.new-ui-v1 body #csgMgr #csgMgrCard :is(.csgMgrBody,.csgMgrBlock,.csgMgrPreview,.csgMgrKpi) {
+  background:var(--ec-light-card)!important;
+  color:var(--ec-light-fg)!important;
+}
+html.new-ui-v1 body #csgMgr #csgMgrCard :is(.csgMgrSmall,.csgMgrPreview td) {
+  color:var(--ec-light-sub)!important;
+  opacity:1!important;
+}
+html.new-ui-v1 body #csgMgr #csgMgrCard .csgMgrStatus {
+  background:var(--ec-dark-bg)!important;
+  color:var(--ec-dark-fg)!important;
+}
+html.new-ui-v1 body #csgMgr #csgMgrCard .csgMgrBtn.primary {
+  background:var(--ec-action)!important;
+  color:var(--ec-action-fg)!important;
+  -webkit-text-fill-color:var(--ec-action-fg)!important;
+}
+html.new-ui-v1 body #csgMgr #csgMgrCard .csgMgrBtn:disabled {
+  opacity:.85!important;
+}
+/* Common interactive hints across legacy panels; respect each surface's existing colors. */
+html.new-ui-v1 body :is(#sagsSettingsCenter,#fwcModal,#sagsFlightDossierModal,#v181AdminCenter,#dailyRosterModal,#fleetManagerModal,#v174DataHub)
+  :is(input,textarea,select,button):not(:disabled) {
+  opacity:1!important;
+}
+html.new-ui-v1 body :is(#sagsSettingsCenter,#fwcModal,#dailyRosterModal,#fleetManagerModal)
+  :is(.sagsSettingsNav,.sagsSettingsPanel,.fwcPanel,.fwcFlight,.drPanel,.fleetManagerPanel) :is(small,em) {
+  opacity:1!important;
+}
+/* Do not change paper forms, canvas, signatures, SVG or the print export at any breakpoint. */
+}
