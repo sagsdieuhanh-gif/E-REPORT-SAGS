@@ -1,11 +1,11 @@
 {
   "schema": 1,
-  "revision": 1,
-  "version": "1",
-  "hash": "518ef49eb35b3db4885e8e751e59939b396fdc93a747c3a320e075264a6ecf5b",
-  "bytes": 30731,
-  "updatedAt": "2026-09-16T05:45:00Z",
-  "source": "TỔNG HỢP LƯU Ý PHỤC VỤ CÁC HÃNG.xlsx",
+  "revision": 2,
+  "version": "2",
+  "hash": "417b5b07df2f31d3ea59b0f7c6260bdf17bebbf45a3be1fd7666ee5d67af2cb5",
+  "bytes": 42292,
+  "updatedAt": "2026-10-21T05:20:00Z",
+  "source": "TỔNG HỢP LƯU Ý PHỤC VỤ CÁC HÃNG.xlsx + Sổ tay thông tin dịch vụ",
   "station": "CXR",
-  "carriers": 26
+  "carriers": 28
 }
