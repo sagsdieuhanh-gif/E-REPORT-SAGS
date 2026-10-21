@@ -18,7 +18,7 @@ const win={
 const doc={readyState:'loading',addEventListener(){},getElementById(){return null}};
 const nav={onLine:true};
 const localStorage={getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v)};
-vm.runInNewContext(src,{window:win,document:doc,navigator:nav,localStorage,console,indexedDB:undefined,setTimeout},{filename:'form-edit-history.v1.js'});
+vm.runInNewContext(src,{window:win,document:doc,navigator:nav,localStorage,console,indexedDB:undefined,setTimeout,clearTimeout},{filename:'form-edit-history.v1.js'});
 const api=win.SAGSFormEditHistoryV1;assert.ok(api);
 const changes=api.changesOf({h24Start:'14:35',fltBefore:'LJ087',signatureImage:'data:image/png;base64,foo',password:'x',photo:'image'},{h24Start:'14:38',fltBefore:'LJ087',signatureImage:'data:image/png;base64,bar',password:'y',photo:'other'});
 assert.equal(changes.length,1,'sensitive and unchanged fields must be excluded');assert.equal(changes[0].before,'14:35');assert.equal(changes[0].after,'14:38');
