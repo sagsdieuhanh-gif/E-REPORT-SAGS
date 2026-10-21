@@ -6,7 +6,7 @@
   const brand = '<b>E-REPORT <em>SAGS</em></b><small>AIRPORT GROUND OPERATIONS</small>';
   const CARRIER_GUIDE = './data/carrier-service-guide.json';
   // Display identity only; roster permissions continue to use the service guide.
-  const AIRLINE_NAMES = {HAV:'HAV Aviation',VJ:'Vietjet Air',QH:'Bamboo Airways',DV:'SCAT Airlines',KC:'Air Astana',C6:'Centrum Air',KA:'Aero Nomad Airlines',N4:'Nordwind Airlines',AK:'AirAsia',FD:'Thai AirAsia',KE:'Korean Air',BX:'Air Busan',WE:'Parata Air',RF:'Aero K',TW:'Trinity Airways',OZ:'Asiana Airlines',LJ:'Jin Air','3U':'Sichuan Airlines',UQ:'Urumqi Air',DR:'Ruili Airlines',TR:'Scoot',HY:'Uzbekistan Airways',HU:'Hainan Airlines',VZ:'Thai Vietjet Air','9G':'Sun PhuQuoc Airways',B2:'Belavia',VU:'Vietravel Airlines'};
+  const AIRLINE_NAMES = {HAV:'HAV Aviation',VJ:'Vietjet Air',QH:'Bamboo Airways',DV:'SCAT Airlines',KC:'Air Astana',C6:'Centrum Air',KA:'Aero Nomad Airlines',N4:'Nordwind Airlines',AK:'AirAsia',FD:'Thai AirAsia',KE:'Korean Air',BX:'Air Busan',WE:'Parata Air',RF:'Aero K',TW:'Trinity Airways',OZ:'Asiana Airlines',LJ:'Jin Air','3U':'Sichuan Airlines',UQ:'Urumqi Air',DR:'Ruili Airlines',TR:'Scoot',HY:'Uzbekistan Airways',HU:'Hainan Airlines',VZ:'Thai Vietjet Air','9G':'Sun PhuQuoc Airways',B2:'Belavia',VU:'Vietravel Airlines',EO:'EO'};
   let pending = false, overviewKey = '', carrierPromise = null, logoObserver = null;
   let stripPending = false, flightView = null, showAll = false, tableFrame = 0, flightRevision = 0, lastFlightRenderKey = '', workspaceBrandTimer = 0, workspaceBrandRetryToken = 0;
   const safe = value => String(value ?? '').replace(/[&<>"']/g, x => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]));
@@ -36,6 +36,7 @@
   function logoUrl(code) {
     code = normalizeCarrier(code);
     if (code === 'TW') return './assets/airlines/TW.svg';
+    if (code === 'EO') return './assets/airlines/EO.svg';
     return AIRLINE_NAMES[code] ? './assets/airlines/'+code+(code==='KA'?'.svg':'.png') : '';
   }
   window.sagsAirlineIdentity = Object.freeze({
