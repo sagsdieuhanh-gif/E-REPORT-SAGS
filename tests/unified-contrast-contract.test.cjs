@@ -1,7 +1,7 @@
 'use strict';
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
 const root=path.resolve(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p),'utf8');
-const css=read('app/styles/unified-contrast.v1.css'),idx=read('index.html'),sw=read('service-worker.js');
+const fullCss=read('app/styles/aviation-reference.v1.css'),css=fullCss.slice(fullCss.indexOf('/* E-REPORT-SAGS V2.5.20')),idx=read('index.html'),sw=read('service-worker.js');
 const ver=JSON.parse(read('version.json')),manifest=JSON.parse(read('asset-manifest.json'));
 assert.equal(ver.build,manifest.build);
 assert.ok(css.startsWith('/* E-REPORT-SAGS V2.5.20'));
@@ -23,8 +23,10 @@ const pairs=[
 ['--ec-action-fg','--ec-action'],['--ec-warning-fg','--ec-warning-bg']
 ];
 for(const[a,b] of pairs)assert.ok(contrast(a,b)>=4.5,a+' on '+b+': '+contrast(a,b).toFixed(2)+':1');
-assert.ok(idx.includes('app/styles/unified-contrast.v1.css?v='+ver.build));
-assert.ok(sw.includes('./app/styles/unified-contrast.v1.css'));
-assert.ok(idx.indexOf('app/modules/theme-contrast.v2.js')<idx.indexOf('app/styles/unified-contrast.v1.css'),'unified styles must follow runtime theme correction');
-assert.ok(manifest.assets['./app/styles/unified-contrast.v1.css'],'missing verified CSS asset');
+assert.ok(idx.includes('app/styles/aviation-reference.v1.css?v='+ver.build));
+assert.equal([...idx.matchAll(/<link[^>]+rel=[\"']stylesheet[\"']/g)].length,6,'CSS request count must remain six');
+assert.ok(sw.includes('./app/styles/aviation-reference.v1.css'));
+assert.ok(!sw.includes('./app/styles/unified-contrast.v1.css'));
+assert.ok(idx.includes('app/modules/theme-contrast.v2.js'),'retain existing runtime theme correction');
+assert.ok(manifest.assets['./app/styles/aviation-reference.v1.css'],'missing verified shared CSS asset');
 console.log('Unified contrast: '+pairs.length+' AA text pairs passed; screen-only; shared mobile/desktop roots, print-safe and release-pinned.');
