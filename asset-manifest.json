@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V2.5.21",
-  "build": "V2.5.21-20261021-FORM-EDIT-HISTORY-01",
+  "version": "V2.5.22",
+  "build": "V2.5.22-20261021-HISTORY-ACTOR-FIX-01",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -234,8 +234,8 @@
       "bytes": 9917
     },
     "./app/modules/form-edit-history.v1.js": {
-      "sha256": "d615997f16e7b1c8a3b45b1fc351262878a578c85afa23d329549cf114a4d59e",
-      "bytes": 16257
+      "sha256": "a259c258522833896e87eab4e49c1ecc55a82af6f62739eff2322ab98e232255",
+      "bytes": 17156
     },
     "./app/modules/form-entry-contrast.v1.js": {
       "sha256": "c86ec492fced4234f3e64521b9d01913ebe8176327f55f3a42f435763777d465",
@@ -762,7 +762,7 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "096aa00bfc72d4cd531525b0d09a59164254176bebd1b5132412427f730b17a2",
+      "sha256": "86e63f2df64d9df4503219ea36fa86d2efef3465932fb4c15f21bfb5a9c83c5f",
       "bytes": 104750
     },
     "./manifest.webmanifest": {
@@ -814,7 +814,7 @@
       "bytes": 6937
     },
     "./service-worker.js": {
-      "sha256": "e46a0c07cf58a8917dde6bcfbeb512a0cd59d816683d250ef93ce16b7cf4d90a",
+      "sha256": "f0e0927347187effaf7b2f2ea6a2a957357a9658c596a2738b43fb7cd0d91d51",
       "bytes": 22465
     },
     "./storage-recovery.html": {
@@ -822,8 +822,8 @@
       "bytes": 25937
     },
     "./version.json": {
-      "sha256": "1063e32f53bcb876a5d3c87bae468aaf43bf6f6a6340a5c2935e075e0cd69f56",
-      "bytes": 781
+      "sha256": "833f8f35177922c6e1a5e65400ebb7b7c49af7dcb0d3d71775fd7f60e7c9b3f8",
+      "bytes": 713
     }
   },
   "mutableAssets": [

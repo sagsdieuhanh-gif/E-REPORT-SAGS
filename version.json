@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.21",
-  "displayVersion": "V2.5.21",
-  "label": "V2.5.21 - LỊCH SỬ CHỈNH SỬA BIỂU MẪU",
-  "build": "V2.5.21-20261021-FORM-EDIT-HISTORY-01",
+  "version": "V2.5.22",
+  "displayVersion": "V2.5.22",
+  "label": "V2.5.22 - LỊCH SỬ PHÂN BIỆT NGƯỜI SỬA VÀ HỆ THỐNG",
+  "build": "V2.5.22-20261021-HISTORY-ACTOR-FIX-01",
   "releasedAt": "2026-10-21",
-  "type": "form-edit-history",
-  "base": "E-REPORT-SAGS main@V2.5.20",
+  "type": "form-edit-history-actor-hardening",
+  "base": "E-REPORT-SAGS main@V2.5.21",
   "updatePolicy": "required",
-  "notes": "Lưu lịch sử thay đổi thực sự sau khi lưu biểu mẫu; xem giá trị trước/sau, người sửa, giờ sửa. Lưu IndexedDB với fallback và cố gắng đồng bộ Firebase cho chuyến có roster. Không ghi chữ ký, ảnh, thông tin nhạy cảm. Chưa thay thế audit bất biến do máy chủ xác nhận.",
-  "message": "V2.5.21: Tra cứu lịch sử sửa biểu mẫu trên máy; trạng thái đồng bộ Firebase minh bạch."
+  "notes": "Phân biệt thao tác nhập thực sự của người dùng và tự động cập nhật; tránh gán nhầm người sửa. Không lưu giá trị mã nhân viên/tên riêng ở ô nhận diện; giữ lịch sử trước/sau, tránh tải nặng.",
+  "message": "V2.5.22: Lịch sử chỉnh sửa chính xác hơn, bảo vệ định danh nhân viên."
 }

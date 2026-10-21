@@ -8,11 +8,11 @@ if(root.SAGSFormEditHistoryV1)return;
 const S=v=>String(v??'').trim(), U=v=>S(v).toUpperCase(), $=id=>document.getElementById(id);
 const esc=v=>S(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','"':'&#39;'}[c]));
 const safe=v=>S(v).replace(/[.#$\[\]\/]/g,'_').slice(0,90);
-const EXCLUDE=/signature|sigcanvas|sigimage|signpad|attachment|image|photo|picture|canvas|password|passwd|passcode|pin($|_)|auth|token|secret|private|base64|biometric|face|fingerprint|cookie|api.?key|passport|boardingpass|passenger.?name|pax.?name|pnr|booking|email|phone|mobile.?number|bag.?tag|device.?id|ssn|identification/i;
+const EXCLUDE=/staff.?id|employee.?id|staff.?name|name_copy|acustart_copy|personnel.?id|signature|sigcanvas|sigimage|signpad|attachment|image|photo|picture|canvas|password|passwd|passcode|pin($|_)|auth|token|secret|private|base64|biometric|face|fingerprint|cookie|api.?key|passport|boardingpass|passenger.?name|pax.?name|pnr|booking|email|phone|mobile.?number|bag.?tag|device.?id|ssn|identification/i;
 const INTERNAL=/^(?:v\d+(?:Local|Remote|Last)|roster|createdAt|updatedAt|audit|version|__)/i;
 const LONG='[Nội dung dài hoặc tệp đính kèm: không lưu giá trị]';
 const MAX_VALUE=140, MAX_CHANGES=80, MAX_ROWS=200;
-let dbPromise=null,patching=false,uiOpen=false,lastError='';const batches=new Map();
+let dbPromise=null,patching=false,uiOpen=false,lastError='',lastTrustedFormEditAt=0;const batches=new Map();
 function user(){
  const sess=root.__sagsGetSession?.()||{},p=sess.profile||root.currentUserProfile||{};
  let uid='';try{uid=S(root.firebase?.auth?.()?.currentUser?.uid)}catch(_){}
@@ -100,9 +100,10 @@ function capture(m,prev,next,reason){
  if(!m?.id||!scopeFor(m))return;
  const diff=changesOf(prev?.state,next?.state);
  if(!diff.length)return;
- const actor=user(),at=Date.now(),sid=S(m.id),aid=S(m.rosterAssignmentId||next?.rosterAssignmentId),scope=scopeFor(m);
+ const at=Date.now(),human=lastTrustedFormEditAt>0&&at-lastTrustedFormEditAt<15000;
+ const actor=human?user():{username:'HỆ THỐNG',name:'Tự động cập nhật',role:'SYSTEM',uid:''},sid=S(m.id),aid=S(m.rosterAssignmentId||next?.rosterAssignmentId),scope=scopeFor(m);
  let batch=batches.get(scope);
- if(batch&&(at-batch.lastAt>1800||batch.event.sessionId!==sid)){void flushBatch(scope);batch=null}
+ if(batch&&(at-batch.lastAt>1800||batch.event.sessionId!==sid||batch.event.actor.username!==actor.username)){void flushBatch(scope);batch=null}
  if(batch){
   const map=new Map(batch.event.changes.map(c=>[c.field,{...c}]));
   for(const c of diff){const old=map.get(c.field);if(old){old.after=c.after;if(old.before===old.after)map.delete(c.field)}else map.set(c.field,c)}
@@ -110,7 +111,7 @@ function capture(m,prev,next,reason){
   batch.event.atMs=at;batch.lastAt=at;
  }else{
   const id='h'+at.toString(36)+'_'+Math.random().toString(36).slice(2,13);
-  const event={schema:1,id,scope,sessionId:sid,assignmentId:aid,flightLabel:S(m.name||m.flightName||m.flightRaw||sid).slice(0,100),formGroup:S(m.initialGroup||next?.mainForm||next?.activeFormGroup).slice(0,40),atMs:at,reason:S(reason||'Lưu biểu mẫu').slice(0,75),actor:{username:actor.username,name:actor.name.slice(0,90),role:actor.role,uid:actor.uid},changes:diff,synced:false};
+  const event={schema:1,id,scope,sessionId:sid,assignmentId:aid,flightLabel:S(m.name||m.flightName||m.flightRaw||sid).slice(0,100),formGroup:S(m.initialGroup||next?.mainForm||next?.activeFormGroup).slice(0,40),atMs:at,reason:human?'Thao tác nhập/sửa dữ liệu':'Phần mềm tự cập nhật',actor:{username:actor.username,name:actor.name.slice(0,90),role:actor.role,uid:actor.uid},changes:diff,synced:false};
   batch={event,lastAt:at,timer:null,written:Promise.resolve()};batches.set(scope,batch);
  }
  const curr=batch;
@@ -148,7 +149,7 @@ async function entriesFor(m){
  const scope=scopeFor(m),local=(await localList()).filter(x=>x.scope===scope).slice(0,MAX_ROWS);
  const remote=await remoteList(m?.rosterAssignmentId);
  const merged=new Map();
- for(const e of remote){if(S(e.sessionId)===S(m.id)&&(U(e.actor?.username)===user().username||['AD','ADMIN'].includes(user().role)))merged.set(e.id,{...e,synced:true})}
+ for(const e of remote){if(S(e.sessionId)===S(m.id)&&(U(e.actor?.username)===user().username||U(e.actor?.role)==='SYSTEM'||['AD','ADMIN'].includes(user().role)))merged.set(e.id,{...e,synced:true})}
  for(const e of local){const old=merged.get(e.id);merged.set(e.id,old||e)}
  return [...merged.values()].sort((a,b)=>b.atMs-a.atMs).slice(0,MAX_ROWS);
 }
@@ -209,6 +210,14 @@ function installButtons(){
   else host.appendChild(btn);
  }
 }
+function trustedInput(e){
+ if(!e?.isTrusted||!document.body?.classList?.contains('v157-authenticated'))return;
+ const t=e.target;if(!t||!['INPUT','SELECT','TEXTAREA'].includes(t.tagName))return;
+ if(/^(?:password|file|hidden)$/i.test(S(t.type)))return;
+ if(t.closest?.('#roleLoginModal,#sagsSettingsCenter,#sagsHistoryOverlay,#v157Drawer,#accountManagerModal,#accountProfileEditModal'))return;
+ lastTrustedFormEditAt=Date.now();
+}
+document.addEventListener('input',trustedInput,true);document.addEventListener('change',trustedInput,true);
 root.SAGSFormEditHistoryV1={changesOf,scrub,open,refresh,install,capture,flushBatch,entriesFor};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install,50),{once:true});
 else setTimeout(install,50);
