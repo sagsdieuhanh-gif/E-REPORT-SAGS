@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.27",
-  "displayVersion": "V2.5.27",
-  "label": "V2.5.27 - TIẾN TRÌNH CẬP NHẬT 3 BƯỚC HIỂN THỊ RÕ",
-  "build": "V2.5.27-20261021-UPDATE-PROGRESS-VISIBLE-01",
+  "version": "V2.5.28",
+  "displayVersion": "V2.5.28",
+  "label": "V2.5.28 - TỐI ƯU TỐC ĐỘ MY FLIGHT VÀ THAO TÁC BIỂU MẪU",
+  "build": "V2.5.28-20261021-PERF-MYFLIGHT-HISTORY-01",
   "releasedAt": "2026-10-21",
-  "type": "visible-three-stage-update-and-auto-refresh",
-  "base": "E-REPORT-SAGS main@V2.5.26",
+  "type": "targeted-myflight-form-history-performance",
+  "base": "E-REPORT-SAGS main@V2.5.27",
   "updatePolicy": "required",
-  "notes": "Mỗi trạng thái ĐANG TẢI BẢN CẬP NHẬT, ĐANG CẬP NHẬT, CẬP NHẬT HOÀN TẤT hiển thị đủ lâu; hoàn tất tự mở lại index mới và toast chỉ xuất hiện một lần. Giữ nguyên an toàn nháp và kiểm tra phiên bản/caches.",
-  "message": "V2.5.27: Cập nhật 3 bước rõ ràng và tự tải phiên bản mới."
+  "notes": "Giảm cập nhật MY FLIGHT lặp khi thay đổi vai trò và trở lại tab; dùng lại snapshot ngắn hạn khi chuyển trạng thái danh sách; gom ghi lịch sử ấn phím xuống IndexedDB thành một đợt, vẫn giữ bản ghi đầu tiên và lưu bản tổng hợp. Không thay đổi Firebase schema, xuất PDF, dữ liệu nháp, phân quyền hay PWA update ba bước.",
+  "message": "V2.5.28: Giảm khựng thao tác nhập liệu và mở MY FLIGHT."
 }
