@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.20",
-  "displayVersion": "V2.5.20",
-  "label": "V2.5.20 - THỐNG NHẤT ĐỘ TƯƠNG PHẢN TOÀN E-REPORT",
-  "build": "V2.5.20-20261021-UNIFIED-CONTRAST-01",
+  "version": "V2.5.21",
+  "displayVersion": "V2.5.21",
+  "label": "V2.5.21 - LỊCH SỬ CHỈNH SỬA BIỂU MẪU",
+  "build": "V2.5.21-20261021-FORM-EDIT-HISTORY-01",
   "releasedAt": "2026-10-21",
-  "type": "global-screen-contrast-unification",
-  "base": "E-REPORT-SAGS main@V2.5.19",
+  "type": "form-edit-history",
+  "base": "E-REPORT-SAGS main@V2.5.20",
   "updatePolicy": "required",
-  "notes": "Chuẩn hóa cặp màu chữ/nền cho PC/mobile, sáng/tối, Sổ tay hãng, đăng nhập, My Flight, dashboard và form quản lý. Giữ nguyên biểu mẫu in PDF, chữ ký, dữ liệu và quy trình nghiệp vụ.",
-  "message": "V2.5.20: tăng tương phản chữ trên toàn bộ giao diện, bảo vệ form và PDF."
+  "notes": "Lưu lịch sử thay đổi thực sự sau khi lưu biểu mẫu; xem giá trị trước/sau, người sửa, giờ sửa. Lưu IndexedDB với fallback và cố gắng đồng bộ Firebase cho chuyến có roster. Không ghi chữ ký, ảnh, thông tin nhạy cảm. Chưa thay thế audit bất biến do máy chủ xác nhận.",
+  "message": "V2.5.21: Tra cứu lịch sử sửa biểu mẫu trên máy; trạng thái đồng bộ Firebase minh bạch."
 }
