@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V2.5.27",
-  "build": "V2.5.27-20261021-UPDATE-PROGRESS-VISIBLE-01",
+  "version": "V2.5.28",
+  "build": "V2.5.28-20261021-PERF-MYFLIGHT-HISTORY-01",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -214,8 +214,8 @@
       "bytes": 20659
     },
     "./app/modules/daily-roster.v502.js": {
-      "sha256": "3edac0aea355c4776bbb78af1aa94e5c2db5f6607c58b29914a8f33cec06663b",
-      "bytes": 87145
+      "sha256": "6868123cee91163d5caed15f0a771494ddf713b78141d9ac06a8d1554c297e53",
+      "bytes": 87653
     },
     "./app/modules/feature-loader.v1.js": {
       "sha256": "dc738a8d7df5134fe41f208fa0a19f6624438dc3d82fc30a921e05541fbc91c9",
@@ -234,8 +234,8 @@
       "bytes": 9917
     },
     "./app/modules/form-edit-history.v1.js": {
-      "sha256": "c192fb653e0d6540bbe021c4d11e04c805824e68f1347460fc227a2949b9171a",
-      "bytes": 18799
+      "sha256": "42a23d4641237c8b63d0e2e2b95043bcfb05bf5b26941946cb5ab8ab767155c4",
+      "bytes": 19135
     },
     "./app/modules/form-entry-contrast.v1.js": {
       "sha256": "c86ec492fced4234f3e64521b9d01913ebe8176327f55f3a42f435763777d465",
@@ -290,8 +290,8 @@
       "bytes": 19587
     },
     "./app/modules/roster-lite.v5.js": {
-      "sha256": "3739427db6ffc56a3a1929f7a429313e32691cd13816a3c31c024142f29ac069",
-      "bytes": 26209
+      "sha256": "fc96a9483925e25b70e2ce8e0b27962c14b703397be1faf30545b698b50c720a",
+      "bytes": 26360
     },
     "./app/modules/roster-open-guard.v1.js": {
       "sha256": "2dd621f3f4958d5830c0da7b9560dda5969e4198e6cfe3d9e90e1ff9ec8423c0",
@@ -762,8 +762,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "63ad37123c983c1fd8ff242145f6190911134cd27c038a05998a159365704427",
-      "bytes": 105224
+      "sha256": "22f99fd979c500dc2e1287d93c6fb48792044b9c41fae65f6ef0ba8812a2662c",
+      "bytes": 105066
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -814,16 +814,16 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "e0a80a287c0c9bc01b51e1e1b6ccff0e66fa00df7675f81fd0bc74ad4eb7494a",
-      "bytes": 22483
+      "sha256": "46ce9887ac6559c0133a5849a4bdd1e236a7135719632724fa35cad4c7cb7a6e",
+      "bytes": 22477
     },
     "./storage-recovery.html": {
       "sha256": "fb864ac28bf98fda1522a266c657260c6b3c93b9ee850f343bed8d969297af44",
       "bytes": 25937
     },
     "./version.json": {
-      "sha256": "608f145c14b28fc6728ac9a0747df745366e559274c7b6991448897dd6353d7a",
-      "bytes": 728
+      "sha256": "d1252398442579d5f72ef69af09e4f871938b50da48431a957ff8846503ea095",
+      "bytes": 848
     }
   },
   "mutableAssets": [

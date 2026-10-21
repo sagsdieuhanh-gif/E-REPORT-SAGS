@@ -403,7 +403,7 @@ async function setFlightCloseout(date,fkey,closed,button=null){
     return true;
   }finally{if(button?.isConnected)button.disabled=false}
 }
-let activeTab='pending',renderToken=0,baseOpen=null,baseRefresh=null,currentQueueDate='';
+let activeTab='pending',renderToken=0,baseOpen=null,baseRefresh=null,currentQueueDate='',lastQueueSnapshot=null;
 function queueDate(preferred=''){
   const d=S(preferred)||S(document.getElementById('fwcDate')?.value)||S(currentQueueDate)||S(sessionStorage.getItem('sagsV36FwcDate'))||opDate();
   return d;
@@ -513,10 +513,17 @@ root.sagsPersonalFlightTasks={async renderInto(host,date,fid){
  host.innerHTML=groups.length?groups.map(g=>'<div class="v1199OwnerNote">'+esc(owner)+' · '+esc(flightLabel(g.primary))+'</div><div class="v1199DossierOverview"><div class="v1199DossierOverviewTitle">BIỂU MẪU CÁC ĐƠN VỊ TRÊN CHUYẾN</div><div class="v1199Tasks">'+flightOverviewHtml(g)+'</div></div><div class="v1199OwnerNote">THAO TÁC BIỂU MẪU CỦA TÔI</div><div class="v1199Tasks">'+taskPills(g,date)+'</div>').join(''):'<p>Không có nhiệm vụ roster được phân cho bạn trên chuyến này. Bạn vẫn có thể xem các tài liệu đã gửi theo quyền truy cập chuyến.</p>';bindDossierTasks(host);
 }};
 const personalQueueMarkup=new WeakMap;
-async function renderPersonal(date=opDate()){
+async function renderPersonal(date=opDate(),reuseRecent=false){
   if(!me())return;date=syncQueueDate(queueDate(date));const token=++renderToken;installStyle();setHeader(date);const host=document.getElementById('fwcList');if(!host)return;const hadQueue=host.classList.contains('v1199Queue');host.classList.add('v1199Queue');if(!hadQueue&&!host.children.length)host.innerHTML='<div class="v1199Empty">Đang tải công việc được phân…</div>';
   try{
-    const {dd,groups}=await personalGroups(date);if(token!==renderToken)return;
+    // Switching queue tabs reuses the immediately preceding authorized snapshot.
+    // Actions / refresh still call renderPersonal(date) and force fresh reads.
+    const owner=me(),cached=lastQueueSnapshot;
+    const useCache=reuseRecent===true&&cached&&cached.owner===owner&&cached.date===date&&Date.now()-cached.at<1500;
+    const result=useCache?cached.result:await personalGroups(date);
+    if(token!==renderToken||me()!==owner)return;
+    const {dd,groups}=result;
+    if(!useCache)lastQueueSnapshot={owner,date,at:Date.now(),result};
     const pending=groups.filter(x=>!x.flightClosed),done=groups.filter(x=>x.flightClosed),show=activeTab==='completed'?done:pending;
     const next='<div class="v1199Tabs"><button class="v1199Tab '+(activeTab==='pending'?'active':'')+'" onclick="v1199QueueTab(\'pending\')">ĐANG LÀM <span class="v1199Count">'+pending.length+'</span></button><button class="v1199Tab '+(activeTab==='completed'?'active':'')+'" onclick="v1199QueueTab(\'completed\')">CHUYẾN ĐÃ HOÀN TẤT <span class="v1199Count">'+done.length+'</span></button></div><div class="v1199OwnerNote">'+esc(me())+' · '+esc(date)+' · '+groups.length+' chuyến được phân · đã loại '+dd.dupes.length+' vé/bản ghi trùng khỏi màn hình</div>'+(show.length?'<div class="v1199FlightGrid">'+show.map(g=>cardHtml(g,date)).join('')+'</div>':'<div class="v1199Empty">'+(activeTab==='completed'?'Chưa có chuyến nào bạn đã bấm Kết thúc chuyến.':'Không còn chuyến đang làm.')+'</div>');
     if(personalQueueMarkup.get(host)!==next||!host.querySelector('.v1199Tabs')){
@@ -558,7 +565,7 @@ async function openTask(aid,fid,completed,cardDate='',exact=false,button=null){
   }catch(e){console.error('Mở công việc roster thất bại',e);alert('Không mở được công việc '+date+': '+S(e?.message||e));}
   finally{openingTasks.delete(key);if(button?.isConnected){button.disabled=false;button.classList.remove('v64100Opening');if(originalButtonText)button.textContent=originalButtonText;}}
 }
-root.v1199QueueTab=function(tab){activeTab=tab==='completed'?'completed':'pending';void renderPersonal(queueDate(currentQueueDate))};
+root.v1199QueueTab=function(tab){activeTab=tab==='completed'?'completed':'pending';void renderPersonal(queueDate(currentQueueDate),true)};
 
 async function cleanupDuplicates(date=opDate()){
   if(role()!=='AD')return {ok:false,reason:'AD_ONLY',removed:0};const man=await readManifest(date),rows=Object.values(man?.items||{}).filter(x=>x&&x.active!==false),dd=dedupeItems(date,rows);if(!dd.dupes.length)return {ok:true,removed:0};const patch={},seen=new Set();for(const d of dd.dupes){const x=d.drop,aid=S(x?.assignmentId),u=norm(x?.user||x?.targetUser);if(!aid||seen.has(aid))continue;seen.add(aid);patch[`roster_manifests/${safe(date)}/items/${safe(aid)}/active`]=false;patch[`roster_manifests/${safe(date)}/items/${safe(aid)}/duplicateInactive`]=true;patch[`roster_manifests/${safe(date)}/items/${safe(aid)}/duplicateOf`]=S(d.keep?.assignmentId);patch[`roster_manifests/${safe(date)}/items/${safe(aid)}/duplicateCleanedAtMs`]=Date.now();if(u){patch[`roster_mail/${safe(u)}/items/${safe(aid)}/active`]=false;patch[`roster_mail/${safe(u)}/items/${safe(aid)}/duplicateInactive`]=true;patch[`roster_mail/${safe(u)}/items/${safe(aid)}/duplicateOf`]=S(d.keep?.assignmentId)}}patch[`roster_manifests/${safe(date)}/duplicateCleanBuild`]='V1.1.102';patch[`roster_manifests/${safe(date)}/duplicateCleanedAtMs`]=Date.now();patch[`roster_manifests/${safe(date)}/duplicateCleanedCount`]=seen.size;await db('').update(patch);return {ok:true,removed:seen.size}}

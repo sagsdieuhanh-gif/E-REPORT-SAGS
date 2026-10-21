@@ -94,7 +94,13 @@ async function send(item){
 async function flushBatch(scope){
  const batch=batches.get(scope);if(!batch)return;
  clearTimeout(batch.timer);batches.delete(scope);
- try{await batch.written;await send(batch.event)}catch(e){lastError=S(e?.message||e)}
+ // Persist first edit immediately, then only final aggregate when typing settles.
+ // Never perform an IndexedDB transaction on each keystroke.
+ try{
+  await batch.written;
+  if(batch.dirty)await saveLocal(batch.event);
+  await send(batch.event);
+ }catch(e){lastError=S(e?.message||e)}
 }
 function capture(m,prev,next,reason){
  if(!m?.id||!scopeFor(m))return;
@@ -108,16 +114,15 @@ function capture(m,prev,next,reason){
   const map=new Map(batch.event.changes.map(c=>[c.field,{...c}]));
   for(const c of diff){const old=map.get(c.field);if(old){old.after=c.after;if(old.before===old.after)map.delete(c.field)}else map.set(c.field,c)}
   batch.event.changes=[...map.values()].slice(0,MAX_CHANGES);
-  batch.event.atMs=at;batch.lastAt=at;
+  batch.event.atMs=at;batch.lastAt=at;batch.dirty=true;
  }else{
   const id='h'+at.toString(36)+'_'+Math.random().toString(36).slice(2,13);
   const event={schema:1,id,scope,sessionId:sid,assignmentId:aid,flightLabel:S(m.name||m.flightName||m.flightRaw||sid).slice(0,100),formGroup:S(m.initialGroup||next?.mainForm||next?.activeFormGroup).slice(0,40),atMs:at,reason:human?'Thao tác nhập/sửa dữ liệu':'Phần mềm tự cập nhật',actor:{username:actor.username,name:actor.name.slice(0,90),role:actor.role,uid:actor.uid},changes:diff,synced:false};
-  batch={event,lastAt:at,timer:null,written:Promise.resolve()};batches.set(scope,batch);
+  batch={event,lastAt:at,timer:null,written:null,dirty:false};batch.written=saveLocal(event);batches.set(scope,batch);
  }
  const curr=batch;
- curr.written=curr.written.then(()=>saveLocal(curr.event));
  clearTimeout(curr.timer);
- curr.timer=setTimeout(()=>{void flushBatch(scope)},1800);
+ curr.timer=setTimeout(()=>{void flushBatch(scope)},900);
 }
 function wrap(name){
  const fn=root[name];if(typeof fn!=='function'||fn.__sagsHistoryWrapped)return false;
@@ -248,5 +253,6 @@ root.addEventListener?.('pageshow',()=>setTimeout(install,100),{passive:true});
 ['sags:login','sags:profilechange','sags:rolechange'].forEach(ev=>root.addEventListener?.(ev,()=>setTimeout(installButtons,80)));
 document.addEventListener('click',e=>{if(e.target?.closest?.('[data-v157-key="myflight"],#roleBtnFlights,#roleBtnRosterFlights,#v324FormActions,#fwcModal,#v157Drawer,.v157MenuToggle,#v157MenuBtn,[aria-controls="v157Drawer"]'))setTimeout(installButtons,70)},true);
 root.addEventListener?.('online',()=>{if(uiOpen)void refresh(true)},{passive:true});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)for(const scope of [...batches.keys()])void flushBatch(scope)},{passive:true});
 root.addEventListener?.('pagehide',()=>{for(const scope of [...batches.keys()])void flushBatch(scope)},{passive:true});
 })(window);
