@@ -26,7 +26,7 @@ assert.deepEqual(JSON.parse(JSON.stringify(api.changesOf({h24Start:'14:38'},{h24
 assert.equal(api.scrub('note','x'.repeat(200)),'[Nội dung dài hoặc tệp đính kèm: không lưu giá trị]');
 assert.equal(api.scrub('text','abc@example.com'),'[Nội dung dài hoặc tệp đính kèm: không lưu giá trị]');
 api.capture(win.currentFlightSessionMeta(),{state:{h24Start:'14:35',signatureImage:'x'}},{state:{h24Start:'14:38',signatureImage:'secret'}},'Lưu biểu mẫu');
-setTimeout(async()=>{
+api.flushBatch('uid1|flight1').then(async()=>{
  try{
   const local=JSON.parse(store.get('sagsFormHistoryV1')||'[]');
   assert.equal(local.length,1);
@@ -38,4 +38,4 @@ setTimeout(async()=>{
   assert.equal((await api.entriesFor(win.currentFlightSessionMeta())).length,1);
   console.log('PASS saved-only diff, sensitive exclusions, local fallback, cloud write and history retrieval');
  }catch(e){console.error(e);process.exitCode=1}
-},40);
+});
