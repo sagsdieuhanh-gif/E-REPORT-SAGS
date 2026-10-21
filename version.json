@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.16",
-  "displayVersion": "V2.5.16",
-  "label": "V2.5.16 - SEARCH BAR SINGLE SURFACE",
-  "build": "V2.5.16-20261019-SEARCH-INPUT-01",
-  "releasedAt": "2026-10-19",
-  "type": "search-field-style-fix",
-  "base": "E-REPORT-SAGS main@f2c8ea3",
+  "version": "V2.5.17",
+  "displayVersion": "V2.5.17",
+  "label": "V2.5.17 - GRND LS ROSTER AND VZ TVJ",
+  "build": "V2.5.17-20261021-ROSTER-LS-TVJ-01",
+  "releasedAt": "2026-10-21",
+  "type": "roster-grnd-ls-tvj-fix",
+  "base": "E-REPORT-SAGS main@7cc483b",
   "updatePolicy": "required",
-  "notes": "Sửa ô tìm kiếm trên thanh trên cùng: bỏ giao diện native/viền nền riêng của input, giữ một lớp nền và viền ngoài. Không thay đổi thao tác tìm kiếm, bố cục khác hoặc dữ liệu.",
-  "message": "V2.5.16: sửa ô tìm chuyến bay hiển thị liền mạch, không còn vùng input đậm màu chồng lên thanh ngoài."
+  "notes": "Tách mã phân công FINAL/54/94 của Grnd_Ls; chấp nhận Grnd_LS; không thu hồi chéo các mẫu CBTT; TVJ chỉ hiện và mở cho chuyến VZ, kể cả AD.",
+  "message": "V2.5.17: sửa đổ roster Grnd_LS và giới hạn TVJ đúng chuyến VZ."
 }

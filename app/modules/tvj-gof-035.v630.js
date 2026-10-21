@@ -114,7 +114,6 @@
   function refreshMenu(){
     const b=document.getElementById("formMenuVZ");if(!b)return;
     let ok=eligible();
-    try{if(String(currentRole||"").toUpperCase()==="AD")ok=true}catch(_){}
     try{if(typeof v485Can==="function")ok=ok&&v485Can("FSAGS423")}catch(_){}
     b.style.display=ok?"":"none";
   }
@@ -183,7 +182,7 @@
     }catch(e){console.warn("TVJ seed persist",e)}
   }
   function showVZ(scrollTop=true){
-    if(!liveForm)return;
+    if(!eligible()||!liveForm)return false;
     const page=ensurePage(liveForm);
     for(let n=1;n<=14;n++){const p=document.getElementById("page"+n);if(p){p.classList.add("hide");p.style.display="none"}}
     page.classList.remove("hide");page.style.display="block";
@@ -204,7 +203,7 @@
     if(root.__SAGS_TVJ_GOF_035_WRAPPED)return;root.__SAGS_TVJ_GOF_035_WRAPPED=true;
     try{
       const base=getActiveFlightMainForm;
-      const wrapped=function(){try{if(String(activeFormGroup||"")===GROUP)return GROUP;const env=currentEnv(),meta=currentMeta();if(eligible(env,meta))return GROUP}catch(_){}return base.apply(this,arguments)};
+      const wrapped=function(){try{const env=currentEnv(),meta=currentMeta();if(eligible(env,meta))return GROUP}catch(_){}return base.apply(this,arguments)};
       getActiveFlightMainForm=wrapped;root.getActiveFlightMainForm=wrapped;
     }catch(e){console.warn("TVJ wrap mainForm",e)}
     try{
