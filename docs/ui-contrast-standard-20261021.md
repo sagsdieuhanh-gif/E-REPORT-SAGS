@@ -7,7 +7,7 @@
 - Duy trì các quy tắc sửa giao diện nghiệp vụ/phân quyền của theme-contrast.v2.js; không can thiệp màu in PDF, giấy gốc, SVG biểu mẫu, canvas chữ ký, vị trí field, dữ liệu biểu mẫu, hay kết nối Firebase.
 
 ## Cơ chế
-- File nguồn mới `app/styles/unified-contrast.v1.css` được load cuối cùng sau theme-contrast.v2.js; chỉ áp dụng `@media screen`.
+- Bộ quy tắc mới được gộp vào `app/styles/aviation-reference.v1.css` vốn đã được nạp, nên không tăng số yêu cầu CSS. Chỉ áp dụng `@media screen`, đồng thời dùng selector đủ cụ thể để không bị style động ghi đè.
 - Cặp token `--ec-dark-*` cho mặt tối và `--ec-light-*` cho mặt sáng; các vùng nhập phụ thuộc theme hiện có không bị đổi nền tràn lan.
 - Sổ tay hãng luôn là thẻ sáng; chữ giá trị chính, nhãn, chưa cập nhật, lưu ý và nguồn đều được cố định màu phù hợp nền, kể cả khi E-Report chạy theme tối.
 - Không sử dụng JS observer/interval, không thay đổi kích thước, layout hay ảnh để giảm nguy cơ lag.
