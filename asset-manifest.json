@@ -190,8 +190,8 @@
       "bytes": 27827
     },
     "./app/modules/aviation-reference.v1.js": {
-      "sha256": "0dc4d416c2a21db88d45f722e65413b83ef2cf8af250fc4e2e168f066a2d6878",
-      "bytes": 20849
+      "sha256": "82e841ebd95426141f6257142d7710ba78992db64711d606ef8af09bf7eeef81",
+      "bytes": 20915
     },
     "./app/modules/business-text.v1.js": {
       "sha256": "e34f55616e06b0024ad8a77d2b3f705f57afa3b064530cc1212d344895b5b407",
@@ -521,6 +521,10 @@
       "sha256": "994c04543022136f66c578df5ca9d136e2375d297c3e2f47d2c1be735b7efaa0",
       "bytes": 6430
     },
+    "./assets/airlines/EO.svg": {
+      "sha256": "86f597bbadd00d7f80d4528552ea2e9c7e5e21e9b17ee0d9dbf731f4c8acae43",
+      "bytes": 395
+    },
     "./assets/airlines/FD.png": {
       "sha256": "172d509e686526251e3433c003a1074771c89c4ea99af2408184fd019e93645e",
       "bytes": 3332
@@ -806,8 +810,8 @@
       "bytes": 6937
     },
     "./service-worker.js": {
-      "sha256": "b5c44067f0910fc9eab5f80b1bd3d00e0256f8865e991745877396651ae5dfd1",
-      "bytes": 22398
+      "sha256": "294000873e2262051a19dbfee6d051166d01453b343e1fadcb1b0b89767b846f",
+      "bytes": 22425
     },
     "./storage-recovery.html": {
       "sha256": "fb864ac28bf98fda1522a266c657260c6b3c93b9ee850f343bed8d969297af44",
