@@ -2,7 +2,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
 const root=path.resolve(__dirname,'..'),src=fs.readFileSync(path.join(root,'app/modules/form-edit-history.v1.js'),'utf8');
 assert.match(src,/readFlightSessionEnvelope/,'history must use saved envelope');
-assert.match(src,/root\.persist/,'wrap persisted save');
+assert.match(src,/wrap\('persist'\)/,'wrap persisted save');
 assert.match(src,/sagsV22SaveNow/,'wrap verified autosave');
 assert.match(src,/edit_audit_v1/,'cloud path available when authorized');
 assert.match(src,/IndexedDB/);
