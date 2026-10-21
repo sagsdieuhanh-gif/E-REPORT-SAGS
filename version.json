@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.19",
-  "displayVersion": "V2.5.19",
-  "label": "V2.5.19 - SỔ TAY HÃNG QUICK VIEW + EXCEL MỞ RỘNG",
-  "build": "V2.5.19-20261021-CARRIER-QUICKVIEW-01",
+  "version": "V2.5.20",
+  "displayVersion": "V2.5.20",
+  "label": "V2.5.20 - THỐNG NHẤT ĐỘ TƯƠNG PHẢN TOÀN E-REPORT",
+  "build": "V2.5.20-20261021-UNIFIED-CONTRAST-01",
   "releasedAt": "2026-10-21",
-  "type": "carrier-quickview-import-and-local-performance",
-  "base": "E-REPORT-SAGS main@V2.5.18",
+  "type": "global-screen-contrast-unification",
+  "base": "E-REPORT-SAGS main@V2.5.19",
   "updatePolicy": "required",
-  "notes": "Sổ tay hãng hiển thị DOOR/KÝ TẢI/thợ máy/xăng dầu/suất ăn/đại diện tức thì; lưu ý quan trọng; nhập Excel HANG/LUU_Y/BO_SUNG không xóa dữ liệu cũ. Giảm thao tác nền của Sổ tay.",
-  "message": "V2.5.19: Sổ tay hãng trực quan và Excel linh hoạt, giảm tác vụ cập nhật thừa."
+  "notes": "Chuẩn hóa cặp màu chữ/nền cho PC/mobile, sáng/tối, Sổ tay hãng, đăng nhập, My Flight, dashboard và form quản lý. Giữ nguyên biểu mẫu in PDF, chữ ký, dữ liệu và quy trình nghiệp vụ.",
+  "message": "V2.5.20: tăng tương phản chữ trên toàn bộ giao diện, bảo vệ form và PDF."
 }
