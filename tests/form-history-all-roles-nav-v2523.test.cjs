@@ -12,7 +12,7 @@ assert.match(src,/all participating roles/,'authorized colleagues edits should b
 assert.match(src,/S\(e\.sessionId\)===S\(m\.id\)&&S\(e\.assignmentId\)===S\(m\.rosterAssignmentId\)/,'remote events must match assigned flight/session');
 assert.match(src,/root\.sagsV470Ref\?\./,'backend authorization remains responsible for remote access');
 assert.match(src,/sags:login/,'late login should re-install shortcuts');
-assert.match(src,/v157Drawer\.Head #sagsHistoryShortcut/,'button should have clear mobile/desktop contrast');
+assert.match(src,/v157Drawer \.v157DrawerHead #sagsHistoryShortcut/,'button should have clear mobile/desktop contrast');
 const index=fs.readFileSync(path.join(root,'index.html'),'utf8');
 assert.match(index,/app\/modules\/form-edit-history\.v1\.js/,'source must load in every role');
 const version=JSON.parse(fs.readFileSync(path.join(root,'version.json'),'utf8'));
