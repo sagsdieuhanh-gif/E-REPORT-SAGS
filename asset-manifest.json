@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V2.5.17",
-  "build": "V2.5.17-20261021-ROSTER-LS-TVJ-01",
+  "version": "V2.5.18",
+  "build": "V2.5.18-20261021-FLIGHT-MANIFEST-01",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -142,8 +142,8 @@
       "bytes": 59876
     },
     "./app/generated/core-shared.js": {
-      "sha256": "63b9a2f3b1b8f8c3238ee949909c42ad3d73b63232384c2c7eaebe2ed34a3c59",
-      "bytes": 123913
+      "sha256": "5beaea144f9ed8ae2eca024f8c9eaab304b587a511643e1c15dacfd4ebf0a07e",
+      "bytes": 124065
     },
     "./app/generated/core-tools.js": {
       "sha256": "3e3e9420a932366457ca80ba10cf0cbc215c8f6405462453423778380a1b7ce0",
@@ -754,8 +754,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "8dde443f6ae57e9f43020ae5f915f61fab9a21d150bdd64639518713d37e299a",
-      "bytes": 104305
+      "sha256": "2b1afbff695398538add3535a70fbac930fe7ae965c0a5d58bdeef59c608b51e",
+      "bytes": 104461
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -806,16 +806,16 @@
       "bytes": 6937
     },
     "./service-worker.js": {
-      "sha256": "9f917c65614e8731680839b5aef0d7e8521a55b1bc137fd3d464ae34aba16407",
-      "bytes": 22386
+      "sha256": "e98e698203c01d64c4464d08d34e5e49d022a404dea3652daa2a200ec6b5d5d4",
+      "bytes": 22392
     },
     "./storage-recovery.html": {
       "sha256": "fb864ac28bf98fda1522a266c657260c6b3c93b9ee850f343bed8d969297af44",
       "bytes": 25937
     },
     "./version.json": {
-      "sha256": "591c83aebbfd1ac3f88a7cb857d76ca45709d602fa86b68441f9a6f6be6a9be6",
-      "bytes": 568
+      "sha256": "45b507c1b0bd5e33753251c90e668c0a4440062628d6f67de03c27ec64f92e92",
+      "bytes": 578
     }
   },
   "mutableAssets": [
