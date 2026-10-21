@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.25",
-  "displayVersion": "V2.5.25",
-  "label": "V2.5.25 - LỊCH SỬ TRÊN MENU PC VÀ MOBILE",
-  "build": "V2.5.25-20261021-HISTORY-ACTUAL-SIDEBAR-01",
+  "version": "V2.5.26",
+  "displayVersion": "V2.5.26",
+  "label": "V2.5.26 - CẬP NHẬT 3 GIAI ĐOẠN VÀ TỰ TẢI LẠI",
+  "build": "V2.5.26-20261021-UPDATE-PROGRESS-AUTOREFRESH-01",
   "releasedAt": "2026-10-21",
-  "type": "aviation-sidebar-history-access",
-  "base": "E-REPORT-SAGS main@V2.5.24",
+  "type": "verified-update-progress-and-auto-refresh",
+  "base": "E-REPORT-SAGS main@V2.5.25",
   "updatePolicy": "required",
-  "notes": "Sửa menu thực tế đang hiển thị Aviation Shell: Lịch sử thay đổi ngay sau My Flight trên PC/mobile, mọi vai trò đăng nhập đều được mở trong phạm vi chuyến được quyền xem. Giữ nguyên dữ liệu, quyền Firebase và biểu mẫu.",
-  "message": "V2.5.25: Mục Lịch sử hiển thị rõ trên menu PC/mobile."
+  "notes": "Thông báo rõ ĐANG TẢI BẢN CẬP NHẬT, ĐANG CẬP NHẬT, CẬP NHẬT HOÀN TẤT; xác minh trước khi dọn SW/cache, tự tải lại trang vào build mới; không ép cập nhật khi biểu mẫu chưa hoàn tất hoặc còn đồng bộ nháp.",
+  "message": "V2.5.26: Hiển thị tiến trình cập nhật thực tế và tự mở bản mới sau khi hoàn tất."
 }
