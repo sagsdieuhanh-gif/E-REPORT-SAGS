@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.24",
-  "displayVersion": "V2.5.24",
-  "label": "V2.5.24 - LỊCH SỬ TRONG MENU CHÍNH CHO MỌI TÀI KHOẢN",
-  "build": "V2.5.24-20261021-HISTORY-NATIVE-MENU-01",
+  "version": "V2.5.25",
+  "displayVersion": "V2.5.25",
+  "label": "V2.5.25 - LỊCH SỬ TRÊN MENU PC VÀ MOBILE",
+  "build": "V2.5.25-20261021-HISTORY-ACTUAL-SIDEBAR-01",
   "releasedAt": "2026-10-21",
-  "type": "native-history-navigation",
-  "base": "E-REPORT-SAGS main@V2.5.23",
+  "type": "aviation-sidebar-history-access",
+  "base": "E-REPORT-SAGS main@V2.5.24",
   "updatePolicy": "required",
-  "notes": "Lịch sử thay đổi được đưa trực tiếp vào menu KHAI THÁC ngay sau My Flight, có cho mọi vai trò đã đăng nhập. Giữ nút trên header My Flight. Giới hạn dữ liệu theo quyền Firebase/flight assignment, không công khai mọi hồ sơ.",
-  "message": "V2.5.24: Nút Lịch sử luôn có trong menu chính, áp dụng PC/mobile."
+  "notes": "Sửa menu thực tế đang hiển thị Aviation Shell: Lịch sử thay đổi ngay sau My Flight trên PC/mobile, mọi vai trò đăng nhập đều được mở trong phạm vi chuyến được quyền xem. Giữ nguyên dữ liệu, quyền Firebase và biểu mẫu.",
+  "message": "V2.5.25: Mục Lịch sử hiển thị rõ trên menu PC/mobile."
 }
