@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V2.5.18",
-  "build": "V2.5.18-20261021-FLIGHT-MANIFEST-01",
+  "version": "V2.5.19",
+  "build": "V2.5.19-20261021-CARRIER-QUICKVIEW-01",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -202,8 +202,8 @@
       "bytes": 3405
     },
     "./app/modules/carrier-notebook.v1.js": {
-      "sha256": "546da5a69ab630dafe68dee11f422324536cfd91a3d9a8be8b305b3592d66791",
-      "bytes": 42484
+      "sha256": "1d344c7717f1b7dae842f6e2447b5b9ea0791a02bbce36b448540fd63ab01cf9",
+      "bytes": 51899
     },
     "./app/modules/cloud-draft-sync.v2.js": {
       "sha256": "fd8365746dd5363210d847cb607343339df20be495e3838d1664b3cc0706bf04",
@@ -666,12 +666,12 @@
       "bytes": 2665
     },
     "./data/carrier-guide-version.json": {
-      "sha256": "a1f779d1086af8904b7ee6dd983e99df309d179552aa2c6b521298ceb28c6b23",
-      "bytes": 290
+      "sha256": "8bdf54333d5683a2d42487d1c9bc310d0149145755efd77bec88d5960ae98a4b",
+      "bytes": 324
     },
     "./data/carrier-service-guide.json": {
-      "sha256": "518ef49eb35b3db4885e8e751e59939b396fdc93a747c3a320e075264a6ecf5b",
-      "bytes": 30731
+      "sha256": "417b5b07df2f31d3ea59b0f7c6260bdf17bebbf45a3be1fd7666ee5d67af2cb5",
+      "bytes": 42292
     },
     "./data/form-configuration.json": {
       "sha256": "bb37b508f650dc51687d0456280071cab6020ad1383cb27d66556bd6df62a8d6",
@@ -754,8 +754,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "2b1afbff695398538add3535a70fbac930fe7ae965c0a5d58bdeef59c608b51e",
-      "bytes": 104461
+      "sha256": "b16299e85f7e7c855d0315c7290ecea9f09a7f7747a39f5a86d694602f64a60a",
+      "bytes": 104617
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -806,16 +806,16 @@
       "bytes": 6937
     },
     "./service-worker.js": {
-      "sha256": "e98e698203c01d64c4464d08d34e5e49d022a404dea3652daa2a200ec6b5d5d4",
-      "bytes": 22392
+      "sha256": "b5c44067f0910fc9eab5f80b1bd3d00e0256f8865e991745877396651ae5dfd1",
+      "bytes": 22398
     },
     "./storage-recovery.html": {
       "sha256": "fb864ac28bf98fda1522a266c657260c6b3c93b9ee850f343bed8d969297af44",
       "bytes": 25937
     },
     "./version.json": {
-      "sha256": "45b507c1b0bd5e33753251c90e668c0a4440062628d6f67de03c27ec64f92e92",
-      "bytes": 578
+      "sha256": "175480c772efba43dd1db6212fa7d7bdf9672230658b70fef869882a026b35a3",
+      "bytes": 692
     }
   },
   "mutableAssets": [
