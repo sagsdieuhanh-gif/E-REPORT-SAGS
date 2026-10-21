@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.23",
-  "displayVersion": "V2.5.23",
-  "label": "V2.5.23 - NÚT LỊCH SỬ CHO MỌI TÀI KHOẢN",
-  "build": "V2.5.23-20261021-HISTORY-VISIBLE-ALL-ROLES-01",
+  "version": "V2.5.24",
+  "displayVersion": "V2.5.24",
+  "label": "V2.5.24 - LỊCH SỬ TRONG MENU CHÍNH CHO MỌI TÀI KHOẢN",
+  "build": "V2.5.24-20261021-HISTORY-NATIVE-MENU-01",
   "releasedAt": "2026-10-21",
-  "type": "history-accessible-navigation",
-  "base": "E-REPORT-SAGS main@V2.5.22",
+  "type": "native-history-navigation",
+  "base": "E-REPORT-SAGS main@V2.5.23",
   "updatePolicy": "required",
-  "notes": "Đưa nút lịch sử vào vị trí cố định ngay đầu menu sau đăng nhập và trên My Flight; mọi vai trò xem lịch sử trong phạm vi chuyến được quyền truy cập. Không mở rộng quyền Firebase hoặc hiển thị dữ liệu chuyến không liên quan.",
-  "message": "V2.5.23: Lịch sử dễ tìm cho AD/ĐH/CBTT/KH/PVHK trên PC và điện thoại."
+  "notes": "Lịch sử thay đổi được đưa trực tiếp vào menu KHAI THÁC ngay sau My Flight, có cho mọi vai trò đã đăng nhập. Giữ nút trên header My Flight. Giới hạn dữ liệu theo quyền Firebase/flight assignment, không công khai mọi hồ sơ.",
+  "message": "V2.5.24: Nút Lịch sử luôn có trong menu chính, áp dụng PC/mobile."
 }
