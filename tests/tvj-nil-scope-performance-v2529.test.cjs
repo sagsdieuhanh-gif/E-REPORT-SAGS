@@ -22,7 +22,7 @@ assert.equal(tvjState.vz_check,'N/A');assert.equal(tvjState.other_form,'N/A','ot
 assert.equal(migrate(),false,'conversion should be idempotent');
 const unrelated={vz_sta:'N/A'};const notActive=new Function('active','form','state','S','rt','bindOf','NIL',funcs.migrateTvjNil+';return migrateTvjNil')(()=>false,tvjForm,unrelated,S,t=>t,q=>'vz_'+q.key,NIL);
 assert.equal(notActive(),false);assert.equal(unrelated.vz_sta,'N/A');
-assert.match(tvj,/na\.textContent='NIL Ô TRỐNG'/);
+assert.match(tvj,/nil\.textContent='NIL Ô TRỐNG'/);
 assert.match(tvj,/window\.vz632FillNIL=\(\)=>/);
 assert.match(tvj,/draft\[f\.k\]=NIL;state\[f\.k\]=NIL/);
 assert.match(tvj,/if\(isNil\(v\)\)v=NIL/,'TVJ saves canonical NIL without collapsing slash');
@@ -60,5 +60,5 @@ assert.match(shell,/const sig=visible\.map\(/);
 assert.match(shell,/if\(sig===lastMenuSignature\)return/,'no repeated innerHTML rebuild for same sidebar state');
 assert.match(shell,/if\(e\.style\.backgroundImage!==background\)/,'skip avatar background reassignment');
 assert.match(index,/onclick="qteFillBlankNA\(\)"/,'generic forms must keep existing N/A shortcut');
-const version=JSON.parse(read('version.json'));assert.equal(version.version,'V2.5.29');
+const version=JSON.parse(read('version.json'));assert.match(version.version,/^V2\.5\.(?:29|30)$/);
 console.log('TVJ NIL scoped migration, quick-entry, PDF-state protection and PC/mobile performance guards PASS');

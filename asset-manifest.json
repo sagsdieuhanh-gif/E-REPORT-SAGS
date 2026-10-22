@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V2.5.29",
-  "build": "V2.5.29-20261022-TVJ-NIL-UI-PERFORMANCE-01",
+  "version": "V2.5.30",
+  "build": "V2.5.30-20261022-TVJ-RECTANGLE-REGIONS-01",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -326,8 +326,8 @@
       "bytes": 8162
     },
     "./app/modules/tvj-gof-035.v632.js": {
-      "sha256": "f5285fc5ccd0bfcb780eeb6f5e313498e0a8178e408b0854d65df7b8611a83b1",
-      "bytes": 13507
+      "sha256": "ad5eda1fc4935191b5a6710879a447ad8a997b543ed74b2c15e0909a0fa71780",
+      "bytes": 17408
     },
     "./app/modules/ui-preferences.v1.js": {
       "sha256": "cb5f9f1df4916791449434d5c24b53eaeb2a9fcdb6ebb8f763fdc6bc63fd675b",
@@ -762,8 +762,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "6e5b55ecc7c175a45b10164eae77e3c3c809cbb4d6376401a1eb90c374d47cb1",
-      "bytes": 105145
+      "sha256": "4e0496b780aba611a21a5fe7d2c4fe77e62fde10fdb22c9cf95a2078a88219cd",
+      "bytes": 105066
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -814,16 +814,16 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "44d45d73f6628486eee36c39ea0b5556c1475702d505277b795048847f0a07d8",
-      "bytes": 22480
+      "sha256": "d253528a1692163a763cf520215865e727d583b8951ced707efd8110f552fc64",
+      "bytes": 22477
     },
     "./storage-recovery.html": {
       "sha256": "fb864ac28bf98fda1522a266c657260c6b3c93b9ee850f343bed8d969297af44",
       "bytes": 25937
     },
     "./version.json": {
-      "sha256": "976ab92924d9b4498ebc2ea7f40b0d0845e56102dafc64c37d4e8312802d51de",
-      "bytes": 886
+      "sha256": "ed448784ceff86c98de1fab2575df446bf197ec8964363a9dbc1ff623492dcf4",
+      "bytes": 835
     }
   },
   "mutableAssets": [

@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.29",
-  "displayVersion": "V2.5.29",
-  "label": "V2.5.29 - TVJ NIL + TỐI ƯU ĐỘ MƯỢT PC/MOBILE",
-  "build": "V2.5.29-20261022-TVJ-NIL-UI-PERFORMANCE-01",
+  "version": "V2.5.30",
+  "displayVersion": "V2.5.30",
+  "label": "V2.5.30 - NHẬP NHANH TVJ ĐÚNG 14 KHUNG CHỮ NHẬT",
+  "build": "V2.5.30-20261022-TVJ-RECTANGLE-REGIONS-01",
   "releasedAt": "2026-10-22",
-  "type": "tvj-only-nil-and-responsive-ui-performance",
-  "base": "E-REPORT-SAGS main@V2.5.28",
+  "type": "tvj-physical-rectangle-entry-groups",
+  "base": "E-REPORT-SAGS main@V2.5.29",
   "updatePolicy": "required",
-  "notes": "Chỉ biểu mẫu TVJ-GOF-035 đổi N/A thành NIL trong nhập nhanh, lưu, hiển thị và PDF qua trường state; dữ liệu N/A cũ riêng TVJ được chuẩn hóa khi mở. Các biểu mẫu khác giữ nguyên N/A. Giảm render thừa menu/ảnh đại diện trên PC/mobile, bỏ polling TVJ 1.8 giây, chỉ redraw khi thay đổi, toggle ô nhanh tại chỗ. Không đổi thông tin chuyến, quyền, registry hay bộ cập nhật.",
-  "message": "V2.5.29: TVJ dùng NIL và tối ưu thao tác trên PC/mobile."
+  "notes": "Sửa Nhập nhanh TVJ-GOF-035: nhóm theo 14 khung chữ nhật đúng trên biểu mẫu giấy thay vì cắt ba phần ĐẾN/ĐI/OTHER; đầy đủ 128 ô, không báo hết khu khi còn ô bên trong; có chọn khu, khu trước, khu tiếp. Giữ nguyên NIL, nhập chữ, tự điền / theo Next; không thay biểu mẫu hãng khác, dữ liệu, PDF, Firebase hay phân quyền.",
+  "message": "V2.5.30: TVJ nhập nhanh đúng từng khung chữ nhật trên biểu mẫu."
 }
