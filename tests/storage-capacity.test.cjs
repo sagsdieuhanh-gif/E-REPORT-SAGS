@@ -10,6 +10,14 @@ function setup({count=1,limit=6000000,initial=new Map(),reply=true}={}){
 (async()=>{
  const key='sagsFlightSessionV1:USER:A';const value=JSON.stringify({state:{name:'NGUYỄN NGỌC ÁNH',notes:'ĐÃ NHẬP\n'.repeat(10000),sig:'data:image/png;base64,'+'AbCd+/='.repeat(20000),photos:['data:image/jpeg;base64,'+'aXbYcZ'.repeat(40000)],boolean:true,count:123,emoji:'🛫'},rosterAssignmentId:'aBcD'});
  const initial=new Map([[key,value],['sagsPersonalAccountSessionV1','MiXeD-CREDENTIAL'],['unrelated',value]]);const a=setup({initial});await a.ready();assert.match(a.raw.get(key),/^~SAGS-LZ1~/);assert.equal(a.local.getItem(key),value);assert.equal(a.raw.get('unrelated'),value);assert.equal(a.raw.get('sagsPersonalAccountSessionV1'),'MiXeD-CREDENTIAL');
+ // Cached raw bytes have already passed checksum verification. An unchanged
+ // save needs no decompression; a changed save verifies only the new packet.
+ let decoded=0;const decode=a.c.LZString.decompressFromUTF16;
+ a.c.LZString.decompressFromUTF16=function(v){decoded++;return decode(v)};
+ a.local.setItem(key,value);assert.equal(decoded,0,'cached previous record is not decompressed again');
+ const edited=value.replace('NGUYỄN NGỌC ÁNH','NGUYỄN TRUNG KIÊN');
+ a.local.setItem(key,edited);assert.equal(decoded,1,'new packet verified once');assert.equal(a.local.getItem(key),edited);
+ a.local.setItem(key,value);a.c.LZString.decompressFromUTF16=decode;
  a.session.setItem(key,value);assert.equal(a.session.map.get(key),value);
  const restarted=setup({initial,count:2});await restarted.ready();assert.equal(restarted.local.getItem(key),value,'decoder works even with migration blocked');
  const blocked=setup({initial:new Map([[key,value]]),count:2});assert.equal(await blocked.ready(),false);assert.equal(blocked.raw.get(key),value,'old second tab prevents conversion');blocked.setCount(1);await blocked.ready();assert.match(blocked.raw.get(key),/^~SAGS-LZ1~/);

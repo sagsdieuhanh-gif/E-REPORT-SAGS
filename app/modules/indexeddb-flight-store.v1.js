@@ -20,7 +20,8 @@
   const bytes=s=>utf8Bytes(String(s));
   const safe=v=>S(v).toUpperCase().replace(/\s+/g,'').replace(/[^A-Z0-9._-]/g,'_').slice(0,64)||'NO_ACCOUNT';
   const clone=v=>JSON.parse(JSON.stringify(v));
-  let mirrorTimer=0,mirrorRunning=false,lastMirrorAt=0,lastMirrorResult=null,hookInstalled=false;
+  let mirrorTimer=0,mirrorRunning=false,lastMirrorAt=0,lastFullMirrorAt=0,lastMirrorResult=null,hookInstalled=false;
+  const pendingMirrors=new Map();
 
   function accountScope(){
     try{
@@ -118,13 +119,16 @@
     }finally{db.close();}
   }
 
-  async function mirrorCurrentLocalStorage(){
+  async function mirrorCurrentLocalStorage(sessionIds=null,scope=accountScope()){
     if(!loggedIn())throw new Error('Chưa đăng nhập hoặc chưa tải đủ flight session.');
-    const scope=accountScope(),list=clone(root.readFlightSessionList()||[]),errors=[];
+    if(scope!==accountScope())return {skipped:true,reason:'account-changed',errors:[],listVerified:false};
+    const list=clone(root.readFlightSessionList()||[]),errors=[];
+    const selected=sessionIds===null?null:new Set(sessionIds);
     await putSessionList(list,scope);
     let mirrored=0,totalBytes=0;
     for(const meta of list){
-      const id=S(meta?.id);if(!id)continue;
+      const id=S(meta?.id);if(!id||selected&&!selected.has(id))continue;
+      if(scope!==accountScope())return {skipped:true,reason:'account-changed',errors:[],listVerified:false};
       try{
         const env=clone(root.readFlightSessionEnvelope(id)||{});
         const out=await putEnvelope(id,env,scope);
@@ -173,29 +177,50 @@
 
   async function mirrorNow(reason='auto'){
     if(mirrorRunning||!loggedIn())return {skipped:true,reason};
-    mirrorRunning=true;
+    const scope=accountScope(),job=pendingMirrors.get(scope);
+    pendingMirrors.delete(scope);mirrorRunning=true;
     try{
-      const out=await mirrorCurrentLocalStorage();
+      const out=await mirrorCurrentLocalStorage(job?.full===false?[...job.ids]:null,scope);
+      if(out.skipped)return out;
       out.reason=reason;out.atMs=Date.now();lastMirrorResult=out;lastMirrorAt=out.atMs;
+      if(job?.full!==false&&out.listVerified&&!out.errors.length)lastFullMirrorAt=out.atMs;
       if(!out.listVerified||out.errors.length)console.warn('E-REPORT IndexedDB shadow verify',out);
       return out;
     }catch(error){
       lastMirrorResult={reason,atMs:Date.now(),error:S(error?.message||error)};
       console.warn('E-REPORT IndexedDB shadow mirror failed',error);
       return lastMirrorResult;
-    }finally{mirrorRunning=false;}
+    }finally{
+      mirrorRunning=false;
+      // A save during an in-flight mirror must receive its own pass.
+      if(pendingMirrors.has(accountScope()))armMirror('queued-save',700);
+    }
   }
-  function scheduleMirror(reason='change',delay=700){
+  function armMirror(reason,delay){
     clearTimeout(mirrorTimer);
     mirrorTimer=setTimeout(()=>{mirrorTimer=0;void mirrorNow(reason);},Math.max(0,Number(delay)||0));
+  }
+  function scheduleMirror(reason='change',delay=700,sessionIds=null){
+    const scope=accountScope();if(scope==='NO_ACCOUNT')return;
+    const job=pendingMirrors.get(scope)||{full:false,ids:new Set()};
+    if(sessionIds===null)job.full=true;
+    else for(const id of sessionIds)if(id)job.ids.add(S(id));
+    pendingMirrors.set(scope,job);armMirror(reason,delay);
   }
   function installShadowWriteHook(){
     if(hookInstalled)return true;
     const original=root.writeFlightSessionList;
     if(typeof original!=='function'||original.__sagsIdbShadow)return false;
     const wrapped=function(list){
+      let before=new Map();
+      try{before=new Map((root.readFlightSessionList?.()||[]).map(x=>[S(x.id),json(x)]))}catch(_){}
       const result=original.apply(this,arguments);
-      scheduleMirror('session-list-write',250);
+      if(result===false)return result;
+      const changed=(Array.isArray(list)?list:[]).filter(x=>before.get(S(x.id))!==json(x)).map(x=>S(x.id));
+      let active='';try{active=S(root.currentFlightSessionMeta?.()?.id)}catch(_){}
+      if(active&&!changed.includes(active))changed.push(active);
+      // Mirror metadata plus changed flights; do not parse photos of other flights.
+      scheduleMirror('session-list-write',700,changed);
       return result;
     };
     wrapped.__sagsIdbShadow=true;wrapped.__sagsOriginal=original;root.writeFlightSessionList=wrapped;hookInstalled=true;
@@ -230,7 +255,7 @@
     attempt();setTimeout(attempt,1200);setTimeout(attempt,3500);
     root.addEventListener?.('pageshow',()=>{attempt();scheduleMirror('pageshow',900)},{passive:true});
     document.addEventListener?.('visibilitychange',()=>{if(document.visibilityState==='hidden')scheduleMirror('visibility-hidden',0)});
-    setInterval(()=>{installShadowWriteHook();if(loggedIn()&&Date.now()-lastMirrorAt>30000)scheduleMirror('periodic',0)},30000);
+    setInterval(()=>{installShadowWriteHook();if(loggedIn()&&Date.now()-lastFullMirrorAt>300000)scheduleMirror('periodic',0)},30000);
   }
 
   root.sagsIndexedDbFlightStoreV1={

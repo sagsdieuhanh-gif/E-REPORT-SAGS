@@ -55,9 +55,9 @@ function formContextActive(){
   return true;
 }
 function hideDock(dock){
-  try{document.body?.classList.remove("sags-form-view-active")}catch(_){}
+  try{document.body?.classList.contains("sags-form-view-active")&&document.body.classList.remove("sags-form-view-active")}catch(_){}
   if(dock)force(dock,"display","none");
-  try{document.documentElement.style.setProperty("--sags-form-dock-height","0px")}catch(_){}
+  try{setDockHeight("0px")}catch(_){}
 }
 function buttonLayout(btn,col,row){
   if(!btn)return;
@@ -81,10 +81,14 @@ function buttonLayout(btn,col,row){
   };
   for(const [k,v] of Object.entries(props))force(btn,k,v);
 }
+function setDockHeight(value){
+  const style=document.documentElement.style;
+  if(style.getPropertyValue("--sags-form-dock-height")!==value)style.setProperty("--sags-form-dock-height",value);
+}
 function measure(dock){
   if(!dock)return;
   const h=Math.ceil(dock.getBoundingClientRect().height||0);
-  if(h>0)document.documentElement.style.setProperty("--sags-form-dock-height",h+"px");
+  if(h>0)setDockHeight(h+"px");
 }
 function apply(){
   raf=0;

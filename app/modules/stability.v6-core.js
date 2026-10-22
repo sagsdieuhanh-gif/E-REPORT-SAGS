@@ -8,7 +8,7 @@
   const $=id=>document.getElementById(id);
   const text=x=>String(x??'');
   const failedDrafts=new Map();
-  let storageError=false, lastCore='', statusTimer=0, reloading=false, warnedStorage=false;
+  let storageError=false, lastCore='', statusTimer=0, reloading=false, warnedStorage=false, statusRefreshTimer=0;
   function scope(){
     try{return sagsOwnedPrefix(PREFIX)+String(activeFlightSessionId||'')+':';}
     catch(_){return PREFIX+'NO_ACCOUNT:NO_FLIGHT:';}
@@ -26,11 +26,11 @@
       // Compare to the durable envelope, NOT mutable in-memory state: a failed
       // SAVE must never trick the recovery layer into deleting its only copy.
       const committed=part==='manual'?text(readFlightSessionEnvelope(activeFlightSessionId)?.state?.[field]):'';
-      if(part==='manual'&&v===committed){localStorage.removeItem(k);failedDrafts.delete(k);storageError=failedDrafts.size>0;status();return true;}
+      if(part==='manual'&&v===committed){localStorage.removeItem(k);failedDrafts.delete(k);storageError=failedDrafts.size>0;scheduleStatus();return true;}
       const encoded=JSON.stringify({field,part,value:v,atMs:Date.now()});
       localStorage.setItem(k,encoded);
       if(localStorage.getItem(k)!==encoded)throw new Error('DRAFT_WRITE_VERIFY');
-      failedDrafts.delete(k);storageError=failedDrafts.size>0;status();return true;
+      failedDrafts.delete(k);storageError=failedDrafts.size>0;scheduleStatus();return true;
     }catch(e){failedDrafts.set(key(field,part),{field,value:text(value),part,scope:scope()});storageError=true;status();if(!warnedStorage){warnedStorage=true;
       alert('Bộ nhớ trình duyệt không ghi được bản nháp. Hãy giữ màn hình này và báo quản trị; KHÔNG cập nhật hoặc xóa dữ liệu trình duyệt.');
     }console.warn('V6.1 draft write failed',e);return false;}
@@ -40,14 +40,17 @@
     status();
   }
   function pending(){
-    const prefix=scope(),out=[],stale=[];
+    const prefix=scope(),out=[],stale=[];let committedState=null;
     try{for(let i=0;i<localStorage.length;i++){
       const k=localStorage.key(i);if(k?.startsWith(prefix)){
         const x=JSON.parse(localStorage.getItem(k)||'null');
         if(!x?.field)continue;
         // A manual recovery record that is already identical to committed state
         // is stale, not unfinished work. Prune it lazily so it cannot block UI.
-        if((x.part||'manual')==='manual'&&x.value===text(readFlightSessionEnvelope(activeFlightSessionId)?.state?.[x.field])){stale.push(k);continue;}
+        if((x.part||'manual')==='manual'){
+          if(committedState===null)committedState=readFlightSessionEnvelope(activeFlightSessionId)?.state||{};
+          if(x.value===text(committedState[x.field])){stale.push(k);continue;}
+        }
         out.push(x);
       }
     }
@@ -89,6 +92,10 @@
     try{if(typeof readOfflineQueue==='function'&&readOfflineQueue().length)return 'Vẫn còn thao tác chính thức chờ đồng bộ. Hãy đợi đồng bộ thành công.';}catch(_){return 'Chưa kiểm tra được hàng đợi đồng bộ.';}
     if(navigator.onLine===false)return 'Máy đang ngoại tuyến. Hãy thử lại khi có mạng.';
     return '';
+  }
+  function scheduleStatus(){
+    if(statusRefreshTimer)return;
+    statusRefreshTimer=setTimeout(()=>{statusRefreshTimer=0;status();},120);
   }
   function status(){
     const badge=$('sagsV61DraftStatus');if(!badge)return;

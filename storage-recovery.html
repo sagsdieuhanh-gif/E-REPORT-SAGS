@@ -568,8 +568,10 @@ if (typeof define === 'function' && define.amd) {
   const k=String(key),v=String(value),previous=get.call(this,k);
   // A damaged record must not be silently replaced by an empty/default envelope.
   const packedBefore=allowed.test(k)&&previous?.startsWith(MAGIC);
-  if(packedBefore)unpack(previous);
   const hit=cache.get(k);
+  // A cache hit is the exact raw record already decoded and checksummed.
+  // Another tab/corruption changes raw bytes and must still be verified.
+  if(packedBefore&&hit?.raw!==previous)unpack(previous);
   const encoded=hit?.raw===previous&&hit.value===v?previous:(enabled||packedBefore)&&allowed.test(k)?pack(v):v;
   try{set.call(this,k,encoded)}catch(e){
    if(!enabled||!quota(e))throw e;

@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.32",
-  "displayVersion": "V2.5.32",
-  "label": "V2.5.32 - KHẮC PHỤC GIẬT LAG KHI DÙNG TVJ / PC / MOBILE",
-  "build": "V2.5.32-20261022-PERF-LAZY-TVJ-SHELL-01",
+  "version": "V2.5.33",
+  "displayVersion": "V2.5.33",
+  "label": "V2.5.33 - TỐI ƯU NHẬP LIỆU, LƯU NHÁP VÀ XUẤT PDF",
+  "build": "V2.5.33-20261022-INPUT-PDF-PERFORMANCE-01",
   "releasedAt": "2026-10-22",
-  "type": "tvj-lazy-registration-and-shell-perf",
-  "base": "E-REPORT-SAGS main@V2.5.31",
+  "type": "input-draft-pdf-performance",
+  "base": "E-REPORT-SAGS main@1430d27 (V2.5.32)",
   "updatePolicy": "required",
-  "notes": "Khởi tạo form TVJ chỉ khi đang mở TVJ, không tải registry 1MB hoặc rà 128 fields khi đang dùng biểu mẫu/chuyến khác. Sử dụng Map index và cache registration đến khi danh sách fields thay đổi; gộp các lần persist/draw khi danh tính tự điền và NIL cũ thay đổi. Memoize ảnh đại diện trong menu PC/mobile. Không đổi nhóm 13 khung TVJ, NIL, /, dữ liệu, quyền hay quy trình PWA.",
-  "message": "V2.5.32: Giảm khựng phản hồi, tránh khởi tạo/đồng bộ dư thừa."
+  "notes": "Gộp FINAL về một lần ghi đã kiểm chứng; giảm đọc hồ sơ và cập nhật trạng thái khi gõ; tránh giải nén bản lưu đã kiểm chứng; sao lưu IndexedDB theo chuyến thay đổi; gộp thao tác dựng SVG; chặn cập nhật dock thừa; giới hạn chờ registry PDF và dùng đúng ảnh nền đóng gói. Giữ kiểm tra tải trọng, chữ ký, nền tùy chỉnh, xuất 42.1 lossless và bảo vệ nháp khi đổi chuyến/ra đa nhiệm.",
+  "message": "V2.5.33: Tối ưu phản hồi nhập liệu, lưu nháp và tạo PDF."
 }
