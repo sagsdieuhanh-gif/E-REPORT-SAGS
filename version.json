@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.28",
-  "displayVersion": "V2.5.28",
-  "label": "V2.5.28 - TỐI ƯU TỐC ĐỘ MY FLIGHT VÀ THAO TÁC BIỂU MẪU",
-  "build": "V2.5.28-20261021-PERF-MYFLIGHT-HISTORY-01",
-  "releasedAt": "2026-10-21",
-  "type": "targeted-myflight-form-history-performance",
-  "base": "E-REPORT-SAGS main@V2.5.27",
+  "version": "V2.5.29",
+  "displayVersion": "V2.5.29",
+  "label": "V2.5.29 - TVJ NIL + TỐI ƯU ĐỘ MƯỢT PC/MOBILE",
+  "build": "V2.5.29-20261022-TVJ-NIL-UI-PERFORMANCE-01",
+  "releasedAt": "2026-10-22",
+  "type": "tvj-only-nil-and-responsive-ui-performance",
+  "base": "E-REPORT-SAGS main@V2.5.28",
   "updatePolicy": "required",
-  "notes": "Giảm cập nhật MY FLIGHT lặp khi thay đổi vai trò và trở lại tab; dùng lại snapshot ngắn hạn khi chuyển trạng thái danh sách; gom ghi lịch sử ấn phím xuống IndexedDB thành một đợt, vẫn giữ bản ghi đầu tiên và lưu bản tổng hợp. Không thay đổi Firebase schema, xuất PDF, dữ liệu nháp, phân quyền hay PWA update ba bước.",
-  "message": "V2.5.28: Giảm khựng thao tác nhập liệu và mở MY FLIGHT."
+  "notes": "Chỉ biểu mẫu TVJ-GOF-035 đổi N/A thành NIL trong nhập nhanh, lưu, hiển thị và PDF qua trường state; dữ liệu N/A cũ riêng TVJ được chuẩn hóa khi mở. Các biểu mẫu khác giữ nguyên N/A. Giảm render thừa menu/ảnh đại diện trên PC/mobile, bỏ polling TVJ 1.8 giây, chỉ redraw khi thay đổi, toggle ô nhanh tại chỗ. Không đổi thông tin chuyến, quyền, registry hay bộ cập nhật.",
+  "message": "V2.5.29: TVJ dùng NIL và tối ưu thao tác trên PC/mobile."
 }
