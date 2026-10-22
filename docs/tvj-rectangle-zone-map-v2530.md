@@ -1,34 +1,44 @@
-# TVJ-GOF-035 · Sơ đồ khu vực Nhập nhanh theo khung chữ nhật (V2.5.30)
+# TVJ-GOF-035 · Phân vùng Nhập nhanh chính xác hơn — V2.5.31 (22/10/2026)
 
-**Nguồn:** `forms/tvj/page-01.png` (TVJ-GO-F-035 REV06 20260801 RAMP CHECKLIST REPORT FORM), đối chiếu `forms/forms.registry.json` với 128 trường nhập. Đây là bản mapping duy nhất cho TVJ, không thay cấu trúc biểu mẫu hãng khác.
+## Cơ sở
+Đối chiếu ba ảnh chụp phần trên, giữa, dưới của mẫu giấy **TVJ-GOF-035 RAMP CHECKLIST REPORT FORM** do người dùng cung cấp với danh sách 128 trường trong `forms/forms.registry.json`.
 
-## Quy tắc
-- **Một khung chữ nhật in trên biểu mẫu = một khu Nhập nhanh.** Phân chia dựa trên tâm hình chữ nhật của chính từng trường, dùng tọa độ chuẩn hóa x/y/w/h.
-- Đầu biểu mẫu là một khung chung, sau đó từng khung trái/phải được giữ nguyên, không cắt ngang khung khi qua mốc y.
-- **14 khu vực / 128 trường; không thiếu, không trùng** (bài kiểm thử `tests/tvj-rectangle-groups-v2530.test.cjs` đối chiếu registry).
-- Nút ◀ KHU TRƯỚC, CHỌN KHU (danh sách 14 khu), KHU TIẾP ▶ thay cho 3 tab ĐẾN/ĐI/OTHER không phù hợp mẫu giấy. Không lưu hay xóa dữ liệu khi đổi khu.
-- Next/Enter: đi tới ô kế tiếp trong **cùng khung**, bao gồm checkbox; chỉ chuyển khu khi đã qua ô cuối. Khi ô được phép sử dụng dấu `/` còn trống thì vẫn tự điền `/`. NIL chỉ TVJ, giữ nguyên các thay đổi V2.5.29.
-- Nếu sau này Form Manager thêm ô ra ngoài 14 khung, ô đó sẽ vào khu **TRƯỜNG BỔ SUNG** thay vì bị mất.
+Phân vùng của V2.5.30 chưa phù hợp vì dùng các ngưỡng x/y để suy đoán khu vực. **V2.5.31 bỏ việc đoán khu theo tọa độ, chuyển sang danh sách `key` tường minh cho từng khung lớn in trên giấy.** Các ô con (Final Cargo, NOTOC, nhiều dòng Checked/Time...) là thành phần của **cùng khung lớn** và không được báo kết thúc khu sớm.
 
-| # | Khung chữ nhật trên biểu mẫu giấy | Số ô | Phạm vi tọa độ (x trái-phải; y trên-dưới) |
-|---:|---|---:|---|
-| 1 | THÔNG TIN CHUYẾN | 15 | 0–1; 0–0.145 |
-| 2 | ARRIVAL FLIGHT | 8 | 0–0.5; 0.145–0.257 |
-| 3 | DEPARTURE FLIGHT | 8 | 0.5–1; 0.145–0.257 |
-| 4 | BAGGAGE UNLOADING | 7 | 0–0.5; 0.257–0.350 |
-| 5 | BAGGAGE LOADING | 7 | 0.5–1; 0.257–0.350 |
-| 6 | CARGO UNLOADING | 7 | 0–0.5; 0.350–0.469 |
-| 7 | CARGO LOADING | 8 | 0.5–1; 0.350–0.469 |
-| 8 | EQUIPMENT / MANPOWER | 8 | 0–0.5; 0.469–0.566 |
-| 9 | FINAL FIGURE · PAX / BAGGAGE | 11 | 0.5–1; 0.469–0.606 |
-| 10 | IRREGULARITIES / DELAY / DAMAGE | 1 | 0–0.5; 0.566–0.765 |
-| 11 | OFFLOADED · PAX / BAGGAGE | 8 | 0.5–1; 0.606–0.704 |
-| 12 | A/C COMPARTMENT VISUAL INSPECTION | 18 | 0–0.5; 0.765–1 |
-| 13 | LIR / GROUND SERVICE | 20 | 0.5–1; 0.704–0.930 |
-| 14 | NAME / STAFF ID | 2 | 0.5–1; 0.930–1 |
+## Các khu đã đối chiếu trực tiếp trên hình
 
-### Nghiệm thu thực tế cần thực hiện
-Trên một chuyến VZ được quyền thao tác, vào **TVJ → Nhập nhanh**; mở danh sách Khu, kiểm tra 14 mục; vào Baggage Unloading, Cargo Loading, Final Figure và Visual Inspection, xác nhận tất cả ô còn trong cùng khu và Next không báo hết khu sớm. Kiểm tra dữ liệu đã điền không mất khi quay lại, xuất PDF đối chiếu trang biểu mẫu. Để không ảnh hưởng vận hành thật, nên thử trên bản sao dữ liệu/chuyến test trước khi nghiệm thu.
+| Số khu | Khung chính | Trường thuộc khu |
+|---:|---|---:|
+| 1 | Thông tin chuyến (đầu trang) | 15 |
+| 2 | Arrival Flight | 8 |
+| 3 | Departure Flight, gồm Final Cargo và NOTOC | 8 |
+| 4 | Baggage Unloading | 7 |
+| 5 | Baggage Loading | 7 |
+| 6 | Cargo Unloading | 7 |
+| 7 | Cargo Loading | 8 |
+| 8 | Equipment / Manpower: 3 dòng × Total và Time | **6** |
+| 9 | Final Figure – Passenger and Baggage | 11 |
+| 10 | Irregularities / Delay / Damage Report | 1 |
+| 11 | OFFLOADED – Passenger and/or Baggage | 8 |
+| 12 | A/C Compartment Visual Inspection | 18 |
+| 13 | LIR / Ground Services | 20 |
+| | **Tổng trường trong 13 khu đã đối chiếu (1 header + 12 nghiệp vụ)** | **124** |
+
+### Trường cần xác nhận riêng (4 trường)
+
+- `fodInspectionChecked`, `fodInspectionTime`: hai trường xuất hiện trong registry gần Equipment nhưng **ảnh mẫu chỉ thấy 3 dòng Equipment/Manpower; không có dòng FOD tương ứng**. Do đó không được gán chúng vào Equipment như V2.5.30.
+- `Name`, `STAFF_ID`: phần dưới bên phải trang mẫu bị che; **không xác nhận được đường viền khung bao của chúng**. Không được coi chúng là một khung chữ nhật đã chứng minh.
+
+Cả bốn trường được giữ đầy đủ trong mục riêng **“⚠ CẦN ĐỐI CHIẾU · FOD / NAME / STAFF ID”**. Mục này **không được tính là khu nghiệp vụ chính**; không cắt khung chính, không mất dữ liệu. Trường thêm sau này mà chưa có trong sơ đồ cũng sẽ vào đây để tránh bị mất/đoán vị trí.
+
+## Quy tắc vận hành
+- Có 13 khu đã đối chiếu, thêm một mục chờ đối chiếu.
+- Nút Khu trước / Chọn khu / Khu tiếp và phím Next di chuyển qua **toàn bộ trường trong khung hiện tại**. Chỉ qua khung khác sau ô cuối; checkbox cũng được tính trong thứ tự duyệt.
+- Phím Next của ô tùy chọn trống vẫn có thể điền `/` theo quy tắc TVJ trước đó; `NIL` tiếp tục riêng TVJ. Không thay cách lưu dữ liệu, chữ ký, PDF, tài khoản hay biểu mẫu hãng khác.
+- Thứ tự trong mỗi khu là danh sách trường tường minh, có thể kiểm toán; không suy từ ngưỡng tọa độ.
+
+## Cách xác nhận sau triển khai
+Kiểm tra trực tiếp trong một hồ sơ TVJ được phép thao tác (tốt nhất chuyến dữ liệu thử): điều hướng từ Arrival → Departure (Final Cargo + NOTOC + Flight Crew) → Baggage → Cargo → Equipment (6 ô) → Final Figure → Irregularities → Offloaded → Inspection (18 ô) → LIR (20 ô). Cuối cùng mở mục ⚠ chờ đối chiếu 4 trường. Đảm bảo không còn thông báo hết khu khi vẫn còn ô trong khung và không thay đổi dữ liệu khi chỉ chuyển khu.
 
 ### Giới hạn
-Việc mapping dựa vào ảnh mẫu lưu trong repository và tọa độ Form Manager, chưa thay thế thử nghiệm trực quan đầy đủ trên thiết bị và với biểu mẫu vận hành thực tế.
+Phân khu mới có kiểm thử đối chiếu registry và hình giấy, nhưng chưa phải kết quả nghiệm thu bằng bàn phím Next trên một chuyến TVJ đang sử dụng thực tế. Cần kiểm tra trực quan trên cả PC và mobile; khi có ảnh không che cuối trang hoặc bản PDF gốc rõ toàn bộ khung, có thể chuyển Name/Staff ID từ mục chờ đối chiếu về vị trí được xác nhận.
