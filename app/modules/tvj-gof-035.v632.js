@@ -9,45 +9,256 @@ function bindOf(q){return S(q.bind||X+q.key)}
 function accountProfile(){try{return window.__sagsGetSession?.()?.profile||window.currentUserProfile||{}}catch(_){return window.currentUserProfile||{}}}
 function accountStaffId(p){let raw=S(p?.employeeCode||p?.staffCode||p?.employeeId||p?.staffId||p?.employeeNo||p?.staffNo).toUpperCase();if(!raw)return '';raw=raw.replace(/^CXR[\s_-]*/,'').replace(/\s+/g,'');return raw?'CXR-'+raw:''}
 function seedAccountIdentity(doPersist=true){try{if(typeof state!=='object'||!state)return false;const p=accountProfile(),name=S(p?.name||p?.fullName||p?.displayName||p?.username),staff=accountStaffId(p);let changed=false;const put=(k,v)=>{if(v&&S(state[k])!==v){state[k]=v;changed=true}};put('acuStart_copy',name);put('Name_copy',staff);put(X+'staffName',name);put(X+'staffId',staff);for(const q of form?.fields||[]){const key=S(q.key).toUpperCase();if(key!=='NAME'&&key!=='STAFF_ID')continue;put(bindOf(q),key==='NAME'?name:staff)}if(changed&&doPersist){try{persist()}catch(_){}try{draw()}catch(_){}}return changed}catch(_){return false}}
-// TVJ-GOF-035 REV06: physical rectangles printed on forms/tvj/page-01.png.
-// Coordinates are normalized 0..1 and apply ONLY to this form's 128 registered fields.
-// Unlike the old 3-way y/x split, each printed rectangle is a self-contained quick-entry region.
+// Mapping verified against the PRINTED TVJ-GOF-035 REV06 rectangles, not approximate Y slices.
+// The header + 12 printed operation rectangles contain 124 fields. Four registry fields
+// (FOD x2, Name/Staff ID x2) cannot be confirmed in the supplied image: preserve
+// them in a clearly labeled review section; do not claim they belong to any box.
+// A stable explicit key map prevents splitting sub-boxes (e.g. NOTOC inside Departure).
 const TVJ_REGIONS=[
- {id:'header',title:'THÔNG TIN CHUYẾN',x0:0,x1:1,y0:0,y1:.145},
- {id:'arrival',title:'ARRIVAL FLIGHT',x0:0,x1:.5,y0:.145,y1:.257},
- {id:'departure',title:'DEPARTURE FLIGHT',x0:.5,x1:1,y0:.145,y1:.257},
- {id:'bag_unload',title:'BAGGAGE UNLOADING',x0:0,x1:.5,y0:.257,y1:.35},
- {id:'bag_load',title:'BAGGAGE LOADING',x0:.5,x1:1,y0:.257,y1:.35},
- {id:'cargo_unload',title:'CARGO UNLOADING',x0:0,x1:.5,y0:.35,y1:.469},
- {id:'cargo_load',title:'CARGO LOADING',x0:.5,x1:1,y0:.35,y1:.469},
- {id:'equipment',title:'EQUIPMENT / MANPOWER',x0:0,x1:.5,y0:.469,y1:.566},
- {id:'final',title:'FINAL FIGURE · PAX / BAGGAGE',x0:.5,x1:1,y0:.469,y1:.606},
- {id:'irregular',title:'IRREGULARITIES / DELAY / DAMAGE',x0:0,x1:.5,y0:.566,y1:.765},
- {id:'offloaded',title:'OFFLOADED · PAX / BAGGAGE',x0:.5,x1:1,y0:.606,y1:.704},
- {id:'inspection',title:'A/C COMPARTMENT VISUAL INSPECTION',x0:0,x1:.5,y0:.765,y1:1},
- {id:'departure_service',title:'LIR / GROUND SERVICE',x0:.5,x1:1,y0:.704,y1:.93},
- {id:'confirmation',title:'NAME / STAFF ID',x0:.5,x1:1,y0:.93,y1:1}
+ {
+  "id": "header",
+  "title": "THÔNG TIN CHUYẾN",
+  "keys": [
+   "flightNumber",
+   "acRegistration",
+   "station",
+   "date",
+   "routing",
+   "acTypeA320",
+   "acTypeA321",
+   "acTypeB7378",
+   "parkingPosition",
+   "sta",
+   "eta",
+   "ata",
+   "std",
+   "etd",
+   "atd"
+  ]
+ },
+ {
+  "id": "arrival",
+  "title": "ARRIVAL FLIGHT",
+  "keys": [
+   "arrCoordinatorStandby",
+   "totalPaxLdm",
+   "arrBaggagePcs",
+   "arrBaggageKgs",
+   "arrBaggageLoadedIn",
+   "arrCargoPcs",
+   "arrCargoKgs",
+   "arrCargoLoadedIn"
+  ]
+ },
+ {
+  "id": "departure",
+  "title": "DEPARTURE FLIGHT · FINAL CARGO / NOTOC",
+  "keys": [
+   "depCoordinatorStandby",
+   "finalCargoPcs",
+   "finalCargoKgs",
+   "notocYes",
+   "notocNo",
+   "wheelchairBattery",
+   "dangerousGoodsCargo",
+   "flightCrewArrive"
+  ]
+ },
+ {
+  "id": "bag_unload",
+  "title": "BAGGAGE UNLOADING",
+  "keys": [
+   "baggageUnloadStart",
+   "baggageUnloadFinish",
+   "baggageUnloadFirstCart",
+   "baggageUnloadFirstTractor",
+   "baggageUnloadLastCart",
+   "baggageUnloadLastTractor",
+   "baggageUnloadCartNo"
+  ]
+ },
+ {
+  "id": "bag_load",
+  "title": "BAGGAGE LOADING",
+  "keys": [
+   "baggageLoadStart",
+   "baggageLoadFinish",
+   "baggageLoadFirstCart",
+   "baggageLoadFirstTractor",
+   "baggageLoadLastCart",
+   "baggageLoadLastTractor",
+   "baggageLoadCartNo"
+  ]
+ },
+ {
+  "id": "cargo_unload",
+  "title": "CARGO UNLOADING",
+  "keys": [
+   "cargoUnloadStart",
+   "cargoUnloadFinish",
+   "cargoUnloadFirstCart",
+   "cargoUnloadFirstTractor",
+   "cargoUnloadLastCart",
+   "cargoUnloadLastTractor",
+   "cargoUnloadCartNo"
+  ]
+ },
+ {
+  "id": "cargo_load",
+  "title": "CARGO LOADING",
+  "keys": [
+   "cargoLoadStart",
+   "cargoLoadFinish",
+   "cargoLoadFirstCart",
+   "cargoLoadFirstTractor",
+   "cargoLoadLastCart",
+   "cargoLoadLastTractor",
+   "cargoLoadCartNo",
+   "cargoDocumentsReceived"
+  ]
+ },
+ {
+  "id": "equipment",
+  "title": "EQUIPMENT / MANPOWER",
+  "keys": [
+   "loaderRampStaffTotal",
+   "loaderRampStaffTime",
+   "conveyorStandbyTotal",
+   "conveyorStandbyTime",
+   "passengerStepStandbyTotal",
+   "passengerStepStandbyTime"
+  ]
+ },
+ {
+  "id": "final",
+  "title": "FINAL FIGURE · PASSENGER / BAGGAGE",
+  "keys": [
+   "finalTotalPax",
+   "checkinClosed",
+   "finalAdult",
+   "finalChild",
+   "finalInfant",
+   "zone0A",
+   "zone0B",
+   "zone0C",
+   "psaBaggagePcs",
+   "psaBaggageKgs",
+   "actualLoadedBaggagePcs"
+  ]
+ },
+ {
+  "id": "irregular",
+  "title": "IRREGULARITIES / DELAY / DAMAGE REPORT",
+  "keys": [
+   "irregularityReport"
+  ]
+ },
+ {
+  "id": "offloaded",
+  "title": "OFFLOADED · PASSENGER / BAGGAGE",
+  "keys": [
+   "offloadStandbyTime",
+   "offloadConfirmTime",
+   "offloadTotalPax",
+   "offloadBagPcs",
+   "offloadBagKgs",
+   "offloadBagTags",
+   "offloadTractorNo",
+   "offloadDeliveryTime"
+  ]
+ },
+ {
+  "id": "inspection",
+  "title": "A/C COMPARTMENT VISUAL INSPECTION",
+  "keys": [
+   "fwdDividerNet",
+   "fwdDividerNetTime",
+   "fwdAllRestraints",
+   "fwdAllRestraintsTime",
+   "fwdPlacard",
+   "fwdPlacardTime",
+   "aftDividerNet",
+   "aftDividerNetTime",
+   "aftAllRestraints",
+   "aftAllRestraintsTime",
+   "aftPlacard",
+   "aftPlacardTime",
+   "loadingWithinLimit",
+   "loadingWithinLimitTime",
+   "noDamageFound",
+   "noDamageFoundTime",
+   "damageFound",
+   "damageFoundTime"
+  ]
+ },
+ {
+  "id": "departure_service",
+  "title": "LIR / GROUND SERVICES",
+  "keys": [
+   "lirPresent",
+   "lirComplete",
+   "refuelingStart",
+   "refuelingComplete",
+   "boardingComplete",
+   "cabinDoorClosed",
+   "cargoCompartmentClosed",
+   "pushbackTruckStandby",
+   "potableWaterStart",
+   "potableWaterComplete",
+   "lavatoryStart",
+   "lavatoryComplete",
+   "brakeCoolingStart",
+   "brakeCoolingComplete",
+   "gpuStart",
+   "gpuComplete",
+   "asuStart",
+   "asuComplete",
+   "acuStart",
+   "acuComplete"
+  ]
+ },
+ {
+  "id": "unverified",
+  "title": "⚠ CẦN ĐỐI CHIẾU · FOD / NAME / STAFF ID",
+  "keys": [
+   "fodInspectionChecked",
+   "fodInspectionTime",
+   "Name",
+   "STAFF_ID"
+  ],
+  "provisional": true
+ }
 ];
 let regionLabels=TVJ_REGIONS.map(r=>r.title);
 function sectionOf(q){
- const cx=Number(q.x||0)+Number(q.w||0)/2,cy=Number(q.y||0)+Number(q.h||0)/2;
- return TVJ_REGIONS.findIndex(r=>cx>=r.x0&&cx<r.x1&&cy>=r.y0&&cy<r.y1);
+ const k=S(q?.key);
+ return TVJ_REGIONS.findIndex(r=>r.keys.includes(k));
 }
 function buildSections(){
  sections=TVJ_REGIONS.map(()=>[]);
  regionLabels=TVJ_REGIONS.map(r=>r.title);
- const missing=[];
- const sorted=(form?.fields||[]).slice().sort((a,b)=>(Number(a.y)||0)-(Number(b.y)||0)||(Number(a.x)||0)-(Number(b.x)||0));
- const seen=new Set();
- for(const q of sorted){
-  const k=bindOf(q);if(!k||seen.has(k))continue;seen.add(k);
-  const field={k,label:S(q.label||q.key||k),type:rt(q.type),key:S(q.key)};
-  const i=sectionOf(q);
-  if(i<0)missing.push(field);
-  else sections[i].push(field);
+ const byKey=new Map((form?.fields||[]).map(q=>[S(q.key),q]));
+ const claimed=new Set();
+ for(let i=0;i<TVJ_REGIONS.length;i++){
+  for(const k of TVJ_REGIONS[i].keys){
+   const q=byKey.get(k);
+   if(!q)continue;
+   const bind=bindOf(q);
+   if(!bind||claimed.has(bind))continue;
+   claimed.add(bind);
+   sections[i].push({k:bind,label:S(q.label||q.key||bind),type:rt(q.type),key:k});
+  }
  }
- // Unknown fields remain accessible instead of being silently discarded.
- if(missing.length){sections.push(missing);regionLabels.push('TRƯỜNG BỔ SUNG');console.warn('TVJ registry fields outside printed rectangles:',missing.map(x=>x.key))}
+ // Newly introduced registry fields remain accessible, but are never guessed into
+ // a printed rectangle. These entries stay in the clearly marked review section.
+ const unverified=TVJ_REGIONS.findIndex(r=>r.provisional);
+ const leftovers=(form?.fields||[]).filter(q=>!claimed.has(bindOf(q)));
+ for(const q of leftovers){
+  const bind=bindOf(q);if(!bind||claimed.has(bind))continue;
+  claimed.add(bind);
+  sections[unverified].push({k:bind,label:S(q.label||q.key||bind),type:rt(q.type),key:S(q.key)});
+ }
+ if(leftovers.length)console.warn('TVJ fields require rectangle verification:',leftovers.map(q=>q.key));
 }
 // Legacy N/A is converted only for the TVJ form's own bound fields.
 function migrateTvjNil(){
@@ -61,7 +272,7 @@ function migrateTvjNil(){
  }
  return changed;
 }
-function ensureStyle(){if(document.getElementById('tvj632QuickStyle'))return;const st=document.createElement('style');st.id='tvj632QuickStyle';st.textContent='.vz632Toggle{width:100%;min-height:38px;border:1px solid #aebdca;border-radius:8px;background:#eef3f7;color:#30465a;font:900 13px Arial}.vz632Toggle.on{background:#1f7a4c;border-color:#1f7a4c;color:#fff}.quickTimeRow.vz632Wide{grid-template-columns:1fr!important}.quickTimeRow.vz632Wide .quickTimeInput{min-height:100px;resize:vertical;line-height:1.35}.quickTimePageTitle .vz632Count{font-weight:700;opacity:.75;margin-left:6px}.vz632RegionSelect{display:block;width:100%;min-height:44px;padding:9px 12px;margin:0 0 12px;border:1px solid #799db8;border-radius:10px;color:#173c57;background:#f0f7fd;font:700 13px system-ui,Arial,sans-serif;box-sizing:border-box}.vz632RegionHelp{font:12px/1.45 system-ui,Arial,sans-serif;color:#36526b;margin:0 0 10px}.quickTimePageTitle{overflow-wrap:anywhere}#qteTab0:disabled,#qteTab2:disabled{opacity:.45;cursor:not-allowed}@media(max-width:640px){.vz632RegionSelect{font-size:14px;min-height:48px}.quickTimePageTitle{font-size:14px}}';document.head.appendChild(st)}
+function ensureStyle(){if(document.getElementById('tvj632QuickStyle'))return;const st=document.createElement('style');st.id='tvj632QuickStyle';st.textContent='.vz632RegionReview{padding:10px 12px;margin:6px 0 12px;background:#fff3dc;border:1px solid #d9a851;border-radius:10px;color:#654312;font:600 12px/1.5 system-ui,Arial,sans-serif}.vz632Toggle{width:100%;min-height:38px;border:1px solid #aebdca;border-radius:8px;background:#eef3f7;color:#30465a;font:900 13px Arial}.vz632Toggle.on{background:#1f7a4c;border-color:#1f7a4c;color:#fff}.quickTimeRow.vz632Wide{grid-template-columns:1fr!important}.quickTimeRow.vz632Wide .quickTimeInput{min-height:100px;resize:vertical;line-height:1.35}.quickTimePageTitle .vz632Count{font-weight:700;opacity:.75;margin-left:6px}.vz632RegionSelect{display:block;width:100%;min-height:44px;padding:9px 12px;margin:0 0 12px;border:1px solid #799db8;border-radius:10px;color:#173c57;background:#f0f7fd;font:700 13px system-ui,Arial,sans-serif;box-sizing:border-box}.vz632RegionHelp{font:12px/1.45 system-ui,Arial,sans-serif;color:#36526b;margin:0 0 10px}.quickTimePageTitle{overflow-wrap:anywhere}#qteTab0:disabled,#qteTab2:disabled{opacity:.45;cursor:not-allowed}@media(max-width:640px){.vz632RegionSelect{font-size:14px;min-height:48px}.quickTimePageTitle{font-size:14px}}';document.head.appendChild(st)}
 let ensurePending=null;
 async function ensure(){
  if(ensurePending)return ensurePending;
@@ -126,7 +337,8 @@ function render(){
  const flight=[S(state?.vz_flightNumber)||'VZ',S(state?.vz_date)].filter(Boolean).join(' · ');
  document.getElementById('quickTimeTitle').textContent='NHẬP NHANH VZ · TVJ-GOF-035';
  document.getElementById('quickTimeFlight').textContent=flight;
- document.getElementById('quickTimeSub').textContent='KHU '+(tab+1)+' / '+total+' · '+title;
+ const unverified=TVJ_REGIONS[tab]?.provisional===true;
+ document.getElementById('quickTimeSub').textContent=unverified?'⚠ TRƯỜNG CHỜ ĐỐI CHIẾU · '+rows.length+' ô':'KHUNG '+(tab+1)+' / 13 · '+title;
  const buttonLabels=['◀ KHU TRƯỚC','CHỌN KHU','KHU TIẾP ▶'];
  buttonLabels.forEach((text,i)=>{
   const btn=document.getElementById('qteTab'+i);if(!btn)return;
@@ -134,9 +346,10 @@ function render(){
   btn.disabled=(i===0&&tab===0)||(i===2&&tab===total-1);
   btn.classList.toggle('active',i===1);
  });
- const choices=sections.map((list,i)=>'<option value="'+i+'" '+(i===tab?'selected':'')+'>'+(i+1)+' / '+total+' · '+E(regionLabels[i])+' ('+list.length+' ô)</option>').join('');
- body.innerHTML='<label class="vz632RegionHelp" for="vz632RegionSelect">Chọn khu vực theo khung chữ nhật trên biểu mẫu giấy</label>'+
+ const choices=sections.map((list,i)=>'<option value="'+i+'" '+(i===tab?'selected':'')+'>'+(TVJ_REGIONS[i]?.provisional?'⚠ ĐỐI CHIẾU':'KHUNG '+(i+1)+' / 13')+' · '+E(regionLabels[i])+' ('+list.length+' ô)</option>').join('');
+ body.innerHTML='<label class="vz632RegionHelp" for="vz632RegionSelect">13 khu theo biểu mẫu giấy · 1 mục chờ đối chiếu FOD / thông tin xác nhận</label>'+
   '<select class="vz632RegionSelect" id="vz632RegionSelect" aria-label="Chọn khu vực TVJ" onchange="vz632JumpGroup(this.value)">'+choices+'</select>'+
+  (unverified?'<p class="vz632RegionReview" role="note">⚠ Các trường FOD và NAME / STAFF ID chưa xác nhận được khung in do phần biểu mẫu gốc không khớp hoặc bị che. Giữ các trường này riêng, không tự gán vào Equipment hoặc Ground Services.</p>':'')+
   '<div class="quickTimePageTitle">'+E(title)+'<span class="vz632Count"> ('+rows.length+' ô)</span></div>'+
   '<div class="quickTimeRows">'+rows.map(f=>'<div class="quickTimeRow single '+(f.type==='textarea'?'vz632Wide':'')+'"><div class="quickTimeLabel">'+E(f.label)+'</div>'+cell(f)+'</div>').join('')+'</div>';
  const nil=document.getElementById('quickTimeNaBtn');if(nil){nil.style.display='';nil.textContent='NIL Ô TRỐNG';nil.setAttribute('aria-label','Điền NIL cho ô trống TVJ');nil.onclick=()=>vz632FillNIL()}
