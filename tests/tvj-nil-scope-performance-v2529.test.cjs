@@ -22,7 +22,7 @@ assert.equal(tvjState.vz_check,'N/A');assert.equal(tvjState.other_form,'N/A','ot
 assert.equal(migrate(),false,'conversion should be idempotent');
 const unrelated={vz_sta:'N/A'};const notActive=new Function('active','form','state','S','rt','bindOf','NIL',funcs.migrateTvjNil+';return migrateTvjNil')(()=>false,tvjForm,unrelated,S,t=>t,q=>'vz_'+q.key,NIL);
 assert.equal(notActive(),false);assert.equal(unrelated.vz_sta,'N/A');
-assert.match(tvj,/na\.textContent='NIL Ô TRỐNG'/);
+assert.match(tvj,/nil\.textContent='NIL Ô TRỐNG'/);
 assert.match(tvj,/window\.vz632FillNIL=\(\)=>/);
 assert.match(tvj,/draft\[f\.k\]=NIL;state\[f\.k\]=NIL/);
 assert.match(tvj,/if\(isNil\(v\)\)v=NIL/,'TVJ saves canonical NIL without collapsing slash');
