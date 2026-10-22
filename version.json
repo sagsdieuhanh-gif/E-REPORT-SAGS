@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.33",
-  "displayVersion": "V2.5.33",
-  "label": "V2.5.33 - TỐI ƯU NHẬP LIỆU, LƯU NHÁP VÀ XUẤT PDF",
-  "build": "V2.5.33-20261022-INPUT-PDF-PERFORMANCE-01",
-  "releasedAt": "2026-10-22",
-  "type": "input-draft-pdf-performance",
-  "base": "E-REPORT-SAGS main@1430d27 (V2.5.32)",
+  "version": "V2.5.34",
+  "displayVersion": "V2.5.34",
+  "label": "V2.5.34 - GIẢM TẢI NHẬP FINAL TRÊN MÁY YẾU",
+  "build": "V2.5.34-20261023-LOW-END-FINAL-01",
+  "releasedAt": "2026-10-23",
+  "type": "low-end-final-performance",
+  "base": "E-REPORT-SAGS main@79f3a27 (V2.5.33)",
   "updatePolicy": "required",
-  "notes": "Gộp FINAL về một lần ghi đã kiểm chứng; giảm đọc hồ sơ và cập nhật trạng thái khi gõ; tránh giải nén bản lưu đã kiểm chứng; sao lưu IndexedDB theo chuyến thay đổi; gộp thao tác dựng SVG; chặn cập nhật dock thừa; giới hạn chờ registry PDF và dùng đúng ảnh nền đóng gói. Giữ kiểm tra tải trọng, chữ ký, nền tùy chỉnh, xuất 42.1 lossless và bảo vệ nháp khi đổi chuyến/ra đa nhiệm.",
-  "message": "V2.5.33: Tối ưu phản hồi nhập liệu, lưu nháp và tạo PDF."
+  "notes": "Sửa truyền dữ liệu đã tính qua lớp phân quyền FINAL; gộp lịch chỉnh chữ theo khung hình; đo kích thước trước khi ghi style. Giữ lưu tức thời, kiểm tra zone và công thức nghiệp vụ.",
+  "message": "V2.5.34: Giảm thao tác lặp khi nhập FINAL và sửa lưu kết quả tính phụ thuộc."
 }
