@@ -17,7 +17,7 @@ function migrateTvjNil(){
  let changed=false;
  for(const q of form.fields||[]){
   const key=S(q.key).toUpperCase();
-  if(rt(q.type)==='check'||key==='NAME'||key==='STAFF_ID')continue;
+  if(rt(q.type)==='check'||key==='NAME'||key==='STAFF_ID'||key==='STAFFID')continue;
   const k=bindOf(q);
   if(S(state[k]).toUpperCase()==='N/A'){state[k]=NIL;changed=true}
  }
@@ -61,8 +61,12 @@ function defaultSlashOnNext(key){
  return true;
 }
 window.vz632Focus=e=>{lastFocusedKey=S(e?.dataset?.vzk)};
+window.vz632Blur=(input,event)=>{
+ const next=event?.relatedTarget;
+ if(next?.classList?.contains('quickTimeInput'))defaultSlashOnNext(S(input?.dataset?.vzk));
+};
 window.vz632Next=(input,event)=>{
- if(event?.key!=='Enter')return;
+ if(event?.key!=='Enter'||input?.tagName==='TEXTAREA'||event.shiftKey)return;
  event.preventDefault();
  defaultSlashOnNext(S(input?.dataset?.vzk));
  const nodes=Array.from(document.querySelectorAll?.('#quickTimeBody .quickTimeInput')||[]);
@@ -74,7 +78,7 @@ window.vz632Next=(input,event)=>{
 
 function init(){draft={};for(const a of sections)for(const f of a)draft[f.k]=f.type==='check'?!!state?.[f.k]:(isNil(state?.[f.k])?NIL:S(state?.[f.k]))}
 function now(){try{return S(nowHHMM()).replace(':','')}catch(_){const d=new Date();return String(d.getHours()).padStart(2,'0')+String(d.getMinutes()).padStart(2,'0')}}
-function cell(f){const k=E(f.k),t=f.type;if(t==='check')return '<div class="quickTimeSingleCell"><button type="button" class="vz632Toggle '+(draft[f.k]?'on':'')+'" data-vzk="'+k+'" onclick="vz632Toggle(this)">'+(draft[f.k]?'✓ ĐÃ CHỌN':'— CHƯA CHỌN')+'</button></div>';if(t==='textarea')return '<div class="quickTimeSingleCell"><textarea class="quickTimeInput" data-vzk="'+k+'" data-vzt="textarea" onfocus="vz632Focus(this)" onkeydown="vz632Next(this,event)" oninput="vz632Input(this)">'+E(draft[f.k])+'</textarea></div>';return '<div class="quickTimeSingleCell"><input class="quickTimeInput" data-vzk="'+k+'" data-vzt="'+E(t)+'" '+('type="text" inputmode="text" enterkeyhint="next"')+' value="'+E(draft[f.k])+'" placeholder="'+(t==='time'?'----':'')+'" onfocus="vz632Focus(this)" onkeydown="vz632Next(this,event)" oninput="vz632Input(this)">'+(t==='time'?'<button class="quickTimeNow" type="button" data-vzk="'+k+'" onclick="vz632Now(this)">◷</button>':'')+'</div>'}
+function cell(f){const k=E(f.k),t=f.type;if(t==='check')return '<div class="quickTimeSingleCell"><button type="button" class="vz632Toggle '+(draft[f.k]?'on':'')+'" data-vzk="'+k+'" onclick="vz632Toggle(this)">'+(draft[f.k]?'✓ ĐÃ CHỌN':'— CHƯA CHỌN')+'</button></div>';if(t==='textarea')return '<div class="quickTimeSingleCell"><textarea class="quickTimeInput" data-vzk="'+k+'" data-vzt="textarea" onfocus="vz632Focus(this)" onkeydown="vz632Next(this,event)" onblur="vz632Blur(this,event)" oninput="vz632Input(this)">'+E(draft[f.k])+'</textarea></div>';return '<div class="quickTimeSingleCell"><input class="quickTimeInput" data-vzk="'+k+'" data-vzt="'+E(t)+'" '+('type="text" inputmode="text" enterkeyhint="next"')+' value="'+E(draft[f.k])+'" placeholder="'+(t==='time'?'----':'')+'" onfocus="vz632Focus(this)" onkeydown="vz632Next(this,event)" onblur="vz632Blur(this,event)" oninput="vz632Input(this)">'+(t==='time'?'<button class="quickTimeNow" type="button" data-vzk="'+k+'" onclick="vz632Now(this)">◷</button>':'')+'</div>'}
 function render(){const labs=['ĐẾN · ARRIVAL','ĐI · DEPARTURE','OTHER'],tabs=['ĐẾN','ĐI','OTHER'],body=document.getElementById('quickTimeBody');if(!body)return;document.getElementById('quickTimeTitle').textContent='NHẬP NHANH VZ · TVJ-GOF-035';document.getElementById('quickTimeFlight').textContent=[S(state?.vz_flightNumber)||'VZ',S(state?.vz_date)].filter(Boolean).join(' · ');document.getElementById('quickTimeSub').textContent=labs[tab];tabs.forEach((x,i)=>{const b=document.getElementById('qteTab'+i);if(b){b.hidden=false;b.textContent=x;b.classList.toggle('active',i===tab)}});const rows=sections[tab]||[];body.innerHTML='<div class="quickTimePageTitle">'+labs[tab]+'<span class="vz632Count">('+rows.length+' ô)</span></div><div class="quickTimeRows">'+rows.map(f=>'<div class="quickTimeRow single '+(f.type==='textarea'?'vz632Wide':'')+'"><div class="quickTimeLabel">'+E(f.label)+'</div>'+cell(f)+'</div>').join('')+'</div>';const na=document.getElementById('quickTimeNaBtn');if(na){na.style.display='';na.textContent='NIL Ô TRỐNG';na.setAttribute('aria-label','Điền NIL cho ô trống TVJ');na.onclick=()=>vz632FillNIL()}const cl=document.getElementById('quickTimeClearBtn');if(cl){cl.style.display='';cl.textContent='BBBT';cl.onclick=()=>vz632BBBT()}}
 window.vz632Input=e=>{const k=S(e.dataset.vzk),t=S(e.dataset.vzt);let v=window.SAGSBusinessText?.upper(S(e.value))??S(e.value).toLocaleUpperCase("vi-VN");const mark=/^(?:N|NI|NIL|NA|N\/A|\/)$/i.test(v);if(t==='time'&&!mark)v=v.replace(/[^0-9:]/g,'').slice(0,5);if(t==='number'&&!mark)v=v.replace(/[^0-9.]/g,'');if(isNil(v)||v==='NA')v=NIL;draft[k]=v;e.value=v};
 window.vz632FillNIL=()=>{if(!confirm('Điền NIL cho toàn bộ ô trống của TVJ-GOF-035?\n\nDữ liệu đã nhập và checkbox được giữ nguyên. NAME / STAFF ID vẫn lấy từ tài khoản đăng nhập.'))return;seedAccountIdentity(false);let n=0;for(const f of sections.flat()){if(f.type==='check'||f.key.toUpperCase()==='NAME'||f.key.toUpperCase()==='STAFF_ID')continue;const cur=S(draft[f.k]??state?.[f.k]);if(!cur){draft[f.k]=NIL;state[f.k]=NIL;n++}}seedAccountIdentity(false);try{persist()}catch(_){}try{draw()}catch(_){}render();const st=document.getElementById('quickTimeSaveStatus');if(st)st.textContent=n?'ĐÃ LƯU NIL '+n+' Ô TRỐNG':'KHÔNG CÓ Ô TRỐNG';try{if(n&&typeof showToast==='function')showToast('Đã điền và lưu NIL cho '+n+' ô trống')}catch(_){}};
