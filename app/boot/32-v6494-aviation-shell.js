@@ -126,12 +126,17 @@ function renderMenus(){
  if(nav.innerHTML!==navHtml)nav.innerHTML=navHtml;
  if(mobile.innerHTML!==mobileHtml)mobile.innerHTML=mobileHtml;
 }
+let cachedAvatarPhoto=null,cachedAvatarBackground='';
 function syncIdentity(){
  const p=profile(),r=role()||'—';let pref={};try{pref=typeof root.sagsGetSettings==='function'?root.sagsGetSettings()||{}:{}}catch(_){}
  const name=S(pref.displayName||p.name||p.fullName||p.displayName||p.username||p.userName||r||'Người dùng'),photo=S(pref.avatarData);
  const initial=(name.match(/[A-ZÀ-Ỹ0-9]/iu)?.[0]||'U').toUpperCase(),put=(id,v)=>{const e=$(id);if(e&&e.textContent!==v)e.textContent=v};
  // Large base64 avatars are expensive to reassign on every menu/body observer event.
- const has=!!photo,background=has?'url("'+photo.replace(/"/g,'%22')+'")':'',avatarText=has?'':initial;
+ const has=!!photo,avatarText=has?'':initial;
+ // Avoid rebuilding a potentially very large base64 avatar URL on every
+ // MutationObserver-driven sync (PC navigation and mobile menu share this path).
+ if(photo!==cachedAvatarPhoto){cachedAvatarPhoto=photo;cachedAvatarBackground=has?'url("'+photo.replace(/"/g,'%22')+'")':''}
+ const background=cachedAvatarBackground;
  const avatar=id=>{
   const e=$(id);if(!e)return;
   const kind=has?'image':'initial';

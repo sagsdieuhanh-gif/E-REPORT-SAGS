@@ -54,11 +54,11 @@ assert.match(tvj,/input\?\.tagName==='TEXTAREA'/,'multi-line notes must preserve
 
 assert.doesNotMatch(tvj,/setInterval\s*\(/,'no always-on TVJ redraw polling on mobile/desktop');
 assert.match(tvj,/if\(ensurePending\)return ensurePending/,'avoid concurrent expensive registry load');
-assert.match(tvj,/if\(geometryChanged\|\|migrated\)try\{draw\(\)\}/,'draw only on actual TVJ changes');
+assert.match(tvj,/if\(geometryChanged\|\|migrated\|\|identityChanged\)try\{draw\(\)\}/,'draw only on geometry, NIL migration or changed account identity');
 assert.doesNotMatch(tvj,/window\.vz632Toggle[^;\n]*render\(\)/,'TVJ checkboxes do not redraw entire quick-entry form');
 assert.match(shell,/const sig=visible\.map\(/);
 assert.match(shell,/if\(sig===lastMenuSignature\)return/,'no repeated innerHTML rebuild for same sidebar state');
 assert.match(shell,/if\(e\.style\.backgroundImage!==background\)/,'skip avatar background reassignment');
 assert.match(index,/onclick="qteFillBlankNA\(\)"/,'generic forms must keep existing N/A shortcut');
-const version=JSON.parse(read('version.json'));assert.match(version.version,/^V2\.5\.(?:29|30|31)$/);
+const version=JSON.parse(read('version.json'));assert.match(version.version,/^V2\.5\.(?:29|30|31|32)$/);
 console.log('TVJ NIL scoped migration, quick-entry, PDF-state protection and PC/mobile performance guards PASS');
