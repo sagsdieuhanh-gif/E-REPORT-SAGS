@@ -115,22 +115,32 @@ function menuCard(item,compact=false){
  return '<button type="button" data-v6494-key="'+esc(item.key)+'" class="'+(item.key==='home'?'active ':'')+(compact?'compact':'')+'"><i>'+icon+'</i><span><b>'+esc(item.label)+'</b><small>'+esc(item.meta||'')+'</small></span><em>›</em></button>';
 }
 function renderMenus(){
+ const visible=DEF.map(sec=>({group:sec.group,items:sec.items.filter(x=>available(x.key))})).filter(sec=>sec.items.length);
+ // Compare only keys and permissions before generating markup or touching the DOM.
+ const sig=visible.map(sec=>sec.group+':'+sec.items.map(x=>x.key).join(',')).join('|');
+ if(sig===lastMenuSignature)return;
  const el=ensure(),nav=el.querySelector('#v6494Nav'),mobile=el.querySelector('#v6494MobileMenu');
- let navHtml='',mobileHtml='';
- for(const sec of DEF){
-  const items=sec.items.filter(x=>available(x.key));
-  if(!items.length)continue;
-  navHtml+='<section><h3>'+esc(sec.group)+'</h3>'+items.map(x=>menuCard(x,true)).join('')+'</section>';
-  mobileHtml+='<div class="v6494MobileGroup"><h3>'+esc(sec.group)+'</h3><div>'+items.map(x=>menuCard(x,false)).join('')+'</div></div>';
- }
- const sig=navHtml+'\u0000'+mobileHtml;if(sig===lastMenuSignature)return;lastMenuSignature=sig;
- nav.innerHTML=navHtml;mobile.innerHTML=mobileHtml;
+ const navHtml=visible.map(sec=>'<section><h3>'+esc(sec.group)+'</h3>'+sec.items.map(x=>menuCard(x,true)).join('')+'</section>').join('');
+ const mobileHtml=visible.map(sec=>'<div class="v6494MobileGroup"><h3>'+esc(sec.group)+'</h3><div>'+sec.items.map(x=>menuCard(x,false)).join('')+'</div></div>').join('');
+ lastMenuSignature=sig;
+ if(nav.innerHTML!==navHtml)nav.innerHTML=navHtml;
+ if(mobile.innerHTML!==mobileHtml)mobile.innerHTML=mobileHtml;
 }
 function syncIdentity(){
  const p=profile(),r=role()||'—';let pref={};try{pref=typeof root.sagsGetSettings==='function'?root.sagsGetSettings()||{}:{}}catch(_){}
  const name=S(pref.displayName||p.name||p.fullName||p.displayName||p.username||p.userName||r||'Người dùng'),photo=S(pref.avatarData);
  const initial=(name.match(/[A-ZÀ-Ỹ0-9]/iu)?.[0]||'U').toUpperCase(),put=(id,v)=>{const e=$(id);if(e&&e.textContent!==v)e.textContent=v};
- const avatar=id=>{const e=$(id);if(!e)return;const has=!!photo;e.dataset.sagsAvatar=has?'image':'initial';e.dataset.sagsUserAvatar='1';e.style.backgroundImage=has?'url("'+photo.replace(/"/g,'%22')+'")':'';e.textContent=has?'':initial;e.title=name};
+ // Large base64 avatars are expensive to reassign on every menu/body observer event.
+ const has=!!photo,background=has?'url("'+photo.replace(/"/g,'%22')+'")':'',avatarText=has?'':initial;
+ const avatar=id=>{
+  const e=$(id);if(!e)return;
+  const kind=has?'image':'initial';
+  if(e.dataset.sagsAvatar!==kind)e.dataset.sagsAvatar=kind;
+  if(e.dataset.sagsUserAvatar!=='1')e.dataset.sagsUserAvatar='1';
+  if(e.style.backgroundImage!==background)e.style.backgroundImage=background;
+  if(e.textContent!==avatarText)e.textContent=avatarText;
+  if(e.title!==name)e.title=name;
+ };
  for(const id of['v6494Name','v6494TopName','v6494MobileName'])put(id,name);
  for(const id of['v6494Role','v6494TopRole','v6494MobileRole'])put(id,r);
  for(const id of['v6494Avatar','v6494TopAvatar','v6494MobileAvatar'])avatar(id);
