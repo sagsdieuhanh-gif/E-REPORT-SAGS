@@ -1,64 +1,67 @@
 'use strict';
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),acorn=require('acorn');
 const root=path.resolve(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p),'utf8');
-const src=read('app/modules/tvj-gof-035.v632.js'),registry=JSON.parse(read('forms/forms.registry.json')).forms.find(f=>f.id==='tvj_gof_035');
-assert.ok(registry?.fields?.length===128,'TVJ REV06 has 128 registered fields');
-const ast=acorn.parse(src,{ecmaVersion:'latest'});
-const funcs={};let regionsNode=null;
-for(const node of ast.body){/* Source is enclosed in an IIFE: traverse its AST safely. */}
-function walk(n){
- if(!n||typeof n!=='object')return;
- if(n.type==='FunctionDeclaration'&&n.id)funcs[n.id.name]=src.slice(n.start,n.end);
- if(n.type==='VariableDeclarator'&&n.id?.name==='TVJ_REGIONS')regionsNode=n.init;
- for(const v of Object.values(n)){if(Array.isArray(v))v.forEach(walk);else if(v&&typeof v==='object')walk(v)}
+const source=read('app/modules/tvj-gof-035.v632.js');
+const tvj=JSON.parse(read('forms/forms.registry.json')).forms.find(f=>f.id==='tvj_gof_035');
+assert.ok(tvj&&tvj.fields.length===128,'TVJ registry must have 128 fields');
+const ast=acorn.parse(source,{ecmaVersion:'latest'}),fn={};let regionNode=null;
+function visit(node){
+ if(!node||typeof node!=='object')return;
+ if(node.type==='FunctionDeclaration'&&node.id)fn[node.id.name]=source.slice(node.start,node.end);
+ if(node.type==='VariableDeclarator'&&node.id?.name==='TVJ_REGIONS')regionNode=node.init;
+ for(const v of Object.values(node))if(Array.isArray(v))v.forEach(visit);else if(v&&typeof v==='object')visit(v);
 }
-walk(ast);
-assert.ok(regionsNode&&funcs.sectionOf&&funcs.buildSections,'physical regions and registry grouping must be present');
-const regions=Function('return ('+src.slice(regionsNode.start,regionsNode.end)+')')();
-assert.equal(regions.length,14,'one quick-entry region per printed rectangle');
-assert.deepEqual(regions.map(r=>r.id),[
- 'header','arrival','departure','bag_unload','bag_load','cargo_unload','cargo_load',
- 'equipment','final','irregular','offloaded','inspection','departure_service','confirmation']);
-for(const r of regions){
- assert.ok(r.x0>=0&&r.x1<=1&&r.y0>=0&&r.y1<=1&&r.x0<r.x1&&r.y0<r.y1,'valid rectangle '+r.id);
+visit(ast);
+assert.ok(regionNode&&fn.sectionOf&&fn.buildSections,'explicit physical section map must be present');
+const regions=Function('return ('+source.slice(regionNode.start,regionNode.end)+')')();
+const ids=['header','arrival','departure','bag_unload','bag_load','cargo_unload','cargo_load','equipment','final','irregular','offloaded','inspection','departure_service','unverified'];
+assert.deepEqual(regions.map(r=>r.id),ids);
+assert.equal(regions.filter(r=>!r.provisional).length,13,'header + 12 printed operational rectangles');
+assert.equal(regions.filter(r=>r.provisional).length,1,'unverified fields are not guessed into a printed rectangle');
+const S=v=>String(v??'').trim();
+const sectionOf=Function('TVJ_REGIONS','S',fn.sectionOf+';return sectionOf')(regions,S);
+const byKey=new Map(tvj.fields.map(x=>[x.key,x]));
+const counts=[15,8,8,7,7,7,8,6,11,1,8,18,20,4];
+assert.deepEqual(regions.map(r=>r.keys.length),counts);
+const referenced=regions.flatMap(r=>r.keys);
+assert.equal(referenced.length,128);
+assert.equal(new Set(referenced).size,128,'no field appears twice across zones');
+assert.deepEqual([...referenced].sort(),[...byKey.keys()].sort(),'every field mapped exactly once');
+for(const q of tvj.fields){
+ const idx=sectionOf(q);
+ assert.ok(idx>=0&&idx<regions.length,'no unmapped field: '+q.key);
+ assert.ok(regions[idx].keys.includes(q.key),'section must use explicit key membership: '+q.key);
 }
-const sectionOf=Function('TVJ_REGIONS',funcs.sectionOf+';return sectionOf')(regions);
-const groups=regions.map(()=>[]);
-for(const q of registry.fields){
- const i=sectionOf(q);
- assert.ok(i>=0&&i<regions.length,'field '+q.key+' must belong to a printed rectangle');
- groups[i].push(q.key);
- const cx=q.x+q.w/2,cy=q.y+q.h/2,r=regions[i];
- assert.ok(cx>=r.x0&&cx<r.x1&&cy>=r.y0&&cy<r.y1,q.key+' must be inside its rectangle');
-}
-assert.deepEqual(groups.map(g=>g.length),[15,8,8,7,7,7,8,8,11,1,8,18,20,2],'all rectangular group counts');
-assert.equal(groups.flat().length,registry.fields.length,'all 128 fields assigned exactly once');
-assert.equal(new Set(groups.flat()).size,registry.fields.length,'no duplicate fields');
-const getGroup=k=>regions.find((r,i)=>groups[i].includes(k))?.id;
-for(const [field,group] of Object.entries({
-  date:'header',sta:'header',eta:'header',
-  arrCoordinatorStandby:'arrival',arrCargoLoadedIn:'arrival',arrBaggageLoadedIn:'arrival',
-  depCoordinatorStandby:'departure',notocYes:'departure',flightCrewArrive:'departure',
-  baggageUnloadFirstCart:'bag_unload',baggageUnloadCartNo:'bag_unload',
-  baggageLoadLastCart:'bag_load',baggageLoadCartNo:'bag_load',
-  cargoUnloadFirstTractor:'cargo_unload',cargoUnloadCartNo:'cargo_unload',
-  cargoLoadFirstCart:'cargo_load',cargoDocumentsReceived:'cargo_load',
-  loaderRampStaffTotal:'equipment',fodInspectionTime:'equipment',
-  finalTotalPax:'final',zone0A:'final',actualLoadedBaggagePcs:'final',
-  irregularityReport:'irregular',offloadStandbyTime:'offloaded',offloadDeliveryTime:'offloaded',
-  fwdDividerNet:'inspection',noDamageFoundTime:'inspection',damageFoundTime:'inspection',
-  lirPresent:'departure_service',refuellingStart:'does-not-exist',
-  refuelingStart:'departure_service',acuComplete:'departure_service',
-  Name:'confirmation',STAFF_ID:'confirmation'
-})){if(group!=='does-not-exist')assert.equal(getGroup(field),group,field+' box membership')}
-assert.match(src,/sections=TVJ_REGIONS\.map\(\(\)=>\[\]\)/,'one section for every physical rectangle');
-assert.match(src,/if\(missing\.length\)\{sections\.push\(missing\)/,'new fields must never be discarded');
-assert.match(src,/const choices=sections\.map\(/,'region chooser must show every region');
-assert.match(src,/window\.vz632JumpGroup=value=>/,'jump directly to a printed rectangle');
-assert.match(src,/buttonLabels=\['◀ KHU TRƯỚC','CHỌN KHU','KHU TIẾP ▶'\]/,'explicit prev / choose / next controls');
-assert.match(src,/tab<sections\.length-1\)moveRegion\(tab\+1,true\)/,'keyboard next keeps traversing all rectangular groups');
-assert.match(src,/\.quickTimeRows \.quickTimeInput,#quickTimeBody \.quickTimeRows \.vz632Toggle/,'keyboard next must include checkboxes before leaving a region');
-assert.doesNotMatch(src,/const labs=\['ĐẾN · ARRIVAL','ĐI · DEPARTURE','OTHER'\]/,'old three-way split must be fully removed');
-assert.match(src,/if\(next>tab\)defaultSlashOnNext\(lastFocusedKey\)/,'slash on Next retained for optional TVJ fields');
-assert.match(src,/function save\(\)/,'TVJ save still includes full sections');
-console.log('TVJ physical rectangle grouping PASS: '+groups.length+' regions, '+groups.flat().length+' fields, no missing/duplicates');
+const group=key=>regions[sectionOf(byKey.get(key))]?.id;
+for(const [id,keys] of Object.entries({
+ header:['flightNumber','date','ata','atd'],
+ arrival:['arrCoordinatorStandby','totalPaxLdm','arrCargoLoadedIn'],
+ departure:['depCoordinatorStandby','finalCargoPcs','notocYes','notocNo','wheelchairBattery','dangerousGoodsCargo','flightCrewArrive'],
+ bag_unload:['baggageUnloadStart','baggageUnloadFirstTractor','baggageUnloadCartNo'],
+ bag_load:['baggageLoadFinish','baggageLoadLastTractor','baggageLoadCartNo'],
+ cargo_unload:['cargoUnloadStart','cargoUnloadLastTractor','cargoUnloadCartNo'],
+ cargo_load:['cargoLoadStart','cargoLoadLastTractor','cargoDocumentsReceived'],
+ equipment:['loaderRampStaffTotal','loaderRampStaffTime','passengerStepStandbyTotal','passengerStepStandbyTime'],
+ final:['finalTotalPax','checkinClosed','zone0C','actualLoadedBaggagePcs'],
+ irregular:['irregularityReport'],
+ offloaded:['offloadStandbyTime','offloadConfirmTime','offloadBagTags','offloadDeliveryTime'],
+ inspection:['fwdDividerNet','fwdDividerNetTime','aftPlacard','aftPlacardTime','damageFound','damageFoundTime'],
+ departure_service:['lirPresent','refuelingStart','cabinDoorClosed','pushbackTruckStandby','gpuStart','acuComplete'],
+ unverified:['fodInspectionChecked','fodInspectionTime','Name','STAFF_ID']
+})){for(const k of keys)assert.equal(group(k),id,k+' must be inside its parent area')}
+assert.ok(!regions.find(r=>r.id==='equipment').keys.some(x=>x.startsWith('fod')),'FOD not silently treated as a printed Equipment row');
+assert.ok(!regions.find(r=>r.id==='departure_service').keys.includes('Name'),'Name cannot be assumed to belong to covered service table');
+assert.match(source,/sections=TVJ_REGIONS\.map\(\(\)=>\[\]\)/);
+assert.match(source,/TVJ_REGIONS\[i\]\.keys/,'section entries must follow explicit field order');
+assert.match(source,/const leftovers=\(form\?\.fields\|\|\[\]\)\.filter/,'new/unmatched fields never disappear');
+assert.match(source,/if\(leftovers\.length\)console\.warn/,'unknown fields must be signaled');
+assert.match(source,/provisional\?'⚠ ĐỐI CHIẾU'/,'unverified section clearly labeled');
+assert.match(source,/role="note"/,'review warning displayed to user');
+assert.match(source,/const choices=sections\.map/,'select any section');
+assert.match(source,/window\.vz632JumpGroup=value=>/,'direct jump to a chosen region');
+assert.match(source,/tab<sections\.length-1\)moveRegion\(tab\+1,true\)/,'Next cannot stop halfway through a printed region');
+assert.match(source,/\.quickTimeRows \.quickTimeInput,#quickTimeBody \.quickTimeRows \.vz632Toggle/,'Next must account for checkboxes within a region');
+assert.match(source,/if\(next>tab\)defaultSlashOnNext\(lastFocusedKey\)/,'TVJ slash-on-Next preserved');
+assert.doesNotMatch(source,/y>=\.145&&x<\.5|cx>=r\.x0/,'no coordinate-based area guessing');
+assert.match(source,/function save\(\)/,'TVJ save remains available');
+console.log('TVJ verified boxes PASS: 13 approved visible areas (header + 12), 4 unverified fields isolated; all 128 preserved');
