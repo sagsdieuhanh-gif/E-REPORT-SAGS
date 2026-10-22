@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.30",
-  "displayVersion": "V2.5.30",
-  "label": "V2.5.30 - NHẬP NHANH TVJ ĐÚNG 14 KHUNG CHỮ NHẬT",
-  "build": "V2.5.30-20261022-TVJ-RECTANGLE-REGIONS-01",
+  "version": "V2.5.31",
+  "displayVersion": "V2.5.31",
+  "label": "V2.5.31 - TVJ ĐỐI CHIẾU KHUNG GỐC, SỬA SAI PHÂN KHU",
+  "build": "V2.5.31-20261022-TVJ-VERIFIED-REGIONS-01",
   "releasedAt": "2026-10-22",
-  "type": "tvj-physical-rectangle-entry-groups",
-  "base": "E-REPORT-SAGS main@V2.5.29",
+  "type": "tvj-keyed-physical-rectangles-audit",
+  "base": "E-REPORT-SAGS main@V2.5.30",
   "updatePolicy": "required",
-  "notes": "Sửa Nhập nhanh TVJ-GOF-035: nhóm theo 14 khung chữ nhật đúng trên biểu mẫu giấy thay vì cắt ba phần ĐẾN/ĐI/OTHER; đầy đủ 128 ô, không báo hết khu khi còn ô bên trong; có chọn khu, khu trước, khu tiếp. Giữ nguyên NIL, nhập chữ, tự điền / theo Next; không thay biểu mẫu hãng khác, dữ liệu, PDF, Firebase hay phân quyền.",
-  "message": "V2.5.30: TVJ nhập nhanh đúng từng khung chữ nhật trên biểu mẫu."
+  "notes": "Chuyển Nhập nhanh TVJ sang phân khu bằng field key chính xác theo khung lớn giấy: 13 khu đã đối chiếu (124 ô), 4 ô FOD/Name/Staff ID giữ riêng chờ xác minh do ảnh thiếu thông tin. Departure gồm Final Cargo + NOTOC; Equipment chỉ 3 dòng 6 ô. Không cắt khung theo tọa độ; giữ Next/NIL/dấu /, dữ liệu, PDF và các form khác.",
+  "message": "V2.5.31: TVJ nhập nhanh đúng khung chính, không báo hết nhóm sớm."
 }
