@@ -60,5 +60,5 @@ assert.match(shell,/const sig=visible\.map\(/);
 assert.match(shell,/if\(sig===lastMenuSignature\)return/,'no repeated innerHTML rebuild for same sidebar state');
 assert.match(shell,/if\(e\.style\.backgroundImage!==background\)/,'skip avatar background reassignment');
 assert.match(index,/onclick="qteFillBlankNA\(\)"/,'generic forms must keep existing N/A shortcut');
-const version=JSON.parse(read('version.json'));assert.match(version.version,/^V2\.5\.(?:29|30|31|32)$/);
+const version=JSON.parse(read('version.json'));assert.match(version.version,/^V2\.5\.\d+$/);assert(Number(version.version.split(".").at(-1))>=29,"TVJ behavior remains valid in newer releases");
 console.log('TVJ NIL scoped migration, quick-entry, PDF-state protection and PC/mobile performance guards PASS');
