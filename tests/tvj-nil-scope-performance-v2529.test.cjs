@@ -5,9 +5,10 @@ const tvj=read('app/modules/tvj-gof-035.v632.js'),shell=read('app/boot/32-v6494-
 const ast=acorn.parse(tvj,{ecmaVersion:'latest'});
 const funcs={};function walk(n){if(!n||typeof n!=='object')return;if(n.type==='FunctionDeclaration'&&n.id)funcs[n.id.name]=tvj.slice(n.start,n.end);for(const v of Object.values(n)){if(Array.isArray(v))v.forEach(walk);else if(v&&typeof v==='object')walk(v)}}
 walk(ast);
-const S=v=>String(v??'').trim(),NIL='NIL',isNil=v=>/^(?:NIL|N\/A)$/i.test(S(v));
-assert.ok(funcs.norm&&funcs.migrateTvjNil,'TVJ-specific conversion functions must exist');
+const S=v=>String(v??'').trim(),NIL='NIL',isNil=v=>/^(?:NIL|N\/A)$/i.test(S(v)),isSlash=v=>S(v)==='/';
+assert.ok(funcs.norm&&funcs.migrateTvjNil&&funcs.defaultSlashOnNext&&funcs.slashEligible,'TVJ-specific conversion functions must exist');
 const norm=new Function('S','isNil','NIL',funcs.norm+';return norm')(S,isNil,NIL);
+assert.equal(isSlash('/'),true);assert.equal(isSlash('NIL'),false);
 assert.equal(norm('N/A'),'NIL','legacy N/A must normalize to NIL');
 assert.equal(norm('NIL'),'NIL');assert.equal(norm(' nil '),'NIL');
 assert.equal(norm('1435'),'14:35');assert.equal(norm('4:35'),'04:35');assert.equal(norm('bad'),'' ,'unchanged invalid time behavior');
@@ -24,8 +25,33 @@ assert.equal(notActive(),false);assert.equal(unrelated.vz_sta,'N/A');
 assert.match(tvj,/na\.textContent='NIL Ô TRỐNG'/);
 assert.match(tvj,/window\.vz632FillNIL=\(\)=>/);
 assert.match(tvj,/draft\[f\.k\]=NIL;state\[f\.k\]=NIL/);
-assert.match(tvj,/if\(isMarker\)v=NIL/,'TVJ saves canonical NIL');
-assert.match(tvj,/const isMarker=isNil\(v\)/,'TVJ input accepts legacy N/A and NIL');
+assert.match(tvj,/if\(isNil\(v\)\)v=NIL/,'TVJ saves canonical NIL without collapsing slash');
+assert.match(tvj,/const isMarker=isNil\(v\)\|\|isSlash\(v\)/,'TVJ preserves slash in time and number fields');
+
+const NON_SLASH_KEYS=new Set(['DATE','FLIGHTNUMBER','ACREGISTRATION','STATION','ROUTING','PARKINGPOSITION','NAME','STAFF_ID']);
+const slashEligible=new Function('S','NON_SLASH_KEYS',funcs.slashEligible+';return slashEligible')(S,NON_SLASH_KEYS);
+assert.equal(slashEligible({key:'baggageUnloadFirstCart',type:'time'}),true);
+assert.equal(slashEligible({key:'arrBaggageKgs',type:'number'}),true);
+assert.equal(slashEligible({key:'Name',type:'text'}),false);
+assert.equal(slashEligible({key:'flightNumber',type:'text'}),false);
+assert.equal(slashEligible({key:'irregularityReport',type:'textarea'}),false);
+const dash={};let tab=0;
+const sections=[[{k:'vz_optional',key:'baggageUnloadFirstCart',type:'time'},{k:'vz_main',key:'flightNumber',type:'text'}]];
+const inputs=[{dataset:{vzk:'vz_optional'},value:''}];
+const document={querySelectorAll:()=>inputs};
+const defaultSlashOnNext=new Function('sections','tab','draft','slashEligible','S','document',funcs.defaultSlashOnNext+';return defaultSlashOnNext')(sections,tab,dash,slashEligible,S,document);
+assert.equal(defaultSlashOnNext('vz_optional'),true);
+assert.equal(dash.vz_optional,'/');
+assert.equal(inputs[0].value,'/');
+assert.equal(defaultSlashOnNext('vz_optional'),false,'do not overwrite filled field');
+assert.equal(defaultSlashOnNext('vz_main'),false,'flight number must never silently become slash');
+assert.match(tvj,/enterkeyhint="next"/,'mobile keyboard should offer Next');
+assert.match(tvj,/type="text" inputmode="text"/,'time and numeric TVJ fields allow entering NIL and slash');
+assert.doesNotMatch(tvj,/type="tel" inputmode="numeric"/,'TVJ keyboard must not be locked to digits');
+assert.match(tvj,/window\.vz632Next=\(input,event\)=>/,'Enter/Next should auto slash the current eligible empty field');
+assert.match(tvj,/window\.vz632Blur=\(input,event\)=>/,'mobile Next focus change should be supported');
+assert.match(tvj,/input\?\.tagName==='TEXTAREA'/,'multi-line notes must preserve Enter');
+
 assert.doesNotMatch(tvj,/setInterval\s*\(/,'no always-on TVJ redraw polling on mobile/desktop');
 assert.match(tvj,/if\(ensurePending\)return ensurePending/,'avoid concurrent expensive registry load');
 assert.match(tvj,/if\(geometryChanged\|\|migrated\)try\{draw\(\)\}/,'draw only on actual TVJ changes');
