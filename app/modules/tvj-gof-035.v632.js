@@ -273,25 +273,37 @@ function migrateTvjNil(){
  return changed;
 }
 function ensureStyle(){if(document.getElementById('tvj632QuickStyle'))return;const st=document.createElement('style');st.id='tvj632QuickStyle';st.textContent='.vz632RegionReview{padding:10px 12px;margin:6px 0 12px;background:#fff3dc;border:1px solid #d9a851;border-radius:10px;color:#654312;font:600 12px/1.5 system-ui,Arial,sans-serif}.vz632Toggle{width:100%;min-height:38px;border:1px solid #aebdca;border-radius:8px;background:#eef3f7;color:#30465a;font:900 13px Arial}.vz632Toggle.on{background:#1f7a4c;border-color:#1f7a4c;color:#fff}.quickTimeRow.vz632Wide{grid-template-columns:1fr!important}.quickTimeRow.vz632Wide .quickTimeInput{min-height:100px;resize:vertical;line-height:1.35}.quickTimePageTitle .vz632Count{font-weight:700;opacity:.75;margin-left:6px}.vz632RegionSelect{display:block;width:100%;min-height:44px;padding:9px 12px;margin:0 0 12px;border:1px solid #799db8;border-radius:10px;color:#173c57;background:#f0f7fd;font:700 13px system-ui,Arial,sans-serif;box-sizing:border-box}.vz632RegionHelp{font:12px/1.45 system-ui,Arial,sans-serif;color:#36526b;margin:0 0 10px}.quickTimePageTitle{overflow-wrap:anywhere}#qteTab0:disabled,#qteTab2:disabled{opacity:.45;cursor:not-allowed}@media(max-width:640px){.vz632RegionSelect{font-size:14px;min-height:48px}.quickTimePageTitle{font-size:14px}}';document.head.appendChild(st)}
-let ensurePending=null;
+// Never preload the 1MB form registry or inspect all rendered fields on non-TVJ
+// flights. Some shared visibility/role callbacks fire repeatedly on both PC/mobile.
+let ensurePending=null,preparedForm=null,preparedFieldArray=null,preparedLength=-1;
 async function ensure(){
+ if(!active())return;
  if(ensurePending)return ensurePending;
  ensurePending=(async()=>{
-  const z=await load();if(!z)return;form=z;
+  const z=await load();if(!z||!active())return;form=z;
   let geometryChanged=false;
-  for(const q of z.fields||[]){
-   const k=bindOf(q),o=fields.find(f=>+f.page===P&&S(f.key)===k);
-   if(o){if(o.__formManagerCustomV463){delete o.__formManagerCustomV463;geometryChanged=true}o.__tvj632=1;continue}
-   const a=+q.x*W,b=+q.y*H,c=Math.max(3,+q.w*W),d=Math.max(3,+q.h*H),t=rt(q.type),runtime=t==='check'?'check':t==='time'?'timeNow':t==='date'?'dateAuto':t==='number'?'number':'text';
-   add(P,k,a,b,c,d,runtime,S(q.label||q.key),{vx:a,vy:b,vw:c,vh:d,font:+q.fontSize||16,align:S(q.align||'center'),valign:S(q.valign||'middle'),multiline:t==='textarea'||+q.rowCount>1,inputMode:(t==='number'||t==='time')?'numeric':'text',filter:t==='number'?'number':t==='time'?'time':null,leftValue:S(q.align).toLowerCase()==='left'});
-   fields[fields.length-1].__tvj632=1;geometryChanged=true;
+  const hasValidMap=preparedForm===z&&preparedFieldArray===fields&&preparedLength===fields.length&&sections.length>0;
+  if(!hasValidMap){
+   // Create one index instead of scanning the full runtime field array 128 times.
+   const current=new Map();
+   for(const entry of fields)if(+entry.page===P)current.set(S(entry.key),entry);
+   for(const q of z.fields||[]){
+    const k=bindOf(q),o=current.get(k);
+    if(o){if(o.__formManagerCustomV463){delete o.__formManagerCustomV463;geometryChanged=true}o.__tvj632=1;continue}
+    const a=+q.x*W,b=+q.y*H,c=Math.max(3,+q.w*W),d=Math.max(3,+q.h*H),t=rt(q.type),runtime=t==='check'?'check':t==='time'?'timeNow':t==='date'?'dateAuto':t==='number'?'number':'text';
+    add(P,k,a,b,c,d,runtime,S(q.label||q.key),{vx:a,vy:b,vw:c,vh:d,font:+q.fontSize||16,align:S(q.align||'center'),valign:S(q.valign||'middle'),multiline:t==='textarea'||+q.rowCount>1,inputMode:(t==='number'||t==='time')?'numeric':'text',filter:t==='number'?'number':t==='time'?'time':null,leftValue:S(q.align).toLowerCase()==='left'});
+    const installed=fields[fields.length-1];installed.__tvj632=1;current.set(k,installed);geometryChanged=true;
+   }
+   buildSections();
+   preparedForm=z;preparedFieldArray=fields;preparedLength=fields.length;
   }
-  buildSections();ensureStyle();
+  ensureStyle();
   if(!active())return;
+  // Aggregate migration + account identity into at most ONE save and ONE draw.
   const migrated=migrateTvjNil();
-  seedAccountIdentity(true);
-  if(migrated)try{persist()}catch(_){}
-  if(geometryChanged||migrated)try{draw()}catch(_){}
+  const identityChanged=seedAccountIdentity(false);
+  if(migrated||identityChanged)try{persist()}catch(_){}
+  if(geometryChanged||migrated||identityChanged)try{draw()}catch(_){}
  })();
  try{return await ensurePending}finally{ensurePending=null}
 }
