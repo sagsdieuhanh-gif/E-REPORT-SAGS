@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.31",
-  "displayVersion": "V2.5.31",
-  "label": "V2.5.31 - TVJ ĐỐI CHIẾU KHUNG GỐC, SỬA SAI PHÂN KHU",
-  "build": "V2.5.31-20261022-TVJ-VERIFIED-REGIONS-01",
+  "version": "V2.5.32",
+  "displayVersion": "V2.5.32",
+  "label": "V2.5.32 - KHẮC PHỤC GIẬT LAG KHI DÙNG TVJ / PC / MOBILE",
+  "build": "V2.5.32-20261022-PERF-LAZY-TVJ-SHELL-01",
   "releasedAt": "2026-10-22",
-  "type": "tvj-keyed-physical-rectangles-audit",
-  "base": "E-REPORT-SAGS main@V2.5.30",
+  "type": "tvj-lazy-registration-and-shell-perf",
+  "base": "E-REPORT-SAGS main@V2.5.31",
   "updatePolicy": "required",
-  "notes": "Chuyển Nhập nhanh TVJ sang phân khu bằng field key chính xác theo khung lớn giấy: 13 khu đã đối chiếu (124 ô), 4 ô FOD/Name/Staff ID giữ riêng chờ xác minh do ảnh thiếu thông tin. Departure gồm Final Cargo + NOTOC; Equipment chỉ 3 dòng 6 ô. Không cắt khung theo tọa độ; giữ Next/NIL/dấu /, dữ liệu, PDF và các form khác.",
-  "message": "V2.5.31: TVJ nhập nhanh đúng khung chính, không báo hết nhóm sớm."
+  "notes": "Khởi tạo form TVJ chỉ khi đang mở TVJ, không tải registry 1MB hoặc rà 128 fields khi đang dùng biểu mẫu/chuyến khác. Sử dụng Map index và cache registration đến khi danh sách fields thay đổi; gộp các lần persist/draw khi danh tính tự điền và NIL cũ thay đổi. Memoize ảnh đại diện trong menu PC/mobile. Không đổi nhóm 13 khung TVJ, NIL, /, dữ liệu, quyền hay quy trình PWA.",
+  "message": "V2.5.32: Giảm khựng phản hồi, tránh khởi tạo/đồng bộ dư thừa."
 }
