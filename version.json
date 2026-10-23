@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.37",
-  "displayVersion": "V2.5.37",
-  "label": "V2.5.37 - TVJ NIL / NIL VÀ NAME MỘT HÀNG",
-  "build": "V2.5.37-20261023-TVJ-PAIR-NAME-01",
+  "version": "V2.5.38",
+  "displayVersion": "V2.5.38",
+  "label": "V2.5.38 - SỬA HIỂN THỊ TVJ TRÊN CANVAS THỰC",
+  "build": "V2.5.38-20261023-TVJ-CANONICAL-CANVAS-01",
   "releasedAt": "2026-10-23",
-  "type": "tvj-pair-separator-name-fit",
-  "base": "E-REPORT-SAGS main@4560f960 (V2.5.36)",
+  "type": "tvj-canonical-canvas-fix",
+  "base": "E-REPORT-SAGS main@951d315a (V2.5.37)",
   "updatePolicy": "required",
-  "notes": "TVJ-GOF-035: tự hiển thị dấu / giữa 5 cặp PCS/KGS (kể cả NIL / NIL); NAME nằm trên một dòng, tự co chữ; không thay đổi dữ liệu từng ô hoặc nghiệp vụ khác.",
-  "message": "V2.5.37: Sửa hiển thị TVJ NIL / NIL và NAME tự co vừa ô."
+  "notes": "Khắc phục V2.5.37 không hiển thị vì sửa lớp SVG bị Canvas che. Vẽ dấu / PCS/KGS và co NAME trên Canvas thực của TVJ, đồng bộ xem trực tiếp và PDF.",
+  "message": "V2.5.38: TVJ NIL / NIL và NAME hiển thị đúng trên biểu mẫu và PDF."
 }
