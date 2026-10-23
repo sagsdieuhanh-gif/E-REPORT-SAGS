@@ -53,7 +53,7 @@ assert(boot.includes('window.__SAGS_TVJ_NEXT_EDIT_FIELD__===String(f.key)'),'TVJ
 const commitCode=boot.slice(a,b);
 const verifySave=(field,value,expected)=>{
  const registryField=tvj.fields.find(x=>x.bind===field);
- const filter=registryField?.type==='date'?'date':registryField?.type==='time'?'time':'number';
+ const filter=registryField?.type==='date'?'date':registryField?.type==='time'?'time':registryField?.type==='number'?'number':registryField?null:'number';
  const f={key:field,page:registryField?15:1,filter};
  const context={editing:f,entryText:{value,focus(){}},state:{},window:{SAGSBusinessText:{upper:v=>String(v).toUpperCase()}},
   shouldUppercaseManualField:()=>true,v22ValidateTimeChange:()=>true,
