@@ -55,7 +55,7 @@ const verifySave=(field,value,expected)=>{
  const f={key:field,page:field.startsWith('vz_')?15:1,filter:/date/i.test(field)?'date':/time/i.test(field)?'time':'number'};
  const context={editing:f,entryText:{value,focus(){}},state:{},window:{SAGSBusinessText:{upper:v=>String(v).toUpperCase()}},
   shouldUppercaseManualField:()=>true,v22ValidateTimeChange:()=>true,
-  sagsV6113Check:()=>null,persist(){},closeEntry(){this.saved=true},resetZoomAfterSave(){},draw(){},alert:s=>{throw Error(s)}};
+  sagsV6113Check:()=>null,persist(){},closeEntry(){},resetZoomAfterSave(){},draw(){},alert:s=>{throw Error(s)}};
  vm.createContext(context);vm.runInContext(commitCode+';this.run=commitEntry;',context);
  context.run();
  assert.equal(context.state[field],expected,'native saved value '+field+'='+value);
