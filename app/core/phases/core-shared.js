@@ -94,7 +94,7 @@ async function continueCoAssignmentV2541(d,fid,item,man,standby){
     draftCopied:!!draft,previousCompleted:false,atMs:t
   };
   try{await db("").update(patch)}
-  catch(e){throw new Error("Đã chuyển khóa nhưng chưa lưu được bản bàn giao. Dữ liệu gốc vẫn còn; bấm NHẬN lại hoặc liên hệ điều hành: "+S(e?.message||e))}
+  catch(e){try{await lock.transaction(cur=>U(cur?.status)==="CLAIMED"&&norm(cur?.claimedBy)===u&&S(cur?.claimedAssignmentId)===aid&&Number(cur?.claimedAtMs||0)===t?lockBefore||null:undefined,undefined,false)}catch(_){}throw new Error("Chưa lưu được bản bàn giao. Dữ liệu gốc vẫn còn; hãy tải lại hoặc liên hệ điều hành: "+S(e?.message||e))}
   try{await addAudit("CO_GROUP_CONTINUE_UNFINISHED",{flightId:fid,oldUser,newUser:u,
       oldAssignmentId:oldAid,newAssignmentId:aid,coAssigneeGroupId:gid,draftCopied:!!draft})}
   catch(_){}
