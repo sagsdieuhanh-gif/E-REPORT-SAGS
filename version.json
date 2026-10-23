@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.39",
-  "displayVersion": "V2.5.39",
-  "label": "V2.5.39 - SỬA TIẾP TRONG NHÓM TVJ TOÀN BỘ 128 Ô",
-  "build": "V2.5.39-20261023-TVJ-REGION-NEXT-01",
+  "version": "V2.5.40",
+  "displayVersion": "V2.5.40",
+  "label": "V2.5.40 - NHẬN BIỂU MẪU KHI NGƯỜI TRƯỚC CHƯA HOÀN THÀNH",
+  "build": "V2.5.40-20261023-ROSTER-HANDOFF-01",
   "releasedAt": "2026-10-23",
-  "type": "tvj-native-next-all-regions",
-  "base": "E-REPORT-SAGS V2.5.38",
+  "type": "roster-incomplete-ownership-transfer",
+  "base": "E-REPORT-SAGS V2.5.39",
   "updatePolicy": "required",
-  "notes": "TVJ: 128 trường thuộc 14 khu theo khung biểu mẫu; NEXT đi theo thứ tự PCS → KGS → giờ và các vùng tương ứng; ô giờ chỉ mở để người dùng nhập khi NEXT; NIL giữ nguyên khi lưu ở trường số/giờ. Checkbox tiếp tục tích chủ động.",
-  "message": "V2.5.39: sửa HẾT NHÓM sai trên toàn bộ TVJ, giữ NIL và dữ liệu nhập."
+  "notes": "Rostering: Khi roster hoặc điều hành chuyển người phụ trách, người sau được nhận dù người trước chưa Hoàn thành; giữ nguyên dữ liệu đã đồng bộ, chỉ áp dụng draft ban đầu một lần; xóa quyền khóa cũ nhưng không ghi hoàn tất giả; khóa đồng thời của nhóm hỗ trợ vẫn giữ.",
+  "message": "V2.5.40: Chuyển quyền nhận an toàn khi người trước chưa Hoàn thành."
 }
