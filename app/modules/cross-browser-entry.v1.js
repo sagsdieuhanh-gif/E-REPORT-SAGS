@@ -197,7 +197,21 @@
   function nextField(current){
     return regionNext(current);
   }
+  function tvjRegion(f){
+    if(!f||Number(f.page)!==15)return null;
+    const key=String(f.key||'');
+    return root.sagsTvjEntryRegionV2539?.(key)||null;
+  }
+  function tvjNativeEditable(f){
+    // Checkbox taps remain deliberate, not an implicit toggle on NEXT.
+    // NAME and STAFF ID are bound to the signed-in employee.
+    if(!f||['acuStart_copy','Name_copy'].includes(String(f.key)))return false;
+    return ['text','number','time','timeNow','timeLocked','dateAuto'].includes(String(f.type||''))&&
+      Number(f.w||0)>0&&Number(f.h||0)>0;
+  }
   function regionOf(f){
+    const tvj=tvjRegion(f);
+    if(tvj)return {id:'15:tvj-'+tvj.id,title:tvj.title,order:tvj.order};
     const key=String(f.key||''),k=key.replace(/^(f421_|f551_|f09_|f208_)/,'');
     const prefix=key.slice(0,key.length-k.length),page=Number(f.page);
     let id='',title='';
@@ -262,7 +276,15 @@
     return {id:page+':'+prefix+id,title};
   }
   function regionFields(current,checks=false){
-    const id=regionOf(current).id;
+    const id=regionOf(current).id,tvj=tvjRegion(current);
+    if(tvj){
+      // Every TVJ input belongs to one verified printed-rectangle region.
+      // Preserve the official registry order, including times between PCS/KGS.
+      // Checkboxes are intentionally not auto-toggled by a Save/Next press.
+      return fieldList().filter(f=>Number(f.page)===15&&tvjRegion(f)?.id===tvj.id&&
+        (checks?f.type==='check':tvjNativeEditable(f)))
+        .sort((a,b)=>tvjRegion(a).order-tvjRegion(b).order);
+    }
     const members=fieldList().filter(f=>Number(f.page)===Number(current.page)&&regionOf(f).id===id&&(checks?f.type==='check':editableManual(f)));
     // The boundary is semantic. Geometry only orders members inside that boundary.
     return members.sort((a,b)=>Math.abs(a.y-b.y)<.009?a.x-b.x:a.y-b.y);
@@ -291,7 +313,12 @@
           try{
             if(typeof editing!=='undefined'&&editing)return; // save failed/validation kept editor open
             report.nextMoves++;
-            activate(next);
+            // On a TVJ time field, NEXT must open its editor, not silently
+            // stamp current time as the normal paper-tap shortcut would.
+            if(tvjRegion(next)&&['timeNow','time','timeLocked','dateAuto'].includes(String(next.type))){
+              root.__SAGS_TVJ_NEXT_EDIT_FIELD__=String(next.key);
+            }
+            try{activate(next)}finally{root.__SAGS_TVJ_NEXT_EDIT_FIELD__=null}
           }catch(e){console.warn('V6.1.28 NEXT open',e);}
         },isIOSWebKitV6128()?650:120);
       });

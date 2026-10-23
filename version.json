@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.38",
-  "displayVersion": "V2.5.38",
-  "label": "V2.5.38 - SỬA HIỂN THỊ TVJ TRÊN CANVAS THỰC",
-  "build": "V2.5.38-20261023-TVJ-CANONICAL-CANVAS-01",
+  "version": "V2.5.39",
+  "displayVersion": "V2.5.39",
+  "label": "V2.5.39 - SỬA TIẾP TRONG NHÓM TVJ TOÀN BỘ 128 Ô",
+  "build": "V2.5.39-20261023-TVJ-REGION-NEXT-01",
   "releasedAt": "2026-10-23",
-  "type": "tvj-canonical-canvas-fix",
-  "base": "E-REPORT-SAGS main@951d315a (V2.5.37)",
+  "type": "tvj-native-next-all-regions",
+  "base": "E-REPORT-SAGS V2.5.38",
   "updatePolicy": "required",
-  "notes": "Khắc phục V2.5.37 không hiển thị vì sửa lớp SVG bị Canvas che. Vẽ dấu / PCS/KGS và co NAME trên Canvas thực của TVJ, đồng bộ xem trực tiếp và PDF.",
-  "message": "V2.5.38: TVJ NIL / NIL và NAME hiển thị đúng trên biểu mẫu và PDF."
+  "notes": "TVJ: 128 trường thuộc 14 khu theo khung biểu mẫu; NEXT đi theo thứ tự PCS → KGS → giờ và các vùng tương ứng; ô giờ chỉ mở để người dùng nhập khi NEXT; NIL giữ nguyên khi lưu ở trường số/giờ. Checkbox tiếp tục tích chủ động.",
+  "message": "V2.5.39: sửa HẾT NHÓM sai trên toàn bộ TVJ, giữ NIL và dữ liệu nhập."
 }
