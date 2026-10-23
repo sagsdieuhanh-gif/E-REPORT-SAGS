@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.34",
-  "displayVersion": "V2.5.34",
-  "label": "V2.5.34 - GIẢM TẢI NHẬP FINAL TRÊN MÁY YẾU",
-  "build": "V2.5.34-20261023-LOW-END-FINAL-01",
+  "version": "V2.5.35",
+  "displayVersion": "V2.5.35",
+  "label": "V2.5.35 - GIẢM TẢI CPU VÀ RAM",
+  "build": "V2.5.35-20261023-LOW-MEMORY-RUNTIME-01",
   "releasedAt": "2026-10-23",
-  "type": "low-end-final-performance",
-  "base": "E-REPORT-SAGS main@79f3a27 (V2.5.33)",
+  "type": "low-memory-runtime-performance",
+  "base": "E-REPORT-SAGS main@73fe9d3 (V2.5.34)",
   "updatePolicy": "required",
-  "notes": "Sửa truyền dữ liệu đã tính qua lớp phân quyền FINAL; gộp lịch chỉnh chữ theo khung hình; đo kích thước trước khi ghi style. Giữ lưu tức thời, kiểm tra zone và công thức nghiệp vụ.",
-  "message": "V2.5.34: Giảm thao tác lặp khi nhập FINAL và sửa lưu kết quả tính phụ thuộc."
+  "notes": "Dùng chung xử lý thao tác SVG, giới hạn bộ nhớ đệm đo chữ, tải ảnh nền khi cần, tránh cập nhật trạng thái DOM thừa. Xuất PDF tuần tự từng trang, giải phóng canvas sớm, chia dải pixel 42.1 lossless và ghép PDF bằng Blob parts để giảm bản sao trong RAM.",
+  "message": "V2.5.35: Giảm tải CPU/RAM khi nhập biểu mẫu và xuất PDF trên thiết bị yếu."
 }
