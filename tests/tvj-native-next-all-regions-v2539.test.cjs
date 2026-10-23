@@ -52,7 +52,9 @@ assert(a>=0&&b>a,'native commitEntry must be extractable');
 assert(boot.includes('window.__SAGS_TVJ_NEXT_EDIT_FIELD__===String(f.key)'),'TVJ time fields explicitly edit on NEXT');
 const commitCode=boot.slice(a,b);
 const verifySave=(field,value,expected)=>{
- const f={key:field,page:field.startsWith('vz_')?15:1,filter:/date/i.test(field)?'date':/time/i.test(field)?'time':'number'};
+ const registryField=tvj.fields.find(x=>x.bind===field);
+ const filter=registryField?.type==='date'?'date':registryField?.type==='time'?'time':'number';
+ const f={key:field,page:registryField?15:1,filter};
  const context={editing:f,entryText:{value,focus(){}},state:{},window:{SAGSBusinessText:{upper:v=>String(v).toUpperCase()}},
   shouldUppercaseManualField:()=>true,v22ValidateTimeChange:()=>true,
   sagsV6113Check:()=>null,persist(){},closeEntry(){},resetZoomAfterSave(){},draw(){},alert:s=>{throw Error(s)}};
