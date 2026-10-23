@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V2.5.36",
-  "build": "V2.5.36-20261023-REPEATED-INPUT-WORK-01",
+  "version": "V2.5.37",
+  "build": "V2.5.37-20261023-TVJ-PAIR-NAME-01",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -18,8 +18,8 @@
       "bytes": 1253
     },
     "./app/boot/05-legacy.js": {
-      "sha256": "1e9c3b39c1731362810147d971950e9e16b8a6ae22a9583ea795954c90ea050d",
-      "bytes": 303132
+      "sha256": "918d0153b87c7e9c5f13e26660f78edddaf46f59e5e687fb9c587639eca5749e",
+      "bytes": 305825
     },
     "./app/boot/06-legacy.js": {
       "sha256": "d53cc7e9d0210389412b0a750ae995469ebbae528cabf55a83121ed2490b6350",
@@ -762,8 +762,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "64319dab5e362c7fe7fb4859531eff6765ddbadb50958ff255b51ca9d78c854e",
-      "bytes": 105430
+      "sha256": "7285b5face366d71235f80922198c64891bf125e8c4e66d48422fff6f2801f4c",
+      "bytes": 104956
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -814,16 +814,16 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "cd6c5c60d5db15478454952bdd288f219134d8a7ddc5cdd8fb7bedc854a68df2",
-      "bytes": 22471
+      "sha256": "e2a991289cf1fd5cdd592c62ba8b9747ce11875f4fcbc1ca26cfd1892b8de7ad",
+      "bytes": 22453
     },
     "./storage-recovery.html": {
       "sha256": "08817204a946fbdfa404e8c083dd0c2016e935fb8fe56ff8ef99f405978d3df6",
       "bytes": 26106
     },
     "./version.json": {
-      "sha256": "3442c8e201e9be87125d4fa58dacaa25e0a4f94e9281e0f926bc62c239d11973",
-      "bytes": 704
+      "sha256": "3f1abe732e6e080fa13122a028495f01e4cc85bba7d3aa969670e2d7cd7109a7",
+      "bytes": 615
     }
   },
   "mutableAssets": [
