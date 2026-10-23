@@ -1,0 +1,28 @@
+'use strict';
+const fs=require('fs'),vm=require('vm'),assert=require('assert/strict'),acorn=require('acorn'),zlib=require('zlib');
+function funcs(file){const s=fs.readFileSync(file,'utf8'),ns=[];function walk(n){if(!n||typeof n!=='object')return;if(n.type==='FunctionDeclaration')ns.push(n);for(const[k,v]of Object.entries(n))if(k!=='start'&&k!=='end')if(Array.isArray(v))v.forEach(walk);else if(v&&typeof v==='object')walk(v)}walk(acorn.parse(s,{ecmaVersion:'latest'}));return name=>{const n=ns.find(n=>n.id.name===name);assert(n,name);return s.slice(n.start,n.end)}}
+const rt=funcs('app/core/runtime.v503hf2.bundle.js'),boot=funcs('app/boot/05-legacy.js');
+(async()=>{
+ let maxRows=0,yields=0;const w=1241,h=1755,expected=new Uint8Array(w*h*3);
+ const canvas={width:w,height:h,getContext:()=>({getImageData(x,y,width,height){maxRows=Math.max(maxRows,height);const bytes=new Uint8ClampedArray(width*height*4);for(let i=0;i<bytes.length;i+=4){const pixel=y*w+i/4,a=[0,128,255][pixel%3],red=pixel%256;bytes[i]=red;bytes[i+1]=30;bytes[i+2]=200;bytes[i+3]=a;const j=pixel*3;expected[j]=Math.round(255*(1-a/255)+red*a/255);expected[j+1]=Math.round(255*(1-a/255)+30*a/255);expected[j+2]=Math.round(255*(1-a/255)+200*a/255)}return {data:bytes}}})};
+ const c={Blob,Response,Uint8Array,CompressionStream,setTimeout:cb=>{yields++;cb()},console};vm.createContext(c);vm.runInContext(rt('canvasToLosslessRgbV6110'),c);
+ const compressed=await c.canvasToLosslessRgbV6110(canvas);assert.equal(compressed.format,'flate-rgb');assert.deepEqual(zlib.inflateSync(compressed.bytes),Buffer.from(expected));assert.equal(maxRows,64);assert.equal(yields,27);c.CompressionStream=undefined;const raw=await c.canvasToLosslessRgbV6110(canvas);assert.equal(raw.format,'raw-rgb');assert.deepEqual(Buffer.from(raw.bytes),Buffer.from(expected));
+ // Assemble a real mixed PDF: image payloads are referenced as parts, and xref offsets stay valid.
+ const p={Blob,TextEncoder,Uint8Array,pdfPayload:(blob,name)=>({blob,name})};vm.createContext(p);vm.runInContext(['b','cat','sagsPdfImagePartsV2535','mixedPdf'].map(rt).join(';'),p);
+ const jpg=new Uint8Array(fs.readFileSync('pdf-bg/fsags42.1/page-01.jpg'));
+ assert.strictEqual(p.sagsPdfImagePartsV2535(jpg,w,h)[1],jpg,'no extra copy of image stream');
+ const result=p.mixedPdf([{layered:true,bg:jpg,overlay:compressed.bytes,overlayFormat:'flate-rgb',bgW:w,bgH:h,ovW:w,ovH:h},{layered:false,img:jpg,w,h}], 'check.pdf');
+ const bytes=Buffer.from(await result.blob.arrayBuffer()),text=bytes.toString('latin1');assert(text.includes('/Count 2'));assert(text.includes('/BM /Multiply'));assert(text.includes('/Filter /FlateDecode'));
+ const offset=Number(text.match(/startxref\n(\d+)/)[1]);assert.equal(text.slice(offset,offset+4),'xref');const rows=text.slice(offset).split('\n'),count=Number(rows[1].split(' ')[1]);for(let id=1;id<count;id++){const at=Number(rows[id+2].slice(0,10));assert.equal(text.slice(at,at+String(id).length+6),id+' 0 obj','xref '+id)}
+ // Actual report coordinator: peak one live page, correct order, attachments and BBBT stamp.
+ for(const kind of ['fsags','fsags421','fsags551','fsags09','loading208','tvjgof035','fsags54','fsags94','bbbt','all']){
+  let live=0,peak=0;const order=[],encoded=[],status={};
+  function render(n){live++;peak=Math.max(peak,live);order.push(n);let width=1241;return Promise.resolve({get width(){return width},set width(v){if(width>1&&v===1)live--;width=v},height:1755,n})}
+  const window={sagsV450FastRenderPage:null,sagsEncodePdfPageV2535:async(c,landscape)=>{assert.equal(landscape,kind==='loading208');if(c.n===4)assert.equal(c.stamp,42);encoded.push(c.n);return {n:c.n}},sagsAssemblePdfV2535:(pages)=>({order:pages.map(p=>p.n)}),sagsV495BeforeExport:async()=>{},sagsV495ManagedPage:()=>true,v452IsDesktopExportDevice:()=>true,v452DesktopDownloadPrepared:()=>true};
+  const ctx={window,state:{date:'23/10/2026'},activeKey:null,preparedPdfFile:null,preparedPdfName:'',safeFilePart:x=>x,flightSessionDisplayName:()=> 'VJ123',currentFlightSessionMeta:()=>null,getCurrentExportMainForm:()=> 'fsags',getActiveFlightMainForm:()=> 'fsags',v479ReleasePreparedUrl(){},openExportModal(){},draw(){},requestAnimationFrame:fn=>fn(),setTimeout:fn=>fn(),renderReportPage:render,renderLoading208Page:()=>render(13),renderAttachmentPage:()=>render(3),renderBBBTAttachmentPage:()=>render(5),renderFSAGS421AttachmentPage:()=>render(8),renderFSAGS551AttachmentPage:()=>render(14),getAttachments:()=>[1],getBBBTAttachments:()=>[1],getFSAGS421Attachments:()=>[1],getFSAGS551Attachments:()=>[1],allocateGlobalBBBTCxrNo:async()=>42,v481PaintBbbtCxrNo:(c,n)=>c.stamp=n,v481DeferredPersistAfterPdf(){},v479ShowPreparedButtons(){},document:{querySelector:()=>true,getElementById:()=>status},navigator:{},console};
+  vm.createContext(ctx);vm.runInContext(boot('sagsRunReportExport'),ctx);await ctx.sagsRunReportExport(kind);assert.equal(peak,1,kind+' peak');assert.equal(live,0,kind+' released');assert.deepEqual(encoded,order);assert.deepEqual(Array.from(ctx.preparedPdfFile.order),order);assert.equal(window.__SAGS_EXPORT_BATCH_DRAWN,false);
+  // Encoder failure must release the active canvas and leave a retryable error, not a stale PDF.
+  order.length=0;encoded.length=0;window.sagsEncodePdfPageV2535=async()=>{throw Error('encode failed')};ctx.console={error(){}};status.style={};await ctx.sagsRunReportExport(kind);assert.equal(live,0);assert.equal(ctx.preparedPdfFile,null);assert.match(status.textContent,/encode failed/);
+ }
+ console.log('PDF: 42.1 pixels identical compressed/raw; RGBA scratch bounded to 317696 bytes (was 8711820); yields 27 times/page; 10 export kinds peak one canvas, error cleanup, valid xref');
+})().catch(e=>{console.error(e);process.exitCode=1});

@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V2.5.34",
-  "build": "V2.5.34-20261023-LOW-END-FINAL-01",
+  "version": "V2.5.35",
+  "build": "V2.5.35-20261023-LOW-MEMORY-RUNTIME-01",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -18,12 +18,12 @@
       "bytes": 1253
     },
     "./app/boot/05-legacy.js": {
-      "sha256": "d0f5e45de11b43eec8654f3db940ec410026204a990e85925d2ad57b8a552455",
-      "bytes": 300895
+      "sha256": "1e9c3b39c1731362810147d971950e9e16b8a6ae22a9583ea795954c90ea050d",
+      "bytes": 303132
     },
     "./app/boot/06-legacy.js": {
-      "sha256": "a4bcce4d7290a71921349f1efe9d6d287a007136f3fa2af9b76e4c8102b1e3de",
-      "bytes": 396691
+      "sha256": "d53cc7e9d0210389412b0a750ae995469ebbae528cabf55a83121ed2490b6350",
+      "bytes": 396711
     },
     "./app/boot/07-legacy.js": {
       "sha256": "da14184a2a816eeaa752dc1e4a91b210fb766f62502ce7d3196f5cba9be2ef11",
@@ -150,8 +150,8 @@
       "bytes": 106804
     },
     "./app/generated/runtime-1.js": {
-      "sha256": "de65d556986661b634a89ae42e71e09825909c7e668d9ab5d4060172a58dc3ce",
-      "bytes": 115606
+      "sha256": "d28c3a15851e5ba0e22f3cd6222ae1f2c66183177638ad5191c201e73573801e",
+      "bytes": 115644
     },
     "./app/generated/runtime-2.js": {
       "sha256": "2d8ff077472edd0932320bbf07a2257230389a078cf8fbb52aee33aad39c913c",
@@ -166,8 +166,8 @@
       "bytes": 181828
     },
     "./app/generated/runtime-5.js": {
-      "sha256": "89745a3ee89741551eeab21141f823933b5cb306e318509fb72b65d08893bf89",
-      "bytes": 26201
+      "sha256": "7e3ecfad3f9ab9373090885d1d1c611feb1907e6e94d6aff1349446b1443418a",
+      "bytes": 27245
     },
     "./app/modules/admin-account-actions.v2.js": {
       "sha256": "6405c8a1e4dbbef6824f3266fe1e747b2b4c20e3ff4893f075854d9a878826a5",
@@ -302,8 +302,8 @@
       "bytes": 38360
     },
     "./app/modules/stability.v6-core.js": {
-      "sha256": "17b80a30ab7e3e3896c3e5c89ba65d121b97e5cc52c103694c6c2cac989d6f06",
-      "bytes": 16907
+      "sha256": "72aa47696127ccff694d4f4758b8670eaf69b924b4a77f12ef1049e248b07507",
+      "bytes": 17054
     },
     "./app/modules/stability.v6.js": {
       "sha256": "507c23b9f450ee2f95af5941cf3108497d91fb37bb3eb8549fd3ca031d0d2ddd",
@@ -762,8 +762,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "a22b2bd7d62588d23a8aaec1c6a01f71a6244648d8229813f92ab710a6997987",
-      "bytes": 104603
+      "sha256": "96aa0a7366066459a47ce7dff811373ee1a8491e38a4f59a5be6c7dc6638c930",
+      "bytes": 105351
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -814,16 +814,16 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "3475c15ecd2b03840e77dee33b61211b480804aed293558b5e86c1b08a2d4907",
-      "bytes": 22453
+      "sha256": "8a7a168c97461e4f2d1ca237ca70fd5d06ab248b052481bfa62fbc56359ee827",
+      "bytes": 22468
     },
     "./storage-recovery.html": {
       "sha256": "08817204a946fbdfa404e8c083dd0c2016e935fb8fe56ff8ef99f405978d3df6",
       "bytes": 26106
     },
     "./version.json": {
-      "sha256": "503cddba8d7a691d5e82e7a1306a23fc128c1868ccfb3e2e4bf1c91f92cd5425",
-      "bytes": 679
+      "sha256": "4fef864748dfc951aec671f90787c2979a4e0e0403d9d759cce5f669c4f00216",
+      "bytes": 754
     }
   },
   "mutableAssets": [

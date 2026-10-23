@@ -30,7 +30,7 @@ c.activeFlightSessionId='F2';assert.equal(api.read('notes'),null);api.record('no
 // Detached drawing publishes once per page rather than once per SVG field.
 const drawSource=read('app/boot/05-legacy.js'),draw=find(drawSource,n=>n.type==='FunctionDeclaration'&&n.id?.name==='draw');
 let replacements=0;const pages=new Map([1,2].map(n=>['svg'+n,{replaceChildren(fragment){replacements++;assert.equal(fragment.nodes.length,1)}}]));
-const d={window:{},state:{a:true,b:true,bbbtManualV18:true},fields:[{page:1,key:'a',type:'displayCheck'},{page:2,key:'b',type:'displayCheck'}],activeKey:null,BASE_W:1241,BASE_H:1755,cancelPendingTouchHit(){},getActiveFlightMainForm:()=> 'fsags',abs:()=>({tickX:0,tickY:0}),E:()=>({}),document:{getElementById:id=>pages.get(id),createDocumentFragment:()=>({nodes:[],appendChild(n){this.nodes.push(n)}})}};
+const d={window:{},state:{a:true,b:true,bbbtManualV18:true},fields:[{page:1,key:'a',type:'displayCheck'},{page:2,key:'b',type:'displayCheck'}],activeKey:null,BASE_W:1241,BASE_H:1755,cancelPendingTouchHit(){},sagsBindSvgHitEvents(){},getActiveFlightMainForm:()=> 'fsags',abs:()=>({tickX:0,tickY:0}),E:()=>({}),document:{getElementById:id=>pages.get(id),createDocumentFragment:()=>({nodes:[],appendChild(n){this.nodes.push(n)}})}};
 vm.createContext(d);vm.runInContext(draw,d);d.draw();assert.equal(replacements,2);
 console.log('V2.5.33 input: FINAL one atomic write, validation/failure intact; 41 drafts one envelope read; flight isolation; batched SVG passed');
 // Idle dock must not mutate the observed body/style on every animation frame.

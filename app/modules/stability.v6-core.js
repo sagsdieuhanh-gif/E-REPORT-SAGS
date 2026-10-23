@@ -98,15 +98,17 @@
     statusRefreshTimer=setTimeout(()=>{statusRefreshTimer=0;status();},120);
   }
   function status(){
-    const badge=$('sagsV61DraftStatus');if(!badge)return;
+    const badge=$('sagsV61DraftStatus');if(!badge||document.hidden)return;
+    const set=(key,value)=>{if(badge[key]!==value)badge[key]=value};
+    const level=value=>{if(badge.dataset.level!==value)badge.dataset.level=value};
     let logged=false;try{logged=!!currentUserProfile?.username;}catch(_){}
-    badge.hidden=!logged;if(!logged)return;
-    if(storageError||root.sagsV622StorageBlocked){badge.textContent='⚠ Không lưu được nháp';badge.dataset.level='error';return;}
+    set('hidden',!logged);if(!logged)return;
+    if(storageError||root.sagsV622StorageBlocked){set('textContent','⚠ Không lưu được nháp');level('error');return;}
     const p=pending(),manual=!!currentManual(),quick=!!currentQuick();
     const cloud=root.sagsDraftV2Status?.()||{},cloudReady=cloud.cloudCapable===true;
-    badge.textContent=p.length||manual||quick?(cloudReady?'📝 Nháp đang được bảo vệ':'📝 Nháp đang lưu trên máy'):(cloudReady?'✓ Nháp đã bảo vệ 3 lớp':'✓ Nháp chuyến trên máy này');
-    badge.dataset.level=p.length||manual||quick?'pending':'local';
-    badge.title=cloudReady?'localStorage + IndexedDB trên máy; khi có mạng đồng bộ bản nháp roster lên server để có thể phục hồi trên thiết bị khác.':'Bản nháp đang được bảo vệ trên thiết bị này; đồng bộ server sẽ bật khi có assignment roster và Firebase sẵn sàng.';
+    set('textContent',p.length||manual||quick?(cloudReady?'📝 Nháp đang được bảo vệ':'📝 Nháp đang lưu trên máy'):(cloudReady?'✓ Nháp đã bảo vệ 3 lớp':'✓ Nháp chuyến trên máy này'));
+    level(p.length||manual||quick?'pending':'local');
+    set('title',cloudReady?'localStorage + IndexedDB trên máy; khi có mạng đồng bộ bản nháp roster lên server để có thể phục hồi trên thiết bị khác.':'Bản nháp đang được bảo vệ trên thiết bị này; đồng bộ server sẽ bật khi có assignment roster và Firebase sẵn sàng.');
   }
   function showPending(){
     const p=pending();alert(p.length
