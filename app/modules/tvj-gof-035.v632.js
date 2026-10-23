@@ -229,6 +229,19 @@ const TVJ_REGIONS=[
   "provisional": true
  }
 ];
+// Canonical TVJ field order for both the 14-area quick wizard and the native
+// Save/Next editor. The registry's printed rectangles own region membership.
+// Never derive groups from string stems: "vz_" fields would otherwise become
+// 128 isolated groups, disabling Next after ARR BAGGAGE PCS.
+const TVJ_ENTRY_FIELD_MAP_V2539=new Map();
+for(const region of TVJ_REGIONS){
+ region.keys.forEach((key,order)=>{
+  const bind=key==='Name'?'acuStart_copy':key==='STAFF_ID'?'Name_copy':X+key;
+  if(TVJ_ENTRY_FIELD_MAP_V2539.has(bind))throw Error('TVJ duplicate entry field '+bind);
+  TVJ_ENTRY_FIELD_MAP_V2539.set(bind,Object.freeze({id:region.id,title:region.title,order,provisional:!!region.provisional}));
+ });
+}
+window.sagsTvjEntryRegionV2539=key=>TVJ_ENTRY_FIELD_MAP_V2539.get(S(key))||null;
 let regionLabels=TVJ_REGIONS.map(r=>r.title);
 function sectionOf(q){
  const k=S(q?.key);
