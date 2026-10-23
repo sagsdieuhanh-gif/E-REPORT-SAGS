@@ -39,8 +39,13 @@ assert(api.record('estimatedBag','KS 358'));
 assert(api.record('estimatedBag','KS 358/5847'));
 assert.equal(writes-before,3,'Every changed value is immediately committed to the recovery store');
 assert.equal(api.read('estimatedBag').value,'KS 358/5847');
-assert.deepEqual(timers.map(x=>x.delay),[350,350,350]);
-assert.deepEqual(canceled,[1,2],'Status timer is reset as typing continues');
+assert.equal(envelopes,2,'Three progressive keystrokes require only one committed-envelope parse');
+// When an identical value is sent again, its committed status is rechecked.
+const previousEnvelopes=envelopes;
+assert(api.record('estimatedBag','KS 358/5847'));
+assert.equal(envelopes,previousEnvelopes+1,'Identical input must revalidate the durable committed envelope');
+assert.deepEqual(timers.map(x=>x.delay),[350,350,350,350]);
+assert.deepEqual(canceled,[1,2,3],'Status timer is reset as typing continues');
 const scannedBefore=enumerations;timers.at(-1).f();
 assert.equal(enumerations,scannedBefore,'Debounced status while typing never scans all drafts');
 context.document.activeElement=null;api.status();
