@@ -60,5 +60,22 @@ module.exports=(async()=>{
  updates=[];failed=true;
  await assert.rejects(()=>transfer('A','PHUONGDD'),/Không thể xác minh/);
  assert.equal(updates.length,0,'offline Firebase verification cannot transfer ownership');
+ const sharedSource=fs.readFileSync('app/core/phases/core-shared.js','utf8');
+ assert.equal(sharedSource,fs.readFileSync('app/generated/core-shared.js','utf8'),'hydration source and runtime must match');
+ const sharedStart=sharedSource.indexOf('async function resolveHandoverEnvelope('),sharedEnd=sharedSource.indexOf('function mergeRosterSeedDefaults(',sharedStart);
+ assert(sharedStart>0&&sharedEnd>sharedStart,'handover resolver must exist');
+ assert(sharedSource.includes('"ROSTER_TRANSFER_DRAFT"].includes(resolved.source)'),'handover treats roster transfer as immutable first-load snapshot');
+ const envelope={state:{typed:'NIL',bags:'11'},mainForm:'fsags421'};
+ const resolverFn=new Function('S','norm','me','sessionState','latestRosterFormSnapshot','previousItem','envelopeHasData',
+ sharedSource.slice(sharedStart,sharedEnd)+';return resolveHandoverEnvelope');
+ let shared={envelope,rosterReassignedAtMs:1700000000123,rosterReassignedTo:'PHUONGDD',envelopeUpdatedAtMs:1700000000000,claimStatus:'READY'};
+ const resolver=resolverFn(S,normUser,()=> 'PHUONGDD',async()=>shared,async()=>null,()=>null,e=>!!Object.keys(e?.state||{}).length);
+ let transferred=await resolver({assignmentId:'A'},{});
+ assert.equal(transferred.source,'ROSTER_TRANSFER_DRAFT','new owner must hydrate saved form despite missing previous Complete');
+ assert.equal(transferred.at,1700000000123,'immutable transfer timestamp must not be advanced by later writes');
+ assert.equal(transferred.env.state.bags,'11','preserved draft must be available to the next owner');
+ shared={...shared,rosterReassignedTo:'OTHER'};
+ transferred=await resolver({assignmentId:'A'},{});
+ assert.equal(transferred.source,'SHARED_ENVELOPE','only actual reassigned owner receives protected transfer signal');
  console.log('Roster unfinished transfer: latest roster wins, preserve envelope, reset claim, audit and fail-closed PASS');
 })().catch(e=>{console.error(e);process.exitCode=1});
