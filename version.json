@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.36",
-  "displayVersion": "V2.5.36",
-  "label": "V2.5.36 - GIẢM XỬ LÝ LẶP KHI NHẬP LIỆU",
-  "build": "V2.5.36-20261023-REPEATED-INPUT-WORK-01",
+  "version": "V2.5.37",
+  "displayVersion": "V2.5.37",
+  "label": "V2.5.37 - TVJ NIL / NIL VÀ NAME MỘT HÀNG",
+  "build": "V2.5.37-20261023-TVJ-PAIR-NAME-01",
   "releasedAt": "2026-10-23",
-  "type": "repeated-input-performance",
-  "base": "E-REPORT-SAGS main@17b928a (V2.5.35)",
+  "type": "tvj-pair-separator-name-fit",
+  "base": "E-REPORT-SAGS main@4560f960 (V2.5.36)",
   "updatePolicy": "required",
-  "notes": "Bỏ chuyển chữ hoa lặp cho giá trị ngắn không đổi, giới hạn bộ nhớ đệm theo từng state. Tránh ghi lại nháp giống hệt sau khi đọc kiểm tra bản lưu thực tế; vẫn lưu ngay khi có thay đổi và kiểm tra lỗi bộ nhớ.",
-  "message": "V2.5.36: Giảm xử lý lặp khi nhập liệu trên thiết bị yếu."
+  "notes": "TVJ-GOF-035: tự hiển thị dấu / giữa 5 cặp PCS/KGS (kể cả NIL / NIL); NAME nằm trên một dòng, tự co chữ; không thay đổi dữ liệu từng ô hoặc nghiệp vụ khác.",
+  "message": "V2.5.37: Sửa hiển thị TVJ NIL / NIL và NAME tự co vừa ô."
 }
