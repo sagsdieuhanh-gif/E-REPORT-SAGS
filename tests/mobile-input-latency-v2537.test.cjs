@@ -54,7 +54,7 @@ const stability=read('app/modules/stability.v6-core.js'),loader=read('app/module
 assert(stability.includes('!document.hidden&&!currentManual()&&!currentQuick()'),
  'Background whole-form serialization must be skipped while the mobile editor is open');
 assert(loader.includes("searchParams.get('v')"),'Draft loader must share parent release version');
-assert(!loader.includes('?v=V2.0'),'Draft loader must not keep stale recovery code cached forever');
+assert(!loader.includes("'stability.v6-core.js?v=V2.0'")&&!loader.includes("'cloud-draft-sync.v2.js?v=V2.0'"),'Executable draft URLs must not pin V2.0 cache forever');
 assert(stability.includes('localStorage.getItem(k)!==encoded'),
  'Each changed field draft must still be verified immediately');
 console.log('Mobile typing: no navigation write per keystroke; durable drafts, deferred scans, trailing status and idle recovery PASS');
