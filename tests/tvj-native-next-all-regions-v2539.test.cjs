@@ -12,7 +12,7 @@ vm.runInContext('const X="vz_",S=v=>String(v??"").trim();'+tvjCode.slice(begin,e
 const registered=new Set(tvj.fields.map(f=>String(f.bind)));
 const mapped=c.regions.flatMap(r=>r.keys.map(k=>k==='Name'?'acuStart_copy':k==='STAFF_ID'?'Name_copy':'vz_'+k));
 assert.equal(new Set(mapped).size,128,'all 128 TVJ keys belong to exactly one printed rectangle');
-assert.deepEqual(mapped.filter(k=>!registered.has(k)),[],'all region keys must resolve to registry bindings');
+assert.deepEqual(Array.from(mapped.filter(k=>!registered.has(k))),[],'all region keys must resolve to registry bindings');
 assert.equal(mapped.length,registered.size,'registry should have no orphan inputs');
 for(const k of registered)assert(c.window.sagsTvjEntryRegionV2539(k),'missing region for '+k);
 const toType={checkbox:'check',time:'timeNow',date:'dateAuto',number:'number',textarea:'text'};
@@ -38,7 +38,7 @@ for(const region of c.regions){
  const eligible=first.filter(f=>!['check'].includes(f.type)&&!['acuStart_copy','Name_copy'].includes(f.key));
  if(!eligible.length)continue;
  const traversed=api.regionFields(eligible[0]);
- assert.deepEqual(Array.from(traversed.map(f=>f.key)),eligible.map(f=>f.key),'same-region field order '+region.id);
+ assert.deepEqual(Array.from(traversed,f=>f.key),Array.from(eligible,f=>f.key),'same-region field order '+region.id);
  for(let i=0;i<eligible.length;i++)assert.equal(next(eligible[i].key),eligible[i+1]?.key||null,'NEXT must stay within '+region.id);
  visited+=eligible.length;
 }
