@@ -19,7 +19,7 @@ ctx.exportStyle({style},'left','100px');ctx.exportStyle({style},'left','100px');
 // Writing the same SVG style must settle, rather than sustain one paint per frame.
 let paintRuns=0,pendingPaint=false,display='';
 const triangle={style:{get display(){return display},set display(v){display=v;pendingPaint=true}}};
-const painter={root:{sagsV495ManagedPage:()=>true,sagsV495PaintCanonicalPage:()=>paintRuns++},document:{getElementById:()=>({}),querySelectorAll:()=>[triangle]},visiblePage:()=>true,registryCanvas:()=>({width:1241,height:1755,getContext:()=>({clearRect(){}})})};
+const painter={paintedPages:new WeakMap(),paintFontRevision:0,root:{sagsV495ManagedPage:()=>true,sagsV495PaintCanonicalPage:()=>paintRuns++},document:{getElementById:()=>({}),querySelectorAll:()=>[triangle]},visiblePage:()=>true,registryCanvas:()=>({width:1241,height:1755,getContext:()=>({clearRect(){}})})};
 vm.createContext(painter);vm.runInContext(registry.slice(registry.indexOf('function paintPage('),registry.indexOf('function releaseHiddenCanvases(')),painter);
 painter.paintPage(16);for(let i=0;pendingPaint&&i<20;i++){pendingPaint=false;painter.paintPage(16)}
 assert.equal(pendingPaint,false,'SVG observer/painter must settle');assert.equal(paintRuns,2);

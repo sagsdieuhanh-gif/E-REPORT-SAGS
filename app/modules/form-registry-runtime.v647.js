@@ -16,7 +16,9 @@ const GROUP_TO_ID={
   fsags54:'fsags54',clc_checklist:'fsags94',fsags94:'fsags94',fsags94_clc:'fsags94'
 };
 let registry=null,paintQueued=false,drawWrapped=false,exportWrapped=false,observer=null;
-const observedSvgs=new WeakSet();
+const observedSvgs=new WeakSet(),paintedPages=new WeakMap();
+let paintFontRevision=0;
+try{for(const event of ['loadingdone','loadingerror'])document.fonts?.addEventListener?.(event,()=>{paintFontRevision++;queuePaint()})}catch(_){}
 
 const S=v=>String(v??'').trim();
 const U=v=>S(v).toLowerCase().replace(/[\s./-]+/g,'_').replace(/^_+|_+$/g,'');
@@ -63,11 +65,18 @@ function paintPage(pageNo){
   if(!root.sagsV495ManagedPage?.(pageNo))return false;
   const page=document.getElementById('page'+pageNo);if(!visiblePage(page))return false;
   const c=registryCanvas(pageNo);if(!c)return false;
-  const ctx=c.getContext('2d');if(!ctx)return false;ctx.clearRect(0,0,c.width,c.height);
-  root.sagsV495PaintCanonicalPage?.(ctx,pageNo);
   if(Number(pageNo)===16){
     document.querySelectorAll('#svg16 .v621Tri').forEach(el=>{if(el.style.display!=='none')el.style.display='none'});
   }
+  const ctx=c.getContext('2d');if(!ctx)return false;
+  let input=null;try{input=root.sagsV495PagePaintInput?.(pageNo)||null}catch(_){}
+  const old=paintedPages.get(c),painter=root.sagsV495PaintCanonicalPage;
+  const environment=JSON.stringify([c.width,c.height,document.documentElement?.lang,document.documentElement?.dir,document.fonts?.status,document.fonts?.size,paintFontRevision]);
+  if(input&&old&&document.fonts?.status!=='loading'&&old.painter===painter&&old.environment===environment&&old.layout===input.layout&&old.values.length===input.values.length&&input.values.every((v,i)=>Object.is(v,old.values[i])))return true;
+  // Cache only a successful paint. Export canvases never use this live cache.
+  paintedPages.delete(c);ctx.clearRect(0,0,c.width,c.height);
+  root.sagsV495PaintCanonicalPage?.(ctx,pageNo);
+  if(input&&typeof painter==='function')paintedPages.set(c,{...input,painter,environment});
   return true;
 }
 function releaseHiddenCanvases(){

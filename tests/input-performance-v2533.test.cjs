@@ -29,9 +29,9 @@ envelopeReads=0;assert.equal(api.pending().length,41);assert.equal(envelopeReads
 c.activeFlightSessionId='F2';assert.equal(api.read('notes'),null);api.record('notes','SECOND');c.activeFlightSessionId='F1';assert.equal(api.read('notes').value,'NEW');
 // Detached drawing publishes once per page rather than once per SVG field.
 const drawSource=read('app/boot/05-legacy.js'),draw=find(drawSource,n=>n.type==='FunctionDeclaration'&&n.id?.name==='draw');
-let replacements=0;const pages=new Map([1,2].map(n=>['svg'+n,{replaceChildren(fragment){replacements++;assert.equal(fragment.nodes.length,1)}}]));
-const d={window:{},state:{a:true,b:true,bbbtManualV18:true},fields:[{page:1,key:'a',type:'displayCheck'},{page:2,key:'b',type:'displayCheck'}],activeKey:null,BASE_W:1241,BASE_H:1755,cancelPendingTouchHit(){},sagsBindSvgHitEvents(){},getActiveFlightMainForm:()=> 'fsags',abs:()=>({tickX:0,tickY:0}),E:()=>({}),document:{getElementById:id=>pages.get(id),createDocumentFragment:()=>({nodes:[],appendChild(n){this.nodes.push(n)}})}};
-vm.createContext(d);vm.runInContext(draw,d);d.draw();assert.equal(replacements,2);
+const {svgDOM}=require('./helpers/svg-dom.cjs'),dom=svgDOM();dom.createPage(1);dom.createPage(2);
+const d={window:{},state:{a:true,b:true,bbbtManualV18:true},fields:[{page:1,key:'a',type:'displayCheck'},{page:2,key:'b',type:'displayCheck'}],activeKey:null,BASE_W:1241,BASE_H:1755,cancelPendingTouchHit(){},sagsBindSvgHitEvents(){},getActiveFlightMainForm:()=> 'fsags',abs:()=>({tickX:0,tickY:0}),E:dom.E,document:dom.document};
+vm.createContext(d);vm.runInContext(find(drawSource,n=>n.type==='FunctionDeclaration'&&n.id?.name==='sagsBeginSvgDraw')+';'+draw,d);d.draw();assert.equal(dom.stats.replaced,2);assert.equal(dom.pages.get('svg1').nodes.length,1);
 console.log('V2.5.33 input: FINAL one atomic write, validation/failure intact; 41 drafts one envelope read; flight isolation; batched SVG passed');
 // Idle dock must not mutate the observed body/style on every animation frame.
 let removals=0,styleWrites=0;const styles=new Map();
