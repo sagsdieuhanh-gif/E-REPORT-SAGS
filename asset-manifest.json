@@ -18,8 +18,8 @@
       "bytes": 1253
     },
     "./app/boot/05-legacy.js": {
-      "sha256": "1e9c3b39c1731362810147d971950e9e16b8a6ae22a9583ea795954c90ea050d",
-      "bytes": 303132
+      "sha256": "3c4a0a5f1bcd29c1854a9853c1c79192e89fae7392aca915a931e49347678fd1",
+      "bytes": 305794
     },
     "./app/boot/06-legacy.js": {
       "sha256": "d53cc7e9d0210389412b0a750ae995469ebbae528cabf55a83121ed2490b6350",
