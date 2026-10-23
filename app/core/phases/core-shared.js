@@ -36,7 +36,7 @@ async function continueCoAssignmentV2541(d,fid,item,man,standby){
   if(coContinueHasOperatorDataV2541(target)&&!target?.coContinueFromAssignmentId)
     throw new Error("Biểu mẫu của bạn đã có dữ liệu riêng. Không tự ghi đè; hãy kiểm tra lịch sử.");
   const draft=envelopeHasData(previous)?sanitizeEnvelope(previous):null;
-  if(!confirm(`NHẬN TIẾP BIỂU MẪU\\n\\n${rosterLabel(item)} · ${formLabel(item.formGroup)}\\n\\n${oldUser} đang nhập nhưng chưa Hoàn thành.\\n\\nChuyển quyền chỉnh sửa sang ${u} và ${draft?"tiếp tục từ dữ liệu đã đồng bộ lên Firebase":"mở phần việc (chưa tìm thấy dữ liệu đã đồng bộ)"}?\\n\\nDữ liệu người trước được giữ nguyên, không đánh dấu Hoàn thành. Máy người trước sẽ không còn quyền đồng bộ phần này.`))return false;
+  if(!confirm(`NHẬN TIẾP BIỂU MẪU\n\n${rosterLabel(item)} · ${formLabel(item.formGroup)}\n\n${oldUser} đang nhập nhưng chưa Hoàn thành.\n\nChuyển quyền chỉnh sửa sang ${u} và ${draft?"tiếp tục từ dữ liệu đã đồng bộ lên Firebase":"mở phần việc (chưa tìm thấy dữ liệu đã đồng bộ)"}?\n\nDữ liệu người trước được giữ nguyên, không đánh dấu Hoàn thành. Máy người trước sẽ không còn quyền đồng bộ phần này.`))return false;
   // Recheck the group lease atomically. A simultaneous takeover must lose,
   // and a different holder must never be displaced by a stale UI.
   const lock=db(`roster_co_claims/${safe(d)}/${safe(gid)}`),t=Date.now();
