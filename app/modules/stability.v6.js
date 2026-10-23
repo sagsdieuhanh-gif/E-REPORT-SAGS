@@ -8,10 +8,13 @@
   root.__SAGS_MOBILE_DRAFT_LOADER__=true;
   const script=document.currentScript;
   const base=new URL('.',script?.src||location.href);
-  const core=new URL('stability.v6-core.js?v=V2.0',base).href;
-  const addon=new URL('mobile-draft-recovery.v1.js?v=V2.0',base).href;
-  const idb=new URL('indexeddb-flight-store.v1.js?v=V2.0',base).href;
-  const cloud=new URL('cloud-draft-sync.v2.js?v=V2.0',base).href;
+  // Use the SAME release build cache key as the parent loader.
+  // Hard-coded ?v=V2.0 previously kept old recovery code on installed PWAs.
+  const releaseBuild=new URL(script?.src||location.href,location.href).searchParams.get('v')||'current';
+  const core=new URL('stability.v6-core.js?v='+encodeURIComponent(releaseBuild),base).href;
+  const addon=new URL('mobile-draft-recovery.v1.js?v='+encodeURIComponent(releaseBuild),base).href;
+  const idb=new URL('indexeddb-flight-store.v1.js?v='+encodeURIComponent(releaseBuild),base).href;
+  const cloud=new URL('cloud-draft-sync.v2.js?v='+encodeURIComponent(releaseBuild),base).href;
   function load(url,done){
     const el=document.createElement('script');el.src=url;el.async=false;
     if(done)el.onload=done;

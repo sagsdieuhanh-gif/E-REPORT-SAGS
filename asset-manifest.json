@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V2.5.42",
-  "build": "V2.5.42-20261023-CO-LOCK-RETRY-01",
+  "version": "V2.5.43",
+  "build": "V2.5.43-20261023-MOBILE-INPUT-PERF-01",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -18,8 +18,8 @@
       "bytes": 1253
     },
     "./app/boot/05-legacy.js": {
-      "sha256": "76d0a919bcca71e09f75d32a9a60f423abaad1164e33130a5aa95b08d89debc2",
-      "bytes": 304130
+      "sha256": "0c0635aa39f298b3517d0fc90b654d889f8a91e07f646809a3f444391baa4bf7",
+      "bytes": 304171
     },
     "./app/boot/06-legacy.js": {
       "sha256": "d53cc7e9d0210389412b0a750ae995469ebbae528cabf55a83121ed2490b6350",
@@ -302,12 +302,12 @@
       "bytes": 38360
     },
     "./app/modules/stability.v6-core.js": {
-      "sha256": "7e9b1591be595a64cfd614af21586776326eb915c56445dd26b54f513150ec47",
-      "bytes": 17621
+      "sha256": "899409d490f0171edd05def94cbc6052eafdbe02e475718abcf7452098db0026",
+      "bytes": 19401
     },
     "./app/modules/stability.v6.js": {
-      "sha256": "507c23b9f450ee2f95af5941cf3108497d91fb37bb3eb8549fd3ca031d0d2ddd",
-      "bytes": 1283
+      "sha256": "32918a7615634cc05b9cafabd92d2e92f48bc2e0bdb5b56aa96c1b7d35acff9b",
+      "bytes": 1645
     },
     "./app/modules/storage-capacity.v1.js": {
       "sha256": "ff932d10500d6abb3b7b4b02889822a1921067f18a267c069d7fc820270a8d26",
@@ -762,8 +762,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "9db2662f6b77df93df0902f7b775a8e0011527eea2099a5ef02378768d248fbf",
-      "bytes": 104956
+      "sha256": "11581e9946a157477f52292d52b5ca34850cb95e24a708ca6de2f1a61e0b8a7c",
+      "bytes": 105272
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -814,16 +814,16 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "8fc665fbe94b2abd6038cd6bbe573277cf07f75e96857410e3cb21b72b2a9720",
-      "bytes": 22453
+      "sha256": "66acca5c8e96be1c569ea7cbb2ee998a70edffe91ff7784d09751f2f19f4e516",
+      "bytes": 22465
     },
     "./storage-recovery.html": {
       "sha256": "08817204a946fbdfa404e8c083dd0c2016e935fb8fe56ff8ef99f405978d3df6",
       "bytes": 26106
     },
     "./version.json": {
-      "sha256": "3318a7811c76ffe83ed3a4db86d36bbe69f3cfba7524f54884156bc2353c24b7",
-      "bytes": 862
+      "sha256": "0a3d51ef7e68ef388cebaab34e76d7dfce5d53796b534c77d08a4a8045f0c45d",
+      "bytes": 844
     }
   },
   "mutableAssets": [

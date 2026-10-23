@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.42",
-  "displayVersion": "V2.5.42",
-  "label": "V2.5.42 - SỬA GIAO DỊCH NHẬN TIẾP SAU CẬP NHẬT ROSTER",
-  "build": "V2.5.42-20261023-CO-LOCK-RETRY-01",
+  "version": "V2.5.43",
+  "displayVersion": "V2.5.43",
+  "label": "V2.5.43 - TỐI ƯU NHẬP LIỆU VÀ PHẢN HỒI MOBILE",
+  "build": "V2.5.43-20261023-MOBILE-INPUT-PERF-01",
   "releasedAt": "2026-10-23",
-  "type": "roster-co-claim-firebase-transaction-initial-null",
-  "base": "E-REPORT-SAGS V2.5.41",
+  "type": "mobile-input-stability-performance",
+  "base": "E-REPORT-SAGS V2.5.42",
   "updatePolicy": "required",
-  "notes": "Sửa Firebase transaction NHẬN TIẾP: chấp nhận callback optimistic khởi tạo null và lock không hoạt động (READY) khi thêm người cùng nhóm sau khi người trước đã nhận; vẫn so sánh chủ khóa thực tế, assignmentId, phiên khóa để chống nhận chồng; báo đúng lý do khi bị tranh quyền. Giữ nguyên bản nháp và trạng thái chưa Hoàn thành.",
-  "message": "V2.5.42: Sửa lỗi nhận tiếp báo nhầm người khác đã nhận nhóm."
+  "notes": "Giảm việc giải mã toàn bộ session khi gõ; không chụp vị trí màn hình mỗi ký tự; không quét hàng loạt localStorage trong hộp nhập; tránh chạy lặp status và vòng kiểm tra 2s khi bàn phím đang mở; giữ lưu nháp localStorage/IndexedDB/Firebase, quyền roster và quy tắc NHẬN TIẾP. Bộ tải nháp theo cache key build, không cố định V2.0.",
+  "message": "V2.5.43: Nhập biểu mẫu mượt hơn, bảo vệ nháp và bàn giao không đổi."
 }
