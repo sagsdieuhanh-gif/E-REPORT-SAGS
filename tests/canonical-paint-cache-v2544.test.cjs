@@ -1,0 +1,20 @@
+'use strict';
+const fs=require('fs'),vm=require('vm'),assert=require('assert/strict'),acorn=require('acorn');
+const moduleSource=fs.readFileSync('app/modules/form-registry-runtime.v647.js','utf8'),core=fs.readFileSync('app/core/runtime.v503hf2.bundle.js','utf8');
+function find(s,predicate){let node;function visit(n){if(!n||typeof n!=='object'||node)return;if(predicate(n)){node=n;return}for(const v of Object.values(n))if(Array.isArray(v))v.forEach(visit);else if(v&&typeof v==='object')visit(v)}visit(acorn.parse(s,{ecmaVersion:'latest'}));assert(node);return s.slice(node.start,node.end)}
+const paint=find(moduleSource,n=>n.type==='FunctionDeclaration'&&n.id.name==='paintPage');
+const input=find(core,n=>n.type==='AssignmentExpression'&&n.left.type==='MemberExpression'&&n.left.property.name==='sagsV495PagePaintInput');
+const state={a:'VALUE',other:'UNRELATED',f421_continuation:'MAIN',f421_continuation2:'OLD SECOND'};
+const form={id:'F',pages:[{id:'p1',sourcePage:1,width:1241,height:1755}],fields:[{pageId:'p1',key:'a',bind:'bound',type:'text'},{pageId:'p2',key:'other',type:'text'}]};
+let canvas={},clears=0,paints=0,fail=false;const ctx={clearRect(){clears++}};
+const c={root:{sagsV495ManagedPage:()=>true,sagsV495PaintCanonicalPage(){paints++;if(fail)throw Error('paint failed')}},document:{documentElement:{lang:'vi',dir:'ltr'},fonts:{status:'loaded',size:0},getElementById:()=>({}),querySelectorAll:()=>[]},visiblePage:()=>true,registryCanvas:()=>canvas,fmManagedPageV495:()=>({form,page:form.pages[0]}),liveStateV45:()=>state,fmNormalizeFieldV487:f=>f,pageNoV45:p=>p.sourcePage,paintedPages:new WeakMap(),paintFontRevision:0};
+canvas={width:1241,height:1755,getContext:()=>ctx};vm.createContext(c);vm.runInContext(input+';'+paint,c);
+c.paintPage(1);assert.equal(paints,1);for(let i=0;i<20;i++)c.paintPage(1);assert.equal(paints,1);assert.equal(clears,1,'unchanged live canvas is not cleared');
+state.other='EDIT OTHER PAGE';c.paintPage(1);assert.equal(paints,1,'another page does not repaint this canvas');
+state.a='EDIT';c.paintPage(1);assert.equal(paints,2);state.bound='BOUND VALUE';c.paintPage(1);assert.equal(paints,3);state.a='HIDDEN BY BIND';c.paintPage(1);assert.equal(paints,3);
+form.fields[0].fontSize=24;c.paintPage(1);assert.equal(paints,4);form.pages[0].height=1700;c.paintPage(1);assert.equal(paints,5);
+canvas.width=1000;c.paintPage(1);assert.equal(paints,6);c.document.fonts.status='loading';c.paintPage(1);c.paintPage(1);assert.equal(paints,8);c.document.fonts.status='loaded';c.paintPage(1);assert.equal(paints,9);
+form.id='fsags421';form.pages[0].sourcePage=7;form.fields=[{key:'f421_continuation',pageId:'p1'},{key:'f421_continuation2',pageId:'p2',x:0,y:0,w:.001,h:.001}];c.paintPage(7);assert.equal(paints,10);state.f421_continuation2='CHANGED SECOND';c.paintPage(7);assert.equal(paints,11,'merged legacy comment on another page invalidates');
+state.f421_continuation={toString(){return 'CUSTOM'}};c.paintPage(7);c.paintPage(7);assert.equal(paints,13,'unsupported value does not cache');state.f421_continuation='TEXT';fail=true;assert.throws(()=>c.paintPage(7),/paint failed/);fail=false;c.paintPage(7);assert.equal(paints,15,'failed paint retried');
+canvas={width:1000,height:1755,getContext:()=>ctx};c.paintPage(7);assert.equal(paints,16,'new canvas after hidden-page cleanup must paint');
+console.log('Canonical live canvas: 21 unchanged requests paint once; other-page edits skipped; binding/layout/dimensions/fonts/merged 42.1 comments/new canvas/failed paint invalidate correctly. PDF painter remains unconditional.');

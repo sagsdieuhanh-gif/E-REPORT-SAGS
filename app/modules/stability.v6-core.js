@@ -194,16 +194,57 @@
     try{root.SAGSMobileDraftRecovery?.snapshotVisibleDirty();}catch(e){console.warn('Mobile draft snapshot failed',e);}
     persistChangedCore();
   }
+  // Compare JSON-compatible data structurally without copying large base64
+  // strings. Nested mutations are checked too; unsupported shapes use JSON.
+  const CORE_UNSUPPORTED=Symbol('unsupported core snapshot');
+  let coreSnapshot=CORE_UNSUPPORTED,coreSnapshotScope='';
+  function captureCoreSnapshot(value){
+    let budget=8192;
+    function visit(v,depth){
+      if(--budget<0||depth>16)throw CORE_UNSUPPORTED;
+      if(v===null||['string','boolean','undefined'].includes(typeof v))return v;
+      if(typeof v==='number'&&Number.isFinite(v))return v;
+      if(typeof v!=='object')throw CORE_UNSUPPORTED;
+      const array=Array.isArray(v),proto=Object.getPrototypeOf(v);
+      if((array?proto!==Array.prototype:proto!==Object.prototype&&proto!==null)||'toJSON' in v)throw CORE_UNSUPPORTED;
+      const keys=Object.keys(v);if(keys.length>budget)throw CORE_UNSUPPORTED;
+      if(array&&(keys.length<v.length||keys.slice(0,v.length).some((k,i)=>k!==String(i))))throw CORE_UNSUPPORTED;
+      const values=keys.map(k=>{const d=Object.getOwnPropertyDescriptor(v,k);if(!d||!('value' in d))throw CORE_UNSUPPORTED;return visit(d.value,depth+1)});
+      return {array,length:array?v.length:0,keys,values};
+    }
+    try{return visit(value,0)}catch(_){return CORE_UNSUPPORTED}
+  }
+  function matchesCoreSnapshot(value,snapshot){
+    if(snapshot===CORE_UNSUPPORTED)return false;
+    function equal(v,s){
+      if(s===null||typeof s!=='object')return Object.is(v,s);
+      if(!v||typeof v!=='object'||Array.isArray(v)!==s.array||'toJSON' in v)return false;
+      const proto=Object.getPrototypeOf(v);
+      if(s.array?proto!==Array.prototype:proto!==Object.prototype&&proto!==null)return false;
+      if(s.array&&v.length!==s.length)return false;
+      const keys=Object.keys(v);if(keys.length!==s.keys.length)return false;
+      for(let i=0;i<keys.length;i++){
+        if(keys[i]!==s.keys[i])return false;
+        const d=Object.getOwnPropertyDescriptor(v,keys[i]);
+        if(!d||!('value' in d)||!equal(d.value,s.values[i]))return false;
+      }
+      return true;
+    }
+    try{return equal(value,snapshot)}catch(_){return false}
+  }
   function persistChangedCore(){
     try{
       if(!activeFlightSessionId){status();return;}
+      const currentScope=scope();
+      if(currentScope===coreSnapshotScope&&matchesCoreSnapshot(state,coreSnapshot)){status();return;}
       const serialized=JSON.stringify(state);
-      if(serialized===lastCore){status();return;}
+      if(currentScope===coreSnapshotScope&&coreSnapshot===CORE_UNSUPPORTED&&serialized===lastCore){status();return;}
       // Only persist when this tab's in-memory state changes, not when another tab edits storage.
       persist();
       const saved=readFlightSessionEnvelope(activeFlightSessionId);
       if(JSON.stringify(saved.state)!==serialized)throw new Error('Lưu nháp chuyến không khớp');
-      lastCore=serialized;storageError=failedDrafts.size>0;
+      coreSnapshot=captureCoreSnapshot(state);coreSnapshotScope=currentScope;
+      lastCore=coreSnapshot===CORE_UNSUPPORTED?serialized:'';storageError=failedDrafts.size>0;
     }catch(e){storageError=true;console.warn('V6.1 local persist failed',e);}
     status();
   }
@@ -281,7 +322,7 @@
   root.sagsV61Draft={retryFailed,hasStorageError:()=>storageError||failedDrafts.size>0,read,record,forget,pending,verifyPending,blockReason,status,saveManualNow,persistChangedCore,snapshotAllEditors,contextKey:scope};
   // SAVE clears a verified draft; closing an unfinished editor retains it.
   root.sagsStabilityForgetManualDraft=function(field){if(field)root.sagsV61Draft.forget(field);const b=$('sagsV61Restore');if(b)b.style.display='none';};
-  try{lastCore=JSON.stringify(state);}catch(_){lastCore='';}
+  try{coreSnapshot=captureCoreSnapshot(state);coreSnapshotScope=scope();lastCore=coreSnapshot===CORE_UNSUPPORTED?JSON.stringify(state):'';}catch(_){lastCore='';}
   function boot(){ensureUi();patchUpdates();status();
     // Manual/quick editors already persist each changing field. Avoid a full
     // JSON.stringify(state) on the main thread every two seconds while the

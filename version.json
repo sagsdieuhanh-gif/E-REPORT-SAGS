@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.43",
-  "displayVersion": "V2.5.43",
-  "label": "V2.5.43 - TỐI ƯU NHẬP LIỆU VÀ PHẢN HỒI MOBILE",
-  "build": "V2.5.43-20261023-MOBILE-INPUT-PERF-01",
+  "version": "V2.5.44",
+  "displayVersion": "V2.5.44",
+  "label": "V2.5.44 - GIẢM VẼ LẠI VÀ SAO CHÉP DỮ LIỆU",
+  "build": "V2.5.44-20261023-INCREMENTAL-RUNTIME-01",
   "releasedAt": "2026-10-23",
-  "type": "mobile-input-stability-performance",
-  "base": "E-REPORT-SAGS V2.5.42",
+  "type": "incremental-runtime-performance",
+  "base": "E-REPORT-SAGS main@c75ddd9 (V2.5.43)",
   "updatePolicy": "required",
-  "notes": "Giảm việc giải mã toàn bộ session khi gõ; không chụp vị trí màn hình mỗi ký tự; không quét hàng loạt localStorage trong hộp nhập; tránh chạy lặp status và vòng kiểm tra 2s khi bàn phím đang mở; giữ lưu nháp localStorage/IndexedDB/Firebase, quyền roster và quy tắc NHẬN TIẾP. Bộ tải nháp theo cache key build, không cố định V2.0.",
-  "message": "V2.5.43: Nhập biểu mẫu mượt hơn, bảo vệ nháp và bàn giao không đổi."
+  "notes": "Giữ lại ô SVG không đổi, cập nhật riêng ô thay đổi; tránh vẽ lại canvas biểu mẫu không đổi. Kiểm tra dữ liệu lồng nhau bằng snapshot giới hạn để tránh tạo chuỗi JSON ảnh base64 trong mỗi chu kỳ rảnh. Giữ các sửa lỗi TVJ, NHẬN TIẾP, bàn giao và nhập mobile của V2.5.43.",
+  "message": "V2.5.44: Giảm vẽ lại biểu mẫu và xử lý dữ liệu khi máy rảnh để hỗ trợ thiết bị cấu hình thấp."
 }
