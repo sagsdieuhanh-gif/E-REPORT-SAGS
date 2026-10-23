@@ -283,7 +283,13 @@
   root.sagsStabilityForgetManualDraft=function(field){if(field)root.sagsV61Draft.forget(field);const b=$('sagsV61Restore');if(b)b.style.display='none';};
   try{lastCore=JSON.stringify(state);}catch(_){lastCore='';}
   function boot(){ensureUi();patchUpdates();status();
-    statusTimer=setInterval(()=>{persistChangedCore();},2000);
+    // Manual/quick editors already persist each changing field. Avoid a full
+    // JSON.stringify(state) on the main thread every two seconds while the
+    // mobile keyboard is open; saving/closing, blur and visibility hooks still
+    // persist changed core state and verify it before updates.
+    statusTimer=setInterval(()=>{
+      if(!document.hidden&&!currentManual()&&!currentQuick())persistChangedCore();
+    },2000);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
   document.addEventListener('visibilitychange',()=>{if(document.hidden)snapshotAllEditors();else status();});
