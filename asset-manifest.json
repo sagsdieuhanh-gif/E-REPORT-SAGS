@@ -18,7 +18,7 @@
       "bytes": 1253
     },
     "./app/boot/05-legacy.js": {
-      "sha256": "dff5bacc083c2fcdb739c51beb08dd5353644625eb9e0246c672dea314221118",
+      "sha256": "918d0153b87c7e9c5f13e26660f78edddaf46f59e5e687fb9c587639eca5749e",
       "bytes": 305825
     },
     "./app/boot/06-legacy.js": {
@@ -762,7 +762,7 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "a1bd52acdbc176a56009b9d3ec09115d6e3113573df0e6748932628bf766ae98",
+      "sha256": "7285b5face366d71235f80922198c64891bf125e8c4e66d48422fff6f2801f4c",
       "bytes": 104956
     },
     "./manifest.webmanifest": {
@@ -814,7 +814,7 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "9bf7a2a4648078d1ecdd9900fb6732e2b70b18f69c38535b27121638732460a2",
+      "sha256": "e2a991289cf1fd5cdd592c62ba8b9747ce11875f4fcbc1ca26cfd1892b8de7ad",
       "bytes": 22453
     },
     "./storage-recovery.html": {
@@ -822,7 +822,7 @@
       "bytes": 26106
     },
     "./version.json": {
-      "sha256": "1136feeeeac76f1c2bd6550eeb83a1daa67cfcf7336286238995568b10708010",
+      "sha256": "3f1abe732e6e080fa13122a028495f01e4cc85bba7d3aa969670e2d7cd7109a7",
       "bytes": 615
     }
   },
