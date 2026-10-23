@@ -20,15 +20,15 @@ const runtime=(keys)=>keys.map(k=>{const f=map.get(k);assert(f,'missing '+k);ret
 const keys=pairs.flat(),fields=runtime(keys.concat(['Name']));
 const state={bbbtManualV18:true};
 for(const key of keys)state[map.get(key).bind]='NIL';
-state.acuStart_copy='TRẦN THỊ NGỌC PHƯƠNG HUYỀN TRANG';
+state.acuStart_copy='TRẦN THỊ NGỌC PHƯƠNG HUYỀN TRANG '.repeat(4).trim();
 const nodes=new Map();
-const node=(tag,attrs={})=>({tag,attrs:{...attrs},children:[],textContent:'',
+const node=(tag,attrs={})=>({tag,attrs:{...attrs},children:[],textContent:'',dataset:{},style:{},
   setAttribute(k,v){this.attrs[k]=v},appendChild(child){this.children.push(child)}});
 const svg15={children:[],replaceChildren(frag){this.children=frag.children.slice()}};
 const document={getElementById:id=>id==='svg15'?svg15:null,
   createDocumentFragment:()=>node('fragment'),createElement:tag=>tag==='canvas'?{
     getContext:()=>({font:'700 20px "Times New Roman"',
-      measureText:s=>({width:[...String(s)].length*15})})
+      measureText(s){const px=Number(this.font.match(/(\d+(?:\.\d+)?)px/)?.[1]||20);return{width:[...String(s)].length*px*.58}}})
   }:node(tag)};
 const start=js.indexOf('// TVJ-GOF-035: preserve each PCS/KGS');
 const end=js.indexOf('function todayDDMMYYYY()',start);
@@ -52,7 +52,7 @@ assert.equal(state.vz_arrBaggageKgs,'NIL');
 const textFor=key=>svg15.children.find(x=>x.attrs['data-field-key']===key&&x.tag==='text');
 let name=textFor('acuStart_copy');
 assert(name,'NAME must be rendered from the bound account identity');
-assert.equal(name.textContent,'TRẦN THỊ NGỌC PHƯƠNG HUYỀN TRANG');
+assert.equal(name.textContent,state.acuStart_copy);
 assert.equal(name.attrs['text-anchor'],'middle');
 assert.equal(name.attrs['dominant-baseline'],'middle');
 assert(Number(name.attrs['font-size'])<20,'NAME should reduce font size for a long name');
