@@ -126,7 +126,22 @@ async function hf4StillOwns(aid,date='',fid=''){
   const u=normUser(root.currentUserProfile?.username||'');
   if(!u||!aid||typeof root.sagsV470Ref!=='function')return false;
   try{const snap=await root.sagsV470Ref(`${MAIL}/${safe(u)}/items/${safe(aid)}`).once('value'),item=snap.val();
-    return !!(item&&item.active!==false&&normUser(item.targetUser||item.user)===u&&(!date||S(item.opDate)===S(date))&&(!fid||S(item.flightId)===S(fid)));
+    const owns=!!(item&&item.active!==false&&normUser(item.targetUser||item.user)===u&&(!date||S(item.opDate)===S(date))&&(!fid||S(item.flightId)===S(fid)));
+    if(!owns)return false;
+    const gid=S(item.coAssigneeGroupId);if(!gid)return true;
+    // The mailbox alone is insufficient after a co-worker selects NHẬN TIẾP.
+    // Stop cloud draft writes from the former editor when a new owner holds
+    // the transactional co-group lease. Keep their unsynced local draft intact.
+    const lock=(await root.sagsV470Ref(`roster_co_claims/${safe(S(date||item.opDate))}/${safe(gid)}`).once('value')).val()||{};
+    if(S(lock.status).toUpperCase()!=='CLAIMED'||normUser(lock.claimedBy)!==u||S(lock.claimedAssignmentId)!==S(aid)){
+      const who=normUser(lock.claimedBy||'');
+      if(who&&who!==u&&root.__sagsCoContinueNoticeV2541!==S(aid)+'|'+who){
+        root.__sagsCoContinueNoticeV2541=S(aid)+'|'+who;
+        try{alert('BIỂU MẪU ĐÃ ĐƯỢC CHUYỂN QUYỀN CHỈNH SỬA CHO '+who+'. Dữ liệu trên máy vẫn được giữ, nhưng thiết bị này không còn đồng bộ biểu mẫu lên Firebase. Hãy trở về MY FLIGHT.')}catch(_){}
+      }
+      return false;
+    }
+    return true;
   }catch(_){return false}
 }
 async function writeWorkspaceForActive(delay=420){

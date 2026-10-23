@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.40",
-  "displayVersion": "V2.5.40",
-  "label": "V2.5.40 - NHẬN BIỂU MẪU KHI NGƯỜI TRƯỚC CHƯA HOÀN THÀNH",
-  "build": "V2.5.40-20261023-ROSTER-HANDOFF-01",
+  "version": "V2.5.41",
+  "displayVersion": "V2.5.41",
+  "label": "V2.5.41 - NHẬN TIẾP CÙNG NHÓM KHI CHƯA HOÀN THÀNH",
+  "build": "V2.5.41-20261023-CO-GROUP-CONTINUE-01",
   "releasedAt": "2026-10-23",
-  "type": "roster-incomplete-ownership-transfer",
-  "base": "E-REPORT-SAGS V2.5.39",
+  "type": "roster-cogroup-unfinished-continue",
+  "base": "E-REPORT-SAGS V2.5.40",
   "updatePolicy": "required",
-  "notes": "Rostering: Khi roster hoặc điều hành chuyển người phụ trách, người sau được nhận dù người trước chưa Hoàn thành; giữ nguyên dữ liệu đã đồng bộ, chỉ áp dụng draft ban đầu một lần; xóa quyền khóa cũ nhưng không ghi hoàn tất giả; khóa đồng thời của nhóm hỗ trợ vẫn giữ.",
-  "message": "V2.5.40: Chuyển quyền nhận an toàn khi người trước chưa Hoàn thành."
+  "notes": "Grnd_Cor: PHUONGDD, KIENNT / PHUONGDD, KIENNT. Khi co-assignee trước đã nhận nhưng chưa Hoàn thành, người sau có nút NHẬN TIẾP và xác nhận. Firebase transaction chuyển khóa nhóm; copy dữ liệu đã đồng bộ; không ghi Hoàn thành giả; bảo vệ nháp cũ và chặn đồng bộ máy đã mất quyền.",
+  "message": "V2.5.41: Cho nhận tiếp biểu mẫu cùng nhóm chưa hoàn tất, bảo toàn dữ liệu."
 }
