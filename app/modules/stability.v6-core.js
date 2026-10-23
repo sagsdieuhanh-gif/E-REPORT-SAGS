@@ -9,6 +9,7 @@
   const text=x=>String(x??'');
   const failedDrafts=new Map();
   let lastVerifiedDraft=null;
+  let lastManualCompare=null;
   let storageError=false, lastCore='', statusTimer=0, reloading=false, warnedStorage=false, statusRefreshTimer=0;
   function scope(){
     try{return sagsOwnedPrefix(PREFIX)+String(activeFlightSessionId||'')+':';}
@@ -26,8 +27,24 @@
       const k=key(field,part),v=root.SAGSBusinessText?.draft(field,text(value))??text(value);
       // Compare to the durable envelope, NOT mutable in-memory state: a failed
       // SAVE must never trick the recovery layer into deleting its only copy.
-      const committed=part==='manual'?text(readFlightSessionEnvelope(activeFlightSessionId)?.state?.[field]):'';
-      if(part==='manual'&&v===committed){localStorage.removeItem(k);failedDrafts.delete(k);storageError=failedDrafts.size>0;scheduleStatus();return true;}
+      // During continuous typing, a previous verified committed value cannot
+      // equal a *new, different* keystroke. Skip repeated full-envelope JSON
+      // parsing in that case. A stale comparison can only retain an extra
+      // recovery draft; it must NEVER delete a potentially uncommitted one.
+      // Identical value events and values matching the cached baseline always
+      // re-read the durable envelope before any draft can be deleted.
+      let matchesCommitted=false;
+      if(part==='manual'){
+        const prev=lastManualCompare;
+        if(prev?.key===k&&prev.input!==v&&prev.committed!==v){
+          lastManualCompare={key:k,input:v,committed:prev.committed};
+        }else{
+          const committed=text(readFlightSessionEnvelope(activeFlightSessionId)?.state?.[field]);
+          lastManualCompare={key:k,input:v,committed};
+          matchesCommitted=v===committed;
+        }
+      }
+      if(matchesCommitted){localStorage.removeItem(k);failedDrafts.delete(k);storageError=failedDrafts.size>0;scheduleStatus();return true;}
       // Repeated input/change/snapshot events need no new write if the exact
       // bytes still exist now. A fresh read also catches another tab, deletion,
       // corruption and storage failures; never trust the in-memory memo alone.
