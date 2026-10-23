@@ -1,69 +1,53 @@
 'use strict';
-const fs=require('fs'),vm=require('vm'),assert=require('node:assert/strict');
-const js=fs.readFileSync('app/boot/05-legacy.js','utf8');
-const forms=JSON.parse(fs.readFileSync('forms/forms.registry.json','utf8')).forms;
-const tvj=forms.find(f=>f.id==='tvj_gof_035');
-assert(tvj&&tvj.fields.length===128,'TVJ form registry must contain 128 fields');
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const registry=JSON.parse(fs.readFileSync('forms/forms.registry.json','utf8')).forms;
+const f=registry.find(x=>x.id==='tvj_gof_035');assert(f,'missing TVJ registry');
+const page=f.pages.find(x=>x.runtimePage===15);assert(page,'TVJ must be runtime page 15');
 const pairs=[
- ['arrBaggagePcs','arrBaggageKgs'],
- ['arrCargoPcs','arrCargoKgs'],
- ['finalCargoPcs','finalCargoKgs'],
- ['psaBaggagePcs','psaBaggageKgs'],
+ ['arrBaggagePcs','arrBaggageKgs'],['arrCargoPcs','arrCargoKgs'],
+ ['finalCargoPcs','finalCargoKgs'],['psaBaggagePcs','psaBaggageKgs'],
  ['offloadBagPcs','offloadBagKgs']
 ];
-const map=new Map(tvj.fields.map(f=>[f.key,f]));
-const runtime=(keys)=>keys.map(k=>{const f=map.get(k);assert(f,'missing '+k);return {
-  page:15,key:f.bind,type:f.type,x:f.x,y:f.y,w:f.w,h:f.h,
-  vx:f.x,vy:f.y,vw:f.w,vh:f.h,font:f.fontSize,align:f.align,
-  valign:f.valign,leftValue:f.align==='left'
-};});
-const keys=pairs.flat(),fields=runtime(keys.concat(['Name']));
-const state={bbbtManualV18:true};
-for(const key of keys)state[map.get(key).bind]='NIL';
-state.acuStart_copy='TRẦN THỊ NGỌC PHƯƠNG HUYỀN TRANG '.repeat(4).trim();
-const nodes=new Map();
-const node=(tag,attrs={})=>({tag,attrs:{...attrs},children:[],textContent:'',dataset:{},style:{},
-  setAttribute(k,v){this.attrs[k]=v},appendChild(child){this.children.push(child)}});
-const svg15={children:[],replaceChildren(frag){this.children=frag.children.slice()}};
-const document={getElementById:id=>id==='svg15'?svg15:null,
-  createDocumentFragment:()=>node('fragment'),createElement:tag=>tag==='canvas'?{
-    getContext:()=>({font:'700 20px "Times New Roman"',
-      measureText(s){const px=Number(this.font.match(/(\d+(?:\.\d+)?)px/)?.[1]||20);return{width:[...String(s)].length*px*.58}}})
-  }:node(tag)};
-const start=js.indexOf('// TVJ-GOF-035: preserve each PCS/KGS');
-const end=js.indexOf('function todayDDMMYYYY()',start);
-const fitStart=js.indexOf('function v1101AutoFitSingleLineFont(');
-const fitEnd=js.indexOf('function v1101AutoFitMultilineFont(',fitStart);
-assert(start>=0&&end>start&&fitStart>=0&&fitEnd>fitStart,'TVJ rendering hooks present');
-const sandbox={document,fields,state,window:{},cancelPendingTouchHit(){},
-  sagsBindSvgHitEvents(){},getActiveFlightMainForm:()=> 'fsags',
-  abs:f=>({x:f.x*1241,y:f.y*1755,w:f.w*1241,h:f.h*1755,
-    vx:f.vx*1241,vy:f.vy*1755,vw:f.vw*1241,vh:f.vh*1755}),
-  E:node,BASE_W:1241,BASE_H:1755,activeKey:null,V1101_FONT23_PAGES:new Set(),
-  sagsCachedTextWidth:(ctx,t)=>ctx.measureText(t).width};
-vm.createContext(sandbox);
-vm.runInContext(js.slice(fitStart,fitEnd)+'\n'+js.slice(start,end)+'\nthis.run=draw;',sandbox);
-sandbox.run();
-let separators=svg15.children.filter(x=>x.attrs['data-tvj-separator']);
-assert.equal(separators.length,5,'five PCS/KGS physical pairs receive exactly one separator');
-assert(separators.every(x=>x.textContent==='/'&&x.attrs.class.includes('value')));
-assert.equal(state.vz_arrBaggagePcs,'NIL');
-assert.equal(state.vz_arrBaggageKgs,'NIL');
-const textFor=key=>svg15.children.find(x=>x.attrs['data-field-key']===key&&x.tag==='text');
-let name=textFor('acuStart_copy');
-assert(name,'NAME must be rendered from the bound account identity');
-assert.equal(name.textContent,state.acuStart_copy);
-assert.equal(name.attrs['text-anchor'],'middle');
-assert.equal(name.attrs['dominant-baseline'],'middle');
-assert(Number(name.attrs['font-size'])<20,'NAME should reduce font size for a long name');
-assert(name.attrs.textLength,'extremely long NAME is horizontally fitted rather than cropped');
-state.acuStart_copy='NGUYỄN VĂN KIÊN';
-sandbox.run();
-name=textFor('acuStart_copy');
-assert.equal(name.textContent,'NGUYỄN VĂN KIÊN');
-assert(!name.attrs.textLength,'short NAME does not need forced stretching or compression');
-for(const key of keys)delete state[map.get(key).bind];
-sandbox.run();separators=svg15.children.filter(x=>x.attrs['data-tvj-separator']);
-assert.equal(separators.length,0,'blank pairs should not gain a visual separator');
-assert.equal(state.acuStart_copy,'NGUYỄN VĂN KIÊN','account NAME remains intact');
-console.log('TVJ PCS/KGS: 5 NIL / NIL separators, no data merge, PDF SVG class intact, single-line auto-fit NAME PASS');
+const selected=pairs.flat().concat('Name');
+const fields=f.fields.filter(x=>selected.includes(x.key));
+assert.equal(fields.length,11,'five paired data fields and NAME are present');
+const data={acuStart_copy:'TRẦN THỊ NGỌC PHƯƠNG HUYỀN TRANG'};
+for(const fld of fields)if(fld.key!=='Name')data[fld.bind]='NIL';
+const src=fs.readFileSync('app/core/runtime.v503hf2.bundle.js','utf8');
+const generated=fs.readFileSync('app/generated/runtime-4.js','utf8');
+const marker='function fmPaintCanonicalPageV495(',endMarker='function fmManagedPageV495(';
+const segment=s=>{const a=s.indexOf(marker),b=s.indexOf(endMarker,a);
+ assert(a>0&&b>a,'canonical painter available');return s.slice(a,b)};
+assert.equal(segment(src),segment(generated),'deployed generated painter must match canonical source');
+assert.match(src,/root\.sagsV495PaintCanonicalPage=\(ctx,pageNo\)=>/);
+assert.match(fs.readFileSync('app/modules/form-registry-runtime.v647.js','utf8'),/root\.sagsV495PaintCanonicalPage\?\.\(ctx,pageNo\)/);
+const draws=[];
+const ctx={canvas:{width:1241,height:1755},font:'',letterSpacing:'',fillStyle:'',textAlign:'',textBaseline:'',
+ save(){},restore(){},scale(){},beginPath(){},rect(){},clip(){},
+ measureText(value){const fontsize=Number(this.font.match(/(\d+(?:\.\d+)?)px/)?.[1]||20);
+  return {width:[...String(value)].length*fontsize*.55}},
+ fillText(value,x,y,maxWidth){draws.push({value,x,y,maxWidth,font:this.font,align:this.textAlign,baseline:this.textBaseline})}
+};
+const sandbox={fmNormalizeFieldV487:x=>x,fmStyleV487:x=>({
+ fontStyle:'normal',fontWeight:700,fontSize:Number(x.fontSize)||20,fontFamily:'Times New Roman',
+ letterSpacing:0,lineHeight:1.08,align:x.align||'left',textColor:'#003b8e'
+}),fmIsMultiV489:()=>false,fmV6119Baseline:(fld,st,pg,py,h)=>py+h/2,
+ fmV6119DrawLine(ctx,v,x,y){ctx.fillText(v,x,y)},pageNoV45:()=>15};
+vm.createContext(sandbox);vm.runInContext(segment(src)+';this.paint=fmPaintCanonicalPageV495',sandbox);
+function paint(){draws.length=0;sandbox.paint(ctx,{id:f.id,fields},page,fld=>data[fld.bind])}
+paint();
+assert.equal(draws.filter(x=>x.value==='/').length,5,'canonical canvas draws 5 real separators');
+assert.equal(draws.filter(x=>x.value==='NIL').length,10,'all 10 NIL values remain separate');
+assert.equal(draws.filter(x=>x.value==='TRẦN THỊ NGỌC PHƯƠNG HUYỀN TRANG').length,1);
+let name=draws.find(x=>x.value==='TRẦN THỊ NGỌC PHƯƠNG HUYỀN TRANG');
+assert.equal(name.align,'center');assert.equal(name.baseline,'middle');
+assert(name.maxWidth>0,'single-line NAME always has an explicit width limit');
+data.acuStart_copy=('TRẦN THỊ NGỌC PHƯƠNG HUYỀN TRANG ').repeat(5).trim();
+paint();name=draws.find(x=>x.value===data.acuStart_copy);
+assert(name&&name.maxWidth>0,'very long NAME must remain complete on one line');
+assert.match(name.font,/\b8px\b/,'long NAME shrinks to minimum font before canvas maxWidth fit');
+data.acuStart_copy='NGUYỄN VĂN KIÊN';paint();name=draws.find(x=>x.value===data.acuStart_copy);
+assert(name&&name.font.includes('20px'),'short NAME should not shrink');
+for(const fld of fields)if(fld.key!=='Name')delete data[fld.bind];
+paint();assert.equal(draws.filter(x=>x.value==='/').length,0,'blank PCS/KGS needs no separator');
+console.log('TVJ authoritative Canvas/PDF: 5 NIL / NIL separators, single-line fitted NAME and generated runtime parity PASS');
