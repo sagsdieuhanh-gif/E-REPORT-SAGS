@@ -50,6 +50,11 @@ const scannedBefore=enumerations;timers.at(-1).f();
 assert.equal(enumerations,scannedBefore,'Debounced status while typing never scans all drafts');
 context.document.activeElement=null;api.status();
 assert.equal(enumerations,scannedBefore+81,'After editing, recovery drafts are discoverable again');
-assert.match(read('app/modules/stability.v6-core.js'),/statusTimer=setInterval\(\(\)=>\{persistChangedCore\(\);\},2000\)/,
- 'Periodic persistence must not duplicate status work');
+const stability=read('app/modules/stability.v6-core.js'),loader=read('app/modules/stability.v6.js');
+assert(stability.includes('!document.hidden&&!currentManual()&&!currentQuick()'),
+ 'Background whole-form serialization must be skipped while the mobile editor is open');
+assert(loader.includes("searchParams.get('v')"),'Draft loader must share parent release version');
+assert(!loader.includes('?v=V2.0'),'Draft loader must not keep stale recovery code cached forever');
+assert(stability.includes('localStorage.getItem(k)!==encoded'),
+ 'Each changed field draft must still be verified immediately');
 console.log('Mobile typing: no navigation write per keystroke; durable drafts, deferred scans, trailing status and idle recovery PASS');
