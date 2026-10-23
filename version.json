@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.41",
-  "displayVersion": "V2.5.41",
-  "label": "V2.5.41 - NHẬN TIẾP CÙNG NHÓM KHI CHƯA HOÀN THÀNH",
-  "build": "V2.5.41-20261023-CO-GROUP-CONTINUE-01",
+  "version": "V2.5.42",
+  "displayVersion": "V2.5.42",
+  "label": "V2.5.42 - SỬA GIAO DỊCH NHẬN TIẾP SAU CẬP NHẬT ROSTER",
+  "build": "V2.5.42-20261023-CO-LOCK-RETRY-01",
   "releasedAt": "2026-10-23",
-  "type": "roster-cogroup-unfinished-continue",
-  "base": "E-REPORT-SAGS V2.5.40",
+  "type": "roster-co-claim-firebase-transaction-initial-null",
+  "base": "E-REPORT-SAGS V2.5.41",
   "updatePolicy": "required",
-  "notes": "Grnd_Cor: PHUONGDD, KIENNT / PHUONGDD, KIENNT. Khi co-assignee trước đã nhận nhưng chưa Hoàn thành, người sau có nút NHẬN TIẾP và xác nhận. Firebase transaction chuyển khóa nhóm; copy dữ liệu đã đồng bộ; không ghi Hoàn thành giả; bảo vệ nháp cũ và chặn đồng bộ máy đã mất quyền.",
-  "message": "V2.5.41: Cho nhận tiếp biểu mẫu cùng nhóm chưa hoàn tất, bảo toàn dữ liệu."
+  "notes": "Sửa Firebase transaction NHẬN TIẾP: chấp nhận callback optimistic khởi tạo null và lock không hoạt động (READY) khi thêm người cùng nhóm sau khi người trước đã nhận; vẫn so sánh chủ khóa thực tế, assignmentId, phiên khóa để chống nhận chồng; báo đúng lý do khi bị tranh quyền. Giữ nguyên bản nháp và trạng thái chưa Hoàn thành.",
+  "message": "V2.5.42: Sửa lỗi nhận tiếp báo nhầm người khác đã nhận nhóm."
 }

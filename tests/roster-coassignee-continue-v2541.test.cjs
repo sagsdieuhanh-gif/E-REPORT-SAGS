@@ -17,7 +17,7 @@ let lock={status:'CLAIMED',claimedBy:'PHUONGDD',claimedAssignmentId:'PARR',claim
 let patches=[],transactions=0,confirms=0;
 const peer={assignmentId:'PARR',user:'PHUONGDD',coAssigneeGroupId:'CG',flightId:'F',sourceColumn:'Grnd_Cor',formGroup:'fsags421',roleKey:'COR'};
 const mine={...peer,assignmentId:'KARR',user:'KIENNT'};
-const db=path=>({once:async()=>({val:()=>lock}),transaction:async fn=>{transactions++;const updated=fn(lock);if(!updated)return{committed:false,snapshot:{val:()=>lock}};lock=updated;return{committed:true,snapshot:{val:()=>lock}}},update:async p=>patches.push(p)});
+const db=path=>({once:async()=>({val:()=>lock}),transaction:async fn=>{transactions++;const optimistic=fn(null);if(!optimistic)return{committed:false,snapshot:{val:()=>lock}};const updated=fn(lock);if(!updated)return{committed:false,snapshot:{val:()=>lock}};lock=updated;return{committed:true,snapshot:{val:()=>lock}}},update:async p=>patches.push(p)});
 const vars={db,S,safe:S,U,norm:U,me:()=> 'KIENNT',coGroupId:x=>x.coAssigneeGroupId,
 lane:()=>[peer,mine],laneKey:x=>[x.flightId,x.formGroup,x.sourceColumn,x.roleKey].join('|'),
 sessionState:async aid=>aid==='PARR'?previous:next,workPartFinished:()=>false,
@@ -44,6 +44,15 @@ assert.equal(transactions,1);
 next={claimStatus:'READY',envelope:{state:{flight:'FD123',memo:'TYPED'},rosterSeed:{flight:'FD123'}}};
 lock={status:'CLAIMED',claimedBy:'PHUONGDD',claimedAssignmentId:'PARR',claimedAtMs:1,updatedAtMs:2};
 await assert.rejects(()=>api.continueWork('2026-10-23','F',mine,{},standby),/dữ liệu riêng/);
+next={claimStatus:'READY',envelope:{state:{flight:'FD123'},rosterSeed:{flight:'FD123'}}};
+lock={status:'READY',claimedBy:null,claimedAssignmentId:null};
+assert.equal(await api.continueWork('2026-10-23','F',mine,{},standby),true,
+ 'a READY previous lock must not falsely block a valid continuation');
+assert.equal(lock.claimedBy,'KIENNT');
+lock=null;
+assert.equal(await api.continueWork('2026-10-23','F',mine,{},standby),true,
+ 'a newly created co-group may have no prior lock');
+assert.equal(lock.claimedBy,'KIENNT');
 assert(shared.includes('old.textContent="NHẬN TIẾP"'));
 assert(shared.includes('continueCoAssignmentV2541(d,fid,item,man,cs)'));
 const sync=fs.readFileSync('app/modules/daily-roster.v502.js','utf8');

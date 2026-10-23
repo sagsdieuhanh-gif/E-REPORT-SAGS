@@ -48,18 +48,38 @@ async function continueCoAssignmentV2541(d,fid,item,man,standby){
   let result;
   try{result=await lock.transaction(cur=>{
     const st=U(cur?.status),holder=norm(cur?.claimedBy),holderAid=S(cur?.claimedAssignmentId);
-    if(st==="CLAIMED"&&(holder!==oldUser||holderAid!==oldAid))return;
-    if(!lockBefore&&st==="CLAIMED")return;
-    if(lockBefore&&st!=="CLAIMED")return;
-    if(lockBefore&&(Number(cur?.claimedAtMs||0)!==Number(lockBefore.claimedAtMs||0)||
-                    Number(cur?.updatedAtMs||0)!==Number(lockBefore.updatedAtMs||0)))return;
+    // Firebase RTDB can invoke the optimistic update with null before it
+    // downloads an existing remote lock. Returning undefined on that first
+    // invocation aborts the transaction instead of retrying on server data.
+    // Compare the actual holder whenever the callback sees an active claim.
+    if(st==="CLAIMED"){
+      const heldByPrevious=holder===oldUser&&holderAid===oldAid;
+      const alreadyTransferred=holder===u&&holderAid===aid&&
+        norm(cur?.takeoverFromUser)===oldUser&&S(cur?.takeoverFromAssignmentId)===oldAid;
+      if(!heldByPrevious&&!alreadyTransferred)return;
+      // If a known previous-owner lock changed after our read, do not silently
+      // displace a newer lease. An initial null/READY value is not a conflict.
+      if(heldByPrevious&&U(lockBefore?.status)==="CLAIMED"&&
+         norm(lockBefore?.claimedBy)===oldUser&&S(lockBefore?.claimedAssignmentId)===oldAid&&
+         (Number(cur?.claimedAtMs||0)!==Number(lockBefore.claimedAtMs||0)||
+          Number(cur?.updatedAtMs||0)!==Number(lockBefore.updatedAtMs||0)))return;
+    }else if(st&&!["READY","UNCLAIMED","RELEASED","COMPLETED","SKIPPED","DONE","STANDBY"].includes(st)){
+      return;
+    }
     return{schema:1,groupId:gid,status:"CLAIMED",claimedBy:u,
       claimedAssignmentId:aid,claimedAtMs:t,updatedAtMs:t,
       opDate:d,flightId:fid,formGroup:S(item.formGroup),sourceColumn:S(item.sourceColumn),
       takeoverFromUser:oldUser,takeoverFromAssignmentId:oldAid,takeoverAtMs:t};
   },undefined,false)}
   catch(e){throw new Error("Không chuyển được khóa chỉnh sửa: "+S(e?.message||e))}
-  if(!result?.committed)throw new Error("Một người khác vừa nhận nhóm này. Tải lại danh sách.");
+  if(!result?.committed){
+    const current=result?.snapshot?.val?.()||{};
+    const who=norm(current.claimedBy),heldAid=S(current.claimedAssignmentId);
+    if(U(current.status)==="CLAIMED"&&who&&
+       (who!==oldUser||heldAid!==oldAid)&&!(who===u&&heldAid===aid))
+      throw new Error("Nhóm đã được "+who+" nhận trước. Tải lại để xem trạng thái mới.");
+    throw new Error("Trạng thái khóa nhóm đã thay đổi trong lúc nhận tiếp. Vui lòng tải lại chuyến.");
+  }
   // The old editor is not COMPLETED; its finished markers remain untouched.
   // The successor's own assignment gets a snapshot, without merging two live
   // editors or replacing the original previous worker's draft.
