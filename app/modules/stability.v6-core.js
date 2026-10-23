@@ -8,6 +8,7 @@
   const $=id=>document.getElementById(id);
   const text=x=>String(x??'');
   const failedDrafts=new Map();
+  let lastVerifiedDraft=null;
   let storageError=false, lastCore='', statusTimer=0, reloading=false, warnedStorage=false, statusRefreshTimer=0;
   function scope(){
     try{return sagsOwnedPrefix(PREFIX)+String(activeFlightSessionId||'')+':';}
@@ -27,9 +28,16 @@
       // SAVE must never trick the recovery layer into deleting its only copy.
       const committed=part==='manual'?text(readFlightSessionEnvelope(activeFlightSessionId)?.state?.[field]):'';
       if(part==='manual'&&v===committed){localStorage.removeItem(k);failedDrafts.delete(k);storageError=failedDrafts.size>0;scheduleStatus();return true;}
+      // Repeated input/change/snapshot events need no new write if the exact
+      // bytes still exist now. A fresh read also catches another tab, deletion,
+      // corruption and storage failures; never trust the in-memory memo alone.
+      if(lastVerifiedDraft?.key===k&&lastVerifiedDraft.value===v&&localStorage.getItem(k)===lastVerifiedDraft.encoded){
+        failedDrafts.delete(k);storageError=failedDrafts.size>0;scheduleStatus();return true;
+      }
       const encoded=JSON.stringify({field,part,value:v,atMs:Date.now()});
       localStorage.setItem(k,encoded);
       if(localStorage.getItem(k)!==encoded)throw new Error('DRAFT_WRITE_VERIFY');
+      lastVerifiedDraft=encoded.length<=65536?{key:k,value:v,encoded}:null;
       failedDrafts.delete(k);storageError=failedDrafts.size>0;scheduleStatus();return true;
     }catch(e){failedDrafts.set(key(field,part),{field,value:text(value),part,scope:scope()});storageError=true;status();if(!warnedStorage){warnedStorage=true;
       alert('Bộ nhớ trình duyệt không ghi được bản nháp. Hãy giữ màn hình này và báo quản trị; KHÔNG cập nhật hoặc xóa dữ liệu trình duyệt.');

@@ -4,6 +4,7 @@
  'use strict';
  if(root.SAGSBusinessText)return;
  const policies=new Map(),protectedFields=new Set(),seen=new WeakMap(),composing=new WeakSet();
+ const normalizedStates=new WeakMap();
  const textTypes=new Set(['text','textarea','number','time','timenow','timelocked','date','dateauto','display','computed']);
  const controls='input,textarea,[contenteditable="true"]';
  function technical(el){
@@ -37,7 +38,20 @@
  function normalizeState(state,fields){
   register(fields);
   if(!state||typeof state!=='object')return state;
-  for(const key of Object.keys(state))if(policies.get(key)===true)state[key]=upper(state[key]);
+  let memo=normalizedStates.get(state);
+  if(!memo){memo=new Map();normalizedStates.set(state,memo);}
+  for(const key of Object.keys(state)){
+   if(policies.get(key)!==true){memo.delete(key);continue;}
+   const value=state[key];
+   if(typeof value==='string'&&memo.has(key)&&memo.get(key)===value)continue;
+   const next=upper(value);state[key]=next;
+   // Keep only short normalized values, per live state. Never retain photos,
+   // long notes, or an unbounded history as operators switch flights.
+   if(typeof next==='string'&&next.length<=128){
+    if(!memo.has(key)&&memo.size>=1024)memo.clear();
+    memo.set(key,next);
+   }else memo.delete(key);
+  }
   return state;
  }
  function draft(field,value){return policies.get(field)===false?value:upper(value)}

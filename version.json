@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.35",
-  "displayVersion": "V2.5.35",
-  "label": "V2.5.35 - GIẢM TẢI CPU VÀ RAM",
-  "build": "V2.5.35-20261023-LOW-MEMORY-RUNTIME-01",
+  "version": "V2.5.36",
+  "displayVersion": "V2.5.36",
+  "label": "V2.5.36 - GIẢM XỬ LÝ LẶP KHI NHẬP LIỆU",
+  "build": "V2.5.36-20261023-REPEATED-INPUT-WORK-01",
   "releasedAt": "2026-10-23",
-  "type": "low-memory-runtime-performance",
-  "base": "E-REPORT-SAGS main@73fe9d3 (V2.5.34)",
+  "type": "repeated-input-performance",
+  "base": "E-REPORT-SAGS main@17b928a (V2.5.35)",
   "updatePolicy": "required",
-  "notes": "Dùng chung xử lý thao tác SVG, giới hạn bộ nhớ đệm đo chữ, tải ảnh nền khi cần, tránh cập nhật trạng thái DOM thừa. Xuất PDF tuần tự từng trang, giải phóng canvas sớm, chia dải pixel 42.1 lossless và ghép PDF bằng Blob parts để giảm bản sao trong RAM.",
-  "message": "V2.5.35: Giảm tải CPU/RAM khi nhập biểu mẫu và xuất PDF trên thiết bị yếu."
+  "notes": "Bỏ chuyển chữ hoa lặp cho giá trị ngắn không đổi, giới hạn bộ nhớ đệm theo từng state. Tránh ghi lại nháp giống hệt sau khi đọc kiểm tra bản lưu thực tế; vẫn lưu ngay khi có thay đổi và kiểm tra lỗi bộ nhớ.",
+  "message": "V2.5.36: Giảm xử lý lặp khi nhập liệu trên thiết bị yếu."
 }
