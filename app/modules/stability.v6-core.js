@@ -102,8 +102,9 @@
     return '';
   }
   function scheduleStatus(){
-    if(statusRefreshTimer)return;
-    statusRefreshTimer=setTimeout(()=>{statusRefreshTimer=0;status();},120);
+    // Trailing debounce: a fast typist must not rescan every draft while typing.
+    if(statusRefreshTimer)clearTimeout(statusRefreshTimer);
+    statusRefreshTimer=setTimeout(()=>{statusRefreshTimer=0;status();},350);
   }
   function status(){
     const badge=$('sagsV61DraftStatus');if(!badge||document.hidden)return;
@@ -112,10 +113,16 @@
     let logged=false;try{logged=!!currentUserProfile?.username;}catch(_){}
     set('hidden',!logged);if(!logged)return;
     if(storageError||root.sagsV622StorageBlocked){set('textContent','⚠ Không lưu được nháp');level('error');return;}
-    const p=pending(),manual=!!currentManual(),quick=!!currentQuick();
+    const manual=!!currentManual(),quick=!!currentQuick();
+    const focus=document.activeElement;
+    const quickTimeTyping=!!focus?.matches?.('input,textarea')&&!!focus.closest?.('#quickTimeModal,#fs09QuickModal');
+    // The recovery record is verified on each input; scanning all localStorage
+    // during focused typing adds contention without improving durability.
+    // Once the editor closes, pending() runs again and prunes committed drafts.
+    const p=manual||quick||quickTimeTyping?[]:pending();
     const cloud=root.sagsDraftV2Status?.()||{},cloudReady=cloud.cloudCapable===true;
-    set('textContent',p.length||manual||quick?(cloudReady?'📝 Nháp đang được bảo vệ':'📝 Nháp đang lưu trên máy'):(cloudReady?'✓ Nháp đã bảo vệ 3 lớp':'✓ Nháp chuyến trên máy này'));
-    level(p.length||manual||quick?'pending':'local');
+    set('textContent',p.length||manual||quick||quickTimeTyping?(cloudReady?'📝 Nháp đang được bảo vệ':'📝 Nháp đang lưu trên máy'):(cloudReady?'✓ Nháp đã bảo vệ 3 lớp':'✓ Nháp chuyến trên máy này'));
+    level(p.length||manual||quick||quickTimeTyping?'pending':'local');
     set('title',cloudReady?'localStorage + IndexedDB trên máy; khi có mạng đồng bộ bản nháp roster lên server để có thể phục hồi trên thiết bị khác.':'Bản nháp đang được bảo vệ trên thiết bị này; đồng bộ server sẽ bật khi có assignment roster và Firebase sẵn sàng.');
   }
   function showPending(){
@@ -172,9 +179,9 @@
   }
   function persistChangedCore(){
     try{
-      if(!activeFlightSessionId)return;
+      if(!activeFlightSessionId){status();return;}
       const serialized=JSON.stringify(state);
-      if(serialized===lastCore)return;
+      if(serialized===lastCore){status();return;}
       // Only persist when this tab's in-memory state changes, not when another tab edits storage.
       persist();
       const saved=readFlightSessionEnvelope(activeFlightSessionId);
@@ -259,7 +266,7 @@
   root.sagsStabilityForgetManualDraft=function(field){if(field)root.sagsV61Draft.forget(field);const b=$('sagsV61Restore');if(b)b.style.display='none';};
   try{lastCore=JSON.stringify(state);}catch(_){lastCore='';}
   function boot(){ensureUi();patchUpdates();status();
-    statusTimer=setInterval(()=>{persistChangedCore();status();},2000);
+    statusTimer=setInterval(()=>{persistChangedCore();},2000);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
   document.addEventListener('visibilitychange',()=>{if(document.hidden)snapshotAllEditors();else status();});
