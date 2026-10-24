@@ -1,12 +1,12 @@
 {
   "version": "V1.0",
   "displayVersion": "V1.0",
-  "label": "V1.0 - NỀN TẢNG MỚI · PDF NHANH HƠN · FONT DỄ ĐỌC",
-  "build": "V1.0-20261025-NEW-VERSION-EXPORT-FONT-01",
+  "label": "V1.0 - GIAO DIỆN DỄ ĐỌC · PDF NHANH HƠN",
+  "build": "V1.0-20261025-HOME-TEXT-READABILITY-02",
   "releasedAt": "2026-10-25",
-  "type": "release-number-reset-pdf-multiaccount-typography",
+  "type": "v1-home-typography-hotfix",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Đánh số phiên bản lại từ V1.0, tiếp tục mã nguồn hiện có, không reset dữ liệu. Loại bỏ quét dữ liệu/chữ ký mọi tài khoản trong đường mở menu Xuất, mở chuyến hoặc khởi động; giữ bảo trì thủ công. Chuẩn hóa font giao diện PC/mobile, không can thiệp mẫu PDF/SVG, logo, roster và quy tắc bàn giao.",
-  "message": "E-REPORT-SAGS V1.0: Đánh số phiên bản lại từ đầu, tối ưu xuất PDF trên máy dùng chung và font PC/mobile."
+  "notes": "Tăng độ dễ đọc của chữ ở sidebar, thông tin người dùng, hãng hàng không, thẻ chuyến bay và danh sách chuyến bay, giữ giao diện gọn và phiên bản V1.0. Không đổi dữ liệu, quy tắc roster, font/tọa độ PDF, chữ ký hoặc giao diện nhập liệu biểu mẫu.",
+  "message": "V1.0: Chỉnh cỡ chữ và độ tương phản giao diện chính PC/mobile, giữ nguyên toàn bộ biểu mẫu."
 }
