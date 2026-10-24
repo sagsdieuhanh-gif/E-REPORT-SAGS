@@ -4,7 +4,7 @@ plugins {
 
 android {
     namespace 'vn.sags.cxr.ereport'
-    compileSdk 35
+    compileSdk 36
 
     defaultConfig {
         applicationId 'vn.sags.cxr.ereport'

@@ -12,7 +12,7 @@ debug APK for the `feature/android-apk-twa` branch. It copies the original
 `assets/icons/icon-192.png` into Android resources without modifying the
 original logo.
 
-You can also build with Android SDK 35, JDK 17 and Gradle 8.11.1:
+You can also build with Android SDK 36, JDK 17 and Gradle 8.13:
 `mkdir -p android/app/src/main/res/drawable-nodpi && cp assets/icons/icon-192.png android/app/src/main/res/drawable-nodpi/ic_ereport.png && gradle -p android assembleDebug`
 
 Build artifact: `android/app/build/outputs/apk/debug/app-debug.apk`.
