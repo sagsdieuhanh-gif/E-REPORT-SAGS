@@ -512,10 +512,15 @@ function cardHtml(g,date){
  return '<article class="v1199Card" data-fkey="'+esc(g.key)+'"><div class="v1199Title">'+esc(flightLabel(x))+'</div><div class="v1199Meta">'+esc(route)+(route?' · ':'')+'A/C '+esc(ac)+' · STA '+esc(sta)+' · STD '+esc(std)+'</div>'+closedNote+'<div class="v1199Tasks">'+forms+'</div>'+policySummary+docSummary+'<div class="v1199FlightActions"><button type="button" class="v1199Action v1199DossierBtn" data-dossier-fid="'+esc(x.flightId)+'" data-dossier-date="'+esc(date)+'">'+dossierText+'</button>'+closeBtn+'</div></article>';
 }
 async function personalGroups(date,fid=''){
- await root.sagsAirlineFormPolicy?.ready();const owner=me(),man=await readManifest(date),manifestItems=Object.values(man?.items||{}).filter(x=>x&&x.active!==false),all=manifestItems.filter(x=>norm(x.user||x.targetUser)===owner&&(!fid||S(x.flightId)===S(fid))),dd=dedupeItems(date,all),states=await Promise.all(dd.items.map(x=>readState(x.assignmentId)));
+ await root.sagsAirlineFormPolicy?.ready();const owner=me(),man=await readManifest(date),manifestItems=Object.values(man?.items||{}).filter(x=>x&&x.active!==false),
+ // CBTT FINAL is not in operational use. Hide it from personal workflows while
+ // preserving the roster source and historic data for FSAGS 54/94 derivation.
+ all=manifestItems.filter(x=>norm(x.user||x.targetUser)===owner&&(!fid||S(x.flightId)===S(fid))),
+ dd=dedupeItems(date,all),displayItems=dd.items.filter(x=>!(U(x.roleKey)==='CBTT'&&canonicalForm(x)==='FINAL')),
+ states=await Promise.all(displayItems.map(x=>readState(x.assignmentId)));
  if(me()!==owner)throw new Error('Đã đổi tài khoản; mở lại My Flight.');
- const groups=groupTasks(dd.items.map((item,i)=>({item,st:states[i]})).filter(x=>itemCompleted(x.item,x.st)||root.sagsAirlineFormPolicy?.allowed(x.item,x.item.formGroup)!==false));
- for(const g of groups){const fid0=S(g?.primary?.flightId);g.flightAssignments=manifestItems.filter(x=>fid0?S(x.flightId)===fid0:flightKey(x)===g.key)}
+ const groups=groupTasks(displayItems.map((item,i)=>({item,st:states[i]})).filter(x=>itemCompleted(x.item,x.st)||root.sagsAirlineFormPolicy?.allowed(x.item,x.item.formGroup)!==false));
+ for(const g of groups){const fid0=S(g?.primary?.flightId);g.flightAssignments=manifestItems.filter(x=>(fid0?S(x.flightId)===fid0:flightKey(x)===g.key)&&!(U(x.roleKey)==='CBTT'&&canonicalForm(x)==='FINAL'))}
  await attachDossierDocs(date,groups);return {dd,groups};
 }
 function bindDossierTasks(host){
