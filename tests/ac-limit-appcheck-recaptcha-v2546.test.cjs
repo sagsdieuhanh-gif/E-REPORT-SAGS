@@ -46,10 +46,10 @@ assert(acl.includes('window.SAGS_FIREBASE_CONFIG||window.firebase?.app?.().optio
 assert(!acl.includes('appCheckMod.getAppCheck'),'browser-only App Check must not call Admin SDK getAppCheck');
 assert(importer.includes('root.__SAGS_V2211_CHECK_INSTANCES'),'multi-image AI must reuse initialized browser App Check instance');
 assert(!importer.includes('appCheckMod.getAppCheck'),'multi-image AI must not call unsupported getAppCheck');
-assert(acl.includes('id="aclAIOcr"'),'A/C LIMITS must expose direct free OCR');
+assert(tools.includes('id="aclAIOcr"'),'A/C LIMITS must expose direct free OCR');
 assert(acl.includes('aclTryOcrFallback(file,null)'),'OCR path must work without Firebase AI request');
 assert(acl.includes('aclTryOcrFallback(file,e)'),'safe OCR fallback should remain available');
-assert(acl.includes('selected:false,reg,category:cat'),'OCR never preselects its inferred rows');
+assert(tools.includes('selected:false,reg,category:cat'),'OCR never preselects its inferred rows');
 assert(acl.includes('https://www.gstatic.com/firebasejs/12.16.0/'),'both importers should use one SDK version');
 const bridge=fs.readFileSync('app/boot/07-legacy.js','utf8');
 assert(bridge.includes('fastModel:String(cfg?.fastModel||cfg?.model||"gemini-3.5-flash-lite").trim()'),'AD FAST model is preserved in Firestore');
