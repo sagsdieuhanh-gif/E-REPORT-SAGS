@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.48",
-  "displayVersion": "V2.5.48",
-  "label": "V2.5.48 - XUẤT PDF NHANH TRÊN MÁY DÙNG CHUNG, FONT DỄ ĐỌC",
-  "build": "V2.5.48-20261025-EXPORT-MULTIUSER-FONT-01",
+  "version": "V1.0",
+  "displayVersion": "V1.0",
+  "label": "V1.0 - NỀN TẢNG MỚI · PDF NHANH HƠN · FONT DỄ ĐỌC",
+  "build": "V1.0-20261025-NEW-VERSION-EXPORT-FONT-01",
   "releasedAt": "2026-10-25",
-  "type": "multiuser-pdf-latency-screen-font",
-  "base": "E-REPORT-SAGS V2.5.47",
+  "type": "release-number-reset-pdf-multiaccount-typography",
+  "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Không quét tự động các bản nháp/chữ ký từ nhiều tài khoản khi mở menu Xuất, mở chuyến, khởi động hoặc quay lại ứng dụng. Giữ lệnh bảo trì thủ công, không xóa dữ liệu. Thống nhất font màn hình PC/mobile có hỗ trợ tiếng Việt; giữ nguyên kiểu chữ/toạ độ SVG, PDF và mọi quy tắc roster/bàn giao.",
-  "message": "V2.5.48: Không chặn xuất PDF bởi quét dữ liệu nhiều tài khoản, chuẩn hóa font giao diện."
+  "notes": "Đánh số phiên bản lại từ V1.0, tiếp tục mã nguồn hiện có, không reset dữ liệu. Loại bỏ quét dữ liệu/chữ ký mọi tài khoản trong đường mở menu Xuất, mở chuyến hoặc khởi động; giữ bảo trì thủ công. Chuẩn hóa font giao diện PC/mobile, không can thiệp mẫu PDF/SVG, logo, roster và quy tắc bàn giao.",
+  "message": "E-REPORT-SAGS V1.0: Đánh số phiên bản lại từ đầu, tối ưu xuất PDF trên máy dùng chung và font PC/mobile."
 }

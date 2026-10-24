@@ -1449,7 +1449,7 @@ html.new-ui-v1 body :is(#sagsSettingsCenter,#fwcModal,#dailyRosterModal,#fleetMa
 /* Do not change paper forms, canvas, signatures, SVG or the print export at any breakpoint. */
 }
 
-/* V2.5.48 — Shared PC/mobile readable typography.
+/* V1.0 — Shared PC/mobile readable typography.
    Excludes printable paper, SVG inputs, signatures and pixel-exact PDF geometry. */
 @media screen {
   html.new-ui-v1 {

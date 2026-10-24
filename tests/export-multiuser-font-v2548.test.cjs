@@ -3,7 +3,7 @@ const fs=require('fs'),vm=require('vm'),assert=require('node:assert/strict');
 const rt=fs.readFileSync('app/generated/runtime-2.js','utf8');
 const chunks=fs.readFileSync('app/core/runtime.v503hf2.bundle.js','utf8').split(/\/\* SAGS_RUNTIME_CHUNK:\d+ \*\/\n/).slice(1);
 assert.equal(chunks[1],rt,'Runtime source/generated parity');
-const at=rt.indexOf('const BUILD="V2.5.48-SIGNATURE-STORAGE-ON-DEMAND"');
+const at=rt.indexOf('const BUILD="V1.0-SIGNATURE-STORAGE-ON-DEMAND"');
 assert(at>0,'Guard missing');
 const endTag='})(typeof window!=="undefined"?window:globalThis);';
 const end=rt.indexOf(endTag,at);
@@ -26,5 +26,5 @@ vm.runInNewContext(code,{window:root,document:{addEventListener(){}},setTimeout(
  const html=fs.readFileSync('index.html','utf8');
  assert.equal([...html.matchAll(/<link[^>]+rel="stylesheet"/g)].length,6,'No extra CSS request');
  assert(html.includes('aviation-reference.v1.css'));
- console.log('V2.5.48: 200 previous users do not block export; manual recovery and PDF fonts preserved; UI font consistent PASS');
+ console.log('V1.0: 200 previous users do not block export; manual recovery and PDF fonts preserved; UI font consistent PASS');
 })().catch(e=>{console.error(e);process.exitCode=1});
