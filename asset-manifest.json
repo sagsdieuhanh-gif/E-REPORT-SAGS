@@ -146,16 +146,16 @@
       "bytes": 132730
     },
     "./app/generated/core-tools.js": {
-      "sha256": "0e6ebcdc3b93758cc1c3ba651a53fd6e21c4ba4819a400286226156c4e983de0",
-      "bytes": 112229
+      "sha256": "d1eae0214a5c273ef03cfaecc89657b3e1c232b8546b6dea045c50d9f7ff4cfb",
+      "bytes": 112235
     },
     "./app/generated/runtime-1.js": {
       "sha256": "d28c3a15851e5ba0e22f3cd6222ae1f2c66183177638ad5191c201e73573801e",
       "bytes": 115644
     },
     "./app/generated/runtime-2.js": {
-      "sha256": "2a1d4bfe1d1f82de9ce2756e2281b88cea7a729182e6d5466bab9e2a306048cc",
-      "bytes": 143372
+      "sha256": "83080e4eeee2c8307a176032c591488cc064102bae532b7c3247689968e99fae",
+      "bytes": 143382
     },
     "./app/generated/runtime-3.js": {
       "sha256": "27af2b0c87d29d642691d6a6aa853228c1f4ff6fdb8c4b80903e975e6a581797",
@@ -762,8 +762,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "4bb58fc99c08a9849538c0771da55c7bbdda8fb64c5bb38aca516340ba1c4a23",
-      "bytes": 105022
+      "sha256": "52e1ac9918bdcf101966f7ecb8d8c65b15bd9d5270ad0553644bc56906f3e5b0",
+      "bytes": 105029
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
