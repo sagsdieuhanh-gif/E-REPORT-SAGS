@@ -14,7 +14,7 @@ const LONG='[Nội dung dài hoặc tệp đính kèm: không lưu giá trị]';
 const MAX_VALUE=140, MAX_CHANGES=80, MAX_ROWS=200;
 let dbPromise=null,patching=false,uiOpen=false,lastError='',lastTrustedFormEditAt=0;
 const batches=new Map(),adminOptions=new Map();
-let registryLabelsPromise=null,renderRequest=0;
+let registryLabelsPromise=null,renderRequest=0,refreshToken=0;
 const isAdmin=()=>['AD','ADMIN'].includes(user().role);
 const dayISO=()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
 const FIELD_TITLES={
@@ -169,19 +169,19 @@ function wrap(name){
  return true;
 }
 function install(){if(patching)return;patching=true;try{wrap('persist');wrap('sagsV22SaveNow');installButtons()}finally{patching=false}}
-async function remoteList(aid){
+async function remoteList(aid,strict=false){
  if(!aid||!root.sagsV470Ref)return [];
  try{
   const ref=cloudRef(aid);const q=ref?.limitToLast?.(MAX_ROWS)||ref;
   if(!q?.once)return [];
   const snap=await q.once('value'),v=snap.val()||{};
   return Object.values(v).filter(x=>x&&x.schema===1&&x.id&&Array.isArray(x.changes)).map(x=>({...x,synced:true}));
- }catch(e){lastError=S(e?.message||e);return []}
+ }catch(e){lastError=S(e?.message||e);if(strict)throw e;return []}
 }
 async function entriesFor(m){
  const adminRemote=isAdmin()&&m?.adminRemote===true;
  const scope=scopeFor(m),local=adminRemote?[]:(await localList()).filter(x=>x.scope===scope).slice(0,MAX_ROWS);
- const remote=await remoteList(m?.rosterAssignmentId);
+ const remote=await remoteList(m?.rosterAssignmentId,adminRemote);
  const merged=new Map();
  // Only roster-assignment records the signed-in account is authorized to read are returned by Firebase.
  // Within that assigned flight, show the edits of all participating roles, not only the current author.
@@ -246,12 +246,16 @@ async function refresh(retry=false){
  const sel=$('sagsHistorySession'),box=$('sagsHistoryRows'),label=$('sagsHistoryCount');if(!sel||!box)return;
  const m=adminOptions.get(sel.value)||available().find(x=>S(x.id)===sel.value);if(!m){box.textContent='Chưa có biểu mẫu để xem.';return}
  box.textContent='Đang tải lịch sử...';
- const token=renderRequest;
- let rows=await entriesFor(m);
- if(token!==renderRequest||!uiOpen)return;
+ const token=renderRequest,request=++refreshToken;
+ let rows;try{rows=await entriesFor(m)}catch(e){
+   if(uiOpen&&token===renderRequest&&request===refreshToken)
+     box.textContent='Firebase không cho đọc lịch sử của phân công này: '+S(e?.message||e)+'. Cần kiểm tra quyền admin trong RTDB.';
+   return;
+ }
+ if(token!==renderRequest||request!==refreshToken||!uiOpen)return;
  const labels=await fieldLabels();
  if(retry){for(const e of rows.filter(x=>!x.synced&&x.assignmentId).slice(0,12))await send(e);rows=await entriesFor(m)}
- if(!uiOpen||token!==renderRequest)return;
+ if(!uiOpen||token!==renderRequest||request!==refreshToken)return;
  label.textContent=rows.length+' bản ghi';
  if(!rows.length){box.textContent='Chưa ghi nhận lần chỉnh sửa nào sau khi cập nhật chức năng này.';return}
  box.innerHTML=rows.map(e=>{
