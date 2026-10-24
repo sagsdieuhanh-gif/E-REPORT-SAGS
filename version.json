@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.47",
-  "displayVersion": "V2.5.47",
-  "label": "V2.5.47 - CHẨN ĐOÁN AI IMPORT VÀ ĐỒNG BỘ APP CHECK",
-  "build": "V2.5.47-20261024-AI-IMPORT-KEY-REFRESH-01",
-  "releasedAt": "2026-10-24",
-  "type": "ai-import-appcheck-refresh-and-diagnostics",
-  "base": "E-REPORT-SAGS V2.5.46",
+  "version": "V1.0",
+  "displayVersion": "V1.0",
+  "label": "V1.0 - NỀN TẢNG MỚI · PDF NHANH HƠN · FONT DỄ ĐỌC",
+  "build": "V1.0-20261025-NEW-VERSION-EXPORT-FONT-01",
+  "releasedAt": "2026-10-25",
+  "type": "release-number-reset-pdf-multiaccount-typography",
+  "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "AI Import nhiều ảnh làm mới Site Key và model theo cấu hình AD, dùng Firebase App Check riêng khi Site Key thay đổi; bổ sung nút CHẨN ĐOÁN AI xác thực token mới trước khi nhập. Lưu riêng model FAST/FALLBACK đúng cấu hình; không bỏ qua App Check, không tự ghi khi thất bại, không sửa roster/handover/biểu mẫu.",
-  "message": "V2.5.47: Sửa cache Site Key, cấu hình model và chẩn đoán App Check AI Import."
+  "notes": "Đánh số phiên bản lại từ V1.0, tiếp tục mã nguồn hiện có, không reset dữ liệu. Loại bỏ quét dữ liệu/chữ ký mọi tài khoản trong đường mở menu Xuất, mở chuyến hoặc khởi động; giữ bảo trì thủ công. Chuẩn hóa font giao diện PC/mobile, không can thiệp mẫu PDF/SVG, logo, roster và quy tắc bàn giao.",
+  "message": "E-REPORT-SAGS V1.0: Đánh số phiên bản lại từ đầu, tối ưu xuất PDF trên máy dùng chung và font PC/mobile."
 }

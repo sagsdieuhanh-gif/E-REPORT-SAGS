@@ -1448,3 +1448,24 @@ html.new-ui-v1 body :is(#sagsSettingsCenter,#fwcModal,#dailyRosterModal,#fleetMa
 }
 /* Do not change paper forms, canvas, signatures, SVG or the print export at any breakpoint. */
 }
+
+/* V1.0 — Shared PC/mobile readable typography.
+   Excludes printable paper, SVG inputs, signatures and pixel-exact PDF geometry. */
+@media screen {
+  html.new-ui-v1 {
+    --sags-readable-font: "Segoe UI", Roboto, "Noto Sans", Arial, sans-serif;
+    --a-font: var(--sags-readable-font);
+    --ui-font: var(--sags-readable-font);
+    --ops-font: var(--sags-readable-font);
+  }
+  html.new-ui-v1 body {
+    font-family: var(--sags-readable-font) !important;
+    text-rendering: optimizeLegibility;
+  }
+  html.new-ui-v1 body :is(button,input,select,textarea,option,label,summary,a,h1,h2,h3,h4,p,small,strong,b,span,li,td,th):not(:is([id^="page"] *,[id^="svg"] *,.page *,.paper *,.form-page *,.pdf-page *,[data-sags-paper] *)) {
+    font-family: var(--sags-readable-font) !important;
+  }
+  html.new-ui-v1 body :is(input,textarea,select) {
+    font-variant-numeric: tabular-nums;
+  }
+}

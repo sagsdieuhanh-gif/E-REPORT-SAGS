@@ -1,0 +1,17 @@
+'use strict';
+const fs=require('node:fs'),assert=require('node:assert/strict');
+const read=p=>fs.readFileSync(p,'utf8');
+const v=JSON.parse(read('version.json')),manifest=JSON.parse(read('asset-manifest.json'));
+const sw=read('service-worker.js'),html=read('index.html');
+assert.equal(v.displayVersion,'V1.0');
+assert.equal(v.version,'V1.0');
+assert.equal(manifest.build,v.build);
+assert.equal(manifest.version,'V1.0');
+assert.equal(sw.match(/const BUILD='([^']+)'/)[1],v.build);
+assert.equal(sw.match(/const DISPLAY_VERSION='([^']+)'/)[1],'V1.0');
+assert.equal(html.match(/name="sags-release-version" content="([^"]+)"/)[1],'V1.0');
+assert.equal(html.match(/name="sags-release-build" content="([^"]+)"/)[1],v.build);
+assert(!sw.includes('sags-app-shell-v2.5.48'),'Fresh SW namespace ensures reset version is not treated as an old cache');
+assert(!html.includes('V2.5.48-20261025-EXPORT-MULTIUSER-FONT-01'),'No stale build links');
+assert.equal(v.updatePolicy,'required');
+console.log('Release V1.0 re-numbered without resetting business data or update-build identity PASS');

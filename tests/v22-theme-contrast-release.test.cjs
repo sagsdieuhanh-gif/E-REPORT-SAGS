@@ -4,7 +4,7 @@ const index=fs.readFileSync(path.join(root,'index.html'),'utf8');
 const sw=fs.readFileSync(path.join(root,'service-worker.js'),'utf8');
 const ver=JSON.parse(fs.readFileSync(path.join(root,'version.json'),'utf8'));
 const man=JSON.parse(fs.readFileSync(path.join(root,'asset-manifest.json'),'utf8'));
-assert.match(ver.version,/^V2\.\d+(?:\.\d+)?$/,'release must be a V2 version');
+assert.match(ver.version,/^V1\.\d+(?:\.\d+)?$/,'release must use the V1.x numbering series');
 assert.equal(ver.displayVersion,ver.version);
 assert.ok(ver.build.startsWith(ver.version+'-'));
 assert.equal(man.version,ver.version);

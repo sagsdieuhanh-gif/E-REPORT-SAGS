@@ -16,5 +16,7 @@ assert.match(fl,/Promise\.allSettled\(\[Promise\.resolve\(\)\.then\(\(\)=>root\.
 console.log('Receive/open performance contract passed');
 
 assert.doesNotMatch(r2,/await migrateAll\("before-my-flight"\)/,'form open must not wait for storage migration');
-assert.match(r2,/migrateAll\("after-my-flight-open"\)/,'post-open background migration missing');
-assert.match(r2,/migrateAll\("startup-idle"\)/,'startup migration must be deferred');
+assert.doesNotMatch(r2,/migrateAll\("after-my-flight-open"\)/,'opening a flight must never sweep drafts belonging to previous accounts');
+assert.doesNotMatch(r2,/migrateAll\("startup-idle"\)/,'startup must never sweep drafts from other accounts');
+assert.doesNotMatch(r2,/migrateAll\("before-export"\)/,'PDF menu must not wait for cross-account migration');
+assert.match(r2,/root\.sagsV227StorageRecovery=\(\)=>migrateAll\("manual"\)/,'explicit manual recovery must remain available');
