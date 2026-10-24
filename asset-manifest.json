@@ -1,7 +1,7 @@
 {
   "schema": 2,
   "version": "V1.0",
-  "build": "V1.0-20261025-NEW-VERSION-EXPORT-FONT-01",
+  "build": "V1.0-20261025-HOME-TEXT-READABILITY-02",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -342,8 +342,8 @@
       "bytes": 41473
     },
     "./app/styles/aviation-reference.v1.css": {
-      "sha256": "558f7df2fa2b8275e02d98b4bfabb08cfd92ab9835dbf3a5d6025257906c1833",
-      "bytes": 75235
+      "sha256": "ad6d493fc9ce88e86393ddb23aae4fd91ee8db262632a6f09986bacd2f259fc7",
+      "bytes": 81119
     },
     "./app/styles/boot-01-legacy.css": {
       "sha256": "fa00cde1d78de014a3c0341b9741993441fa4a8a0b8aad860f916a50613e7bb4",
@@ -762,8 +762,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "9ea49735e40e0e7a286af567f99db5dd4009281127202d03acc141748258722c",
-      "bytes": 105503
+      "sha256": "f7ccf85a3e914e49ef2e395de02646dab23eefa5aeb34ca9f2392fb5191821fe",
+      "bytes": 105345
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -814,16 +814,16 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "361b74adb57ec15e79a7d3dc21a89fc8e414ec8c3286fe90d219e2f0b91150c0",
-      "bytes": 22468
+      "sha256": "3bb09e71247d7807a7aeb229da506a589f7bb49ac67bef1b0d10d90436edd631",
+      "bytes": 22462
     },
     "./storage-recovery.html": {
       "sha256": "08817204a946fbdfa404e8c083dd0c2016e935fb8fe56ff8ef99f405978d3df6",
       "bytes": 26106
     },
     "./version.json": {
-      "sha256": "9655b8fa7603506a8f751c98c76f57673020f49e8e5b8395bf4386744850c743",
-      "bytes": 927
+      "sha256": "5653a298c9e2daf835e55631cd12dcdc106e27f3c1ee29082dbbbfab5db0b90e",
+      "bytes": 815
     }
   },
   "mutableAssets": [
