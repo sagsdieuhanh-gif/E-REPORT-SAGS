@@ -15,7 +15,11 @@ assert(importer.includes('root.sagsAiLoadConfig()'),'multi-image reads AD-manage
 assert(importer.includes('const siteKey=S(cfg?.appCheckSiteKey)'),'must use AD-managed site key, not static fallback');
 assert(!importer.includes('APP_CHECK_SITE_KEY_FALLBACK'),'must never quietly use an unrelated hard-coded key');
 assert(importer.includes('if(!siteKey)throw Error('),'missing site key must fail with an actionable error');
-assert(importer.includes('appCheckMod.getToken(check,false)'),'token is verified before AI use');
+assert(importer.includes('appCheckMod.getToken(check,!!forceTokenCheck)'),'token is verified and can be force-refreshed for diagnostics');
+assert(importer.includes('aiSdkCacheKey===identity'),'AI SDK cache is keyed by the current AD-managed site key and model');
+assert(importer.includes('sags-v2211-import-ai-'),'new site keys get a distinct Firebase App Check instance');
+assert(importer.includes('runAiImportDiagnostic()'),'admin can independently check App Check token before importing');
+assert(importer.includes('id="v2211Diag"'),'AI Import provides a dedicated diagnostic button');
 assert(importer.includes('SAGS_ACL_APP_CHECK_RECAPTCHA'),'recaptcha-error must be classified');
 assert(importer.includes('e-report-sags.vercel.app'),'diagnostics point to correct production hostname');
 assert(importer.includes('A/C LIMITS → AI ĐỌC ẢNH (OCR dự phòng)'),'safe review fallback is explained');
@@ -39,4 +43,7 @@ assert(!acl.includes('6LeJjYotAAAAAELyLTYPzugn_Zn37U5qOz9tHjqV'),'legacy key is 
 assert(acl.includes('appCheckMod.getToken(appCheck,!1)'),'single-image AI verifies App Check');
 assert(acl.includes('aclTryOcrFallback(file,e)'),'safe OCR fallback should remain available');
 assert(acl.includes('https://www.gstatic.com/firebasejs/12.16.0/'),'both importers should use one SDK version');
-console.log('A/C LIMITS App Check config, recaptcha diagnosis, no bypass, safe OCR and generated parity PASS');
+const bridge=fs.readFileSync('app/boot/07-legacy.js','utf8');
+assert(bridge.includes('fastModel:String(cfg?.fastModel||cfg?.model||"gemini-3.5-flash-lite").trim()'),'AD FAST model is preserved in Firestore');
+assert(bridge.includes('accurateModel:String(cfg?.accurateModel||"gemini-3.6-flash").trim()'),'AD accurate model is preserved in Firestore');
+console.log('A/C LIMITS App Check key refresh, diagnosis, admin models, no bypass, safe OCR and generated parity PASS');
