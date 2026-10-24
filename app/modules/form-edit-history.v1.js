@@ -185,7 +185,11 @@ async function entriesFor(m){
  const merged=new Map();
  // Only roster-assignment records the signed-in account is authorized to read are returned by Firebase.
  // Within that assigned flight, show the edits of all participating roles, not only the current author.
- for(const e of remote){if((adminRemote||S(e.sessionId)===S(m.id))&&S(e.assignmentId)===S(m.rosterAssignmentId))merged.set(e.id,{...e,synced:true})}
+ for(const e of remote){
+  const assignedSessionMatch=S(e.sessionId)===S(m.id)&&S(e.assignmentId)===S(m.rosterAssignmentId);
+  const adminAssignmentMatch=adminRemote&&S(e.assignmentId)===S(m.rosterAssignmentId);
+  if(assignedSessionMatch||adminAssignmentMatch)merged.set(e.id,{...e,synced:true});
+ }
  for(const e of local){const old=merged.get(e.id);merged.set(e.id,old||e)}
  return [...merged.values()].sort((a,b)=>b.atMs-a.atMs).slice(0,MAX_ROWS);
 }
@@ -216,7 +220,7 @@ async function loadAdminDay(){
   if(typeof root.sagsV470Ref!=='function')throw Error('Firebase chưa sẵn sàng');
   const snap=await root.sagsV470Ref('roster_manifests/'+safe(day)+'/items').once('value');
   if(token!==renderRequest||!uiOpen)return;
-  const values=Object.values(snap.val()||{}).filter(x=>x&&x.active!==false&&x.assignmentId);
+  const values=Object.values(snap.val()||{}).filter(x=>x&&x.assignmentId);
   for(const item of values){
    const aid=S(item.assignmentId),k='admin:'+aid;
    if(!adminOptions.has(k))adminOptions.set(k,{
@@ -311,7 +315,7 @@ function trustedInput(e){
  lastTrustedFormEditAt=Date.now();
 }
 document.addEventListener('input',trustedInput,true);document.addEventListener('change',trustedInput,true);
-root.SAGSFormEditHistoryV1={changesOf,scrub,open,refresh,install,capture,flushBatch,entriesFor};
+root.SAGSFormEditHistoryV1={changesOf,scrub,open,refresh,install,capture,flushBatch,entriesFor,fieldTitle,readableKey};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install,50),{once:true});
 else setTimeout(install,50);
 root.addEventListener?.('pageshow',()=>setTimeout(install,100),{passive:true});
