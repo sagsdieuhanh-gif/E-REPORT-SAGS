@@ -44,12 +44,15 @@ async function aiSdk(forceTokenCheck=false){
   const appName="sags-v2211-import-ai-"+fingerprint.toString(36);
   let app;
   try{app=appMod.getApp(appName)}catch(_){app=appMod.initializeApp(opts,appName)}
-  let check;
-  try{check=appCheckMod.getAppCheck(app)}catch(_){
+  // The browser App Check SDK does not export getAppCheck().
+  // Reuse the instance returned by initializeAppCheck for this exact key.
+  const instances=root.__SAGS_V2211_CHECK_INSTANCES||(root.__SAGS_V2211_CHECK_INSTANCES=Object.create(null));
+  let check=instances[appName];
+  if(!check){
    try{check=appCheckMod.initializeAppCheck(app,{
     provider:new appCheckMod.ReCaptchaEnterpriseProvider(siteKey),
     isTokenAutoRefreshEnabled:true
-   })}catch(e){throw v2211AppCheckError(e)}
+   });instances[appName]=check}catch(e){throw v2211AppCheckError(e)}
   }
   try{
    const token=await appCheckMod.getToken(check,!!forceTokenCheck);

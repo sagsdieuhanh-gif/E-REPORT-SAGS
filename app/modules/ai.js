@@ -7,7 +7,7 @@ const FAST_MODEL="gemini-3.5-flash-lite";
 const ACCURATE_MODEL="gemini-3.6-flash";
 const FAST_TIMEOUT_MS=35000;
 const ACCURATE_TIMEOUT_MS=45000;
-let aiApp=null, appCheckInstance=null, models=null, activeConfig=null, activeModelNames={fast:FAST_MODEL,accurate:ACCURATE_MODEL}, configLoadedAt=0;
+let aiApp=null, appCheckInstance=null, appCheckSiteKey="", models=null, activeConfig=null, activeModelNames={fast:FAST_MODEL,accurate:ACCURATE_MODEL}, configLoadedAt=0;
 const inFlight=new Map();
 
 function el(id){return document.getElementById(id)}
@@ -65,10 +65,16 @@ async function initModels(force=false){
   if(!conf?.projectId)throw new Error("Không tìm thấy Firebase config.");
   if(String(conf.projectId)!=="e-report-sags")throw new Error("AI chỉ được phép dùng Firebase project e-report-sags.");
   if(!conf.apiKey||!conf.appId)throw new Error("cấu hình Firebase chưa có đủ Web App config của e-report-sags (thiếu apiKey/appId).");
-  const list=getApps();aiApp=list.find(a=>a.name==="SAGS_AI")||initializeApp(conf,"SAGS_AI");
-  if(!appCheckInstance){
-    try{appCheckInstance=initializeAppCheck(aiApp,{provider:new ReCaptchaEnterpriseProvider(siteKey),isTokenAutoRefreshEnabled:true});}
-    catch(e){if(!/already|initialized/i.test(String(e?.message||e)))throw taggedError("APP_CHECK_INIT",e);}
+  // Refresh the attestation provider if AD changed the site key.
+  let fingerprint=2166136261;
+  for(let i=0;i<siteKey.length;i++)fingerprint=Math.imul(fingerprint^siteKey.charCodeAt(i),16777619)>>>0;
+  const appName="SAGS_AI_V10_"+fingerprint.toString(36);
+  const list=getApps();aiApp=list.find(a=>a.name===appName)||initializeApp(conf,appName);
+  if(!appCheckInstance||appCheckSiteKey!==siteKey){
+    try{
+      appCheckInstance=initializeAppCheck(aiApp,{provider:new ReCaptchaEnterpriseProvider(siteKey),isTokenAutoRefreshEnabled:true});
+      appCheckSiteKey=siteKey;
+    }catch(e){throw taggedError("APP_CHECK_INIT",e);}
   }
   const ai=getAI(aiApp,{backend:new GoogleAIBackend()});
   activeModelNames=resolveModelNames(cfg);
