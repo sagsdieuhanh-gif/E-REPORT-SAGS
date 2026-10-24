@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.45",
-  "displayVersion": "V2.5.45",
-  "label": "V2.5.45 - ADMIN LỊCH SỬ, AC LIMIT OCR, ẨN FINAL CBTT",
-  "build": "V2.5.45-20261024-ADMIN-HISTORY-ACL-OCR-01",
+  "version": "V2.5.46",
+  "displayVersion": "V2.5.46",
+  "label": "V2.5.46 - SỬA CẤU HÌNH APP CHECK AI A/C LIMITS",
+  "build": "V2.5.46-20261024-ACL-APPCHECK-DIAG-01",
   "releasedAt": "2026-10-24",
-  "type": "admin-history-ac-limit-ocr-cbtt-final-hide",
-  "base": "E-REPORT-SAGS V2.5.44",
+  "type": "ac-limit-recaptcha-site-key-and-diagnostics",
+  "base": "E-REPORT-SAGS V2.5.45",
   "updatePolicy": "required",
-  "notes": "Admin xem lịch sử chỉnh sửa theo ngày của mọi tài khoản trong roster theo quyền RTDB, tên trường theo biểu mẫu; AC LIMITS Gemini ổn định và OCR dự phòng để kiểm tra thủ công; ẩn FINAL/Bảng tải chưa dùng của CBTT, không xóa dữ liệu. Duy trì tối ưu hiệu năng và bàn giao an toàn V2.5.44.",
-  "message": "V2.5.45: Lịch sử dễ đọc cho Admin, cải thiện đọc ảnh A/C LIMITS, gọn chức năng CBTT."
+  "notes": "Đọc và gán A/C LIMITS/lịch vệ sinh dùng reCAPTCHA Enterprise Site Key từ cấu hình AD; không dùng khóa dự phòng lỗi thời. Thông báo rõ lỗi App Check và hướng kiểm tra domain. AI đọc A/C LIMITS đơn ảnh dùng cùng Site Key/SDK và giữ OCR dự phòng chỉ cho kiểm tra thủ công. Không bỏ qua bảo vệ App Check, không tự lưu nội dung OCR chưa kiểm tra.",
+  "message": "V2.5.46: Sửa nhận diện lỗi App Check và thống nhất cấu hình AI đọc ảnh."
 }

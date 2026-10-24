@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V2.5.45",
-  "build": "V2.5.45-20261024-ADMIN-HISTORY-ACL-OCR-01",
+  "version": "V2.5.46",
+  "build": "V2.5.46-20261024-ACL-APPCHECK-DIAG-01",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -146,16 +146,16 @@
       "bytes": 132730
     },
     "./app/generated/core-tools.js": {
-      "sha256": "0b18075bd4a5f418f39eef5e96f0b8483c919c3e8b65d6eb12e23eee90d16c42",
-      "bytes": 109960
+      "sha256": "aa38b563b55ee2557e4bb27ac84c361b79c5dcdb3f577161d26cc17c0e04d186",
+      "bytes": 110138
     },
     "./app/generated/runtime-1.js": {
       "sha256": "d28c3a15851e5ba0e22f3cd6222ae1f2c66183177638ad5191c201e73573801e",
       "bytes": 115644
     },
     "./app/generated/runtime-2.js": {
-      "sha256": "2d8ff077472edd0932320bbf07a2257230389a078cf8fbb52aee33aad39c913c",
-      "bytes": 140526
+      "sha256": "e2d5b5816071b173c228da5f3c767337784d2cc3c64b65a592efb734e27c8804",
+      "bytes": 141805
     },
     "./app/generated/runtime-3.js": {
       "sha256": "27af2b0c87d29d642691d6a6aa853228c1f4ff6fdb8c4b80903e975e6a581797",
@@ -762,8 +762,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "57aadc1302290a5789139f9074666cb387a59419885357e3afe648c6d2d20a26",
-      "bytes": 105588
+      "sha256": "311c87742c2199c8d858aa03f1e94b91df7d37ba08bcd2a0da138205cfbd78fd",
+      "bytes": 105272
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -814,16 +814,16 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "f4aae291ff1bcea437cacae7cc868e1ae85dc019e4a072c6e4f6a3da715cfc74",
-      "bytes": 22477
+      "sha256": "f2cb42103bb45e13f96f059c4fd9f8cbc0b3b01ecd40cb86b4944b6f9cc8385e",
+      "bytes": 22465
     },
     "./storage-recovery.html": {
       "sha256": "08817204a946fbdfa404e8c083dd0c2016e935fb8fe56ff8ef99f405978d3df6",
       "bytes": 26106
     },
     "./version.json": {
-      "sha256": "b6373c412ef35651a4271f996c1bfdf52990dd02bce9a179d30862e1ed0e4048",
-      "bytes": 831
+      "sha256": "608f5f4025ebada048adb605839127086a361f8fa70f3ff9c9c9c1fc66b7d85a",
+      "bytes": 867
     }
   },
   "mutableAssets": [
