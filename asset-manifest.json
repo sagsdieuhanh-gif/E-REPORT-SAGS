@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V2.5.44",
-  "build": "V2.5.44-20261023-INCREMENTAL-RUNTIME-01",
+  "version": "V2.5.45",
+  "build": "V2.5.45-20261024-ADMIN-HISTORY-ACL-OCR-01",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -90,8 +90,8 @@
       "bytes": 15990
     },
     "./app/boot/32-v6494-aviation-shell.js": {
-      "sha256": "9b52071a4d6d9d1fc206bc752077997afde9d70038bdba99eb3632b892e99821",
-      "bytes": 15255
+      "sha256": "ee1b547a693f19bad4b170258fffda06082b4160fdf2e9aae923fb2b9eb6a77b",
+      "bytes": 15326
     },
     "./app/boot/33-v6497-dossier-enhancements.js": {
       "sha256": "7ccc4b3372e1fc62b8658451fe98ecdc8e9d09d2ccc2041f0011e0db04d11c60",
@@ -126,8 +126,8 @@
       "bytes": 71727
     },
     "./app/generated/core-control.js": {
-      "sha256": "38ca226f3305e5f3db92d687779565e5215117e2d862f0ef87d98788e67a2c81",
-      "bytes": 85064
+      "sha256": "1725d0c94c9cc0c7f8457c6b9d5428e1dfe7f48577c5f2ffee37b0fd710182c7",
+      "bytes": 85050
     },
     "./app/generated/core-flight.js": {
       "sha256": "3b59a638db39a8226f9ce6ea7d75fe9c9a574060debcb9592a9f1d1b565cb43b",
@@ -146,8 +146,8 @@
       "bytes": 132730
     },
     "./app/generated/core-tools.js": {
-      "sha256": "3e3e9420a932366457ca80ba10cf0cbc215c8f6405462453423778380a1b7ce0",
-      "bytes": 106804
+      "sha256": "0b18075bd4a5f418f39eef5e96f0b8483c919c3e8b65d6eb12e23eee90d16c42",
+      "bytes": 109960
     },
     "./app/generated/runtime-1.js": {
       "sha256": "d28c3a15851e5ba0e22f3cd6222ae1f2c66183177638ad5191c201e73573801e",
@@ -214,8 +214,8 @@
       "bytes": 22174
     },
     "./app/modules/daily-roster.v502.js": {
-      "sha256": "8d04358e01ffb3ca05796e43d72fbe46e16a1f774ad74e3d7e127762929ff1e5",
-      "bytes": 88713
+      "sha256": "58c5bcbce09411aaad68e5de0eaea0b741df014dd8920e3ebc382cd69e1090ed",
+      "bytes": 89028
     },
     "./app/modules/feature-loader.v1.js": {
       "sha256": "dc738a8d7df5134fe41f208fa0a19f6624438dc3d82fc30a921e05541fbc91c9",
@@ -234,8 +234,8 @@
       "bytes": 9917
     },
     "./app/modules/form-edit-history.v1.js": {
-      "sha256": "42a23d4641237c8b63d0e2e2b95043bcfb05bf5b26941946cb5ab8ab767155c4",
-      "bytes": 19135
+      "sha256": "2dc7c8d0fa13dd0ed0283071437775303d526348765ec338ff035b766a59a4a3",
+      "bytes": 24292
     },
     "./app/modules/form-entry-contrast.v1.js": {
       "sha256": "c86ec492fced4234f3e64521b9d01913ebe8176327f55f3a42f435763777d465",
@@ -762,8 +762,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "03ff30f71de14d1a6bf0f2dfd3205bb909bc5cb8d095c6e15efefad8990b5af1",
-      "bytes": 105430
+      "sha256": "57aadc1302290a5789139f9074666cb387a59419885357e3afe648c6d2d20a26",
+      "bytes": 105588
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -814,16 +814,16 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "81d31b3ceb2ab284b40ae84863b836f2ded79eddef7529022253a4b4126152ec",
-      "bytes": 22471
+      "sha256": "f4aae291ff1bcea437cacae7cc868e1ae85dc019e4a072c6e4f6a3da715cfc74",
+      "bytes": 22477
     },
     "./storage-recovery.html": {
       "sha256": "08817204a946fbdfa404e8c083dd0c2016e935fb8fe56ff8ef99f405978d3df6",
       "bytes": 26106
     },
     "./version.json": {
-      "sha256": "645a7968e741b4bebb1c0ffaf56d843520e34dbfeef5f1b454a8801635818c57",
-      "bytes": 843
+      "sha256": "b6373c412ef35651a4271f996c1bfdf52990dd02bce9a179d30862e1ed0e4048",
+      "bytes": 831
     }
   },
   "mutableAssets": [

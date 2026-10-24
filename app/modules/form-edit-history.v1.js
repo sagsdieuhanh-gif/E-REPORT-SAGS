@@ -12,7 +12,35 @@ const EXCLUDE=/staff.?id|employee.?id|staff.?name|name_copy|acustart_copy|person
 const INTERNAL=/^(?:v\d+(?:Local|Remote|Last)|roster|createdAt|updatedAt|audit|version|__)/i;
 const LONG='[Nội dung dài hoặc tệp đính kèm: không lưu giá trị]';
 const MAX_VALUE=140, MAX_CHANGES=80, MAX_ROWS=200;
-let dbPromise=null,patching=false,uiOpen=false,lastError='',lastTrustedFormEditAt=0;const batches=new Map();
+let dbPromise=null,patching=false,uiOpen=false,lastError='',lastTrustedFormEditAt=0;
+const batches=new Map(),adminOptions=new Map();
+let registryLabelsPromise=null,renderRequest=0,refreshToken=0;
+const isAdmin=()=>['AD','ADMIN'].includes(user().role);
+const dayISO=()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
+const FIELD_TITLES={
+ h24Start:'Bắt đầu đẩy lùi tàu bay (PUSHBACK START)',
+ f421_h24Start:'Bắt đầu đẩy lùi tàu bay (PUSHBACK START)',
+ h5Start:'Thời điểm CHOCK ON (chèn bánh)',
+ f421_h5Start:'Thời điểm CHOCK ON (chèn bánh)',
+ h14Start:'Bắt đầu gọi hành khách lên tàu (BOARDING CALL)',
+ f421_h14Start:'Bắt đầu gọi hành khách lên tàu (BOARDING CALL)'
+};
+function readableKey(key){
+ const k=S(key);return k.replace(/^(?:f421_|f551_|f09_|vz_)/,'').replace(/([a-z0-9])([A-Z])/g,'$1 $2').replace(/_/g,' ').replace(/\s+/g,' ').trim().toUpperCase();
+}
+async function fieldLabels(){
+ if(!registryLabelsPromise)registryLabelsPromise=fetch('./forms/forms.registry.json',{cache:'force-cache'})
+  .then(r=>{if(!r.ok)throw Error('Không tải được tên trường biểu mẫu');return r.json()})
+  .then(data=>{const map=new Map();for(const form of data.forms||[])for(const fld of form.fields||[]){
+    const key=S(fld.bind||fld.key),label=S(fld.label);
+    if(key&&label&&!/^(START|END|START \d+|END \d+)$/i.test(label))map.set(S(form.id)+'|'+key,label);
+  }return map}).catch(()=>new Map());
+ return registryLabelsPromise;
+}
+function fieldTitle(key,form,labels){
+ const k=S(key);return FIELD_TITLES[k]||labels.get(S(form)+'|'+k)||
+  labels.get('fsags423|'+k)||labels.get('fsags421|'+k)||readableKey(k);
+}
 function user(){
  const sess=root.__sagsGetSession?.()||{},p=sess.profile||root.currentUserProfile||{};
  let uid='';try{uid=S(root.firebase?.auth?.()?.currentUser?.uid)}catch(_){}
@@ -141,22 +169,27 @@ function wrap(name){
  return true;
 }
 function install(){if(patching)return;patching=true;try{wrap('persist');wrap('sagsV22SaveNow');installButtons()}finally{patching=false}}
-async function remoteList(aid){
+async function remoteList(aid,strict=false){
  if(!aid||!root.sagsV470Ref)return [];
  try{
   const ref=cloudRef(aid);const q=ref?.limitToLast?.(MAX_ROWS)||ref;
   if(!q?.once)return [];
   const snap=await q.once('value'),v=snap.val()||{};
   return Object.values(v).filter(x=>x&&x.schema===1&&x.id&&Array.isArray(x.changes)).map(x=>({...x,synced:true}));
- }catch(e){lastError=S(e?.message||e);return []}
+ }catch(e){lastError=S(e?.message||e);if(strict)throw e;return []}
 }
 async function entriesFor(m){
- const scope=scopeFor(m),local=(await localList()).filter(x=>x.scope===scope).slice(0,MAX_ROWS);
- const remote=await remoteList(m?.rosterAssignmentId);
+ const adminRemote=isAdmin()&&m?.adminRemote===true;
+ const scope=scopeFor(m),local=adminRemote?[]:(await localList()).filter(x=>x.scope===scope).slice(0,MAX_ROWS);
+ const remote=await remoteList(m?.rosterAssignmentId,adminRemote);
  const merged=new Map();
  // Only roster-assignment records the signed-in account is authorized to read are returned by Firebase.
  // Within that assigned flight, show the edits of all participating roles, not only the current author.
- for(const e of remote){if(S(e.sessionId)===S(m.id)&&S(e.assignmentId)===S(m.rosterAssignmentId))merged.set(e.id,{...e,synced:true})}
+ for(const e of remote){
+  const assignedSessionMatch=S(e.sessionId)===S(m.id)&&S(e.assignmentId)===S(m.rosterAssignmentId);
+  const adminAssignmentMatch=adminRemote&&S(e.assignmentId)===S(m.rosterAssignmentId);
+  if(assignedSessionMatch||adminAssignmentMatch)merged.set(e.id,{...e,synced:true});
+ }
  for(const e of local){const old=merged.get(e.id);merged.set(e.id,old||e)}
  return [...merged.values()].sort((a,b)=>b.atMs-a.atMs).slice(0,MAX_ROWS);
 }
@@ -169,13 +202,40 @@ function paintStyle(){
 function panel(){
  paintStyle();let div=$('sagsHistoryOverlay');if(div)return div;
  div=document.createElement('div');div.id='sagsHistoryOverlay';div.setAttribute('role','dialog');div.setAttribute('aria-modal','true');div.setAttribute('aria-label','Lịch sử chỉnh sửa biểu mẫu');
- div.innerHTML='<div id="sagsHistoryPanel"><div class="hHead"><h3>🕘 LỊCH SỬ THAY ĐỔI BIỂU MẪU</h3><button id="sagsHistoryClose" type="button">ĐÓNG</button></div><label for="sagsHistorySession">Chọn chuyến / biểu mẫu của tôi</label><select id="sagsHistorySession"></select><div class="hActions"><button id="sagsHistoryReload" type="button">↻ TẢI LẠI</button><small id="sagsHistoryCount"></small></div><div id="sagsHistoryRows" aria-live="polite"></div><div class="hNote">Chỉ ghi các trường thay đổi sau khi lưu. Chữ ký, hình ảnh và dữ liệu nhạy cảm không được lưu vào lịch sử. <b>Trên máy</b> nghĩa là chưa xác nhận đã đồng bộ Firebase; nhật ký hiện tại chưa thay thế audit bất biến được phê duyệt.</div></div>';
+ div.innerHTML='<div id="sagsHistoryPanel"><div class="hHead"><h3>🕘 LỊCH SỬ THAY ĐỔI BIỂU MẪU</h3><button id="sagsHistoryClose" type="button">ĐÓNG</button></div><div id="sagsHistoryAdminDayWrap" hidden><label for="sagsHistoryDay">Ngày khai thác (Admin · toàn bộ tài khoản)</label><input type="date" id="sagsHistoryDay" style="width:100%;min-height:40px;margin:6px 0 9px;border:1px solid #9bb1c0;border-radius:8px;padding:8px;background:white;color:#17324d"></div><label id="sagsHistoryPickerLabel" for="sagsHistorySession">Chọn chuyến / biểu mẫu</label><select id="sagsHistorySession"></select><div class="hActions"><button id="sagsHistoryReload" type="button">↻ TẢI LẠI</button><small id="sagsHistoryCount"></small></div><div id="sagsHistoryRows" aria-live="polite"></div><div class="hNote">Chỉ ghi các trường thay đổi sau khi lưu. Chữ ký, hình ảnh và dữ liệu nhạy cảm không được lưu vào lịch sử. <b>Trên máy</b> nghĩa là chưa xác nhận đã đồng bộ Firebase; nhật ký hiện tại chưa thay thế audit bất biến được phê duyệt.</div></div>';
  document.body.appendChild(div);
  $('sagsHistoryClose').onclick=()=>{div.classList.remove('open');uiOpen=false};
  div.addEventListener('click',e=>{if(e.target===div)$('sagsHistoryClose').click()});
  $('sagsHistorySession').onchange=()=>void refresh();
+ $('sagsHistoryDay').onchange=()=>{void loadAdminDay()};
  $('sagsHistoryReload').onclick=()=>void refresh(true);
  return div;
+}
+async function loadAdminDay(){
+ if(!isAdmin()||!uiOpen)return;
+ const day=S($('sagsHistoryDay')?.value)||dayISO(),sel=$('sagsHistorySession'),box=$('sagsHistoryRows');
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(day))return;
+ const token=++renderRequest;adminOptions.clear();box.textContent='Đang lấy danh sách phân công theo ngày từ Firebase...';
+ try{
+  if(typeof root.sagsV470Ref!=='function')throw Error('Firebase chưa sẵn sàng');
+  const snap=await root.sagsV470Ref('roster_manifests/'+safe(day)+'/items').once('value');
+  if(token!==renderRequest||!uiOpen)return;
+  const values=Object.values(snap.val()||{}).filter(x=>x&&x.assignmentId);
+  for(const item of values){
+   const aid=S(item.assignmentId),k='admin:'+aid;
+   if(!adminOptions.has(k))adminOptions.set(k,{
+     id:k,rosterAssignmentId:aid,adminRemote:true,
+     name:S(item.flightName||item.flightRaw||item.flightId||'Chuyến'),
+     initialGroup:S(item.formGroup),targetUser:U(item.user||item.targetUser),
+     updatedAt:Number(item.updatedAtMs||0)
+   });
+  }
+  const rows=[...adminOptions.values()].sort((a,b)=>(a.name||'').localeCompare(b.name||'')||(a.targetUser||'').localeCompare(b.targetUser||''));
+  sel.innerHTML=rows.map(m=>'<option value="'+esc(m.id)+'">'+esc(m.name)+' · '+esc(m.initialGroup)+' · '+esc(m.targetUser)+'</option>').join('');
+  box.textContent=rows.length?'Chọn biểu mẫu hoặc nhấn TẢI LẠI để xem lịch sử.':'Ngày này chưa có phân công roster.';
+  $('sagsHistoryCount').textContent=rows.length+' phân công';
+  if(rows.length)await refresh();
+ }catch(e){if(token===renderRequest){lastError=S(e?.message||e);box.textContent='Không đọc được danh sách lịch sử của toàn bộ nhân viên: '+lastError+'. Kiểm tra quyền đọc Firebase của tài khoản admin.'}}
 }
 function available(){
  let list=[];try{list=root.readFlightSessionList?.()||[]}catch(_){}
@@ -184,23 +244,36 @@ function available(){
 }
 async function refresh(retry=false){
  const sel=$('sagsHistorySession'),box=$('sagsHistoryRows'),label=$('sagsHistoryCount');if(!sel||!box)return;
- const m=available().find(x=>S(x.id)===sel.value);if(!m){box.textContent='Chưa có biểu mẫu để xem.';return}
+ const m=adminOptions.get(sel.value)||available().find(x=>S(x.id)===sel.value);if(!m){box.textContent='Chưa có biểu mẫu để xem.';return}
  box.textContent='Đang tải lịch sử...';
- let rows=await entriesFor(m);
+ const token=renderRequest,request=++refreshToken;
+ let rows;try{rows=await entriesFor(m)}catch(e){
+   if(uiOpen&&token===renderRequest&&request===refreshToken)
+     box.textContent='Firebase không cho đọc lịch sử của phân công này: '+S(e?.message||e)+'. Cần kiểm tra quyền admin trong RTDB.';
+   return;
+ }
+ if(token!==renderRequest||request!==refreshToken||!uiOpen)return;
+ const labels=await fieldLabels();
  if(retry){for(const e of rows.filter(x=>!x.synced&&x.assignmentId).slice(0,12))await send(e);rows=await entriesFor(m)}
- if(!uiOpen)return;
+ if(!uiOpen||token!==renderRequest||request!==refreshToken)return;
  label.textContent=rows.length+' bản ghi';
  if(!rows.length){box.textContent='Chưa ghi nhận lần chỉnh sửa nào sau khi cập nhật chức năng này.';return}
  box.innerHTML=rows.map(e=>{
   const date=new Date(Number(e.atMs)||Date.now()).toLocaleString('vi-VN');
   const who=esc(e.actor?.name||e.actor?.username||'Chưa xác định');
   const status=e.synced?'ĐÃ LƯU FIREBASE':'CHỈ TRÊN MÁY';
-  return '<div class="hEvent"><div class="hMeta"><b>'+esc(date)+'</b> · '+who+' ('+esc(e.actor?.username||'')+') · '+esc(e.actor?.role||'')+' · '+status+'</div><small>'+esc(e.reason||'Thay đổi biểu mẫu')+'</small>'+(e.changes||[]).map(c=>'<div class="hDiff"><b>'+esc(c.field)+'</b><span class="hOld">Trước: '+esc(c.before||'—')+'</span><span class="hNew">Sau: '+esc(c.after||'—')+'</span></div>').join('')+'</div>';
+  const form=esc(e.formGroup||m.initialGroup||'');
+  const flight=esc(e.flightLabel||m.name||'');
+  return '<div class="hEvent"><div class="hMeta"><b>'+esc(date)+'</b> · '+who+' ('+esc(e.actor?.username||'')+') · '+esc(e.actor?.role||'')+' · '+status+'</div><small>'+flight+' · '+form+' · '+esc(e.reason||'Đã lưu thay đổi')+'</small>'+(e.changes||[]).map(c=>'<div class="hDiff"><b title="'+esc(c.field)+'">'+esc(fieldTitle(c.field,e.formGroup||m.initialGroup,labels))+'</b><span class="hOld">Trước: '+esc(c.before||'—')+'</span><span class="hNew">Sau: '+esc(c.after||'—')+'</span></div>').join('')+'</div>';
  }).join('');
 }
 function open(sessionId){
  const u=user();if(!u.username)return alert('Vui lòng đăng nhập để xem lịch sử.');
  const el=panel();const select=$('sagsHistorySession'),list=available();
+ adminOptions.clear();renderRequest++;
+ const admin=isAdmin();$('sagsHistoryAdminDayWrap').hidden=!admin;
+ $('sagsHistoryPickerLabel').textContent=admin?'Chọn chuyến / biểu mẫu / nhân viên':'Chọn chuyến / biểu mẫu của tôi';
+ if(admin){$('sagsHistoryDay').value=dayISO();el.classList.add('open');uiOpen=true;void loadAdminDay();return;}
  const sid=S(sessionId||meta()?.id||list[0]?.id);
  select.innerHTML=list.map(m=>'<option value="'+esc(m.id)+'">'+esc(S(m.name||m.flightName||m.id))+' · '+esc(S(m.initialGroup||''))+'</option>').join('');
  if(sid&&list.some(m=>S(m.id)===sid))select.value=sid;
@@ -246,7 +319,7 @@ function trustedInput(e){
  lastTrustedFormEditAt=Date.now();
 }
 document.addEventListener('input',trustedInput,true);document.addEventListener('change',trustedInput,true);
-root.SAGSFormEditHistoryV1={changesOf,scrub,open,refresh,install,capture,flushBatch,entriesFor};
+root.SAGSFormEditHistoryV1={changesOf,scrub,open,refresh,install,capture,flushBatch,entriesFor,fieldTitle,readableKey};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install,50),{once:true});
 else setTimeout(install,50);
 root.addEventListener?.('pageshow',()=>setTimeout(install,100),{passive:true});

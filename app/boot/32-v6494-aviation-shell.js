@@ -60,6 +60,7 @@ function overlayVisible(){
 function homeState(){return auth()&&document.body.classList.contains('v157-home')&&!overlayVisible()}
 function legacyButton(key){return document.querySelector('.v157MenuItem[data-v157-key="'+key+'"]')}
 function available(key){
+ if(key==='final'&&String(role()).toUpperCase()==='CBTT')return false;
  if(key==='home')return true;
  if(key==='history')return typeof root.SAGSFormEditHistoryV1?.open==='function';
  if(key==='settings')return typeof root.sagsOpenSettings==='function'||!!legacyButton('settings');
