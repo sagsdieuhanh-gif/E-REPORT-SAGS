@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.44",
-  "displayVersion": "V2.5.44",
-  "label": "V2.5.44 - GIẢM VẼ LẠI VÀ SAO CHÉP DỮ LIỆU",
-  "build": "V2.5.44-20261023-INCREMENTAL-RUNTIME-01",
-  "releasedAt": "2026-10-23",
-  "type": "incremental-runtime-performance",
-  "base": "E-REPORT-SAGS main@c75ddd9 (V2.5.43)",
+  "version": "V2.5.45",
+  "displayVersion": "V2.5.45",
+  "label": "V2.5.45 - ADMIN LỊCH SỬ, AC LIMIT OCR, ẨN FINAL CBTT",
+  "build": "V2.5.45-20261024-ADMIN-HISTORY-ACL-OCR-01",
+  "releasedAt": "2026-10-24",
+  "type": "admin-history-ac-limit-ocr-cbtt-final-hide",
+  "base": "E-REPORT-SAGS V2.5.44",
   "updatePolicy": "required",
-  "notes": "Giữ lại ô SVG không đổi, cập nhật riêng ô thay đổi; tránh vẽ lại canvas biểu mẫu không đổi. Kiểm tra dữ liệu lồng nhau bằng snapshot giới hạn để tránh tạo chuỗi JSON ảnh base64 trong mỗi chu kỳ rảnh. Giữ các sửa lỗi TVJ, NHẬN TIẾP, bàn giao và nhập mobile của V2.5.43.",
-  "message": "V2.5.44: Giảm vẽ lại biểu mẫu và xử lý dữ liệu khi máy rảnh để hỗ trợ thiết bị cấu hình thấp."
+  "notes": "Admin xem lịch sử chỉnh sửa theo ngày của mọi tài khoản trong roster theo quyền RTDB, tên trường theo biểu mẫu; AC LIMITS Gemini ổn định và OCR dự phòng để kiểm tra thủ công; ẩn FINAL/Bảng tải chưa dùng của CBTT, không xóa dữ liệu. Duy trì tối ưu hiệu năng và bàn giao an toàn V2.5.44.",
+  "message": "V2.5.45: Lịch sử dễ đọc cho Admin, cải thiện đọc ảnh A/C LIMITS, gọn chức năng CBTT."
 }
