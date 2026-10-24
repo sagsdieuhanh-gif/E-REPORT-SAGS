@@ -10,7 +10,7 @@ const start=runtime.indexOf('(function(root){"use strict";const BUILD="V2.2.11-A
 const end=runtime.indexOf('})(typeof window',start);
 assert(start>0&&end>start,'multi-image A/C importer found');
 const importer=runtime.slice(start,end);
-assert(importer.includes('async function aiSdk()'),'multi-image uses Firebase AI SDK');
+assert(importer.includes('async function aiSdk(forceTokenCheck=false)'),'multi-image uses Firebase AI SDK and supports forced token refresh');
 assert(importer.includes('root.sagsAiLoadConfig()'),'multi-image reads AD-managed App Check key');
 assert(importer.includes('const siteKey=S(cfg?.appCheckSiteKey)'),'must use AD-managed site key, not static fallback');
 assert(!importer.includes('APP_CHECK_SITE_KEY_FALLBACK'),'must never quietly use an unrelated hard-coded key');
