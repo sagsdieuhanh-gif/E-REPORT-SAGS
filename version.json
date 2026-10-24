@@ -1,12 +1,12 @@
 {
-  "version": "V2.5.47",
-  "displayVersion": "V2.5.47",
-  "label": "V2.5.47 - CHẨN ĐOÁN AI IMPORT VÀ ĐỒNG BỘ APP CHECK",
-  "build": "V2.5.47-20261024-AI-IMPORT-KEY-REFRESH-01",
-  "releasedAt": "2026-10-24",
-  "type": "ai-import-appcheck-refresh-and-diagnostics",
-  "base": "E-REPORT-SAGS V2.5.46",
+  "version": "V2.5.48",
+  "displayVersion": "V2.5.48",
+  "label": "V2.5.48 - XUẤT PDF NHANH TRÊN MÁY DÙNG CHUNG, FONT DỄ ĐỌC",
+  "build": "V2.5.48-20261025-EXPORT-MULTIUSER-FONT-01",
+  "releasedAt": "2026-10-25",
+  "type": "multiuser-pdf-latency-screen-font",
+  "base": "E-REPORT-SAGS V2.5.47",
   "updatePolicy": "required",
-  "notes": "AI Import nhiều ảnh làm mới Site Key và model theo cấu hình AD, dùng Firebase App Check riêng khi Site Key thay đổi; bổ sung nút CHẨN ĐOÁN AI xác thực token mới trước khi nhập. Lưu riêng model FAST/FALLBACK đúng cấu hình; không bỏ qua App Check, không tự ghi khi thất bại, không sửa roster/handover/biểu mẫu.",
-  "message": "V2.5.47: Sửa cache Site Key, cấu hình model và chẩn đoán App Check AI Import."
+  "notes": "Không quét tự động các bản nháp/chữ ký từ nhiều tài khoản khi mở menu Xuất, mở chuyến, khởi động hoặc quay lại ứng dụng. Giữ lệnh bảo trì thủ công, không xóa dữ liệu. Thống nhất font màn hình PC/mobile có hỗ trợ tiếng Việt; giữ nguyên kiểu chữ/toạ độ SVG, PDF và mọi quy tắc roster/bàn giao.",
+  "message": "V2.5.48: Không chặn xuất PDF bởi quét dữ liệu nhiều tài khoản, chuẩn hóa font giao diện."
 }
