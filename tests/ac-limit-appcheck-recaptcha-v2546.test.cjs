@@ -26,7 +26,7 @@ assert(importer.includes('A/C LIMITS → AI ĐỌC ẢNH (OCR dự phòng)'),'sa
 assert(importer.includes('catch(e){aiSdkPromise=null;const msg="AI đọc/gán ảnh thất bại:'),'failed import must remain unsuccessful without automatic writes');
 assert(importer.includes('$(\"v2211Images\").value=\"\";renderSelectedFiles()'),'successful import resets selection');
 const errorFnBegin=runtime.indexOf('function v2211AppCheckError(error)',start);
-const errorFnEnd=runtime.indexOf('async function aiSdk()',errorFnBegin);
+const errorFnEnd=runtime.indexOf('async function aiSdk(forceTokenCheck=false)',errorFnBegin);
 const makeError=new Function('S',runtime.slice(errorFnBegin,errorFnEnd)+';return v2211AppCheckError;')(v=>String(v??'').trim());
 const ex=Object.assign(new Error('AppCheck: reCAPTCHA error'),{code:'appcheck/recaptcha-error'});
 const classified=makeError(ex);
