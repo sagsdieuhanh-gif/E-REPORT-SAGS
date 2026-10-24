@@ -31,7 +31,8 @@ assert(eligible.includes("canonicalForm(x)==='FINAL'"),'hide only inactive CBTT 
 assert(eligible.includes('displayItems.map(x=>readState(x.assignmentId))'),'excluded form must not create extra RTDB reads');
 assert(eligible.includes('const groups=groupTasks(displayItems.map'),'keep generated FSAGS54/94 task views');
 assert(roster.includes('async function reconcilePolicyAuxForms('),'CBTT source remains for policy forms');
-assert.match(core,/model:"gemini-3\.8-flash"/,'A/C LIMITS uses verified supported stable model');
+assert.match(core,/const modelName="gemini-3\.8-flash"/,'A/C LIMITS uses verified supported stable model');
+assert.match(core,/model:modelName/,'A/C LIMITS passes its stable model name to Firebase AI Logic');
 assert.match(core,/function aclTryOcrFallback\(/);
 const start=core.indexOf('function normalizedCategory(v)'),end=core.indexOf('async function readAI()',start);
 assert(start>=0&&end>start);
