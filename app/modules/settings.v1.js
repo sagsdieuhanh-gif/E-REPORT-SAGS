@@ -18,9 +18,16 @@ function role(){return U(session().role||profile().role||w.currentRole)}
 function safe(v){try{return S(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/Đ/g,'D').replace(/[^A-Za-z0-9_.-]+/g,'_').slice(0,80)||'device'}catch(e){return S(v).replace(/[^A-Za-z0-9_.-]+/g,'_').slice(0,80)||'device'}}
 function identity(){var s=session(),p=s.profile||{};return safe(p.username||p.userName||p.email||s.username||role()||'device')}
 function key(){return 'sagsSettingsV1:'+identity()}
+function pendingLoginTheme(){try{
+ var r=JSON.parse(localStorage.getItem('sagsUiThemeV1:loginPending')||'null');
+ return r&&(r.theme==='light'||r.theme==='dark')?r.theme:''
+}catch(_){return''}}
 function read(){try{
  var x=JSON.parse(localStorage.getItem(key())||'{}');
  if(!x||typeof x!=='object')x={};
+ // Pre-login explicit choice overrides old local/cloud appearance only until
+ // the authenticated session adopts it via syncIdentity().
+ var chosen=pendingLoginTheme();if(chosen)x.appearance=chosen;
  if(x.appearance!=='dark'&&x.appearance!=='light'){
   var legacy=localStorage.getItem('sagsUiThemeV1:'+identity())||localStorage.getItem('sagsUiThemeV1:device');
   x.appearance=legacy==='dark'?'dark':(legacy==='light'?'light':(w.matchMedia&&w.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'));
@@ -136,7 +143,18 @@ async function diagnostics(){if(!$('sagsDiag'))return;if(role()!=='AD'){$('sagsD
 async function copy(t){try{await navigator.clipboard.writeText(t)}catch(e){var x=document.createElement('textarea');x.value=t;document.body.appendChild(x);x.select();try{document.execCommand('copy')}catch(z){}x.remove()}}
 function toast(t){var e=document.createElement('div');e.className='sagsSettingsToast';e.textContent=t;document.body.appendChild(e);setTimeout(function(){e.classList.add('show')},20);setTimeout(function(){e.classList.remove('show');setTimeout(function(){e.remove()},250)},2200)}
 function resetLock(){clearTimeout(lockTimer);var m=Number(P.autoLockMinutes)||0;if(!m||!document.body.classList.contains('v157-authenticated'))return;lockTimer=setTimeout(function(){try{close();if(typeof w.roleLogout==='function')w.roleLogout();else if($('v157LogoutBtn'))$('v157LogoutBtn').click()}catch(e){}},m*60000)}
-function syncIdentity(){var i=identity();if(i===uidKey)return;uidKey=i;P=read();cloudState='Chỉ lưu trên thiết bị';cloudAt=0;apply();render();if(i!=='device')setTimeout(loadCloud,250)}
+function syncIdentity(){
+ var i=identity(),pending=pendingLoginTheme();
+ var authenticated=!!(document.body&&document.body.classList.contains('v157-authenticated'));
+ if(i===uidKey&&!(authenticated&&pending&&i!=='device'))return;
+ if(i!==uidKey){uidKey=i;P=read();cloudState='Chỉ lưu trên thiết bị';cloudAt=0}
+ if(authenticated&&pending&&i!=='device'){
+  // Persist the user-selected login mode to this account before any cloud pull.
+  persist(Object.assign({},P,{appearance:pending}));
+  try{localStorage.removeItem('sagsUiThemeV1:loginPending')}catch(_){}
+ }else{apply();render()}
+ if(i!=='device')setTimeout(loadCloud,250)
+}
 function beforeLeave(e){if(P.warnUnsynced&&navigator.onLine===false&&draftCount()){e.preventDefault();e.returnValue=''}}
 function refreshSettingsIdentity(){syncIdentity();ensureMenu();applyProfile()}
 var menuFrame=0,observedMenu=null;
