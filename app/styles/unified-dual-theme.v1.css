@@ -218,6 +218,74 @@
     opacity:1!important;
   }
 
+  /* Quick-entry panels are application UI, not printable form artwork. */
+  html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #sagsQuickEntry .sq-card{
+    background:var(--et-card)!important;color:var(--et-fg)!important;border:1px solid var(--et-edge)!important;
+  }
+  html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #sagsQuickEntry :is(.sq-title,.sq-input){
+    color:var(--et-fg)!important;-webkit-text-fill-color:var(--et-fg)!important;
+  }
+  html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #sagsQuickEntry :is(.sq-overline,.sq-count,.sq-hint,.sq-close){
+    color:var(--et-sub)!important;-webkit-text-fill-color:var(--et-sub)!important;
+  }
+  html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #sagsQuickEntry :is(.sq-input,textarea,select){
+    background:var(--et-input)!important;border-color:var(--et-edge-strong)!important;
+    color:var(--et-fg)!important;-webkit-text-fill-color:var(--et-fg)!important;caret-color:var(--et-fg)!important;
+  }
+  html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #quickTimeModal{
+    --qt-bg:var(--et-shell);--qt-surface:var(--et-card);
+    --qt-surface-2:var(--et-raised);--qt-line:var(--et-edge);
+    --qt-line-soft:var(--et-edge);--qt-text:var(--et-fg);
+    --qt-muted:var(--et-sub);--qt-focus:var(--et-hover);
+  }
+  html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #quickTimeModal :is(
+    .quickTimePanel,.quickTimeHead,.quickTimeBody,.quickTimeFooter,.quickTimeRow,
+    .quickTimePage,.quickTimeTimeRow,.quickTimeColumn,.quickTimeTimeField
+  ){background:var(--et-card)!important;color:var(--et-fg)!important;border-color:var(--et-edge)!important;}
+  html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #quickTimeModal :is(
+    .quickTimeTitle,.quickTimeLabel,.quickTimePageTitle,.quickTimeTimeSectionHead
+  ){color:var(--et-fg)!important;-webkit-text-fill-color:var(--et-fg)!important;}
+  html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #quickTimeModal :is(
+    .quickTimeFlight,.quickTimeSub,.quickTimeColumnHead,.quickTimeSwipeHint,.quickTimeEmpty
+  ){color:var(--et-sub)!important;-webkit-text-fill-color:var(--et-sub)!important;}
+  html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #quickTimeModal :is(input,select,textarea){
+    background:var(--et-input)!important;color:var(--et-fg)!important;-webkit-text-fill-color:var(--et-fg)!important;
+    caret-color:var(--et-fg)!important;border-color:var(--et-edge-strong)!important;color-scheme:inherit!important;
+  }
+
+  html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #fs09QuickModal :is(
+    .fs09qPanel,.fs09qHead,.fs09qBody,.fs09qPage,.fs09qFooter,
+    .fs09qDataField,.fs09qCloseoutGrid,.fs09qTimeRow
+  ){background:var(--et-card)!important;color:var(--et-fg)!important;border-color:var(--et-edge)!important;}
+  html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #fs09QuickModal :is(
+    .fs09qPageTitle,.fs09qLabel,.fs09qDataLabel,.fs09qCloseoutTitle,.fs09qTimeSectionHead,.fs09qTitle
+  ){color:var(--et-fg)!important;-webkit-text-fill-color:var(--et-fg)!important;}
+  html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #fs09QuickModal :is(
+    .fs09qHint,.fs09qFlight,.fs09qCloseoutHeadLine
+  ){color:var(--et-sub)!important;-webkit-text-fill-color:var(--et-sub)!important;}
+  html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #fs09QuickModal :is(input,select,textarea){
+    background:var(--et-input)!important;color:var(--et-fg)!important;-webkit-text-fill-color:var(--et-fg)!important;
+    caret-color:var(--et-fg)!important;border-color:var(--et-edge-strong)!important;color-scheme:inherit!important;
+  }
+
+  /* 54/94 field-editor overlay follows user preference; printed sheets do not. */
+  html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body :is(#sags5494Quick .q-card,#sags5494FieldEditor .fe-card){
+    background:var(--et-card)!important;color:var(--et-fg)!important;border-color:var(--et-edge)!important;
+  }
+  html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body :is(
+    #sags5494Quick .q-title,#sags5494Quick .q-label,
+    #sags5494FieldEditor .fe-title,#sags5494FieldEditor label
+  ){color:var(--et-fg)!important;-webkit-text-fill-color:var(--et-fg)!important;}
+  html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body :is(
+    #sags5494Quick .q-sub,#sags5494FieldEditor .fe-sub
+  ){color:var(--et-sub)!important;-webkit-text-fill-color:var(--et-sub)!important;}
+  html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body :is(
+    #sags5494Quick,#sags5494FieldEditor
+  ) :is(input,select,textarea){
+    background:var(--et-input)!important;color:var(--et-fg)!important;-webkit-text-fill-color:var(--et-fg)!important;
+    caret-color:var(--et-fg)!important;border-color:var(--et-edge-strong)!important;
+  }
+
   /* Business forms/PDF remain the authored paper color rather than theme colors. */
   html.new-ui-v1[data-ui-theme] body :is(.paper,.form-page,.pdf-page,[data-sags-paper],.fsagsPaper,.sheetCanvas){
     color-scheme:light;
