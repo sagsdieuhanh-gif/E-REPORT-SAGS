@@ -232,6 +232,52 @@ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal
 html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal .acls-tab.active .acls-tab-count{background:var(--et-hover,#e0efff)!important;color:var(--et-link,#075b9d)!important;-webkit-text-fill-color:var(--et-link,#075b9d)!important}
 html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal .acls-status.err{color:var(--et-danger-fg,#9c2020)!important;-webkit-text-fill-color:var(--et-danger-fg,#9c2020)!important}
 `;document.head.appendChild(st);
+/* V1.5 diagnostic harness: opt-in ONLY. No customer content, form values,
+   Firebase records, network telemetry or recording in normal operation.
+   QA can enable ?sags_theme_audit=1, click every screen and then call
+   sagsThemeJourneyAudit.report() from DevTools. */
+try{
+ if(new URLSearchParams(root.location?.search||'').get('sags_theme_audit')==='1'){
+  const records=[];
+  const roots='#roleLoginModal,#v157Drawer,#v157HomeDashboard,#v6494AviationHome,#fwcModal,#sagsFlightDossierModal,#sagsSettingsCenter,#dailyRosterModal,#aclSimpleModal,#csgModal,#quickTimeModal,#fs09QuickModal,#sagsQuickEntry,#sags5494Quick,#sags5494FieldEditor,#finalFormsModal,#formMenuModal,#fleetManagerModal,#adminHubModal,#v181AdminCenter,#v174DataHub,#accountManagerModal,#accountProfileEditModal,#changePasswordModal,#activityMonitorModal,#auditManagerModal,#v485FeaturePermissionModal,#flightSessionModal,#kh208ManagerModal,#fs09SheetManagerModal,#exportChoiceModal,#cxCleanModal,#firebaseUsageModal,#flightTypeEditModal,#fwcMultitaskModal,#v440Fm';
+  const skip='.sheet,.paper,.hit,#entryPaperSheet,#entryPaperViewport,.pdf-page,.pdf-preview,.signature-canvas,canvas,svg,[data-paper-form]';
+  const visible=el=>{if(!el?.isConnected)return false;const s=root.getComputedStyle(el);return s.display!=='none'&&s.visibility!=='hidden'&&s.opacity!=='0'&&el.getClientRects().length>0};
+  function rgb(s){const m=String(s||'').match(/rgba?\(([\d.]+)[ ,]+([\d.]+)[ ,]+([\d.]+)/);return m?[+m[1],+m[2],+m[3]]:null}
+  function lum(rgb){const a=rgb.map(x=>{const v=x/255;return v<=.04045?v/12.92:((v+.055)/1.055)**2.4});return a[0]*.2126+a[1]*.7152+a[2]*.0722}
+  function bg(el){for(let n=el;n&&n.nodeType===1;n=n.parentElement){const s=root.getComputedStyle(n),raw=s.backgroundColor,m=raw.match(/rgba?\([^)]*\)/);if(m&&!/rgba\([^)]*,\s*0(?:\.0+)?\s*\)/.test(raw)&&s.backgroundImage==='none'&&rgb(raw))return rgb(raw)}return rgb(root.getComputedStyle(document.body).backgroundColor)||[255,255,255]}
+  function contrast(el){const st=root.getComputedStyle(el),fg=rgb(st.webkitTextFillColor&&st.webkitTextFillColor!=='transparent'?st.webkitTextFillColor:st.color),back=bg(el);if(!fg||!back)return null;const a=lum(fg),b=lum(back);return +(Math.max(a,b)+.05)/(Math.min(a,b)+.05)}
+  function capture(trigger){
+   if(document.hidden)return;
+   const active=[...document.querySelectorAll(roots)].filter(visible);
+   const failures=[];let inspected=0;
+   for(const scope of active){
+    const candidates=[...scope.querySelectorAll('label,h1,h2,h3,h4,p,small,button,a,input,select,textarea,[role="button"],.meta,.hint')];
+    for(const el of candidates){
+     if(inspected>=480||failures.length>=35)break;
+     if(el.closest(skip)||!visible(el))continue;
+     const ratio=contrast(el);
+     inspected++;
+     if(ratio!==null&&ratio<3.1){
+      failures.push({screen:scope.id||scope.className||'unknown',element:el.id||el.tagName.toLowerCase(),contrast:+ratio.toFixed(2)});
+     }
+    }
+   }
+   records.push({at:Date.now(),mode:document.documentElement.getAttribute('data-ui-theme')||'unknown',
+    trigger,visibleScreens:active.map(x=>x.id).filter(Boolean),inspected,failures});
+   if(records.length>160)records.shift();
+  }
+  let timer=0;
+  const schedule=trigger=>{clearTimeout(timer);timer=setTimeout(()=>capture(trigger),180)};
+  document.addEventListener('click',e=>{const t=e.target?.closest?.('button,a,[role="button"],[onclick]');if(t)schedule(t.id||t.getAttribute('data-action')||t.tagName.toLowerCase())},true);
+  root.addEventListener('sags:themechange',()=>schedule('themechange'));
+  root.addEventListener('load',()=>schedule('load'),{once:true});
+  root.sagsThemeJourneyAudit=Object.freeze({
+   report:()=>JSON.parse(JSON.stringify(records)),
+   summary:()=>({clicks:records.length,screenIds:[...new Set(records.flatMap(x=>x.visibleScreens))],failures:records.reduce((n,x)=>n+x.failures.length,0)}),
+   capture:()=>capture('manual')
+  });
+ }
+}catch(e){console.warn('Optional theme QA not available',e?.message||e)}
 root.sagsThemeContrastV2Audit=function(){
  const forms=(root.SAGS_FORMS_REGISTRY?.forms||root.formsRegistry?.forms||[]);
  return {theme:document.documentElement.getAttribute('data-ui-theme')||'',forms:Array.isArray(forms)?forms.length:0,style:!!document.getElementById('sagsThemeContrastV2')};
