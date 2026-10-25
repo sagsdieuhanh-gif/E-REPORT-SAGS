@@ -16,7 +16,6 @@ function sagsCurrentShellCache(){
  if(!sagsShellCachePromise)sagsShellCachePromise=caches.open(CACHE_NAME).catch(e=>{sagsShellCachePromise=null;throw e});
  return sagsShellCachePromise;
 }
-let sagsPinnedManifest=null;
 const SCOPE_PATH=new URL(self.registration.scope).pathname;
 function scopeUrl(path){return new URL(path,self.registration.scope).href}
 function canonicalUrl(input){const source=typeof input==='string'?input:(input?.href||input?.url);const u=new URL(source,self.location.href);u.search='';u.hash='';return u.href}
@@ -28,14 +27,9 @@ async function checksum(response,meta,path){
  if(hash!==meta.sha256)throw new Error('SHA-256 mismatch '+path);
 }
 async function readManifest(){
- if(sagsPinnedManifest?.build===BUILD)return sagsPinnedManifest;
- try{
-  const c=await caches.open(META_CACHE_NAME),r=await c.match(scopeUrl(ASSET_MANIFEST_URL));
-  const m=r?await r.json():null;
-  // Only pin a successfully installed immutable manifest; retry while installing.
-  if(m?.build===BUILD)sagsPinnedManifest=m;
-  return m;
- }catch(_){return null}
+ // Read live pinned metadata so staging, rollback and damage-repair cannot
+ // accidentally rely on an old in-memory manifest after CacheStorage changes.
+ try{const c=await caches.open(META_CACHE_NAME),r=await c.match(scopeUrl(ASSET_MANIFEST_URL));return r?await r.json():null}catch(_){return null}
 }
 async function assertIndexReleaseStamp(response){
  const text=await response.clone().text();
@@ -129,6 +123,9 @@ async function ensureBootstrapVerified(manifest,{force=false}={}){
  try{return await run}finally{if(sagsVerifiedBootstrapPromise===run)sagsVerifiedBootstrapPromise=null}
 }
 async function stageRelease(){
+ // A previous failed install may have deleted the cache behind the handle.
+ // Fresh staging must never reuse that stale handle.
+ sagsShellCachePromise=null;
  try{
   const {manifest:m,versionResponse}=await getReleaseManifest();const c=await sagsCurrentShellCache();
   // Check local cached bytes against the NEW manifest before deciding to fetch.
@@ -159,6 +156,7 @@ async function stageRelease(){
  }catch(e){
   console.error('E-REPORT stage aborted; previous release retained',e);
   await Promise.all([caches.delete(CACHE_NAME),caches.delete(META_CACHE_NAME)]);
+  sagsShellCachePromise=null;
   throw e;
  }
 }
