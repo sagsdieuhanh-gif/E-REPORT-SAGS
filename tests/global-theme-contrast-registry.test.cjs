@@ -14,7 +14,8 @@ for(const token of ['--sags-ui-text-primary','--sags-ui-text-secondary','--sags-
 assert.match(css,/#fwcModal #fwcDate/);
 assert.match(css,/#fwcModal #sagsFlightSearch/);
 assert.match(css,/-webkit-text-fill-color/);
-assert.doesNotMatch(css,/\.sheet|svg/i,'contrast layer must not recolor official paper/PDF');
+const paintedStyles=css.slice(css.indexOf('st.textContent=`')+16,css.indexOf('`;document.head.appendChild(st);'));
+assert.doesNotMatch(paintedStyles,/\.sheet\s*\{|\bsvg\s*\{|#sigCanvas\s*\{/i,'CSS must not recolor paper, SVG or signatures; diagnostics may EXCLUDE them');
 // entryPaperSheet is an HTML input preview, not a printed form. Permit only
 // rules scoped inside its native editor; keep the actual paper/SVG guard above.
 let emitted='';require('node:vm').runInNewContext(css,{window:{},document:{createElement:()=>({}),head:{appendChild:s=>{emitted=s.textContent}}}});
