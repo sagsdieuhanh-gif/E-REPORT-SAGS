@@ -2,6 +2,12 @@
 <html lang="vi" class="new-ui-v1">
 <head><script id="sagsCanonicalProduction">(function(){try{if(/(^|\.)github\.io$/i.test(location.hostname)){const u=new URL("https://e-report-sags.vercel.app/");u.search=location.search;u.hash=location.hash;location.replace(u.href)}}catch(_){}})();</script>
 <meta charset="utf-8"/>
+<script id="sags-dual-theme-early">(function(){
+ try{
+  var mode=localStorage.getItem('sagsUiThemeV1:device');
+  document.documentElement.setAttribute('data-ui-theme',mode==='dark'?'dark':'light');
+ }catch(_){document.documentElement.setAttribute('data-ui-theme','light')}
+})();</script>
 <script id="sags-storage-capacity-bootstrap">
 // Copyright (c) 2013 Pieroxy <pieroxy@pieroxy.net>
 // This work is free. You can redistribute it and/or modify it
