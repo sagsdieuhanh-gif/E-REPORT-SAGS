@@ -11,7 +11,7 @@ const html=read('index.html');
 const sw=read('service-worker.js');
 const settings=read('app/modules/settings.v1.js');
 const css=read('app/styles/aviation-reference.v1.css');
-assert.equal(version.version,'V1.1');
+assert.match(version.version,/^V1\.\d+(?:\.\d+)?$/,'Dual-theme release stays in the V1 series');
 assert.equal(manifest.build,version.build);
 assert.ok(html.includes('aviation-reference.v1.css?v='+version.build),'Unified theme stylesheet must be version-pinned');
 assert.ok(html.includes('settings.v1.js?v='+version.build),'Updated settings module must be version-pinned');
@@ -34,4 +34,4 @@ for(const asset of ['./index.html','./service-worker.js','./version.json','./app
   assert.equal(item.bytes,buf.length,asset+' byte-size mismatch');
   assert.equal(item.sha256,crypto.createHash('sha256').update(buf).digest('hex'),asset+' integrity mismatch');
 }
-console.log('V1.1 dual-theme settings, operational contrasts and SW integrity verified');
+console.log(version.version+' dual-theme settings, operational contrasts and SW integrity verified');
