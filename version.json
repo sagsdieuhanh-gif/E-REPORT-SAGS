@@ -1,12 +1,12 @@
 {
   "version": "V1.0",
   "displayVersion": "V1.0",
-  "label": "V1.0 - A/C LIMITS: MOBILE VỪA MÀN HÌNH & TƯƠNG PHẢN",
-  "build": "V1.0-20261025-ACL-MOBILE-FIT-CONTRAST-05",
+  "label": "V1.0 - A/C LIMITS: TỐI ƯU TẢI DANH SÁCH",
+  "build": "V1.0-20261025-ACL-LAG-LOAD-FIX-06",
   "releasedAt": "2026-10-25",
-  "type": "v1-aclimits-mobile-responsive-contrast",
+  "type": "v1-aclimits-fast-load",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Sửa triệt để tràn ngang A/C LIMITS mobile do thanh điều hướng LIMIT/LỊCH VỆ SINH/AI ẢNH và input ngày; bố cục grid co giãn 320–720px, nút chọn và thẻ LIMIT không tràn. Khóa màu chữ/nền tương phản cao và ổn định sáng/tối riêng A/C LIMITS, giữ mọi nghiệp vụ, dữ liệu, quy tắc xóa và nháp.",
-  "message": "V1.0: A/C LIMITS mobile vừa màn hình, chữ rõ và thao tác gọn"
+  "notes": "A/C LIMITS tránh dựng DOM toàn bộ danh sách khi chưa chọn ngày/đang ở Nhập LIMIT; giới hạn 60 bản ghi mỗi lượt, Hiện thêm. Không chờ tải Fleet khi mở, RTDB đọc quá chậm chuyển Firestore có giới hạn. Giữ nguyên dữ liệu, quy tắc xóa sao lưu, roster/biểu mẫu/PDF/logo và hiển thị V1.0.",
+  "message": "V1.0: Tối ưu A/C LIMITS tránh quay tải kéo dài, không render dư"
 }
