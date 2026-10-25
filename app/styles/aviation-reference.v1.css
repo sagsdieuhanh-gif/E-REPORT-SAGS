@@ -1954,3 +1954,100 @@ html.new-ui-v1 body :is(#sagsSettingsCenter,#fwcModal,#dailyRosterModal,#fleetMa
   }
 }
 
+
+/* E-REPORT SAGS V1.2 · Compact login theme picker; PC/mobile.
+   Presentation only. Existing login assets, authentication and PDF unchanged. */
+@media screen {
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme="light"] body #roleLoginModal .roleLoginCard{
+   background:rgba(255,255,255,.97)!important;color:#111827!important;
+   border:1px solid #cbd5e1!important;box-shadow:0 18px 48px #04101f52!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme="dark"] body #roleLoginModal .roleLoginCard{
+   background:rgba(7,17,30,.94)!important;color:#f8fafc!important;
+   border:1px solid #60748b!important;box-shadow:0 18px 48px #0008!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .roleLoginCard{
+   width:min(100%,430px)!important;max-width:calc(100vw - 20px)!important;
+   box-sizing:border-box!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .newUiLoginEyebrow{
+   color:var(--et-sub)!important;-webkit-text-fill-color:var(--et-sub)!important;
+   letter-spacing:.08em!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .newUiLoginEyebrow span{
+   color:var(--et-link)!important;-webkit-text-fill-color:var(--et-link)!important;
+   background:var(--et-hover)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .roleLoginCard h2{
+   color:var(--et-fg)!important;-webkit-text-fill-color:var(--et-fg)!important;
+   margin:0 0 17px!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .roleLoginCard label{
+   color:var(--et-sub)!important;-webkit-text-fill-color:var(--et-sub)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .roleLoginCard :is(input:not([type="checkbox"]),select){
+   background:var(--et-input)!important;border-color:var(--et-edge-strong)!important;
+   color:var(--et-fg)!important;-webkit-text-fill-color:var(--et-fg)!important;
+   caret-color:var(--et-fg)!important;color-scheme:inherit!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .roleLoginCard input::placeholder{
+   color:var(--et-muted)!important;-webkit-text-fill-color:var(--et-muted)!important;
+   opacity:1!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginThemeBar{
+   display:flex;align-items:center;justify-content:space-between;gap:9px;
+   margin:8px 0 13px;padding:7px 8px 7px 11px;border-radius:11px;
+   background:var(--et-raised)!important;border:1px solid var(--et-edge)!important;
+   color:var(--et-fg)!important;box-sizing:border-box;min-width:0;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginThemeLabel{
+   color:var(--et-sub)!important;-webkit-text-fill-color:var(--et-sub)!important;
+   font:800 10px/1.3 system-ui,Arial,sans-serif!important;
+   letter-spacing:.06em!important;white-space:nowrap;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginThemeChoices{
+   display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;
+   min-width:0;width:158px;max-width:59%;flex-shrink:1;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginThemeBtn{
+   appearance:none!important;box-sizing:border-box!important;
+   min-width:0!important;width:100%!important;height:34px!important;min-height:34px!important;
+   padding:0 9px!important;margin:0!important;border:1px solid transparent!important;
+   border-radius:8px!important;background:transparent!important;
+   color:var(--et-sub)!important;-webkit-text-fill-color:var(--et-sub)!important;
+   font:750 12px/1.2 system-ui,Arial,sans-serif!important;
+   letter-spacing:0!important;white-space:nowrap;cursor:pointer;
+   box-shadow:none!important;transition:background .15s ease,border-color .15s ease;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginThemeBtn.active{
+   background:var(--et-card)!important;border-color:var(--et-edge-strong)!important;
+   color:var(--et-fg)!important;-webkit-text-fill-color:var(--et-fg)!important;
+   box-shadow:0 1px 5px #00000014!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginThemeBtn:focus-visible{
+   outline:2px solid var(--et-focus)!important;outline-offset:1px!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal #roleLoginSubmit{
+   background:#086aa3!important;color:#fff!important;-webkit-text-fill-color:#fff!important;
+   border:0!important;min-height:46px!important;font-weight:850!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme="dark"] body #roleLoginModal #roleLoginSubmit{
+   background:#257cba!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal #roleLoginError{
+   color:var(--et-danger-fg)!important;-webkit-text-fill-color:var(--et-danger-fg)!important;
+ }
+ @media (max-width:480px){
+  html.new-ui-v1[data-ui-theme] body #roleLoginModal .roleLoginCard{
+    padding:clamp(18px,5vw,24px)!important;
+  }
+  html.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginThemeBar{padding:6px 7px 6px 10px;gap:6px}
+  html.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginThemeChoices{width:146px;max-width:62%;gap:3px}
+  html.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginThemeBtn{
+    padding:0 5px!important;font-size:11px!important;
+  }
+ }
+ @media(prefers-reduced-motion:reduce){
+  html.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginThemeBtn{transition:none!important}
+ }
+}
