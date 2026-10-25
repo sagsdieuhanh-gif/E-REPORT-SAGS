@@ -1,12 +1,12 @@
 {
   "version": "V1.0",
   "displayVersion": "V1.0",
-  "label": "V1.0 - LOẠI BỎ XUẤT PDF NGOÀI HỒ SƠ",
-  "build": "V1.0-20261025-REMOVE-IDLE-EXPORT-07",
+  "label": "V1.0 - TVJ CHỈ VZ & 42.1 NHẬP GIỜ TỰ DO",
+  "build": "V1.0-20261025-TVJ-VZ-421-FREE-TIME-09",
   "releasedAt": "2026-10-25",
-  "type": "v1-remove-idle-export-entry",
+  "type": "v1-tvj-vz-dossier-and-421-free-time",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Gỡ hoàn toàn nút Xuất trong thanh công cụ chính trước khi mở hồ sơ, gồm markup, phân quyền UI và nhật ký click dành riêng cho nút; giữ toàn bộ logic xuất PDF từ biểu mẫu/hồ sơ đang mở, FINAL, các chức năng chia sẻ và dữ liệu; không thay đổi quy tắc roster/hoàn tất.",
-  "message": "V1.0: Bỏ nút xuất PDF ngoài hồ sơ, giữ xuất trong biểu mẫu"
+  "notes": "Sửa AD hồ sơ chỉ hiện TVJ-GOF-035 khi mã chuyến thuộc VZ/TVJ; FSAGS 42.1 nhập ô giờ bất kỳ không yêu cầu giờ trước hoặc Start/Finish theo thứ tự, cả nhập trực tiếp và nhập nhanh. Vẫn kiểm tra HH:MM; giữ nguyên điều kiện hãng khác, biểu mẫu khác, dữ liệu, roster, chữ ký và PDF.",
+  "message": "V1.0: Chỉ hiện TVJ-GOF-035 trên VZ và bỏ ràng buộc thứ tự giờ FSAGS 42.1"
 }

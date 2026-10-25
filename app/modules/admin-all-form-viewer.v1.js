@@ -178,11 +178,32 @@ async function assignmentRows(date,fid){
   const man=await once('roster_manifests/'+safe(date))||{},items=Array.isArray(man.items)?man.items:Object.values(man.items||{});
   for(const a0 of items){if(!a0||a0.active===false||a0.duplicateInactive===true||S(a0.flightId)!==S(fid))continue;const id=S(a0.assignmentId);if(!id)continue;map.set(id,{...(map.get(id)||{}),...a0,assignmentId:id,flightId:fid,opDate:date})}
  }catch(_){}
- return [...map.values()].filter(x=>canonGroup(x.formGroup)!=='unit_task');
+ return {flight:rec,items:[...map.values()].filter(x=>canonGroup(x.formGroup)!=='unit_task')};
 }
-function docsFor(item,st,reg){
+/* The read-only dossier must use the flight's own identity, not form fields
+ * copied from a different assignment (which may contain stale VZ values). */
+function flightCodes(value){
+ const fields=['arrFlight','depFlight','flightRaw','flightName','assignmentFlight','flightNo','flightNumber','flightCode','name'];
+ const values=typeof value==='string'?[value]:fields.map(k=>value?.[k]).filter(Boolean);
+ const codes=[];
+ for(const raw of values){
+  const text=U(raw);
+  const matches=text.matchAll(/(?:^|[^A-Z0-9])([A-Z]{2,3}|[0-9][A-Z]|[A-Z][0-9])\s*[-/]?\s*\d{1,5}[A-Z]?(?=$|[^A-Z0-9])/g);
+  for(const m of matches)codes.push(m[1]);
+ }
+ return codes;
+}
+function isVzFlightForDossier(flight,items){
+ const mainCodes=flightCodes(flight);
+ if(mainCodes.length)return mainCodes.every(code=>code==='VZ'||code==='TVJ');
+ const mainCarrier=U(flight?.airlineCode||flight?.carrierCode);
+ if(mainCarrier)return mainCarrier==='VZ'||mainCarrier==='TVJ';
+ const rosterCodes=(items||[]).flatMap(flightCodes);
+ return rosterCodes.length>0&&rosterCodes.every(code=>code==='VZ'||code==='TVJ');
+}
+function docsFor(item,st,reg,showTvj=false){
  const info=envelopeInfo(st),env=info.env||{},state=stateOf(env),group=canonGroup(st?.formGroup||item?.formGroup||env?.mainForm||env?.activeFormGroup);
- if(group==='loading208')return [];
+ if(group==='loading208'||(group==='tvjgof035'&&!showTvj))return [];
  const primary=formFor(reg,group),docs=[],seen=new Set();
  const add=(form,g,count)=>{
   const id=S(form?.id||g||'raw');if(seen.has(id))return;seen.add(id);
@@ -190,7 +211,7 @@ function docsFor(item,st,reg){
  };
  const primaryCount=primary?formValueCount(primary,state):Object.values(state).filter(meaningful).length;
  if(primary||group==='final'||primaryCount>0)add(primary,group,primaryCount);
- for(const f of reg?.forms||[]){if(primary&&f.id===primary.id)continue;const n=formValueCount(f,state);if(n>=3)add(f,canonGroup(f.group||f.id),n)}
+ for(const f of reg?.forms||[]){if(primary&&f.id===primary.id)continue;const candidateGroup=canonGroup(f.group||f.id);if(candidateGroup==='tvjgof035'&&!showTvj)continue;const n=formValueCount(f,state);if(n>=3)add(f,candidateGroup,n)}
  return docs.map(d=>({...d,user:S(item.user||item.targetUser||item.ownerUser||st.ownerUser||st.completedBy||'—'),status:statusText(st),snapshotKind:info.kind,at:info.at,aid:S(item.assignmentId)}));
 }
 function openFinalSpecial(item){
@@ -208,9 +229,11 @@ async function augmentDossier(date,fid){
  host.querySelector('#sagsAdminAllFormList')?.remove();
  const wrap=document.createElement('section');wrap.id='sagsAdminAllFormList';wrap.innerHTML='<h3>TOÀN BỘ BIỂU MẪU / NGƯỜI THỰC HIỆN</h3><div class="ad-note">AD chỉ xem dữ liệu cloud của từng assignment; thao tác tại đây không nhận việc và không sửa dữ liệu người đang làm.</div><div class="ad-loading">Đang đọc các biểu mẫu…</div>';host.appendChild(wrap);
  try{
-  const [reg,items]=await Promise.all([registry(),assignmentRows(date,fid)]);
-  const rows=await Promise.all(items.map(async item=>({item,st:await readSession(item.assignmentId)})));
-  const docs=[];for(const row of rows){for(const d of docsFor(row.item,row.st,reg))docs.push({item:row.item,st:row.st,...d})}
+  const [reg,assignmentData]=await Promise.all([registry(),assignmentRows(date,fid)]);
+  const {flight,items}=assignmentData;
+  const showTvj=isVzFlightForDossier(flight,items);
+  const rows=await Promise.all(items.filter(item=>showTvj||canonGroup(item.formGroup)!=='tvjgof035').map(async item=>({item,st:await readSession(item.assignmentId)})));
+  const docs=[];for(const row of rows){for(const d of docsFor(row.item,row.st,reg,showTvj))docs.push({item:row.item,st:row.st,...d})}
   wrap.querySelector('.ad-loading')?.remove();
   if(!items.length){const x=document.createElement('div');x.className='ad-note';x.textContent='Chuyến này chưa có assignment biểu mẫu.';wrap.appendChild(x);return true}
   const rendered=new Set();
@@ -229,7 +252,7 @@ async function augmentDossier(date,fid){
   }
   const covered=new Set(docs.map(d=>S(d.aid)));
   for(const {item,st} of rows){
-   if(covered.has(S(item.assignmentId))||canonGroup(item.formGroup)==='loading208')continue;
+   if(covered.has(S(item.assignmentId))||canonGroup(item.formGroup)==='loading208'||(!showTvj&&canonGroup(item.formGroup)==='tvjgof035'))continue;
    const card=document.createElement('article');card.className='ad-form-card';const title=document.createElement('b');title.textContent=labelFallback(item.formGroup);card.appendChild(title);
    const meta=document.createElement('small');meta.textContent=[S(item.user||item.targetUser||st.ownerUser||'—'),statusText(st),'CHƯA CÓ DỮ LIỆU BIỂU MẪU'].join(' · ');card.appendChild(meta);
    const btn=document.createElement('button');btn.type='button';btn.disabled=true;btn.textContent='CHƯA CÓ DỮ LIỆU';card.appendChild(btn);wrap.appendChild(card);
