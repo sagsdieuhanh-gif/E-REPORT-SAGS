@@ -21,7 +21,7 @@ vm.createContext(sandbox);vm.runInContext(sw,sandbox,{filename:'service-worker.j
  assert.equal(shellOpenCount,1,'No repeated expensive CacheStorage.open per asset request');
  const manifests=await vm.runInContext('Promise.all([readManifest(),readManifest(),readManifest()])',sandbox);
  assert.ok(manifests.every(x=>x.build===metaBody.build));
- assert.equal(metaMatchCount,1,'Readiness queries must reuse the immutable pinned manifest');
+ assert.equal(metaMatchCount,3,'Pinned metadata must be reread to detect deleted or damaged cache storage');
  assert.ok(metaOpenCount>=1);
  vm.runInContext('markBootstrapVerified({assets:{}})',sandbox);
  const fast=await vm.runInContext('ensureBootstrapVerified({assets:{}})',sandbox);
@@ -35,5 +35,5 @@ vm.createContext(sandbox);vm.runInContext(sw,sandbox,{filename:'service-worker.j
  assert.ok(!html.includes("void checkClients();\n})(window);"),'Storage compaction must not run while head parses');
  assert.match(html,/proto\.setItem=function\(key,value\)/,'Lossless quota-recovery hook must remain installed');
  assert.match(html,/const packedBefore=allowed\.test\(k\)/,'Encrypted/compressed draft overwrite guard preserved');
- console.log('PWA warm start: cache handles and manifest memoized; storage recovery deferred; integrity guard preserved');
+ console.log('PWA warm start: cache handle shared, live integrity metadata preserved, storage recovery deferred');
 })().catch(e=>{console.error(e);process.exitCode=1});
