@@ -1,7 +1,7 @@
 {
   "schema": 2,
   "version": "V1.0",
-  "build": "V1.0-20261025-ACL-APP-CHECK-OCR-03",
+  "build": "V1.0-20261025-ACL-UX-CLEAR-04",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -146,8 +146,8 @@
       "bytes": 132730
     },
     "./app/generated/core-tools.js": {
-      "sha256": "d1eae0214a5c273ef03cfaecc89657b3e1c232b8546b6dea045c50d9f7ff4cfb",
-      "bytes": 112235
+      "sha256": "3c8b3721a602680daa68d4f279a38988081ae1a39a6281d719c966e62b61fd78",
+      "bytes": 119894
     },
     "./app/generated/runtime-1.js": {
       "sha256": "d28c3a15851e5ba0e22f3cd6222ae1f2c66183177638ad5191c201e73573801e",
@@ -822,8 +822,8 @@
       "bytes": 26106
     },
     "./version.json": {
-      "sha256": "91a8abb1e35e13bb8d412129e1382da25b1946f6dd6c04cd2e053569cbda6911",
-      "bytes": 861
+      "sha256": "3eaf99d29d793530af7ed8b6a4191343fe8b1f1dec6698f0464cb5a8fbe6c2fc",
+      "bytes": 786
     }
   },
   "mutableAssets": [

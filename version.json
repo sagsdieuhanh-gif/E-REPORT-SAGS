@@ -1,12 +1,12 @@
 {
   "version": "V1.0",
   "displayVersion": "V1.0",
-  "label": "V1.0 - A/C LIMITS: APP CHECK & OCR DỰ PHÒNG",
-  "build": "V1.0-20261025-ACL-APP-CHECK-OCR-03",
+  "label": "V1.0 - A/C LIMITS: GIAO DIỆN GỌN & XÓA TOÀN BỘ",
+  "build": "V1.0-20261025-ACL-UX-CLEAR-04",
   "releasedAt": "2026-10-25",
-  "type": "v1-aclimits-app-check-ocr",
+  "type": "v1-aclimits-ui-and-safe-clear",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Sửa A/C LIMITS AI dùng lại App Check instance theo Site Key trên cùng Web App Firebase và đọc lại cấu hình AD; xử lý đổi Site Key của AI CROSSCHECK và AI Import nhiều ảnh. Bổ sung OCR dự phòng độc lập với Firebase để AD kiểm tra từ ảnh, không tự chọn hay lưu dữ liệu. Giữ nguyên số phiên bản V1.0, quy tắc A/C LIMITS, roster, PDF và biểu mẫu.",
-  "message": "V1.0: Sửa luồng xác minh A/C LIMITS và thêm OCR dự phòng."
+  "notes": "Phân chia A/C LIMITS thành hai tab Nhập LIMIT và Danh sách, tìm kiếm/chọn ngày rõ ràng trên PC/mobile. AD được xóa toàn bộ LIMIT sau xác nhận hai bước, tải lại danh sách, sao lưu Firestore trước khi xóa, giữ audit và quy tắc cảnh báo. Không thay đổi roster, biểu mẫu, PDF hay logo.",
+  "message": "V1.0: Làm gọn A/C LIMITS và thêm xóa toàn bộ có sao lưu"
 }
