@@ -2,14 +2,20 @@
    Base: V4.8.10B Layered PDF + HF1–HF4. Never mix navigation HTML with a different runtime.
 */
 'use strict';
-const BUILD='V1.2-20261025-LOGIN-THEME-11';
-const DISPLAY_VERSION='V1.2';
-const CACHE_NAME='sags-app-shell-v1.2-20261025-login-theme-11';
-const META_CACHE_NAME='sags-app-meta-v1.2-20261025-login-theme-11';
+const BUILD='V1.3-20261026-PWA-FAST-START-12';
+const DISPLAY_VERSION='V1.3';
+const CACHE_NAME='sags-app-shell-v1.3-20261026-pwa-fast-start-12';
+const META_CACHE_NAME='sags-app-meta-v1.3-20261026-pwa-fast-start-12';
 const ASSET_MANIFEST_URL='./asset-manifest.json';
 const MUTABLE_METADATA=new Set(['./forms/forms.registry.json','./data/form-configuration.json']);
 const SAGS_BOOTSTRAP=["./app/modules/roster-open-guard.v1.js","./app/modules/form-edit-history.v1.js","./app/modules/business-text.v1.js","./app/modules/flight-retention-policy.v1.js","./app/modules/flight-retention.v1.js","./index.html","./app/boot/01-sags-v620-unified-form-migration.js","./app/boot/02-sags-v611-update-alert-position.js","./app/generated/boot-group-1.js","./app/boot/05-legacy.js","./app/boot/06-legacy.js","./app/boot/07-legacy.js","./app/boot/08-v412-kh208-script.js","./app/boot/09-v454AccountProfileOverrides.js","./app/boot/10-v470-hybrid-core.js","./app/boot/11-v476-core.js","./app/boot/12-v484SystemDepartmentRoles.js","./app/boot/13-v485FeaturePermissions.js","./app/boot/14-v18CanonicalAccountHierarchy.js","./app/boot/15-v116-account-name-search.js","./app/modules/feature-loader.v1.js","./app/generated/core-shared.js","./app/generated/core-archive.js","./app/generated/boot-group-2.js","./app/generated/core-tools.js","./app/boot/18-v173-quick-time.js","./app/boot/19-v183-fs09-quick.js","./app/generated/boot-group-3.js","./app/boot/22-v1121-ios-time-footer-script.js","./app/boot/23-v1122-roster-sign-script.js","./app/generated/boot-group-4.js","./app/generated/core-flight.js","./app/generated/core-control.js","./app/generated/core-postcontrol.js","./app/modules/admin-reset.v503hf2.js","./app/generated/core-performance.js","./app/modules/firebase-read-coalescer.v1.js","./app/modules/daily-roster.v502.js","./app/boot/26-v644SafeStorageCleanup.js","./app/generated/runtime-1.js","./app/generated/runtime-2.js","./app/generated/runtime-3.js","./app/generated/runtime-4.js","./app/generated/runtime-5.js","./app/generated/boot-group-5.js","./app/modules/quick-entry.v1.js","./app/modules/ui-preferences.v1.js","./app/modules/settings.v1.js","./app/modules/stability.v6.js","./app/modules/cross-browser-entry.v1.js","./app/modules/roster-lite.v5.js","./app/boot/30-sags-v6120-all-form-render-standard.js","./app/modules/tvj-gof-035.v630.js","./app/modules/tvj-gof-035.v631.js","./app/modules/tvj-gof-035.v632.js","./app/boot/31-sags-grnd-ls-v621.js","./app/modules/fsags54-94.v622.js","./app/modules/form-registry-runtime.v647.js","./app/modules/form-registry-runtime.v6419.js","./app/modules/airline-form-policy.v1.js","./app/modules/workflow-cleanup.v6444.js","./app/modules/fsags208-workspace.v1.js","./app/modules/fsags208-image-reader.v1.js","./app/modules/admin-account-actions.v2.js","./app/modules/admin-all-form-viewer.v1.js","./app/modules/form-entry-contrast.v1.js","./app/modules/theme-contrast.v2.js","./app/modules/mobile-form-dock.v2.js","./app/boot/32-v6494-aviation-shell.js","./app/modules/aviation-reference.v1.js","./app/boot/33-v6497-dossier-enhancements.js","./assets/airlines/DR.png","./assets/airlines/EO.svg","./assets/airlines/QH.png","./assets/airlines/KA.svg","./assets/airlines/OZ.png","./assets/airlines/KE.png","./assets/airlines/3U.png","./assets/airlines/VU.png","./assets/airlines/BX.png","./assets/airlines/TR.png","./assets/airlines/LJ.png","./assets/airlines/TW.png","./assets/airlines/VJ.png","./assets/airlines/9G.png","./assets/airlines/HY.png","./assets/airlines/DV.png","./assets/airlines/C6.png","./assets/airlines/N4.png","./assets/airlines/UQ.png","./assets/airlines/HU.png","./assets/airlines/KC.png","./assets/airlines/WE.png","./assets/airlines/VZ.png","./assets/airlines/HAV.png","./assets/airlines/RF.png","./assets/airlines/B2.png","./assets/airlines/FD.png","./assets/airlines/AK.png","./assets/airlines/TW.svg","./app/styles/aviation-reference.v1.css","./assets/branding/apron-night-v6494.webp","./app/styles/app.bundle.css","./app/styles/new-ui-v1.css","./app/styles/boot-36-v6494-aviation-final.css","./app/styles/boot-bundle-1.css","./app/styles/boot-bundle-2.css","./service-worker.js","./version.json","./data/airline-form-catalog.json","./app/modules/stability.v6-core.js","./app/modules/mobile-draft-recovery.v1.js","./app/modules/indexeddb-flight-store.v1.js","./app/modules/cloud-draft-sync.v2.js","./app/modules/form-performance.v1.js"];
 const HOME= new URL('./index.html',self.registration.scope).href;
+// Share the CacheStorage handle between dozens of startup asset requests.
+let sagsShellCachePromise=null;
+function sagsCurrentShellCache(){
+ if(!sagsShellCachePromise)sagsShellCachePromise=caches.open(CACHE_NAME).catch(e=>{sagsShellCachePromise=null;throw e});
+ return sagsShellCachePromise;
+}
 const SCOPE_PATH=new URL(self.registration.scope).pathname;
 function scopeUrl(path){return new URL(path,self.registration.scope).href}
 function canonicalUrl(input){const source=typeof input==='string'?input:(input?.href||input?.url);const u=new URL(source,self.location.href);u.search='';u.hash='';return u.href}
@@ -20,7 +26,11 @@ async function checksum(response,meta,path){
  const digest=await crypto.subtle.digest('SHA-256',b);const hash=[...new Uint8Array(digest)].map(n=>n.toString(16).padStart(2,'0')).join('');
  if(hash!==meta.sha256)throw new Error('SHA-256 mismatch '+path);
 }
-async function readManifest(){try{const c=await caches.open(META_CACHE_NAME),r=await c.match(scopeUrl(ASSET_MANIFEST_URL));return r?await r.json():null}catch(_){return null}}
+async function readManifest(){
+ // Read live pinned metadata so staging, rollback and damage-repair cannot
+ // accidentally rely on an old in-memory manifest after CacheStorage changes.
+ try{const c=await caches.open(META_CACHE_NAME),r=await c.match(scopeUrl(ASSET_MANIFEST_URL));return r?await r.json():null}catch(_){return null}
+}
 async function assertIndexReleaseStamp(response){
  const text=await response.clone().text();
  const buildOk=text.includes('name="sags-release-build" content="'+BUILD+'"')||text.includes('name="sags-release-build" content="'+BUILD+'"')||text.includes('const APP_BUILD_VERSION="'+BUILD+'"')||text.includes("const APP_BUILD_VERSION='"+BUILD+"'");
@@ -31,7 +41,7 @@ async function assertIndexReleaseStamp(response){
  return true;
 }
 async function verifyReleaseContract(manifest){
- const c=await caches.open(CACHE_NAME),prior=await sagsPriorShellNames();
+ const c=await sagsCurrentShellCache(),prior=await sagsPriorShellNames();
  let r=await c.match(scopeUrl('./index.html'));
  if(!r)r=await sagsPriorAsset('./index.html',manifest?.assets?.['./index.html'],prior);
  if(!r)throw new Error('Missing release index.html');
@@ -71,7 +81,7 @@ async function sagsPriorAsset(path,meta,names,check=true){
  return null;
 }
 async function verifyBootstrapPresence(){
- const c=await caches.open(CACHE_NAME),prior=await sagsPriorShellNames();
+ const c=await sagsCurrentShellCache(),prior=await sagsPriorShellNames();
  for(const path of SAGS_BOOTSTRAP){
   if(await c.match(scopeUrl(path)))continue;
   if(!await sagsPriorAsset(path,null,prior,false))throw new Error('Missing staged bootstrap '+path);
@@ -83,18 +93,28 @@ function markBootstrapVerified(manifest){
  sagsVerifiedBootstrapReady=true;
 }
 async function verifyStaged(manifest){
- const c=await caches.open(CACHE_NAME),prior=await sagsPriorShellNames();
- for(const path of SAGS_BOOTSTRAP){
-  const r=await c.match(scopeUrl(path));
-  if(r){await checksum(r,manifest.assets[path],path);continue}
-  if(!await sagsPriorAsset(path,manifest.assets[path],prior))throw new Error('Missing verified bootstrap '+path);
- }
+ const c=await sagsCurrentShellCache(),prior=await sagsPriorShellNames();
+ // Bound verification to three workers instead of >100 serial cache round trips.
+ const queue=SAGS_BOOTSTRAP.slice();let failure=null;
+ await Promise.all(Array.from({length:3},async()=>{
+  while(queue.length&&!failure){
+   const path=queue.shift();
+   try{
+    const r=await c.match(scopeUrl(path));
+    if(r){await checksum(r,manifest.assets[path],path);continue}
+    if(!await sagsPriorAsset(path,manifest.assets[path],prior))throw new Error('Missing verified bootstrap '+path);
+   }catch(e){if(!failure)failure=e}
+  }
+ }));
+ if(failure)throw failure;
  return true;
 }
 async function ensureBootstrapVerified(manifest,{force=false}={}){
  const key=sagsBootstrapVerificationKey(manifest);
  if(!force&&sagsVerifiedBootstrapReady&&sagsVerifiedBootstrapKey===key){
-  try{await verifyBootstrapPresence();return true}catch(_){sagsVerifiedBootstrapReady=false;sagsVerifiedBootstrapKey=''}
+  // Immutable assets already verified. Do not re-scan the full shell
+  // on every PWA startup query; explicit checks still verify everything.
+  return true;
  }
  if(!force&&sagsVerifiedBootstrapPromise&&sagsVerifiedBootstrapKey===key)return sagsVerifiedBootstrapPromise;
  sagsVerifiedBootstrapKey=key;
@@ -103,8 +123,11 @@ async function ensureBootstrapVerified(manifest,{force=false}={}){
  try{return await run}finally{if(sagsVerifiedBootstrapPromise===run)sagsVerifiedBootstrapPromise=null}
 }
 async function stageRelease(){
+ // A previous failed install may have deleted the cache behind the handle.
+ // Fresh staging must never reuse that stale handle.
+ sagsShellCachePromise=null;
  try{
-  const {manifest:m,versionResponse}=await getReleaseManifest();const c=await caches.open(CACHE_NAME);
+  const {manifest:m,versionResponse}=await getReleaseManifest();const c=await sagsCurrentShellCache();
   // Check local cached bytes against the NEW manifest before deciding to fetch.
   // An unchanged asset stays in its prior cache; no network OR duplicate cache copy.
   // A missing/modified/corrupt asset is downloaded and checked before insertion.
@@ -133,12 +156,13 @@ async function stageRelease(){
  }catch(e){
   console.error('E-REPORT stage aborted; previous release retained',e);
   await Promise.all([caches.delete(CACHE_NAME),caches.delete(META_CACHE_NAME)]);
+  sagsShellCachePromise=null;
   throw e;
  }
 }
 async function reportNetworkRx(id,url,r){try{if(!id||!r?.ok)return;let n=Number(r.headers.get('content-length'))||0;if(!n)n=(await r.clone().blob()).size||0;const c=await self.clients.get(id);if(c&&n)c.postMessage({type:'SAGS_NET_RX',bytes:n,url:String(url||''),atMs:Date.now()})}catch(_){}}
 async function verifiedAsset(request,event,path,key){
- const c=await caches.open(CACHE_NAME),hit=await c.match(key);
+ const c=await sagsCurrentShellCache(),hit=await c.match(key);
  if(hit)return hit;
  try{
   const m=await readManifest();if(!m||m.build!==BUILD)throw new Error('No verified release manifest');
@@ -155,7 +179,7 @@ async function verifiedAsset(request,event,path,key){
  }catch(e){console.warn('E-REPORT V5 asset unavailable',path,e?.message||e);return new Response('RELEASE ASSET NOT READY',{status:503})}
 }
 async function networkMetadata(request,event,immutable=false){
- const c=await caches.open(CACHE_NAME),key=canonicalUrl(request);
+ const c=await sagsCurrentShellCache(),key=canonicalUrl(request);
  try{const r=await fetch(request,{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);
   // Version/manifest are fresh metadata, NOT executable-cache content. Caching a
   // future version.json into the current build's pinned cache would break its checksum.
@@ -169,7 +193,7 @@ async function networkMetadata(request,event,immutable=false){
 }
 async function verifyCurrentAssets(){
  const m=await readManifest();if(!m||m.build!==BUILD)throw new Error('No staged V5 manifest');
- const c=await caches.open(CACHE_NAME);
+ const c=await sagsCurrentShellCache();
  const prior=await sagsPriorShellNames();
  for(const p of SAGS_BOOTSTRAP){
   let r=await c.match(scopeUrl(p));let good=false;
@@ -253,7 +277,7 @@ self.addEventListener('message',event=>{
    try{event.ports?.[0]?.postMessage({build:BUILD,ready})}catch(_){}})());return;
  }
  if(event.data?.type==='SKIP_WAITING'){
-  event.waitUntil((async()=>{const m=await readManifest();if(m?.build!==BUILD)throw new Error('Unverified V5 build');await ensureBootstrapVerified(m);await self.skipWaiting()})());return;
+  event.waitUntil((async()=>{const m=await readManifest();if(m?.build!==BUILD)throw new Error('Unverified V5 build');await ensureBootstrapVerified(m,{force:true});await self.skipWaiting()})());return;
  }
  if(event.data?.type==='SAGS_CHECK_ASSETS')event.waitUntil(verifyCurrentAssets().catch(e=>console.warn('E-REPORT V5 asset check failed',e)));
 });
@@ -277,7 +301,7 @@ self.addEventListener('fetch',event=>{
   // page. repair.html unregisters stale workers/caches and re-opens only after
   // version + manifest + index agree on one build.
   event.respondWith((async()=>{
-   const c=await caches.open(CACHE_NAME),r=await c.match(HOME);if(r)return r;
+   const c=await sagsCurrentShellCache(),r=await c.match(HOME);if(r)return r;
    const m=await readManifest();
    const old=m?.build===BUILD?await sagsPriorAsset('./index.html',m.assets?.['./index.html']):null;
    if(old)return old;

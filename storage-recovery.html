@@ -609,11 +609,28 @@ if (typeof define === 'function' && define.amd) {
   })().finally(()=>{checking=null});return checking;
  }
  root.SAGSStorageCapacity=Object.freeze({check:checkClients,compact,status:()=>({enabled,clientCount,converted,savedChars,lastError,cacheChars:cachedChars})});
- // Count all windows first; never auto-convert while another old shell may be running.
- root.navigator?.serviceWorker?.addEventListener?.('controllerchange',checkClients);
- root.addEventListener('pageshow',checkClients);
- document.addEventListener('visibilitychange',()=>{if(!document.hidden)void checkClients()});
- void checkClients();
+ // The optional lossless storage migration must not preempt login rendering.
+ // Immediate manual .check(), quota recovery, and safe multi-window checks remain.
+ let queuedAutoCheck=false,lastAutoCheckAt=0;
+ function autoCheck(){
+  if(queuedAutoCheck||checking||document.hidden)return;
+  if(Date.now()-lastAutoCheckAt<60000)return;
+  queuedAutoCheck=true;
+  const run=()=>{
+   queuedAutoCheck=false;
+   if(document.hidden)return;
+   lastAutoCheckAt=Date.now();
+   void checkClients();
+  };
+  if(typeof root.requestIdleCallback==='function')root.requestIdleCallback(run,{timeout:2500});
+  else setTimeout(run,800);
+ }
+ // Count all app windows first; never compress while another shell is open.
+ root.navigator?.serviceWorker?.addEventListener?.('controllerchange',()=>{lastAutoCheckAt=0;autoCheck()});
+ root.addEventListener('pageshow',autoCheck);
+ root.addEventListener('load',autoCheck,{once:true});
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden)autoCheck()});
+ if(document.readyState==='complete')autoCheck();
 })(window);
 
 </script>

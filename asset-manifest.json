@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V1.2",
-  "build": "V1.2-20261025-LOGIN-THEME-11",
+  "version": "V1.3",
+  "build": "V1.3-20261026-PWA-FAST-START-12",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -310,8 +310,8 @@
       "bytes": 1645
     },
     "./app/modules/storage-capacity.v1.js": {
-      "sha256": "ff932d10500d6abb3b7b4b02889822a1921067f18a267c069d7fc820270a8d26",
-      "bytes": 6755
+      "sha256": "8b2badd480947634098c5f512af45f7d7a8e077d7db2e1b26015a9e805e22f05",
+      "bytes": 7456
     },
     "./app/modules/theme-contrast.v2.js": {
       "sha256": "460f44656d78eb66d7b9755c1065d35b717e0e200517e7b837e11eafad0b4909",
@@ -762,8 +762,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "8d41fdc93d093303648762d2330722a0e568b0e72c5743b0a66e1241ef339abe",
-      "bytes": 106433
+      "sha256": "94b56cc4df0e9135151a4961a0844d610d29cfc1d0439687866d84372d6bdf7d",
+      "bytes": 107371
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -814,16 +814,16 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "756f252d60a576cecc2c23e7c5407836a8971b5395608ee0e6c4ef5cf0b604c5",
-      "bytes": 22432
+      "sha256": "20e98a1dcba57001c63997a9c198519c15d3bdadb42716c52af1dc9a38fbad16",
+      "bytes": 23432
     },
     "./storage-recovery.html": {
-      "sha256": "08817204a946fbdfa404e8c083dd0c2016e935fb8fe56ff8ef99f405978d3df6",
-      "bytes": 26106
+      "sha256": "ab4c00fecfd1d7d580c315597a261e685b9d79226abacfc41f1f0168292f5a62",
+      "bytes": 26807
     },
     "./version.json": {
-      "sha256": "7f154c295a96a4cfb2668753c91d48e6a3e3781b9f23b547a3f60bf6975cea0a",
-      "bytes": 730
+      "sha256": "50eadb3e5fb1da2b6600d22ee25c522331ed844bad8ac98f328d8e4b2983525f",
+      "bytes": 758
     }
   },
   "mutableAssets": [
