@@ -1,12 +1,12 @@
 {
   "version": "V1.0",
   "displayVersion": "V1.0",
-  "label": "V1.0 - TVJ-GOF-035 CHỈ HIỂN THỊ CHUYẾN VZ",
-  "build": "V1.0-20261025-TVJ-VZ-DOSSIER-GATE-08",
+  "label": "V1.0 - TVJ CHỈ VZ & 42.1 NHẬP GIỜ TỰ DO",
+  "build": "V1.0-20261025-TVJ-VZ-421-FREE-TIME-09",
   "releasedAt": "2026-10-25",
-  "type": "v1-tvj-vz-dossier-visibility",
+  "type": "v1-tvj-vz-dossier-and-421-free-time",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Dossier AD áp dụng điều kiện hãng cho TVJ-GOF-035: ưu tiên mã chuyến bay từ flight_records, fallback roster cùng flightId; loại thẻ TVJ nhận nhầm do trùng khóa dữ liệu, chặn cả dòng không có dữ liệu. Không xóa dữ liệu cũ, không sửa roster, biểu mẫu, PDF và người thực hiện.",
-  "message": "V1.0: Không hiển thị TVJ-GOF-035 trên chuyến không thuộc VZ"
+  "notes": "Sửa AD hồ sơ chỉ hiện TVJ-GOF-035 khi mã chuyến thuộc VZ/TVJ; FSAGS 42.1 nhập ô giờ bất kỳ không yêu cầu giờ trước hoặc Start/Finish theo thứ tự, cả nhập trực tiếp và nhập nhanh. Vẫn kiểm tra HH:MM; giữ nguyên điều kiện hãng khác, biểu mẫu khác, dữ liệu, roster, chữ ký và PDF.",
+  "message": "V1.0: Chỉ hiện TVJ-GOF-035 trên VZ và bỏ ràng buộc thứ tự giờ FSAGS 42.1"
 }
