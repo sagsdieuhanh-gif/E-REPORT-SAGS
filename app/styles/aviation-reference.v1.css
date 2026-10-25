@@ -2126,7 +2126,7 @@ html.new-ui-v1 body :is(#sagsSettingsCenter,#fwcModal,#dailyRosterModal,#fleetMa
    background:var(--et-shell)!important;color:var(--et-fg)!important;
  }
  html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #v6494AviationHome :is(
-   .v6494Hero,.v6494Work,.v6494QuickHead,.v6494QuickGrid,
+   .v6494Work,.v6494QuickHead,.v6494QuickGrid,
    .v6494Nav,.v6494MobileNav,.v6494MobileGroup,.v6494MobileProfile,
    .v6494MobileBrand,.v6494Bottom,.v6494Main,
    #opsHomeQueue,#opsHomeFlights,#opsAirlineStrip,#opsHomeMetrics>div
@@ -2335,5 +2335,45 @@ html.new-ui-v1 body :is(#sagsSettingsCenter,#fwcModal,#dailyRosterModal,#fleetMa
       #sagsSettingsCenter input,#fwcModal input,#dailyRosterModal input,
       #aclSimpleModal input,#csgModal input
    ){min-width:0!important;max-width:100%!important;box-sizing:border-box!important;}
+ }
+}
+
+
+/* V1.4 paired small controls and headers. Preserve photographic banner and logos. */
+@media screen {
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #v6494AviationHome :is(.v6494Nav button:not(.active),.v6494MobileNav button:not(.active),.v6494Bottom button:not(.active)){
+  background:var(--et-raised)!important;color:var(--et-sub)!important;
+  -webkit-text-fill-color:var(--et-sub)!important;border-color:var(--et-edge)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #v6494AviationHome :is(.v6494Search,.v6494Search input,#v6494Search){
+  background:var(--et-input)!important;color:var(--et-fg)!important;
+  -webkit-text-fill-color:var(--et-fg)!important;border-color:var(--et-edge-strong)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #v6494AviationHome :is(.v6494Search input,#v6494Search)::placeholder{
+  color:var(--et-muted)!important;-webkit-text-fill-color:var(--et-muted)!important;opacity:1!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #fwcModal :is(.fwcTools button,.fwcHead button,.fwcFilter,.fwcAction){
+  background:var(--et-raised)!important;color:var(--et-fg)!important;
+  -webkit-text-fill-color:var(--et-fg)!important;border-color:var(--et-edge-strong)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #fwcModal :is(.fwcFlight button.active,.fwcTools button.active){
+  background:var(--et-hover)!important;color:var(--et-link)!important;
+  -webkit-text-fill-color:var(--et-link)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #csgModal :is(#csgHead b,#csgHead .csgHeadBtn,#csgList .csgCarrier,.csgDetailTitle,.csgDetailHead){
+  color:var(--et-fg)!important;-webkit-text-fill-color:var(--et-fg)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #csgModal :is(.csgMeta,.csgHint,.csgSub,.csgCarrier small){
+  color:var(--et-sub)!important;-webkit-text-fill-color:var(--et-sub)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #csgModal :is(.csgHeadBtn,.csgAction,button:not(.danger):not(.primary)){
+  background:var(--et-raised)!important;color:var(--et-fg)!important;
+  -webkit-text-fill-color:var(--et-fg)!important;border-color:var(--et-edge)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #sagsSettingsCenter :is(.rows,.grid,.profile,.about,.release,.flow>div,.stats>div){
+  background:var(--et-card)!important;color:var(--et-fg)!important;border-color:var(--et-edge)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #sagsSettingsCenter :is(.rows small,.grid small,.profile small,.release small,.about small,.desc){
+  color:var(--et-sub)!important;-webkit-text-fill-color:var(--et-sub)!important;
  }
 }
