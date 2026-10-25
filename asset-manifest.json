@@ -314,8 +314,8 @@
       "bytes": 6755
     },
     "./app/modules/theme-contrast.v2.js": {
-      "sha256": "460f44656d78eb66d7b9755c1065d35b717e0e200517e7b837e11eafad0b4909",
-      "bytes": 66353
+      "sha256": "efd6ad5cf0725fe00bbd780c91031d8f1f6f83ea3e2d326d2748ee5d2099e2af",
+      "bytes": 86765
     },
     "./app/modules/tvj-gof-035.v630.js": {
       "sha256": "e3903e714bc7b66d843fce48153500eb3f9af76e679b136a3209ed5873681e9c",
@@ -484,10 +484,6 @@
     "./app/styles/new-ui-v1.css": {
       "sha256": "e0882469c033cb2de486993e710918eb345eb6df00b6e61663ace0ce6e97f11b",
       "bytes": 376938
-    },
-    "./app/styles/unified-dual-theme.v1.css": {
-      "sha256": "d83546e1a782731d20418b0c2de574b65eeeb265fa2d9abe2367040e13e26e79",
-      "bytes": 20338
     },
     "./app/vendor/lz-string-1.5.0.js": {
       "sha256": "550034b821027008776cb9bcd1700bb5d31e8b3de224cb130fc966a75dab0e5e",
@@ -766,8 +762,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "ba53f7a4efbd22b9207a46652f9419c656dd944cfd1f0d2fd1398aa5f836f628",
-      "bytes": 105455
+      "sha256": "14924ea3877446d661fa17dea7607cb14a8cfd201f45ac375e97e38c248fcaca",
+      "bytes": 105320
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -818,8 +814,8 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "37a50e6b2fd35b4a138439b42154be360bc3180536f2d12b125f04e6f67ee582",
-      "bytes": 22494
+      "sha256": "ce2857453d1acf35e3f9bd33318f64434cc6ed6afd094b309348cc0812e35f79",
+      "bytes": 22453
     },
     "./storage-recovery.html": {
       "sha256": "08817204a946fbdfa404e8c083dd0c2016e935fb8fe56ff8ef99f405978d3df6",
