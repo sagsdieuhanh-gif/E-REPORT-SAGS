@@ -10,12 +10,13 @@ const manifest=JSON.parse(read('asset-manifest.json'));
 const html=read('index.html');
 const sw=read('service-worker.js');
 const settings=read('app/modules/settings.v1.js');
-const css=read('app/styles/unified-dual-theme.v1.css');
+const css=read('app/modules/theme-contrast.v2.js');
 assert.equal(version.version,'V1.1');
 assert.equal(manifest.build,version.build);
-assert.ok(html.includes('./app/styles/unified-dual-theme.v1.css?v='+version.build),'The UI stylesheet must be version-pinned');
+assert.ok(html.includes('theme-contrast.v2.js?v='+version.build),'Theme palette module must be version-pinned');
 assert.ok(html.includes('settings.v1.js?v='+version.build),'Updated settings module must be version-pinned');
-assert.ok(sw.includes('./app/styles/unified-dual-theme.v1.css'),'The offline bootstrap needs the new palette');
+assert.ok(sw.includes('./app/modules/theme-contrast.v2.js'),'The offline bootstrap needs the palette module');
+assert.equal([...html.matchAll(/<link[^>]+rel="stylesheet"/g)].length,6,'Do not increase CSS network requests');
 assert.ok(settings.includes('data-sags-theme-pick="light"')&&settings.includes('data-sags-theme-pick="dark"'),'Both choices must be present in Settings');
 assert.ok(settings.includes("b.setAttribute('aria-pressed'"),'Active theme must be announced accessibly');
 assert.ok(settings.includes("persist(Object.assign({},P,{appearance:b.dataset.sagsThemePick}))"),'The choice must persist through existing settings/cloud');
@@ -26,7 +27,7 @@ for(const surface of ['#aclSimpleModal#aclSimpleModal','#sagsSettingsCenter','#v
 assert.ok(css.includes('-webkit-text-fill-color:var(--et-fg)!important'),'Safari input/text contrast must be controlled');
 assert.ok(css.includes('color-scheme:inherit!important'),'Native dark date fields must follow theme');
 assert.ok(css.includes('/* Business forms/PDF remain'),'Paper forms must be excluded from UI recoloring');
-for(const asset of ['./index.html','./service-worker.js','./version.json','./app/modules/settings.v1.js','./app/styles/unified-dual-theme.v1.css']){
+for(const asset of ['./index.html','./service-worker.js','./version.json','./app/modules/settings.v1.js','./app/modules/theme-contrast.v2.js']){
   const buf=fs.readFileSync(path.join(root,asset.slice(2)));
   const item=manifest.assets[asset];
   assert.ok(item,asset+' missing pinned manifest metadata');
