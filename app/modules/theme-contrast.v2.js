@@ -231,6 +231,60 @@ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal
 html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal .acls-tab-count{background:var(--et-hover,#d9eaf6)!important;color:var(--et-link,#17435c)!important;-webkit-text-fill-color:var(--et-link,#17435c)!important}
 html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal .acls-tab.active .acls-tab-count{background:var(--et-hover,#e0efff)!important;color:var(--et-link,#075b9d)!important;-webkit-text-fill-color:var(--et-link,#075b9d)!important}
 html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal .acls-status.err{color:var(--et-danger-fg,#9c2020)!important;-webkit-text-fill-color:var(--et-danger-fg,#9c2020)!important}
+
+/* V1.5: verified DOM-root gaps in click-opened application chrome.
+   Override inline presentation only, not paper/scan/PDF/canvas surfaces. */
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #cxCleanModal > div,
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #cxCleanModal > div > div:first-child,
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #v503AdminResetPanel,
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #finalFormsModal .finalFormsPanel,
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #finalFormsModal .finalFormsHeader,
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #fs09PreviewModal .fs09PreviewHead,
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #fs09PreviewModal .fs09PreviewFoot{
+ background:var(--et-card)!important;color:var(--et-fg)!important;border-color:var(--et-edge)!important;
+ color-scheme:inherit!important;
+}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #cxCleanModal :is(#cxCleanMeta,b,h3,.cxCleanTitle),
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #v503AdminResetPanel :is(b,strong,div,label,h3),
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #finalFormsModal .finalFormsHeader :is(span,b,strong){
+ color:var(--et-fg)!important;-webkit-text-fill-color:var(--et-fg)!important;
+}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #cxCleanModal :is(#cxCleanMeta,.cxCleanSub),
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #finalFormsModal .finalHeaderHint{
+ color:var(--et-sub)!important;-webkit-text-fill-color:var(--et-sub)!important;
+}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #cxCleanModal :is(button:not(.danger),select,input),
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #v503AdminResetPanel :is(input:not([type=checkbox]),select),
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #finalFormsModal .finalFormsHeader :is(button:not(.send),select),
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #fs09PreviewModal .fs09PreviewFoot button{
+ background:var(--et-raised)!important;color:var(--et-fg)!important;
+ -webkit-text-fill-color:var(--et-fg)!important;border-color:var(--et-edge-strong)!important;
+}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body :is(
+ #flightTypeEditModal,#firebaseUsageModal,#fwcMultitaskModal,#sagsNetDiagModal
+) :is(.panel,.modalPanel,.modalBox,.card,.modalBody,.modalHeader){
+ background:var(--et-card)!important;color:var(--et-fg)!important;border-color:var(--et-edge)!important;
+}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body :is(
+ #flightTypeEditModal,#firebaseUsageModal,#fwcMultitaskModal,#sagsNetDiagModal
+) :is(input:not([type=checkbox]):not([type=radio]),select,textarea){
+ background:var(--et-input)!important;color:var(--et-fg)!important;
+ -webkit-text-fill-color:var(--et-fg)!important;border-color:var(--et-edge-strong)!important;
+ caret-color:var(--et-fg)!important;color-scheme:inherit!important;
+}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body :is(
+ #flightTypeEditModal,#firebaseUsageModal,#fwcMultitaskModal,#sagsNetDiagModal
+) :is(label,h2,h3,h4,strong){
+ color:var(--et-fg)!important;-webkit-text-fill-color:var(--et-fg)!important;
+}
+/* Semantic chrome classes cover extra dialogs injected after each click.
+   Do not target generic .sheet, PDF page or handwritten image containers. */
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body :is(
+ [id$="Modal"] .modalHeader,[id$="Modal"] .modalFooter,
+ [id$="Modal"] .panelHeader,[id$="Modal"] .panelFooter
+){
+ background:var(--et-card)!important;color:var(--et-fg)!important;border-color:var(--et-edge)!important;
+}
 `;document.head.appendChild(st);
 /* V1.5 diagnostic harness: opt-in ONLY. No customer content, form values,
    Firebase records, network telemetry or recording in normal operation.
