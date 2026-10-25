@@ -1,12 +1,12 @@
 {
-  "version": "V1.0",
-  "displayVersion": "V1.0",
-  "label": "V1.0 - TVJ CHỈ VZ & 42.1 NHẬP GIỜ TỰ DO",
-  "build": "V1.0-20261025-TVJ-VZ-421-FREE-TIME-09",
+  "version": "V1.1",
+  "displayVersion": "V1.1",
+  "label": "V1.1 - HAI CHẾ ĐỘ GIAO DIỆN SÁNG / TỐI",
+  "build": "V1.1-20261025-UNIFIED-DUAL-THEME-10",
   "releasedAt": "2026-10-25",
-  "type": "v1-tvj-vz-dossier-and-421-free-time",
+  "type": "v1-1-global-dual-theme",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Sửa AD hồ sơ chỉ hiện TVJ-GOF-035 khi mã chuyến thuộc VZ/TVJ; FSAGS 42.1 nhập ô giờ bất kỳ không yêu cầu giờ trước hoặc Start/Finish theo thứ tự, cả nhập trực tiếp và nhập nhanh. Vẫn kiểm tra HH:MM; giữ nguyên điều kiện hãng khác, biểu mẫu khác, dữ liệu, roster, chữ ký và PDF.",
-  "message": "V1.0: Chỉ hiện TVJ-GOF-035 trên VZ và bỏ ràng buộc thứ tự giờ FSAGS 42.1"
+  "notes": "Chuẩn hóa 2 giao diện SÁNG (nền trắng/chữ tối) và TỐI (nền đen/chữ sáng) trên PC/mobile; chọn trong Cài đặt và lưu theo tài khoản. Sửa cặp nền/chữ không tương phản trong A/C Limits, các ô lọc/ngày và nhiều trang điều hành. Không thay đổi biểu mẫu in/PDF, roster, chữ ký, dữ liệu chuyến bay.",
+  "message": "V1.1: Giao diện Sáng/Tối đồng bộ toàn hệ thống"
 }
