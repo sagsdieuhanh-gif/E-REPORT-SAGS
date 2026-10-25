@@ -1,7 +1,7 @@
 {
   "schema": 2,
   "version": "V1.0",
-  "build": "V1.0-20261025-ACL-UX-CLEAR-04",
+  "build": "V1.0-20261025-ACL-MOBILE-FIT-CONTRAST-05",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -146,8 +146,8 @@
       "bytes": 132730
     },
     "./app/generated/core-tools.js": {
-      "sha256": "3c8b3721a602680daa68d4f279a38988081ae1a39a6281d719c966e62b61fd78",
-      "bytes": 119894
+      "sha256": "5f5ba2517b93f70f8493a0b22a45f69cf83760dee961f6af3495239cf695ae79",
+      "bytes": 126222
     },
     "./app/generated/runtime-1.js": {
       "sha256": "d28c3a15851e5ba0e22f3cd6222ae1f2c66183177638ad5191c201e73573801e",
@@ -314,8 +314,8 @@
       "bytes": 6755
     },
     "./app/modules/theme-contrast.v2.js": {
-      "sha256": "1b87791070b8b54aceb1581c1f545af681bbce94e71a0b78709f7ba3e6e44386",
-      "bytes": 60280
+      "sha256": "460f44656d78eb66d7b9755c1065d35b717e0e200517e7b837e11eafad0b4909",
+      "bytes": 66353
     },
     "./app/modules/tvj-gof-035.v630.js": {
       "sha256": "e3903e714bc7b66d843fce48153500eb3f9af76e679b136a3209ed5873681e9c",
@@ -762,8 +762,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "1dfdc737adf2fed134e82d008d9883b5b99187da90b2476554900d3721b09e67",
-      "bytes": 104634
+      "sha256": "9ae9e5344d2d83c7813f08b6b9b6394275e1b042610d5b431a3273ba19c00fbc",
+      "bytes": 105503
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -814,16 +814,16 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "30435ccf7e46ec0b450548c8c59bde7fa44730f6b44c20441ff768fd4b4c757e",
-      "bytes": 22435
+      "sha256": "e64ef630cca57228eeed1ac2ac5173247e720fb88b2f95a098a206e5d6efd0be",
+      "bytes": 22468
     },
     "./storage-recovery.html": {
       "sha256": "08817204a946fbdfa404e8c083dd0c2016e935fb8fe56ff8ef99f405978d3df6",
       "bytes": 26106
     },
     "./version.json": {
-      "sha256": "3eaf99d29d793530af7ed8b6a4191343fe8b1f1dec6698f0464cb5a8fbe6c2fc",
-      "bytes": 786
+      "sha256": "ad0d47058c35461bf4e37094ebe9d671c4489692262b5930fd67faf094233a41",
+      "bytes": 840
     }
   },
   "mutableAssets": [
