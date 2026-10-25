@@ -3,7 +3,7 @@
    Preferences stay local to the signed-in account/device; no form keys or business rules change. */
 (function(root){
   'use strict';
-  const BUILD='V6.4.82-20261003-QUICK-PREFS-COLLAPSE-PERSIST-01';
+  const BUILD='V1.2-20261025-LOGIN-THEME-SYNC';
   if(root.__SAGS_UI_PREFS_BUILD__===BUILD)return;
   root.__SAGS_UI_PREFS_BUILD__=BUILD;
 
