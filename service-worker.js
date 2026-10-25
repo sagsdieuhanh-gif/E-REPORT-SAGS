@@ -2,7 +2,7 @@
    Base: V4.8.10B Layered PDF + HF1–HF4. Never mix navigation HTML with a different runtime.
 */
 'use strict';
-const BUILD='V1.0-20261025-REMOVE-IDLE-EXPORT-07';
+const BUILD='V1.0-20261025-TVJ-VZ-DOSSIER-GATE-08';
 const DISPLAY_VERSION='V1.0';
 const CACHE_NAME='sags-app-shell-v1.0-20261025-remove-idle-export-07';
 const META_CACHE_NAME='sags-app-meta-v1.0-20261025-remove-idle-export-07';
