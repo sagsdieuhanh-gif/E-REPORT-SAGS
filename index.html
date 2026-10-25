@@ -2,12 +2,37 @@
 <html lang="vi" class="new-ui-v1">
 <head><script id="sagsCanonicalProduction">(function(){try{if(/(^|\.)github\.io$/i.test(location.hostname)){const u=new URL("https://e-report-sags.vercel.app/");u.search=location.search;u.hash=location.hash;location.replace(u.href)}}catch(_){}})();</script>
 <meta charset="utf-8"/>
-<script id="sags-dual-theme-early">(function(){
- try{
-  var mode=localStorage.getItem('sagsUiThemeV1:device');
-  document.documentElement.setAttribute('data-ui-theme',mode==='dark'?'dark':'light');
- }catch(_){document.documentElement.setAttribute('data-ui-theme','light')}
-})();</script>
+<script id="sags-dual-theme-early">(function(w,d){
+ 'use strict';
+ var key='sagsUiThemeV1:device',pending='sagsUiThemeV1:loginPending';
+ function active(){try{return localStorage.getItem(key)==='dark'?'dark':'light'}catch(_){return 'light'}}
+ function sync(){
+  var mode=d.documentElement.getAttribute('data-ui-theme')||active();
+  d.querySelectorAll('[data-sags-login-theme]').forEach(function(b){
+   var on=b.getAttribute('data-sags-login-theme')===mode;
+   b.classList.toggle('active',on);b.setAttribute('aria-pressed',on?'true':'false');
+  });
+ }
+ w.sagsChooseLoginTheme=function(mode){
+  if(mode!=='light'&&mode!=='dark')return false;
+  try{
+   localStorage.setItem(key,mode);
+   localStorage.setItem(pending,JSON.stringify({theme:mode,at:Date.now()}));
+  }catch(_){}
+  d.documentElement.setAttribute('data-ui-theme',mode);
+  try{if(typeof w.sagsSetUiTheme==='function')w.sagsSetUiTheme(mode)}catch(_){}
+  sync();
+  try{w.dispatchEvent(new CustomEvent('sags:themechange',{detail:{theme:mode,source:'login'}}))}catch(_){}
+  return true;
+ };
+ d.documentElement.setAttribute('data-ui-theme',active());
+ d.addEventListener('click',function(e){
+  var b=e.target&&e.target.closest&&e.target.closest('[data-sags-login-theme]');
+  if(b){e.preventDefault();w.sagsChooseLoginTheme(b.getAttribute('data-sags-login-theme'))}
+ },false);
+ d.addEventListener('DOMContentLoaded',sync,{once:true});
+ w.addEventListener('sags:themechange',sync,{passive:true});
+})(window,document);</script>
 <script id="sags-storage-capacity-bootstrap">
 // Copyright (c) 2013 Pieroxy <pieroxy@pieroxy.net>
 // This work is free. You can redistribute it and/or modify it
@@ -672,7 +697,14 @@ if (typeof define === 'function' && define.amd) {
 <div id="roleLoginModal">
 <div class="roleLoginCard">
 <div class="roleLoginLogo"><img src="assets/branding/login-logo-10years.png?v=1" alt="SAGS-CXR 10 Years Anniversary"></div>
-<div class="newUiLoginEyebrow" aria-label="Giao diện NEW UI V1">SAGS / E-REPORT <span id="loginReleaseVersion">V1.1</span></div>
+<div class="newUiLoginEyebrow" aria-label="E-REPORT SAGS">SAGS / E-REPORT <span id="loginReleaseVersion">V1.1</span></div>
+<div class="sagsLoginThemeBar" role="group" aria-label="Chọn giao diện">
+ <span class="sagsLoginThemeLabel">GIAO DIỆN</span>
+ <div class="sagsLoginThemeChoices">
+  <button type="button" class="sagsLoginThemeBtn" data-sags-login-theme="light" aria-pressed="false" aria-label="Giao diện sáng">☀ Sáng</button>
+  <button type="button" class="sagsLoginThemeBtn" data-sags-login-theme="dark" aria-pressed="false" aria-label="Giao diện tối">☾ Tối</button>
+ </div>
+</div>
 <h2>Đăng nhập</h2>
 <div id="personalLoginFields">
 <label>Tài khoản</label>
