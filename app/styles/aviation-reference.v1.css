@@ -2051,3 +2051,329 @@ html.new-ui-v1 body :is(#sagsSettingsCenter,#fwcModal,#dailyRosterModal,#fleetMa
   html.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginThemeBtn{transition:none!important}
  }
 }
+
+
+/* V1.4 · Theme coverage audit: application CHROME only.
+   All rules inherit one paired foreground/background palette. Never target
+   the printable .sheet/.paper, SVG form, PDF preview, canvas or signature. */
+@media screen {
+ html.new-ui-v1.new-ui-v1[data-ui-theme]{
+   --ui-text:var(--et-fg);--ui-text-muted:var(--et-sub);
+   --ui-surface:var(--et-card);--ui-surface-soft:var(--et-raised);
+   --ui-border:var(--et-edge);--ui-border-soft:var(--et-edge);
+   --ui-primary-soft:var(--et-hover);
+   --fo-bg:var(--et-shell);--fo-surface:var(--et-card);
+   --fo-surface-2:var(--et-raised);--fo-text:var(--et-fg);
+   --fo-muted:var(--et-sub);--fo-line:var(--et-edge);
+   --fo-line-strong:var(--et-edge-strong);--fo-blue-soft:var(--et-hover);
+   --fo-blue-strong:var(--et-link);
+   --v157-bg:var(--et-shell);--v157-card:var(--et-card);
+   --v157-text:var(--et-fg);--v157-muted:var(--et-sub);
+   --v157-line:var(--et-edge);
+ }
+ html.new-ui-v1.new-ui-v1[data-ui-theme="light"]{--et-overlay:rgba(15,32,48,.42)}
+ html.new-ui-v1.new-ui-v1[data-ui-theme="dark"]{--et-overlay:rgba(0,0,0,.73)}
+ /* Navigation drawer, menus, tabs, account, shortcuts (desktop + handheld). */
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body.v157-authenticated #v157Drawer,
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body.v157-authenticated #v157Drawer :is(.v157DrawerHead,.v157MenuBody,.v157DrawerFooter,.v157DrawerSection){
+   background:var(--et-shell)!important;color:var(--et-fg)!important;border-color:var(--et-edge)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body.v157-authenticated #v157Drawer :is(.v157MenuItem,.v157DrawerUser,.v157DrawerProfile,.v157DrawerAccount,.v157LogoBox,.v157DrawerControls){
+   background:var(--et-card)!important;color:var(--et-fg)!important;border-color:var(--et-edge)!important;
+   box-shadow:none!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body.v157-authenticated #v157Drawer :is(.v157SectionTitle,.meta,.v157DrawerSub,.v157DrawerRole,small){
+   color:var(--et-sub)!important;-webkit-text-fill-color:var(--et-sub)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body.v157-authenticated #v157Drawer :is(.v157MenuItem.active,.v157MenuItem[aria-current="page"]){
+   background:var(--et-hover)!important;color:var(--et-link)!important;
+   -webkit-text-fill-color:var(--et-link)!important;border-color:var(--et-focus)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body.v157-authenticated #v157Drawer .v157Brand::after{
+   color:var(--et-fg)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body.v157-authenticated #v157Drawer :is(.v157MenuItem:not(.active) .ico,.v157DrawerIcon){
+   background:var(--et-raised)!important;color:var(--et-link)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #v157BottomBar{
+   background:var(--et-card)!important;border-color:var(--et-edge)!important;color:var(--et-fg)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #v157BottomBar .v157BottomBtn:not(.active){
+   background:transparent!important;color:var(--et-sub)!important;
+   -webkit-text-fill-color:var(--et-sub)!important;
+ }
+ /* Real menu and form action docks: backgrounds were forced white or navy. */
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body.v163-operational :is(#sagsMobileFormDock,#v324FormActions,#v163OperationNav){
+   background:var(--et-card)!important;color:var(--et-fg)!important;border-color:var(--et-edge)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body.v163-operational :is(#v324FormActions .v324FormAction,#v163OperationNav>button,#sagsMobileFormDock .v324FormAction){
+   background:var(--et-raised)!important;color:var(--et-fg)!important;
+   -webkit-text-fill-color:var(--et-fg)!important;border-color:var(--et-edge-strong)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body.v163-operational :is(#v163HomeBtn,#v324FormActions .active){
+   background:var(--et-hover)!important;color:var(--et-link)!important;
+   -webkit-text-fill-color:var(--et-link)!important;
+ }
+ /* Retain operational handover/danger semantics, but pair foreground properly. */
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #v324FormActions #v324HandoverBtn{
+   background:var(--et-danger-bg)!important;color:var(--et-danger-fg)!important;
+   -webkit-text-fill-color:var(--et-danger-fg)!important;border-color:var(--et-danger-edge)!important;
+ }
+ /* Home cards, all flights, airline strip, dashboard chips. */
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #v6494AviationHome{
+   --a-bg:var(--et-shell);--a-text:var(--et-fg);--a-muted:var(--et-sub);
+   --ops-text:var(--et-fg);--ops-muted:var(--et-sub);
+   background:var(--et-shell)!important;color:var(--et-fg)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #v6494AviationHome :is(
+   .v6494Work,.v6494QuickHead,.v6494QuickGrid,
+   .v6494Nav,.v6494MobileNav,.v6494MobileGroup,.v6494MobileProfile,
+   .v6494MobileBrand,.v6494Bottom,.v6494Main,
+   #opsHomeQueue,#opsHomeFlights,#opsAirlineStrip,#opsHomeMetrics>div
+ ){
+   background:var(--et-card)!important;color:var(--et-fg)!important;border-color:var(--et-edge)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #v6494AviationHome :is(
+   #opsHomeMetrics small,#opsHomeFlights th,#opsHomeFlights,
+   .v6494MobileGroup h3,.v6494MobileBrand small,.v6494MobileProfile small,
+   .v6494Bottom button:not(.active),.v6494Card small
+ ){
+   color:var(--et-sub)!important;-webkit-text-fill-color:var(--et-sub)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #v6494AviationHome :is(
+   #opsHomeMetrics strong,#opsHomeFlights td,.v6494QuickHead b,.v6494SectionHead b
+ ){
+   color:var(--et-fg)!important;-webkit-text-fill-color:var(--et-fg)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #v6494AviationHome :is(#opsHomeFlights th,#opsHomeFlights td){
+   background:var(--et-card)!important;border-color:var(--et-edge)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #v6494AviationHome :is(.v6494Nav button.active,.v6494Bottom button.active){
+   background:var(--et-hover)!important;color:var(--et-link)!important;
+   -webkit-text-fill-color:var(--et-link)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #v6494AviationHome #opsHomeQueue button{
+   background:var(--et-raised)!important;color:var(--et-fg)!important;
+   -webkit-text-fill-color:var(--et-fg)!important;border-color:var(--et-edge)!important;
+ }
+ /* Flight list and dossiers: leaf cards, filters, toolbars, status text. */
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body :is(
+  #fwcModal .fwcPanel,#fwcModal .fwcHead,#fwcModal #fwcBody,#fwcModal .fwcList,
+  #fwcModal .fwcTools,#fwcModal .fwcFlight,#fwcModal .fwcInfo,
+  #sagsFlightDossierModal .sagsFlightDossierPanel,
+  #sagsFlightDossierModal .sagsFlightDossierHead,
+  #sagsFlightDossierModal .sagsFlightDossierBody,
+  #fwcMultitaskModal .fwcMultitaskPanel
+ ){
+   background:var(--et-card)!important;color:var(--et-fg)!important;border-color:var(--et-edge)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #fwcModal :is(.fwcSub,.fwcFlight span,.fwcMeta,.fwcHint,#fwcStatus){
+   color:var(--et-sub)!important;-webkit-text-fill-color:var(--et-sub)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #fwcModal :is(.fwcHead h3,.fwcFlight strong,.fwcFlight b){
+   color:var(--et-fg)!important;-webkit-text-fill-color:var(--et-fg)!important;
+ }
+ /* Legacy/admin modal family uses shared paired dialog variables.
+    High-specificity V2 fallback classes should not repaint every screen navy. */
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body :is(
+  .sagsAdminPanel,.sagsAdminField,.sagsUserCard,.fleetManagerPanel,
+  .v181AdminPanel,.v181AdminCard,.v181AdminIntro,.v174DataHubPanel,
+  .v174DataCard,.v340Panel,.v320Panel,.v327Panel,.v488Box,
+  .v485PermBox,.v460AiCard,.v2211-card,.airlinePolicyPanel,
+  .formMenuBox,.exportBox,.flightSessionBox,.attachmentSourceBox,
+  .sagsQteCustomizeCard,.ndCard
+ ){
+   background:var(--et-card)!important;color:var(--et-fg)!important;border-color:var(--et-edge)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body :is(
+  #v181AdminCenter,#v174DataHub,#adminHubModal,#activityMonitorModal,
+  #auditManagerModal,#fleetManagerModal,#accountManagerModal,#accountProfileEditModal,
+  #changePasswordModal,#aclAdminModal,#v485FeaturePermissionModal,
+  #v327ReassignModal,#v340ManualFlightModal,#v320RampModal,
+  #v488ArchiveModal,#v451NoticeAdminModal,#v460AiModal,
+  #v2211ImportModal,#airlinePolicyModal,#v377CreateFormModal,
+  #firebaseUsageModal,#flightTypeEditModal
+ ) :is(input:not([type="checkbox"]):not([type="radio"]),select,textarea){
+   background:var(--et-input)!important;color:var(--et-fg)!important;
+   -webkit-text-fill-color:var(--et-fg)!important;caret-color:var(--et-fg)!important;
+   border-color:var(--et-edge-strong)!important;color-scheme:inherit!important;
+ }
+ /* Legacy daily roster was forcibly dark regardless of appearance selection. */
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #dailyRosterModal :is(
+   .drPanel,.drBody,.drHead,.drField,.drCard,.drManage,.drManager,.drControls,
+   .drStatus:not(.err):not(.warn):not(.nochange),#drManage th,#drManage td
+ ){
+   background:var(--et-card)!important;color:var(--et-fg)!important;
+   -webkit-text-fill-color:var(--et-fg)!important;border-color:var(--et-edge)!important;
+   color-scheme:inherit!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #dailyRosterModal :is(h3,h4,label,.drField>label,#drManage td b,#drManage td strong){
+   color:var(--et-fg)!important;-webkit-text-fill-color:var(--et-fg)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #dailyRosterModal :is(.drSub,.drHint,.drEmpty,.drBadge,#drManageSearchStatus){
+   color:var(--et-sub)!important;-webkit-text-fill-color:var(--et-sub)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #dailyRosterModal :is(input:not([type="checkbox"]),select,textarea){
+   background:var(--et-input)!important;color:var(--et-fg)!important;
+   -webkit-text-fill-color:var(--et-fg)!important;caret-color:var(--et-fg)!important;
+   border-color:var(--et-edge-strong)!important;color-scheme:inherit!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #dailyRosterModal :is(input,textarea)::placeholder{
+   color:var(--et-muted)!important;-webkit-text-fill-color:var(--et-muted)!important;opacity:1!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #dailyRosterModal .drBtn:not(.publish):not(.danger){
+   background:var(--et-raised)!important;color:var(--et-fg)!important;
+   -webkit-text-fill-color:var(--et-fg)!important;border-color:var(--et-edge)!important;
+ }
+ /* A/C Limits had a late injected light-only stylesheet, overriding the mode. */
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #aclSimpleModal#aclSimpleModal :is(
+   .acls-panel,.acls-list,.acls-view,.acls-top,.acls-day-head
+ ){
+   background:var(--et-shell)!important;color:var(--et-fg)!important;
+   border-color:var(--et-edge)!important;color-scheme:inherit!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #aclSimpleModal#aclSimpleModal :is(
+   .acls-step,.acls-type,.acls-item,.acls-help,.acls-day,.acls-day-body,.acls-manage-card,
+   .acls-list-head,.acls-date-hint,.acls-manage-card .acls-filter-row
+ ){
+   background:var(--et-card)!important;color:var(--et-fg)!important;
+   border-color:var(--et-edge)!important;color-scheme:inherit!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #aclSimpleModal#aclSimpleModal :is(
+   .acls-top h3,.acls-step-title,.acls-item-head b,.acls-day-head label,
+   .acls-select,.acls-type>label,.acls-help summary,.acls-filter-label,
+   .acls-text,.acls-grid>label,.acls-role
+ ){
+   color:var(--et-fg)!important;-webkit-text-fill-color:var(--et-fg)!important;opacity:1!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #aclSimpleModal#aclSimpleModal :is(
+   .acls-hint,.acls-sub,.acls-meta,.acls-state,.acls-day-head span,.acls-help p
+ ){
+   color:var(--et-sub)!important;-webkit-text-fill-color:var(--et-sub)!important;opacity:1!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #aclSimpleModal#aclSimpleModal :is(input:not([type="checkbox"]),select,textarea){
+   background:var(--et-input)!important;color:var(--et-fg)!important;
+   -webkit-text-fill-color:var(--et-fg)!important;caret-color:var(--et-fg)!important;
+   border-color:var(--et-edge-strong)!important;color-scheme:inherit!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #aclSimpleModal#aclSimpleModal :is(input,textarea)::placeholder{
+   color:var(--et-muted)!important;-webkit-text-fill-color:var(--et-muted)!important;opacity:1!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #aclSimpleModal#aclSimpleModal :is(.acls-close,.v2213-tab:not(.active),.acls-tab:not(.active),.acls-actions button:not(.danger),.acls-day-delete:not(.danger),.acls-bulk:not(.danger),.acls-reset,.acls-today){
+   background:var(--et-raised)!important;color:var(--et-fg)!important;
+   -webkit-text-fill-color:var(--et-fg)!important;border-color:var(--et-edge)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #aclSimpleModal#aclSimpleModal :is(.acls-tab.active,.v2213-tab.active){
+   background:var(--et-primary)!important;color:var(--et-on-primary)!important;
+   -webkit-text-fill-color:var(--et-on-primary)!important;border-color:var(--et-primary)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #aclSimpleModal#aclSimpleModal :is(.acls-danger-zone){
+   background:var(--et-danger-bg)!important;border-color:var(--et-danger-edge)!important;
+ }
+ /* Another hidden gap: carrier service guide and its manager popups. */
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #csgModal :is(
+   #csgPanel,#csgBody,#csgDetail,#csgList,#csgTools,#csgMgr,#csgMgrCard,.csgCarrier,.csgCard,.csgRow
+ ){
+   background:var(--et-card)!important;color:var(--et-fg)!important;border-color:var(--et-edge)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #csgModal :is(#csgHead,.csgDetailHead){
+   background:var(--et-raised)!important;color:var(--et-fg)!important;border-color:var(--et-edge)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #csgModal :is(input,textarea,select,#csgSearch){
+   background:var(--et-input)!important;color:var(--et-fg)!important;
+   -webkit-text-fill-color:var(--et-fg)!important;border-color:var(--et-edge-strong)!important;
+   caret-color:var(--et-fg)!important;color-scheme:inherit!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #csgModal :is(input,textarea)::placeholder{
+   color:var(--et-muted)!important;-webkit-text-fill-color:var(--et-muted)!important;opacity:1!important;
+ }
+ /* Flight layout editor: control chrome only, not aircraft blueprint/paper. */
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #v440Fm :is(
+   .sagsLayoutToolbar,.sagsLayoutActions,.sagsLayoutSettings
+ ){
+   background:var(--et-card)!important;color:var(--et-fg)!important;border-color:var(--et-edge)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #v440Fm .sagsLayoutToolbar :is(input,select,button){
+   background:var(--et-input)!important;color:var(--et-fg)!important;
+   -webkit-text-fill-color:var(--et-fg)!important;border-color:var(--et-edge-strong)!important;
+ }
+ /* UI form entry quick editors only – not official underlying printed sheets. */
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body :is(
+   #sagsQuickEntry .sq-card,#quickTimeModal .quickTimePanel,#fs09QuickModal .fs09qPanel,
+   #sags5494Quick .q-card,#sags5494FieldEditor .fe-card
+ ){
+   background:var(--et-card)!important;color:var(--et-fg)!important;border-color:var(--et-edge)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body :is(
+   #sagsQuickEntry .sq-title,#quickTimeModal .quickTimeTitle,#fs09QuickModal .fs09qTitle,
+   #sags5494Quick .q-title,#sags5494FieldEditor .fe-title
+ ){
+   color:var(--et-fg)!important;-webkit-text-fill-color:var(--et-fg)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body :is(
+   #sagsQuickEntry #sqValue,#quickTimeModal input,#fs09QuickModal input,
+   #sags5494Quick input,#sags5494FieldEditor input
+ ){
+   background:var(--et-input)!important;color:var(--et-fg)!important;
+   -webkit-text-fill-color:var(--et-fg)!important;border-color:var(--et-edge-strong)!important;
+   caret-color:var(--et-fg)!important;color-scheme:inherit!important;
+ }
+ /* Misc admin alert/help panels also use shared palette. */
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body :is(
+   #appUpdateModal .panel,#firebaseUsageModal .sagsAdminPanel,
+   #cxCleanModal .sagsAdminPanel,#fwcMultitaskModal .panel,
+   #aclAiModal .panel
+ ){
+   background:var(--et-card)!important;color:var(--et-fg)!important;border-color:var(--et-edge)!important;
+ }
+ @media(max-width:720px){
+   html.new-ui-v1.new-ui-v1[data-ui-theme] body :is(
+      #v157Drawer,#sagsSettingsCenter,#fwcModal .fwcPanel,#dailyRosterModal .drPanel,
+      #aclSimpleModal .acls-panel,#csgModal #csgPanel
+   ){max-width:100vw!important;box-sizing:border-box!important;}
+   html.new-ui-v1.new-ui-v1[data-ui-theme] body :is(
+      #sagsSettingsCenter input,#fwcModal input,#dailyRosterModal input,
+      #aclSimpleModal input,#csgModal input
+   ){min-width:0!important;max-width:100%!important;box-sizing:border-box!important;}
+ }
+}
+
+
+/* V1.4 paired small controls and headers. Preserve photographic banner and logos. */
+@media screen {
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #v6494AviationHome :is(.v6494Nav button:not(.active),.v6494MobileNav button:not(.active),.v6494Bottom button:not(.active)){
+  background:var(--et-raised)!important;color:var(--et-sub)!important;
+  -webkit-text-fill-color:var(--et-sub)!important;border-color:var(--et-edge)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #v6494AviationHome :is(.v6494Search,.v6494Search input,#v6494Search){
+  background:var(--et-input)!important;color:var(--et-fg)!important;
+  -webkit-text-fill-color:var(--et-fg)!important;border-color:var(--et-edge-strong)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #v6494AviationHome :is(.v6494Search input,#v6494Search)::placeholder{
+  color:var(--et-muted)!important;-webkit-text-fill-color:var(--et-muted)!important;opacity:1!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #fwcModal :is(.fwcTools button,.fwcHead button,.fwcFilter,.fwcAction){
+  background:var(--et-raised)!important;color:var(--et-fg)!important;
+  -webkit-text-fill-color:var(--et-fg)!important;border-color:var(--et-edge-strong)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #fwcModal :is(.fwcFlight button.active,.fwcTools button.active){
+  background:var(--et-hover)!important;color:var(--et-link)!important;
+  -webkit-text-fill-color:var(--et-link)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #csgModal :is(#csgHead b,#csgHead .csgHeadBtn,#csgList .csgCarrier,.csgDetailTitle,.csgDetailHead){
+  color:var(--et-fg)!important;-webkit-text-fill-color:var(--et-fg)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #csgModal :is(.csgMeta,.csgHint,.csgSub,.csgCarrier small){
+  color:var(--et-sub)!important;-webkit-text-fill-color:var(--et-sub)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #csgModal :is(.csgHeadBtn,.csgAction,button:not(.danger):not(.primary)){
+  background:var(--et-raised)!important;color:var(--et-fg)!important;
+  -webkit-text-fill-color:var(--et-fg)!important;border-color:var(--et-edge)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #sagsSettingsCenter :is(.rows,.grid,.profile,.about,.release,.flow>div,.stats>div){
+  background:var(--et-card)!important;color:var(--et-fg)!important;border-color:var(--et-edge)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #sagsSettingsCenter :is(.rows small,.grid small,.profile small,.release small,.about small,.desc){
+  color:var(--et-sub)!important;-webkit-text-fill-color:var(--et-sub)!important;
+ }
+}

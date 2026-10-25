@@ -1,12 +1,12 @@
 {
-  "version": "V1.3",
-  "displayVersion": "V1.3",
-  "label": "V1.3 - PWA FAST START",
-  "build": "V1.3-20261026-PWA-FAST-START-12",
+  "version": "V1.4",
+  "displayVersion": "V1.4",
+  "label": "V1.4 - GIAO DIỆN SÁNG/TỐI TOÀN HỆ THỐNG",
+  "build": "V1.4-20261026-GLOBAL-THEME-13",
   "releasedAt": "2026-10-26",
-  "type": "v1-3-pwa-warm-start",
+  "type": "v1-4-global-dual-theme",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Giảm khối lượng kiểm tra tài nguyên lặp lại khi mở bằng icon; tái sử dụng CacheStorage và manifest đã xác minh, chạy song song có giới hạn khi cần xác minh lại, dời nén lưu trữ nháp sang lúc máy rảnh; giữ nguyên kiểm tra bản cập nhật, tính toàn vẹn, dữ liệu và nghiệp vụ.",
-  "message": "V1.3: Tối ưu khởi động PWA và phản hồi màn hình chính"
+  "notes": "Đồng bộ cặp màu nền/chữ ở các màn hình PC, mobile, menu, My Flight, trang chính, thanh thao tác, Daily Roster, A/C Limits, hướng dẫn hãng, cài đặt, quản trị và nhập nhanh. Giữ nguyên hình nền/logo và giấy biểu mẫu/PDF/chữ ký. Kế thừa PWA fast start V1.3.",
+  "message": "V1.4: Chuẩn hóa màu Sáng/Tối ở các màn hình nghiệp vụ"
 }
