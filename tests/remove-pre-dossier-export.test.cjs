@@ -1,0 +1,11 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs');
+const read=p=>fs.readFileSync(p,'utf8'),html=read('index.html'),boot=read('app/boot/06-legacy.js'),permissions=read('app/boot/13-v485FeaturePermissions.js'),form=read('app/core/phases/core-shared.js');
+for(const [name,source] of [['index.html',html],['legacy role UI',boot],['feature role UI',permissions]])assert.ok(!source.includes('roleBtnExport'),'Obsolete pre-dossier toolbar export survived in '+name);
+assert.match(html,/id="exportChoiceModal"/,'Shared in-form PDF export modal must remain');
+assert.match(html,/id="exportModal"/,'PDF download/share must remain');
+assert.match(form,/id="v324PdfBtn"/,'Form-specific PDF button must remain');
+assert.match(form,/function v324OpenPdf\(\)/,'Form-specific export handler must remain');
+assert.match(permissions,/function\(\)\{const exporting208=getCurrentExportMainForm\(\)/,'In-form permissions must remain');
+assert.match(read('app/boot/05-legacy.js'),/function openExportChoiceMenu\(\)/,'Form PDF export logic must remain');
+console.log('No idle toolbar PDF button, preserved in-form PDF/FINAL export PASS');

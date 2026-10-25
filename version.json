@@ -1,12 +1,12 @@
 {
   "version": "V1.0",
   "displayVersion": "V1.0",
-  "label": "V1.0 - A/C LIMITS: TỐI ƯU TẢI DANH SÁCH",
-  "build": "V1.0-20261025-ACL-LAG-LOAD-FIX-06",
+  "label": "V1.0 - LOẠI BỎ XUẤT PDF NGOÀI HỒ SƠ",
+  "build": "V1.0-20261025-REMOVE-IDLE-EXPORT-07",
   "releasedAt": "2026-10-25",
-  "type": "v1-aclimits-fast-load",
+  "type": "v1-remove-idle-export-entry",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "A/C LIMITS tránh dựng DOM toàn bộ danh sách khi chưa chọn ngày/đang ở Nhập LIMIT; giới hạn 60 bản ghi mỗi lượt, Hiện thêm. Không chờ tải Fleet khi mở, RTDB đọc quá chậm chuyển Firestore có giới hạn. Giữ nguyên dữ liệu, quy tắc xóa sao lưu, roster/biểu mẫu/PDF/logo và hiển thị V1.0.",
-  "message": "V1.0: Tối ưu A/C LIMITS tránh quay tải kéo dài, không render dư"
+  "notes": "Gỡ hoàn toàn nút Xuất trong thanh công cụ chính trước khi mở hồ sơ, gồm markup, phân quyền UI và nhật ký click dành riêng cho nút; giữ toàn bộ logic xuất PDF từ biểu mẫu/hồ sơ đang mở, FINAL, các chức năng chia sẻ và dữ liệu; không thay đổi quy tắc roster/hoàn tất.",
+  "message": "V1.0: Bỏ nút xuất PDF ngoài hồ sơ, giữ xuất trong biểu mẫu"
 }
