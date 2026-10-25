@@ -22,7 +22,7 @@ const registry={forms:[{id:'ramp',group:'fsags',code:'FSAGS42.3',fields:[{key:'a
 const docsFor=new Function('S','canonGroup','envelopeInfo','stateOf','formFor','formValueCount','meaningful','labelFallback','statusText',src.slice(src.indexOf('function docsFor('),src.indexOf('function openFinalSpecial('))+'return docsFor;')(
  S,canonGroup,st=>({env:st.envelope,kind:'ĐANG LÀM',at:0}),env=>env?.state||{},
  (reg,g)=>reg.forms.find(f=>f.group===g)||null,(form,state)=>form.fields.filter(f=>meaningful(state[f.key])).length,
- meaningful,v=>v,'ĐANG LÀM');
+ meaningful,v=>v,()=> 'ĐANG LÀM');
 const assigned={formGroup:'fsags',assignmentId:'aid1',user:'QUOCT'};
 const st={envelope:{state:{a:'A',b:'B',c:'C'}},formGroup:'fsags'};
 const nonVz=docsFor(assigned,st,registry,false);

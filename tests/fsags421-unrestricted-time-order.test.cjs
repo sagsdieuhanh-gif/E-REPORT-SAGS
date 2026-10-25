@@ -1,0 +1,15 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs');
+const legacy=fs.readFileSync('app/boot/05-legacy.js','utf8');
+const qte=fs.readFileSync('app/boot/18-v173-quick-time.js','utf8');
+assert.match(legacy,/function orderedTimeRequirement\(key\)\{return null\}/,'FSAGS 42.1 time predecessor rule removed');
+assert.match(legacy,/function canCreateOrderedTime\(f\)\{return true\}/,'FSAGS 42.1 tap opens any empty time field');
+assert.match(legacy,/function v22ValidateTimeChange\(key,newValue\)\{if\(\/\^f421_\/.test\(String\(key\|\|''\)\)\)return true/,'42.1 pair chronological constraint disabled');
+assert.match(qte,/function validateOrderedBatch\(draft,changedKeys\)\{return true\}/,'quick-time batch accepts partial/out-of-order 42.1 entries');
+assert.match(qte,/if\(String\(key\).startsWith\('f421_'\)\)continue/,'quick-time pair chronological gate bypassed only for 42.1');
+assert.match(qte,/Giờ chưa hợp lệ:/,'HHMM shape validation retained');
+assert.match(legacy,/Giờ không hợp lệ\. Giờ 00-23, phút 00-59/,'HH:MM numeric boundaries retained');
+assert.match(legacy,/function v22TimeRuleForKey\(key\)/,'other form pair rule remains');
+assert.match(qte,/function validatePairsBatch\(draft,changedKeys\)/,'other form pair checks retained');
+assert.match(legacy,/if\(f\.key==="f421_h5Start"\)updateArrivalDelay421\(\)/,'42.1 arrival delay update retained');
+console.log('FSAGS 42.1: free-order time entry direct and quick-time; HH:MM validation, other forms and draft/persistence unchanged');
