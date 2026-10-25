@@ -188,7 +188,7 @@ function flightCodes(value){
  const codes=[];
  for(const raw of values){
   const text=U(raw);
-  const matches=text.matchAll(/(?:^|[^A-Z0-9])([A-Z0-9]{2,3})\s*[-/]?\s*\d{1,5}[A-Z]?(?=$|[^A-Z0-9])/g);
+  const matches=text.matchAll(/(?:^|[^A-Z0-9])([A-Z]{2,3}|[0-9][A-Z]|[A-Z][0-9])\s*[-/]?\s*\d{1,5}[A-Z]?(?=$|[^A-Z0-9])/g);
   for(const m of matches)codes.push(m[1]);
  }
  return codes;
