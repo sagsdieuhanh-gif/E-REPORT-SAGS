@@ -202,6 +202,35 @@ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #entry#entry #entryPaperSheet.
 html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #entry#entry #entryText#entryText::placeholder{
  color:#5b6b76!important;-webkit-text-fill-color:#5b6b76!important;opacity:1!important;
 }
+
+/* V1.0 scoped A/C LIMITS surface contract. Keep document editing legible
+   regardless of global dark/light theme and high-specificity generic modal rules. */
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal .acls-panel{background:#edf2f7!important;color:#193047!important;color-scheme:light!important}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal :is(.acls-step,.acls-type,.acls-item,.acls-help,.acls-day,.acls-day-body,.acls-manage-card){background:#ffffff!important;color:#193047!important;border-color:#ccd9e4!important;color-scheme:light!important}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal .acls-top{background:#103657!important;border-color:#103657!important}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal .acls-top>h3{color:#ffffff!important;-webkit-text-fill-color:#ffffff!important;opacity:1!important}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal :is(.acls-step-title,.acls-item-head b,.acls-select,.acls-day-head label,.acls-date-hint,.acls-type>label,.acls-help summary){color:#17324d!important;-webkit-text-fill-color:#17324d!important;opacity:1!important}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal :is(.acls-hint,.acls-sub,.acls-meta,.acls-state,.acls-filter-label,.acls-day-head span,.acls-help,.acls-danger-zone p){color:#42596b!important;-webkit-text-fill-color:#42596b!important;opacity:1!important}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal :is(.acls-text,.acls-status,.acls-grid>label,.acls-role,.acls-date-hint){color:#193047!important;-webkit-text-fill-color:#193047!important}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal .acls-day-head{background:#e8f2fa!important;border-color:#cbddea!important}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal .acls-danger-zone{background:#fff6f6!important;border-color:#cb8989!important}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal .acls-danger-zone strong{color:#862323!important;-webkit-text-fill-color:#862323!important}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal :is(.acls-filter,.acls-reg,.acls-date,.acls-textarea,input:not([type=checkbox]):not([type=radio]),textarea){--sags-entry-bg:#ffffff;--sags-entry-fg:#172b3a;--sags-entry-placeholder:#53677a;background:#ffffff!important;color:#172b3a!important;-webkit-text-fill-color:#172b3a!important;caret-color:#172b3a!important;border-color:#8da9bd!important;color-scheme:light!important;opacity:1!important}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal :is(input,textarea)::placeholder{color:#53677a!important;-webkit-text-fill-color:#53677a!important;opacity:1!important}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal :is(.acls-close,.v2213-tab,.acls-tab,.acls-actions button,.acls-day-delete,.acls-bulk,.acls-reset,.acls-today){background:#e8f0f6!important;color:#173b54!important;-webkit-text-fill-color:#173b54!important;border-color:#b8ccda!important;opacity:1!important}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal :is(.acls-close){background:#244a6a!important;color:#ffffff!important;-webkit-text-fill-color:#ffffff!important;border-color:#315b7c!important}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal :is(.acls-tab.active,.v2213-tab.active){background:#075b9d!important;color:#ffffff!important;-webkit-text-fill-color:#ffffff!important;border-color:#075b9d!important}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal .v2213-tab.clean{background:#e5f5eb!important;color:#10603b!important;-webkit-text-fill-color:#10603b!important;border-color:#79b995!important}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal .v2213-tab.ai{background:#eee8fc!important;color:#583197!important;-webkit-text-fill-color:#583197!important;border-color:#b7a3da!important}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal .acls-save{background:#096a45!important;color:#ffffff!important;-webkit-text-fill-color:#ffffff!important;border-color:#096a45!important}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal :is(.acls-delete-all,.acls-day-delete.danger,.acls-actions .danger,.acls-bulk.danger){background:#fff0f0!important;color:#942222!important;-webkit-text-fill-color:#942222!important;border-color:#d1a0a0!important}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal .acls-delete-all{background:#a92c31!important;color:#ffffff!important;-webkit-text-fill-color:#ffffff!important;border-color:#a92c31!important}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal .acls-badge.apu{background:#fff0d6!important;color:#805000!important;-webkit-text-fill-color:#805000!important}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal .acls-badge.hold{background:#e0efff!important;color:#174f80!important;-webkit-text-fill-color:#174f80!important}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal .acls-badge.other{background:#e9edf2!important;color:#334f62!important;-webkit-text-fill-color:#334f62!important}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal .acls-tab-count{background:#d9eaf6!important;color:#17435c!important;-webkit-text-fill-color:#17435c!important}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal .acls-tab.active .acls-tab-count{background:#ffffff!important;color:#075b9d!important;-webkit-text-fill-color:#075b9d!important}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal .acls-status.err{color:#9c2020!important;-webkit-text-fill-color:#9c2020!important}
 `;document.head.appendChild(st);
 root.sagsThemeContrastV2Audit=function(){
  const forms=(root.SAGS_FORMS_REGISTRY?.forms||root.formsRegistry?.forms||[]);
