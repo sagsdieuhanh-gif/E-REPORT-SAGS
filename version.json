@@ -1,12 +1,12 @@
 {
-  "version": "V1.2",
-  "displayVersion": "V1.2",
-  "label": "V1.2 - CHỌN GIAO DIỆN TẠI ĐĂNG NHẬP",
-  "build": "V1.2-20261025-LOGIN-THEME-11",
-  "releasedAt": "2026-10-25",
-  "type": "v1-2-login-theme-control",
+  "version": "V1.3",
+  "displayVersion": "V1.3",
+  "label": "V1.3 - PWA FAST START",
+  "build": "V1.3-20261026-PWA-FAST-START-12",
+  "releasedAt": "2026-10-26",
+  "type": "v1-3-pwa-warm-start",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Chọn Sáng/Tối bằng nút nhỏ gọn tại màn hình đăng nhập, áp dụng ngay, giữ trạng thái khi thoát vào lại, đồng bộ Cài đặt sau đăng nhập. Tối ưu tương phản màn hình đăng nhập PC/mobile, giữ nguyên biểu mẫu giấy/PDF, dữ liệu và roster.",
-  "message": "V1.2: Chọn giao diện ngay từ màn hình đăng nhập"
+  "notes": "Giảm khối lượng kiểm tra tài nguyên lặp lại khi mở bằng icon; tái sử dụng CacheStorage và manifest đã xác minh, chạy song song có giới hạn khi cần xác minh lại, dời nén lưu trữ nháp sang lúc máy rảnh; giữ nguyên kiểm tra bản cập nhật, tính toàn vẹn, dữ liệu và nghiệp vụ.",
+  "message": "V1.3: Tối ưu khởi động PWA và phản hồi màn hình chính"
 }
