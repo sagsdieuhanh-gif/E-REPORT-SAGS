@@ -3,7 +3,7 @@
    Preferences stay local to the signed-in account/device; no form keys or business rules change. */
 (function(root){
   'use strict';
-  const BUILD='V6.4.82-20261003-QUICK-PREFS-COLLAPSE-PERSIST-01';
+  const BUILD='V1.2-20261025-LOGIN-THEME-SYNC';
   if(root.__SAGS_UI_PREFS_BUILD__===BUILD)return;
   root.__SAGS_UI_PREFS_BUILD__=BUILD;
 
@@ -39,6 +39,10 @@
 
   function readTheme(){
     try{
+      // Explicit selection on the login screen takes priority until Settings
+      // writes the chosen theme into the authenticated account.
+      const pending=JSON.parse(localStorage.getItem(THEME_ROOT+':loginPending')||'null');
+      if(pending&&(pending.theme==='light'||pending.theme==='dark'))return pending.theme;
       const own=S(localStorage.getItem(themeKey()));
       if(own==='dark'||own==='light')return own;
       const device=S(localStorage.getItem(THEME_ROOT+':device'));
@@ -590,6 +594,7 @@
     const refreshPrefs=()=>{ensureQuickButton();bindQuickObserver();bindFs09Observer();syncIdentityAndTheme();applyQuickVisibility();optimizeEntryFlow()};
     document.addEventListener('click',e=>{if(e.target?.closest?.('#roleBtnQuickTime,.quickTimeTabs,.quickTimeFooter,#sagsQuickCustomizeModal,#fs09qTabs,#v38NavQuickTime'))scheduleEntryRefresh()},true);
     ['sags:login','sags:logout','sags:rolechange','sags:profilechange','sags:ui-ready'].forEach(name=>window.addEventListener(name,refreshPrefs));
+    window.addEventListener('sags:themechange',()=>{applyTheme(readTheme(),false)},{passive:true});
     setTimeout(refreshPrefs,450);setTimeout(refreshPrefs,1500);
     window.addEventListener('pageshow',()=>{syncIdentityAndTheme();setTimeout(()=>{applyQuickVisibility();optimizeEntryFlow()},0)},{passive:true});
     document.addEventListener('visibilitychange',()=>{if(!document.hidden){syncIdentityAndTheme();setTimeout(()=>{applyQuickVisibility();optimizeEntryFlow()},0)}});

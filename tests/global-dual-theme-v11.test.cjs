@@ -1,0 +1,37 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const crypto=require('node:crypto');
+const root=path.resolve(__dirname,'..');
+const read=p=>fs.readFileSync(path.join(root,p),'utf8');
+const version=JSON.parse(read('version.json'));
+const manifest=JSON.parse(read('asset-manifest.json'));
+const html=read('index.html');
+const sw=read('service-worker.js');
+const settings=read('app/modules/settings.v1.js');
+const css=read('app/styles/aviation-reference.v1.css');
+assert.match(version.version,/^V1\.\d+(?:\.\d+)?$/,'Dual-theme release stays in the V1 series');
+assert.equal(manifest.build,version.build);
+assert.ok(html.includes('aviation-reference.v1.css?v='+version.build),'Unified theme stylesheet must be version-pinned');
+assert.ok(html.includes('settings.v1.js?v='+version.build),'Updated settings module must be version-pinned');
+assert.ok(sw.includes('./app/styles/aviation-reference.v1.css'),'Offline bootstrap must include the theme stylesheet');
+assert.equal([...html.matchAll(/<link[^>]+rel="stylesheet"/g)].length,6,'Do not increase CSS network requests');
+assert.ok(settings.includes('data-sags-theme-pick="light"')&&settings.includes('data-sags-theme-pick="dark"'),'Both choices must be present in Settings');
+assert.ok(settings.includes("b.setAttribute('aria-pressed'"),'Active theme must be announced accessibly');
+assert.ok(settings.includes("persist(Object.assign({},P,{appearance:b.dataset.sagsThemePick}))"),'The choice must persist through existing settings/cloud');
+assert.ok(settings.includes('sagsSetUiTheme'),'Appearance must use the shared theme controller');
+for(const mode of ['light','dark'])assert.ok(css.includes('data-ui-theme="'+mode+'"'),mode+' palette missing');
+for(const token of ['--et-bg','--et-shell','--et-card','--et-input','--et-fg','--et-sub','--et-muted','--et-edge','--et-focus'])assert.ok(css.includes(token),'Missing semantic color token '+token);
+for(const surface of ['#aclSimpleModal#aclSimpleModal','#sagsSettingsCenter','#v157HomeDashboard','#v6494AviationHome','#fwcModal','#dailyRosterModal'])assert.ok(css.includes(surface),'Missing operational contrast coverage '+surface);
+assert.ok(css.includes('-webkit-text-fill-color:var(--et-fg)!important'),'Safari input/text contrast must be controlled');
+assert.ok(css.includes('color-scheme:inherit!important'),'Native dark date fields must follow theme');
+assert.ok(css.includes('/* Business forms/PDF remain'),'Paper forms must be excluded from UI recoloring');
+for(const asset of ['./index.html','./service-worker.js','./version.json','./app/modules/settings.v1.js','./app/styles/aviation-reference.v1.css']){
+  const buf=fs.readFileSync(path.join(root,asset.slice(2)));
+  const item=manifest.assets[asset];
+  assert.ok(item,asset+' missing pinned manifest metadata');
+  assert.equal(item.bytes,buf.length,asset+' byte-size mismatch');
+  assert.equal(item.sha256,crypto.createHash('sha256').update(buf).digest('hex'),asset+' integrity mismatch');
+}
+console.log(version.version+' dual-theme settings, operational contrasts and SW integrity verified');
