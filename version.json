@@ -1,12 +1,12 @@
 {
-  "version": "V1.1",
-  "displayVersion": "V1.1",
-  "label": "V1.1 - HAI CHẾ ĐỘ GIAO DIỆN SÁNG / TỐI",
-  "build": "V1.1-20261025-UNIFIED-DUAL-THEME-10",
+  "version": "V1.2",
+  "displayVersion": "V1.2",
+  "label": "V1.2 - CHỌN GIAO DIỆN TẠI ĐĂNG NHẬP",
+  "build": "V1.2-20261025-LOGIN-THEME-11",
   "releasedAt": "2026-10-25",
-  "type": "v1-1-global-dual-theme",
+  "type": "v1-2-login-theme-control",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Chuẩn hóa 2 giao diện SÁNG (nền trắng/chữ tối) và TỐI (nền đen/chữ sáng) trên PC/mobile; chọn trong Cài đặt và lưu theo tài khoản. Sửa cặp nền/chữ không tương phản trong A/C Limits, các ô lọc/ngày và nhiều trang điều hành. Không thay đổi biểu mẫu in/PDF, roster, chữ ký, dữ liệu chuyến bay.",
-  "message": "V1.1: Giao diện Sáng/Tối đồng bộ toàn hệ thống"
+  "notes": "Chọn Sáng/Tối bằng nút nhỏ gọn tại màn hình đăng nhập, áp dụng ngay, giữ trạng thái khi thoát vào lại, đồng bộ Cài đặt sau đăng nhập. Tối ưu tương phản màn hình đăng nhập PC/mobile, giữ nguyên biểu mẫu giấy/PDF, dữ liệu và roster.",
+  "message": "V1.2: Chọn giao diện ngay từ màn hình đăng nhập"
 }
