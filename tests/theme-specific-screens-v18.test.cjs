@@ -34,7 +34,7 @@ const palettes={
 const luminance=hex=>{const v=[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)/255).map(x=>x<=.04045?x/12.92:((x+.055)/1.055)**2.4);return v[0]*.2126+v[1]*.7152+v[2]*.0722};
 const ratio=(a,b)=>{let x=luminance(a),y=luminance(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05)};
 for(const [mode,p] of Object.entries(palettes)){
- const root=css.slice(css.indexOf('html.new-ui-v1[data-ui-theme="'+mode+'"] {'));
+ const root=css.slice(css.indexOf('html.new-ui-v1[data-ui-theme="'+mode+'"] {',css.indexOf('/* V1.1 unified two-theme')));
  for(const [name,value] of [['--et-warn-bg',p.bg],['--et-warn-fg',p.fg]]){
   assert.ok(root.slice(0,1000).includes(name+':'+value),'Wrong '+mode+' semantic '+name);
  }
