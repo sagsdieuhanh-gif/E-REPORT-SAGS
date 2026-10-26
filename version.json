@@ -1,12 +1,12 @@
 {
-  "version": "V1.4",
-  "displayVersion": "V1.4",
-  "label": "V1.4 - GIAO DIỆN SÁNG/TỐI TOÀN HỆ THỐNG",
-  "build": "V1.4-20261026-GLOBAL-THEME-13",
+  "version": "V1.5",
+  "displayVersion": "V1.5",
+  "label": "V1.5 - KIỂM TRA SÁNG/TỐI THEO LUỒNG CHỨC NĂNG",
+  "build": "V1.5-20261026-THEME-JOURNEY-14",
   "releasedAt": "2026-10-26",
-  "type": "v1-4-global-dual-theme",
+  "type": "v1-5-theme-journeys",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Đồng bộ cặp màu nền/chữ ở các màn hình PC, mobile, menu, My Flight, trang chính, thanh thao tác, Daily Roster, A/C Limits, hướng dẫn hãng, cài đặt, quản trị và nhập nhanh. Giữ nguyên hình nền/logo và giấy biểu mẫu/PDF/chữ ký. Kế thừa PWA fast start V1.3.",
-  "message": "V1.4: Chuẩn hóa màu Sáng/Tối ở các màn hình nghiệp vụ"
+  "notes": "Sửa tại nguồn các màu cố định của Daily Roster, A/C Limits, quick entry, My Flight và modals; bổ sung kiểm tra tương phản từng click chế độ QA opt-in không ảnh hưởng hiệu năng production; giữ nguyên dữ liệu, giấy in, PDF và quy tắc nghiệp vụ. Cần nghiệm thu trực quan trên các tài khoản vai trò trước khi coi là hoàn tất toàn bộ.",
+  "message": "V1.5: Loại bỏ xung đột giao diện Sáng/Tối và kiểm tra theo từng màn hình"
 }
