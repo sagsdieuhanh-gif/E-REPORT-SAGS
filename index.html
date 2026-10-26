@@ -712,27 +712,54 @@ if (typeof define === 'function' && define.amd) {
 <body>
 <div aria-hidden="true" id="roleHomeIdle"></div>
 <div id="roleLoginModal">
-<div class="roleLoginCard">
-<div class="roleLoginLogo"><img src="assets/branding/login-logo-10years.png?v=1" alt="SAGS-CXR 10 Years Anniversary"></div>
-<div class="newUiLoginEyebrow" aria-label="E-REPORT SAGS">SAGS / E-REPORT <span id="loginReleaseVersion">V1.7</span></div>
-<div class="sagsLoginThemeBar" role="group" aria-label="Chọn giao diện">
- <span class="sagsLoginThemeLabel">GIAO DIỆN</span>
- <div class="sagsLoginThemeChoices">
-  <button type="button" class="sagsLoginThemeBtn" data-sags-login-theme="light" aria-pressed="false" aria-label="Giao diện sáng">☀ Sáng</button>
-  <button type="button" class="sagsLoginThemeBtn" data-sags-login-theme="dark" aria-pressed="false" aria-label="Giao diện tối">☾ Tối</button>
- </div>
+<div class="sagsLoginStage">
+  <header class="sagsLoginIdentity" aria-label="E-REPORT SAGS · Airport Ground Operations">
+    <div class="sagsLoginBrandWordmark">
+      <strong>E-REPORT</strong>
+      <strong>SAGS</strong>
+    </div>
+    <p>AIRPORT GROUND OPERATIONS</p>
+  </header>
+  <div class="roleLoginCard">
+    <div class="roleLoginLogo"><img src="assets/branding/login-logo-10years.png?v=1" alt="SAGS-CXR 10 Years Anniversary"></div>
+    <div class="newUiLoginEyebrow" aria-label="Phiên bản E-REPORT SAGS">
+      <span class="sagsLoginEyebrowText">SAGS / E-REPORT</span>
+      <span id="loginReleaseVersion">V1.9</span>
+    </div>
+    <h2>ĐĂNG NHẬP</h2>
+    <p class="sagsLoginWelcome">Truy cập hệ thống điều hành khai thác mặt đất</p>
+    <div class="sagsLoginThemeBar" role="group" aria-label="Chọn giao diện">
+      <span class="sagsLoginThemeLabel">GIAO DIỆN</span>
+      <div class="sagsLoginThemeChoices">
+        <button type="button" class="sagsLoginThemeBtn" data-sags-login-theme="light" aria-pressed="false" aria-label="Giao diện sáng">☀ Sáng</button>
+        <button type="button" class="sagsLoginThemeBtn" data-sags-login-theme="dark" aria-pressed="false" aria-label="Giao diện tối">☾ Tối</button>
+      </div>
+    </div>
+    <div id="personalLoginFields">
+      <label for="personalLoginUser">TÀI KHOẢN</label>
+      <div class="sagsLoginInputRow">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="7.5" r="4"/><path d="M4.5 20v-1.5a7.5 7.5 0 0 1 15 0V20H4.5Z"/></svg>
+        <input autocorrect="off" data-sags-case="preserve" autocomplete="username" id="personalLoginUser" placeholder="Nhập tài khoản" type="text" autocapitalize="none" spellcheck="false"/>
+      </div>
+    </div>
+    <label for="roleLoginPass">MẬT KHẨU</label>
+    <div class="sagsLoginInputRow sagsLoginPasswordRow">
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="5" y="10.5" width="14" height="11" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/><path d="M12 15.5v2"/></svg>
+      <input spellcheck="false" autocorrect="off" autocapitalize="none" data-sags-case="preserve" autocomplete="current-password" id="roleLoginPass" placeholder="Nhập mật khẩu" type="password"/>
+      <button type="button" class="sagsLoginEyeBtn" id="sagsLoginPasswordToggle" aria-label="Hiện mật khẩu" aria-pressed="false" onclick="var p=document.getElementById('roleLoginPass');if(p){var v=p.type==='password';p.type=v?'text':'password';this.setAttribute('aria-pressed',String(v));this.setAttribute('aria-label',v?'Ẩn mật khẩu':'Hiện mật khẩu');}">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
+    </div>
+    <button id="roleLoginSubmit" type="button" onclick="roleLogin()"><span>ĐĂNG NHẬP</span><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12h16m-7-7 7 7-7 7"/></svg></button>
+    <div id="roleLoginError" role="alert" aria-live="polite"></div>
+  </div>
+  <footer class="sagsLoginFooter">
+    <p>AN TOÀN <span>•</span> HIỆU QUẢ <span>•</span> CHUYÊN NGHIỆP</p>
+    <small>© 2026 E-REPORT SAGS · AIRPORT GROUND OPERATIONS</small>
+  </footer>
 </div>
-<h2>Đăng nhập</h2>
-<div id="personalLoginFields">
-<label>Tài khoản</label>
-<input autocorrect="off" data-sags-case="preserve" autocomplete="username" id="personalLoginUser" placeholder="Nhập tài khoản" type="text" autocapitalize="none" spellcheck="false"/>
 </div>
-<label>Mật khẩu</label>
-<input spellcheck="false" autocorrect="off" autocapitalize="none" data-sags-case="preserve" autocomplete="current-password" id="roleLoginPass" placeholder="Nhập mật khẩu" type="password"/>
-<button id="roleLoginSubmit" onclick="roleLogin()">ĐĂNG NHẬP</button>
-<div id="roleLoginError"></div>
-</div>
-</div>
+
 <div class="sagsAdminModal" id="accountManagerModal">
   <div class="sagsAdminPanel">
     <div class="sagsAdminTopActions"><button class="sagsAdminBtn secondary" onclick="closeAccountManager()">ĐÓNG</button></div>
