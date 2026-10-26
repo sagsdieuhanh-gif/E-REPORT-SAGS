@@ -2517,3 +2517,426 @@ html.new-ui-v1 body :is(#sagsSettingsCenter,#fwcModal,#dailyRosterModal,#fleetMa
   }
  }
 }
+
+
+/* V1.9 · CINEMATIC LOGIN ONLY — mobile portrait concept in real DOM.
+   Keep operational form design unchanged. Image is the existing cached apron
+   photograph, not a rasterized screenshot containing pretend input fields. */
+@media screen {
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal {
+   --sags-login-ink:#f6fbff;
+   --sags-login-copy:#c4d6e4;
+   --sags-login-card:rgba(4,21,36,.89);
+   --sags-login-field:rgba(11,35,54,.89);
+   --sags-login-border:rgba(127,208,236,.40);
+   --sags-login-panel-shadow:0 24px 70px rgba(0,9,24,.43);
+   --sags-login-accent:#36e1f0;
+   position:fixed!important;
+   inset:0!important;
+   width:100%!important;
+   height:auto!important;
+   min-height:100dvh!important;
+   box-sizing:border-box!important;
+   padding:0!important;
+   align-items:stretch!important;
+   justify-content:center!important;
+   flex-direction:row!important;
+   overflow-x:hidden!important;
+   overflow-y:auto!important;
+   -webkit-overflow-scrolling:touch!important;
+   background:linear-gradient(180deg,rgba(2,15,31,.38) 0%,rgba(3,18,31,.03) 30%,rgba(1,10,22,.39) 57%,rgba(0,13,28,.92) 100%),url('../../assets/branding/apron-night-v6494.webp') center center/cover no-repeat!important;
+   color-scheme:dark;
+   font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginStage {
+   width:min(1130px,100%);
+   min-height:100dvh;
+   box-sizing:border-box;
+   padding:clamp(24px,5vh,58px) clamp(20px,5vw,70px) calc(18px + env(safe-area-inset-bottom));
+   display:grid;
+   grid-template-columns:minmax(0,1fr) minmax(340px,460px);
+   grid-template-rows:minmax(0,1fr) auto;
+   gap:24px clamp(24px,6vw,80px);
+   position:relative;
+   isolation:isolate;
+   align-items:center;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginIdentity {
+   align-self:start;
+   min-width:0;
+   max-width:580px;
+   margin-top:clamp(20px,9vh,100px);
+   color:#f6fbff!important;
+   text-shadow:0 2px 20px rgba(0,8,20,.52);
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginBrandWordmark {
+   display:flex;
+   flex-direction:column;
+   gap:0;
+   line-height:.98;
+   letter-spacing:.015em;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginBrandWordmark strong {
+   display:block;
+   color:#f8fbff!important;
+   -webkit-text-fill-color:#f8fbff!important;
+   font-weight:900!important;
+   font-size:clamp(39px,5vw,71px);
+   line-height:.98!important;
+   letter-spacing:.012em!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginBrandWordmark strong+strong {
+   background:linear-gradient(120deg,#50f4fa,#00b9f1);
+   background-clip:text;
+   -webkit-background-clip:text;
+   color:#34dceb!important;
+   -webkit-text-fill-color:transparent!important;
+   margin-top:2px;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginIdentity p {
+   margin:12px 0 0!important;
+   color:#c7e6f5!important;
+   -webkit-text-fill-color:#c7e6f5!important;
+   font:650 clamp(10px,1.35vw,15px)/1.5 Inter,system-ui,sans-serif!important;
+   letter-spacing:.19em!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .roleLoginCard {
+   position:relative!important;
+   align-self:end;
+   min-width:0!important;
+   width:100%!important;
+   max-width:none!important;
+   max-height:none!important;
+   margin:0!important;
+   padding:clamp(23px,3.4vw,36px)!important;
+   overflow:visible!important;
+   box-sizing:border-box!important;
+   border:1px solid var(--sags-login-border)!important;
+   border-radius:25px!important;
+   background:var(--sags-login-card)!important;
+   color:var(--sags-login-ink)!important;
+   box-shadow:var(--sags-login-panel-shadow),inset 0 1px 0 rgba(233,255,255,.13)!important;
+   backdrop-filter:blur(17px) saturate(125%)!important;
+   -webkit-backdrop-filter:blur(17px) saturate(125%)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .roleLoginLogo {
+   display:none!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .newUiLoginEyebrow {
+   display:flex;
+   justify-content:space-between;
+   align-items:center;
+   gap:8px;
+   margin:0 0 11px!important;
+   color:var(--sags-login-copy)!important;
+   -webkit-text-fill-color:var(--sags-login-copy)!important;
+   font:750 10px/1.2 Inter,system-ui,sans-serif!important;
+   letter-spacing:.1em!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .newUiLoginEyebrow #loginReleaseVersion {
+   display:inline-flex;
+   align-items:center;
+   justify-content:center;
+   flex:0 0 auto;
+   padding:7px 11px!important;
+   border-radius:999px!important;
+   background:rgba(12,65,91,.8)!important;
+   border:1px solid rgba(70,218,246,.65)!important;
+   color:#d1f9ff!important;
+   -webkit-text-fill-color:#d1f9ff!important;
+   text-shadow:none!important;
+   box-shadow:0 0 18px rgba(38,198,239,.10)!important;
+   font:800 11px/1 Inter,system-ui,sans-serif!important;
+   letter-spacing:.02em!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .roleLoginCard h2 {
+   margin:0 0 6px!important;
+   color:var(--sags-login-ink)!important;
+   -webkit-text-fill-color:var(--sags-login-ink)!important;
+   font:900 clamp(27px,3vw,36px)/1.13 Inter,system-ui,sans-serif!important;
+   letter-spacing:-.025em!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginWelcome {
+   display:block!important;
+   margin:0 0 16px!important;
+   color:var(--sags-login-copy)!important;
+   -webkit-text-fill-color:var(--sags-login-copy)!important;
+   font:500 12px/1.55 Inter,system-ui,sans-serif!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginThemeBar {
+   width:100%;
+   min-width:0;
+   max-width:100%;
+   margin:0 0 19px!important;
+   padding:5px 6px 5px 11px!important;
+   gap:8px!important;
+   border-radius:11px!important;
+   border:1px solid var(--sags-login-border)!important;
+   background:rgba(5,25,40,.65)!important;
+   color:var(--sags-login-ink)!important;
+   box-sizing:border-box!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginThemeLabel {
+   color:var(--sags-login-copy)!important;
+   -webkit-text-fill-color:var(--sags-login-copy)!important;
+   font:800 10px/1.2 Inter,system-ui,sans-serif!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginThemeChoices {
+   width:148px!important;
+   max-width:59%!important;
+   gap:5px!important;
+   flex-shrink:1!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginThemeBtn {
+   min-height:32px!important;
+   height:32px!important;
+   color:var(--sags-login-copy)!important;
+   -webkit-text-fill-color:var(--sags-login-copy)!important;
+   padding:0 6px!important;
+   border-radius:8px!important;
+   font:750 11px/1.1 Inter,system-ui,sans-serif!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginThemeBtn.active {
+   background:#bdf5ff!important;
+   border-color:#53dcef!important;
+   color:#003043!important;
+   -webkit-text-fill-color:#003043!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .roleLoginCard label {
+   display:block!important;
+   margin:13px 0 7px!important;
+   color:var(--sags-login-copy)!important;
+   -webkit-text-fill-color:var(--sags-login-copy)!important;
+   font:800 11px/1.3 Inter,system-ui,sans-serif!important;
+   letter-spacing:.035em!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginInputRow {
+   position:relative;
+   display:flex;
+   align-items:center;
+   width:100%;
+   min-width:0;
+   height:54px;
+   border:1px solid var(--sags-login-border)!important;
+   background:var(--sags-login-field)!important;
+   border-radius:13px;
+   box-sizing:border-box;
+   padding:0 11px 0 12px;
+   transition:border-color .15s ease,box-shadow .15s ease;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginInputRow:focus-within {
+   border-color:#45def5!important;
+   box-shadow:0 0 0 3px rgba(52,223,241,.14)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginInputRow>svg {
+   width:24px;
+   height:24px;
+   flex:0 0 24px;
+   stroke:var(--sags-login-copy);
+   stroke-width:1.8;
+   stroke-linecap:round;
+   stroke-linejoin:round;
+   fill:none;
+   margin-right:12px;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .roleLoginCard .sagsLoginInputRow input {
+   display:block;
+   appearance:none!important;
+   -webkit-appearance:none!important;
+   flex:1 1 auto!important;
+   width:100%!important;
+   min-width:0!important;
+   height:100%!important;
+   min-height:0!important;
+   padding:0!important;
+   margin:0!important;
+   border:0!important;
+   border-radius:0!important;
+   background:transparent!important;
+   box-shadow:none!important;
+   color:var(--sags-login-ink)!important;
+   -webkit-text-fill-color:var(--sags-login-ink)!important;
+   caret-color:var(--sags-login-accent)!important;
+   font:600 16px/1.4 Inter,system-ui,sans-serif!important;
+   letter-spacing:normal!important;
+   color-scheme:dark!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .roleLoginCard .sagsLoginInputRow input::placeholder {
+   color:var(--sags-login-copy)!important;
+   -webkit-text-fill-color:var(--sags-login-copy)!important;
+   opacity:.9!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginEyeBtn {
+   flex:0 0 36px!important;
+   display:grid!important;
+   place-items:center!important;
+   width:36px!important;
+   height:40px!important;
+   min-width:36px!important;
+   min-height:40px!important;
+   margin:0 0 0 6px!important;
+   padding:0!important;
+   border:0!important;
+   border-radius:8px!important;
+   background:transparent!important;
+   box-shadow:none!important;
+   color:var(--sags-login-copy)!important;
+   -webkit-text-fill-color:var(--sags-login-copy)!important;
+   cursor:pointer;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginEyeBtn svg {
+   width:23px;height:23px;
+   stroke:currentColor;stroke-width:1.8;
+   fill:none;stroke-linecap:round;stroke-linejoin:round;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginEyeBtn[aria-pressed="true"] {
+   background:rgba(39,211,255,.13)!important;
+   color:var(--sags-login-accent)!important;
+   -webkit-text-fill-color:var(--sags-login-accent)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal #roleLoginSubmit {
+   display:flex!important;
+   align-items:center!important;
+   justify-content:center!important;
+   gap:20px!important;
+   width:100%!important;
+   min-height:57px!important;
+   height:57px!important;
+   padding:11px 16px!important;
+   margin:21px 0 0!important;
+   border:1px solid #57e5f4!important;
+   border-radius:13px!important;
+   background:linear-gradient(103deg,#07bfee 0%,#35e3e8 100%)!important;
+   box-shadow:0 12px 29px rgba(2,180,216,.20)!important;
+   color:#00253a!important;
+   -webkit-text-fill-color:#00253a!important;
+   font:900 16px/1.2 Inter,system-ui,sans-serif!important;
+   letter-spacing:.015em!important;
+   cursor:pointer;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal #roleLoginSubmit svg {
+   display:block;
+   width:22px;height:22px;
+   fill:none;stroke:currentColor;
+   stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal #roleLoginSubmit:hover {
+   background:linear-gradient(103deg,#2ad3f2 0%,#69f5ed 100%)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal #roleLoginSubmit:disabled {
+   filter:saturate(.5);
+   cursor:wait;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal #roleLoginError {
+   color:#ffb9ba!important;
+   -webkit-text-fill-color:#ffb9ba!important;
+   font:650 12px/1.5 Inter,system-ui,sans-serif!important;
+   margin-top:9px!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginFooter {
+   grid-column:1 / -1;
+   align-self:end;
+   text-align:center;
+   min-width:0;
+   color:#b4cbde;
+   text-shadow:0 2px 12px #061724;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginFooter p {
+   margin:0 0 10px!important;
+   font:750 11px/1.5 Inter,system-ui,sans-serif!important;
+   letter-spacing:.18em!important;
+   color:#38d6f2!important;
+   -webkit-text-fill-color:#38d6f2!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginFooter p span {
+   color:#38d6f2!important;
+   -webkit-text-fill-color:#38d6f2!important;
+   padding:0 4px;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginFooter small {
+   display:block;
+   font:600 9px/1.5 Inter,system-ui,sans-serif!important;
+   letter-spacing:.07em!important;
+   color:#b4cbde!important;
+   -webkit-text-fill-color:#b4cbde!important;
+ }
+ /* Light is an actual alternate surface, not white text on a white field.
+    The airport photograph remains unchanged in either mode. */
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme="light"] body #roleLoginModal {
+   --sags-login-ink:#10253a;
+   --sags-login-copy:#385166;
+   --sags-login-card:rgba(250,252,255,.94);
+   --sags-login-field:rgba(242,249,255,.97);
+   --sags-login-border:rgba(65,108,140,.44);
+   --sags-login-panel-shadow:0 24px 70px rgba(0,9,24,.32);
+   --sags-login-accent:#006e9f;
+   color-scheme:light;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme="light"] body #roleLoginModal .sagsLoginThemeBar {
+   background:rgba(235,244,251,.89)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme="light"] body #roleLoginModal .roleLoginCard .sagsLoginInputRow input{
+   color-scheme:light!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme="light"] body #roleLoginModal .sagsLoginThemeBtn.active{
+   background:#075c86!important;color:#ffffff!important;-webkit-text-fill-color:#ffffff!important;
+   border-color:#075c86!important;
+ }
+ @media(max-width:767px){
+   html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal {
+     background:linear-gradient(180deg,rgba(2,12,26,.36) 0%,rgba(2,12,26,.08) 27%,rgba(2,12,26,.30) 43%,rgba(1,13,27,.90) 73%,#041326 100%),url('../../assets/branding/apron-night-v6494.webp') 57% top/cover no-repeat!important;
+   }
+   html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginStage {
+     width:100%;
+     min-height:100dvh;
+     display:flex;
+     flex-direction:column;
+     align-items:stretch;
+     justify-content:flex-start;
+     gap:0;
+     padding:calc(25px + env(safe-area-inset-top)) 17px calc(14px + env(safe-area-inset-bottom));
+   }
+   html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginIdentity {
+     width:100%;
+     margin:12px 0 clamp(52px,16vh,135px)!important;
+     align-self:flex-start;
+   }
+   html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginBrandWordmark strong {
+     font-size:clamp(37px,10vw,55px)!important;
+   }
+   html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginIdentity p {
+     font-size:clamp(9px,2.5vw,11px)!important;
+     margin-top:9px!important;
+   }
+   html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .roleLoginCard {
+     width:100%!important;
+     flex:0 0 auto;
+     margin:0 0 19px!important;
+     padding:clamp(21px,5.5vw,29px)!important;
+     border-radius:21px!important;
+     align-self:center;
+   }
+   html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginFooter {
+     width:100%;
+     padding:0 2px!important;
+     box-sizing:border-box;
+   }
+ }
+ @media(max-width:374px){
+   html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginStage {
+     padding-left:12px!important;padding-right:12px!important;
+   }
+   html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginIdentity {margin-bottom:34px!important}
+   html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .roleLoginCard {padding:18px!important}
+   html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginThemeChoices {width:135px!important;max-width:58%!important}
+   html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginInputRow {height:49px}
+   html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal #roleLoginSubmit {height:52px!important;min-height:52px!important}
+ }
+ @media(max-height:720px) and (max-width:767px){
+   html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginIdentity {margin-bottom:28px!important}
+   html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginStage {padding-top:calc(12px + env(safe-area-inset-top))}
+ }
+ @media(prefers-reduced-motion:reduce){
+   html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #roleLoginModal .sagsLoginInputRow {transition:none!important}
+ }
+}
