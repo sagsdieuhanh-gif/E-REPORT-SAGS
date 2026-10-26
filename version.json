@@ -1,12 +1,12 @@
 {
-  "version": "V1.0",
-  "displayVersion": "V1.0",
-  "label": "V1.0 - FSAGS 42.1 NHẬP GIỜ KHÔNG THEO THỨ TỰ",
-  "build": "V1.0-20261026-421-UNRESTRICTED-10",
+  "version": "V1.1",
+  "displayVersion": "V1.1",
+  "label": "V1.1 - SỬA LỖI XUẤT PDF KHI CÓ ẢNH TRÊN IPHONE",
+  "build": "V1.1-20261026-PDF-ATTACH-IOS-01",
   "releasedAt": "2026-10-26",
-  "type": "v1-0-complete-restore-421-unrestricted",
+  "type": "ios-attachment-pdf-canvas-compat",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Khôi phục toàn bộ mã ứng dụng về nền V1.0 (commit 682342de) và vô hiệu hóa triệt để điều kiện yêu cầu nhập giờ trước trong FSAGS 42.1. Mọi ô giờ Start/Finish và các mốc giờ khác có thể nhập riêng, bỏ trống ô trước, nhập giờ sau sớm hơn ô trước; áp dụng nhập trực tiếp và Nhập giờ nhanh, lưu giữ được. Giữ kiểm tra giờ HH:MM; quy tắc biểu mẫu 42.3, 55.1 và các biểu mẫu khác không thay đổi. Firebase/dữ liệu máy chủ không bị khôi phục.",
-  "message": "V1.0: FSAGS 42.1 nhập mốc giờ tùy ý, không cần mốc trước"
+  "notes": "Khắc phục lỗi ctx.roundRect is not a function khi xuất PDF có ảnh đính kèm trên iPhone/Safari. Thay 4 lệnh vẽ khung ảnh bằng Canvas path tương thích; giữ bố cục biểu mẫu và quy trình xuất PDF.",
+  "message": "V1.1: Khắc phục xuất PDF kèm ảnh trên iOS/Safari"
 }
