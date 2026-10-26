@@ -1,12 +1,12 @@
 {
-  "version": "V1.7",
-  "displayVersion": "V1.7",
-  "label": "V1.7 - SỬA TƯƠNG PHẢN THEO 8 ẢNH GIAO DIỆN",
-  "build": "V1.7-20261026-SCREENSHOT-CONTRAST-16",
+  "version": "V1.9",
+  "displayVersion": "V1.9",
+  "label": "V1.9 - GIAO DIỆN ĐĂNG NHẬP SÂN BAY",
+  "build": "V1.9-20261026-CINEMATIC-LOGIN-18",
   "releasedAt": "2026-10-26",
-  "type": "v1-7-screenshot-paired-contrast",
+  "type": "v1-9-cinematic-login",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Đồng bộ màu chữ và nền ở MY FLIGHT, ngày/tìm kiếm/tab/trạng thái, dashboard metrics/dải hãng, thanh tài khoản, menu trái, thẻ biểu mẫu/chuyến bay và popup thông báo hồ sơ chuyến tạo sau mỗi click. Sửa tại nguồn token cũ và CSS sinh động; giữ nguyên PWA an toàn, nghiệp vụ, nháp, logo, bản giấy/PDF/chữ ký. Chưa xác minh trực quan mọi vai trò khi đăng nhập.",
-  "message": "V1.7: Khắc phục màu chữ/nền tại các màn hình người dùng đã gửi"
+  "notes": "Thiết kế lại riêng trang đăng nhập dựa theo mockup điện thoại đã duyệt: ảnh sân bay có sẵn/cached, thương hiệu E-REPORT SAGS, bảng đăng nhập glassmorphism, ô nhập có icon, nút hiện/ẩn mật khẩu thật và nút Đăng nhập cyan. Hỗ trợ sáng/tối, PC/mobile, không thêm xác thực sinh trắc học hoặc đặt lại mật khẩu giả. Giữ nguyên xác thực Firebase, quyền tài khoản, roster, dữ liệu nháp, mẫu PDF và toàn bộ nghiệp vụ V1.7.",
+  "message": "V1.9: Giao diện đăng nhập mới theo mẫu sân bay, bảo toàn cơ chế đăng nhập"
 }
