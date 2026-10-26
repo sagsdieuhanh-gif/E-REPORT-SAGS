@@ -1,12 +1,12 @@
 {
-  "version": "V1.6",
-  "displayVersion": "V1.6",
-  "label": "V1.6 - ĐỒNG NHẤT GIAO DIỆN SÁNG/TỐI",
-  "build": "V1.6-20261026-UNIFIED-SURFACES-15",
+  "version": "V1.7",
+  "displayVersion": "V1.7",
+  "label": "V1.7 - SỬA TƯƠNG PHẢN THEO 8 ẢNH GIAO DIỆN",
+  "build": "V1.7-20261026-SCREENSHOT-CONTRAST-16",
   "releasedAt": "2026-10-26",
-  "type": "v1-6-theme-root-cascade",
+  "type": "v1-7-screenshot-paired-contrast",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Sửa gốc: loại bỏ ép tối ở root/high-specificity aviation, đồng bộ màu menu PC/mobile, khung nội dung và menu chọn; xử lý CSS modal ưu tiên cao làm nền/chữ trái chế độ (MY FLIGHT, Quick Time, FSAGS09, 54/94, Daily Roster); giữ nguyên bản giấy, logo, chữ ký và xuất PDF. Tiếp tục kiểm thử trực quan từng vai trò sau đăng nhập.",
-  "message": "V1.6: Đồng bộ màu hệ thống theo lựa chọn Sáng/Tối"
+  "notes": "Đồng bộ màu chữ và nền ở MY FLIGHT, ngày/tìm kiếm/tab/trạng thái, dashboard metrics/dải hãng, thanh tài khoản, menu trái, thẻ biểu mẫu/chuyến bay và popup thông báo hồ sơ chuyến tạo sau mỗi click. Sửa tại nguồn token cũ và CSS sinh động; giữ nguyên PWA an toàn, nghiệp vụ, nháp, logo, bản giấy/PDF/chữ ký. Chưa xác minh trực quan mọi vai trò khi đăng nhập.",
+  "message": "V1.7: Khắc phục màu chữ/nền tại các màn hình người dùng đã gửi"
 }
