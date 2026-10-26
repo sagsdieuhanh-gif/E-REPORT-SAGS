@@ -14,7 +14,7 @@ const palettes=[
  ['dark','#f8fafc','#151d2a','#0c111a']
 ];
 for(const [mode,fg,card,surface] of palettes){
- const vars=extract(aviation,'html.new-ui-v1[data-ui-theme="'+mode+'"]');
+ const vars=extract(aviation.slice(aviation.indexOf('/* V1.1 unified two-theme')),'html.new-ui-v1[data-ui-theme="'+mode+'"]');
  assert.ok(vars.includes('--et-fg:'+fg),'Foreground token for '+mode);
  assert.ok(vars.includes('--et-card:'+card),'Card token for '+mode);
  assert.ok(vars.includes('--et-shell:'+surface),'Shell token for '+mode);
