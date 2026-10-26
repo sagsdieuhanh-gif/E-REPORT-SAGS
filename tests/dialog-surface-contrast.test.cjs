@@ -6,8 +6,8 @@ vm.runInNewContext(fs.readFileSync('app/modules/theme-contrast.v2.js','utf8'),{
 });
 const style=fs.readFileSync('app/styles/aviation-reference.v1.css','utf8');
 const palettes={
- light:{'--et-card':'#ffffff','--et-raised':'#f0f4f8','--et-fg':'#111827','--et-sub':'#334155','--et-edge':'#b8c5d3'},
- dark:{'--et-card':'#151d2a','--et-raised':'#202b3b','--et-fg':'#f8fafc','--et-sub':'#dbe4ee','--et-edge':'#52677c'}
+ light:{'--et-shell':'#f5f7fa','--et-card':'#ffffff','--et-raised':'#f0f4f8','--et-fg':'#111827','--et-sub':'#334155','--et-edge':'#b8c5d3'},
+ dark:{'--et-shell':'#0c111a','--et-card':'#151d2a','--et-raised':'#202b3b','--et-fg':'#f8fafc','--et-sub':'#dbe4ee','--et-edge':'#52677c'}
 };
 for(const [theme,defs] of Object.entries(palettes)){
  assert.ok(style.includes('data-ui-theme="'+theme+'"'),theme+' palette selector missing');
