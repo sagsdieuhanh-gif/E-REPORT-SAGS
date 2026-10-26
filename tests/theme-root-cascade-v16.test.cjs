@@ -35,9 +35,14 @@ for(const selector of [
  '.v6494MobileMenu button','.v6494MobileMenu button.active',
  '.v6494Bottom','.v6494MobileProfile'
 ]){
- const b=extract(shell,selector+'{');
- assert.match(b,/(?:background:var\(--a-|background:var\(--et-)/,'Source should not retain forced navy '+selector);
- assert.doesNotMatch(b,/background:(?:linear-gradient|rgba\(|#[0-9a-f]{3,8}\b)/,'Fixed dark background detected '+selector);
+ const blocks=[...shell.matchAll(/([^{}]+)\{([^{}]*)\}/g)]
+  .filter(m=>m[1].trim().split(',').some(x=>x.trim()===selector))
+  .map(m=>m[2]).filter(body=>body.includes('background:'));
+ assert.ok(blocks.length,'Missing painted mobile/desktop block '+selector);
+ for(const b of blocks){
+  assert.match(b,/(?:background:var\(--a-|background:var\(--et-)/,'Source should not retain forced navy '+selector);
+  assert.doesNotMatch(b,/background:(?:linear-gradient|rgba\(|#[0-9a-f]{3,8}\b)/,'Fixed dark background detected '+selector);
+ }
 }
 const caseFor=id=>{
  const pos=injected.indexOf(id);
