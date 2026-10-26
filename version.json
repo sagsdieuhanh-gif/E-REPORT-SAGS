@@ -1,12 +1,12 @@
 {
-  "version": "V1.5",
-  "displayVersion": "V1.5",
-  "label": "V1.5 - KIỂM TRA SÁNG/TỐI THEO LUỒNG CHỨC NĂNG",
-  "build": "V1.5-20261026-THEME-JOURNEY-14",
+  "version": "V1.6",
+  "displayVersion": "V1.6",
+  "label": "V1.6 - ĐỒNG NHẤT GIAO DIỆN SÁNG/TỐI",
+  "build": "V1.6-20261026-UNIFIED-SURFACES-15",
   "releasedAt": "2026-10-26",
-  "type": "v1-5-theme-journeys",
+  "type": "v1-6-theme-root-cascade",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Sửa tại nguồn các màu cố định của Daily Roster, A/C Limits, quick entry, My Flight và modals; bổ sung kiểm tra tương phản từng click chế độ QA opt-in không ảnh hưởng hiệu năng production; giữ nguyên dữ liệu, giấy in, PDF và quy tắc nghiệp vụ. Cần nghiệm thu trực quan trên các tài khoản vai trò trước khi coi là hoàn tất toàn bộ.",
-  "message": "V1.5: Loại bỏ xung đột giao diện Sáng/Tối và kiểm tra theo từng màn hình"
+  "notes": "Sửa gốc: loại bỏ ép tối ở root/high-specificity aviation, đồng bộ màu menu PC/mobile, khung nội dung và menu chọn; xử lý CSS modal ưu tiên cao làm nền/chữ trái chế độ (MY FLIGHT, Quick Time, FSAGS09, 54/94, Daily Roster); giữ nguyên bản giấy, logo, chữ ký và xuất PDF. Tiếp tục kiểm thử trực quan từng vai trò sau đăng nhập.",
+  "message": "V1.6: Đồng bộ màu hệ thống theo lựa chọn Sáng/Tối"
 }
