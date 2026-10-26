@@ -1673,6 +1673,7 @@ html.new-ui-v1 body :is(#sagsSettingsCenter,#fwcModal,#dailyRosterModal,#fleetMa
     --et-edge:#b8c5d3;--et-edge-strong:#8092a6;--et-link:#164d91;
     --et-primary:#1956a4;--et-on-primary:#ffffff;--et-focus:#2563eb;
     --et-danger-bg:#fff1f0;--et-danger-fg:#9f1d1d;--et-danger-edge:#dca3a3;
+    --et-warn-bg:#fff3d4;--et-warn-fg:#654100;--et-warn-edge:#bd8b25;
     --et-hover:#e8f1fd;
   }
   html.new-ui-v1[data-ui-theme="dark"] {
@@ -1682,6 +1683,7 @@ html.new-ui-v1 body :is(#sagsSettingsCenter,#fwcModal,#dailyRosterModal,#fleetMa
     --et-edge:#52677c;--et-edge-strong:#8fa1b3;--et-link:#a7cfff;
     --et-primary:#2868c3;--et-on-primary:#ffffff;--et-focus:#8dc4ff;
     --et-danger-bg:#352024;--et-danger-fg:#ffbdbd;--et-danger-edge:#be6269;
+    --et-warn-bg:#3c2f17;--et-warn-fg:#ffe3a4;--et-warn-edge:#aa8033;
     --et-hover:#263952;
   }
   html.new-ui-v1[data-ui-theme] body {
@@ -2515,5 +2517,85 @@ html.new-ui-v1 body :is(#sagsSettingsCenter,#fwcModal,#dailyRosterModal,#fleetMa
   html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #fwcModal.show :is(#fwcDate,#sagsFlightSearch,.fwcTools input){
     min-width:0!important;max-width:100%!important;box-sizing:border-box!important;
   }
+ }
+}
+
+
+/* V1.8 · Screenshot-derived source-level cascade repair.
+   UI CHROME ONLY: official forms, signatures, PDF and airline logos untouched.
+   Pair foreground, text-fill and background in the same cascade rule. */
+@media screen {
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #v6494AviationHome#v6494AviationHome #opsHomeQueue .opsQueueHead :is(h2,strong){
+  color:var(--et-fg)!important;-webkit-text-fill-color:var(--et-fg)!important;opacity:1!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #v6494AviationHome#v6494AviationHome #opsHomeQueue .opsQueueHead :is(small,#opsFlightCount){
+  color:var(--et-sub)!important;-webkit-text-fill-color:var(--et-sub)!important;opacity:1!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #v6494AviationHome#v6494AviationHome #opsHomeQueue{
+  background:var(--et-card)!important;color:var(--et-fg)!important;border-color:var(--et-edge)!important;
+ }
+ /* MY FLIGHT MENU and back button must never have navy background with dark text. */
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #fwcModal#fwcModal .fwcHead :is(#v477Close,#v644MyFlightBack,.fwcBtn.gray){
+  background:var(--et-raised)!important;color:var(--et-fg)!important;
+  -webkit-text-fill-color:var(--et-fg)!important;border-color:var(--et-edge-strong)!important;
+  opacity:1!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #fwcModal#fwcModal .fwcHead :is(#v477Close,#v644MyFlightBack,.fwcBtn.gray):hover{
+  background:var(--et-hover)!important;color:var(--et-link)!important;
+  -webkit-text-fill-color:var(--et-link)!important;
+ }
+ /* Amber unclaimed/waiting tiles are semantic statuses; in either appearance,
+    text INCLUDING small labels must match the actual amber fill, not inherited
+    navy foreground from a legacy generic warning rule. */
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #fwcModal#fwcModal :is(.fwcFormChip.warn,.fwcBadge.warn,.v1199FormTile.warn,.v1199TaskBtn.warn),
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #fwcModal#fwcModal #fwcList.v478CanonicalQueue .v478RoleModules .fwcBadge.warn{
+  background:var(--et-warn-bg)!important;color:var(--et-warn-fg)!important;
+  -webkit-text-fill-color:var(--et-warn-fg)!important;border-color:var(--et-warn-edge)!important;
+  opacity:1!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #fwcModal#fwcModal :is(.fwcFormChip.warn,.fwcBadge.warn,.v1199FormTile.warn,.v1199TaskBtn.warn) :is(b,strong,span,small,em),
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #fwcModal#fwcModal #fwcList.v478CanonicalQueue .v478RoleModules .fwcBadge.warn :is(b,strong,span,small,em){
+  color:var(--et-warn-fg)!important;-webkit-text-fill-color:var(--et-warn-fg)!important;
+  opacity:1!important;
+ }
+ /* All settings sections use the same mode rather than a pinned dark backdrop.
+    The JS-injected style has a double-ID selector; match its specificity. */
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #sagsSettingsCenter#sagsSettingsCenter{
+  --sc-bg:var(--et-shell);--sc-card:var(--et-card);
+  --sc-fg:var(--et-fg);--sc-muted:var(--et-sub);
+  --sc-button:var(--et-raised);--sc-button-fg:var(--et-fg);
+  color-scheme:inherit!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #sagsSettingsCenter#sagsSettingsCenter :is(.sagsSettingsPanel,.sagsSettingsLayout,.sagsSettingsNav,.sagsSettingsContent,.sagsSettingsPanel>header){
+  background:var(--et-shell)!important;color:var(--et-fg)!important;border-color:var(--et-edge)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #sagsSettingsCenter#sagsSettingsCenter :is(.profile,.grid,.rows,.about,.release,.stats>div,.flow>div,.note){
+  background:var(--et-card)!important;color:var(--et-fg)!important;border-color:var(--et-edge)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #sagsSettingsCenter#sagsSettingsCenter :is(h2,h3,h4,b,strong,.grid>label,.rows label){
+  color:var(--et-fg)!important;-webkit-text-fill-color:var(--et-fg)!important;opacity:1!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #sagsSettingsCenter#sagsSettingsCenter :is(.desc,.sagsSettingsNavTitle,.sagsSettingsNav button>span small,.profile small,.profile span,.sagsSettingsPanel>header p,.rows small,.note){
+  color:var(--et-sub)!important;-webkit-text-fill-color:var(--et-sub)!important;opacity:1!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #sagsSettingsCenter#sagsSettingsCenter .sagsSettingsNav button:not(.active){
+  background:var(--et-raised)!important;color:var(--et-fg)!important;
+  -webkit-text-fill-color:var(--et-fg)!important;border-color:var(--et-edge)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #sagsSettingsCenter#sagsSettingsCenter .sagsSettingsNav button.active{
+  background:var(--et-hover)!important;color:var(--et-link)!important;
+  -webkit-text-fill-color:var(--et-link)!important;border-color:var(--et-focus)!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #sagsSettingsCenter#sagsSettingsCenter :is(input:not([type="checkbox"]):not([type="radio"]),select,textarea){
+  background:var(--et-input)!important;color:var(--et-fg)!important;
+  -webkit-text-fill-color:var(--et-fg)!important;caret-color:var(--et-fg)!important;
+  border-color:var(--et-edge-strong)!important;color-scheme:inherit!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #sagsSettingsCenter#sagsSettingsCenter :is(input,textarea)::placeholder{
+  color:var(--et-muted)!important;-webkit-text-fill-color:var(--et-muted)!important;opacity:1!important;
+ }
+ html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme] body #sagsSettingsCenter#sagsSettingsCenter :is(#sagsSettingsClose,.actions button:not(.primary):not(.danger),.file){
+  background:var(--et-raised)!important;color:var(--et-fg)!important;
+  -webkit-text-fill-color:var(--et-fg)!important;border-color:var(--et-edge)!important;
  }
 }
