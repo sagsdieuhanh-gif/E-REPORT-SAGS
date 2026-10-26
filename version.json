@@ -1,12 +1,12 @@
 {
   "version": "V1.0",
   "displayVersion": "V1.0",
-  "label": "V1.0 - TVJ CHỈ VZ & 42.1 NHẬP GIỜ TỰ DO",
-  "build": "V1.0-20261025-TVJ-VZ-421-FREE-TIME-09",
-  "releasedAt": "2026-10-25",
-  "type": "v1-tvj-vz-dossier-and-421-free-time",
+  "label": "V1.0 - FSAGS 42.1 NHẬP GIỜ KHÔNG THEO THỨ TỰ",
+  "build": "V1.0-20261026-421-UNRESTRICTED-10",
+  "releasedAt": "2026-10-26",
+  "type": "v1-0-complete-restore-421-unrestricted",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Sửa AD hồ sơ chỉ hiện TVJ-GOF-035 khi mã chuyến thuộc VZ/TVJ; FSAGS 42.1 nhập ô giờ bất kỳ không yêu cầu giờ trước hoặc Start/Finish theo thứ tự, cả nhập trực tiếp và nhập nhanh. Vẫn kiểm tra HH:MM; giữ nguyên điều kiện hãng khác, biểu mẫu khác, dữ liệu, roster, chữ ký và PDF.",
-  "message": "V1.0: Chỉ hiện TVJ-GOF-035 trên VZ và bỏ ràng buộc thứ tự giờ FSAGS 42.1"
+  "notes": "Khôi phục toàn bộ mã ứng dụng về nền V1.0 (commit 682342de) và vô hiệu hóa triệt để điều kiện yêu cầu nhập giờ trước trong FSAGS 42.1. Mọi ô giờ Start/Finish và các mốc giờ khác có thể nhập riêng, bỏ trống ô trước, nhập giờ sau sớm hơn ô trước; áp dụng nhập trực tiếp và Nhập giờ nhanh, lưu giữ được. Giữ kiểm tra giờ HH:MM; quy tắc biểu mẫu 42.3, 55.1 và các biểu mẫu khác không thay đổi. Firebase/dữ liệu máy chủ không bị khôi phục.",
+  "message": "V1.0: FSAGS 42.1 nhập mốc giờ tùy ý, không cần mốc trước"
 }
