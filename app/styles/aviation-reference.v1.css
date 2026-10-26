@@ -1,6 +1,14 @@
 /* Final reference layer. Scoped to screen UI: paper and print retain original geometry. */
 @media screen {
-html.new-ui-v1.new-ui-v1.new-ui-v1[data-ui-theme],html.new-ui-v1.new-ui-v1.new-ui-v1{--ops-bg:#05111b;--ops-panel:#0b1e2c;--ops-panel-2:#102838;--ops-text:#f4f7fa;--ops-muted:#94a9b8;--ops-cyan:#24d4e5;--ops-line:rgba(109,190,220,.16);--v157-bg:#05111b;--v157-card:#0b1e2c;--v157-text:#f4f7fa;--v157-muted:#94a9b8;--v157-line:rgba(109,190,220,.16);color-scheme:dark}
+html.new-ui-v1.new-ui-v1.new-ui-v1{
+--ops-bg:var(--et-shell,#05111b);--ops-panel:var(--et-card,#0b1e2c);--ops-panel-2:var(--et-raised,#102838);--ops-text:var(--et-fg,#f4f7fa);--ops-muted:var(--et-sub,#94a9b8);--ops-cyan:var(--et-link,#24d4e5);--ops-line:var(--et-edge,rgba(109,190,220,.16));
+--v157-bg:var(--et-shell,#05111b);--v157-card:var(--et-card,#0b1e2c);--v157-text:var(--et-fg,#f4f7fa);--v157-muted:var(--et-sub,#94a9b8);--v157-line:var(--et-edge,rgba(109,190,220,.16));
+--a-bg:var(--et-shell,#06131f);--a-bg2:var(--et-shell,#071824);
+--a-surface:var(--et-card,#0c1e2c);--a-surface2:var(--et-raised,#102635);--a-surface3:var(--et-raised,#132d3d);
+--a-border:var(--et-edge,rgba(100,190,220,.18));--a-border2:var(--et-edge-strong,rgba(62,202,226,.34));
+--a-text:var(--et-fg,#f2f7fa);--a-muted:var(--et-sub,#8fa7b7);--a-cyan:var(--et-link,#21d4e8);
+color-scheme:var(--et-color-scheme,dark);
+}
 html.new-ui-v1.new-ui-v1.new-ui-v1 body #roleLoginModal{background:linear-gradient(90deg,rgba(5,17,27,.22),rgba(5,17,27,.45)),url('../../assets/branding/apron-night-v6494.webp') center/cover no-repeat!important;min-height:100dvh!important;box-sizing:border-box!important}
 html.new-ui-v1.new-ui-v1.new-ui-v1 body #roleLoginModal::before,html.new-ui-v1.new-ui-v1.new-ui-v1 body #roleLoginModal::after{display:none!important}
 .opsReferenceBrand{position:absolute;left:6vw;top:12vh;max-width:48vw;color:#f4f7fa}
@@ -1659,7 +1667,7 @@ html.new-ui-v1 body :is(#sagsSettingsCenter,#fwcModal,#dailyRosterModal,#fleetMa
    or pixel-exact PDF previews. No layout/flight/roster business logic changes. */
 @media screen {
   html.new-ui-v1[data-ui-theme="light"] {
-    color-scheme:light;
+    --et-color-scheme:light;color-scheme:light;
     --et-bg:#ffffff;--et-shell:#f5f7fa;--et-card:#ffffff;--et-raised:#f0f4f8;
     --et-input:#ffffff;--et-fg:#111827;--et-sub:#334155;--et-muted:#475569;
     --et-edge:#b8c5d3;--et-edge-strong:#8092a6;--et-link:#164d91;
@@ -1668,7 +1676,7 @@ html.new-ui-v1 body :is(#sagsSettingsCenter,#fwcModal,#dailyRosterModal,#fleetMa
     --et-hover:#e8f1fd;
   }
   html.new-ui-v1[data-ui-theme="dark"] {
-    color-scheme:dark;
+    --et-color-scheme:dark;color-scheme:dark;
     --et-bg:#06090f;--et-shell:#0c111a;--et-card:#151d2a;--et-raised:#202b3b;
     --et-input:#111c2a;--et-fg:#f8fafc;--et-sub:#dbe4ee;--et-muted:#b1c2d2;
     --et-edge:#52677c;--et-edge-strong:#8fa1b3;--et-link:#a7cfff;
