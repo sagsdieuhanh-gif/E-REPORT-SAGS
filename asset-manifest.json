@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V1.5",
-  "build": "V1.5-20261026-THEME-JOURNEY-14",
+  "version": "V1.6",
+  "build": "V1.6-20261026-UNIFIED-SURFACES-15",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -314,8 +314,8 @@
       "bytes": 7456
     },
     "./app/modules/theme-contrast.v2.js": {
-      "sha256": "aad4cfa3b9fdf72a132067fed829c9adb099df5dc0c9bd1e4064760f7b72ea29",
-      "bytes": 76908
+      "sha256": "335b29e28219fef5caa860b780cfa79f6c4f7285911651e25644515082a73cc9",
+      "bytes": 77831
     },
     "./app/modules/tvj-gof-035.v630.js": {
       "sha256": "e3903e714bc7b66d843fce48153500eb3f9af76e679b136a3209ed5873681e9c",
@@ -342,8 +342,8 @@
       "bytes": 41473
     },
     "./app/styles/aviation-reference.v1.css": {
-      "sha256": "03f93833ed01e813169cf282dff332f424fa9fd1f6ba8063117122c74af2bbcc",
-      "bytes": 128739
+      "sha256": "7217678d179119a2fe69a1903e7099914d7ff2207088cb58e8a62c74448a715c",
+      "bytes": 129317
     },
     "./app/styles/boot-01-legacy.css": {
       "sha256": "fa00cde1d78de014a3c0341b9741993441fa4a8a0b8aad860f916a50613e7bb4",
@@ -470,8 +470,8 @@
       "bytes": 333
     },
     "./app/styles/boot-36-v6494-aviation-final.css": {
-      "sha256": "cb1ad53c3a06efbc595f6a480e07588efe60935924d9d8c33b457d087195089f",
-      "bytes": 17226
+      "sha256": "c8ab8b76444e38c20a3faca88e3975b14b8ab92f6a4784d3a43982dd4e42b136",
+      "bytes": 17348
     },
     "./app/styles/boot-bundle-1.css": {
       "sha256": "e9f0d46c327cde83b56e70378b9a8c2c0c07205ce1fa81eb7034ccd7be8884ac",
@@ -762,8 +762,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "2b5d923746620cf32e7173b0957b1c23f9b8937ee147e3e6f591cf19b572f5f5",
-      "bytes": 107292
+      "sha256": "44b971d1889c6ffa469062e658e88ea0f3fd2a8fa63ad95af876e87670ce8f90",
+      "bytes": 107529
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -814,16 +814,16 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "39707e91368465fefd855561e8fe0388f113a638325e5929c31ca2e731cf3630",
-      "bytes": 23429
+      "sha256": "995021496eadfd7350af3eaccb439c0e0b658cbea2ca7450ae9b829d2977c143",
+      "bytes": 23438
     },
     "./storage-recovery.html": {
       "sha256": "ab4c00fecfd1d7d580c315597a261e685b9d79226abacfc41f1f0168292f5a62",
       "bytes": 26807
     },
     "./version.json": {
-      "sha256": "3380156c067e75f8d49fbaaf4fbf771965b1951a9b736d4a752b74feefa15bb5",
-      "bytes": 874
+      "sha256": "9213f604e71d329c2ada890f8133bf484d7aafa42e370dfc1c38188a1b6c464d",
+      "bytes": 833
     }
   },
   "mutableAssets": [
