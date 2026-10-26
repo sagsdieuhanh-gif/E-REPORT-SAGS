@@ -10,6 +10,8 @@ assert.match(qte,/if\(String\(key\).startsWith\('f421_'\)\)continue/,'quick-time
 assert.match(qte,/Giờ chưa hợp lệ:/,'HHMM shape validation retained');
 assert.match(legacy,/Giờ không hợp lệ\. Giờ 00-23, phút 00-59/,'HH:MM numeric boundaries retained');
 assert.match(legacy,/function v22TimeRuleForKey\(key\)/,'other form pair rule remains');
+assert.match(legacy,/function v22TimeRuleForKey\(key\)\{const k=String\(key\|\|""\);if\(\/\^f421_\/\.test\(k\)\)return null/,'42.1 generic start/finish pairs do not exist even for other consumers');
+assert.match(qte,/function validateOrderedBatch\(draft,changedKeys\)\{return true\}/,'42.1 save does not enforce predecessor');
 assert.match(qte,/function validatePairsBatch\(draft,changedKeys\)/,'other form pair checks retained');
 assert.match(legacy,/if\(f\.key==="f421_h5Start"\)updateArrivalDelay421\(\)/,'42.1 arrival delay update retained');
 console.log('FSAGS 42.1: free-order time entry direct and quick-time; HH:MM validation, other forms and draft/persistence unchanged');
