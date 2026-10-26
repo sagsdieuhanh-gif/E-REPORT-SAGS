@@ -46,12 +46,12 @@ html.new-ui-v1.new-ui-v1.new-ui-v1 body #v644MyFlightBack{display:none!important
 html.new-ui-v1.new-ui-v1.new-ui-v1 body #fwcModal :is(#sagsContextBackBtn,#v479MyFlightHome){display:none!important}
 html.new-ui-v1.new-ui-v1.new-ui-v1 body #fwcModal .fwcHead{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important}
 html.new-ui-v1.new-ui-v1.new-ui-v1 body #fwcModal .fwcHead>div{min-width:0!important;flex:1!important}
-html.new-ui-v1.new-ui-v1.new-ui-v1 body #fwcModal .fwcSub{display:block!important;font-size:12px!important;line-height:1.4!important;color:#94a9b8!important;margin-top:5px!important}
+html.new-ui-v1.new-ui-v1.new-ui-v1 body #fwcModal .fwcSub{display:block!important;font-size:12px!important;line-height:1.4!important;color:var(--et-sub)!important;margin-top:5px!important}
 html.new-ui-v1.new-ui-v1.new-ui-v1 body #fwcModal .sagsReferenceMenu{font-size:11px!important;flex-shrink:0!important;width:auto!important}
 html.new-ui-v1.new-ui-v1.new-ui-v1 body #fwcModal .sagsReferenceMenu::before,html.new-ui-v1.new-ui-v1.new-ui-v1 body #fwcModal .sagsReferenceMenu::after{display:none!important;content:none!important}
 html.new-ui-v1.new-ui-v1.new-ui-v1 body #fwcModal .fwcHead>button{min-width:44px!important;width:auto!important;min-height:44px!important;border-radius:9px!important;padding:0 12px!important}
-html.new-ui-v1.new-ui-v1.new-ui-v1 body #fwcModal .sagsWorkDateControl{display:grid!important;grid-template-columns:minmax(0,1fr) 44px!important;border:1px solid #395062!important;border-radius:9px!important;background:#102838!important;overflow:hidden!important}
-html.new-ui-v1.new-ui-v1.new-ui-v1 body #fwcModal .sagsWorkDateControl :is(input,#sagsWorkDatePicker){border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;min-width:0!important;color:#f4f7fa!important}
+html.new-ui-v1.new-ui-v1.new-ui-v1 body #fwcModal .sagsWorkDateControl{display:grid!important;grid-template-columns:minmax(0,1fr) 44px!important;border:1px solid var(--et-edge-strong)!important;border-radius:9px!important;background:var(--et-input)!important;color:var(--et-fg)!important;overflow:hidden!important}
+html.new-ui-v1.new-ui-v1.new-ui-v1 body #fwcModal .sagsWorkDateControl :is(input,#sagsWorkDatePicker){border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;min-width:0!important;color:var(--et-fg)!important;-webkit-text-fill-color:var(--et-fg)!important;color-scheme:inherit!important}
 html.new-ui-v1.new-ui-v1.new-ui-v1 body #fwcModal #v477Refresh{font-size:0!important}
 html.new-ui-v1.new-ui-v1.new-ui-v1 body #fwcModal #v477Refresh::before{display:none!important;content:none!important}
 html.new-ui-v1.new-ui-v1.new-ui-v1 body #fwcModal #v477Refresh::after{content:'↻';font-size:22px}
@@ -62,7 +62,7 @@ html.new-ui-v1.new-ui-v1.new-ui-v1 body #fwcStatus{font-size:12px!important;line
 .opsQueueHead{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .opsQueueHead h2{margin:0!important}
 html.new-ui-v1.new-ui-v1.new-ui-v1 body #opsHomeQueue button{min-height:44px!important;border:1px solid #26718a!important;border-radius:9px!important;background:#0d3449!important;color:#80e6ef!important;font-size:12px!important;padding:0 12px!important;cursor:pointer;margin-top:12px}
-html.new-ui-v1.new-ui-v1.new-ui-v1 body #v6494AviationHome{--a-bg:#05111b;--a-cyan:#24d4e5;--a-text:#f4f7fa;--a-muted:#94a9b8}
+html.new-ui-v1.new-ui-v1.new-ui-v1 body #v6494AviationHome{--a-bg:var(--et-shell);--a-cyan:var(--et-link);--a-text:var(--et-fg);--a-muted:var(--et-sub);--a-surface:var(--et-card);--a-surface2:var(--et-raised);--a-border:var(--et-edge)}
 html.new-ui-v1.new-ui-v1.new-ui-v1 body #v6494AviationHome button{border-radius:10px!important;box-shadow:none!important}
 html.new-ui-v1.new-ui-v1.new-ui-v1 body #v6494AviationHome .v6494Nav button.active{background:#102838!important;color:#f4f7fa!important;border-color:#26718a!important;border-left:3px solid #24d4e5!important}
 html.new-ui-v1.new-ui-v1.new-ui-v1 body #v6494AviationHome .v6494Bottom button{font-size:10px!important;background:none!important;color:#94a9b8!important}
@@ -181,9 +181,9 @@ html.new-ui-v1.new-ui-v1.new-ui-v1 body #v6494AviationHome #opsAirlineStrip{
   order:3;
   margin-top:10px!important;
   padding:8px 9px;
-  border:1px solid var(--ops-line);
+  border:1px solid var(--et-edge);
   border-radius:11px;
-  background:#0a1d2b;
+  background:var(--et-card);
   overflow:hidden;
 }
 html.new-ui-v1.new-ui-v1.new-ui-v1 body #v6494AviationHome .v6494QuickHead{order:4;margin-top:18px!important}
@@ -212,8 +212,8 @@ html.new-ui-v1.new-ui-v1.new-ui-v1 body #v6494AviationHome #opsHomeQueue{order:8
   gap:7px;
   border:1px solid rgba(100,190,220,.13);
   border-radius:9px;
-  background:#0d2637;
-  color:#dceaf0;
+  background:var(--et-card);
+  color:var(--et-fg);
   scroll-snap-align:start;
 }
 #opsAirlineStrip .opsAirlineChip b{font-size:9px;line-height:1.1;letter-spacing:.02em}
@@ -473,12 +473,12 @@ body.sags-overlay-open #v6494AviationHome{filter:none!important;backdrop-filter:
   gap:2px!important;
 }
 #fwcModal .opsFwcIdentity b{
-  color:#effaff!important;
+  color:var(--et-fg)!important;
   font:900 11px/1.1 system-ui,-apple-system,"Segoe UI",sans-serif!important;
   letter-spacing:.10em!important;
 }
 #fwcModal .opsFwcIdentity small{
-  color:#9fc6da!important;
+  color:var(--et-sub)!important;
   font:800 11px/1.25 system-ui,-apple-system,"Segoe UI",sans-serif!important;
   text-transform:uppercase!important;
   white-space:normal!important;
@@ -577,7 +577,7 @@ html.new-ui-v1.new-ui-v1.new-ui-v1 body #v6494AviationHome #opsHomeMetrics>.opsM
   overflow:hidden!important;
   border-radius:12px!important;
   border:1px solid rgba(113,181,216,.17)!important;
-  background:linear-gradient(135deg,#122b3e 0%,#0d2233 72%,#0a1b29 100%)!important;
+  background:var(--et-card)!important;
   box-shadow:0 10px 28px rgba(0,8,16,.12)!important;
   display:flex!important;
   flex-direction:column!important;
@@ -585,16 +585,16 @@ html.new-ui-v1.new-ui-v1.new-ui-v1 body #v6494AviationHome #opsHomeMetrics>.opsM
   box-sizing:border-box!important;
 }
 html.new-ui-v1.new-ui-v1.new-ui-v1 body #v6494AviationHome #opsHomeMetrics>.opsMetric-complete{
-  background:linear-gradient(135deg,#112e3b 0%,#0a343c 55%,#07343a 100%)!important;
+  background:var(--et-card)!important;
 }
 html.new-ui-v1.new-ui-v1.new-ui-v1 body #v6494AviationHome #opsHomeMetrics>.opsMetric-pending{
-  background:linear-gradient(135deg,#122d42 0%,#10283b 62%,#0c2132 100%)!important;
+  background:var(--et-card)!important;
 }
 #opsHomeMetrics .opsMetricLabel{
   position:relative;
   z-index:2;
   margin:0!important;
-  color:#b6c9d5!important;
+  color:var(--et-sub)!important;
   font-size:12px!important;
   font-weight:650!important;
   letter-spacing:0!important;
@@ -654,7 +654,7 @@ html.new-ui-v1.new-ui-v1.new-ui-v1 body #v6494AviationHome #opsHomeMetrics>.opsM
 }
 #opsHomeMetrics .opsMetricBody strong{
   margin:0!important;
-  color:#f8fbff!important;
+  color:var(--et-fg)!important;
   font-size:29px!important;
   line-height:1!important;
   font-weight:850!important;
@@ -662,7 +662,7 @@ html.new-ui-v1.new-ui-v1.new-ui-v1 body #v6494AviationHome #opsHomeMetrics>.opsM
 }
 #opsHomeMetrics .opsMetricUnit{
   margin:0;
-  color:#4cbdd8;
+  color:var(--et-sub);
   font-size:10px;
   font-weight:600;
   line-height:1.15;
