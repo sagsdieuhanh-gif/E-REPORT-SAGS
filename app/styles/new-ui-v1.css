@@ -5389,7 +5389,7 @@ html.new-ui-v1 body #fwcModal :is(.v1199FormTile,.v1199TaskBtn).done{
 }
 html.new-ui-v1 body #fwcModal .v1199FormTile.working{border-color:rgba(33,212,232,.45)!important;background:#0b3447!important}
 html.new-ui-v1 body #fwcList.v478CanonicalQueue .v478RoleModules .fwcBadge.warn{
-  border-color:rgba(228,166,42,.45)!important;background:#322816!important;color:#f5d08a!important;
+  border-color:var(--et-warn-edge,#c89a39)!important;background:var(--et-warn-bg,#322816)!important;color:var(--et-warn-fg,#f5d08a)!important;-webkit-text-fill-color:var(--et-warn-fg,#f5d08a)!important;
 }
 html.new-ui-v1 body #fwcModal :is(.v1199Action,.fwcBtn),
 html.new-ui-v1 body #fwcList.v478CanonicalQueue .v478RoleActions>.fwcBtn{
@@ -6000,9 +6000,9 @@ html.new-ui-v1 body #fwcModal .fwcFormChip.working{
   color:#cff2f7!important;
 }
 html.new-ui-v1 body #fwcModal .fwcFormChip.warn{
-  border-color:rgba(225,178,57,.42)!important;
-  background:#332a10!important;
-  color:#ffe383!important;
+  border-color:var(--et-warn-edge,#c89a39)!important;
+  background:var(--et-warn-bg,#332a10)!important;
+  color:var(--et-warn-fg,#ffe383)!important;-webkit-text-fill-color:var(--et-warn-fg,#ffe383)!important;
 }
 @media(max-width:720px){
   html.new-ui-v1 body #fwcModal .fwcFormOverviewTitle{font-size:8px!important}
