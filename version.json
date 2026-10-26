@@ -1,12 +1,12 @@
 {
-  "version": "V1.7",
-  "displayVersion": "V1.7",
-  "label": "V1.7 - SỬA TƯƠNG PHẢN THEO 8 ẢNH GIAO DIỆN",
-  "build": "V1.7-20261026-SCREENSHOT-CONTRAST-16",
+  "version": "V1.8",
+  "displayVersion": "V1.8",
+  "label": "V1.8 - SÁNG/TỐI MENU, CÀI ĐẶT VÀ THẺ CHUYẾN BAY",
+  "build": "V1.8-20261026-SETTINGS-CASCADE-17",
   "releasedAt": "2026-10-26",
-  "type": "v1-7-screenshot-paired-contrast",
+  "type": "v1-8-settings-cascade-and-amber-contrast",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Đồng bộ màu chữ và nền ở MY FLIGHT, ngày/tìm kiếm/tab/trạng thái, dashboard metrics/dải hãng, thanh tài khoản, menu trái, thẻ biểu mẫu/chuyến bay và popup thông báo hồ sơ chuyến tạo sau mỗi click. Sửa tại nguồn token cũ và CSS sinh động; giữ nguyên PWA an toàn, nghiệp vụ, nháp, logo, bản giấy/PDF/chữ ký. Chưa xác minh trực quan mọi vai trò khi đăng nhập.",
-  "message": "V1.7: Khắc phục màu chữ/nền tại các màn hình người dùng đã gửi"
+  "notes": "Sửa CSS gốc selector lặp ID ép Cài đặt tối khi chọn Sáng; đồng bộ sáng/tối cho nút MENU trong MY FLIGHT, thẻ biểu mẫu vàng/chờ nhận và tiêu đề danh sách chuyến bay hôm nay. Ràng buộc màu nền/chữ/placeholder ở PC/mobile, bảo vệ giấy/PDF và dữ liệu nháp; không thêm tài nguyên tải mạng. Cần kiểm thử trực quan các vai trò sau đăng nhập.",
+  "message": "V1.8: Sửa tương phản MENU, thẻ chờ nhận, Cài đặt và danh sách chuyến"
 }
