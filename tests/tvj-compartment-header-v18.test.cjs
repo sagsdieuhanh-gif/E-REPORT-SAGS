@@ -15,7 +15,7 @@ for(const prefix of ['fwd','aft']){
 }
 const quick=read('app/modules/tvj-gof-035.v632.js');
 const begin=quick.indexOf('const TVJ_REGIONS='),end=quick.indexOf('let regionLabels=',begin);
-const rctx={window:{},console,S:v=>String(v??'').trim()};
+const rctx={window:{},console,X:'vz_',S:v=>String(v??'').trim()};
 vm.createContext(rctx);vm.runInContext(quick.slice(begin,end)+';this.regions=TVJ_REGIONS;',rctx);
 const inspect=rctx.regions.find(x=>x.id==='inspection');
 assert.equal(inspect.keys.length,22);
