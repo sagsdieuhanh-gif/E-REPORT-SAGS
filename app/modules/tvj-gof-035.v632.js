@@ -2,6 +2,8 @@
 const G='tvjgof035',P=15,W=1241,H=1755,F='tvj_gof_035',X='vz_';let form=null,tab=0,draft={},sections=[[],[],[]],lastFocusedKey='';
 const NIL='NIL',isNil=v=>/^(?:NIL|N\/A)$/i.test(S(v)),isSlash=v=>S(v)==='/';
 const S=v=>String(v??'').trim(),E=v=>S(v).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+// Only TVJ: if no selection exists, NOTOC defaults to NO. Existing YES wins.
+function defaultNotocNo(flags){if(!flags)return false;const y=X+'notocYes',n=X+'notocNo';if(flags[y]){if(flags[n]){flags[n]=false;return true}return false}if(!flags[n]){flags[n]=true;return true}return false}
 const active=()=>{try{const g=S(typeof activeFormGroup!=='undefined'?activeFormGroup:window.activeFormGroup).toLowerCase();if(g)return g===G}catch(_){}try{const sid=S(typeof activeFlightSessionId!=='undefined'?activeFlightSessionId:window.activeFlightSessionId);if(!sid||typeof readFlightSessionEnvelope!=='function')return false;const env=readFlightSessionEnvelope(sid)||{},g=S(env.activeFormGroup||env.mainForm).toLowerCase();return g===G}catch(_){return false}};
 async function load(){if(form)return form;try{form=window.sagsV450GetFormRegistry?.()?.forms?.find(x=>S(x.id)===F)||null}catch(_){}if(!form){const r=await fetch('./forms/forms.registry.json?t='+Date.now(),{cache:'no-store'}),j=await r.json();form=(j.forms||[]).find(x=>S(x.id)===F)}return form}
 function rt(t){t=S(t).toLowerCase();return t==='checkbox'?'check':t==='time'?'time':t==='date'?'date':t==='number'?'number':t==='textarea'?'textarea':'text'}
@@ -315,8 +317,9 @@ async function ensure(){
   // Aggregate migration + account identity into at most ONE save and ONE draw.
   const migrated=migrateTvjNil();
   const identityChanged=seedAccountIdentity(false);
-  if(migrated||identityChanged)try{persist()}catch(_){}
-  if(geometryChanged||migrated||identityChanged)try{draw()}catch(_){}
+  const notocChanged=defaultNotocNo(state);
+  if(migrated||identityChanged||notocChanged)try{persist()}catch(_){}
+  if(geometryChanged||migrated||identityChanged||notocChanged)try{draw()}catch(_){}
  })();
  try{return await ensurePending}finally{ensurePending=null}
 }
@@ -352,7 +355,7 @@ window.vz632Next=(input,event)=>{
  else input.blur?.();
 };
 
-function init(){draft={};for(const a of sections)for(const f of a)draft[f.k]=f.type==='check'?!!state?.[f.k]:(isNil(state?.[f.k])?NIL:S(state?.[f.k]))}
+function init(){draft={};for(const a of sections)for(const f of a)draft[f.k]=f.type==='check'?!!state?.[f.k]:(isNil(state?.[f.k])?NIL:S(state?.[f.k]));defaultNotocNo(draft)}
 function now(){try{return S(nowHHMM()).replace(':','')}catch(_){const d=new Date();return String(d.getHours()).padStart(2,'0')+String(d.getMinutes()).padStart(2,'0')}}
 function cell(f){const k=E(f.k),t=f.type;if(t==='check')return '<div class="quickTimeSingleCell"><button type="button" class="vz632Toggle '+(draft[f.k]?'on':'')+'" data-vzk="'+k+'" onclick="vz632Toggle(this)">'+(draft[f.k]?'✓ ĐÃ CHỌN':'— CHƯA CHỌN')+'</button></div>';if(t==='textarea')return '<div class="quickTimeSingleCell"><textarea class="quickTimeInput" data-vzk="'+k+'" data-vzt="textarea" onfocus="vz632Focus(this)" onkeydown="vz632Next(this,event)" onblur="vz632Blur(this,event)" oninput="vz632Input(this)">'+E(draft[f.k])+'</textarea></div>';return '<div class="quickTimeSingleCell"><input class="quickTimeInput" data-vzk="'+k+'" data-vzt="'+E(t)+'" '+('type="text" inputmode="text" enterkeyhint="next"')+' value="'+E(draft[f.k])+'" placeholder="'+(t==='time'?'----':'')+'" onfocus="vz632Focus(this)" onkeydown="vz632Next(this,event)" onblur="vz632Blur(this,event)" oninput="vz632Input(this)">'+(t==='time'?'<button class="quickTimeNow" type="button" data-vzk="'+k+'" onclick="vz632Now(this)">◷</button>':'')+'</div>'}
 function render(){
@@ -384,9 +387,9 @@ window.vz632Input=e=>{const k=S(e.dataset.vzk),t=S(e.dataset.vzt);let v=window.S
 window.vz632FillNIL=()=>{if(!confirm('Điền NIL cho toàn bộ ô trống của TVJ-GOF-035?\n\nDữ liệu đã nhập và checkbox được giữ nguyên. NAME / STAFF ID vẫn lấy từ tài khoản đăng nhập.'))return;seedAccountIdentity(false);let n=0;for(const f of sections.flat()){if(f.type==='check'||f.key.toUpperCase()==='NAME'||f.key.toUpperCase()==='STAFF_ID')continue;const cur=S(draft[f.k]??state?.[f.k]);if(!cur){draft[f.k]=NIL;state[f.k]=NIL;n++}}seedAccountIdentity(false);try{persist()}catch(_){}try{draw()}catch(_){}render();const st=document.getElementById('quickTimeSaveStatus');if(st)st.textContent=n?'ĐÃ LƯU NIL '+n+' Ô TRỐNG':'KHÔNG CÓ Ô TRỐNG';try{if(n&&typeof showToast==='function')showToast('Đã điền và lưu NIL cho '+n+' ô trống')}catch(_){}};
 // Legacy internal shortcut stays compatible, but the TVJ UI always writes NIL.
 window.vz632FillNA=()=>window.vz632FillNIL();
-window.vz632Toggle=e=>{const k=S(e.dataset.vzk);draft[k]=!draft[k];e.classList.toggle('on',!!draft[k]);e.textContent=draft[k]?'✓ ĐÃ CHỌN':'— CHƯA CHỌN'};
+window.vz632Toggle=e=>{const k=S(e.dataset.vzk);if(k===X+'notocYes'||k===X+'notocNo'){draft[X+'notocYes']=k===X+'notocYes';draft[X+'notocNo']=k===X+'notocNo';for(const btn of document.querySelectorAll?.('.vz632Toggle[data-vzk]')||[]){const key=S(btn.dataset.vzk);if(key===X+'notocYes'||key===X+'notocNo'){btn.classList.toggle('on',!!draft[key]);btn.textContent=draft[key]?'✓ ĐÃ CHỌN':'— CHƯA CHỌN'}}return}draft[k]=!draft[k];e.classList.toggle('on',!!draft[k]);e.textContent=draft[k]?'✓ ĐÃ CHỌN':'— CHƯA CHỌN'};
 window.vz632Now=e=>{const k=S(e.dataset.vzk);draft[k]=now();const input=e.parentElement?.querySelector('.quickTimeInput');if(input)input.value=draft[k]};
-function save(){seedAccountIdentity(false);const bad=[];for(const f of sections.flat()){let v=draft[f.k];if(f.type==='check'){state[f.k]=!!v;continue}v=S(v);const isMarker=isNil(v)||isSlash(v);if(f.type==='time'&&!isMarker){v=norm(v);if(v===null){bad.push(f.label);continue}}if(f.type==='number'&&!isMarker)v=S(v).replace(/[^0-9.]/g,'');if(isNil(v))v=NIL;if(v==='')delete state[f.k];else state[f.k]=v}if(bad.length){alert('Giờ chưa hợp lệ: '+[...new Set(bad)].join(', '));return false}seedAccountIdentity(false);try{persist();draw()}catch(_){}const st=document.getElementById('quickTimeSaveStatus');if(st)st.textContent='ĐÃ CẬP NHẬT';return true}
+function save(){seedAccountIdentity(false);defaultNotocNo(draft);const bad=[];for(const f of sections.flat()){let v=draft[f.k];if(f.type==='check'){state[f.k]=!!v;continue}v=S(v);const isMarker=isNil(v)||isSlash(v);if(f.type==='time'&&!isMarker){v=norm(v);if(v===null){bad.push(f.label);continue}}if(f.type==='number'&&!isMarker)v=S(v).replace(/[^0-9.]/g,'');if(isNil(v))v=NIL;if(v==='')delete state[f.k];else state[f.k]=v}if(bad.length){alert('Giờ chưa hợp lệ: '+[...new Set(bad)].join(', '));return false}seedAccountIdentity(false);try{persist();draw()}catch(_){}const st=document.getElementById('quickTimeSaveStatus');if(st)st.textContent='ĐÃ CẬP NHẬT';return true}
 async function open(){await ensure();seedAccountIdentity(true);tab=0;init();render();const m=document.getElementById('quickTimeModal');if(m)m.style.display='flex';document.body.classList.add('sags-quicktime-open')}
 window.vz632BBBT=()=>{save();try{closeQuickTimePanel()}catch(_){}setTimeout(()=>{try{selectFormGroup('bbbt')}catch(_){}},30)};
 const o=window.openQuickTimePanel,g=window.qteGoPage,s=window.qteSaveCompact,v=window.quickTimeRefreshVisibility;
