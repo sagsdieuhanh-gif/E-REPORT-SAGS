@@ -229,7 +229,15 @@
     }catch(e){console.warn("TVJ wrap show",e)}
     try{
       const base=draw;
-      const wrapped=function(){syncAccountIdentity();const s=document.getElementById("svg15");if(s)s.innerHTML="";return base.apply(this,arguments)};
+      const wrapped=function(){
+        syncAccountIdentity();
+        // The core sagsBeginSvgDraw() already updates only changed fields and
+        // repairs missing/stale nodes. Clearing svg15 here forced all 128 TVJ
+        // hit/text nodes to be rebuilt on EVERY draw (also on unrelated forms),
+        // defeating incremental rendering and causing excessive mobile DOM work.
+        // Leave the SVG intact; the core renderer owns full invalidation.
+        return base.apply(this,arguments);
+      };
       draw=wrapped;root.draw=wrapped;
     }catch(e){console.warn("TVJ wrap draw",e)}
     try{
