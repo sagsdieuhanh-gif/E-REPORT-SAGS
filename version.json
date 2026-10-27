@@ -1,12 +1,12 @@
 {
-  "version": "V1.5",
-  "displayVersion": "V1.5",
-  "label": "V1.5 - SỬA TRIỆT ĐỂ Ô ✓ / NIL TVJ",
-  "build": "V1.5-20261027-TVJ-DAMAGE-CLICK-FIX-01",
+  "version": "V1.6",
+  "displayVersion": "V1.6",
+  "label": "V1.6 - TỐI ƯU VẼ BIỂU MẪU CHROME ANDROID",
+  "build": "V1.6-20261027-MOBILE-CHROME-REDRAW-01",
   "releasedAt": "2026-10-27",
-  "type": "tvj-damaged-check-real-click-fix",
+  "type": "mobile-chrome-incremental-tvj-svg",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Sửa đúng nguyên nhân: legacy TVJ checkbox interceptor xử lý trước khi mở lựa chọn ✓ / NIL. Chuyển riêng ô vz_damageFound sang hộp chọn hai giá trị, không rơi về toggle; lưu trạng thái NIL trên biểu mẫu/PDF, giữ auto-time khi chọn ✓ và rollback khi lỗi lưu. Kiểm tra thao tác nhấn thật. Giữ nguyên các form, quy tắc roster và FSAGS 42.1.",
-  "message": "V1.5: Khắc phục ô Damage found chỉ hiển thị dấu tích do bộ chặn cũ"
+  "notes": "Loại bỏ việc xóa rồi dựng lại toàn bộ SVG TVJ trang 15 ở mỗi lần draw (kể cả khi làm các biểu mẫu khác), kích hoạt cơ chế cập nhật từng ô sẵn có. Giảm công việc DOM và quan sát biến đổi dư thừa, không thay cấu trúc biểu mẫu/PDF, thao tác chạm, ✓/NIL, nghiệp vụ 42.1 hay lưu nháp. Kết quả tốc độ trên Chrome Android cần xác minh thiết bị thực.",
+  "message": "V1.6: Giảm vẽ lại SVG không cần thiết trên Chrome/Samsung"
 }
