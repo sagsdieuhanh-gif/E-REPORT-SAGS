@@ -156,6 +156,10 @@
       if(blank||unchanged){state[full]=val;nextSeed[full]=val}
     };
     const st=state,rs=env.rosterSeed||{};
+    // TVJ NOTOC defaults to NO until an operator explicitly selects YES.
+    // Keep existing YES data; the checkboxes must never both be selected.
+    if(st[PREFIX+'notocYes'])st[PREFIX+'notocNo']=false;
+    else if(!st[PREFIX+'notocNo'])st[PREFIX+'notocNo']=true;
     let f1=String(st.fltBefore||rs.fltBefore||rs.arrFlight||"").trim(),f2=String(st.fltAfter||rs.fltAfter||rs.depFlight||"").trim();
     if(!f1&&!f2){const ms=String(meta?.name||"").match(/VZ\s*\d+/ig)||[];f1=ms[0]||"";f2=ms[1]||""}
     setSeed("flightNumber",[stripVZ(f1),stripVZ(f2)].filter(Boolean).join(" / "));
