@@ -9,8 +9,8 @@ assert.match(code,/const hasValidMap=preparedForm===z&&preparedFieldArray===fiel
 assert.match(code,/const current=new Map\(\)/,'runtime fields indexed once');
 assert.doesNotMatch(code,/fields\.find\(f=>\+f\.page===P/,'do not scan entire field list 128 times');
 assert.match(code,/const identityChanged=seedAccountIdentity\(false\)/,'identity update must not redraw independently');
-assert.match(code,/if\(migrated\|\|identityChanged\)try\{persist\(\)\}/,'only one persist when values change');
-assert.match(code,/if\(geometryChanged\|\|migrated\|\|identityChanged\)try\{draw\(\)\}/,'only one paint when needed');
+assert.match(code,/if\(migrated\|\|identityChanged\|\|notocChanged\)try\{persist\(\)\}/,'only one persist for NIL, account or initial NOTOC changes');
+assert.match(code,/if\(geometryChanged\|\|migrated\|\|identityChanged\|\|notocChanged\)try\{draw\(\)\}/,'only one paint when geometry, NIL, identity or NOTOC changed');
 assert.match(shell,/if\(photo!==cachedAvatarPhoto\)/,'cache avatar transformation on PC and mobile');
 assert.match(code,/const TVJ_REGIONS=/,'physical rectangle mappings retained');
 assert.match(code,/NIL Ô TRỐNG/);
