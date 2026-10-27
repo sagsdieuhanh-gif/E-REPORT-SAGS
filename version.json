@@ -1,12 +1,12 @@
 {
-  "version": "V1.2",
-  "displayVersion": "V1.2",
-  "label": "V1.2 - ỔN ĐỊNH ĐĂNG NHẬP MOBILE",
-  "build": "V1.2-20261027-MOBILE-LOGIN-STABLE-02",
+  "version": "V1.3",
+  "displayVersion": "V1.3",
+  "label": "V1.3 - TVJ NAME, CHECKED/TIME VÀ NOTOC",
+  "build": "V1.3-20261027-TVJ-PRINT-NOTOC-03",
   "releasedAt": "2026-10-27",
-  "type": "v1-2-mobile-login-keyboard-viewport-stability",
+  "type": "tvj-name-compartment-heading-notoc-default-no",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Sửa đăng nhập mobile nhảy vị trí khi chạm Tài khoản/Mật khẩu: vùng đăng nhập dùng chiều cao viewport ổn định 100svh và cuộn nội dung khi bàn phím hiện, không căn flex-end theo 100dvh; tránh zoom trên iPhone bằng font 16px. Bộ giám sát visualViewport gom sự kiện theo requestAnimationFrame và không ghi CSS khi kích thước không đổi. Giữ nguyên Firebase login, V1.1 sửa PDF iPhone, FSAGS 42.1 nhập giờ tự do, biểu mẫu và dữ liệu nháp.",
-  "message": "V1.2: Sửa đăng nhập mobile nhảy khi mở bàn phím"
+  "notes": "Chỉ TVJ-GOF-035 (chuyến VZ): NAME căn cùng hàng với nhãn NAME và chữ dài tự thu nhỏ trong ô; hai dòng FWD Compartment và AFT Compartment mặc định hiển thị dấu - trong cả CHECKED lẫn TIME, đồng bộ bản xem và PDF; NOTOC mặc định tích NO nếu chưa lựa chọn, người dùng có thể đổi YES và hai lựa chọn loại trừ lẫn nhau. Giữ nguyên dữ liệu đã chọn YES, các biểu mẫu khác, đăng nhập mobile V1.2, PDF iPhone và quy tắc FSAGS 42.1.",
+  "message": "V1.3: Căn NAME, đánh dấu ô trống và mặc định NOTOC NO cho TVJ"
 }
