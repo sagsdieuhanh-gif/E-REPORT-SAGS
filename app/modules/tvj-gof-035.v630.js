@@ -40,7 +40,7 @@
       const x=root.sagsV450GetFormRegistry?.();
       if(x?.forms?.some(f=>String(f?.id)===FORM_ID))return x;
     }catch(_){}
-    const pending=root.__SAGS_TVJ_GOF_REGISTRY_PENDING||(root.__SAGS_TVJ_GOF_REGISTRY_PENDING=fetch("./forms/forms.registry.json?tvj="+Date.now(),{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error("forms/forms.registry.json HTTP "+r.status);return r.json()}).catch(e=>{root.__SAGS_TVJ_GOF_REGISTRY_PENDING=null;throw e}));
+    const pending=root.__SAGS_TVJ_GOF_REGISTRY_PENDING||(root.__SAGS_TVJ_GOF_REGISTRY_PENDING=fetch("./forms/forms.registry.json?tvj="+Date.now(),{cache:"no-store"}).then(r=>{if(r.ok===false)throw new Error("forms/forms.registry.json HTTP "+r.status);return r.json()}).catch(e=>{root.__SAGS_TVJ_GOF_REGISTRY_PENDING=null;throw e}));
     return await pending;
   }
   function ensureStyle(){
