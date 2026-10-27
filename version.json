@@ -7,6 +7,6 @@
   "type": "ramp-bx-font-and-global-input-stability",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Chuẩn hóa Times New Roman đậm 700 cỡ cơ sở 20 cho các trường dữ liệu nhập (tự thu nhỏ vừa ô) trên 10 biểu mẫu. Giữ checkbox, chữ ký, tờ in gốc. TVJ: 2 ô thời gian noDamageFound và damageFound cho nhập giờ thủ công, giữ CHECKED với ✓, riêng Damage found vẫn ✓/NIL. FINAL: lưu/xác minh từng ký tự không đổi, gộp các lần tính hiển thị/fit font và refresh realtime dư trong lúc gõ; giảm ghi metadata lặp. Không thay quy tắc roster và FSAGS 42.1. Tốc độ thực tế cần thử thiết bị.",
-  "message": "V1.7: font theo RAMP BX, TIME TVJ nhập tay, giảm lag nhập liệu"
+  "notes": "Chuẩn hóa Times New Roman đậm 700 cỡ cơ sở 20 cho các trường dữ liệu nhập (tự thu nhỏ vừa ô) trên 10 biểu mẫu. Giữ checkbox, chữ ký, tờ in gốc. TVJ: 2 ô thời gian noDamageFound và damageFound cho nhập giờ thủ công, giữ CHECKED với ✓, riêng Damage found vẫn ✓/NIL. FINAL: lưu/xác minh từng ký tự không đổi, gộp các lần tính hiển thị/fit font và refresh realtime dư trong lúc gõ; giảm ghi metadata lặp. Không thay quy tắc roster và FSAGS 42.1. Tốc độ thực tế cần thử thiết bị. Tạm ẩn và chặn chức năng phân công FINAL/bảng tải thủ công vào chuyến của CBTT; dữ liệu phân công đã có, roster và FINAL/CROSSCHECK vẫn được giữ nguyên.",
+  "message": "V1.7: đồng bộ font RAMP BX, sửa TIME TVJ, tối ưu nhập và tạm ngưng phân công FINAL thủ công CBTT"
 }
