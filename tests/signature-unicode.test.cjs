@@ -8,7 +8,7 @@ assert.equal(sample.normalize('NFC'),sample,'Vietnamese fixture must be NFC');
 assert.match(boot,/signatureText=signatureNameField\?String\(val\?\?""\)\.normalize\("NFC"\)/);
 assert.match(boot,/"font-family":"Times New Roman"/);
 assert.match(rt,/signatureNameFieldV6119=.*coordArrName.*loadingStaffName.*bbbtPerson/s);
-assert.match(rt,/if\(signatureNameFieldV6119\)st\.fontFamily="Arial"/);
+assert.match(rt,/if\(signatureNameFieldV6119\)st\.fontFamily="Times New Roman"/);
 assert.match(rt,/unicodeNamePad=signatureNameFieldV6119\?Math\.max\(3,st\.fontSize\*\.32\):0/);
 assert.match(rt,/const rawText=String\(v\)\.normalize\("NFC"\)/);
 assert.match(rt,/if\(strict421&&!signatureNameFieldV6119\)/);
