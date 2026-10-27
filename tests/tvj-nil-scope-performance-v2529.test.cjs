@@ -54,7 +54,7 @@ assert.match(tvj,/input\?\.tagName==='TEXTAREA'/,'multi-line notes must preserve
 
 assert.doesNotMatch(tvj,/setInterval\s*\(/,'no always-on TVJ redraw polling on mobile/desktop');
 assert.match(tvj,/if\(ensurePending\)return ensurePending/,'avoid concurrent expensive registry load');
-assert.match(tvj,/if\(geometryChanged\|\|migrated\|\|identityChanged\)try\{draw\(\)\}/,'draw only on geometry, NIL migration or changed account identity');
+assert.match(tvj,/if\(geometryChanged\|\|migrated\|\|identityChanged\|\|notocChanged\)try\{draw\(\)\}/,'draw only on geometry, NIL migration, account identity or initial NOTOC');
 assert.doesNotMatch(tvj,/window\.vz632Toggle[^;\n]*render\(\)/,'TVJ checkboxes do not redraw entire quick-entry form');
 assert.match(shell,/const sig=visible\.map\(/);
 assert.match(shell,/if\(sig===lastMenuSignature\)return/,'no repeated innerHTML rebuild for same sidebar state');
