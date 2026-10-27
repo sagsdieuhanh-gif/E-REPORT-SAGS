@@ -235,6 +235,14 @@
     try{
       const base=activate;
       const wrapped=function(f){
+        // Printed TVJ Damaged found has two valid states (✓ / NIL).
+        // This legacy interceptor runs BEFORE the generic activate(), so route
+        // to the dedicated choice before any boolean-only checkbox handling.
+        if(f&&String(f.key||"")===PREFIX+"damageFound"&&Number(f.page)===PAGE){
+          const opened=root.sagsTvjDamageChoice?.();
+          if(!opened)try{root.showToast?.("Chưa mở được lựa chọn ✓ / NIL. Hãy tải lại bản cập nhật.")}catch(_){}
+          return;
+        }
         if(f&&String(f.key||"").startsWith(PREFIX)&&f.type==="check"){
           activeKey=f.key;const next=!state[f.key];state[f.key]=next;
           if(next){for(const g of CHECK_GROUPS)if(g.includes(f.key))for(const other of g)if(other!==f.key)state[other]=false;const tk=INS_TIME.get(f.key);if(tk&&!state[tk])state[tk]=now()}

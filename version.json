@@ -1,12 +1,12 @@
 {
-  "version": "V1.4",
-  "displayVersion": "V1.4",
-  "label": "V1.4 - TVJ DAMAGE ✓/NIL VÀ TỐI ƯU NHẬP",
-  "build": "V1.4-20261027-TVJ-DAMAGE-NIL-INPUT-01",
+  "version": "V1.5",
+  "displayVersion": "V1.5",
+  "label": "V1.5 - SỬA TRIỆT ĐỂ Ô ✓ / NIL TVJ",
+  "build": "V1.5-20261027-TVJ-DAMAGE-CLICK-FIX-01",
   "releasedAt": "2026-10-27",
-  "type": "tvj-damage-nil-input-performance",
+  "type": "tvj-damaged-check-real-click-fix",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Riêng TVJ-GOF-035 chuyến VZ: Damage found/unreadable placard có hai lựa chọn ✓ hoặc NIL, hiển thị đúng cả trên biểu mẫu, nhập nhanh và PDF. Gộp tải registry, tránh ghi/vẽ dữ liệu không thay đổi, giữ ổn định vị trí con trỏ khi nhập. Giữ nguyên các trường khác, NOTOC NO/YES, quy tắc FSAGS 42.1 và dữ liệu chuyến bay.",
-  "message": "V1.4: Lựa chọn ✓ / NIL và giảm lag nhập biểu mẫu TVJ"
+  "notes": "Sửa đúng nguyên nhân: legacy TVJ checkbox interceptor xử lý trước khi mở lựa chọn ✓ / NIL. Chuyển riêng ô vz_damageFound sang hộp chọn hai giá trị, không rơi về toggle; lưu trạng thái NIL trên biểu mẫu/PDF, giữ auto-time khi chọn ✓ và rollback khi lỗi lưu. Kiểm tra thao tác nhấn thật. Giữ nguyên các form, quy tắc roster và FSAGS 42.1.",
+  "message": "V1.5: Khắc phục ô Damage found chỉ hiển thị dấu tích do bộ chặn cũ"
 }
