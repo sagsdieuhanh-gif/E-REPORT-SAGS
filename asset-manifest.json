@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V1.4",
-  "build": "V1.4-20261027-TVJ-DAMAGE-NIL-INPUT-01",
+  "version": "V1.5",
+  "build": "V1.5-20261027-TVJ-DAMAGE-CLICK-FIX-01",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -318,16 +318,16 @@
       "bytes": 66353
     },
     "./app/modules/tvj-gof-035.v630.js": {
-      "sha256": "215a4dcf3e78010ac1027d0d0c0a9d7922509cee5a887c713c9560254e568c05",
-      "bytes": 17973
+      "sha256": "145391048b8d4ecb5cc614595e51a7b7864d06982b118f279d9c3e4c0439dc20",
+      "bytes": 18500
     },
     "./app/modules/tvj-gof-035.v631.js": {
       "sha256": "9e89b5d32de75bc395ec68685d77c4eb714a729e85c40ba144bc9585dd812d1a",
       "bytes": 8162
     },
     "./app/modules/tvj-gof-035.v632.js": {
-      "sha256": "1847756c89d4808b9f8850c33a67bd98786461477d7624e45b4921235ecabd38",
-      "bytes": 28047
+      "sha256": "d825323e244ca33feb0bd775cf224c7f135473004cdf62359609a3523a288b4b",
+      "bytes": 28363
     },
     "./app/modules/ui-preferences.v1.js": {
       "sha256": "cb5f9f1df4916791449434d5c24b53eaeb2a9fcdb6ebb8f763fdc6bc63fd675b",
@@ -762,7 +762,7 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "8eb9c73f474a25e77f6dc200a13acf0f36c978faca770fbe5698d65924770110",
+      "sha256": "ddbc98a366cb91276e640416906d0c2af54863ad99cee7a82abf8b79b2bf963b",
       "bytes": 105190
     },
     "./manifest.webmanifest": {
@@ -814,7 +814,7 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "9d479e67e8f2eb83f6f10ac74e4c87965c724174727da76f10d9d4eb4321e90e",
+      "sha256": "502804cffd1e81300a4c3e10618ea9cffe588c2d1ad6c6a8b8ae9e56ea29b439",
       "bytes": 22459
     },
     "./storage-recovery.html": {
@@ -822,8 +822,8 @@
       "bytes": 26106
     },
     "./version.json": {
-      "sha256": "b7883c668ff19aa1f1fa465e83282088e6ca7963448d4dc3ac9a2e43cb158c04",
-      "bytes": 843
+      "sha256": "13c7c01e94e6d458003bbc2f812beaa6e41a35747dbc0aff850e960f34c66c6a",
+      "bytes": 873
     }
   },
   "mutableAssets": [
