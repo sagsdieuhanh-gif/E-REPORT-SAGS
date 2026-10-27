@@ -1,12 +1,12 @@
 {
-  "version": "V1.1",
-  "displayVersion": "V1.1",
-  "label": "V1.1 - SỬA LỖI XUẤT PDF KHI CÓ ẢNH TRÊN IPHONE",
-  "build": "V1.1-20261026-PDF-ATTACH-IOS-01",
-  "releasedAt": "2026-10-26",
-  "type": "ios-attachment-pdf-canvas-compat",
+  "version": "V1.2",
+  "displayVersion": "V1.2",
+  "label": "V1.2 - ỔN ĐỊNH ĐĂNG NHẬP MOBILE",
+  "build": "V1.2-20261027-MOBILE-LOGIN-STABLE-02",
+  "releasedAt": "2026-10-27",
+  "type": "v1-2-mobile-login-keyboard-viewport-stability",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Khắc phục lỗi ctx.roundRect is not a function khi xuất PDF có ảnh đính kèm trên iPhone/Safari. Thay 4 lệnh vẽ khung ảnh bằng Canvas path tương thích; giữ bố cục biểu mẫu và quy trình xuất PDF.",
-  "message": "V1.1: Khắc phục xuất PDF kèm ảnh trên iOS/Safari"
+  "notes": "Sửa đăng nhập mobile nhảy vị trí khi chạm Tài khoản/Mật khẩu: vùng đăng nhập dùng chiều cao viewport ổn định 100svh và cuộn nội dung khi bàn phím hiện, không căn flex-end theo 100dvh; tránh zoom trên iPhone bằng font 16px. Bộ giám sát visualViewport gom sự kiện theo requestAnimationFrame và không ghi CSS khi kích thước không đổi. Giữ nguyên Firebase login, V1.1 sửa PDF iPhone, FSAGS 42.1 nhập giờ tự do, biểu mẫu và dữ liệu nháp.",
+  "message": "V1.2: Sửa đăng nhập mobile nhảy khi mở bàn phím"
 }
