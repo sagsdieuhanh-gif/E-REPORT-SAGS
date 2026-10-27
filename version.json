@@ -1,12 +1,12 @@
 {
-  "version": "V1.10",
-  "displayVersion": "V1.10",
-  "label": "V1.10 - TĂNG TỐC XUẤT PDF",
-  "build": "V1.10-20261027-PDF-EMPTY-OVERLAY-01",
+  "version": "V1.11",
+  "displayVersion": "V1.11",
+  "label": "V1.11 - TỐI ƯU TỐC ĐỘ XUẤT PDF",
+  "build": "V1.11-20261027-PDF-FASTGUARD-01",
   "releasedAt": "2026-10-27",
-  "type": "pdf-canonical-overlay-empty-raster-skip",
+  "type": "pdf-export-fast-preflight-bounded-background-cache",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Tăng tốc xuất PDF các biểu mẫu canonical: nếu toàn bộ ô đã được bộ vẽ Canvas chuẩn xử lý và không còn hình vẽ SVG cần thiết, không tạo XML/Blob/giải mã ảnh SVG toàn trang chỉ để phủ lớp trắng; các đường/hình minh họa chưa nằm trong Canvas vẫn giữ render gốc. TVJ FWD/AFT mask đã được Canvas xử lý, nhận diện để tránh xuất đúp. Giữ nguyên kiểm tra registry, độ phân giải ảnh nền, font RAMP BX, checkbox, chữ ký, dữ liệu và chất lượng PDF; cần benchmark thực tế trên Chrome/Samsung/Safari.",
-  "message": "V1.10: Bỏ thao tác mã hóa SVG trắng dư khi xuất PDF"
+  "notes": "Giảm thời gian chờ kiểm tra cấu hình Form Manager khi thiết bị đã có registry hợp lệ (900 ms thay vì 5 giây trên mạng chậm), vẫn giữ chờ tối đa 5 giây nếu chưa có registry để bảo vệ tính đúng đắn. Tái sử dụng cache ảnh nền PDF có giới hạn 8 ảnh qua nhiều lần xuất, tránh xóa tải lại liên tục. Không thay đổi dữ liệu, font RAMP BX, checkbox, chữ ký, vị trí và độ phân giải PDF. Kiểm thử trên Chrome/Samsung và Safari/iPhone.",
+  "message": "V1.11: Giảm chờ mạng trước xuất PDF và không tải lại nền PDF dư"
 }

@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V1.10",
-  "build": "V1.10-20261027-PDF-EMPTY-OVERLAY-01",
+  "version": "V1.11",
+  "build": "V1.11-20261027-PDF-FASTGUARD-01",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -162,12 +162,12 @@
       "bytes": 46305
     },
     "./app/generated/runtime-4.js": {
-      "sha256": "d913d7391724613f9127ee7ed6d34bc5e3c1458d161dd51b512b8c0570ddb573",
-      "bytes": 185556
+      "sha256": "43a440f7bb8f240d4d0b3461218266c3380e40177d6d8d8c70df6f83489e2ec0",
+      "bytes": 185647
     },
     "./app/generated/runtime-5.js": {
-      "sha256": "e20c49893c992a74a40544df4abb6a7f20bba87ee7ef1a500343c8c3f37dc97e",
-      "bytes": 27758
+      "sha256": "d7d4e38eaf40c0e2af0d25bb9449b9b6f4e62e6cd84adff298c8115e4c78551b",
+      "bytes": 27738
     },
     "./app/modules/admin-account-actions.v2.js": {
       "sha256": "6405c8a1e4dbbef6824f3266fe1e747b2b4c20e3ff4893f075854d9a878826a5",
@@ -762,8 +762,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "0946645216192d567e5ad74d8d7996203fa293baef93e538a4b3214030cb7912",
-      "bytes": 105034
+      "sha256": "7a20bba2ea701da362b19b0719e51f5b75031f78890e18f04adf4dcd5b501896",
+      "bytes": 104718
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -814,16 +814,16 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "f86826fe6bd3a4fd43b0504ed14337e07cb724a97de724fe1bceb5e030787880",
-      "bytes": 22454
+      "sha256": "f78d41a70e54dd75b648c3313b22813a9307d1ba04a05e685d7bc2931c5eefb0",
+      "bytes": 22442
     },
     "./storage-recovery.html": {
       "sha256": "08817204a946fbdfa404e8c083dd0c2016e935fb8fe56ff8ef99f405978d3df6",
       "bytes": 26106
     },
     "./version.json": {
-      "sha256": "2c4542598f852bfa84a104efd0636de10e00d98b8b9cbddeec4f9d8c6957d7df",
-      "bytes": 1060
+      "sha256": "20f1e5491e866c7466cfae2672509068287ca41dbd75e34ff85af30b0cbac6ea",
+      "bytes": 1015
     }
   },
   "mutableAssets": [
