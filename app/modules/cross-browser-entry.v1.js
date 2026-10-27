@@ -291,7 +291,25 @@
   }
   function regionNext(current){
     if(!current)return null;
+    if(Number(current.page)===15&&current.type!=='check'){
+      // TVJ: the authoritative order is the printed rectangle's stable
+      // region plan, not a snapshot of the mutable form field array. The
+      // latter can be incomplete while the TVJ registry is being mounted.
+      const planned=root.sagsTvjNextFieldKeyV19?.(String(current.key||''));
+      if(planned===null)return null;
+      if(typeof planned==='string'){
+        return fieldList().find(f=>Number(f.page)===15&&String(f.key)===planned)||null;
+      }
+    }
     const members=regionFields(current,current.type==='check'),i=members.findIndex(f=>f.key===current.key);
+    // Using metadata order also tolerates a stale field instance currently
+    // held by the native editor during a Form Manager field rebuild.
+    if(i<0&&Number(current.page)===15){
+      const order=tvjRegion(current);
+      if(order){
+        return members.find(f=>Number(tvjRegion(f)?.order)>Number(order.order))||null;
+      }
+    }
     return i<0?null:members[i+1]||null;
   }
   root.sagsEntryRegions={regionOf,regionFields,next:regionNext};
@@ -331,8 +349,14 @@
     try{next=nextField(editing);}catch(_){}
     btn.disabled=!next;
     btn.style.opacity=next?'1':'.45';
-    btn.title=next?'Lưu và chuyển ô trong '+regionOf(editing).title:'Đã đến cuối vùng nhập; lưu rồi chọn vùng tiếp theo trên biểu mẫu';
-    btn.textContent=next?'Tiếp trong nhóm ›':'Hết nhóm';
+    const isTvj=Number(editing?.page)===15;
+    const planned=isTvj?root.sagsTvjNextFieldKeyV19?.(String(editing?.key||'')):null;
+    const pending=isTvj&&(planned===undefined||(typeof planned==='string'&&!next));
+    btn.title=next?'Lưu và chuyển ô trong '+regionOf(editing).title:
+      pending?'Đang đồng bộ các ô thuộc vùng TVJ; không phải hết nhóm':
+      'Đã đến cuối vùng nhập; lưu rồi chọn vùng tiếp theo trên biểu mẫu';
+    btn.textContent=next?'Tiếp trong nhóm ›':pending?'Đang tải nhóm…':'Hết nhóm';
+    if(pending)try{void root.sagsTvjEnsureFieldsV19?.()?.catch?.(()=>{})}catch(_){};
   }
 
   function installEntryPreviewCss(){
@@ -402,4 +426,6 @@
   root.sagsBrowserStabilityV6128={report,applyArrivalReason,reconcileMultilinePaint,nextField,syncReleaseLabel};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
   root.addEventListener?.('pageshow',()=>{wrapFunctions();installNextButton();scheduleReconcile();syncReleaseLabel();},{passive:true});
+  // Registry initialization may finish after the native modal opened.
+  root.addEventListener?.('sags:tvj-regions-ready',updateNextButton,{passive:true});
 })(window);
