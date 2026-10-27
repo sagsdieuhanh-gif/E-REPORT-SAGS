@@ -280,6 +280,21 @@ function buildSections(){
  }
  if(leftovers.length)console.warn('TVJ fields require rectangle verification:',leftovers.map(q=>q.key));
 }
+// Native Next must follow the verified TVJ printed rectangle, not the current
+// live fields array (which may be temporarily rebuilt by Form Manager).
+// Undefined means the TVJ sections have not finished initializing; null is
+// reserved exclusively for the actual last editable field in a region.
+window.sagsTvjNextFieldKeyV19=key=>{
+ const target=S(key);
+ if(!target||!form||preparedForm!==form||sections.length!==TVJ_REGIONS.length)return undefined;
+ const region=sections.find(a=>a.some(f=>f.k===target));
+ if(!region)return undefined;
+ const editable=region.filter(f=>f.type!=='check'&&
+   f.k!=='acuStart_copy'&&f.k!=='Name_copy');
+ const index=editable.findIndex(f=>f.k===target);
+ if(index<0)return undefined;
+ return editable[index+1]?.k||null;
+};
 // Legacy N/A is converted only for the TVJ form's own bound fields.
 function migrateTvjNil(){
  if(!active()||!form||typeof state!=='object'||!state)return false;
@@ -316,6 +331,9 @@ async function ensure(){
    }
    buildSections();
    preparedForm=z;preparedFieldArray=fields;preparedLength=fields.length;
+   // The native editor can open while the one-megabyte TVJ registry loads.
+   // Notify its Next button once all 14 regions are mapped to live fields.
+   try{window.dispatchEvent?.(new Event('sags:tvj-regions-ready'))}catch(_){}
   }
   ensureStyle();
   if(!active())return;
@@ -328,6 +346,7 @@ async function ensure(){
  })();
  try{return await ensurePending}finally{ensurePending=null}
 }
+window.sagsTvjEnsureFieldsV19=()=>ensure();
 function toolbar(){try{document.getElementById('tvjQuickBtn')?.remove();document.getElementById('tvjQuickModal')?.remove()}catch(_){}}
 function norm(v){v=S(v);if(isNil(v))return NIL;let d=v.replace(/\D/g,'').slice(0,4);if(!d)return '';if(d.length===3)d='0'+d;if(d.length!==4||+d.slice(0,2)>23||+d.slice(2)>59)return null;return d.slice(0,2)+':'+d.slice(2)}
 // TVJ only: '/' marks an optional operation as not applicable, never identity/header.
