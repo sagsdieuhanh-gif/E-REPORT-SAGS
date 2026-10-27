@@ -1,12 +1,12 @@
 {
-  "version": "V1.3",
-  "displayVersion": "V1.3",
-  "label": "V1.3 - TVJ NAME, CHECKED/TIME VÀ NOTOC",
-  "build": "V1.3-20261027-TVJ-PRINT-NOTOC-03",
+  "version": "V1.4",
+  "displayVersion": "V1.4",
+  "label": "V1.4 - TVJ DAMAGE ✓/NIL VÀ TỐI ƯU NHẬP",
+  "build": "V1.4-20261027-TVJ-DAMAGE-NIL-INPUT-01",
   "releasedAt": "2026-10-27",
-  "type": "tvj-name-compartment-heading-notoc-default-no",
+  "type": "tvj-damage-nil-input-performance",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Chỉ TVJ-GOF-035 (chuyến VZ): NAME căn cùng hàng với nhãn NAME và chữ dài tự thu nhỏ trong ô; hai dòng FWD Compartment và AFT Compartment mặc định hiển thị dấu - trong cả CHECKED lẫn TIME, đồng bộ bản xem và PDF; NOTOC mặc định tích NO nếu chưa lựa chọn, người dùng có thể đổi YES và hai lựa chọn loại trừ lẫn nhau. Giữ nguyên dữ liệu đã chọn YES, các biểu mẫu khác, đăng nhập mobile V1.2, PDF iPhone và quy tắc FSAGS 42.1.",
-  "message": "V1.3: Căn NAME, đánh dấu ô trống và mặc định NOTOC NO cho TVJ"
+  "notes": "Riêng TVJ-GOF-035 chuyến VZ: Damage found/unreadable placard có hai lựa chọn ✓ hoặc NIL, hiển thị đúng cả trên biểu mẫu, nhập nhanh và PDF. Gộp tải registry, tránh ghi/vẽ dữ liệu không thay đổi, giữ ổn định vị trí con trỏ khi nhập. Giữ nguyên các trường khác, NOTOC NO/YES, quy tắc FSAGS 42.1 và dữ liệu chuyến bay.",
+  "message": "V1.4: Lựa chọn ✓ / NIL và giảm lag nhập biểu mẫu TVJ"
 }
