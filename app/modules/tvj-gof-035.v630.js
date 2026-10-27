@@ -243,6 +243,15 @@
     try{
       const base=activate;
       const wrapped=function(f){
+        // TVJ: CHECKED and TIME are two independent editable cells.
+        // Open the TIME editor explicitly rather than auto-stamping the current
+        // time when either damage inspection TIME field is tapped.
+        if(f&&Number(f.page)===PAGE&&[PREFIX+"noDamageFoundTime",PREFIX+"damageFoundTime"].includes(String(f.key||""))){
+          const previous=root.__SAGS_TVJ_NEXT_EDIT_FIELD__;
+          root.__SAGS_TVJ_NEXT_EDIT_FIELD__=String(f.key);
+          try{return base.apply(this,arguments)}
+          finally{root.__SAGS_TVJ_NEXT_EDIT_FIELD__=previous}
+        }
         // Printed TVJ Damaged found has two valid states (✓ / NIL).
         // This legacy interceptor runs BEFORE the generic activate(), so route
         // to the dedicated choice before any boolean-only checkbox handling.
