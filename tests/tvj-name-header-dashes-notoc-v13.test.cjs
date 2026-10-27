@@ -2,7 +2,7 @@
 const fs=require('node:fs'),assert=require('node:assert/strict'),vm=require('node:vm');
 const registry=JSON.parse(fs.readFileSync('forms/forms.registry.json','utf8'));
 const tvj=registry.forms.find(f=>f.id==='tvj_gof_035');
-assert(tvj&&tvj.fields.length===128,'TVJ field contract must remain 128');
+assert(tvj&&tvj.fields.length===132,'TVJ field contract must include 132');
 const get=k=>tvj.fields.find(x=>x.key===k);
 const name=get('Name'),staff=get('STAFF_ID');
 assert.ok(name&&staff);assert.equal(name.bind,'acuStart_copy');
@@ -21,7 +21,7 @@ vm.createContext(testContext);
 vm.runInContext(extract(canonical)+';this.paint=fmPaintCanonicalPageV495;',testContext);
 const data={acuStart_copy:'NGUYỄN THANH HUYỀN',vz_notocNo:true};
 testContext.paint(ctx,tvj,tvj.pages[0],fld=>data[fld.bind]);
-assert.equal(paints.filter(x=>x.value==='-').length,4,'two printed compartment headers must each have Checked and Time dash');
+assert.equal(paints.filter(x=>x.value==='-').length,4,'two initially empty compartment headers must each have Checked and Time dash');
 for(const prefix of ['fwd','aft']){
  const c=get(prefix+'DividerNet'),t=get(prefix+'DividerNetTime');
  const y=(c.y-.009)*1755;
@@ -59,4 +59,4 @@ assert.equal(state.draft.vz_notocYes,true);assert.equal(state.draft.vz_notocNo,f
 qctx.window.vz632Toggle(buttons.vz_notocNo);
 assert.equal(state.draft.vz_notocYes,false);assert.equal(state.draft.vz_notocNo,true);
 assert(!v632.includes('setInterval('),'TVJ should not introduce continuous redraw polling');
-console.log('TVJ NAME inline auto-fit + FWD/AFT four heading dashes + NOTOC default NO / editable exclusive YES PASS');
+console.log('TVJ NAME inline auto-fit + FWD/AFT four empty header dashes + NOTOC default NO / editable exclusive YES PASS');
