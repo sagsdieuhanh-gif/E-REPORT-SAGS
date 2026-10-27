@@ -13,7 +13,7 @@ function accountProfile(){try{return window.__sagsGetSession?.()?.profile||windo
 function accountStaffId(p){let raw=S(p?.employeeCode||p?.staffCode||p?.employeeId||p?.staffId||p?.employeeNo||p?.staffNo).toUpperCase();if(!raw)return '';raw=raw.replace(/^CXR[\s_-]*/,'').replace(/\s+/g,'');return raw?'CXR-'+raw:''}
 function seedAccountIdentity(doPersist=true){try{if(typeof state!=='object'||!state)return false;const p=accountProfile(),name=S(p?.name||p?.fullName||p?.displayName||p?.username),staff=accountStaffId(p);let changed=false;const put=(k,v)=>{if(v&&S(state[k])!==v){state[k]=v;changed=true}};put('acuStart_copy',name);put('Name_copy',staff);put(X+'staffName',name);put(X+'staffId',staff);for(const q of form?.fields||[]){const key=S(q.key).toUpperCase();if(key!=='NAME'&&key!=='STAFF_ID')continue;put(bindOf(q),key==='NAME'?name:staff)}if(changed&&doPersist){try{persist()}catch(_){}try{draw()}catch(_){}}return changed}catch(_){return false}}
 // Mapping verified against the PRINTED TVJ-GOF-035 REV06 rectangles, not approximate Y slices.
-// The header + 12 printed operation rectangles contain 124 fields. Four registry fields
+// The header + 12 printed operation rectangles contain 128 fields. Four registry fields
 // (FOD x2, Name/Staff ID x2) cannot be confirmed in the supplied image: preserve
 // them in a clearly labeled review section; do not claim they belong to any box.
 // A stable explicit key map prevents splitting sub-boxes (e.g. NOTOC inside Departure).
@@ -174,12 +174,16 @@ const TVJ_REGIONS=[
   "id": "inspection",
   "title": "A/C COMPARTMENT VISUAL INSPECTION",
   "keys": [
+   "fwdCompartmentChecked",
+   "fwdCompartmentTime",
    "fwdDividerNet",
    "fwdDividerNetTime",
    "fwdAllRestraints",
    "fwdAllRestraintsTime",
    "fwdPlacard",
    "fwdPlacardTime",
+   "aftCompartmentChecked",
+   "aftCompartmentTime",
    "aftDividerNet",
    "aftDividerNetTime",
    "aftAllRestraints",

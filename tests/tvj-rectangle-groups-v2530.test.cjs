@@ -3,7 +3,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
 const root=path.resolve(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p),'utf8');
 const source=read('app/modules/tvj-gof-035.v632.js');
 const tvj=JSON.parse(read('forms/forms.registry.json')).forms.find(f=>f.id==='tvj_gof_035');
-assert.ok(tvj&&tvj.fields.length===128,'TVJ registry must have 128 fields');
+assert.ok(tvj&&tvj.fields.length===132,'TVJ registry must have 128 fields');
 const ast=acorn.parse(source,{ecmaVersion:'latest'}),fn={};let regionNode=null;
 function visit(node){
  if(!node||typeof node!=='object')return;
@@ -21,11 +21,11 @@ assert.equal(regions.filter(r=>r.provisional).length,1,'unverified fields are no
 const S=v=>String(v??'').trim();
 const sectionOf=Function('TVJ_REGIONS','S',fn.sectionOf+';return sectionOf')(regions,S);
 const byKey=new Map(tvj.fields.map(x=>[x.key,x]));
-const counts=[15,8,8,7,7,7,8,6,11,1,8,18,20,4];
+const counts=[15,8,8,7,7,7,8,6,11,1,8,22,20,4];
 assert.deepEqual(regions.map(r=>r.keys.length),counts);
 const referenced=regions.flatMap(r=>r.keys);
-assert.equal(referenced.length,128);
-assert.equal(new Set(referenced).size,128,'no field appears twice across zones');
+assert.equal(referenced.length,132);
+assert.equal(new Set(referenced).size,132,'no field appears twice across zones');
 assert.deepEqual([...referenced].sort(),[...byKey.keys()].sort(),'every field mapped exactly once');
 for(const q of tvj.fields){
  const idx=sectionOf(q);
@@ -45,7 +45,7 @@ for(const [id,keys] of Object.entries({
  final:['finalTotalPax','checkinClosed','zone0C','actualLoadedBaggagePcs'],
  irregular:['irregularityReport'],
  offloaded:['offloadStandbyTime','offloadConfirmTime','offloadBagTags','offloadDeliveryTime'],
- inspection:['fwdDividerNet','fwdDividerNetTime','aftPlacard','aftPlacardTime','damageFound','damageFoundTime'],
+ inspection:['fwdCompartmentChecked','fwdCompartmentTime','aftCompartmentChecked','aftCompartmentTime','fwdDividerNet','fwdDividerNetTime','aftPlacard','aftPlacardTime','damageFound','damageFoundTime'],
  departure_service:['lirPresent','refuelingStart','cabinDoorClosed','pushbackTruckStandby','gpuStart','acuComplete'],
  unverified:['fodInspectionChecked','fodInspectionTime','Name','STAFF_ID']
 })){for(const k of keys)assert.equal(group(k),id,k+' must be inside its parent area')}
@@ -64,4 +64,4 @@ assert.match(source,/\.quickTimeRows \.quickTimeInput,#quickTimeBody \.quickTime
 assert.match(source,/if\(next>tab\)defaultSlashOnNext\(lastFocusedKey\)/,'TVJ slash-on-Next preserved');
 assert.doesNotMatch(source,/y>=\.145&&x<\.5|cx>=r\.x0/,'no coordinate-based area guessing');
 assert.match(source,/function save\(\)/,'TVJ save remains available');
-console.log('TVJ verified boxes PASS: 13 approved visible areas (header + 12), 4 unverified fields isolated; all 128 preserved');
+console.log('TVJ verified boxes PASS: 13 approved visible areas (header + 12), 4 unverified fields isolated; all 132 preserved');

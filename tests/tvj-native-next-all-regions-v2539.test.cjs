@@ -2,7 +2,7 @@
 const fs=require('node:fs'),assert=require('node:assert/strict'),vm=require('node:vm');
 const repo='forms/forms.registry.json';
 const tvj=JSON.parse(fs.readFileSync(repo,'utf8')).forms.find(f=>f.id==='tvj_gof_035');
-assert(tvj&&tvj.fields.length===128,'TVJ must have its complete 128 registry inputs');
+assert(tvj&&tvj.fields.length===132,'TVJ must have its complete 128 registry inputs');
 const tvjCode=fs.readFileSync('app/modules/tvj-gof-035.v632.js','utf8');
 const begin=tvjCode.indexOf('const TVJ_REGIONS='),end=tvjCode.indexOf('let regionLabels=',begin);
 assert(begin>0&&end>begin,'static printed-rectangle map must be available');
@@ -11,7 +11,7 @@ vm.createContext(c);
 vm.runInContext('const X="vz_",S=v=>String(v??"").trim();'+tvjCode.slice(begin,end)+'\nthis.regions=TVJ_REGIONS;',c);
 const registered=new Set(tvj.fields.map(f=>String(f.bind)));
 const mapped=c.regions.flatMap(r=>r.keys.map(k=>k==='Name'?'acuStart_copy':k==='STAFF_ID'?'Name_copy':'vz_'+k));
-assert.equal(new Set(mapped).size,128,'all 128 TVJ keys belong to exactly one printed rectangle');
+assert.equal(new Set(mapped).size,132,'all 128 TVJ keys belong to exactly one printed rectangle');
 assert.deepEqual(Array.from(mapped.filter(k=>!registered.has(k))),[],'all region keys must resolve to registry bindings');
 assert.equal(mapped.length,registered.size,'registry should have no orphan inputs');
 for(const k of registered)assert(c.window.sagsTvjEntryRegionV2539(k),'missing region for '+k);
@@ -42,7 +42,7 @@ for(const region of c.regions){
  for(let i=0;i<eligible.length;i++)assert.equal(next(eligible[i].key),eligible[i+1]?.key||null,'NEXT must stay within '+region.id);
  visited+=eligible.length;
 }
-assert.equal(visited,109,'native modal traversal includes all 109 non-checkbox, non-identity TVJ inputs');
+assert.equal(visited,111,'native modal traversal includes all 111 non-checkbox, non-identity TVJ inputs');
 assert.equal(api.regionOf(byKey.get('vz_arrBaggagePcs')).title,'ARRIVAL FLIGHT');
 assert.equal(api.regionOf(byKey.get('vz_arrBaggageKgs')).id,api.regionOf(byKey.get('vz_arrBaggagePcs')).id);
 assert(browser.includes('__SAGS_TVJ_NEXT_EDIT_FIELD__'),'NEXT must open TVJ time editor explicitly');
@@ -71,4 +71,4 @@ verifySave('vz_arrBaggageLoadedIn','/','/');
 verifySave('vz_arrBaggageLoadedIn','13:25','13:25');
 verifySave('vz_date','NIL','NIL');
 verifySave('ordinaryNumber','NIL','','other forms retain preexisting number-filter behavior');
-console.log('TVJ 128/128 field coverage, 14 regions, 109 native NEXT inputs, PCS→KGS and NIL durable saves PASS');
+console.log('TVJ 132/132 field coverage, 14 regions, 111 native NEXT inputs, PCS→KGS and NIL durable saves PASS');

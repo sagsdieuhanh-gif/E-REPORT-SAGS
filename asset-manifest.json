@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V1.7",
-  "build": "V1.7-20261027-RAMP-BX-FONT-INPUT-01",
+  "version": "V1.8",
+  "build": "V1.8-20261027-TVJ-COMPARTMENT-HEADER-01",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -18,8 +18,8 @@
       "bytes": 1253
     },
     "./app/boot/05-legacy.js": {
-      "sha256": "b4ba8d8f50b60ce1e662b43d0ad5d49cde67e94b300933b2944f39837572a489",
-      "bytes": 306902
+      "sha256": "dfdc43ec8178e8fb78eb3de212bb065ced52180f19fd787f58920a26740d52b2",
+      "bytes": 307197
     },
     "./app/boot/06-legacy.js": {
       "sha256": "e1fb74054b389fc37a470148dc364e101b6e8e9eb8e0e54ec60ce36c24d6f690",
@@ -162,8 +162,8 @@
       "bytes": 46305
     },
     "./app/generated/runtime-4.js": {
-      "sha256": "8756523d9d20a8b24550835e108b48ff46d5fda7b1faf6278f667f1f84d7b995",
-      "bytes": 185166
+      "sha256": "d913d7391724613f9127ee7ed6d34bc5e3c1458d161dd51b512b8c0570ddb573",
+      "bytes": 185556
     },
     "./app/generated/runtime-5.js": {
       "sha256": "7e3ecfad3f9ab9373090885d1d1c611feb1907e6e94d6aff1349446b1443418a",
@@ -318,16 +318,16 @@
       "bytes": 66353
     },
     "./app/modules/tvj-gof-035.v630.js": {
-      "sha256": "c2444c06c4a2adde0e112298e305490c22a09053f5f5ace226554207845ad73d",
-      "bytes": 19440
+      "sha256": "5727c80ecbfee3b54447c0a53919d1d3cf68be30af7d9503d1574a2932222026",
+      "bytes": 19496
     },
     "./app/modules/tvj-gof-035.v631.js": {
       "sha256": "9e89b5d32de75bc395ec68685d77c4eb714a729e85c40ba144bc9585dd812d1a",
       "bytes": 8162
     },
     "./app/modules/tvj-gof-035.v632.js": {
-      "sha256": "d825323e244ca33feb0bd775cf224c7f135473004cdf62359609a3523a288b4b",
-      "bytes": 28363
+      "sha256": "e2c3be9cdace6c78e31f24e60ca99e1fbc0eb365ecd6c1b9960c5d5db05248c5",
+      "bytes": 28469
     },
     "./app/modules/ui-preferences.v1.js": {
       "sha256": "cb5f9f1df4916791449434d5c24b53eaeb2a9fcdb6ebb8f763fdc6bc63fd675b",
@@ -698,8 +698,8 @@
       "bytes": 489595
     },
     "./forms/forms.registry.json": {
-      "sha256": "17e04ea653f5e4afac856d2608626a4610827cec5c41c42bc59e8abe04ceea5d",
-      "bytes": 1011907
+      "sha256": "aa00977afe8ae846c44561a3cdc3e4b38578ff448e3f114926d5f887f612a824",
+      "bytes": 1015301
     },
     "./forms/fsags09/page-01.png": {
       "sha256": "11d83788014011aeee5abe56bb9292b7b4cd2d3186a226dbc1b7e95bb5463877",
@@ -762,8 +762,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "2edeb39e5bc804bb60a72309a7817f77534b6aec264a60df5c1176fbad33a420",
-      "bytes": 105032
+      "sha256": "8491f3fa9e5ae524209331cef2717360c6167db8a8a50fab8d276091da59e1b5",
+      "bytes": 105348
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -814,16 +814,16 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "149bd19b5484a5002d411a9f47f34ce2565d1a0734351c5bcd683aceea5d5f2b",
-      "bytes": 22453
+      "sha256": "32c35cd665d0cda035426de156950abd7cfc97de6eaef43ceae0fb0bda8f63b3",
+      "bytes": 22465
     },
     "./storage-recovery.html": {
       "sha256": "08817204a946fbdfa404e8c083dd0c2016e935fb8fe56ff8ef99f405978d3df6",
       "bytes": 26106
     },
     "./version.json": {
-      "sha256": "b936e35c148fbf29b8e7cc33f74ed1b84652ea45b5e946bd0348a6f36ce275be",
-      "bytes": 1304
+      "sha256": "4089bd5bb8270c042548c51913e779fd547529965312b3dca8e88155c9d0b762",
+      "bytes": 936
     }
   },
   "mutableAssets": [

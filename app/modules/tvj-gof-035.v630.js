@@ -246,7 +246,7 @@
         // TVJ: CHECKED and TIME are two independent editable cells.
         // Open the TIME editor explicitly rather than auto-stamping the current
         // time when either damage inspection TIME field is tapped.
-        if(f&&Number(f.page)===PAGE&&[PREFIX+"noDamageFoundTime",PREFIX+"damageFoundTime"].includes(String(f.key||""))){
+        if(f&&Number(f.page)===PAGE&&[PREFIX+"noDamageFoundTime",PREFIX+"damageFoundTime",PREFIX+"fwdCompartmentTime",PREFIX+"aftCompartmentTime"].includes(String(f.key||""))){
           const previous=root.__SAGS_TVJ_NEXT_EDIT_FIELD__;
           root.__SAGS_TVJ_NEXT_EDIT_FIELD__=String(f.key);
           try{return base.apply(this,arguments)}
