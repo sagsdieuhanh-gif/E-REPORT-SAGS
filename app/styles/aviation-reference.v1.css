@@ -1652,3 +1652,57 @@ html.new-ui-v1 body :is(#sagsSettingsCenter,#fwcModal,#dailyRosterModal,#fleetMa
     font-weight:650!important;
   }
 }
+
+
+/* V1.2 MOBILE LOGIN KEYBOARD STABILITY
+   Safari/Android software keyboard changes dynamic viewport height. The login
+   must not bottom-align/reflow with each keyboard animation frame. Keep a
+   stable scrollport; scroll only the form as necessary, never the paper UI. */
+@media screen and (max-width:767px) {
+  html.new-ui-v1.new-ui-v1.new-ui-v1 body #roleLoginModal {
+    /* 100svh does not chase the visual viewport while keyboard opens. */
+    position:fixed!important;
+    top:0!important;left:0!important;right:0!important;bottom:auto!important;
+    width:100%!important;
+    height:100svh!important;
+    min-height:100svh!important;
+    max-height:100svh!important;
+    overflow-x:hidden!important;
+    overflow-y:auto!important;
+    -webkit-overflow-scrolling:touch!important;
+    overscroll-behavior-y:contain!important;
+    scroll-behavior:auto!important;
+    scroll-padding-bottom:calc(20px + env(safe-area-inset-bottom));
+    align-items:stretch!important;
+    justify-content:flex-start!important;
+    padding:calc(18px + env(safe-area-inset-top)) 16px calc(18px + env(safe-area-inset-bottom))!important;
+    background-attachment:scroll!important;
+  }
+  html.new-ui-v1.new-ui-v1.new-ui-v1 body #roleLoginModal .roleLoginCard {
+    flex:0 0 auto!important;
+    align-self:stretch!important;
+    margin-top:auto!important;
+    max-height:none!important;
+    overflow:visible!important;
+    transform:none!important;
+    transition:none!important;
+    box-sizing:border-box!important;
+  }
+  html.new-ui-v1.new-ui-v1.new-ui-v1 body #roleLoginModal .roleLoginCard input {
+    font-size:16px!important;
+    line-height:normal!important;
+    scroll-margin-top:20px;
+    scroll-margin-bottom:22px;
+  }
+  /* Only focus ring changes: no position/size/transforms when typing. */
+  html.new-ui-v1.new-ui-v1.new-ui-v1 body #roleLoginModal .roleLoginCard input:focus {
+    transform:none!important;
+  }
+}
+@supports not (height:100svh) {
+  @media screen and (max-width:767px) {
+    html.new-ui-v1.new-ui-v1.new-ui-v1 body #roleLoginModal {
+      height:100vh!important;min-height:100vh!important;max-height:100vh!important;
+    }
+  }
+}
