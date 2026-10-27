@@ -1,12 +1,12 @@
 {
-  "version": "V1.9",
-  "displayVersion": "V1.9",
-  "label": "V1.9 - SỬA HẾT NHÓM NHẬP TVJ",
-  "build": "V1.9-20261027-TVJ-REGION-NEXT-STABLE-01",
+  "version": "V1.10",
+  "displayVersion": "V1.10",
+  "label": "V1.10 - TĂNG TỐC XUẤT PDF",
+  "build": "V1.10-20261027-PDF-EMPTY-OVERLAY-01",
   "releasedAt": "2026-10-27",
-  "type": "tvj-native-next-printed-region-async-stability",
+  "type": "pdf-canonical-overlay-empty-raster-skip",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Sửa sai trạng thái Hết nhóm trong cửa sổ nhập TVJ do Next phụ thuộc danh sách trường động chưa nạp xong hoặc bị Form Manager dựng lại. Thứ tự NEXT lấy trực tiếp từ 14 vùng in chính xác của TVJ; trong khi tải báo Đang tải nhóm thay vì Hết nhóm; tự cập nhật khi registry sẵn sàng. Bao phủ 111 ô nhập không phải checkbox, gồm 4 ô FWD/AFT vừa thêm ở V1.8 (2 TIME), giữ nguyên các biểu mẫu, PDF, dữ liệu, roster và quyền.",
-  "message": "V1.9: Tiếp trong nhóm TVJ đi đúng tất cả ô cùng khung"
+  "notes": "Tăng tốc xuất PDF các biểu mẫu canonical: nếu toàn bộ ô đã được bộ vẽ Canvas chuẩn xử lý và không còn hình vẽ SVG cần thiết, không tạo XML/Blob/giải mã ảnh SVG toàn trang chỉ để phủ lớp trắng; các đường/hình minh họa chưa nằm trong Canvas vẫn giữ render gốc. TVJ FWD/AFT mask đã được Canvas xử lý, nhận diện để tránh xuất đúp. Giữ nguyên kiểm tra registry, độ phân giải ảnh nền, font RAMP BX, checkbox, chữ ký, dữ liệu và chất lượng PDF; cần benchmark thực tế trên Chrome/Samsung/Safari.",
+  "message": "V1.10: Bỏ thao tác mã hóa SVG trắng dư khi xuất PDF"
 }
