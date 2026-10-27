@@ -40,9 +40,8 @@
       const x=root.sagsV450GetFormRegistry?.();
       if(x?.forms?.some(f=>String(f?.id)===FORM_ID))return x;
     }catch(_){}
-    const r=await fetch("./forms/forms.registry.json?tvj="+Date.now(),{cache:"no-store"});
-    if(!r.ok)throw new Error("forms/forms.registry.json HTTP "+r.status);
-    return await r.json();
+    const pending=root.__SAGS_TVJ_GOF_REGISTRY_PENDING||(root.__SAGS_TVJ_GOF_REGISTRY_PENDING=fetch("./forms/forms.registry.json?tvj="+Date.now(),{cache:"no-store"}).then(r=>{if(r.ok===false)throw new Error("forms/forms.registry.json HTTP "+r.status);return r.json()}).catch(e=>{root.__SAGS_TVJ_GOF_REGISTRY_PENDING=null;throw e}));
+    return await pending;
   }
   function ensureStyle(){
     if(document.getElementById("tvjV630Style"))return;
@@ -147,19 +146,20 @@
   function seed(){
     if(typeof state!=="object")return;
     const meta=currentMeta(),env=currentEnv(),oldSeed=(env.vzRosterSeed&&typeof env.vzRosterSeed==="object")?env.vzRosterSeed:{};
-    const nextSeed={...oldSeed};
+    const nextSeed={...oldSeed};let seedDirty=env.vzForm!==FORM_ID;
     const setSeed=(key,val)=>{
       val=val===undefined||val===null?"":String(val).trim();if(!val)return;
       const full=PREFIX+key,cur=state[full],old=oldSeed[full];
       const blank=cur===undefined||cur===null||String(cur).trim()==="";
       const unchanged=old!==undefined&&String(cur??"")===String(old??"");
-      if(blank||unchanged){state[full]=val;nextSeed[full]=val}
+      if(blank||unchanged){if(state[full]!==val){state[full]=val;seedDirty=true}if(nextSeed[full]!==val){nextSeed[full]=val;seedDirty=true}}
     };
-    const st=state,rs=env.rosterSeed||{};
+    const st=state,rs=env.rosterSeed||{};const oldNotocNo=!!st[PREFIX+'notocNo'];
     // TVJ NOTOC defaults to NO until an operator explicitly selects YES.
     // Keep existing YES data; the checkboxes must never both be selected.
     if(st[PREFIX+'notocYes'])st[PREFIX+'notocNo']=false;
     else if(!st[PREFIX+'notocNo'])st[PREFIX+'notocNo']=true;
+    if(oldNotocNo!==!!st[PREFIX+'notocNo'])seedDirty=true;
     let f1=String(st.fltBefore||rs.fltBefore||rs.arrFlight||"").trim(),f2=String(st.fltAfter||rs.fltAfter||rs.depFlight||"").trim();
     if(!f1&&!f2){const ms=String(meta?.name||"").match(/VZ\s*\d+/ig)||[];f1=ms[0]||"";f2=ms[1]||""}
     setSeed("flightNumber",[stripVZ(f1),stripVZ(f2)].filter(Boolean).join(" / "));
@@ -175,8 +175,10 @@
     const acKeys=[PREFIX+"acTypeA320",PREFIX+"acTypeA321",PREFIX+"acTypeB7378"];
     if(ac&&acKeys.every(k=>!state[k])){
       if(ac.includes("A320"))state[acKeys[0]]=true;else if(ac.includes("A321"))state[acKeys[1]]=true;else if(/B737-?8|B738|B38M|737 MAX 8/.test(ac))state[acKeys[2]]=true;
+      if(acKeys.some(k=>!!state[k]))seedDirty=true;
     }
-    syncAccountIdentity();
+    if(syncAccountIdentity())seedDirty=true;
+    if(!seedDirty)return;
     try{
       if(activeFlightSessionId&&typeof flightSessionStorageKey==="function"){
         const saved={...env,vzForm:FORM_ID,vzRosterSeed:nextSeed,state:JSON.parse(JSON.stringify(state))};
