@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V1.6",
-  "build": "V1.6-20261027-MOBILE-CHROME-REDRAW-01",
+  "version": "V1.7",
+  "build": "V1.7-20261027-RAMP-BX-FONT-INPUT-01",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -18,12 +18,12 @@
       "bytes": 1253
     },
     "./app/boot/05-legacy.js": {
-      "sha256": "38a6e0df6307c068b7b94d4f9c95dc215b9d18c498b8fbb7f7ac85d382a218f4",
-      "bytes": 307142
+      "sha256": "b4ba8d8f50b60ce1e662b43d0ad5d49cde67e94b300933b2944f39837572a489",
+      "bytes": 306902
     },
     "./app/boot/06-legacy.js": {
-      "sha256": "6e0250d12b85803eea4c404fbc0a178ea0bb42511e5c86e0b75a5517bf3d60df",
-      "bytes": 396603
+      "sha256": "e1fb74054b389fc37a470148dc364e101b6e8e9eb8e0e54ec60ce36c24d6f690",
+      "bytes": 397937
     },
     "./app/boot/07-legacy.js": {
       "sha256": "f08b12c510ccd4c0a537806995959c9b2a75891e2b8795308158b44ddce7d641",
@@ -126,8 +126,8 @@
       "bytes": 71727
     },
     "./app/generated/core-control.js": {
-      "sha256": "1725d0c94c9cc0c7f8457c6b9d5428e1dfe7f48577c5f2ffee37b0fd710182c7",
-      "bytes": 85050
+      "sha256": "55d0e7c8f0f9779705aa272276dbebbea0dbbd41613ef33edb5899354664a6a3",
+      "bytes": 85292
     },
     "./app/generated/core-flight.js": {
       "sha256": "3b59a638db39a8226f9ce6ea7d75fe9c9a574060debcb9592a9f1d1b565cb43b",
@@ -162,8 +162,8 @@
       "bytes": 46305
     },
     "./app/generated/runtime-4.js": {
-      "sha256": "787bd02d65b1c7282cdcfb65c73d52cbcf0465780a5b146fac32ca31beb1a813",
-      "bytes": 185156
+      "sha256": "8756523d9d20a8b24550835e108b48ff46d5fda7b1faf6278f667f1f84d7b995",
+      "bytes": 185166
     },
     "./app/generated/runtime-5.js": {
       "sha256": "7e3ecfad3f9ab9373090885d1d1c611feb1907e6e94d6aff1349446b1443418a",
@@ -318,8 +318,8 @@
       "bytes": 66353
     },
     "./app/modules/tvj-gof-035.v630.js": {
-      "sha256": "882e4d08de0eccd1bc47d9cb632da1bf3c1947e5389470954af6e1440cb5716b",
-      "bytes": 18861
+      "sha256": "c2444c06c4a2adde0e112298e305490c22a09053f5f5ace226554207845ad73d",
+      "bytes": 19440
     },
     "./app/modules/tvj-gof-035.v631.js": {
       "sha256": "9e89b5d32de75bc395ec68685d77c4eb714a729e85c40ba144bc9585dd812d1a",
@@ -698,8 +698,8 @@
       "bytes": 489595
     },
     "./forms/forms.registry.json": {
-      "sha256": "98169ab9a5002de6edb26416b4d2f8e38335709cfd55ab1143317ed931520ce6",
-      "bytes": 1011921
+      "sha256": "17e04ea653f5e4afac856d2608626a4610827cec5c41c42bc59e8abe04ceea5d",
+      "bytes": 1011907
     },
     "./forms/fsags09/page-01.png": {
       "sha256": "11d83788014011aeee5abe56bb9292b7b4cd2d3186a226dbc1b7e95bb5463877",
@@ -762,8 +762,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "77fd59bc4274080080e32d4c14a5566b8f3d7cbb88b0ac655d1ddb3fb9bb4fa3",
-      "bytes": 105190
+      "sha256": "2edeb39e5bc804bb60a72309a7817f77534b6aec264a60df5c1176fbad33a420",
+      "bytes": 105032
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -814,16 +814,16 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "d153f3af176f1178b03af9add6d14632406b6e516f36fe31d199778f0fb13a39",
-      "bytes": 22459
+      "sha256": "149bd19b5484a5002d411a9f47f34ce2565d1a0734351c5bcd683aceea5d5f2b",
+      "bytes": 22453
     },
     "./storage-recovery.html": {
       "sha256": "08817204a946fbdfa404e8c083dd0c2016e935fb8fe56ff8ef99f405978d3df6",
       "bytes": 26106
     },
     "./version.json": {
-      "sha256": "0507a272dd71b184c891a6b021ab024265dd3f17e3d68da4d75adacd487651ac",
-      "bytes": 904
+      "sha256": "b936e35c148fbf29b8e7cc33f74ed1b84652ea45b5e946bd0348a6f36ce275be",
+      "bytes": 1304
     }
   },
   "mutableAssets": [

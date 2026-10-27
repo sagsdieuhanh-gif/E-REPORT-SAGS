@@ -1,12 +1,12 @@
 {
-  "version": "V1.6",
-  "displayVersion": "V1.6",
-  "label": "V1.6 - TỐI ƯU VẼ BIỂU MẪU CHROME ANDROID",
-  "build": "V1.6-20261027-MOBILE-CHROME-REDRAW-01",
+  "version": "V1.7",
+  "displayVersion": "V1.7",
+  "label": "V1.7 - THỐNG NHẤT FONT RAMP BX VÀ TĂNG TỐC NHẬP",
+  "build": "V1.7-20261027-RAMP-BX-FONT-INPUT-01",
   "releasedAt": "2026-10-27",
-  "type": "mobile-chrome-incremental-tvj-svg",
+  "type": "ramp-bx-font-and-global-input-stability",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Loại bỏ việc xóa rồi dựng lại toàn bộ SVG TVJ trang 15 ở mỗi lần draw (kể cả khi làm các biểu mẫu khác), kích hoạt cơ chế cập nhật từng ô sẵn có. Giảm công việc DOM và quan sát biến đổi dư thừa, không thay cấu trúc biểu mẫu/PDF, thao tác chạm, ✓/NIL, nghiệp vụ 42.1 hay lưu nháp. Kết quả tốc độ trên Chrome Android cần xác minh thiết bị thực.",
-  "message": "V1.6: Giảm vẽ lại SVG không cần thiết trên Chrome/Samsung"
+  "notes": "Chuẩn hóa Times New Roman đậm 700 cỡ cơ sở 20 cho các trường dữ liệu nhập (tự thu nhỏ vừa ô) trên 10 biểu mẫu. Giữ checkbox, chữ ký, tờ in gốc. TVJ: 2 ô thời gian noDamageFound và damageFound cho nhập giờ thủ công, giữ CHECKED với ✓, riêng Damage found vẫn ✓/NIL. FINAL: lưu/xác minh từng ký tự không đổi, gộp các lần tính hiển thị/fit font và refresh realtime dư trong lúc gõ; giảm ghi metadata lặp. Không thay quy tắc roster và FSAGS 42.1. Tốc độ thực tế cần thử thiết bị. Tạm ẩn và chặn chức năng phân công FINAL/bảng tải thủ công vào chuyến của CBTT; dữ liệu phân công đã có, roster và FINAL/CROSSCHECK vẫn được giữ nguyên.",
+  "message": "V1.7: đồng bộ font RAMP BX, sửa TIME TVJ, tối ưu nhập và tạm ngưng phân công FINAL thủ công CBTT"
 }
