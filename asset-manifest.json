@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V1.8",
-  "build": "V1.8-20261027-TVJ-COMPARTMENT-HEADER-01",
+  "version": "V1.9",
+  "build": "V1.9-20261027-TVJ-REGION-NEXT-STABLE-01",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -210,8 +210,8 @@
       "bytes": 16645
     },
     "./app/modules/cross-browser-entry.v1.js": {
-      "sha256": "8b0ce1d0433a27fa7b027ddfb0d9aad37210e248ca36f0f91615c1c46100fcb4",
-      "bytes": 22174
+      "sha256": "b5c2f7d1911196d7242265aa0335f716dfad70b01cec9a1857f5b3c9540214cb",
+      "bytes": 23630
     },
     "./app/modules/daily-roster.v502.js": {
       "sha256": "58c5bcbce09411aaad68e5de0eaea0b741df014dd8920e3ebc382cd69e1090ed",
@@ -326,8 +326,8 @@
       "bytes": 8162
     },
     "./app/modules/tvj-gof-035.v632.js": {
-      "sha256": "e2c3be9cdace6c78e31f24e60ca99e1fbc0eb365ecd6c1b9960c5d5db05248c5",
-      "bytes": 28469
+      "sha256": "568c6c5fc93ad1a8568deb8852946f48d136de9cc7ce83ececcbe87be6d8436f",
+      "bytes": 29502
     },
     "./app/modules/ui-preferences.v1.js": {
       "sha256": "cb5f9f1df4916791449434d5c24b53eaeb2a9fcdb6ebb8f763fdc6bc63fd675b",
@@ -762,7 +762,7 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "8491f3fa9e5ae524209331cef2717360c6167db8a8a50fab8d276091da59e1b5",
+      "sha256": "83314ce0075b2e719835b2677b95a09496d521622136359b3c1423805a491b0c",
       "bytes": 105348
     },
     "./manifest.webmanifest": {
@@ -814,7 +814,7 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "32c35cd665d0cda035426de156950abd7cfc97de6eaef43ceae0fb0bda8f63b3",
+      "sha256": "dc453d44a1eb65bbbfa29a75741db7c65ddd39b2d17262b394fec5e83e378095",
       "bytes": 22465
     },
     "./storage-recovery.html": {
@@ -822,8 +822,8 @@
       "bytes": 26106
     },
     "./version.json": {
-      "sha256": "4089bd5bb8270c042548c51913e779fd547529965312b3dca8e88155c9d0b762",
-      "bytes": 936
+      "sha256": "86ac82131d98683cd829dfbdf971d3052102e1c5d4516a03a2813230996bc152",
+      "bytes": 977
     }
   },
   "mutableAssets": [
