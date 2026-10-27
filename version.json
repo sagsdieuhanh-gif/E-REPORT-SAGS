@@ -1,12 +1,12 @@
 {
-  "version": "V1.8",
-  "displayVersion": "V1.8",
-  "label": "V1.8 - MỞ 2 HÀNG CHECKED / TIME CỦA TVJ",
-  "build": "V1.8-20261027-TVJ-COMPARTMENT-HEADER-01",
+  "version": "V1.9",
+  "displayVersion": "V1.9",
+  "label": "V1.9 - SỬA HẾT NHÓM NHẬP TVJ",
+  "build": "V1.9-20261027-TVJ-REGION-NEXT-STABLE-01",
   "releasedAt": "2026-10-27",
-  "type": "tvj-compartment-fwd-aft-header-inputs",
+  "type": "tvj-native-next-printed-region-async-stability",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Bổ sung 4 trường tương tác cho 2 hàng tiêu đề FWD Compartment (1–2), AFT Compartment (3–4) and Bulk (5): Checked bấm ✓/bỏ ✓, Time nhập HH:MM thủ công. Tích không tự điền giờ. Khi có dữ liệu, dấu – nền được che trên màn hình và không in đè trên PDF. Cập nhật Nhập nhanh, vùng chạm và kiểm thử; giữ nguyên 128 ô TVJ cũ, dữ liệu người dùng, V1.7, roster và các biểu mẫu khác.",
-  "message": "V1.8: FWD/AFT compartment CHECKED tích ✓, TIME nhập giờ trực tiếp"
+  "notes": "Sửa sai trạng thái Hết nhóm trong cửa sổ nhập TVJ do Next phụ thuộc danh sách trường động chưa nạp xong hoặc bị Form Manager dựng lại. Thứ tự NEXT lấy trực tiếp từ 14 vùng in chính xác của TVJ; trong khi tải báo Đang tải nhóm thay vì Hết nhóm; tự cập nhật khi registry sẵn sàng. Bao phủ 111 ô nhập không phải checkbox, gồm 4 ô FWD/AFT vừa thêm ở V1.8 (2 TIME), giữ nguyên các biểu mẫu, PDF, dữ liệu, roster và quyền.",
+  "message": "V1.9: Tiếp trong nhóm TVJ đi đúng tất cả ô cùng khung"
 }
