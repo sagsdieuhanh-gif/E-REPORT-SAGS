@@ -3,10 +3,10 @@ const fs=require('fs'),path=require('path'),assert=require('assert/strict');
 const root=path.resolve(__dirname,'..');
 const css=fs.readFileSync(path.join(root,'app/styles/new-ui-v1.css'),'utf8');
 assert(!css.includes('previews/final-ui/assets/ui/myflight-hero-v64101.webp'),'no stale preview assets in production stylesheet');
-const urls=[...css.matchAll(/url\\(\\s*['\"]?([^'\")]+)['\"]?\\s*\\)/g)].map(m=>m[1]);
+const urls=[...css.matchAll(/url\(\s*['"]?([^'")]+)['"]?\s*\)/g)].map(m=>m[1]);
 assert(urls.length>=4,'login, home and mobile drawer backgrounds are referenced');
 for(const url of urls){
- if(/^(?:data:|https?:|\\/)/.test(url))continue;
+ if(url.startsWith('data:')||url.startsWith('http')||url.startsWith('/'))continue;
  const absolute=path.resolve(root,'app/styles',url);
  assert(absolute.startsWith(root+path.sep),'CSS asset must remain within release root: '+url);
  assert(fs.existsSync(absolute),'referenced CSS background missing: '+url);
