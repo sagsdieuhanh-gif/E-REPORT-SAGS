@@ -1,12 +1,12 @@
 {
-  "version": "V1.11",
-  "displayVersion": "V1.11",
-  "label": "V1.11 - TỐI ƯU TỐC ĐỘ XUẤT PDF",
-  "build": "V1.11-20261027-PDF-FASTGUARD-01",
-  "releasedAt": "2026-10-27",
-  "type": "pdf-export-fast-preflight-bounded-background-cache",
+  "version": "V1.12",
+  "displayVersion": "V1.12",
+  "label": "V1.12 - SỬA ẢNH NỀN MY FLIGHT 404",
+  "build": "V1.12-20261028-MYFLIGHT-ASSET-FIX-01",
+  "releasedAt": "2026-10-28",
+  "type": "myflight-css-image-path-repair",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Giảm thời gian chờ kiểm tra cấu hình Form Manager khi thiết bị đã có registry hợp lệ (900 ms thay vì 5 giây trên mạng chậm), vẫn giữ chờ tối đa 5 giây nếu chưa có registry để bảo vệ tính đúng đắn. Tái sử dụng cache ảnh nền PDF có giới hạn 8 ảnh qua nhiều lần xuất, tránh xóa tải lại liên tục. Không thay đổi dữ liệu, font RAMP BX, checkbox, chữ ký, vị trí và độ phân giải PDF. Kiểm thử trên Chrome/Samsung và Safari/iPhone.",
-  "message": "V1.11: Giảm chờ mạng trước xuất PDF và không tải lại nền PDF dư"
+  "notes": "Sửa các đường dẫn ảnh nền My Flight / đăng nhập / menu di động trỏ tới previews/final-ui không có trong bản Production. Dùng ảnh sân đỗ hiện có assets/branding/apron-night-v6494.webp cho PC và mobile; bổ sung meta PWA hiện đại. Không thay đổi chức năng nghiệp vụ, PDF, biểu mẫu, chữ ký hoặc dữ liệu.",
+  "message": "V1.12: Sửa lỗi 404 ảnh nền My Flight và chuẩn hóa đường dẫn CSS"
 }
