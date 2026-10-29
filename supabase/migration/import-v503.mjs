@@ -4,6 +4,9 @@ import {createHash} from 'node:crypto';
 import {pathToFileURL} from 'node:url';
 export const DEST_HOST='wggirxzdcfnxyjgjvpgh.supabase.co';
 const sha=s=>createHash('sha256').update(s).digest('hex');
+// JSONB can reorder object keys. Use canonical semantic JSON hashes on both sides.
+export const canonical=x=>Array.isArray(x)?'['+x.map(canonical).join(',')+']':
+ x!==null&&typeof x==='object'?'{'+Object.keys(x).sort().map(k=>JSON.stringify(k)+':'+canonical(x[k])).join(',')+'}':JSON.stringify(x);
 const bytes=x=>Buffer.byteLength(JSON.stringify(x),'utf8');
 const enc=x=>String(x).replaceAll('~','~0').replaceAll('/','~1');
 const dec=x=>x.replaceAll('~1','/').replaceAll('~0','~');
@@ -32,7 +35,7 @@ export function flatten(value){
  function record(p,k,v){
   const source_path=at(p),payload={v};
   if(source_path.length>2048)throw Error('Unsafe Firebase path length');
-  out.push({source_path,node_kind:k,payload,value_sha256:sha(JSON.stringify({node_kind:k,payload}))});
+  out.push({source_path,node_kind:k,payload,value_sha256:sha(canonical({node_kind:k,payload}))});
  }
  function visit(v,p){
   if(typeof v==='string'&&bytes(v)>65536){
@@ -54,7 +57,7 @@ export function flatten(value){
 export function reconstruct(rows){
  const tag=Symbol('stringChunk'),nodes=new Map();let root;
  for(const r of [...rows].sort((a,b)=>parts(a.source_path).length-parts(b.source_path).length)){
-  if(r.value_sha256!==sha(JSON.stringify({node_kind:r.node_kind,payload:r.payload})))throw Error('SHA mismatch in staging row');
+  if(r.value_sha256!==sha(canonical({node_kind:r.node_kind,payload:r.payload})))throw Error('SHA mismatch in staging row');
   const k=r.node_kind,v=k==='array'?new Array(r.payload.v):k==='object'?{}:k==='string'?{[tag]:true,chunks:[]}:r.payload.v;
   if(r.source_path==='@')root=v;
   else{
@@ -119,10 +122,10 @@ export async function importToStaging(prepared,{url,key},fetchImpl=fetch){
  }
  const checks=new Map(rows.map(x=>[x.source_path,x.value_sha256]));let count=0;
  while(true){
-  const page=await request('GET','e_report_migration_entries?select=source_path,value_sha256&batch_id=eq.'+id+'&order=source_path.asc&limit=500&offset='+count);
+  const page=await request('GET','e_report_migration_entries?select=source_path,value_sha256,node_kind,payload&batch_id=eq.'+id+'&order=source_path.asc&limit=500&offset='+count);
   if(!Array.isArray(page))throw Error('Malformed verification reply');
   for(const r of page){
-   if(checks.get(r.source_path)!==r.value_sha256)throw Error('Source/destination SHA disagreement');
+   if(checks.get(r.source_path)!==r.value_sha256||sha(canonical({node_kind:r.node_kind,payload:r.payload}))!==r.value_sha256)throw Error('Source/destination payload integrity mismatch');
    if(!checks.delete(r.source_path))throw Error('Duplicate source path');
    count++;
   }
