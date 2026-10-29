@@ -5139,7 +5139,7 @@ html.new-ui-v1 body #roleLoginModal{
   background:
     linear-gradient(90deg,rgba(3,14,24,.50) 0%,rgba(3,14,24,.55) 45%,rgba(3,14,24,.86) 100%),
     linear-gradient(180deg,rgba(3,17,29,.20),rgba(3,17,29,.72)),
-    url('../../assets/branding/apron-night-v6494.webp') center/cover no-repeat!important;
+    url('../../previews/final-ui/assets/ui/myflight-hero-v64101.webp') center/cover no-repeat!important;
 }
 html.new-ui-v1 body #roleLoginModal::before{
   content:"E-REPORT SAGS";
@@ -5293,7 +5293,7 @@ html.new-ui-v1 body.v157-authenticated #v157Drawer :is(#v157PasswordBtn,#v157Log
     border:1px solid var(--ops-line)!important;border-radius:14px!important;overflow:hidden!important;
     background:
       linear-gradient(90deg,rgba(5,22,36,.88),rgba(5,22,36,.38) 65%,rgba(5,22,36,.72)),
-      url('../../assets/branding/apron-night-v6494.webp') center/cover no-repeat!important;
+      url('../../previews/final-ui/assets/ui/myflight-hero-v64101.webp') center/cover no-repeat!important;
     box-shadow:none!important;
   }
   html.new-ui-v1 body.v157-authenticated.v157-home #v157HomeDashboard .v157Welcome strong{
@@ -5455,7 +5455,7 @@ html.new-ui-v1 body.v163-operational #sagsMobileFormDock #v324PdfBtn{
     justify-content:flex-end!important;align-items:stretch!important;padding:calc(18px + env(safe-area-inset-top)) 16px calc(18px + env(safe-area-inset-bottom))!important;
     background:
       linear-gradient(180deg,rgba(3,16,27,.30),rgba(3,16,27,.78) 48%,rgba(3,16,27,.96) 100%),
-      url('../../assets/branding/apron-night-v6494.webp') center/cover no-repeat!important;
+      url('../../previews/final-ui/assets/ui/myflight-hero-v64101.webp') center/cover no-repeat!important;
   }
   html.new-ui-v1 body #roleLoginModal::before{
     left:20px!important;top:calc(54px + env(safe-area-inset-top))!important;font-size:28px!important;letter-spacing:.04em!important;
@@ -5484,7 +5484,7 @@ html.new-ui-v1 body.v163-operational #sagsMobileFormDock #v324PdfBtn{
     transform:none!important;overflow:auto!important;padding:0!important;z-index:500!important;
     background:
       linear-gradient(180deg,rgba(6,24,38,.92),rgba(5,17,28,.98)),
-      url('../../assets/branding/apron-night-v6494.webp') center top/100% 170px no-repeat!important;
+      url('../../previews/final-ui/assets/ui/myflight-hero-v64101.webp') center top/100% 170px no-repeat!important;
   }
   html.new-ui-v1 body.v157-authenticated.v157-home #v157Drawer .v157DrawerHead{
     padding:calc(12px + env(safe-area-inset-top)) 12px 10px!important;border-bottom:1px solid var(--ops-line)!important;background:transparent!important;
