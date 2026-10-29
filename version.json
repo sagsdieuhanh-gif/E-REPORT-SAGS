@@ -1,12 +1,12 @@
 {
-  "version": "V1.10",
-  "displayVersion": "V1.10",
-  "label": "V1.10 - TĂNG TỐC XUẤT PDF",
-  "build": "V1.10-20261027-PDF-EMPTY-OVERLAY-01",
-  "releasedAt": "2026-10-27",
-  "type": "pdf-canonical-overlay-empty-raster-skip",
+  "version": "V1.12",
+  "displayVersion": "V1.12",
+  "label": "V1.12 - SỬA ẢNH NỀN MY FLIGHT 404",
+  "build": "V1.12-20261028-MYFLIGHT-ASSET-FIX-01",
+  "releasedAt": "2026-10-28",
+  "type": "myflight-css-image-path-repair",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Tăng tốc xuất PDF các biểu mẫu canonical: nếu toàn bộ ô đã được bộ vẽ Canvas chuẩn xử lý và không còn hình vẽ SVG cần thiết, không tạo XML/Blob/giải mã ảnh SVG toàn trang chỉ để phủ lớp trắng; các đường/hình minh họa chưa nằm trong Canvas vẫn giữ render gốc. TVJ FWD/AFT mask đã được Canvas xử lý, nhận diện để tránh xuất đúp. Giữ nguyên kiểm tra registry, độ phân giải ảnh nền, font RAMP BX, checkbox, chữ ký, dữ liệu và chất lượng PDF; cần benchmark thực tế trên Chrome/Samsung/Safari.",
-  "message": "V1.10: Bỏ thao tác mã hóa SVG trắng dư khi xuất PDF"
+  "notes": "Sửa các đường dẫn ảnh nền My Flight / đăng nhập / menu di động trỏ tới previews/final-ui không có trong bản Production. Dùng ảnh sân đỗ hiện có assets/branding/apron-night-v6494.webp cho PC và mobile; bổ sung meta PWA hiện đại. Không thay đổi chức năng nghiệp vụ, PDF, biểu mẫu, chữ ký hoặc dữ liệu.",
+  "message": "V1.12: Sửa lỗi 404 ảnh nền My Flight và chuẩn hóa đường dẫn CSS"
 }

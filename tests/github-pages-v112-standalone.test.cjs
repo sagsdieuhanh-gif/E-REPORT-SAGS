@@ -1,0 +1,16 @@
+'use strict';
+const fs=require('node:fs'),crypto=require('node:crypto'),assert=require('node:assert/strict');
+const html=fs.readFileSync('index.html','utf8');
+const manifest=JSON.parse(fs.readFileSync('asset-manifest.json','utf8'));
+const version=JSON.parse(fs.readFileSync('version.json','utf8'));
+const sw=fs.readFileSync('service-worker.js','utf8');
+const reg=JSON.parse(fs.readFileSync('forms/forms.registry.json','utf8'));
+assert.equal(version.version,'V1.12');assert.equal(manifest.version,'V1.12');
+assert(!html.includes('id="sagsCanonicalProduction"'));
+assert(!html.includes('location.replace(u.href)'));
+assert(html.includes('id="loginReleaseVersion">V1.12'));
+assert(sw.includes("const DISPLAY_VERSION='V1.12'"));
+assert.equal(reg.schema,2);assert(reg.forms?.length>0);
+assert.equal(manifest.assets['./index.html'].sha256,crypto.createHash('sha256').update(fs.readFileSync('index.html')).digest('hex'));
+assert.equal(manifest.assets['./index.html'].bytes,fs.statSync('index.html').size);
+console.log('Standalone GitHub Pages V1.12 integrity + PDF registry checks passed');
