@@ -4,7 +4,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
  const mod=await import(pathToFileURL(path.resolve('supabase/migration/import-v503.mjs')).href);
  const b={schema:'E_REPORT_SAGS_BACKUP_V503',project:'E-REPORT-SAGS',createdAt:'2026-10-29T12:00:00Z',
  data:{rtdb:{sags_live_v470:{'p/~':{data:'✓'.repeat(60000)}},sags_live_v469:null},
- firestore:{users:[{id:'USER01',data:{role:'ADMIN'}}],sags_handovers:[{id:'D/2',data:{big:[...Array(2000)].map((_,i)=>i),flag:{__migrationString:true}}}]}}};
+ firestore:{users:[{id:'USER01',data:{role:'ADMIN'}}],sags_handovers:[{id:'D/2',data:{big:[...Array(18000)].map((_,i)=>i),flag:{__migrationString:true}}}]}}};
  assert.equal(mod.validateBackup(b).counts.users,1);
  const rows=mod.flatten(b.data);
  assert(rows.some(x=>x.node_kind==='string'));
