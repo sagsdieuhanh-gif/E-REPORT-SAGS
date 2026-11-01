@@ -4,5 +4,7 @@ assert.match(html,/app\/boot\/32-v6494-aviation-shell\.js/);
 assert.match(css,/SUPERVISOR ALL-FLIGHT HOME \+ AD CONTRAST HARDENING/);
 assert.doesNotMatch(html,/id="sagsCanonicalProduction"/);
 assert.doesNotMatch(html,/location\.replace\(u\.href\)/);
-assert.match(html,/sags-radio-custody-v1/);
+const shell=fs.readFileSync(path.join(root,'app/boot/32-v6494-aviation-shell.js'),'utf8');
+assert.match(shell,/sags-radio-custody-v1/,'radio loads only when selected');
+assert.doesNotMatch(html,/sags-radio-custody-v1/,'no additional startup JS');
 console.log('Dashboard preserved; GitHub Pages has no forced redirect');
