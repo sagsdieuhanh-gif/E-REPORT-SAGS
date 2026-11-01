@@ -1127,7 +1127,6 @@ service cloud.firestore {
         && ((!exists(/databases/$(database)/documents/airline_form_policies/active) && request.resource.data.revision == 1)
           || (exists(/databases/$(database)/documents/airline_form_policies/active) && request.resource.data.revision == resource.data.revision + 1));
     }
-
     // E-REPORT radio asset custody v1: immutable events + authenticated transitions.
     // Deploy with Firebase CLI before exposing the feature in production.
     function radioActionAllowed(a) {
@@ -1150,9 +1149,7 @@ service cloud.firestore {
         && radioActionAllowed(d.action)
         && radioReasonAllowed(d.reasonCode)
         && d.deviceCode is string
-        && d.deviceCode.matches('^[A-Z0-9]{3,12}
-  }
-})
+        && d.deviceCode.matches('^[A-Z0-9]+') && d.deviceCode.size() >= 3 && d.deviceCode.size() <= 12
         && d.actorUid == request.auth.uid
         && d.actorName is string && d.actorName.size() > 0 && d.actorName.size() <= 110
         && d.personUid is string && d.personUid.size() <= 150
@@ -1162,9 +1159,7 @@ service cloud.firestore {
         && d.signature is string && d.signature.size() <= 45000
         && (d.action in ['INIT','RELEASE']
           ? d.signature == ''
-          : d.signature.matches('^data:image/webp;base64,[A-Za-z0-9+/=]+
-  }
-})
+          : d.signature.matches('^data:image/webp;base64,[A-Za-z0-9+/=]+')
             && d.signature.size() > 120)
         && d.beforeStatus in ['', 'READY','OUT','CHARGING','FAULT','LOST']
         && d.afterStatus in ['READY','OUT','CHARGING','FAULT','LOST']
@@ -1184,9 +1179,7 @@ service cloud.firestore {
         'lastEventId','updatedAt'])
         && d.schemaVersion == 1
         && d.code == code
-        && code.matches('^[A-Z0-9]{3,12}
-  }
-})
+        && code.matches('^[A-Z0-9]+') && code.size() >= 3 && code.size() <= 12
         && d.label is string && d.label.size() <= 32
         && d.status in ['READY','OUT','CHARGING','FAULT','LOST']
         && d.holderUid is string && d.holderUid.size() <= 150

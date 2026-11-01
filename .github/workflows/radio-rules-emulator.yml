@@ -1,0 +1,36 @@
+name: Radio Firestore Rules Emulator (independent)
+on:
+  push:
+    branches:
+      - 'test/radio-firebase-emulator-validation'
+      - 'main'
+    paths:
+      - 'firebase/firestore.rules'
+      - 'firebase.radio-test.json'
+      - 'tests/radio-firestore-emulator.mjs'
+      - '.github/workflows/radio-rules-emulator.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  radio-emulator:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+      - name: Install isolated test dependencies (no Firebase credentials)
+        run: |
+          npm install --no-save --package-lock=false --ignore-scripts firebase-tools@14.25.0 firebase@11.10.0 @firebase/rules-unit-testing@4.0.1
+      - name: Run emulator against exact proposed production rules
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ''
+          GCLOUD_PROJECT: demo-e-report-radio-rules
+        run: |
+          npx firebase emulators:exec --only firestore --project demo-e-report-radio-rules --config firebase.radio-test.json "node tests/radio-firestore-emulator.mjs"
