@@ -90,8 +90,8 @@
       "bytes": 15990
     },
     "./app/boot/32-v6494-aviation-shell.js": {
-      "sha256": "3eb42ae98150051a4f5e3e01ffd69f1c7d8970e39454a2d4b9ad125138267bd5",
-      "bytes": 15699
+      "sha256": "0ff92653dcad85e54e8be50465cfd703c164c9cee596e3e88c30b0f69050937a",
+      "bytes": 16849
     },
     "./app/boot/33-v6497-dossier-enhancements.js": {
       "sha256": "7ccc4b3372e1fc62b8658451fe98ecdc8e9d09d2ccc2041f0011e0db04d11c60",
@@ -770,8 +770,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "194d174d5aaf265e1ad6356522e89fb84da50883d10f4e4c981bddc0cf543570",
-      "bytes": 105252
+      "sha256": "4ef960ca9f80065c3075d6d1d29d580231de2a82cd12e73df399c4ca081661d0",
+      "bytes": 104994
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",

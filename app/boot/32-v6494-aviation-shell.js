@@ -71,7 +71,28 @@ function available(key){
 }
 function trigger(key){
  if(key==='home'){try{root.sagsV479GoHome?.()}catch(_){}sync();return}
- if(key==='radio'){root.SAGSRadioCustodyV1?.open?.();setTimeout(scheduleSync,0);return}
+ if(key==='radio'){
+   const build=document.querySelector('meta[name="sags-release-build"]')?.content||'current';
+   if(!document.getElementById('sags-radio-custody-style')){
+     const link=document.createElement('link');link.rel='stylesheet';link.id='sags-radio-custody-style';
+     link.href='./app/styles/radio-custody.v1.css?v='+encodeURIComponent(build);
+     document.head.appendChild(link);
+   }
+   if(root.SAGSRadioCustodyV1?.open){root.SAGSRadioCustodyV1.open()}
+   else{
+     if(!root.__sagsRadioModuleLoading){
+       root.__sagsRadioModuleLoading=new Promise((resolve,reject)=>{
+         const s=document.createElement('script');s.id='sags-radio-custody-v1';
+         s.src='./app/modules/radio-custody.v1.js?v='+encodeURIComponent(build);
+         s.onload=()=>root.SAGSRadioCustodyV1?.open?resolve():reject(Error('Module bộ đàm chưa khởi tạo'));
+         s.onerror=()=>{s.remove();reject(Error('Không tải được quản lý bộ đàm. Kiểm tra mạng.'))};
+         document.body.appendChild(s);
+       });
+     }
+     root.__sagsRadioModuleLoading.then(()=>root.SAGSRadioCustodyV1.open()).catch(e=>{root.__sagsRadioModuleLoading=null;root.alert?.(e.message)});
+   }
+   setTimeout(scheduleSync,0);return
+ }
  if(key==='history'){try{root.SAGSFormEditHistoryV1?.open?.()}catch(e){console.warn('History UI unavailable',e)}return}
  if(key==='notice'&&typeof root.sagsFlightNoticeOpen==='function'){root.sagsFlightNoticeOpen();return}
  if(key==='settings'){
