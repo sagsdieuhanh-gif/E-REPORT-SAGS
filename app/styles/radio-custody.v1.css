@@ -1,0 +1,47 @@
+/* Radio custody – self-contained; no override of flight form selectors. */
+.sagsRadioPanel{position:fixed;inset:0;z-index:999999;background:#061423f0;color:#e8f4fb;overflow-y:auto;overscroll-behavior:contain;font:14px/1.45 Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+.sagsRadioPanel[hidden],.sagsRadioPanel [hidden]{display:none!important}
+.sagsRadioPanel *{box-sizing:border-box}
+.radioShell{max-width:1050px;margin:0 auto;padding:20px 18px 100px}
+.radioHeader{display:flex;align-items:center;justify-content:space-between;gap:15px;border-bottom:1px solid #356078;padding:8px 0 18px}
+.radioHeader small{letter-spacing:.14em;color:#6cdddf;font-size:11px;font-weight:800}
+.radioHeader h2{font-size:clamp(23px,4vw,32px);margin:3px 0;color:#ecf8ff;font-weight:820}
+.radioHeader p{margin:0;color:#a9c5d1}.radioHeader button,#radioActionCancel{border:1px solid #496d7e;border-radius:11px;background:#163348;color:#e5f2f8;width:44px;height:44px;font-size:20px}
+#radioMessage{margin:14px 0;min-height:20px;color:#9de9dc;font-size:13px}#radioMessage[data-error="1"]{color:#ffa99c}
+.radioStats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:16px 0}
+.radioStats>div,.radioReportGrid>div{border:1px solid #335c71;background:#0c293d;border-radius:13px;padding:13px;display:flex;gap:4px;flex-direction:column}
+.radioStats strong,.radioReportGrid strong{font-size:26px;line-height:1.2;color:#d9fcf9;font-variant-numeric:tabular-nums}
+.radioStats small,.radioReportGrid small{color:#a5c4d3;font-size:11px}
+.radioTabs{display:flex;gap:8px;padding:5px;border:1px solid #28495d;background:#0a2236;border-radius:11px;margin:18px 0}
+.radioTabs button{flex:1;border:0;border-radius:9px;background:transparent;color:#bad3df;min-height:42px;padding:8px 7px;font-size:13px;cursor:pointer}
+.radioTabs button.selected{background:#62d4d0;color:#06293b;font-weight:800}
+.radioTools{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;color:#b5cfda;margin:14px 0}
+.radioTools button,.radioButtons button,#radioClearSignature,#radioCancel{border:1px solid #4c8294;border-radius:9px;background:#183e54;color:#e9fbff;padding:9px 12px;font-size:12px;cursor:pointer}
+.radioTools select{background:#102e42;color:#fff;border:1px solid #4f788a;border-radius:7px;padding:8px}
+.radioDeviceList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.radioDevice{border-radius:13px;border:1px solid #315269;background:#0b293c;padding:15px;display:flex;flex-direction:column;gap:12px}
+.radioDevice>div:first-child{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.radioDevice strong{font-size:17px}.radioDevice small{width:100%;color:#bed0dc;overflow-wrap:anywhere}
+.radioStatus{border:1px solid #4b6e81;padding:3px 8px;border-radius:30px;font-size:10px;font-weight:700;color:#d4e6ef}
+.radioStatus-READY{color:#70e4bd;border-color:#36836a}.radioStatus-OUT{color:#85c7ff;border-color:#427dae}
+.radioStatus-CHARGING{color:#ffda87;border-color:#9a783f}.radioStatus-FAULT,.radioStatus-LOST{color:#ffc0b7;border-color:#a96565}
+.radioButtons{display:flex;gap:6px;flex-wrap:wrap}.radioButtons button{min-height:36px}
+.radioEvent{padding:12px 15px;border-bottom:1px solid #38586b;display:flex;gap:3px;flex-direction:column}
+.radioEvent span,.radioEvent small{font-size:12px;color:#aec7d1}
+.radioReportGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.radioAction{margin-top:20px;border-radius:16px;border:1px solid #5c7f8c;background:#102d42;padding:18px}
+.radioActionHeader{display:flex;justify-content:space-between;align-items:center}.radioAction h3{font-size:20px;margin:0}
+.radioFields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin:12px 0}
+.radioFields label{display:block;color:#cbdfeb;font-size:12px;font-weight:700}
+.radioFields label.wide{grid-column:1/-1}
+.radioFields input,.radioFields select,.radioFields textarea{width:100%;display:block;margin-top:7px;border-radius:9px;background:#061827;border:1px solid #457387;color:#fff;padding:12px;font:inherit;min-height:43px}
+#radioSigWrap{border-radius:12px;background:#0b2539;padding:12px}
+#radioSigWrap p{color:#d2ebf3;margin:3px 0 10px}
+#radioSignature{display:block;width:100%;max-width:560px;height:150px;border:1px solid #c6dbe5;background:#f2fbff;border-radius:10px;touch-action:none}
+#radioClearSignature{margin-top:9px}
+.radioActions{display:flex;justify-content:flex-end;gap:10px;margin-top:17px}
+.radioPrimary{border:0;border-radius:10px;background:#68dfd7;color:#032b40;font-weight:850;padding:13px 16px;cursor:pointer}
+.radioShell footer,.radioHint{font-size:12px;color:#a8bdcb;margin:16px 0}
+.radioEmpty{color:#afcad7;grid-column:1/-1;padding:15px}
+.sagsRadioPanel button:disabled,.sagsRadioPanel input:disabled{opacity:.55;cursor:wait}
+@media(max-width:680px){.radioShell{padding:16px 12px 75px}.radioStats{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.radioStats>div{padding:9px}.radioStats strong{font-size:20px}.radioDeviceList{grid-template-columns:1fr}.radioFields{grid-template-columns:1fr}.radioReportGrid{grid-template-columns:1fr}.radioHeader h2{font-size:22px}.radioTabs button{font-size:12px}.radioAction{padding:12px}}
