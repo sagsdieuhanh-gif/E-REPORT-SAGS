@@ -1221,6 +1221,7 @@ service cloud.firestore {
         || (action == 'RETURN' && old.status == 'OUT'
           && (old.holderUid == request.auth.uid || isAdmin())
           && next.status in ['READY','CHARGING']
+          && (next.status == 'READY' ? next.battery in ['FULL','GOOD'] : true)
           && next.holderUid == ''
           && (next.status == 'CHARGING'
              ? next.battery in ['LOW','EMPTY'] && next.faultCode == 'BATTERY_WEAK'

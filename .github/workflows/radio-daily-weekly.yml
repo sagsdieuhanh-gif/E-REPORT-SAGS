@@ -25,7 +25,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   send:
-    if: github.repository == 'sagsdieuhanh-gif/E-REPORT-SAGS' && github.ref == 'refs/heads/main'
+    if: vars.SAGS_RADIO_REPORTS_ACTIVE == 'true' && github.repository == 'sagsdieuhanh-gif/E-REPORT-SAGS' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 12
     env:

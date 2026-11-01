@@ -81,7 +81,7 @@ function start(action,code){
 function badge(state){return '<span class="radioStatus radioStatus-'+state+'">'+(STATUSES[state]||state)+'</span>'}
 function render(){
  if(!$('radioDeviceList'))return;
- const u=currentUser();$('radioSeed').hidden=!isAdmin(u)||devices.length>0;
+ const u=currentUser();$('radioSeed').hidden=!isAdmin(u)||INIT.every(code=>devices.some(x=>x.code===code));
  const counts=Object.fromEntries(Object.keys(STATUSES).map(k=>[k,devices.filter(x=>x.status===k).length]));
  $('radioStats').innerHTML='<div><strong>'+devices.length+'</strong><small>Tổng thiết bị</small></div><div><strong>'+counts.READY+'</strong><small>Sẵn sàng</small></div><div><strong>'+counts.OUT+'</strong><small>Đang giữ</small></div><div><strong>'+counts.CHARGING+'</strong><small>Đang sạc</small></div><div><strong>'+counts.FAULT+counts.LOST+'</strong><small>Lỗi / mất</small></div>';
  $('radioDeviceList').innerHTML=devices.length?devices.map(d=>{
@@ -121,6 +121,7 @@ async function submit(){
  if(['REPORT','SWAP_OUT'].includes(mode)&&(reason==='OTHER'||reason==='LOST')&&details.length<10)return notify('Vui lòng mô tả lý do cụ thể (từ 10 ký tự).',true);
  if(mode==='RELEASE'&&details.length<10)return notify('AD phải ghi kết quả kiểm tra/sửa chữa (ít nhất 10 ký tự).',true);
  let sig='';try{if(mode!=='RELEASE')sig=signature()}catch(e){return notify(e.message,true)}
+ if(['ISSUE','RETURN'].includes(mode)&&bat==='UNKNOWN')return notify('Vui lòng kiểm tra mức pin trước khi nhận hoặc trả máy.',true);
  if(!navigator.onLine)return notify('Đang ngoại tuyến: không cho phép nhận/trả vì có thể xảy ra nhận trùng máy.',true);
  setBusy(true);
  try{
@@ -157,21 +158,29 @@ async function submit(){
  }catch(e){notify(errText(e),true)}finally{setBusy(false)}
 }
 async function seed(){
- if(busy)return;const user=currentUser();if(!isAdmin(user))return notify('Chỉ AD được khởi tạo.',true);
- if(!root.confirm('Khởi tạo '+INIT.length+' mã bộ đàm? Mỗi mã được tạo riêng với lịch sử kiểm kê. Không thực hiện nếu dữ liệu đã tồn tại.'))return;
- setBusy(true);
+ if(busy)return;
+ const user=currentUser();if(!isAdmin(user))return notify('Chỉ AD được khởi tạo.',true);
+ if(!navigator.onLine)return notify('Cần có mạng để kiểm kê bộ đàm.',true);
+ if(!root.confirm('Khởi tạo các mã máy còn thiếu theo sổ giấy? Các máy đã có sẽ giữ nguyên.'))return;
+ setBusy(true);let created=0;
  try{
   const db=fs();
-  await db.runTransaction(async tx=>{
-   const refs=INIT.map(code=>db.collection(COLLECTION).doc(code)),snaps=await Promise.all(refs.map(ref=>tx.get(ref)));
-   if(snaps.some(s=>s.exists))throw Error('Có mã máy đã tồn tại. Không tự ghi đè danh mục.');
-   for(let i=0;i<refs.length;i++){
-    const evRef=db.collection(EVENTS).doc(),code=INIT[i];
-    tx.set(refs[i],{schemaVersion:1,code,label:label(code),status:'READY',holderUid:'',holderName:'',shift:'',faultCode:'',faultDetail:'',battery:'UNKNOWN',version:0,lastEventId:evRef.id,updatedAt:fv()});
-    tx.set(evRef,{schemaVersion:1,action:'INIT',deviceCode:code,actorUid:user.uid,actorName:user.name,personUid:'',personName:'',shift:'',reasonCode:'',details:'Khởi tạo theo sổ giấy; không tự nhận dữ liệu chữ viết tay.',signature:'',beforeStatus:'',afterStatus:'READY',deviceVersion:0,relatedDeviceCode:'',swapId:'',at:fv()});
-   }
-  });notify('Đã khởi tạo '+INIT.length+' bộ đàm và nhật ký.');}
- catch(e){notify(errText(e),true)}finally{setBusy(false)}
+  // Separate two-document transactions avoid the Firestore getAfter limit
+  // of a single multi-asset batch. Safe to re-run after partial failures.
+  for(const code of INIT){
+   const ref=db.collection(COLLECTION).doc(code),evRef=db.collection(EVENTS).doc();
+   const changed=await db.runTransaction(async tx=>{
+    const snap=await tx.get(ref);
+    if(snap.exists)return false;
+    tx.set(ref,{schemaVersion:1,code,label:label(code),status:'READY',holderUid:'',holderName:'',shift:'',faultCode:'',faultDetail:'',battery:'UNKNOWN',version:0,lastEventId:evRef.id,updatedAt:fv()});
+    tx.set(evRef,{schemaVersion:1,action:'INIT',deviceCode:code,actorUid:user.uid,actorName:user.name,personUid:'',personName:'',shift:'',reasonCode:'',details:'Khởi tạo từ sổ giấy; chưa xác minh pin.',signature:'',beforeStatus:'',afterStatus:'READY',deviceVersion:0,relatedDeviceCode:'',swapId:'',at:fv()});
+    return true;
+   });
+   if(changed)created++;
+  }
+  notify('Đã bổ sung '+created+' mã máy; các máy đã tồn tại được giữ nguyên.');
+ }catch(e){notify('Đã tạo '+created+' máy trước khi dừng. Có thể thử lại để hoàn thành. '+errText(e),true)}
+ finally{setBusy(false)}
 }
 function exportCsv(){
  if(!events.length)return notify('Không có lịch sử để xuất CSV.',true);
