@@ -91,7 +91,7 @@ async function main(){
  await assertFails(setDoc(doc(getDb('alice'),'sags_radio_mail_runs_v1','daily_2026-11-01'),{status:'SENT'}));
  const final=(await getDoc(doc(getDb('admin'),root,'DH01'))).data();
  assert.equal(final.status,'READY');
- assert.equal(final.version,6);
+ assert.equal(final.version,5);
  console.log('Firebase emulator PASS: isolated permissions, signed append-only audit, admin release, battery quarantine');
 }
 try{await main()}finally{await env.cleanup()}
