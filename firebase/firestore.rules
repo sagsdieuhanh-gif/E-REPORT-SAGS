@@ -1268,7 +1268,8 @@ service cloud.firestore {
       allow delete: if false;
     }
     match /sags_radio_events_v1/{eventId} {
-      allow read: if activeUser();
+      // Hand-drawn signatures are private: staff see only their own events, AD sees all.
+      allow read: if activeUser() && (isAdmin() || resource.data.actorUid == request.auth.uid);
       allow create: if activeUser()
         && radioEventShape(request.resource.data)
         && existsAfter(/databases/$(database)/documents/sags_radio_devices_v1/$(request.resource.data.deviceCode))

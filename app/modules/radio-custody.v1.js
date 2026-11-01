@@ -188,7 +188,8 @@ async function open(){
  try{
   const db=fs();
   unsubs.push(db.collection(COLLECTION).onSnapshot(s=>{devices=s.docs.map(d=>({code:d.id,...d.data()})).sort((a,b)=>a.code.localeCompare(b.code,'vi',{numeric:true}));render();notify(devices.length?'Danh mục đang được đồng bộ trực tuyến.':'Chưa có dữ liệu máy; AD cần khởi tạo.')},e=>notify(errText(e),true)));
-  unsubs.push(db.collection(EVENTS).orderBy('at','desc').limit(120).onSnapshot(s=>{events=s.docs.map(d=>({id:d.id,...d.data()}));renderHistory();renderSummary()},e=>notify(errText(e),true)));
+  const eventQuery=isAdmin(u)?db.collection(EVENTS).orderBy('at','desc').limit(120):db.collection(EVENTS).where('actorUid','==',u.uid).limit(120);
+  unsubs.push(eventQuery.onSnapshot(s=>{events=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.at?.toMillis?.()||0)-(a.at?.toMillis?.()||0));renderHistory();renderSummary()},e=>notify(errText(e),true)));
  }catch(e){notify(errText(e),true)}
 }
 root.SAGSRadioCustodyV1=Object.freeze({open,close,reasons:REASONS.map(([code,name])=>({code,name})),collection:COLLECTION,eventsCollection:EVENTS});
