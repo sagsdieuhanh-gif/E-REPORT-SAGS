@@ -26,7 +26,7 @@ jobs:
           java-version: '21'
       - name: Install isolated test dependencies (no Firebase credentials)
         run: |
-          npm install --no-save --package-lock=false --ignore-scripts firebase-tools@14.25.0 firebase@10.14.1 @firebase/rules-unit-testing@4.0.1
+          npm install --no-save --package-lock=false --ignore-scripts firebase-tools@14.25.0 firebase@11.10.0 @firebase/rules-unit-testing@4.0.1
       - name: Run emulator against exact proposed production rules
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ''
