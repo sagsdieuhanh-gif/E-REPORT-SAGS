@@ -22,7 +22,8 @@ const ICONS={
  notice:'<svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>',
  adcontrol:'<svg viewBox="0 0 24 24"><path d="M12 3l8 4v5c0 5-3.3 8.6-8 10-4.7-1.4-8-5-8-10V7l8-4zm-3 9 2 2 4-4"/></svg>',
  settings:'<svg viewBox="0 0 24 24"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm8 4 2 1-2 3-2-.5a8 8 0 0 1-2 2L16 20h-4l-.5-2.5a8 8 0 0 1-2-1.2L7 17l-2-3 2-2a8 8 0 0 1 .3-2.3L5 8l2-3 2.5.7a8 8 0 0 1 2-1.2L12 2h4l.5 2.5a8 8 0 0 1 2 1.2L21 5l2 3-2.3 1.7A8 8 0 0 1 20 12z"/></svg>',
- logout:'<svg viewBox="0 0 24 24"><path d="M10 4H4v16h6M14 8l4 4-4 4m4-4H9"/></svg>',
+ radio:'<svg viewBox="0 0 24 24"><rect x="6" y="7" width="12" height="14" rx="2"/><path d="M9 7 16 3M10 12h4M10 16h4"/></svg>',
+  logout:'<svg viewBox="0 0 24 24"><path d="M10 4H4v16h6M14 8l4 4-4 4m4-4H9"/></svg>',
  search:'<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>'
 };
 const DEF=[
@@ -40,6 +41,7 @@ const DEF=[
  ]},
  {group:'HỆ THỐNG',items:[
   {key:'datahub',label:'Dữ liệu khai thác',meta:'Roster · A/C Limits · Fleet'},
+  {key:'radio',label:'Ký nhận bộ đàm',meta:'Nhận · trả · đổi · sự cố · lịch sử'},
   {key:'alerts',label:'Cảnh báo khai thác',meta:'A/C Limits'},
   {key:'notice',label:'Thông báo',meta:'Thông tin nghiệp vụ'},
   {key:'adcontrol',label:'AD Control Center',meta:'Quản trị hệ thống'},
@@ -54,7 +56,7 @@ function isShown(el){if(!el)return false;try{const cs=getComputedStyle(el);retur
 function loginVisible(){return isShown($('roleLoginModal'))}
 function auth(){return document.body.classList.contains('v157-authenticated')&&!loginVisible()}
 function overlayVisible(){
- const ids=['fwcModal','v174DataHub','v181AdminCenter','appUpdateModal','roleChangePasswordModal','quickTimeModal','fs09QuickModal','finalPaperModal','flightSessionModal','accountManagerModal','auditManagerModal','activityMonitorModal','fleetManagerModal','kh208ManagerModal','finalSheetManagerModal','fs09SheetManagerModal'];
+ const ids=['sagsRadioPanel','fwcModal','v174DataHub','v181AdminCenter','appUpdateModal','roleChangePasswordModal','quickTimeModal','fs09QuickModal','finalPaperModal','flightSessionModal','accountManagerModal','auditManagerModal','activityMonitorModal','fleetManagerModal','kh208ManagerModal','finalSheetManagerModal','fs09SheetManagerModal'];
  return ids.some(id=>{const e=$(id);return !!e&&(e.classList.contains('show')||e.classList.contains('open')||isShown(e)&&id!=='fwcModal'&&e.getAttribute('aria-hidden')==='false')});
 }
 function homeState(){return auth()&&document.body.classList.contains('v157-home')&&!overlayVisible()}
@@ -62,12 +64,14 @@ function legacyButton(key){return document.querySelector('.v157MenuItem[data-v15
 function available(key){
  if(key==='final'&&String(role()).toUpperCase()==='CBTT')return false;
  if(key==='home')return true;
+ if(key==='radio')return true;
  if(key==='history')return typeof root.SAGSFormEditHistoryV1?.open==='function';
  if(key==='settings')return typeof root.sagsOpenSettings==='function'||!!legacyButton('settings');
  const b=legacyButton(key);return !!b&&!b.disabled&&!b.hidden;
 }
 function trigger(key){
  if(key==='home'){try{root.sagsV479GoHome?.()}catch(_){}sync();return}
+ if(key==='radio'){root.SAGSRadioCustodyV1?.open?.();setTimeout(scheduleSync,0);return}
  if(key==='history'){try{root.SAGSFormEditHistoryV1?.open?.()}catch(e){console.warn('History UI unavailable',e)}return}
  if(key==='notice'&&typeof root.sagsFlightNoticeOpen==='function'){root.sagsFlightNoticeOpen();return}
  if(key==='settings'){

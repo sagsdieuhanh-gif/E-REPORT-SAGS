@@ -90,8 +90,8 @@
       "bytes": 15990
     },
     "./app/boot/32-v6494-aviation-shell.js": {
-      "sha256": "ee1b547a693f19bad4b170258fffda06082b4160fdf2e9aae923fb2b9eb6a77b",
-      "bytes": 15326
+      "sha256": "3eb42ae98150051a4f5e3e01ffd69f1c7d8970e39454a2d4b9ad125138267bd5",
+      "bytes": 15699
     },
     "./app/boot/33-v6497-dossier-enhancements.js": {
       "sha256": "7ccc4b3372e1fc62b8658451fe98ecdc8e9d09d2ccc2041f0011e0db04d11c60",
@@ -289,6 +289,10 @@
       "sha256": "ac86b01fb60710f396812728df03ec28e1755192aeac62ecb334db00fd3cf013",
       "bytes": 19587
     },
+    "./app/modules/radio-custody.v1.js": {
+      "sha256": "72fe759233742546f3a9ee82db2fc7ecbd286c6f4f3871ef11532468d8e59b94",
+      "bytes": 22911
+    },
     "./app/modules/roster-lite.v5.js": {
       "sha256": "fc96a9483925e25b70e2ce8e0b27962c14b703397be1faf30545b698b50c720a",
       "bytes": 26360
@@ -484,6 +488,10 @@
     "./app/styles/new-ui-v1.css": {
       "sha256": "6d70c544e3e1782e71e85ddfbd3c2f8fc213a275dd5ef70227412cddc092e432",
       "bytes": 376878
+    },
+    "./app/styles/radio-custody.v1.css": {
+      "sha256": "6f1ea8feacb20f36a323677bb86bbe16132c3e1bd52054ada68c8e13cbe9e328",
+      "bytes": 5210
     },
     "./app/vendor/lz-string-1.5.0.js": {
       "sha256": "550034b821027008776cb9bcd1700bb5d31e8b3de224cb130fc966a75dab0e5e",
@@ -762,8 +770,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "4ef960ca9f80065c3075d6d1d29d580231de2a82cd12e73df399c4ca081661d0",
-      "bytes": 104994
+      "sha256": "194d174d5aaf265e1ad6356522e89fb84da50883d10f4e4c981bddc0cf543570",
+      "bytes": 105252
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
