@@ -1,0 +1,153 @@
+    // E-REPORT radio asset custody v1: immutable events + authenticated transitions.
+    // Deploy with Firebase CLI before exposing the feature in production.
+    function radioActionAllowed(a) {
+      return a in ['INIT','ISSUE','RETURN','REPORT','SWAP_OUT','SWAP_IN','RELEASE'];
+    }
+    function radioReasonAllowed(r) {
+      return r in ['', 'BATTERY_EMPTY','BATTERY_WEAK','WEAK_SIGNAL','INTERMITTENT',
+        'AUDIO','MIC','PTT','CHARGING','DAMAGED','LOST','OTHER'];
+    }
+    function radioEventShape(d) {
+      return d.keys().hasAll(['schemaVersion','action','deviceCode','actorUid',
+        'actorName','personUid','personName','shift','reasonCode','details',
+        'signature','beforeStatus','afterStatus','deviceVersion',
+        'relatedDeviceCode','swapId','at'])
+        && d.keys().hasOnly(['schemaVersion','action','deviceCode','actorUid',
+        'actorName','personUid','personName','shift','reasonCode','details',
+        'signature','beforeStatus','afterStatus','deviceVersion',
+        'relatedDeviceCode','swapId','at'])
+        && d.schemaVersion == 1
+        && radioActionAllowed(d.action)
+        && radioReasonAllowed(d.reasonCode)
+        && d.deviceCode is string
+        && d.deviceCode.matches('^[A-Z0-9]+') && d.deviceCode.size() >= 3 && d.deviceCode.size() <= 12
+        && d.actorUid == request.auth.uid
+        && d.actorName is string && d.actorName.size() > 0 && d.actorName.size() <= 110
+        && d.personUid is string && d.personUid.size() <= 150
+        && d.personName is string && d.personName.size() <= 110
+        && d.shift in ['', 'AM','PM']
+        && d.details is string && d.details.size() <= 500
+        && d.signature is string && d.signature.size() <= 45000
+        && (d.action in ['INIT','RELEASE']
+          ? d.signature == ''
+          : (d.signature.matches('^data:image/webp;base64,[A-Za-z0-9+/=]+')
+            || d.signature.matches('^data:image/png;base64,[A-Za-z0-9+/=]+'))
+            && d.signature.size() > 120)
+        && d.beforeStatus in ['', 'READY','OUT','CHARGING','FAULT','LOST']
+        && d.afterStatus in ['READY','OUT','CHARGING','FAULT','LOST']
+        && d.deviceVersion is int && d.deviceVersion >= 0
+        && d.relatedDeviceCode is string && d.relatedDeviceCode.size() <= 12
+        && d.swapId is string && d.swapId.size() <= 150
+        && d.at == request.time
+        && (d.reasonCode in ['OTHER','LOST'] || d.action == 'RELEASE'
+          ? d.details.size() >= 10 : true);
+    }
+    function radioAssetShape(code, d) {
+      return d.keys().hasAll(['schemaVersion','code','label','status','holderUid',
+        'holderName','shift','faultCode','faultDetail','battery','version',
+        'lastEventId','updatedAt'])
+        && d.keys().hasOnly(['schemaVersion','code','label','status','holderUid',
+        'holderName','shift','faultCode','faultDetail','battery','version',
+        'lastEventId','updatedAt'])
+        && d.schemaVersion == 1
+        && d.code == code
+        && code.matches('^[A-Z0-9]+') && code.size() >= 3 && code.size() <= 12
+        && d.label is string && d.label.size() <= 32
+        && d.status in ['READY','OUT','CHARGING','FAULT','LOST']
+        && d.holderUid is string && d.holderUid.size() <= 150
+        && d.holderName is string && d.holderName.size() <= 110
+        && d.shift in ['', 'AM','PM']
+        && radioReasonAllowed(d.faultCode)
+        && d.faultDetail is string && d.faultDetail.size() <= 500
+        && d.battery in ['UNKNOWN','FULL','GOOD','LOW','EMPTY']
+        && d.version is int && d.version >= 0
+        && d.lastEventId is string && d.lastEventId.size() >= 1
+        && d.lastEventId.size() <= 150
+        && d.updatedAt == request.time
+        && (d.status == 'OUT' ? d.holderUid.size() > 0 : d.holderUid == '')
+        && (d.status != 'OUT' ? d.holderName == '' : d.holderName.size() > 0);
+    }
+    function radioEventLink(code, d, oldStatus) {
+      return existsAfter(/databases/$(database)/documents/sags_radio_events_v1/$(d.lastEventId))
+        && getAfter(/databases/$(database)/documents/sags_radio_events_v1/$(d.lastEventId)).data.deviceCode == code
+        && getAfter(/databases/$(database)/documents/sags_radio_events_v1/$(d.lastEventId)).data.deviceVersion == d.version
+        && getAfter(/databases/$(database)/documents/sags_radio_events_v1/$(d.lastEventId)).data.beforeStatus == oldStatus
+        && getAfter(/databases/$(database)/documents/sags_radio_events_v1/$(d.lastEventId)).data.afterStatus == d.status
+        && getAfter(/databases/$(database)/documents/sags_radio_events_v1/$(d.lastEventId)).data.actorUid == request.auth.uid
+        && getAfter(/databases/$(database)/documents/sags_radio_events_v1/$(d.lastEventId)).data.at == request.time;
+    }
+    function radioTransition(old, next, action) {
+      return
+        // Issue to the authenticated person only.
+        (action in ['ISSUE','SWAP_IN'] && old.status == 'READY'
+          && next.status == 'OUT' && next.holderUid == request.auth.uid
+          && next.battery in ['FULL','GOOD']
+          && next.holderName.size() > 0 && next.faultCode == '')
+        // Custodian or AD can return. Needs explicit battery state.
+        || (action == 'RETURN' && old.status == 'OUT'
+          && (old.holderUid == request.auth.uid || isAdmin())
+          && next.status in ['READY','CHARGING']
+          && (next.status == 'READY' ? next.battery in ['FULL','GOOD'] : true)
+          && next.holderUid == ''
+          && (next.status == 'CHARGING'
+             ? next.battery in ['LOW','EMPTY'] && next.faultCode == 'BATTERY_WEAK'
+             : next.faultCode == ''))
+        // Atomic swap: old machine quarantined/charging.
+        || (action == 'SWAP_OUT' && old.status == 'OUT'
+          && (old.holderUid == request.auth.uid || isAdmin())
+          && next.status in ['FAULT','CHARGING']
+          && next.faultCode != '' && next.holderUid == '')
+        // Report bad radio, immediately remove from circulation.
+        || (action == 'REPORT' && old.status in ['READY','OUT']
+          && (old.status == 'READY' || old.holderUid == request.auth.uid || isAdmin())
+          && next.status in ['FAULT','CHARGING','LOST']
+          && next.faultCode != '' && next.holderUid == '')
+        // Only AD can make fault/charging/lost radio available again.
+        || (action == 'RELEASE' && isAdmin()
+          && old.status in ['FAULT','CHARGING','LOST']
+          && next.status == 'READY' && next.holderUid == ''
+          && next.faultCode == '' && next.battery == 'GOOD');
+    }
+    function radioDeviceUpdate(code) {
+      let old = resource.data;
+      let d = request.resource.data;
+      let e = getAfter(/databases/$(database)/documents/sags_radio_events_v1/$(d.lastEventId)).data;
+      return activeUser()
+        && radioAssetShape(code, d)
+        && d.label == old.label
+        && d.schemaVersion == old.schemaVersion
+        && d.version == old.version + 1
+        && d.lastEventId != old.lastEventId
+        && radioEventLink(code, d, old.status)
+        && radioEventShape(e)
+        && radioTransition(old, d, e.action);
+    }
+    match /sags_radio_devices_v1/{code} {
+      allow read: if activeUser();
+      allow create: if isAdmin()
+        && radioAssetShape(code, request.resource.data)
+        && request.resource.data.version == 0
+        && request.resource.data.status == 'READY'
+        && request.resource.data.holderUid == ''
+        && radioEventLink(code, request.resource.data, '')
+        && getAfter(/databases/$(database)/documents/sags_radio_events_v1/$(request.resource.data.lastEventId)).data.action == 'INIT';
+      allow update: if radioDeviceUpdate(code);
+      allow delete: if false;
+    }
+    match /sags_radio_events_v1/{eventId} {
+      // Hand-drawn signatures are private: staff see only their own events, AD sees all.
+      allow read: if activeUser() && (isAdmin() || resource.data.actorUid == request.auth.uid);
+      allow create: if activeUser()
+        && radioEventShape(request.resource.data)
+        && existsAfter(/databases/$(database)/documents/sags_radio_devices_v1/$(request.resource.data.deviceCode))
+        && getAfter(/databases/$(database)/documents/sags_radio_devices_v1/$(request.resource.data.deviceCode)).data.lastEventId == eventId
+        && getAfter(/databases/$(database)/documents/sags_radio_devices_v1/$(request.resource.data.deviceCode)).data.version == request.resource.data.deviceVersion
+        && getAfter(/databases/$(database)/documents/sags_radio_devices_v1/$(request.resource.data.deviceCode)).data.status == request.resource.data.afterStatus
+        && (request.resource.data.action in ['INIT','RELEASE'] ? isAdmin() : true)
+        && (request.resource.data.action == 'INIT' ? request.resource.data.beforeStatus == '' : true);
+      allow update, delete: if false;
+    }
+    match /sags_radio_mail_runs_v1/{mailKey} {
+      allow read: if isAdmin();
+      allow create, update, delete: if false;
+    }

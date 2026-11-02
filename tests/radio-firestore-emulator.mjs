@@ -55,6 +55,28 @@ async function transition(uid,code,action,mutations={},opts={}){
   tx.set(evRef,data);
  });
 }
+async function atomicSwap(uid,oldCode,newCode){
+ const db=actor(uid),oldRef=doc(db,root,oldCode),newRef=doc(db,root,newCode);
+ const oldEv=doc(collection(db,audit)),newEv=doc(collection(db,audit));
+ const swapId=doc(collection(db,audit)).id;
+ return runTransaction(db,async tx=>{
+  const [oldSnap,newSnap]=await Promise.all([tx.get(oldRef),tx.get(newRef)]);
+  const old=oldSnap.data(),next=newSnap.data();
+  assert.equal(old.status,'OUT');assert.equal(next.status,'READY');
+  const oldState={status:'CHARGING',holderUid:'',holderName:'',shift:'',faultCode:'BATTERY_EMPTY',faultDetail:'Hết pin trong ca trực',battery:'EMPTY',version:old.version+1,lastEventId:oldEv.id,updatedAt:serverTimestamp()};
+  const newState={status:'OUT',holderUid:uid,holderName:names[uid],shift:'AM',faultCode:'',faultDetail:'',battery:'GOOD',version:next.version+1,lastEventId:newEv.id,updatedAt:serverTimestamp()};
+  tx.update(oldRef,oldState);
+  tx.update(newRef,newState);
+  tx.set(oldEv,event(uid,'SWAP_OUT',oldCode,'OUT','CHARGING',oldState.version,{
+   personUid:uid,personName:names[uid],reasonCode:'BATTERY_EMPTY',
+   details:'Hết pin trong ca trực',relatedDeviceCode:newCode,swapId
+  }));
+  tx.set(newEv,event(uid,'SWAP_IN',newCode,'READY','OUT',newState.version,{
+   personUid:uid,personName:names[uid],reasonCode:'BATTERY_EMPTY',
+   details:'Thay máy do bộ cũ hết pin',relatedDeviceCode:oldCode,swapId
+  }));
+ });
+}
 async function main(){
  await seedUsers();
  await assertFails(getDoc(doc(getDb(),root,'DH01')));
@@ -89,9 +111,30 @@ async function main(){
  await assertFails(updateDoc(one.docs[0].ref,{details:'Sửa lịch sử trái phép'}));
  await assertFails(deleteDoc(one.docs[0].ref));
  await assertFails(setDoc(doc(getDb('alice'),'sags_radio_mail_runs_v1','daily_2026-11-01'),{status:'SENT'}));
- const final=(await getDoc(doc(getDb('admin'),root,'DH01'))).data();
- assert.equal(final.status,'READY');
- assert.equal(final.version,5);
- console.log('Firebase emulator PASS: isolated permissions, signed append-only audit, admin release, battery quarantine');
+ const initial=(await getDoc(doc(getDb('admin'),root,'DH01'))).data();
+ assert.equal(initial.status,'READY');
+ assert.equal(initial.version,5);
+ // Tested on a second radio; failed attempts cannot mark broken/low-battery radios as issued.
+ await assertSucceeds(createRadio('admin','DH02'));
+ await assertFails(transition('alice','DH02','ISSUE',{
+  status:'OUT',holderUid:'alice',holderName:names.alice,shift:'AM',faultCode:'',faultDetail:'',battery:'LOW'
+ }));
+ await assertSucceeds(transition('alice','DH01','ISSUE',{
+  status:'OUT',holderUid:'alice',holderName:names.alice,shift:'AM',faultCode:'',faultDetail:'',battery:'GOOD'
+ },{signature:'data:image/png;base64,'+'b'.repeat(180)}));
+ // One old-radio return and one new-radio issue must commit atomically.
+ await assertSucceeds(atomicSwap('alice','DH01','DH02'));
+ const old=(await getDoc(doc(getDb('admin'),root,'DH01'))).data();
+ const newer=(await getDoc(doc(getDb('admin'),root,'DH02'))).data();
+ assert.equal(old.status,'CHARGING');
+ assert.equal(old.version,7);
+ assert.equal(newer.status,'OUT');
+ assert.equal(newer.holderUid,'alice');
+ assert.equal(newer.battery,'GOOD');
+ assert.equal(newer.version,1);
+ await assertFails(transition('bob','DH02','ISSUE',{
+  status:'OUT',holderUid:'bob',holderName:names.bob,shift:'AM',faultCode:'',faultDetail:'',battery:'GOOD'
+ }));
+ console.log('Firebase emulator PASS: privacy, signed custody (WebP/PNG), battery quarantine, atomic replacement and immutable audit');
 }
 try{await main()}finally{await env.cleanup()}

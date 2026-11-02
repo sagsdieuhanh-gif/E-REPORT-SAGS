@@ -1159,7 +1159,8 @@ service cloud.firestore {
         && d.signature is string && d.signature.size() <= 45000
         && (d.action in ['INIT','RELEASE']
           ? d.signature == ''
-          : d.signature.matches('^data:image/webp;base64,[A-Za-z0-9+/=]+')
+          : (d.signature.matches('^data:image/webp;base64,[A-Za-z0-9+/=]+')
+            || d.signature.matches('^data:image/png;base64,[A-Za-z0-9+/=]+'))
             && d.signature.size() > 120)
         && d.beforeStatus in ['', 'READY','OUT','CHARGING','FAULT','LOST']
         && d.afterStatus in ['READY','OUT','CHARGING','FAULT','LOST']
@@ -1209,6 +1210,7 @@ service cloud.firestore {
         // Issue to the authenticated person only.
         (action in ['ISSUE','SWAP_IN'] && old.status == 'READY'
           && next.status == 'OUT' && next.holderUid == request.auth.uid
+          && next.battery in ['FULL','GOOD']
           && next.holderName.size() > 0 && next.faultCode == '')
         // Custodian or AD can return. Needs explicit battery state.
         || (action == 'RETURN' && old.status == 'OUT'
