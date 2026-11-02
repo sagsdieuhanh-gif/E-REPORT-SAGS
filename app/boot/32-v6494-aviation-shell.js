@@ -71,7 +71,12 @@ function available(key){
  if(key==='settings')return typeof root.sagsOpenSettings==='function'||!!legacyButton('settings');
  const b=legacyButton(key);return !!b&&!b.disabled&&!b.hidden;
 }
+let navigationEpoch=0;
 function trigger(key){
+ const ticket=++navigationEpoch;
+ const radioPanel=document.getElementById?.('sagsRadioPanel');
+ if(key!=='radio'&&radioPanel&&!radioPanel.hidden)root.SAGSRadioCustodyV1?.close?.();
+ if(key!=='history'&&document.getElementById?.('sagsHistoryOverlay')?.classList?.contains('open'))document.getElementById?.('sagsHistoryClose')?.click?.();
  if(key!=='home'){
   navTransitionUntil=Date.now()+2200;
   const home=$('v6494AviationHome');
@@ -87,7 +92,7 @@ function trigger(key){
      link.href='./app/styles/radio-custody.v1.css?v='+encodeURIComponent(build);
      document.head.appendChild(link);
    }
-   if(root.SAGSRadioCustodyV1?.open){root.SAGSRadioCustodyV1.open()}
+   if(root.SAGSRadioCustodyV1?.open){if(ticket===navigationEpoch)root.SAGSRadioCustodyV1.open()}
    else{
      if(!root.__sagsRadioModuleLoading){
        root.__sagsRadioModuleLoading=new Promise((resolve,reject)=>{
@@ -98,7 +103,7 @@ function trigger(key){
          document.body.appendChild(s);
        });
      }
-     root.__sagsRadioModuleLoading.then(()=>root.SAGSRadioCustodyV1.open()).catch(e=>{root.__sagsRadioModuleLoading=null;root.alert?.(e.message)});
+     root.__sagsRadioModuleLoading.then(()=>{if(ticket===navigationEpoch)root.SAGSRadioCustodyV1.open()}).catch(e=>{root.__sagsRadioModuleLoading=null;if(ticket===navigationEpoch)root.alert?.(e.message)});
    }
    setTimeout(scheduleSync,0);return
  }
@@ -150,15 +155,6 @@ function menuCard(item,compact=false){
  const icon=ICONS[item.key]||ICONS.home;
  return '<button type="button" data-v6494-key="'+esc(item.key)+'" class="'+(item.key==='home'?'active ':'')+(compact?'compact':'')+'"><i>'+icon+'</i><span><b>'+esc(item.label)+'</b><small>'+esc(item.meta||'')+'</small></span><em>›</em></button>';
 }
-function ensurePcRadioFallback(){
- const nav=document.querySelector('#v157Drawer .v157MenuBody');
- const flight=nav?.querySelector('.v157MenuItem[data-v157-key="myflight"]');
- if(!flight||nav.querySelector('[data-sags-radio-shortcut]'))return;
- const button=document.createElement('button');button.type='button';button.className='v157MenuItem';button.dataset.sagsRadioShortcut='1';
- button.innerHTML='<span class="ico">📻</span><span>Ký nhận bộ đàm</span><span class="meta">Nhận / trả / PDF</span>';
- button.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();trigger('radio')});
- flight.insertAdjacentElement('afterend',button);
-}
 function renderMenus(){
  const visible=DEF.map(sec=>({group:sec.group,items:sec.items.filter(x=>available(x.key))})).filter(sec=>sec.items.length);
  const sig=visible.map(sec=>sec.group+':'+sec.items.map(x=>x.key).join(',')).join('|');
@@ -195,7 +191,7 @@ function syncIdentity(){
 function sync(){
  if(syncing)return;syncing=true;
  try{
-  const el=ensure();ensurePcRadioFallback();renderMenus();syncIdentity();
+  const el=ensure();renderMenus();syncIdentity();
   const show=homeState(),wasShown=el.classList.contains('show');
   el.classList.toggle('show',show);const hidden=show?'false':'true';if(el.getAttribute('aria-hidden')!==hidden)el.setAttribute('aria-hidden',hidden);
   document.body.classList.toggle('v6494-home-active',show);
@@ -230,8 +226,9 @@ function boot(){
  window.addEventListener('pageshow',()=>{observeStateTargets();scheduleSync()},{passive:true});
  document.addEventListener('visibilitychange',()=>{if(!document.hidden){observeStateTargets();scheduleSync()}},{passive:true});
  ['sags:login','sags:logout','sags:rolechange','sags:profilechange','sags:ui-ready','sags:profile-display-updated'].forEach(name=>root.addEventListener?.(name,()=>{observeStateTargets();scheduleSync()}));
- document.addEventListener('click',e=>{if(e.target?.closest?.('#v157MenuBody [data-v157-key],#v157MenuBody [data-sags-radio-shortcut]')){navTransitionUntil=Date.now()+2200;setTimeout(scheduleSync,2300)}},true);
+ document.addEventListener('click',e=>{if(e.target?.closest?.('#v157MenuBody [data-v157-key]')){navTransitionUntil=Date.now()+2200;setTimeout(scheduleSync,2300)}},true);
  document.addEventListener('click',e=>{if(e.target?.closest?.('[data-v6494-key],[data-v6494-account],#v157LogoutBtn,.fwcHead button,.sagsAdminTopActions button'))setTimeout(scheduleSync,0)},true);
 }
+root.SAGSAviationOpenRadio=()=>trigger('radio');
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })(window);
