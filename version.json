@@ -1,12 +1,12 @@
 {
-  "version": "V2.0",
-  "displayVersion": "V2.0",
-  "label": "V2.0 - KÝ NHẬN BỘ ĐÀM CÓ ẢNH, GIỜ CHỤP VÀ CHỮ KÝ",
-  "build": "V2.0-20261103-RADIO-CAMERA-01",
+  "version": "V2.1",
+  "displayVersion": "V2.1",
+  "label": "V2.1 - KÝ NHẬN BỘ ĐÀM: PC, LỊCH SỬ, PDF VÀ NHẮC VIỆC",
+  "build": "V2.1-20261103-RADIO-OPS-01",
   "releasedAt": "2026-11-03",
-  "type": "radio-camera-evidence-mandatory",
+  "type": "radio-in-app-reminders-visual-only",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Giữ nguyên nghiệp vụ chuyến bay và xuất PDF V1.12; bổ sung menu Ký nhận bộ đàm ngay dưới My Flight; nhận/trả/đổi bắt buộc mở camera trực tiếp, ảnh in mã máy, thao tác, thời gian chụp giờ Việt Nam; xác nhận chữ ký và lưu hình vào nhật ký Firestore hiện có. Giờ xác nhận độc lập do Firebase ghi nhận. Không bật email.",
-  "message": "E-REPORT SAGS V2.0: Camera bắt buộc khi nhận/trả bộ đàm và lịch sử ảnh."
+  "notes": "Ký nhận bộ đàm V2.1: menu PC; lịch sử trực quan, lọc và PDF; trả máy mặc định Hết ca; nhắc nhận/trả trực quan dựa trên My Flight đang hiệu lực và Firestore trực tuyến; AD theo dõi máy giữ quá 12 giờ. Không QR, Zalo, SMS, email, rung hay âm thanh; không giả định giờ kết thúc ca khi roster thiếu giờ.",
+  "message": "E-REPORT SAGS V2.1: Ký nhận bộ đàm, nhắc việc trực quan, báo cáo PDF."
 }

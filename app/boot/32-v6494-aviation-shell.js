@@ -120,6 +120,7 @@ function ensure(){
    '<div class="v6494QuickHead"><div><small>HÔM NAY</small><h2 id="v6494Date"></h2></div><span>OPERATIONS CONSOLE</span></div>'+
    '<div class="v6494QuickGrid">'+
     '<button type="button" data-v6494-key="myflight"><i>'+ICONS.myflight+'</i><span><small>CÔNG VIỆC</small><b>My Flight</b><em>Chuyến được phân công</em></span></button>'+
+    '<button type="button" data-v6494-key="radio"><i>'+ICONS.radio+'</i><span><small>THIẾT BỊ</small><b>Ký nhận bộ đàm</b><em>Nhận · trả · PDF</em></span></button>'+
     '<button type="button" data-v6494-key="archive"><i>'+ICONS.archive+'</i><span><small>HỒ SƠ</small><b>Hồ sơ chuyến</b><em>Theo dõi hồ sơ nghiệp vụ</em></span></button>'+
     '<button type="button" data-v6494-key="cross"><i>'+ICONS.cross+'</i><span><small>KIỂM TRA</small><b>Crosscheck</b><em>Việc cần đối chiếu</em></span></button>'+
    '</div>'+
@@ -139,6 +140,15 @@ function ensure(){
 function menuCard(item,compact=false){
  const icon=ICONS[item.key]||ICONS.home;
  return '<button type="button" data-v6494-key="'+esc(item.key)+'" class="'+(item.key==='home'?'active ':'')+(compact?'compact':'')+'"><i>'+icon+'</i><span><b>'+esc(item.label)+'</b><small>'+esc(item.meta||'')+'</small></span><em>›</em></button>';
+}
+function ensurePcRadioFallback(){
+ const nav=document.querySelector('#v157Drawer .v157MenuBody');
+ const flight=nav?.querySelector('.v157MenuItem[data-v157-key="myflight"]');
+ if(!flight||nav.querySelector('[data-sags-radio-shortcut]'))return;
+ const button=document.createElement('button');button.type='button';button.className='v157MenuItem';button.dataset.sagsRadioShortcut='1';
+ button.innerHTML='<span class="ico">📻</span><span>Ký nhận bộ đàm</span><span class="meta">Nhận / trả / PDF</span>';
+ button.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();trigger('radio')});
+ flight.insertAdjacentElement('afterend',button);
 }
 function renderMenus(){
  const visible=DEF.map(sec=>({group:sec.group,items:sec.items.filter(x=>available(x.key))})).filter(sec=>sec.items.length);
@@ -180,10 +190,11 @@ function syncIdentity(){
 function sync(){
  if(syncing)return;syncing=true;
  try{
-  const el=ensure();renderMenus();syncIdentity();
+  const el=ensure();ensurePcRadioFallback();renderMenus();syncIdentity();
   const show=homeState(),wasShown=el.classList.contains('show');
   el.classList.toggle('show',show);const hidden=show?'false':'true';if(el.getAttribute('aria-hidden')!==hidden)el.setAttribute('aria-hidden',hidden);
   document.body.classList.toggle('v6494-home-active',show);
+   if(auth())loadRadioReminders();
   if(show)document.body.classList.remove('v157-drawer-open');
   if(show&&!wasShown)root.dispatchEvent(new Event('sags:home-shown'));
  }finally{syncing=false}
@@ -199,6 +210,15 @@ function observeStateTargets(){
  try{stateObserver.observe(document.body,{attributes:true,attributeFilter:['class']})}catch(_){}
  const ids=['roleLoginModal','fwcModal','v174DataHub','v181AdminCenter','appUpdateModal','roleChangePasswordModal','quickTimeModal','fs09QuickModal','finalPaperModal','flightSessionModal','accountManagerModal','auditManagerModal','activityMonitorModal','fleetManagerModal','kh208ManagerModal','finalSheetManagerModal','fs09SheetManagerModal'];
  for(const id of ids){const el=$(id);if(el)try{stateObserver.observe(el,cfg)}catch(_){}}
+}
+function loadRadioReminders(){
+ if(root.SAGSRadioRemindersV21||root.__sagsRadioRemindersLoadV21)return;
+ root.__sagsRadioRemindersLoadV21=true;
+ const build=document.querySelector('meta[name="sags-release-build"]')?.content||'current';
+ const node=document.createElement('script');node.id='sags-radio-reminders-v21';
+ node.src='./app/modules/radio-reminders.v21.js?v='+encodeURIComponent(build);
+ node.onerror=()=>console.warn('Không tải được nhắc ký nhận bộ đàm trong ứng dụng.');
+ document.body.appendChild(node);
 }
 function boot(){
  ensure();sync();observeStateTargets();

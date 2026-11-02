@@ -4,7 +4,7 @@ const index=fs.readFileSync(path.join(root,'index.html'),'utf8');
 const sw=fs.readFileSync(path.join(root,'service-worker.js'),'utf8');
 const ver=JSON.parse(fs.readFileSync(path.join(root,'version.json'),'utf8'));
 const man=JSON.parse(fs.readFileSync(path.join(root,'asset-manifest.json'),'utf8'));
-assert.match(ver.version,/^V2\.0$/,'release must use the V2.0 release identity');
+assert.match(ver.version,/^V2\.1$/,'release must use the V2.1 release identity');
 assert.equal(ver.displayVersion,ver.version);
 assert.ok(ver.build.startsWith(ver.version+'-'));
 assert.equal(man.version,ver.version);

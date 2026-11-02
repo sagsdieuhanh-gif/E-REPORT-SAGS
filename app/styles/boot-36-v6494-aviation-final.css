@@ -43,7 +43,7 @@ html.new-ui-v1 body.v6494-home-active :is(#roleHomeIdle,#v157HomeDashboard,#v157
 .v6494Hero>div{max-width:640px}.v6494Hero small{color:#a9eef3;font-size:9.5px;letter-spacing:.08em;font-weight:700}.v6494Hero h1{margin:8px 0 8px;color:#fff;font-size:clamp(25px,2.5vw,38px);line-height:1.13;letter-spacing:-.03em}.v6494Hero p{margin:0;color:#c2d1db;font-size:12px}
 .v6494Hero button{margin-top:20px;min-height:42px;padding:0 14px;border:1px solid rgba(70,215,230,.54);border-radius:9px;background:linear-gradient(135deg,#1289ad,#19b6c9);color:#fff;display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:800;box-shadow:none}.v6494Hero button svg{width:17px;height:17px}
 .v6494QuickHead{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-top:16px!important}.v6494QuickHead small,.v6494SectionHead small{color:#b5cad6;font-size:9px;letter-spacing:.06em}.v6494QuickHead h2,.v6494SectionHead h2{margin:4px 0 0;color:#eef7fa;font-size:16px}.v6494QuickHead>span{color:#b2c9d7;font-size:9px;letter-spacing:.06em}
-.v6494QuickGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:9px!important}
+.v6494QuickGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:9px!important}
 .v6494QuickGrid>button{min-height:102px;padding:14px;border:1px solid var(--a-border);border-radius:12px;background:linear-gradient(145deg,#0b2132,#081b29);color:#dcebf1;text-align:left;display:grid;grid-template-columns:42px minmax(0,1fr);gap:11px;align-items:center}.v6494QuickGrid>button:hover{border-color:var(--a-border2);background:#0c2638}.v6494QuickGrid i{width:42px;height:42px;display:grid;place-items:center;border-radius:10px;background:#0d3449;color:#77e2ec}.v6494QuickGrid span small{display:block;color:#b4cad8;font-size:9px;letter-spacing:.05em}.v6494QuickGrid span b{display:block;margin:4px 0;color:#f4fafc;font-size:14px}.v6494QuickGrid span em{display:block;color:#b9cfdb;font-size:10px;font-style:normal}
 .v6494Work{margin-top:16px!important;padding:14px;border:1px solid var(--a-border);border-radius:13px;background:#081b29}.v6494SectionHead{display:flex;align-items:end;justify-content:space-between;gap:12px;padding-bottom:11px;border-bottom:1px solid var(--a-border)}.v6494SectionHead p{margin:0;color:#b4cbd7;font-size:10px}.v6494MobileMenu{display:none}
 .v6494Bottom{display:none}
@@ -111,3 +111,8 @@ html.new-ui-v1 body :is(.v174DataHubPanel,.v181AdminPanel,.sagsAdminPanel,.drPan
  html.new-ui-v1 body #fwcModal.show .fwcPanel{width:min(100%,1500px)!important;height:calc(100vh - 28px)!important;max-width:none!important;max-height:none!important;margin:0 auto!important;padding:15px 18px 20px!important;overflow:auto!important}
  html.new-ui-v1 body #fwcModal.show :is(.v1199FlightGrid,.v478RoleGrid){display:grid!important;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))!important;gap:10px!important}
 }
+
+.v6494Nav button[data-v6494-key="radio"]{background:#103849;border-color:#3c7b8d;color:#ecfbff}
+.v6494Nav button[data-v6494-key="radio"] i{background:#125069;color:#8df5e2}
+#v157Drawer .v157MenuItem[data-sags-radio-shortcut]{border:1px solid #4c8497!important;background:#12364b!important;color:#e7fbff!important}
+@media(min-width:768px) and (max-width:1150px){.v6494QuickGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}

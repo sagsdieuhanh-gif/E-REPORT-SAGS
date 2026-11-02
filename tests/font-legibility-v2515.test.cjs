@@ -3,7 +3,7 @@ const css=fs.readFileSync(__dirname+'/../app/styles/boot-36-v6494-aviation-final
 const html=fs.readFileSync(__dirname+'/../index.html','utf8');
 const normalize=s=>s.replace(/(?<=[{;])(\s*)(color|font-size|font-weight|letter-spacing)\s*:\s*([^;}]+)/g,'$1$2:__TEXT__');
 const structuralHash=crypto.createHash('sha256').update(normalize(css)).digest('hex');
-assert.equal(structuralHash,'a908cd985d0a78e50a800a04ed3fa04f86d7cfaaa956adb16b1aa510f76728ed','Typography update changed CSS properties other than existing color/font-size/font-weight/letter-spacing');
+assert.equal(structuralHash,'389b3b8388550efde748667496b04e488107b724fd6e891583c70acc2e0582d6','Typography update changed CSS properties other than existing color/font-size/font-weight/letter-spacing');
 assert.match(css,/\.v6494Nav button span small\{[^}]*font-size:9px/);
 assert.match(css,/\.v6494MobileBrand small\{[^}]*font-size:8px/);
 assert.match(css,/#fwcModal\.show \.fwcSub\{color:#b9ced9/);
