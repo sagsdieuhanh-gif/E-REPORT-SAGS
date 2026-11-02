@@ -194,6 +194,7 @@ function sync(){
   const show=homeState(),wasShown=el.classList.contains('show');
   el.classList.toggle('show',show);const hidden=show?'false':'true';if(el.getAttribute('aria-hidden')!==hidden)el.setAttribute('aria-hidden',hidden);
   document.body.classList.toggle('v6494-home-active',show);
+   if(auth())loadRadioReminders();
   if(show)document.body.classList.remove('v157-drawer-open');
   if(show&&!wasShown)root.dispatchEvent(new Event('sags:home-shown'));
  }finally{syncing=false}
@@ -209,6 +210,15 @@ function observeStateTargets(){
  try{stateObserver.observe(document.body,{attributes:true,attributeFilter:['class']})}catch(_){}
  const ids=['roleLoginModal','fwcModal','v174DataHub','v181AdminCenter','appUpdateModal','roleChangePasswordModal','quickTimeModal','fs09QuickModal','finalPaperModal','flightSessionModal','accountManagerModal','auditManagerModal','activityMonitorModal','fleetManagerModal','kh208ManagerModal','finalSheetManagerModal','fs09SheetManagerModal'];
  for(const id of ids){const el=$(id);if(el)try{stateObserver.observe(el,cfg)}catch(_){}}
+}
+function loadRadioReminders(){
+ if(root.SAGSRadioRemindersV21||root.__sagsRadioRemindersLoadV21)return;
+ root.__sagsRadioRemindersLoadV21=true;
+ const build=document.querySelector('meta[name="sags-release-build"]')?.content||'current';
+ const node=document.createElement('script');node.id='sags-radio-reminders-v21';
+ node.src='./app/modules/radio-reminders.v21.js?v='+encodeURIComponent(build);
+ node.onerror=()=>console.warn('Không tải được nhắc ký nhận bộ đàm trong ứng dụng.');
+ document.body.appendChild(node);
 }
 function boot(){
  ensure();sync();observeStateTargets();
