@@ -49,20 +49,17 @@ const DEF=[
  ]}
 ];
 let syncing=false,stateObserver=null,lastMenuSignature='',syncFrame=0;
-let navTransitionUntil=0; // Brief guard while navigating from the fixed PC landing shell.
+let navTransitionUntil=0;
 function session(){try{return root.__sagsGetSession?.()||{}}catch(_){return{}}}
 function profile(){const s=session();return s.profile||root.currentUserProfile||{}}
 function role(){const s=session(),p=profile();return S(s.role||p.role||root.currentRole).toUpperCase()}
 function isShown(el){if(!el)return false;try{const cs=getComputedStyle(el);return cs.display!=='none'&&cs.visibility!=='hidden'&&Number(cs.opacity||1)!==0}catch(_){return true}}
 function loginVisible(){return isShown($('roleLoginModal'))}
 function auth(){return document.body.classList.contains('v157-authenticated')&&!loginVisible()}
+const OVERLAY_IDS=['sagsRadioPanel','sagsSettingsCenter','sagsHistoryOverlay','csgModal','fwcModal','v174DataHub','v181AdminCenter','appUpdateModal','roleChangePasswordModal','quickTimeModal','fs09QuickModal','finalPaperModal','flightSessionModal','accountManagerModal','auditManagerModal','activityMonitorModal','fleetManagerModal','kh208ManagerModal','finalSheetManagerModal','fs09SheetManagerModal','sagsFlightNoticeModal','sagsFormEditHistoryOverlay'];
 function overlayVisible(){
- const ids=['sagsRadioPanel','sagsSettingsCenter','sagsHistoryOverlay','csgModal','fwcModal','v174DataHub','v181AdminCenter','appUpdateModal','roleChangePasswordModal','quickTimeModal','fs09QuickModal','finalPaperModal','flightSessionModal','accountManagerModal','auditManagerModal','activityMonitorModal','fleetManagerModal','kh208ManagerModal','finalSheetManagerModal','fs09SheetManagerModal','sagsFlightNoticeModal','sagsFormEditHistoryOverlay'];
- return ids.some(id=>{
-  const e=$(id);if(!e||e.hidden||!isShown(e))return false;
-  if(e.classList.contains('show')||e.classList.contains('open')||e.getAttribute('aria-hidden')==='false')return true;
-  // Radio is a standalone dialog controlled only by its native hidden property.
-  return id==='sagsRadioPanel';
+ return OVERLAY_IDS.some(id=>{
+  const e=$(id);return !!e&&!e.hidden&&isShown(e)&&(id==='sagsRadioPanel'||e.classList.contains('show')||e.classList.contains('open')||e.getAttribute('aria-hidden')==='false');
  });
 }
 function homeState(){return auth()&&document.body.classList.contains('v157-home')&&!overlayVisible()&&Date.now()>=navTransitionUntil}
@@ -79,10 +76,9 @@ function trigger(key){
  if(key!=='home'){
   navTransitionUntil=Date.now()+2200;
   const home=$('v6494AviationHome');
-  if(home){home.classList.remove('show');home.setAttribute('aria-hidden','true')}
-  document.body.classList.remove('v6494-home-active');
+  home?.classList?.remove?.('show');home?.setAttribute?.('aria-hidden','true');
+  document.body?.classList?.remove?.('v6494-home-active');
   setTimeout(()=>{observeStateTargets();scheduleSync()},2300);
-  setTimeout(scheduleSync,6000);
  }else navTransitionUntil=0;
  if(key==='home'){try{root.sagsV479GoHome?.()}catch(_){}sync();return}
  if(key==='radio'){
@@ -222,7 +218,7 @@ function observeStateTargets(){
  stateObserver=new MutationObserver(scheduleSync);
  const cfg={attributes:true,attributeFilter:['class','style','aria-hidden','hidden']};
  try{stateObserver.observe(document.body,{attributes:true,attributeFilter:['class']})}catch(_){}
- const ids=['roleLoginModal','sagsRadioPanel','sagsSettingsCenter','sagsHistoryOverlay','csgModal','fwcModal','v174DataHub','v181AdminCenter','appUpdateModal','roleChangePasswordModal','quickTimeModal','fs09QuickModal','finalPaperModal','flightSessionModal','accountManagerModal','auditManagerModal','activityMonitorModal','fleetManagerModal','kh208ManagerModal','finalSheetManagerModal','fs09SheetManagerModal'];
+ const ids=['roleLoginModal',...OVERLAY_IDS];
  for(const id of ids){const el=$(id);if(el)try{stateObserver.observe(el,cfg)}catch(_){}}
 }
 function loadRadioReminders(){
