@@ -8,6 +8,7 @@ const index=fs.readFileSync('index.html','utf8');
 const sw=fs.readFileSync('service-worker.js','utf8');
 assert.equal(ver.version,'V2.1');
 assert(index.includes(ver.build)&&sw.includes(ver.build),'hotfix must be cache-busted');
+assert(sw.includes('"./app/modules/radio-custody.v1.js"')&&sw.includes('"./app/styles/radio-custody.v1.css"'),'standalone radio menu must work from verified PWA cache');
 assert(shell.includes('e.stopPropagation();trigger(b.dataset.v6494Key)'),'PC quick actions cannot bubble into legacy My Flight route');
 assert(shell.includes("if(key!=='home'){"),'non-home routes must suppress fixed landing');
 assert(shell.includes('navTransitionUntil=Date.now()+2200'),'async module loads must not re-open landing shell');
