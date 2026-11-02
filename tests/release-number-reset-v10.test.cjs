@@ -3,7 +3,7 @@ const fs=require('node:fs'),assert=require('node:assert/strict');
 const read=p=>fs.readFileSync(p,'utf8');
 const v=JSON.parse(read('version.json')),manifest=JSON.parse(read('asset-manifest.json'));
 const sw=read('service-worker.js'),html=read('index.html');
-assert.equal(v.displayVersion,'V2.0','release upgraded to requested V2.0 after validated camera features');
+assert.equal(v.displayVersion,'V2.1','release upgraded to requested V2.1 after validated camera features');
 assert.equal(v.version,v.displayVersion);
 assert.equal(manifest.build,v.build);
 assert.equal(manifest.version,v.displayVersion);
@@ -14,4 +14,4 @@ assert.equal(html.match(/name="sags-release-build" content="([^"]+)"/)[1],v.buil
 assert(!sw.includes('sags-app-shell-v2.5.48'),'Fresh SW namespace ensures reset version is not treated as an old cache');
 assert(!html.includes('V2.5.48-20261025-EXPORT-MULTIUSER-FONT-01'),'No stale build links');
 assert.equal(v.updatePolicy,'required');
-console.log('Release V2.0 identity/version consistency without resetting business data PASS');
+console.log('Release V2.1 identity/version consistency without resetting business data PASS');
