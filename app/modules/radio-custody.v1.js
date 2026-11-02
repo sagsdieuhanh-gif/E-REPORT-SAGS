@@ -28,7 +28,7 @@ const OVERDUE_MS=12*60*60*1000;
 const STATUSES={READY:'Sẵn sàng',OUT:'Đang sử dụng',CHARGING:'Đang sạc',FAULT:'Ngừng cấp / lỗi',LOST:'Thất lạc'};
 const ACTS={INIT:'Khởi tạo',ISSUE:'Nhận máy',RETURN:'Trả máy',REPORT:'Báo sự cố',SWAP_OUT:'Đổi – trả máy cũ',SWAP_IN:'Đổi – nhận máy mới',RELEASE:'Mở lại / sạc xong'};
 let unsubs=[],devices=[],events=[],busy=false,connected=false,choice=null,mode='ISSUE',canvasDirty=false,strokes=[],drawing=false,dateFilter='all';
-let cameraStream=null,cameraToken=0,cameraLeg='old',photos={old:null,new:null},historyStop=null;
+let cameraStream=null,cameraToken=0,cameraLeg='old',photos={old:null,new:null},historyStop=null,historyVerified=false;
 function session(){try{return root.__sagsGetSession?.()||{}}catch(_){return{}}}
 function currentUser(){const u=root.firebase?.auth?.().currentUser,s=session(),p=s.profile||root.currentUserProfile||{};return {uid:u?.uid||'',name:S(p.fullName||p.name||p.displayName||p.username||u?.displayName||u?.email||'Nhân viên'),role:S(s.role||p.role||root.currentRole).toUpperCase()}}
 function isAdmin(u){return ['ADMIN','AD'].includes(u?.role)}
@@ -167,7 +167,8 @@ function viewProof(id){
  const e=events.find(x=>x.id===id);if(!e?.signature||!/^data:image\/(webp|png);base64,/.test(e.signature))return;
  $('radioProofName').textContent=label(e.deviceCode)+' · '+(ACTS[e.action]||e.action);
  $('radioProofImage').src=e.signature;
- $('radioProofTimestamp').textContent='Thời gian xác nhận Firebase: '+(e.at?.toDate?.()?fmt(e.at.toDate()):'Đang đồng bộ');
+ const check=photoAudit(e);
+ $('radioProofTimestamp').textContent='Giờ Firebase: '+(check.serverMs?fmt(new Date(check.serverMs)):'Chưa xác minh')+' · Giờ thiết bị: '+(check.deviceMs?fmt(new Date(check.deviceMs)):'xem trực tiếp trên ảnh')+' · '+check.status+(check.delta!==null?' ('+check.delta+' phút)':'');
  $('radioProofViewer').hidden=false;
 }
 function closeProof(){const el=$('radioProofViewer');if(el)el.hidden=true;const img=$('radioProofImage');if(img)img.removeAttribute('src')}
@@ -232,7 +233,7 @@ function renderHistory(){
  if(sel&&sel.dataset.codes!==key){const old=sel.value;sel.innerHTML='<option value="">Tất cả máy</option>'+codes.map(x=>'<option value="'+esc(x)+'">'+esc(label(x))+'</option>').join('');sel.value=codes.includes(old)?old:'';sel.dataset.codes=key}
  const rows=filteredHistory(),meta=$('radioHistoryMeta');
  const exportPhotos=$('radioExportPhotos');if(exportPhotos)exportPhotos.hidden=!isAdmin(currentUser());
- if(meta)meta.textContent=rows.length+' sự kiện phù hợp | '+(events.length>=120?'Chỉ có 120 sự kiện gần nhất được tải từ Firebase.':'Dữ liệu theo quyền tài khoản.');
+ if(meta)meta.textContent=rows.length+' sự kiện phù hợp | '+(events.length>=120?'Chỉ có 120 sự kiện gần nhất được tải từ Firebase.':'Dữ liệu theo quyền tài khoản.')+(isAdmin(currentUser())?' | PDF kèm ảnh tối đa 16 sự kiện/lần; lọc để xuất đủ.':'');
  if(!rows.length){wrap.innerHTML='<p class="radioEmpty">Không có lịch sử phù hợp bộ lọc.</p>';return;}
  wrap.innerHTML='<div class="radioAudit"><div class="radioAuditHead"><span>Thời gian</span><span>Máy / sự kiện</span><span>Người thực hiện</span><span>Trạng thái / ghi chú</span><span>Bằng chứng</span></div>'+
  rows.map(e=>{
@@ -429,7 +430,7 @@ async function photoPdfPage(e,index,total){
 }
 async function exportPhotoPdf(){
  if(!isAdmin(currentUser()))return notify('Chỉ tài khoản AD được xuất lịch sử kèm ảnh.',true);
- if(!connected||!navigator.onLine)return notify('Cần lịch sử được xác nhận từ Firebase trực tuyến để xuất bằng chứng.',true);
+ if(!connected||!historyVerified||!navigator.onLine)return notify('Cần lịch sử xác nhận trực tuyến từ Firebase, không xuất ảnh từ dữ liệu cache.',true);
  const rows=filteredHistory();
  if(!rows.length)return notify('Không có lịch sử phù hợp.',true);
  if(rows.length>16)return notify('Đang có '+rows.length+' sự kiện. Lọc theo máy/ngày/thao tác để còn tối đa 16 sự kiện rồi xuất toàn bộ ảnh, tránh bỏ sót.',true);
@@ -463,7 +464,7 @@ async function exportPdf(){
 }
 function stopHistory(){
  if(historyStop){historyStop();historyStop=null}
- events=[];if($('radioHistoryList'))renderHistory();
+ historyVerified=false;events=[];if($('radioHistoryList'))renderHistory();
  if($('radioSummary'))renderSummary();
 }
 function subscribeHistory(){
@@ -473,9 +474,10 @@ function subscribeHistory(){
  // Fetch only when the user explicitly opens history or summary.
  const query=isAdmin(u)?db.collection(EVENTS).orderBy('at','desc').limit(120):db.collection(EVENTS).where('actorUid','==',u.uid).limit(120);
  historyStop=query.onSnapshot(s=>{
+  historyVerified=!s.metadata.fromCache&&navigator.onLine;
   events=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.at?.toMillis?.()||0)-(a.at?.toMillis?.()||0));
   renderHistory();renderSummary();
- },e=>{events=[];renderHistory();renderSummary();notify(errText(e),true)});
+ },e=>{historyVerified=false;events=[];renderHistory();renderSummary();notify(errText(e),true)});
 }
 async function open(){
  tpl();const u=currentUser();$('radioExportPhotos').hidden=!isAdmin(u);if(!u.uid){$('sagsRadioPanel').hidden=false;notify('Đang chờ xác thực Firebase. Kiểm tra đăng nhập hoặc mở lại sau khi kết nối.',true);return}
