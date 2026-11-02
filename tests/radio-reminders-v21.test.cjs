@@ -7,7 +7,8 @@ const fakeWindow={addEventListener(){},currentUserProfile:{},firebase:{}},fakeDo
 vm.runInNewContext(code,{window:fakeWindow,document:fakeDocument,setTimeout(){},setInterval(){},clearTimeout(){},clearInterval(){},navigator:{onLine:true},Intl,Date});
 const api=fakeWindow.SAGSRadioRemindersV21;
 assert(api&&api.delivery==='VISUAL_ONLY');
-assert(html.includes('app/modules/radio-reminders.v21.js?v='+version.build));
+assert(menu.includes("node.src='./app/modules/radio-reminders.v21.js?v='"),'radio reminder must load after authentication');
+assert(!html.includes('id="sags-radio-reminders-v21"'),'do not increase startup JS parse budget');
 assert(menu.includes('data-v6494-key="radio"'));
 const active={flightId:'VJ100',active:true,taskStatusV333:'PENDING'},completed={...active,taskStatusV333:'COMPLETED'};
 const own={code:'DH01',status:'OUT',holderUid:'user-1',updatedAt:{toMillis:()=>Date.now()-1000}};
