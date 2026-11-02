@@ -30,6 +30,7 @@ const DEF=[
  {group:'KHAI THÁC',items:[
   {key:'home',label:'Trang chủ',meta:'Tổng quan hoạt động'},
   {key:'myflight',label:'My Flight',meta:'Công việc của tôi'},
+  {key:'radio',label:'Ký nhận bộ đàm',meta:'Chụp ảnh · ký · trả'},
   {key:'history',label:'Lịch sử thay đổi',meta:'Ai sửa · thời gian · trước/sau'},
   {key:'archive',label:'Hồ sơ chuyến bay',meta:'Hồ sơ theo chuyến'},
   {key:'guide',label:'Sổ tay hãng',meta:'Tài liệu khai thác'}
@@ -41,7 +42,6 @@ const DEF=[
  ]},
  {group:'HỆ THỐNG',items:[
   {key:'datahub',label:'Dữ liệu khai thác',meta:'Roster · A/C Limits · Fleet'},
-  {key:'radio',label:'Ký nhận bộ đàm',meta:'Nhận · trả · đổi · sự cố · lịch sử'},
   {key:'alerts',label:'Cảnh báo khai thác',meta:'A/C Limits'},
   {key:'notice',label:'Thông báo',meta:'Thông tin nghiệp vụ'},
   {key:'adcontrol',label:'AD Control Center',meta:'Quản trị hệ thống'},
