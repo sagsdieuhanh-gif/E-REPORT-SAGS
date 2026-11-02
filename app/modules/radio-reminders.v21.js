@@ -89,6 +89,7 @@ function render(){
  const panel=document.querySelector('#v6494AviationHome .v6494Scroll'),work=document.querySelector('#fwcModal.show .fwcPanel');
  if(!haveDevices||!haveRoster||!currentUid){clear();return}
  const alert=evaluate(roster,devices,currentUid);
+ if(alert)createStyle();
  put(panel,'home',alert);put(work,'myflight',alert);
  if(!alert)lastNotice='';
  else lastNotice=alert.kind+':'+alert.text;

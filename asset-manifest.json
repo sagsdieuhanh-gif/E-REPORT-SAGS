@@ -1,7 +1,7 @@
 {
   "schema": 2,
   "version": "V2.1",
-  "build": "V2.1-20261103-RADIO-OPS-01",
+  "build": "V2.1-20261103-PC-NAV-FIX-02",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -90,8 +90,8 @@
       "bytes": 15990
     },
     "./app/boot/32-v6494-aviation-shell.js": {
-      "sha256": "6a8aafa9ebb85248e1a077a304e53f8dafc7a7de46fe43cc8e9644c50b8dcb87",
-      "bytes": 18265
+      "sha256": "25b1e338f2bca5acf5e30039a66870d7b159e04cd2d3af299e967102f0f49cdc",
+      "bytes": 18745
     },
     "./app/boot/33-v6497-dossier-enhancements.js": {
       "sha256": "7ccc4b3372e1fc62b8658451fe98ecdc8e9d09d2ccc2041f0011e0db04d11c60",
@@ -290,12 +290,12 @@
       "bytes": 19587
     },
     "./app/modules/radio-custody.v1.js": {
-      "sha256": "a15629e544a8fec39724a0964a91f8537210b552ff7ad3a7660daab45350c368",
-      "bytes": 44407
+      "sha256": "9968af1b46a896b599a2d15e84c41f3d96472486670cc9eb39855c9677d45db2",
+      "bytes": 44495
     },
     "./app/modules/radio-reminders.v21.js": {
-      "sha256": "6b7ab191a31e28939c59967184dda75c8a31ab357efddd4301b57757a993829a",
-      "bytes": 9745
+      "sha256": "d22a59b3fb19bb8175adf2c011b1b4990a455c9ed076087f313d983efdb8e757",
+      "bytes": 9770
     },
     "./app/modules/roster-lite.v5.js": {
       "sha256": "0a80b3cbdaf7e644270d361e74c2c89a09dae7523572b30f68a7bd6b9d684899",
@@ -774,8 +774,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "5ef202d1580a1374c9b934e1cf307b2810a198f712b21fc3ae02aba9d30efe48",
-      "bytes": 104202
+      "sha256": "eea98eacc767759f9be60da4fde0febd73bf742fef82c67ef0d1418d76900dc4",
+      "bytes": 104281
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -826,16 +826,16 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "4ff99066d02d610de11226f384a58966bf1358a7699810bd53ddb770c5920889",
-      "bytes": 22465
+      "sha256": "77f22002a7e99a7b5e5c4476df0387d250d19848a7e5d5e7761211d7833010bf",
+      "bytes": 22540
     },
     "./storage-recovery.html": {
       "sha256": "08817204a946fbdfa404e8c083dd0c2016e935fb8fe56ff8ef99f405978d3df6",
       "bytes": 26106
     },
     "./version.json": {
-      "sha256": "640d434b72b41da248c3d1c0e0dc5a0f9e813d791c6dd06a92e2dd18bd90a34c",
-      "bytes": 854
+      "sha256": "d8d1f819faa8159455aaece0c04fdbdc9d106125d879cba56bb362dc00a86c85",
+      "bytes": 776
     }
   },
   "mutableAssets": [

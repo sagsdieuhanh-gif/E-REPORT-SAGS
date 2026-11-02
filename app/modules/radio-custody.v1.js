@@ -408,7 +408,7 @@ function subscribeHistory(){
  },e=>{events=[];renderHistory();renderSummary();notify(errText(e),true)});
 }
 async function open(){
- tpl();const u=currentUser();if(!u.uid){notify('Cần đăng nhập tài khoản E-REPORT.',true);return}
+ tpl();const u=currentUser();if(!u.uid){$('sagsRadioPanel').hidden=false;notify('Đang chờ xác thực Firebase. Kiểm tra đăng nhập hoặc mở lại sau khi kết nối.',true);return}
  $('sagsRadioPanel').hidden=false;notify('Đang tải danh mục thiết bị…');tab('devices');
  if(unsubs.length)return;
  connected=false;devices=[];events=[];render();
