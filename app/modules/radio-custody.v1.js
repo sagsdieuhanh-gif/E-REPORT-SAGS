@@ -57,6 +57,112 @@ function tpl(){
  p.addEventListener('click',e=>{const b=e.target.closest('[data-radio-act]');if(b)start(b.dataset.radioAct,b.dataset.radioCode);const el=e.target.closest('[data-radio-proof]');if(el)viewProof(el.dataset.radioProof)});
  $('radioSwapTarget').onchange=()=>{if(mode==='SWAP_OUT'&&choice){photos.new=null;clearSignature();updatePhotoUI();void startCamera('new')}};
 }
+
+function needsPhoto(action){return ['ISSUE','RETURN','SWAP_OUT','REPORT'].includes(action)}
+function stopCamera(){
+ ++cameraToken;if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null}
+ const v=$('radioCameraVideo');if(v){v.pause();v.srcObject=null}
+}
+function resetCamera(){
+ stopCamera();photos={old:null,new:null};cameraLeg='old';
+ const img=$('radioCameraPhoto');if(img){img.hidden=true;img.removeAttribute('src')}
+ const list=$('radioPhotoChips');if(list)list.replaceChildren();
+}
+function photosReady(){return !!photos.old&&(mode!=='SWAP_OUT'||!!photos.new)}
+function updatePhotoUI(){
+ const area=$('radioPhotoArea');if(!area)return;const needs=needsPhoto(mode),complete=photosReady();
+ area.hidden=!needs;$('radioSigWrap').hidden=mode==='RELEASE'||(needs&&!complete);
+ $('radioConfirm').disabled=busy||(needs&&!complete);
+ $('radioTakePhoto').hidden=!needs||complete;$('radioTakePhoto').disabled=busy||!cameraStream;
+ $('radioRetakePhoto').hidden=!needs||!photos.old;
+ $('radioRetryPhoto').hidden=!needs||complete;
+ $('radioPhotoStep').textContent=mode==='SWAP_OUT'?(photos.old?'2 · Chụp máy thay thế':'1 · Chụp máy cũ'):'1 · Chụp bộ đàm thực tế';
+ const list=$('radioPhotoChips');list.replaceChildren();
+ for(const leg of ['old','new']){
+  const x=photos[leg];if(!x)continue;
+  const item=document.createElement('div');item.className='radioPhotoChip';
+  const image=document.createElement('img');image.src=x.preview;image.alt='Ảnh '+x.code;
+  const title=document.createElement('span');title.textContent=label(x.code);
+  item.append(image,title);list.append(item);
+ }
+}
+async function startCamera(leg){
+ if(!choice||!needsPhoto(mode))return;
+ stopCamera();cameraLeg=leg;const v=$('radioCameraVideo');v.hidden=false;
+ $('radioCameraPhoto').hidden=true;$('radioPhotoArea').hidden=false;
+ $('radioTakePhoto').disabled=true;notify('Đang yêu cầu quyền camera...');const token=cameraToken;
+ if(!navigator.mediaDevices?.getUserMedia){notify('Camera trực tiếp không hỗ trợ ở trình duyệt này. Hãy dùng HTTPS trên Chrome, Edge hoặc Safari.',true);updatePhotoUI();return}
+ try{
+  const stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}}});
+  if(token!==cameraToken||!choice){stream.getTracks().forEach(t=>t.stop());return}
+  cameraStream=stream;v.srcObject=stream;await v.play();
+  if(token!==cameraToken){stopCamera();return}
+  updatePhotoUI();notify('Chụp rõ mã số và thân bộ đàm, sau đó ký xác nhận.');
+ }catch(e){
+  if(token!==cameraToken)return;
+  stopCamera();updatePhotoUI();
+  notify('Không mở được camera ('+S(e?.name||'lỗi')+'). Vào quyền trang để cho phép camera rồi thử lại. Không thể ký khi thiếu ảnh.',true);
+ }
+}
+function formatShotTime(d){return new Intl.DateTimeFormat('vi-VN',{timeZone:VN,day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(d)}
+function takePhoto(){
+ if(!choice||!cameraStream||busy)return notify('Camera chưa hoạt động. Bấm Mở camera và thử lại.',true);
+ const v=$('radioCameraVideo');if(v.readyState<2||!v.videoWidth)return notify('Camera chưa có hình.',true);
+ const code=cameraLeg==='new'?$('radioSwapTarget').value:choice.code;if(!code)return notify('Chọn bộ đàm thay thế.',true);
+ const c=document.createElement('canvas');c.width=640;c.height=430;
+ const ctx=c.getContext('2d');ctx.fillStyle='#071827';ctx.fillRect(0,0,640,430);
+ const scale=Math.min(640/v.videoWidth,345/v.videoHeight),dw=v.videoWidth*scale,dh=v.videoHeight*scale;
+ ctx.drawImage(v,(640-dw)/2,(345-dh)/2,dw,dh);
+ const operation=cameraLeg==='new'?'SWAP_IN':mode,at=new Date();
+ ctx.fillStyle='#041926';ctx.fillRect(0,345,640,85);
+ ctx.fillStyle='#fff';ctx.textBaseline='middle';ctx.font='bold 23px Arial';
+ ctx.fillText('SAGS · '+label(code)+' · '+(['ISSUE','SWAP_IN'].includes(operation)?'NHẬN':['RETURN','SWAP_OUT'].includes(operation)?'TRẢ':'BÁO LỖI'),15,374);
+ ctx.font='bold 17px Arial';ctx.fillStyle='#9ee5eb';
+ ctx.fillText(formatShotTime(at)+'  ·  giờ thiết bị (VN)',15,407);
+ photos[cameraLeg]={canvas:c,preview:c.toDataURL('image/webp',.5),code,at:at.getTime()};
+ stopCamera();updatePhotoUI();
+ if(mode==='SWAP_OUT'&&cameraLeg==='old'){notify('Đã chụp máy cũ. Tiếp tục chụp máy mới.');void startCamera('new')}
+ else{
+  v.hidden=true;const preview=$('radioCameraPhoto');
+  preview.src=photos[cameraLeg].preview;preview.hidden=false;
+  notify('Đã chụp ảnh có giờ. Ký ở ô bên dưới rồi xác nhận để lưu Firebase.');
+  $('radioSigWrap').scrollIntoView({behavior:'smooth',block:'nearest'});
+ }
+}
+async function retakePhoto(){
+ if(!choice)return;
+ clearSignature();
+ if(mode==='SWAP_OUT'&&photos.new){photos.new=null;updatePhotoUI();await startCamera('new')}
+ else{photos={old:null,new:null};updatePhotoUI();await startCamera('old')}
+}
+function combineProof(leg){
+ const photo=photos[leg];if(!photo)throw Error('Chưa chụp ảnh trực tiếp.');
+ const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');
+ // Same authenticated, immutable Firestore event field as the previous signature.
+ // Preserve 45K character rules limit, keeping flight data and old events intact.
+ for(const width of [640,560,512,448,384]){
+  const ph=Math.round(width*430/640),sh=Math.round(width*130/640);
+  canvas.width=width;canvas.height=ph+sh;ctx.fillStyle='#fff';ctx.fillRect(0,0,width,canvas.height);
+  ctx.drawImage(photo.canvas,0,0,width,ph);
+  ctx.fillStyle='#e7f3f9';ctx.fillRect(0,ph,width,sh);ctx.fillStyle='#193c4e';
+  ctx.font='bold '+Math.max(9,Math.round(width*14/640))+'px Arial';
+  ctx.fillText('CHỮ KÝ XÁC NHẬN',Math.round(width*.025),ph+Math.round(width*.025));
+  ctx.drawImage($('radioSignature'),Math.round(width*.03),ph+Math.round(width*.035),Math.round(width*.85),Math.round(sh*.72));
+  for(const quality of [.7,.55,.4,.3,.2]){
+   const value=canvas.toDataURL('image/webp',quality);
+   if(value.startsWith('data:image/webp;base64,')&&value.length>120&&value.length<=44000)return value;
+  }
+ }
+ throw Error('Ảnh quá nhiều chi tiết để lưu rõ trong giới hạn hiện tại. Chụp gần mã máy, nền ít chi tiết và thử lại.');
+}
+function viewProof(id){
+ const e=events.find(x=>x.id===id);if(!e?.signature||!/^data:image\/(webp|png);base64,/.test(e.signature))return;
+ $('radioProofName').textContent=label(e.deviceCode)+' · '+(ACTS[e.action]||e.action);
+ $('radioProofImage').src=e.signature;
+ $('radioProofTimestamp').textContent='Thời gian xác nhận Firebase: '+(e.at?.toDate?.()?fmt(e.at.toDate()):'Đang đồng bộ');
+ $('radioProofViewer').hidden=false;
+}
+function closeProof(){const el=$('radioProofViewer');if(el)el.hidden=true;const img=$('radioProofImage');if(img)img.removeAttribute('src')}
 function mark(e){const c=$('radioSignature'),r=c.getBoundingClientRect(),x=Math.max(0,Math.min(c.width,Math.round((e.clientX-r.left)*c.width/r.width))),y=Math.max(0,Math.min(c.height,Math.round((e.clientY-r.top)*c.height/r.height)));const points=strokes.at(-1);if(!points||points.length>350)return;points.push([x,y]);const ctx=c.getContext('2d');ctx.strokeStyle='#123f66';ctx.lineWidth=2.8;ctx.lineCap='round';if(points.length===1){ctx.fillStyle='#123f66';ctx.beginPath();ctx.arc(x,y,1.4,0,Math.PI*2);ctx.fill()}else{const prev=points[points.length-2];ctx.beginPath();ctx.moveTo(prev[0],prev[1]);ctx.lineTo(x,y);ctx.stroke()}}
 function clearSignature(){strokes=[];canvasDirty=false;const c=$('radioSignature');if(c)c.getContext('2d').clearRect(0,0,c.width,c.height)}
 function signature(){if(!canvasDirty||!strokes.some(a=>a.length>=2))throw Error('Vui lòng ký xác nhận trực tiếp trên màn hình.');const c=$('radioSignature');let v=c.toDataURL('image/webp',0.45);if(!v.startsWith('data:image/webp;base64,')){v=c.toDataURL('image/png')}if(v.length>45000)throw Error('Chữ ký quá lớn. Xóa và ký lại nét ngắn gọn.');return v}
