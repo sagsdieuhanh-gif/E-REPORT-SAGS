@@ -4,6 +4,7 @@ on:
     branches:
       - 'test/radio-firebase-emulator-validation'
       - 'main'
+      - 'fix/radio-signing-reliability-v112'
     paths:
       - 'firebase/firestore.rules'
       - 'firebase.radio-test.json'
