@@ -19,5 +19,5 @@ assert(radio.includes('formatShotTime(at)')&&radio.includes('Giờ thiết bị'
 assert(radio.includes("data-radio-proof="),'History exposes evidence from same restricted Firestore event');
 assert(radio.includes("tx.set(evRef,ev)")&&radio.includes('at:fv()'),'Server timestamp and immutable event preserved');
 assert(css.includes('.radioPhotoArea')&&css.includes('@media(max-width:680px)'),'Compact mobile camera UI present');
-assert(index.includes('V2.0-20261103-RADIO-CAMERA-01'));
+assert(index.includes(ver.build));
 console.log('V2.0 radio live-photo, signed timestamp and flight-safe menu release contract PASS');
