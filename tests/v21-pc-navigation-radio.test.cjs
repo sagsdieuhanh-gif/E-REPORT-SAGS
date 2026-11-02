@@ -18,7 +18,7 @@ assert(shell.includes("['roleLoginModal',...OVERLAY_IDS]"),'must observe module 
 assert(radio.includes("if(!u.uid){$('sagsRadioPanel').hidden=false;notify("),'radio must visibly report missing Firebase auth');
 assert(!/navigator\.vibrate|AudioContext|sendSms|ZALO_OA/.test(reminders),'silent reminders only');
 // Evaluate the real overlay predicate with minimal realistic DOM state, rather than only static pattern matching.
-const begin=shell.indexOf('function overlayVisible(){'),end=shell.indexOf('function homeState(){',begin);
+const begin=shell.indexOf('const OVERLAY_IDS='),end=shell.indexOf('function homeState(){',begin);
 assert(begin>0&&end>begin,'overlay predicate not found');
 const source=shell.slice(begin,end)+'\nthis.overlayVisible=overlayVisible;';
 const fixtures={};
