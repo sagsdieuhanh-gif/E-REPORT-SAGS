@@ -4,7 +4,7 @@ const radio=fs.readFileSync('app/modules/radio-custody.v1.js','utf8');
 const rules=fs.readFileSync('firebase/firestore.rules','utf8');
 const shell=fs.readFileSync('app/boot/32-v6494-aviation-shell.js','utf8');
 const email=fs.readFileSync('.github/workflows/radio-daily-weekly.yml','utf8');
-for(const t of ["swapBattery=$('radioSwapBattery').value","battery:swapBattery","Pin máy thay thế","if(!connected)","s.metadata.fromCache","data:image/png","dateFilter==='today'"]){
+for(const t of ["swapBattery=$('radioSwapBattery').value","battery:swapBattery","Pin máy thay thế","if(!connected)","s.metadata.fromCache","toDataURL('image/png')","dateFilter==='today'"]){
  assert(radio.includes(t),t+' signing support missing');
 }
 assert(radio.includes("if(mode==='ISSUE'&&['LOW','EMPTY'].includes(bat))"));
