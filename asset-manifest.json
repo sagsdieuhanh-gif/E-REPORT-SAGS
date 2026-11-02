@@ -826,8 +826,8 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "7c588b1859f77666727b3aebb695063308cbedd7edaf96e47c8b4ae3e56f582d",
-      "bytes": 22468
+      "sha256": "77f22002a7e99a7b5e5c4476df0387d250d19848a7e5d5e7761211d7833010bf",
+      "bytes": 22540
     },
     "./storage-recovery.html": {
       "sha256": "08817204a946fbdfa404e8c083dd0c2016e935fb8fe56ff8ef99f405978d3df6",
