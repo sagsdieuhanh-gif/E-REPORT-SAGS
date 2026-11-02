@@ -226,7 +226,7 @@ function boot(){
  window.addEventListener('pageshow',()=>{observeStateTargets();scheduleSync()},{passive:true});
  document.addEventListener('visibilitychange',()=>{if(!document.hidden){observeStateTargets();scheduleSync()}},{passive:true});
  ['sags:login','sags:logout','sags:rolechange','sags:profilechange','sags:ui-ready','sags:profile-display-updated'].forEach(name=>root.addEventListener?.(name,()=>{observeStateTargets();scheduleSync()}));
- document.addEventListener('click',e=>{if(e.target?.closest?.('#v157MenuBody [data-v157-key]')){navTransitionUntil=Date.now()+2200;setTimeout(scheduleSync,2300)}},true);
+ document.addEventListener('click',e=>{const item=e.target?.closest?.('#v157MenuBody [data-v157-key]');if(item){if(item.dataset.v157Key!=='radio'){navigationEpoch++;root.SAGSRadioCustodyV1?.close?.()}navTransitionUntil=Date.now()+2200;setTimeout(scheduleSync,2300)}},true);
  document.addEventListener('click',e=>{if(e.target?.closest?.('[data-v6494-key],[data-v6494-account],#v157LogoutBtn,.fwcHead button,.sagsAdminTopActions button'))setTimeout(scheduleSync,0)},true);
 }
 root.SAGSAviationOpenRadio=()=>trigger('radio');
