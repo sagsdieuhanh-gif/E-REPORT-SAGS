@@ -57,7 +57,7 @@ function isShown(el){if(!el)return false;try{const cs=getComputedStyle(el);retur
 function loginVisible(){return isShown($('roleLoginModal'))}
 function auth(){return document.body.classList.contains('v157-authenticated')&&!loginVisible()}
 function overlayVisible(){
- const ids=['sagsRadioPanel','sagsSettingsCenter','sagsHistoryOverlay','fwcModal','v174DataHub','v181AdminCenter','appUpdateModal','roleChangePasswordModal','quickTimeModal','fs09QuickModal','finalPaperModal','flightSessionModal','accountManagerModal','auditManagerModal','activityMonitorModal','fleetManagerModal','kh208ManagerModal','finalSheetManagerModal','fs09SheetManagerModal','sagsFlightNoticeModal','sagsFormEditHistoryOverlay'];
+ const ids=['sagsRadioPanel','sagsSettingsCenter','sagsHistoryOverlay','csgModal','fwcModal','v174DataHub','v181AdminCenter','appUpdateModal','roleChangePasswordModal','quickTimeModal','fs09QuickModal','finalPaperModal','flightSessionModal','accountManagerModal','auditManagerModal','activityMonitorModal','fleetManagerModal','kh208ManagerModal','finalSheetManagerModal','fs09SheetManagerModal','sagsFlightNoticeModal','sagsFormEditHistoryOverlay'];
  return ids.some(id=>{
   const e=$(id);if(!e||e.hidden||!isShown(e))return false;
   if(e.classList.contains('show')||e.classList.contains('open')||e.getAttribute('aria-hidden')==='false')return true;
@@ -81,7 +81,8 @@ function trigger(key){
   const home=$('v6494AviationHome');
   if(home){home.classList.remove('show');home.setAttribute('aria-hidden','true')}
   document.body.classList.remove('v6494-home-active');
-  setTimeout(scheduleSync,2300);
+  setTimeout(()=>{observeStateTargets();scheduleSync()},2300);
+  setTimeout(scheduleSync,6000);
  }else navTransitionUntil=0;
  if(key==='home'){try{root.sagsV479GoHome?.()}catch(_){}sync();return}
  if(key==='radio'){
@@ -221,7 +222,7 @@ function observeStateTargets(){
  stateObserver=new MutationObserver(scheduleSync);
  const cfg={attributes:true,attributeFilter:['class','style','aria-hidden','hidden']};
  try{stateObserver.observe(document.body,{attributes:true,attributeFilter:['class']})}catch(_){}
- const ids=['roleLoginModal','sagsRadioPanel','sagsSettingsCenter','sagsHistoryOverlay','fwcModal','v174DataHub','v181AdminCenter','appUpdateModal','roleChangePasswordModal','quickTimeModal','fs09QuickModal','finalPaperModal','flightSessionModal','accountManagerModal','auditManagerModal','activityMonitorModal','fleetManagerModal','kh208ManagerModal','finalSheetManagerModal','fs09SheetManagerModal'];
+ const ids=['roleLoginModal','sagsRadioPanel','sagsSettingsCenter','sagsHistoryOverlay','csgModal','fwcModal','v174DataHub','v181AdminCenter','appUpdateModal','roleChangePasswordModal','quickTimeModal','fs09QuickModal','finalPaperModal','flightSessionModal','accountManagerModal','auditManagerModal','activityMonitorModal','fleetManagerModal','kh208ManagerModal','finalSheetManagerModal','fs09SheetManagerModal'];
  for(const id of ids){const el=$(id);if(el)try{stateObserver.observe(el,cfg)}catch(_){}}
 }
 function loadRadioReminders(){
