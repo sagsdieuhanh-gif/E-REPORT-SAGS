@@ -12,9 +12,9 @@ assert(shell.includes('e.stopPropagation();trigger(b.dataset.v6494Key)'),'PC qui
 assert(shell.includes("if(key!=='home'){"),'non-home routes must suppress fixed landing');
 assert(shell.includes('navTransitionUntil=Date.now()+2200'),'async module loads must not re-open landing shell');
 assert(shell.includes("'sagsSettingsCenter','sagsHistoryOverlay'"),'settings and history must suppress fixed landing');
-assert(shell.includes("return id==='sagsRadioPanel'"),'radio uses hidden property, not show/open');
+assert(shell.includes("id==='sagsRadioPanel'"),'radio uses hidden property, not show/open');
 assert(shell.includes("document.addEventListener('click',e=>{if(e.target?.closest?.('#v157MenuBody"),'legacy PC menu guard missing');
-assert(shell.includes("['roleLoginModal','sagsRadioPanel','sagsSettingsCenter','sagsHistoryOverlay'"),'must observe module state');
+assert(shell.includes("['roleLoginModal',...OVERLAY_IDS]"),'must observe module state');
 assert(radio.includes("if(!u.uid){$('sagsRadioPanel').hidden=false;notify("),'radio must visibly report missing Firebase auth');
 assert(!/navigator\.vibrate|AudioContext|sendSms|ZALO_OA/.test(reminders),'silent reminders only');
 // Evaluate the real overlay predicate with minimal realistic DOM state, rather than only static pattern matching.
