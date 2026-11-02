@@ -4,7 +4,7 @@ const radio=fs.readFileSync('app/modules/radio-custody.v1.js','utf8');
 const menu=fs.readFileSync('app/boot/32-v6494-aviation-shell.js','utf8');
 const css=fs.readFileSync('app/styles/radio-custody.v1.css','utf8');
 const index=fs.readFileSync('index.html','utf8'),ver=JSON.parse(fs.readFileSync('version.json','utf8'));
-assert.equal(ver.version,'V2.0');
+assert.equal(ver.version,'V2.1');
 const i=menu.indexOf("key:'myflight'"),j=menu.indexOf("key:'radio'"),k=menu.indexOf("key:'history'");
 assert(i>=0&&j>i&&k>j,'Radio menu must appear immediately below My Flight');
 assert.equal((menu.match(/key:'radio',label:/g)||[]).length,1,'Radio menu must not duplicate');
@@ -20,4 +20,4 @@ assert(radio.includes("data-radio-proof="),'History exposes evidence from same r
 assert(radio.includes("tx.set(evRef,ev)")&&radio.includes('at:fv()'),'Server timestamp and immutable event preserved');
 assert(css.includes('.radioPhotoArea')&&css.includes('@media(max-width:680px)'),'Compact mobile camera UI present');
 assert(index.includes(ver.build));
-console.log('V2.0 radio live-photo, signed timestamp and flight-safe menu release contract PASS');
+console.log('V2.1 radio live-photo, signed timestamp and flight-safe menu release contract PASS');
