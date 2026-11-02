@@ -145,7 +145,7 @@ function tick(){
  }
  schedule(0);
 }
-['sags:login','sags:logout','sags:rolechange'].forEach(event=>root.addEventListener?.(event,()=>tick()));
+['sags:login','sags:logout','sags:rolechange'].forEach(event=>root.addEventListener?.(event,()=>{tick();setTimeout(tick,650)}));
 ['sags:personal-roster-updated','sags:ui-ready'].forEach(event=>root.addEventListener?.(event,()=>schedule(200)));
 root.addEventListener?.('pageshow',()=>tick(),{passive:true});
 document.addEventListener?.('visibilitychange',()=>{if(!document.hidden)tick()},{passive:true});
