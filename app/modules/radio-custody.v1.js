@@ -211,7 +211,7 @@ function render(){
   const status=d.status==='OUT'?'Đang giữ: '+esc(d.holderName||d.holderUid.slice(0,8)):(d.faultCode?('Lý do: '+esc(REASON_TEXT[d.faultCode]||d.faultCode)):'');
   return '<article class="radioDevice"><div><strong>'+esc(label(d.code))+'</strong>'+badge(d.status)+'<small>'+status+'</small></div><div class="radioButtons">'+buttons.map(([a,n])=>'<button type="button" data-radio-act="'+a+'" data-radio-code="'+esc(d.code)+'">'+n+'</button>').join('')+'</div></article>'
  }).join(''):'<p class="radioEmpty">'+(connected?'Chưa có mã máy. AD hãy khởi tạo danh mục bộ đàm từ sổ giấy.':'Chưa xác nhận kết nối Firebase. Không thể ký nhận cho đến khi kích hoạt.')+'</p>';
- renderHistory();
+ renderHistory();if(!$('radioSummaryTab')?.hidden)renderSummary();
 }
 function filteredHistory(){
  const now=Date.now(),device=S($('radioHistoryDevice')?.value),action=S($('radioHistoryAction')?.value),search=S($('radioHistorySearch')?.value).toLocaleLowerCase('vi-VN');
