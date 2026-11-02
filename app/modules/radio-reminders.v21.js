@@ -145,7 +145,8 @@ function tick(){
  }
  schedule(0);
 }
-['sags:login','sags:logout','sags:rolechange','sags:personal-roster-updated','sags:ui-ready'].forEach(event=>root.addEventListener?.(event,()=>schedule(200)));
+['sags:login','sags:logout','sags:rolechange'].forEach(event=>root.addEventListener?.(event,()=>tick()));
+['sags:personal-roster-updated','sags:ui-ready'].forEach(event=>root.addEventListener?.(event,()=>schedule(200)));
 root.addEventListener?.('pageshow',()=>tick(),{passive:true});
 document.addEventListener?.('visibilitychange',()=>{if(!document.hidden)tick()},{passive:true});
 document.addEventListener?.('click',e=>{if(e.target?.closest?.('[data-v6494-key="myflight"],[data-v6494-key="radio"],#roleBtnRosterFlights'))schedule(500)},{passive:true,capture:true});
