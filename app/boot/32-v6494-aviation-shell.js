@@ -1,5 +1,4 @@
-/* E-REPORT SAGS V6.4.101 · Final Aviation Operations shell
-   Presentation/navigation adapter only. Existing business handlers remain authoritative. */
+/* E-REPORT SAGS navigation shell */
 (function(root){
 'use strict';
 const BUILD='V6.4.101-20261006-MOBILE-UX-SPEED-01';
@@ -162,7 +161,6 @@ function ensurePcRadioFallback(){
 }
 function renderMenus(){
  const visible=DEF.map(sec=>({group:sec.group,items:sec.items.filter(x=>available(x.key))})).filter(sec=>sec.items.length);
- // Compare only keys and permissions before generating markup or touching the DOM.
  const sig=visible.map(sec=>sec.group+':'+sec.items.map(x=>x.key).join(',')).join('|');
  if(sig===lastMenuSignature)return;
  const el=ensure(),nav=el.querySelector('#v6494Nav'),mobile=el.querySelector('#v6494MobileMenu');
@@ -177,10 +175,7 @@ function syncIdentity(){
  const p=profile(),r=role()||'—';let pref={};try{pref=typeof root.sagsGetSettings==='function'?root.sagsGetSettings()||{}:{}}catch(_){}
  const name=S(pref.displayName||p.name||p.fullName||p.displayName||p.username||p.userName||r||'Người dùng'),photo=S(pref.avatarData);
  const initial=(name.match(/[A-ZÀ-Ỹ0-9]/iu)?.[0]||'U').toUpperCase(),put=(id,v)=>{const e=$(id);if(e&&e.textContent!==v)e.textContent=v};
- // Large base64 avatars are expensive to reassign on every menu/body observer event.
  const has=!!photo,avatarText=has?'':initial;
- // Avoid rebuilding a potentially very large base64 avatar URL on every
- // MutationObserver-driven sync (PC navigation and mobile menu share this path).
  if(photo!==cachedAvatarPhoto){cachedAvatarPhoto=photo;cachedAvatarBackground=has?'url("'+photo.replace(/"/g,'%22')+'")':''}
  const background=cachedAvatarBackground;
  const avatar=id=>{
