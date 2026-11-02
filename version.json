@@ -2,11 +2,11 @@
   "version": "V2.1",
   "displayVersion": "V2.1",
   "label": "V2.1 - KÝ NHẬN BỘ ĐÀM: PC, LỊCH SỬ, PDF VÀ NHẮC VIỆC",
-  "build": "V2.1-20261103-PC-NAV-FIX-02",
+  "build": "V2.1-20261103-PC-ROOT-FIX-03",
   "releasedAt": "2026-11-03",
-  "type": "pc-navigation-radio-hotfix",
+  "type": "pc-navigation-canonical-root-fix",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Bản vá PC V2.1: xử lý lớp trang chủ đè lên ký nhận bộ đàm, cài đặt, lịch sử và các menu khác; khi Firebase chưa xác thực phải thông báo rõ; nhắc việc giữ trạng thái trực quan. Giữ nguyên nghiệp vụ và dữ liệu.",
-  "message": "V2.1: Sửa không mở được ký nhận bộ đàm trên PC và lỗi điều hướng trở về My Flight."
+  "notes": "Khắc phục trong runtime gốc: nhận diện modal bộ đàm/Cài đặt/Lịch sử/Sổ tay, chỉ tự vào My Flight cho KH trên mobile, ngăn mở lại workspace sau mỗi đồng bộ UI. Giữ nguyên dữ liệu Firebase, roster, chữ ký và nghiệp vụ.",
+  "message": "Sửa điều hướng PC: không tự chuyển My Flight, không đè cửa sổ Ký nhận bộ đàm và các menu."
 }
