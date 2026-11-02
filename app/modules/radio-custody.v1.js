@@ -21,7 +21,7 @@ const REASON_TEXT=Object.fromEntries(REASONS);
 const STATUSES={READY:'Sẵn sàng',OUT:'Đang sử dụng',CHARGING:'Đang sạc',FAULT:'Ngừng cấp / lỗi',LOST:'Thất lạc'};
 const ACTS={INIT:'Khởi tạo',ISSUE:'Nhận máy',RETURN:'Trả máy',REPORT:'Báo sự cố',SWAP_OUT:'Đổi – trả máy cũ',SWAP_IN:'Đổi – nhận máy mới',RELEASE:'Mở lại / sạc xong'};
 let unsubs=[],devices=[],events=[],busy=false,connected=false,choice=null,mode='ISSUE',canvasDirty=false,strokes=[],drawing=false,dateFilter='all';
-let cameraStream=null,cameraToken=0,cameraLeg='old',photos={old:null,new:null};
+let cameraStream=null,cameraToken=0,cameraLeg='old',photos={old:null,new:null},historyStop=null;
 function session(){try{return root.__sagsGetSession?.()||{}}catch(_){return{}}}
 function currentUser(){const u=root.firebase?.auth?.().currentUser,s=session(),p=s.profile||root.currentUserProfile||{};return {uid:u?.uid||'',name:S(p.fullName||p.name||p.displayName||p.username||u?.displayName||u?.email||'Nhân viên'),role:S(s.role||p.role||root.currentRole).toUpperCase()}}
 function isAdmin(u){return ['ADMIN','AD'].includes(u?.role)}
@@ -166,8 +166,8 @@ function closeProof(){const el=$('radioProofViewer');if(el)el.hidden=true;const 
 function mark(e){const c=$('radioSignature'),r=c.getBoundingClientRect(),x=Math.max(0,Math.min(c.width,Math.round((e.clientX-r.left)*c.width/r.width))),y=Math.max(0,Math.min(c.height,Math.round((e.clientY-r.top)*c.height/r.height)));const points=strokes.at(-1);if(!points||points.length>350)return;points.push([x,y]);const ctx=c.getContext('2d');ctx.strokeStyle='#123f66';ctx.lineWidth=2.8;ctx.lineCap='round';if(points.length===1){ctx.fillStyle='#123f66';ctx.beginPath();ctx.arc(x,y,1.4,0,Math.PI*2);ctx.fill()}else{const prev=points[points.length-2];ctx.beginPath();ctx.moveTo(prev[0],prev[1]);ctx.lineTo(x,y);ctx.stroke()}}
 function clearSignature(){strokes=[];canvasDirty=false;const c=$('radioSignature');if(c)c.getContext('2d').clearRect(0,0,c.width,c.height)}
 function signature(){if(!canvasDirty||!strokes.some(a=>a.length>=2))throw Error('Vui lòng ký xác nhận trực tiếp trên màn hình.');const c=$('radioSignature');let v=c.toDataURL('image/webp',0.45);if(!v.startsWith('data:image/webp;base64,')){v=c.toDataURL('image/png')}if(v.length>45000)throw Error('Chữ ký quá lớn. Xóa và ký lại nét ngắn gọn.');return v}
-function tab(t){for(const id of ['devices','history','summary']){$('radio'+id[0].toUpperCase()+id.slice(1)+'Tab').hidden=id!==t;const btn=document.querySelector('[data-radio-tab="'+id+'"]');btn?.classList.toggle('selected',t===id)}cancel();if(t==='summary')renderSummary()}
-function close(){closeProof();const el=$('sagsRadioPanel');if(el)el.hidden=true;unsubs.forEach(fn=>fn());unsubs=[];connected=false;cancel();root.dispatchEvent(new Event('sags:ui-ready'));}
+function tab(t){for(const id of ['devices','history','summary']){$('radio'+id[0].toUpperCase()+id.slice(1)+'Tab').hidden=id!==t;const btn=document.querySelector('[data-radio-tab="'+id+'"]');btn?.classList.toggle('selected',t===id)}cancel();if(t==='history'||t==='summary')subscribeHistory();else stopHistory();if(t==='summary')renderSummary()}
+function close(){closeProof();stopHistory();const el=$('sagsRadioPanel');if(el)el.hidden=true;unsubs.forEach(fn=>fn());unsubs=[];connected=false;cancel();root.dispatchEvent(new Event('sags:ui-ready'));}
 function cancel(){resetCamera();choice=null;$('radioAction').hidden=true;clearSignature()}
 function shift(){const h=Number(new Intl.DateTimeFormat('en-GB',{timeZone:VN,hour:'2-digit',hourCycle:'h23'}).format(new Date()));return h<12?'AM':'PM'}
 function start(action,code){
@@ -306,6 +306,22 @@ function exportCsv(){
  const csv='\ufeff'+[cols,...rows].map(row=>row.map(cell).join(',')).join('\r\n');
  const href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=href;a.download='SAGS-BO-DAM-LICH-SU-'+new Date().toISOString().slice(0,10)+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(href),1000);
 }
+function stopHistory(){
+ if(historyStop){historyStop();historyStop=null}
+ events=[];if($('radioHistoryList'))renderHistory();
+ if($('radioSummary'))renderSummary();
+}
+function subscribeHistory(){
+ if(historyStop||!connected||!navigator.onLine||!currentUser().uid)return;
+ const u=currentUser(),db=fs();
+ // Avoid downloading up to 120 compressed photographs at every application launch.
+ // Fetch only when the user explicitly opens history or summary.
+ const query=isAdmin(u)?db.collection(EVENTS).orderBy('at','desc').limit(120):db.collection(EVENTS).where('actorUid','==',u.uid).limit(120);
+ historyStop=query.onSnapshot(s=>{
+  events=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.at?.toMillis?.()||0)-(a.at?.toMillis?.()||0));
+  renderHistory();renderSummary();
+ },e=>{events=[];renderHistory();renderSummary();notify(errText(e),true)});
+}
 async function open(){
  tpl();const u=currentUser();if(!u.uid){notify('Cần đăng nhập tài khoản E-REPORT.',true);return}
  $('sagsRadioPanel').hidden=false;notify('Đang tải danh mục thiết bị…');tab('devices');
@@ -314,8 +330,7 @@ async function open(){
  try{
   const db=fs();
   unsubs.push(db.collection(COLLECTION).onSnapshot(s=>{connected=!s.metadata.fromCache&&navigator.onLine;devices=s.docs.map(d=>({code:d.id,...d.data()})).sort((a,b)=>a.code.localeCompare(b.code,'vi',{numeric:true}));render();notify(connected?(devices.length?'Đã kết nối Firebase – có thể ký nhận.':'Đã kết nối Firebase – AD cần khởi tạo danh mục máy.'):'Đang xem bản lưu cục bộ; cần kết nối Firebase để ký nhận.',!connected)},e=>{connected=false;devices=[];events=[];render();notify(errText(e),true)}));
-  const eventQuery=isAdmin(u)?db.collection(EVENTS).orderBy('at','desc').limit(120):db.collection(EVENTS).where('actorUid','==',u.uid).limit(120);
-  unsubs.push(eventQuery.onSnapshot(s=>{events=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.at?.toMillis?.()||0)-(a.at?.toMillis?.()||0));renderHistory();renderSummary()},e=>{events=[];renderHistory();renderSummary();notify(errText(e),true)}));
+  // Heavy photographic history is fetched only when its tab is opened.
  }catch(e){notify(errText(e),true)}
 }
 root.SAGSRadioCustodyV1=Object.freeze({open,close,reasons:REASONS.map(([code,name])=>({code,name})),collection:COLLECTION,eventsCollection:EVENTS});

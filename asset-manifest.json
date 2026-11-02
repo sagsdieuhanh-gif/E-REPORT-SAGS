@@ -290,8 +290,8 @@
       "bytes": 19587
     },
     "./app/modules/radio-custody.v1.js": {
-      "sha256": "5188f3b1e118e0b8aef8c19244bc07d9b8d4714f4030e5fde7aba87597c1c874",
-      "bytes": 34755
+      "sha256": "f6ea2122e86023889709104c3b1fe58ceeb259445e5e9968edb0549b7826caca",
+      "bytes": 35379
     },
     "./app/modules/roster-lite.v5.js": {
       "sha256": "fc96a9483925e25b70e2ce8e0b27962c14b703397be1faf30545b698b50c720a",
