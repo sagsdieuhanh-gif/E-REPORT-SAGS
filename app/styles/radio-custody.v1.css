@@ -45,3 +45,41 @@
 .radioEmpty{color:#afcad7;grid-column:1/-1;padding:15px}
 .sagsRadioPanel button:disabled,.sagsRadioPanel input:disabled{opacity:.55;cursor:wait}
 @media(max-width:680px){.radioShell{padding:16px 12px 75px}.radioStats{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.radioStats>div{padding:9px}.radioStats strong{font-size:20px}.radioDeviceList{grid-template-columns:1fr}.radioFields{grid-template-columns:1fr}.radioReportGrid{grid-template-columns:1fr}.radioHeader h2{font-size:22px}.radioTabs button{font-size:12px}.radioAction{padding:12px}}
+
+/* E-REPORT V2.0 · compact PC/mobile radio screen and mandatory live photo */
+.radioShell{max-width:970px;padding:12px 13px 58px}
+.radioHeader{padding:6px 0 10px}.radioHeader h2{font-size:clamp(21px,3vw,26px)}.radioHeader p{font-size:12px}
+.radioStats{margin:9px 0;gap:7px}.radioStats>div{padding:9px;border-radius:10px}.radioStats strong{font-size:22px}
+.radioTabs{margin:10px 0}.radioTabs button{min-height:38px}
+.radioDeviceList{gap:8px}.radioDevice{padding:11px 12px;gap:8px;border-radius:10px}
+.radioDevice strong{font-size:15px}.radioButtons button{padding:7px 10px;min-height:35px}
+.radioTools{margin:8px 0}.radioAction{margin:12px 0;padding:12px}
+.radioFields{gap:9px;margin:9px 0}.radioFields input,.radioFields select,.radioFields textarea{padding:10px;min-height:40px}
+.radioPhotoArea{border-radius:12px;border:1px solid #467d94;background:#0a2b41;padding:11px;margin:12px 0}
+.radioPhotoHeading{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.radioPhotoHeading strong{font-size:14px;color:#effcff}.radioPhotoHeading small{font-size:11px;color:#a9d6e2}
+.radioCameraView{background:#06111c;width:100%;max-width:640px;min-height:170px;border-radius:9px;overflow:hidden;border:1px solid #47697a}
+.radioCameraView video,.radioCameraView img{display:block;width:100%;max-height:345px;object-fit:contain}
+.radioCameraView [hidden]{display:none!important}
+.radioPhotoActions{display:flex;gap:8px;margin:10px 0 8px;flex-wrap:wrap}
+.radioPhotoActions button{min-height:41px;padding:10px 13px;border-radius:9px;cursor:pointer}
+.radioPhotoActions button:not(.radioPrimary){background:#173f56;color:#edf8fc;border:1px solid #507d91}
+.radioPhotoChips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.radioPhotoChip{display:flex;gap:6px;align-items:center;border:1px solid #446d81;border-radius:9px;padding:5px 8px;font-size:12px}
+.radioPhotoChip img{width:50px;height:38px;object-fit:cover;border-radius:5px}
+.radioViewProof{align-self:flex-start;border:1px solid #4a8497;background:#123c53;color:#bcf3e9;border-radius:8px;padding:7px 10px;margin-top:5px;font-size:12px;cursor:pointer}
+.radioProofViewer{position:fixed;inset:0;z-index:1000003;display:grid;place-items:center;background:#041321ef;padding:12px}
+.radioProofViewer[hidden]{display:none!important}
+.radioProofViewer>div{width:min(720px,100%);max-height:92dvh;overflow-y:auto;border-radius:13px;background:#12334a;padding:13px}
+.radioProofViewer header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.radioProofViewer header button{border:0;border-radius:9px;background:#2a5368;color:#fff;padding:8px 12px}
+.radioProofViewer img{display:block;width:100%;height:auto;margin-top:10px;background:#fff;border-radius:9px}
+.radioProofViewer p{font-size:12px;color:#c8e4ed}
+@media(max-width:680px){
+ .radioShell{padding:10px 10px 70px}.radioHeader h2{font-size:22px}.radioHeader p{font-size:11px}
+ .radioStats{display:flex;overflow-x:auto;gap:7px;padding-bottom:4px}
+ .radioStats>div{min-width:92px;padding:8px}.radioStats strong{font-size:20px}
+ .radioDevice{padding:10px}.radioAction{padding:10px}
+ .radioPhotoArea{padding:9px}.radioCameraView video,.radioCameraView img{max-height:45dvh}
+ .radioPhotoActions .radioPrimary{flex:1}
+}

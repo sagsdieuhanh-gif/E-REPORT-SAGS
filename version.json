@@ -1,12 +1,12 @@
 {
-  "version": "V1.12",
-  "displayVersion": "V1.12",
-  "label": "V1.12 - SỬA ẢNH NỀN MY FLIGHT 404",
-  "build": "V1.12-20261028-MYFLIGHT-ASSET-FIX-01",
-  "releasedAt": "2026-10-28",
-  "type": "myflight-css-image-path-repair",
+  "version": "V2.0",
+  "displayVersion": "V2.0",
+  "label": "V2.0 - KÝ NHẬN BỘ ĐÀM CÓ ẢNH, GIỜ CHỤP VÀ CHỮ KÝ",
+  "build": "V2.0-20261103-RADIO-CAMERA-01",
+  "releasedAt": "2026-11-03",
+  "type": "radio-camera-evidence-mandatory",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Sửa các đường dẫn ảnh nền My Flight / đăng nhập / menu di động trỏ tới previews/final-ui không có trong bản Production. Dùng ảnh sân đỗ hiện có assets/branding/apron-night-v6494.webp cho PC và mobile; bổ sung meta PWA hiện đại. Không thay đổi chức năng nghiệp vụ, PDF, biểu mẫu, chữ ký hoặc dữ liệu.",
-  "message": "V1.12: Sửa lỗi 404 ảnh nền My Flight và chuẩn hóa đường dẫn CSS"
+  "notes": "Giữ nguyên nghiệp vụ chuyến bay và xuất PDF V1.12; bổ sung menu Ký nhận bộ đàm ngay dưới My Flight; nhận/trả/đổi bắt buộc mở camera trực tiếp, ảnh in mã máy, thao tác, thời gian chụp giờ Việt Nam; xác nhận chữ ký và lưu hình vào nhật ký Firestore hiện có. Giờ xác nhận độc lập do Firebase ghi nhận. Không bật email.",
+  "message": "E-REPORT SAGS V2.0: Camera bắt buộc khi nhận/trả bộ đàm và lịch sử ảnh."
 }

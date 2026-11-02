@@ -5,7 +5,7 @@ const index=fs.readFileSync('index.html','utf8');
 const version=JSON.parse(fs.readFileSync('version.json','utf8'));
 const manifest=JSON.parse(fs.readFileSync('asset-manifest.json','utf8'));
 const sw=fs.readFileSync('service-worker.js','utf8');
-assert.match(version.version,/^V1\.\d+$/,'Keep display version in V1.x series');
+assert.equal(version.version,'V2.0','V2.0 release preserves PC/mobile typography');
 assert.equal(version.displayVersion,version.version,'Display version must match current release');
 assert.equal(manifest.version,version.version);
 assert.equal(manifest.build,version.build);

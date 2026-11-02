@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V1.12",
-  "build": "V1.12-20261028-MYFLIGHT-ASSET-FIX-01",
+  "version": "V2.0",
+  "build": "V2.0-20261103-RADIO-CAMERA-01",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -90,8 +90,8 @@
       "bytes": 15990
     },
     "./app/boot/32-v6494-aviation-shell.js": {
-      "sha256": "0ff92653dcad85e54e8be50465cfd703c164c9cee596e3e88c30b0f69050937a",
-      "bytes": 16849
+      "sha256": "43e13c858f445f44ecf804a21e52ffc4a63611b941350588484cc283fad3bcdd",
+      "bytes": 16824
     },
     "./app/boot/33-v6497-dossier-enhancements.js": {
       "sha256": "7ccc4b3372e1fc62b8658451fe98ecdc8e9d09d2ccc2041f0011e0db04d11c60",
@@ -290,8 +290,8 @@
       "bytes": 19587
     },
     "./app/modules/radio-custody.v1.js": {
-      "sha256": "f54a72621a38dec4b70400acc2610e120a77903a4e2ce953a3124dc7be27d894",
-      "bytes": 25404
+      "sha256": "f6ea2122e86023889709104c3b1fe58ceeb259445e5e9968edb0549b7826caca",
+      "bytes": 35379
     },
     "./app/modules/roster-lite.v5.js": {
       "sha256": "fc96a9483925e25b70e2ce8e0b27962c14b703397be1faf30545b698b50c720a",
@@ -490,8 +490,8 @@
       "bytes": 376878
     },
     "./app/styles/radio-custody.v1.css": {
-      "sha256": "6f1ea8feacb20f36a323677bb86bbe16132c3e1bd52054ada68c8e13cbe9e328",
-      "bytes": 5210
+      "sha256": "95b58c4f7a003242fc90da07344374a50621da68c78cf501327dfe01ac54895f",
+      "bytes": 8484
     },
     "./app/vendor/lz-string-1.5.0.js": {
       "sha256": "550034b821027008776cb9bcd1700bb5d31e8b3de224cb130fc966a75dab0e5e",
@@ -770,8 +770,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "4ef960ca9f80065c3075d6d1d29d580231de2a82cd12e73df399c4ca081661d0",
-      "bytes": 104994
+      "sha256": "e397de45f63b9ac6b511ec959961681381ab88b3013bd44a342119ed55c3605d",
+      "bytes": 104439
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -822,16 +822,16 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "6331da68f2804225523defaa75f873b15b233ad823418be011dba2e90f7969f0",
-      "bytes": 22503
+      "sha256": "a157274d05c6a9305be1428126b56ff06672df3a2d4dd72f347711783428cec3",
+      "bytes": 22435
     },
     "./storage-recovery.html": {
       "sha256": "08817204a946fbdfa404e8c083dd0c2016e935fb8fe56ff8ef99f405978d3df6",
       "bytes": 26106
     },
     "./version.json": {
-      "sha256": "f0151762fbe98800487c10be89c75357153f5afa0c3803b27ba61e205da7a389",
-      "bytes": 829
+      "sha256": "dc1f583618495503b0629dc6824c1aa404ec157feaf2b8b1f6dd02f9f04772e7",
+      "bytes": 888
     }
   },
   "mutableAssets": [

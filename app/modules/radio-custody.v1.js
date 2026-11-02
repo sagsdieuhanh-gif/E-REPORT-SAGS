@@ -21,6 +21,7 @@ const REASON_TEXT=Object.fromEntries(REASONS);
 const STATUSES={READY:'Sẵn sàng',OUT:'Đang sử dụng',CHARGING:'Đang sạc',FAULT:'Ngừng cấp / lỗi',LOST:'Thất lạc'};
 const ACTS={INIT:'Khởi tạo',ISSUE:'Nhận máy',RETURN:'Trả máy',REPORT:'Báo sự cố',SWAP_OUT:'Đổi – trả máy cũ',SWAP_IN:'Đổi – nhận máy mới',RELEASE:'Mở lại / sạc xong'};
 let unsubs=[],devices=[],events=[],busy=false,connected=false,choice=null,mode='ISSUE',canvasDirty=false,strokes=[],drawing=false,dateFilter='all';
+let cameraStream=null,cameraToken=0,cameraLeg='old',photos={old:null,new:null},historyStop=null;
 function session(){try{return root.__sagsGetSession?.()||{}}catch(_){return{}}}
 function currentUser(){const u=root.firebase?.auth?.().currentUser,s=session(),p=s.profile||root.currentUserProfile||{};return {uid:u?.uid||'',name:S(p.fullName||p.name||p.displayName||p.username||u?.displayName||u?.email||'Nhân viên'),role:S(s.role||p.role||root.currentRole).toUpperCase()}}
 function isAdmin(u){return ['ADMIN','AD'].includes(u?.role)}
@@ -28,7 +29,7 @@ function fs(){if(!root.firebase?.apps?.length||!root.firebase?.firestore)throw E
 function fv(){return root.firebase.firestore.FieldValue.serverTimestamp()}
 function errText(e){if(String(e?.code||'').includes('permission-denied'))return 'CHƯA KÍCH HOẠT KÝ NHẬN: Firebase chưa cấp quyền truy cập bộ đàm. AD cần triển khai Firestore Rules đã kiểm thử. Không có dữ liệu nào được ghi.';if(!navigator.onLine)return 'Mất kết nối. Không ghi nhận nhận/trả khi ngoại tuyến.';return S(e?.message||e||'Có lỗi, thử lại.')}
 function notify(s,fail=false){const e=$('radioMessage');if(e){e.textContent=s;e.dataset.error=fail?'1':'0'}}
-function setBusy(v){busy=!!v;for(const e of document.querySelectorAll('#sagsRadioPanel button,#sagsRadioPanel select,#sagsRadioPanel input,#sagsRadioPanel textarea'))e.disabled=busy}
+function setBusy(v){busy=!!v;for(const e of document.querySelectorAll('#sagsRadioPanel button,#sagsRadioPanel select,#sagsRadioPanel input,#sagsRadioPanel textarea'))e.disabled=busy;if($('radioPhotoArea'))updatePhotoUI()}
 function tpl(){
  if($('sagsRadioPanel'))return;
  const p=document.createElement('section');p.id='sagsRadioPanel';p.className='sagsRadioPanel';p.hidden=true;p.setAttribute('role','dialog');p.setAttribute('aria-modal','true');p.setAttribute('aria-label','Quản lý ký nhận bộ đàm');
@@ -39,11 +40,13 @@ function tpl(){
  '<section id="radioDevicesTab"><div class="radioTools"><span>Trạng thái từng máy cập nhật từ Firebase</span><button type="button" id="radioSeed" hidden>+ Khởi tạo danh mục từ giấy</button></div><div id="radioDeviceList" class="radioDeviceList"></div></section>'+
  '<section id="radioHistoryTab" hidden><div class="radioTools"><label>Tra cứu <select id="radioDateFilter"><option value="all">Gần đây</option><option value="today">Hôm nay</option><option value="week">7 ngày</option></select></label><button type="button" id="radioExport">Xuất CSV</button></div><div id="radioHistoryList"></div></section>'+
  '<section id="radioSummaryTab" hidden><div id="radioSummary"></div><p class="radioHint">Tổng hợp dữ liệu đã tải trên màn hình; không gửi email.</p></section>'+
- '<section id="radioAction" class="radioAction" hidden><div class="radioActionHeader"><h3 id="radioActionTitle">Ký nhận</h3><button type="button" id="radioActionCancel">✕</button></div><div class="radioFields"><label>Mã máy<input id="radioActionCode" readonly></label><label>Người thực hiện<input id="radioPerson" readonly></label><label>Ca làm việc<select id="radioShift"><option value="AM">Ca sáng</option><option value="PM">Ca chiều</option></select></label><label id="radioBatteryWrap">Pin lúc nhận/trả<select id="radioBattery"><option value="UNKNOWN">Chưa xác định</option><option value="FULL">Đầy</option><option value="GOOD">Đủ dùng</option><option value="LOW">Yếu</option><option value="EMPTY">Hết pin</option></select></label><label id="radioReasonWrap">Lý do<select id="radioReason">'+REASONS.map(([v,n])=>'<option value="'+v+'">'+esc(n)+'</option>').join('')+'</select></label><label id="radioSwapWrap">Máy thay thế<select id="radioSwapTarget"></select></label><label id="radioSwapBatteryWrap" hidden>Pin máy thay thế<select id="radioSwapBattery"><option value="UNKNOWN">Chọn pin máy thay thế</option><option value="FULL">Đầy</option><option value="GOOD">Đủ dùng</option><option value="LOW">Yếu</option><option value="EMPTY">Hết pin</option></select></label><label class="wide">Ghi chú hiện trạng<textarea id="radioDetail" rows="2" placeholder="Ghi cụ thể hiện tượng, thời gian, vị trí..."></textarea></label></div><div id="radioSigWrap"><p>Chữ ký xác nhận của tài khoản đang đăng nhập</p><canvas id="radioSignature" width="540" height="150" aria-label="Ký bằng ngón tay hoặc chuột"></canvas><button type="button" id="radioClearSignature">Xóa nét ký</button></div><div class="radioActions"><button type="button" id="radioCancel">Hủy</button><button class="radioPrimary" type="button" id="radioConfirm">Xác nhận và lưu lịch sử</button></div></section>'+
- '<footer>Thời điểm xác nhận và nhật ký ghi theo máy chủ Firebase. Không lưu thành công giả khi mất mạng.</footer></div>';
+ '<section id="radioAction" class="radioAction" hidden><div class="radioActionHeader"><h3 id="radioActionTitle">Ký nhận</h3><button type="button" id="radioActionCancel">✕</button></div><div class="radioFields"><label>Mã máy<input id="radioActionCode" readonly></label><label>Người thực hiện<input id="radioPerson" readonly></label><label>Ca làm việc<select id="radioShift"><option value="AM">Ca sáng</option><option value="PM">Ca chiều</option></select></label><label id="radioBatteryWrap">Pin lúc nhận/trả<select id="radioBattery"><option value="UNKNOWN">Chưa xác định</option><option value="FULL">Đầy</option><option value="GOOD">Đủ dùng</option><option value="LOW">Yếu</option><option value="EMPTY">Hết pin</option></select></label><label id="radioReasonWrap">Lý do<select id="radioReason">'+REASONS.map(([v,n])=>'<option value="'+v+'">'+esc(n)+'</option>').join('')+'</select></label><label id="radioSwapWrap">Máy thay thế<select id="radioSwapTarget"></select></label><label id="radioSwapBatteryWrap" hidden>Pin máy thay thế<select id="radioSwapBattery"><option value="UNKNOWN">Chọn pin máy thay thế</option><option value="FULL">Đầy</option><option value="GOOD">Đủ dùng</option><option value="LOW">Yếu</option><option value="EMPTY">Hết pin</option></select></label><label class="wide">Ghi chú hiện trạng<textarea id="radioDetail" rows="2" placeholder="Ghi cụ thể hiện tượng, thời gian, vị trí..."></textarea></label></div><section id="radioPhotoArea" class="radioPhotoArea" hidden><div class="radioPhotoHeading"><strong id="radioPhotoStep">1 · Ảnh bộ đàm thực tế</strong><small>Camera trực tiếp · không chọn thư viện</small></div><div class="radioCameraView"><video id="radioCameraVideo" playsinline autoplay muted></video><img id="radioCameraPhoto" alt="Ảnh chụp mã máy và thời gian" hidden></div><div id="radioPhotoChips" class="radioPhotoChips"></div><div class="radioPhotoActions"><button id="radioTakePhoto" type="button" class="radioPrimary">📷 Chụp ảnh</button><button id="radioRetakePhoto" type="button" hidden>Chụp lại</button><button id="radioRetryPhoto" type="button" hidden>Mở camera</button></div><small class="radioHint">Giờ trên ảnh là giờ của điện thoại; Firebase ghi riêng thời điểm xác nhận trên máy chủ.</small></section><div id="radioSigWrap"><p>Chữ ký xác nhận của tài khoản đang đăng nhập</p><canvas id="radioSignature" width="540" height="150" aria-label="Ký bằng ngón tay hoặc chuột"></canvas><button type="button" id="radioClearSignature">Xóa nét ký</button></div><div class="radioActions"><button type="button" id="radioCancel">Hủy</button><button class="radioPrimary" type="button" id="radioConfirm">Xác nhận và lưu lịch sử</button></div></section>'+
+ '<div class="radioProofViewer" id="radioProofViewer" hidden><div><header><strong id="radioProofName">Ảnh và chữ ký</strong><button type="button" id="radioProofClose">✕</button></header><img id="radioProofImage" alt="Bằng chứng ảnh có giờ và chữ ký"><p id="radioProofTimestamp"></p></div></div><footer>Giờ trên ảnh do thiết bị cung cấp; giờ xác nhận chính thức theo Firebase.</footer></div>';
  document.body.appendChild(p);
  $('radioClose').onclick=close;$('radioActionCancel').onclick=cancel;$('radioCancel').onclick=cancel;
  $('radioConfirm').onclick=()=>void submit();$('radioClearSignature').onclick=()=>clearSignature();
+ $('radioTakePhoto').onclick=takePhoto;$('radioRetakePhoto').onclick=()=>void retakePhoto();$('radioRetryPhoto').onclick=()=>void startCamera(cameraLeg);$('radioProofClose').onclick=closeProof;
+ $('radioProofViewer').onclick=e=>{if(e.target.id==='radioProofViewer')closeProof()};
  $('radioSeed').onclick=()=>void seed();$('radioDateFilter').onchange=e=>{dateFilter=e.target.value;renderHistory()};
  $('radioExport').onclick=exportCsv;
  p.querySelectorAll('[data-radio-tab]').forEach(b=>b.onclick=()=>tab(b.dataset.radioTab));
@@ -51,14 +54,121 @@ function tpl(){
  const down=e=>{if(busy)return;drawing=true;canvasDirty=true;strokes.push([]);c.setPointerCapture?.(e.pointerId);mark(e)};
  const move=e=>{if(drawing)mark(e)};const up=()=>{drawing=false};
  c.addEventListener('pointerdown',down);c.addEventListener('pointermove',move);c.addEventListener('pointerup',up);c.addEventListener('pointercancel',up);
- p.addEventListener('click',e=>{const b=e.target.closest('[data-radio-act]');if(b)start(b.dataset.radioAct,b.dataset.radioCode)});
+ p.addEventListener('click',e=>{const b=e.target.closest('[data-radio-act]');if(b)start(b.dataset.radioAct,b.dataset.radioCode);const el=e.target.closest('[data-radio-proof]');if(el)viewProof(el.dataset.radioProof)});
+ $('radioSwapTarget').onchange=()=>{if(mode==='SWAP_OUT'&&choice){photos.new=null;clearSignature();updatePhotoUI();void startCamera('new')}};
 }
+
+function needsPhoto(action){return ['ISSUE','RETURN','SWAP_OUT','REPORT'].includes(action)}
+function stopCamera(){
+ ++cameraToken;if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null}
+ const v=$('radioCameraVideo');if(v){v.pause();v.srcObject=null}
+}
+function resetCamera(){
+ stopCamera();photos={old:null,new:null};cameraLeg='old';
+ const img=$('radioCameraPhoto');if(img){img.hidden=true;img.removeAttribute('src')}
+ const list=$('radioPhotoChips');if(list)list.replaceChildren();
+}
+function photosReady(){return !!photos.old&&(mode!=='SWAP_OUT'||!!photos.new)}
+function updatePhotoUI(){
+ const area=$('radioPhotoArea');if(!area)return;const needs=needsPhoto(mode),complete=photosReady();
+ area.hidden=!needs;$('radioSigWrap').hidden=mode==='RELEASE'||(needs&&!complete);
+ $('radioConfirm').disabled=busy||(needs&&!complete);
+ $('radioTakePhoto').hidden=!needs||complete;$('radioTakePhoto').disabled=busy||!cameraStream;
+ $('radioRetakePhoto').hidden=!needs||!photos.old;
+ $('radioRetryPhoto').hidden=!needs||complete;
+ $('radioPhotoStep').textContent=mode==='SWAP_OUT'?(photos.old?'2 · Chụp máy thay thế':'1 · Chụp máy cũ'):'1 · Chụp bộ đàm thực tế';
+ const list=$('radioPhotoChips');list.replaceChildren();
+ for(const leg of ['old','new']){
+  const x=photos[leg];if(!x)continue;
+  const item=document.createElement('div');item.className='radioPhotoChip';
+  const image=document.createElement('img');image.src=x.preview;image.alt='Ảnh '+x.code;
+  const title=document.createElement('span');title.textContent=label(x.code);
+  item.append(image,title);list.append(item);
+ }
+}
+async function startCamera(leg){
+ if(!choice||!needsPhoto(mode))return;
+ stopCamera();cameraLeg=leg;const v=$('radioCameraVideo');v.hidden=false;
+ $('radioCameraPhoto').hidden=true;$('radioPhotoArea').hidden=false;
+ $('radioTakePhoto').disabled=true;notify('Đang yêu cầu quyền camera...');const token=cameraToken;
+ if(!navigator.mediaDevices?.getUserMedia){notify('Camera trực tiếp không hỗ trợ ở trình duyệt này. Hãy dùng HTTPS trên Chrome, Edge hoặc Safari.',true);updatePhotoUI();return}
+ try{
+  const stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}}});
+  if(token!==cameraToken||!choice){stream.getTracks().forEach(t=>t.stop());return}
+  cameraStream=stream;v.srcObject=stream;await v.play();
+  if(token!==cameraToken){stopCamera();return}
+  updatePhotoUI();notify('Chụp rõ mã số và thân bộ đàm, sau đó ký xác nhận.');
+ }catch(e){
+  if(token!==cameraToken)return;
+  stopCamera();updatePhotoUI();
+  notify('Không mở được camera ('+S(e?.name||'lỗi')+'). Vào quyền trang để cho phép camera rồi thử lại. Không thể ký khi thiếu ảnh.',true);
+ }
+}
+function formatShotTime(d){return new Intl.DateTimeFormat('vi-VN',{timeZone:VN,day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(d)}
+function takePhoto(){
+ if(!choice||!cameraStream||busy)return notify('Camera chưa hoạt động. Bấm Mở camera và thử lại.',true);
+ const v=$('radioCameraVideo');if(v.readyState<2||!v.videoWidth)return notify('Camera chưa có hình.',true);
+ const code=cameraLeg==='new'?$('radioSwapTarget').value:choice.code;if(!code)return notify('Chọn bộ đàm thay thế.',true);
+ const c=document.createElement('canvas');c.width=640;c.height=430;
+ const ctx=c.getContext('2d');ctx.fillStyle='#071827';ctx.fillRect(0,0,640,430);
+ const scale=Math.min(640/v.videoWidth,345/v.videoHeight),dw=v.videoWidth*scale,dh=v.videoHeight*scale;
+ ctx.drawImage(v,(640-dw)/2,(345-dh)/2,dw,dh);
+ const operation=cameraLeg==='new'?'SWAP_IN':mode,at=new Date();
+ ctx.fillStyle='#041926';ctx.fillRect(0,345,640,85);
+ ctx.fillStyle='#fff';ctx.textBaseline='middle';ctx.font='bold 23px Arial';
+ ctx.fillText('SAGS · '+label(code)+' · '+(['ISSUE','SWAP_IN'].includes(operation)?'NHẬN':['RETURN','SWAP_OUT'].includes(operation)?'TRẢ':'BÁO LỖI'),15,374);
+ ctx.font='bold 17px Arial';ctx.fillStyle='#9ee5eb';
+ ctx.fillText(formatShotTime(at)+'  ·  giờ thiết bị (VN)',15,407);
+ photos[cameraLeg]={canvas:c,preview:c.toDataURL('image/webp',.5),code,at:at.getTime()};
+ stopCamera();updatePhotoUI();
+ if(mode==='SWAP_OUT'&&cameraLeg==='old'){notify('Đã chụp máy cũ. Tiếp tục chụp máy mới.');void startCamera('new')}
+ else{
+  v.hidden=true;const preview=$('radioCameraPhoto');
+  preview.src=photos[cameraLeg].preview;preview.hidden=false;
+  notify('Đã chụp ảnh có giờ. Ký ở ô bên dưới rồi xác nhận để lưu Firebase.');
+  $('radioSigWrap').scrollIntoView({behavior:'smooth',block:'nearest'});
+ }
+}
+async function retakePhoto(){
+ if(!choice)return;
+ clearSignature();
+ if(mode==='SWAP_OUT'&&photos.new){photos.new=null;updatePhotoUI();await startCamera('new')}
+ else{photos={old:null,new:null};updatePhotoUI();await startCamera('old')}
+}
+function combineProof(leg){
+ const photo=photos[leg];if(!photo)throw Error('Chưa chụp ảnh trực tiếp.');
+ const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');
+ // Same authenticated, immutable Firestore event field as the previous signature.
+ // Preserve 45K character rules limit, keeping flight data and old events intact.
+ for(const width of [640,560,512,448,384]){
+  const ph=Math.round(width*430/640),sh=Math.round(width*130/640);
+  canvas.width=width;canvas.height=ph+sh;ctx.fillStyle='#fff';ctx.fillRect(0,0,width,canvas.height);
+  ctx.drawImage(photo.canvas,0,0,width,ph);
+  ctx.fillStyle='#e7f3f9';ctx.fillRect(0,ph,width,sh);ctx.fillStyle='#193c4e';
+  ctx.font='bold '+Math.max(9,Math.round(width*14/640))+'px Arial';
+  ctx.fillText('CHỮ KÝ XÁC NHẬN',Math.round(width*.025),ph+Math.round(width*.025));
+  ctx.drawImage($('radioSignature'),Math.round(width*.03),ph+Math.round(width*.035),Math.round(width*.85),Math.round(sh*.72));
+  for(const quality of [.7,.55,.4,.3,.2]){
+   const value=canvas.toDataURL('image/webp',quality);
+   if(value.startsWith('data:image/webp;base64,')&&value.length>120&&value.length<=44000)return value;
+  }
+ }
+ throw Error('Ảnh quá nhiều chi tiết để lưu rõ trong giới hạn hiện tại. Chụp gần mã máy, nền ít chi tiết và thử lại.');
+}
+function viewProof(id){
+ const e=events.find(x=>x.id===id);if(!e?.signature||!/^data:image\/(webp|png);base64,/.test(e.signature))return;
+ $('radioProofName').textContent=label(e.deviceCode)+' · '+(ACTS[e.action]||e.action);
+ $('radioProofImage').src=e.signature;
+ $('radioProofTimestamp').textContent='Thời gian xác nhận Firebase: '+(e.at?.toDate?.()?fmt(e.at.toDate()):'Đang đồng bộ');
+ $('radioProofViewer').hidden=false;
+}
+function closeProof(){const el=$('radioProofViewer');if(el)el.hidden=true;const img=$('radioProofImage');if(img)img.removeAttribute('src')}
 function mark(e){const c=$('radioSignature'),r=c.getBoundingClientRect(),x=Math.max(0,Math.min(c.width,Math.round((e.clientX-r.left)*c.width/r.width))),y=Math.max(0,Math.min(c.height,Math.round((e.clientY-r.top)*c.height/r.height)));const points=strokes.at(-1);if(!points||points.length>350)return;points.push([x,y]);const ctx=c.getContext('2d');ctx.strokeStyle='#123f66';ctx.lineWidth=2.8;ctx.lineCap='round';if(points.length===1){ctx.fillStyle='#123f66';ctx.beginPath();ctx.arc(x,y,1.4,0,Math.PI*2);ctx.fill()}else{const prev=points[points.length-2];ctx.beginPath();ctx.moveTo(prev[0],prev[1]);ctx.lineTo(x,y);ctx.stroke()}}
 function clearSignature(){strokes=[];canvasDirty=false;const c=$('radioSignature');if(c)c.getContext('2d').clearRect(0,0,c.width,c.height)}
 function signature(){if(!canvasDirty||!strokes.some(a=>a.length>=2))throw Error('Vui lòng ký xác nhận trực tiếp trên màn hình.');const c=$('radioSignature');let v=c.toDataURL('image/webp',0.45);if(!v.startsWith('data:image/webp;base64,')){v=c.toDataURL('image/png')}if(v.length>45000)throw Error('Chữ ký quá lớn. Xóa và ký lại nét ngắn gọn.');return v}
-function tab(t){for(const id of ['devices','history','summary']){$('radio'+id[0].toUpperCase()+id.slice(1)+'Tab').hidden=id!==t;const btn=document.querySelector('[data-radio-tab="'+id+'"]');btn?.classList.toggle('selected',t===id)}cancel();if(t==='summary')renderSummary()}
-function close(){const el=$('sagsRadioPanel');if(el)el.hidden=true;unsubs.forEach(fn=>fn());unsubs=[];connected=false;cancel();root.dispatchEvent(new Event('sags:ui-ready'));}
-function cancel(){choice=null;$('radioAction').hidden=true;clearSignature()}
+function tab(t){for(const id of ['devices','history','summary']){$('radio'+id[0].toUpperCase()+id.slice(1)+'Tab').hidden=id!==t;const btn=document.querySelector('[data-radio-tab="'+id+'"]');btn?.classList.toggle('selected',t===id)}cancel();if(t==='history'||t==='summary')subscribeHistory();else stopHistory();if(t==='summary')renderSummary()}
+function close(){closeProof();stopHistory();const el=$('sagsRadioPanel');if(el)el.hidden=true;unsubs.forEach(fn=>fn());unsubs=[];connected=false;cancel();root.dispatchEvent(new Event('sags:ui-ready'));}
+function cancel(){resetCamera();choice=null;$('radioAction').hidden=true;clearSignature()}
 function shift(){const h=Number(new Intl.DateTimeFormat('en-GB',{timeZone:VN,hour:'2-digit',hourCycle:'h23'}).format(new Date()));return h<12?'AM':'PM'}
 function start(action,code){
  const u=currentUser(),d=devices.find(x=>x.code===code);
@@ -66,18 +176,18 @@ function start(action,code){
  if(!connected||!navigator.onLine)return notify('Chưa kết nối Firebase. Không thể ký nhận khi chưa đồng bộ trạng thái máy.',true);
  if(action==='RELEASE'&&!isAdmin(u))return notify('Chỉ AD được đưa máy trở lại sử dụng.',true);
  if(['RETURN','SWAP_OUT'].includes(action)&&d.holderUid!==u.uid&&!isAdmin(u))return notify('Máy đang được người khác sử dụng; chỉ chủ máy hoặc AD được trả.',true);
- mode=action;choice=d;clearSignature();
+ resetCamera();mode=action;choice=d;clearSignature();
  $('radioActionCode').value=label(code);$('radioPerson').value=u.name+' · '+u.uid.slice(0,8);
  $('radioShift').value=shift();$('radioReason').value='BATTERY_EMPTY';$('radioBattery').value='UNKNOWN';$('radioSwapBattery').value='UNKNOWN';$('radioDetail').value='';
  $('radioActionTitle').textContent=(ACTS[action]||'Báo cáo')+' · '+label(code);
  $('radioReasonWrap').hidden=action==='ISSUE';
  $('radioBatteryWrap').hidden=action==='RELEASE';
  $('radioSwapWrap').hidden=action!=='SWAP_OUT';$('radioSwapBatteryWrap').hidden=action!=='SWAP_OUT';
- $('radioSigWrap').hidden=action==='RELEASE';
+ $('radioSigWrap').hidden=action==='RELEASE'||needsPhoto(action);
  const available=devices.filter(x=>x.status==='READY'&&x.code!==code);
  $('radioSwapTarget').innerHTML=available.map(x=>'<option value="'+esc(x.code)+'">'+esc(label(x.code))+'</option>').join('');
  if(action==='SWAP_OUT'&&!available.length)return notify('Không có máy sẵn sàng để đổi. Báo lỗi và liên hệ AD.',true);
- $('radioAction').hidden=false;$('radioAction').scrollIntoView({behavior:'smooth',block:'start'});
+ $('radioAction').hidden=false;updatePhotoUI();$('radioAction').scrollIntoView({behavior:'smooth',block:'start'});if(needsPhoto(action))void startCamera('old');
 }
 function badge(state){return '<span class="radioStatus radioStatus-'+state+'">'+(STATUSES[state]||state)+'</span>'}
 function render(){
@@ -99,7 +209,7 @@ function renderHistory(){
  const wrap=$('radioHistoryList');if(!wrap)return;const now=Date.now(),limit=dateFilter==='today'?24*3600000:dateFilter==='week'?7*24*3600000:Infinity;
  const todayVN=d=>new Intl.DateTimeFormat('en-CA',{timeZone:VN,year:'numeric',month:'2-digit',day:'2-digit'}).format(d);
  const list=events.filter(e=>{const timestamp=e.at?.toMillis?.();if(!timestamp)return dateFilter==='all';if(dateFilter==='today')return todayVN(new Date(timestamp))===todayVN(new Date(now));return now-timestamp<=limit});
- wrap.innerHTML=list.length?list.slice(0,120).map(e=>'<div class="radioEvent"><b>'+esc(label(e.deviceCode))+' · '+esc(ACTS[e.action]||e.action)+'</b><span>'+esc(e.actorName||e.actorUid)+' · '+(e.at?.toDate?.()?fmt(e.at.toDate()):'Đang đồng bộ')+'</span><small>'+esc(REASON_TEXT[e.reasonCode]||'')+(e.details?' · '+esc(e.details):'')+'</small></div>').join(''):'<p class="radioEmpty">Chưa có lịch sử trong phạm vi đang xem.</p>';
+ wrap.innerHTML=list.length?list.slice(0,120).map(e=>'<div class="radioEvent"><b>'+esc(label(e.deviceCode))+' · '+esc(ACTS[e.action]||e.action)+'</b><span>'+esc(e.actorName||e.actorUid)+' · '+(e.at?.toDate?.()?fmt(e.at.toDate()):'Đang đồng bộ')+'</span><small>'+esc(REASON_TEXT[e.reasonCode]||'')+(e.details?' · '+esc(e.details):'')+'</small>'+(e.signature?'<button type="button" class="radioViewProof" data-radio-proof="'+esc(e.id)+'">📷 Xem ảnh / chữ ký</button>':'')+'</div>').join(''):'<p class="radioEmpty">Chưa có lịch sử trong phạm vi đang xem.</p>';
 }
 function renderSummary(){
  const n=events.filter(x=>['SWAP_OUT'].includes(x.action)).length,issues=events.filter(x=>['REPORT','SWAP_OUT'].includes(x.action)),pending=devices.filter(x=>['FAULT','CHARGING','LOST'].includes(x.status));
@@ -122,7 +232,7 @@ async function submit(){
  const code=choice.code,reason=$('radioReason').value,details=S($('radioDetail').value),shiftVal=$('radioShift').value,bat=$('radioBattery').value,swapBattery=$('radioSwapBattery').value;
  if(['REPORT','SWAP_OUT'].includes(mode)&&(reason==='OTHER'||reason==='LOST')&&details.length<10)return notify('Vui lòng mô tả lý do cụ thể (từ 10 ký tự).',true);
  if(mode==='RELEASE'&&details.length<10)return notify('AD phải ghi kết quả kiểm tra/sửa chữa (ít nhất 10 ký tự).',true);
- let sig='';try{if(mode!=='RELEASE')sig=signature()}catch(e){return notify(e.message,true)}
+ let sig='',sigNew='';try{if(mode!=='RELEASE'){signature();if(needsPhoto(mode)){if(!photosReady())throw Error('Phải chụp ảnh bằng camera trước khi ký.');if(Date.now()-photos.old.at>600000||(mode==='SWAP_OUT'&&Date.now()-photos.new.at>600000))throw Error('Ảnh quá 10 phút, vui lòng chụp lại.');sig=combineProof('old');if(mode==='SWAP_OUT')sigNew=combineProof('new')}else sig=signature()}}catch(e){return notify(e.message,true)}
  if(['ISSUE','RETURN'].includes(mode)&&bat==='UNKNOWN')return notify('Vui lòng kiểm tra mức pin trước khi nhận hoặc trả máy.',true);
  if(mode==='ISSUE'&&['LOW','EMPTY'].includes(bat))return notify('Máy pin yếu/hết pin không được cấp phát. Báo lỗi pin để đưa máy về trạng thái chờ sạc.',true);
  if(mode==='SWAP_OUT'&&!['FULL','GOOD'].includes(swapBattery))return notify('Vui lòng kiểm tra máy thay thế có pin Đầy hoặc Đủ dùng trước khi đổi.',true);
@@ -140,7 +250,7 @@ async function submit(){
    const oldNew={status:['BATTERY_EMPTY','BATTERY_WEAK'].includes(reason)?'CHARGING':'FAULT',holderUid:'',holderName:'',shift:'',faultCode:reason,faultDetail:details,battery:bat};
    updateDevice(tx,ref,a,'SWAP_OUT',oldNew,{user,shift:shiftVal,reason,details,sig,related:other,swapId});
    const newNew={status:'OUT',holderUid:user.uid,holderName:user.name,shift:shiftVal,faultCode:'',faultDetail:'',battery:swapBattery};
-   updateDevice(tx,ref2,b,'SWAP_IN',newNew,{user,shift:shiftVal,reason,details,sig,related:code,swapId});
+   updateDevice(tx,ref2,b,'SWAP_IN',newNew,{user,shift:shiftVal,reason,details,sig:sigNew,related:code,swapId});
   });
  }else{
   await db.runTransaction(async tx=>{
@@ -196,6 +306,22 @@ function exportCsv(){
  const csv='\ufeff'+[cols,...rows].map(row=>row.map(cell).join(',')).join('\r\n');
  const href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=href;a.download='SAGS-BO-DAM-LICH-SU-'+new Date().toISOString().slice(0,10)+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(href),1000);
 }
+function stopHistory(){
+ if(historyStop){historyStop();historyStop=null}
+ events=[];if($('radioHistoryList'))renderHistory();
+ if($('radioSummary'))renderSummary();
+}
+function subscribeHistory(){
+ if(historyStop||!connected||!navigator.onLine||!currentUser().uid)return;
+ const u=currentUser(),db=fs();
+ // Avoid downloading up to 120 compressed photographs at every application launch.
+ // Fetch only when the user explicitly opens history or summary.
+ const query=isAdmin(u)?db.collection(EVENTS).orderBy('at','desc').limit(120):db.collection(EVENTS).where('actorUid','==',u.uid).limit(120);
+ historyStop=query.onSnapshot(s=>{
+  events=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.at?.toMillis?.()||0)-(a.at?.toMillis?.()||0));
+  renderHistory();renderSummary();
+ },e=>{events=[];renderHistory();renderSummary();notify(errText(e),true)});
+}
 async function open(){
  tpl();const u=currentUser();if(!u.uid){notify('Cần đăng nhập tài khoản E-REPORT.',true);return}
  $('sagsRadioPanel').hidden=false;notify('Đang tải danh mục thiết bị…');tab('devices');
@@ -204,8 +330,7 @@ async function open(){
  try{
   const db=fs();
   unsubs.push(db.collection(COLLECTION).onSnapshot(s=>{connected=!s.metadata.fromCache&&navigator.onLine;devices=s.docs.map(d=>({code:d.id,...d.data()})).sort((a,b)=>a.code.localeCompare(b.code,'vi',{numeric:true}));render();notify(connected?(devices.length?'Đã kết nối Firebase – có thể ký nhận.':'Đã kết nối Firebase – AD cần khởi tạo danh mục máy.'):'Đang xem bản lưu cục bộ; cần kết nối Firebase để ký nhận.',!connected)},e=>{connected=false;devices=[];events=[];render();notify(errText(e),true)}));
-  const eventQuery=isAdmin(u)?db.collection(EVENTS).orderBy('at','desc').limit(120):db.collection(EVENTS).where('actorUid','==',u.uid).limit(120);
-  unsubs.push(eventQuery.onSnapshot(s=>{events=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.at?.toMillis?.()||0)-(a.at?.toMillis?.()||0));renderHistory();renderSummary()},e=>{events=[];renderHistory();renderSummary();notify(errText(e),true)}));
+  // Heavy photographic history is fetched only when its tab is opened.
  }catch(e){notify(errText(e),true)}
 }
 root.SAGSRadioCustodyV1=Object.freeze({open,close,reasons:REASONS.map(([code,name])=>({code,name})),collection:COLLECTION,eventsCollection:EVENTS});
