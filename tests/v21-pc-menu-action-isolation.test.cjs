@@ -28,7 +28,7 @@ script.onload();
 Promise.resolve().then(()=>Promise.resolve()).then(()=>{
  assert.deepEqual(opened,['history'],'late radio load must NOT supersede history');
  cx.trigger('radio');assert.deepEqual(opened,['history','radio']);
- cx.trigger('archive');assert.deepEqual(opened,['history','radio','archive']);
+ all.sagsRadioPanel={hidden:false};cx.trigger('archive');assert.deepEqual(opened,['history','radio','archive']);
  assert(closed.includes('radio'),'switch away must close active radio');
  assert(!source.includes('function ensurePcRadioFallback()'));
  console.log('PC native menu actions and stale radio async isolation PASS');
