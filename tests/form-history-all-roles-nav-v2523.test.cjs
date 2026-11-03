@@ -25,7 +25,7 @@ assert.match(runtime,/v157MenuItem/,'native menu styling applies equally on PC a
 const shell=fs.readFileSync(path.join(root,'app/boot/32-v6494-aviation-shell.js'),'utf8');
 assert.match(shell,/\{key:'history',label:'Lịch sử thay đổi',meta:'Ai sửa · thời gian · trước\/sau'\}/,'actual aviation-shell menu must contain history');
 assert.match(shell,/if\(key==='history'\)return typeof root\.SAGSFormEditHistoryV1\?\.open==='function'/,'available on any authenticated role, without admin restriction');
-assert.match(shell,/if\(key==='history'\)\{try\{root\.SAGSFormEditHistoryV1\?\.open\?\.\(\)/,'click must open the history panel');
+assert.match(shell,/if\(key==='history'\)\{if\(root\.sagsV157NavigateMenu\?\.\('history'\)\)return;try\{root\.SAGSFormEditHistoryV1\?\.open\?\.\(\)/,'history must prefer the canonical route, retain a direct fallback');
 assert.match(shell,/const visible=DEF\.map\(sec=>\(\{group:sec\.group,items:sec\.items\.filter\(x=>available\(x\.key\)\)\}\)\)/,'same filtered items for desktop and mobile');
 assert.match(shell,/const mobileHtml=visible\.map\(sec=>'<div class="v6494MobileGroup"/,'history must render in mobile menu as well');
 assert.match(shell,/const navHtml=visible\.map\(sec=>'<section>/,'history must render in desktop menu as well');
