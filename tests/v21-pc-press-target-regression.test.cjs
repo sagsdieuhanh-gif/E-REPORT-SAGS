@@ -27,6 +27,11 @@ handlers.el.click(event('myflight'));assert.equal(routes.at(-1),'myflight','keyb
 assert(shell.includes('if(menuPointerActive){pendingMenuRender=true;return}'),'pointer must freeze menu reflow');
 assert(shell.includes("if(key!=='guide'&&guide?.classList?.contains('open'))guide.classList.remove('open')"),'old notebook overlay must close on next route');
 assert(shell.includes('root.SAGSAviationRouteToken=()=>navigationEpoch'),'route epoch must be exposed');
+const lazy=fs.readFileSync('app/boot/29-sags-v6118-carrier-lazy.js','utf8');
+assert(lazy.includes('const ticket=root.SAGSAviationRouteToken?.()'),'notebook must capture route epoch BEFORE lazy script download');
+assert(lazy.includes('if(ticket!==undefined&&root.SAGSAviationRouteToken?.()!==ticket)return'),'obsolete lazy notebook must not open');
+assert(lazy.includes('meta[name="sags-release-build"]'),'notebook script should use current PWA build key');
+
 const cStart=carrier.indexOf('async function open(){'),cEnd=carrier.indexOf('function close(){',cStart);
 assert(cStart>=0&&cEnd>cStart);
 let token=11,releaseData,opens=0;
