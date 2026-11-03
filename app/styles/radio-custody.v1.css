@@ -110,3 +110,11 @@
 .radioPdfChoice input[type="checkbox"]{width:21px;height:21px;flex:0 0 21px;accent-color:#39d5d8;cursor:pointer}
 .radioPdfChoice small{font-size:11px;line-height:1.45;color:#c4e1ea}
 @media(max-width:680px){.radioPdfChoice{align-items:flex-start;flex-direction:column}.radioPdfChoice label{font-size:12px}}
+
+/* iOS Safari: keep the live save control above bottom browser bars and show errors beside it. */
+.sagsRadioPanel{scroll-padding-bottom:calc(80px + env(safe-area-inset-bottom,0px));-webkit-overflow-scrolling:touch}
+.sagsRadioPanel .radioShell{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
+.radioActionMessage{font-size:12px;line-height:1.45;color:#b9ebde;margin:14px 0 5px;overflow-wrap:anywhere;min-height:18px}
+.radioActionMessage[data-error="1"]{color:#ffb9a8}
+#radioConfirm{min-height:48px;touch-action:manipulation}
+@media(max-width:680px){.radioActions{position:relative;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))}.radioActions #radioConfirm{flex:1;min-height:50px}}

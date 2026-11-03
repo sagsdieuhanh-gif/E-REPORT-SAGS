@@ -35,7 +35,11 @@ function isAdmin(u){return ['ADMIN','AD'].includes(u?.role)}
 function fs(){if(!root.firebase?.apps?.length||!root.firebase?.firestore)throw Error('Chưa khởi tạo kết nối Firebase.');return root.firebase.firestore()}
 function fv(){return root.firebase.firestore.FieldValue.serverTimestamp()}
 function errText(e){if(String(e?.code||'').includes('permission-denied'))return 'CHƯA KÍCH HOẠT KÝ NHẬN: Firebase chưa cấp quyền truy cập bộ đàm. AD cần triển khai Firestore Rules đã kiểm thử. Không có dữ liệu nào được ghi.';if(!navigator.onLine)return 'Mất kết nối. Không ghi nhận nhận/trả khi ngoại tuyến.';return S(e?.message||e||'Có lỗi, thử lại.')}
-function notify(s,fail=false){const e=$('radioMessage');if(e){e.textContent=s;e.dataset.error=fail?'1':'0'}}
+function notify(s,fail=false){
+ for(const id of ['radioMessage','radioActionMessage']){
+  const e=$(id);if(e){e.textContent=s;e.dataset.error=fail?'1':'0'}
+ }
+}
 function setBusy(v){busy=!!v;for(const e of document.querySelectorAll('#sagsRadioPanel button,#sagsRadioPanel select,#sagsRadioPanel input,#sagsRadioPanel textarea'))e.disabled=busy;if($('radioPhotoArea'))updatePhotoUI()}
 function tpl(){
  if($('sagsRadioPanel'))return;
@@ -47,7 +51,7 @@ function tpl(){
  '<section id="radioDevicesTab"><div class="radioTools"><span>Trạng thái từng máy cập nhật từ Firebase</span><button type="button" id="radioSeed" hidden>+ Khởi tạo danh mục từ giấy</button></div><div id="radioDeviceList" class="radioDeviceList"></div></section>'+
  '<section id="radioHistoryTab" hidden><div class="radioTools"><label>Tra cứu <select id="radioDateFilter"><option value="all">Gần đây</option><option value="today">Hôm nay</option><option value="week">7 ngày</option></select></label><button type="button" id="radioExport" class="radioPrimary">📄 Xuất PDF</button></div><div class="radioHistoryFilters"><label>Mã máy<select id="radioHistoryDevice"><option value="">Tất cả máy</option></select></label><label>Thao tác<select id="radioHistoryAction"><option value="">Tất cả</option><option value="ISSUE">Nhận máy</option><option value="RETURN">Trả máy</option><option value="SWAP_OUT">Đổi máy</option><option value="REPORT">Báo lỗi</option></select></label><label>Tìm kiếm<input id="radioHistorySearch" type="search" placeholder="Tên, UID hoặc ghi chú" autocomplete="off"></label></div><div id="radioHistoryMeta" class="radioHistoryMeta"></div><div id="radioHistoryList"></div></section>'+
  '<section id="radioSummaryTab" hidden><div class="radioTools"><span>Tổng hợp theo dữ liệu đã tải</span><button type="button" id="radioSummaryExport" class="radioPrimary">📄 Xuất PDF</button></div><div id="radioSummary"></div><p class="radioHint">Tổng hợp dữ liệu đã tải trên màn hình; không gửi email.</p></section>'+
- '<section id="radioAction" class="radioAction" hidden><div class="radioActionHeader"><h3 id="radioActionTitle">Ký nhận</h3><button type="button" id="radioActionCancel">✕</button></div><div class="radioFields"><label>Mã máy<input id="radioActionCode" readonly></label><label>Người thực hiện<input id="radioPerson" readonly></label><label>Ca làm việc<select id="radioShift"><option value="AM">Ca sáng</option><option value="PM">Ca chiều</option></select></label><label id="radioBatteryWrap">Pin lúc nhận/trả<select id="radioBattery"><option value="UNKNOWN">Chưa xác định</option><option value="FULL">Đầy</option><option value="GOOD">Đủ dùng</option><option value="LOW">Yếu</option><option value="EMPTY">Hết pin</option></select></label><label id="radioReasonWrap">Lý do<select id="radioReason">'+REASONS.map(([v,n])=>'<option value="'+v+'">'+esc(n)+'</option>').join('')+'</select></label><label id="radioReturnReasonWrap" hidden>Lý do trả<select id="radioReturnReason"><option value="END_SHIFT">Hết ca</option><option value="HANDOVER">Bàn giao ca tiếp theo</option><option value="STOP_USE">Không tiếp tục sử dụng</option><option value="OTHER">Lý do khác (ghi cụ thể)</option></select></label><label id="radioSwapWrap">Máy thay thế<select id="radioSwapTarget"></select></label><label id="radioSwapBatteryWrap" hidden>Pin máy thay thế<select id="radioSwapBattery"><option value="UNKNOWN">Chọn pin máy thay thế</option><option value="FULL">Đầy</option><option value="GOOD">Đủ dùng</option><option value="LOW">Yếu</option><option value="EMPTY">Hết pin</option></select></label><label class="wide">Ghi chú hiện trạng<textarea id="radioDetail" rows="2" placeholder="Ghi cụ thể hiện tượng, thời gian, vị trí..."></textarea></label></div><section id="radioPhotoArea" class="radioPhotoArea" hidden><div class="radioPhotoHeading"><strong id="radioPhotoStep">1 · Ảnh bộ đàm thực tế</strong><small>Camera trực tiếp · không chọn thư viện</small></div><div class="radioCameraView"><video id="radioCameraVideo" playsinline autoplay muted></video><img id="radioCameraPhoto" alt="Ảnh chụp mã máy và thời gian" hidden></div><div id="radioPhotoChips" class="radioPhotoChips"></div><div class="radioPhotoActions"><button id="radioTakePhoto" type="button" class="radioPrimary">📷 Chụp ảnh</button><button id="radioRetakePhoto" type="button" hidden>Chụp lại</button><button id="radioRetryPhoto" type="button" hidden>Mở camera</button></div><small class="radioHint">Giờ trên ảnh là giờ của điện thoại; Firebase ghi riêng thời điểm xác nhận trên máy chủ.</small></section><div id="radioSigWrap"><p>Chữ ký xác nhận của tài khoản đang đăng nhập</p><canvas id="radioSignature" width="540" height="150" aria-label="Ký bằng ngón tay hoặc chuột"></canvas><button type="button" id="radioClearSignature">Xóa nét ký</button></div><div class="radioActions"><button type="button" id="radioCancel">Hủy</button><button class="radioPrimary" type="button" id="radioConfirm">Xác nhận và lưu lịch sử</button></div></section>'+
+ '<section id="radioAction" class="radioAction" hidden><div class="radioActionHeader"><h3 id="radioActionTitle">Ký nhận</h3><button type="button" id="radioActionCancel">✕</button></div><div class="radioFields"><label>Mã máy<input id="radioActionCode" readonly></label><label>Người thực hiện<input id="radioPerson" readonly></label><label>Ca làm việc<select id="radioShift"><option value="AM">Ca sáng</option><option value="PM">Ca chiều</option></select></label><label id="radioBatteryWrap">Pin lúc nhận/trả<select id="radioBattery"><option value="UNKNOWN">Chưa xác định</option><option value="FULL">Đầy</option><option value="GOOD">Đủ dùng</option><option value="LOW">Yếu</option><option value="EMPTY">Hết pin</option></select></label><label id="radioReasonWrap">Lý do<select id="radioReason">'+REASONS.map(([v,n])=>'<option value="'+v+'">'+esc(n)+'</option>').join('')+'</select></label><label id="radioReturnReasonWrap" hidden>Lý do trả<select id="radioReturnReason"><option value="END_SHIFT">Hết ca</option><option value="HANDOVER">Bàn giao ca tiếp theo</option><option value="STOP_USE">Không tiếp tục sử dụng</option><option value="OTHER">Lý do khác (ghi cụ thể)</option></select></label><label id="radioSwapWrap">Máy thay thế<select id="radioSwapTarget"></select></label><label id="radioSwapBatteryWrap" hidden>Pin máy thay thế<select id="radioSwapBattery"><option value="UNKNOWN">Chọn pin máy thay thế</option><option value="FULL">Đầy</option><option value="GOOD">Đủ dùng</option><option value="LOW">Yếu</option><option value="EMPTY">Hết pin</option></select></label><label class="wide">Ghi chú hiện trạng<textarea id="radioDetail" rows="2" placeholder="Ghi cụ thể hiện tượng, thời gian, vị trí..."></textarea></label></div><section id="radioPhotoArea" class="radioPhotoArea" hidden><div class="radioPhotoHeading"><strong id="radioPhotoStep">1 · Ảnh bộ đàm thực tế</strong><small>Camera trực tiếp · không chọn thư viện</small></div><div class="radioCameraView"><video id="radioCameraVideo" playsinline autoplay muted></video><img id="radioCameraPhoto" alt="Ảnh chụp mã máy và thời gian" hidden></div><div id="radioPhotoChips" class="radioPhotoChips"></div><div class="radioPhotoActions"><button id="radioTakePhoto" type="button" class="radioPrimary">📷 Chụp ảnh</button><button id="radioRetakePhoto" type="button" hidden>Chụp lại</button><button id="radioRetryPhoto" type="button" hidden>Mở camera</button></div><small class="radioHint">Giờ trên ảnh là giờ của điện thoại; Firebase ghi riêng thời điểm xác nhận trên máy chủ.</small></section><div id="radioSigWrap"><p>Chữ ký xác nhận của tài khoản đang đăng nhập</p><canvas id="radioSignature" width="540" height="150" aria-label="Ký bằng ngón tay hoặc chuột"></canvas><button type="button" id="radioClearSignature">Xóa nét ký</button></div><p id="radioActionMessage" class="radioActionMessage" role="status" aria-live="polite"></p><div class="radioActions"><button type="button" id="radioCancel">Hủy</button><button class="radioPrimary" type="button" id="radioConfirm">Xác nhận và lưu lịch sử</button></div></section>'+
  '<div class="radioProofViewer" id="radioProofViewer" hidden><div><header><strong id="radioProofName">Ảnh và chữ ký</strong><button type="button" id="radioProofClose">✕</button></header><img id="radioProofImage" alt="Bằng chứng ảnh có giờ và chữ ký"><p id="radioProofTimestamp"></p></div></div><footer>Giờ trên ảnh do thiết bị cung cấp; giờ xác nhận chính thức theo Firebase.</footer></div>';
  document.body.appendChild(p);
  $('radioClose').onclick=close;$('radioActionCancel').onclick=cancel;$('radioCancel').onclick=cancel;
@@ -59,9 +63,16 @@ function tpl(){
  ['radioHistoryDevice','radioHistoryAction'].forEach(id=>{$(id).onchange=renderHistory});$('radioHistorySearch').oninput=renderHistory;
  p.querySelectorAll('[data-radio-tab]').forEach(b=>b.onclick=()=>tab(b.dataset.radioTab));
  const c=$('radioSignature');c.style.touchAction='none';
- const down=e=>{if(busy)return;drawing=true;canvasDirty=true;strokes.push([]);c.setPointerCapture?.(e.pointerId);mark(e)};
+ const down=e=>{if(busy)return;drawing=true;canvasDirty=true;strokes.push([]);try{c.setPointerCapture?.(e.pointerId)}catch(_){}mark(e)};
  const move=e=>{if(drawing)mark(e)};const up=()=>{drawing=false};
  c.addEventListener('pointerdown',down);c.addEventListener('pointermove',move);c.addEventListener('pointerup',up);c.addEventListener('pointercancel',up);
+ // Older iOS WebKit versions lack reliable PointerEvent support.
+ if(!root.PointerEvent){
+  const mapped=e=>({clientX:e.touches[0]?.clientX,clientY:e.touches[0]?.clientY});
+  c.addEventListener('touchstart',e=>{if(!e.touches.length)return;e.preventDefault();down(mapped(e))},{passive:false});
+  c.addEventListener('touchmove',e=>{if(!e.touches.length)return;e.preventDefault();move(mapped(e))},{passive:false});
+  c.addEventListener('touchend',up,{passive:true});c.addEventListener('touchcancel',up,{passive:true});
+ }
  p.addEventListener('click',e=>{const b=e.target.closest('[data-radio-act]');if(b)start(b.dataset.radioAct,b.dataset.radioCode);const el=e.target.closest('[data-radio-proof]');if(el)viewProof(el.dataset.radioProof)});
  $('radioSwapTarget').onchange=()=>{if(mode==='SWAP_OUT'&&choice){photos.new=null;clearSignature();updatePhotoUI();void startCamera('new')}};
 }
@@ -127,7 +138,10 @@ function takePhoto(){
  ctx.fillText('SAGS · '+label(code)+' · '+(['ISSUE','SWAP_IN'].includes(operation)?'NHẬN':['RETURN','SWAP_OUT'].includes(operation)?'TRẢ':'BÁO LỖI'),15,374);
  ctx.font='bold 17px Arial';ctx.fillStyle='#9ee5eb';
  ctx.fillText(formatShotTime(at)+'  ·  giờ thiết bị (VN)',15,407);
- photos[cameraLeg]={canvas:c,preview:c.toDataURL('image/webp',.5),code,at:at.getTime()};
+ // WebKit on iOS can display WebP but cannot encode it from Canvas.
+ // JPEG here is ONLY the local preview; immutable signed proof remains WebP/PNG.
+ const preview=c.toDataURL('image/jpeg',.68);
+ photos[cameraLeg]={canvas:c,preview:preview.startsWith('data:image/jpeg;base64,')?preview:c.toDataURL('image/png'),code,at:at.getTime()};
  stopCamera();updatePhotoUI();
  if(mode==='SWAP_OUT'&&cameraLeg==='old'){notify('Đã chụp máy cũ. Tiếp tục chụp máy mới.');void startCamera('new')}
  else{
@@ -143,25 +157,66 @@ async function retakePhoto(){
  if(mode==='SWAP_OUT'&&photos.new){photos.new=null;updatePhotoUI();await startCamera('new')}
  else{photos={old:null,new:null};updatePhotoUI();await startCamera('old')}
 }
+function webpCanvasEncoderSupported(){
+ const c=document.createElement('canvas');c.width=1;c.height=1;
+ try{return c.toDataURL('image/webp',.5).startsWith('data:image/webp;base64,')}
+ catch(_){return false}
+}
+function quantizePngCanvas(canvas,levels){
+ // iOS Safari does not encode WebP Canvas output. Keep genuine PNG bytes
+ // inside the existing immutable Firestore proof field (<= 45,000 chars).
+ // Pixel quantization compresses a photograph without falsifying its capture.
+ const ctx=canvas.getContext('2d'),image=ctx.getImageData(0,0,canvas.width,canvas.height);
+ const rgb=image.data,scale=255/(levels-1);
+ for(let i=0;i<rgb.length;i+=4){
+  rgb[i]=Math.round(rgb[i]/scale)*scale;
+  rgb[i+1]=Math.round(rgb[i+1]/scale)*scale;
+  rgb[i+2]=Math.round(rgb[i+2]/scale)*scale;
+ }
+ ctx.putImageData(image,0,0);
+}
 function combineProof(leg){
  const photo=photos[leg];if(!photo)throw Error('Chưa chụp ảnh trực tiếp.');
  const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');
- // Same authenticated, immutable Firestore event field as the previous signature.
- // Preserve 45K character rules limit, keeping flight data and old events intact.
- for(const width of [640,560,512,448,384]){
+ const webp=webpCanvasEncoderSupported();
+ const maxBytes=44000;
+ // WebP is preferred where natively supported. Safari needs a real PNG
+ // fallback, not the PNG data silently returned by toDataURL('image/webp').
+ const widths=webp?[640,560,512,448,384]:[512,448,384,320,280,240,208,176];
+ for(const width of widths){
   const ph=Math.round(width*430/640),sh=Math.round(width*130/640);
-  canvas.width=width;canvas.height=ph+sh;ctx.fillStyle='#fff';ctx.fillRect(0,0,width,canvas.height);
+  canvas.width=width;canvas.height=ph+sh;
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,width,canvas.height);
   ctx.drawImage(photo.canvas,0,0,width,ph);
   ctx.fillStyle='#e7f3f9';ctx.fillRect(0,ph,width,sh);ctx.fillStyle='#193c4e';
   ctx.font='bold '+Math.max(9,Math.round(width*14/640))+'px Arial';
   ctx.fillText('CHỮ KÝ XÁC NHẬN',Math.round(width*.025),ph+Math.round(width*.025));
   ctx.drawImage($('radioSignature'),Math.round(width*.03),ph+Math.round(width*.035),Math.round(width*.85),Math.round(sh*.72));
-  for(const quality of [.7,.55,.4,.3,.2]){
-   const value=canvas.toDataURL('image/webp',quality);
-   if(value.startsWith('data:image/webp;base64,')&&value.length>120&&value.length<=44000)return value;
+  if(webp){
+   for(const quality of [.7,.55,.4,.3,.2]){
+    const value=canvas.toDataURL('image/webp',quality);
+    if(value.startsWith('data:image/webp;base64,')&&value.length>120&&value.length<=maxBytes)return value;
+   }
+  }else{
+   // Reduce palette detail progressively to fit the Firebase rule. Always
+   // retain the original camera pixels/time and drawn signature in the output.
+   for(const levels of [6,4,3,2]){
+    // Re-render each attempt, rather than successively degrading pixels.
+    if(levels!==6){
+     ctx.clearRect(0,0,width,canvas.height);ctx.fillStyle='#fff';ctx.fillRect(0,0,width,canvas.height);
+     ctx.drawImage(photo.canvas,0,0,width,ph);
+     ctx.fillStyle='#e7f3f9';ctx.fillRect(0,ph,width,sh);ctx.fillStyle='#193c4e';
+     ctx.font='bold '+Math.max(9,Math.round(width*14/640))+'px Arial';
+     ctx.fillText('CHỮ KÝ XÁC NHẬN',Math.round(width*.025),ph+Math.round(width*.025));
+     ctx.drawImage($('radioSignature'),Math.round(width*.03),ph+Math.round(width*.035),Math.round(width*.85),Math.round(sh*.72));
+    }
+    quantizePngCanvas(canvas,levels);
+    const value=canvas.toDataURL('image/png');
+    if(value.startsWith('data:image/png;base64,')&&value.length>120&&value.length<=maxBytes)return value;
+   }
   }
  }
- throw Error('Ảnh quá nhiều chi tiết để lưu rõ trong giới hạn hiện tại. Chụp gần mã máy, nền ít chi tiết và thử lại.');
+ throw Error('Ảnh quá nhiều chi tiết để lưu trong giới hạn Firebase. Chụp gần mã máy, nền ít chi tiết rồi thử lại; ảnh và chữ ký chưa được ghi nhận.');
 }
 function viewProof(id){
  const e=events.find(x=>x.id===id);if(!e?.signature||!/^data:image\/(webp|png);base64,/.test(e.signature))return;
@@ -286,14 +341,23 @@ async function submit(){
  const details=mode==='RETURN'?('Lý do trả: '+(RETURN_REASONS[returnReason]||RETURN_REASONS.END_SHIFT)+(rawDetail?' · '+rawDetail:'')):rawDetail;
  if(['REPORT','SWAP_OUT'].includes(mode)&&(reason==='OTHER'||reason==='LOST')&&details.length<10)return notify('Vui lòng mô tả lý do cụ thể (từ 10 ký tự).',true);
  if(mode==='RELEASE'&&details.length<10)return notify('AD phải ghi kết quả kiểm tra/sửa chữa (ít nhất 10 ký tự).',true);
- let sig='',sigNew='';try{if(mode!=='RELEASE'){signature();if(needsPhoto(mode)){if(!photosReady())throw Error('Phải chụp ảnh bằng camera trước khi ký.');if(Date.now()-photos.old.at>600000||(mode==='SWAP_OUT'&&Date.now()-photos.new.at>600000))throw Error('Ảnh quá 10 phút, vui lòng chụp lại.');sig=combineProof('old');if(mode==='SWAP_OUT')sigNew=combineProof('new')}else sig=signature()}}catch(e){return notify(e.message,true)}
+ let sig='',sigNew='';try{if(mode!=='RELEASE'){signature();if(needsPhoto(mode)){if(!photosReady())throw Error('Phải chụp ảnh bằng camera trước khi ký.');if(Date.now()-photos.old.at>600000||(mode==='SWAP_OUT'&&Date.now()-photos.new.at>600000))throw Error('Ảnh quá 10 phút, vui lòng chụp lại.')}}}catch(e){return notify(e.message,true)}
  if(['ISSUE','RETURN'].includes(mode)&&bat==='UNKNOWN')return notify('Vui lòng kiểm tra mức pin trước khi nhận hoặc trả máy.',true);
  if(mode==='ISSUE'&&['LOW','EMPTY'].includes(bat))return notify('Máy pin yếu/hết pin không được cấp phát. Báo lỗi pin để đưa máy về trạng thái chờ sạc.',true);
  if(mode==='SWAP_OUT'&&!['FULL','GOOD'].includes(swapBattery))return notify('Vui lòng kiểm tra máy thay thế có pin Đầy hoặc Đủ dùng trước khi đổi.',true);
  if(!connected)return notify('Chưa xác nhận kết nối Firebase. Không thể ghi nhận.',true);
  if(!navigator.onLine)return notify('Đang ngoại tuyến: không cho phép nhận/trả vì có thể xảy ra nhận trùng máy.',true);
  setBusy(true);
+ notify('Đang xử lý ảnh chụp và chữ ký để ghi Firebase…');
  try{
+  await new Promise(resolve=>requestAnimationFrame(resolve));
+  if(mode!=='RELEASE'){
+   if(needsPhoto(mode)){
+    sig=combineProof('old');
+    if(mode==='SWAP_OUT')sigNew=combineProof('new');
+   }else sig=signature();
+  }
+  notify('Đang xác nhận với Firebase, vui lòng không bấm lại…');
  const db=fs(),ref=db.collection(COLLECTION).doc(code);
  if(mode==='SWAP_OUT'){
   const other=$('radioSwapTarget').value,ref2=db.collection(COLLECTION).doc(other),swapId=db.collection(EVENTS).doc().id;

@@ -1,7 +1,7 @@
 {
   "schema": 2,
   "version": "V2.1",
-  "build": "V2.1-20261103-PC-ROUTE-PHOTO-PDF-07",
+  "build": "V2.1-20261103-IOS-RADIO-SAVE-08",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -290,8 +290,8 @@
       "bytes": 19587
     },
     "./app/modules/radio-custody.v1.js": {
-      "sha256": "67242b65984815220653a1bb97a5dde1b686800729f7e00b3203a91e6df1f1b5",
-      "bytes": 51886
+      "sha256": "0e5cb7bdf22bbd79b595c2218c4a2f9fe4d35e530be9ebd574dd8ed920c052ed",
+      "bytes": 55108
     },
     "./app/modules/radio-reminders.v21.js": {
       "sha256": "d22a59b3fb19bb8175adf2c011b1b4990a455c9ed076087f313d983efdb8e757",
@@ -494,8 +494,8 @@
       "bytes": 376878
     },
     "./app/styles/radio-custody.v1.css": {
-      "sha256": "7ca7e961a00facc7f8875940c10f429ca746d24a13e00b3c834f9d2b22c3b9e4",
-      "bytes": 11397
+      "sha256": "7f14f549218f000a47a11be6b702cb914cfd837a08f7dcbb281c3a99c2b7fd28",
+      "bytes": 12103
     },
     "./app/vendor/lz-string-1.5.0.js": {
       "sha256": "550034b821027008776cb9bcd1700bb5d31e8b3de224cb130fc966a75dab0e5e",
@@ -774,8 +774,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "d2a283d36d177db476b4c94af68156002cc197f8fa876e51015c324ed1dd669e",
-      "bytes": 104913
+      "sha256": "9dbb31613910f925325f1aa4adb59f20664aa110e2ed1746381ca5f64a6b09fd",
+      "bytes": 104597
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -826,16 +826,16 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "505290f0bb2ce7f76ef53d5d0377e1d4ad2d6c3c01fbc5406ac90598e8c85c46",
-      "bytes": 22564
+      "sha256": "eb53cd6fd00dc4a7ac39919320159690504b4b35aad7bfe8aca92f7cdb966f41",
+      "bytes": 22552
     },
     "./storage-recovery.html": {
       "sha256": "08817204a946fbdfa404e8c083dd0c2016e935fb8fe56ff8ef99f405978d3df6",
       "bytes": 26106
     },
     "./version.json": {
-      "sha256": "521ac4afafecfb1a66003fc076dcbf9487e87f36e5b70a30f771b7f46ea384f4",
-      "bytes": 1098
+      "sha256": "86de003ef42b6af2634c9a67c5e8b90f0403d938761f31b43d2820094c62c505",
+      "bytes": 1080
     }
   },
   "mutableAssets": [
