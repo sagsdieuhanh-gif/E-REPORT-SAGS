@@ -8,7 +8,7 @@ assert(p>0&&q>p,'real shell pointer/click event handlers missing');
 const handlers={el:{},doc:{}},routes=[],timer=[];
 const el={addEventListener:(name,fn)=>{handlers.el[name]=fn}};
 const doc={addEventListener:(name,fn)=>{handlers.doc[name]=fn}};
-const cx={el,document:doc,pointerMenuKey:'',menuPointerActive:false,pendingMenuRender:false,lastMenuSignature:'',renderMenus:()=>routes.push('render'),setTimeout:fn=>timer.push(fn),trigger:key=>routes.push(key),$:()=>null,console};
+const cx={el,document:doc,pointerMenuKey:'',pointerSerial:0,menuPointerActive:false,pendingMenuRender:false,lastMenuSignature:'',renderMenus:()=>routes.push('render'),setTimeout:fn=>timer.push(fn),trigger:key=>routes.push(key),$:()=>null,console};
 vm.createContext(cx);vm.runInContext(shell.slice(p,q),cx);
 const target=key=>({closest:selector=>(key?{dataset:{v6494Key:key}}:null)});
 const event=key=>({target:target(key),preventDefault(){},stopPropagation(){}});
