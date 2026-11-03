@@ -259,6 +259,15 @@ document.addEventListener('click',e=>{if(e.target?.closest?.('#v157MenuBody [dat
 document.addEventListener('click',e=>{if(e.target?.closest?.('[data-v6494-key],[data-v6494-account],#v157LogoutBtn,.fwcHead button,.sagsAdminTopActions button'))setTimeout(scheduleSync,0)},true);
 }
 root.SAGSAviationRouteToken=()=>navigationEpoch;
+root.sagsV6118OpenCarrierNotebook=function(){
+ const ticket=navigationEpoch;
+ try{return root.sagsV6118LoadCarrierNotebook().then(()=>{
+  if(ticket!==navigationEpoch)return;
+  if(typeof root.sagsCarrierGuideOpen!=='function')throw Error('Sổ tay chưa khởi tạo');
+  return root.sagsCarrierGuideOpen();
+ }).catch(e=>{if(ticket===navigationEpoch)root.alert?.('Không mở được Sổ tay hãng: '+String(e?.message||e))})}
+ catch(e){if(ticket===navigationEpoch)root.alert?.(String(e?.message||e))}
+};
 root.SAGSAviationBeforeRoute=beforeRoute;
 root.SAGSAviationOpenRadio=()=>trigger('radio');
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
