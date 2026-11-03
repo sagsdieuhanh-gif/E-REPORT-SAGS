@@ -140,7 +140,7 @@ function takePhoto(){
  ctx.fillText(formatShotTime(at)+'  ·  giờ thiết bị (VN)',15,407);
  // WebKit on iOS can display WebP but cannot encode it from Canvas.
  // JPEG here is ONLY the local preview; immutable signed proof remains WebP/PNG.
- const preview=c.toDataURL('image/jpeg',.68);
+ const preview=c.toDataURL('image/jpeg',.84);
  photos[cameraLeg]={canvas:c,preview:preview.startsWith('data:image/jpeg;base64,')?preview:c.toDataURL('image/png'),code,at:at.getTime()};
  stopCamera();updatePhotoUI();
  if(mode==='SWAP_OUT'&&cameraLeg==='old'){notify('Đã chụp máy cũ. Tiếp tục chụp máy mới.');void startCamera('new')}
@@ -175,51 +175,45 @@ function quantizePngCanvas(canvas,levels){
  }
  ctx.putImageData(image,0,0);
 }
-function combineProof(leg){
+function combineProof(leg,requestedFormat='auto'){
  const photo=photos[leg];if(!photo)throw Error('Chưa chụp ảnh trực tiếp.');
  const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');
- const webp=webpCanvasEncoderSupported();
- const maxBytes=44000;
- // WebP is preferred where natively supported. Safari needs a real PNG
- // fallback, not the PNG data silently returned by toDataURL('image/webp').
- const widths=webp?[640,560,512,448,384]:[512,448,384,320,280,240,208,176];
- for(const width of widths){
+ const mode=requestedFormat==='png'?'png':webpCanvasEncoderSupported()?'webp':'jpeg';
+ const maxLength=44000;
+ const widths=mode==='png'?[560,512,448,384,320,280,240,208,176]:[640,600,560,512,480,448,416,384,352];
+ function drawPage(width){
   const ph=Math.round(width*430/640),sh=Math.round(width*130/640);
   canvas.width=width;canvas.height=ph+sh;
   ctx.fillStyle='#fff';ctx.fillRect(0,0,width,canvas.height);
   ctx.drawImage(photo.canvas,0,0,width,ph);
-  ctx.fillStyle='#e7f3f9';ctx.fillRect(0,ph,width,sh);ctx.fillStyle='#193c4e';
-  ctx.font='bold '+Math.max(9,Math.round(width*14/640))+'px Arial';
+  ctx.fillStyle='#e7f3f9';ctx.fillRect(0,ph,width,sh);
+  ctx.fillStyle='#193c4e';ctx.font='bold '+Math.max(9,Math.round(width*14/640))+'px Arial';
   ctx.fillText('CHỮ KÝ XÁC NHẬN',Math.round(width*.025),ph+Math.round(width*.025));
   ctx.drawImage($('radioSignature'),Math.round(width*.03),ph+Math.round(width*.035),Math.round(width*.85),Math.round(sh*.72));
-  if(webp){
-   for(const quality of [.7,.55,.4,.3,.2]){
-    const value=canvas.toDataURL('image/webp',quality);
-    if(value.startsWith('data:image/webp;base64,')&&value.length>120&&value.length<=maxBytes)return value;
+ }
+ for(const width of widths){
+  drawPage(width);
+  if(mode==='png'){
+   // Older deployed Firestore rules accept PNG even when JPEG is not enabled.
+   for(const levels of [24,16,12,8,6,4,3,2]){
+    drawPage(width);quantizePngCanvas(canvas,levels);
+    const value=canvas.toDataURL('image/png');
+    if(value.startsWith('data:image/png;base64,')&&value.length>120&&value.length<=maxLength)return value;
    }
   }else{
-   // Reduce palette detail progressively to fit the Firebase rule. Always
-   // retain the original camera pixels/time and drawn signature in the output.
-   for(const levels of [6,4,3,2]){
-    // Re-render each attempt, rather than successively degrading pixels.
-    if(levels!==6){
-     ctx.clearRect(0,0,width,canvas.height);ctx.fillStyle='#fff';ctx.fillRect(0,0,width,canvas.height);
-     ctx.drawImage(photo.canvas,0,0,width,ph);
-     ctx.fillStyle='#e7f3f9';ctx.fillRect(0,ph,width,sh);ctx.fillStyle='#193c4e';
-     ctx.font='bold '+Math.max(9,Math.round(width*14/640))+'px Arial';
-     ctx.fillText('CHỮ KÝ XÁC NHẬN',Math.round(width*.025),ph+Math.round(width*.025));
-     ctx.drawImage($('radioSignature'),Math.round(width*.03),ph+Math.round(width*.035),Math.round(width*.85),Math.round(sh*.72));
-    }
-    quantizePngCanvas(canvas,levels);
-    const value=canvas.toDataURL('image/png');
-    if(value.startsWith('data:image/png;base64,')&&value.length>120&&value.length<=maxBytes)return value;
+   const mime=mode==='webp'?'image/webp':'image/jpeg';
+   const prefix='data:'+mime+';base64,';
+   const qualities=mode==='webp'?[.85,.78,.7,.62,.54,.46,.38,.3]:[.88,.82,.76,.7,.64,.58,.52,.46,.4];
+   for(const quality of qualities){
+    const value=canvas.toDataURL(mime,quality);
+    if(value.startsWith(prefix)&&value.length>120&&value.length<=maxLength)return value;
    }
   }
  }
- throw Error('Ảnh quá nhiều chi tiết để lưu trong giới hạn Firebase. Chụp gần mã máy, nền ít chi tiết rồi thử lại; ảnh và chữ ký chưa được ghi nhận.');
+ throw Error('Ảnh quá lớn trong giới hạn lưu trữ. Vui lòng chụp rõ mã bộ đàm, giảm chi tiết nền rồi thử lại; chưa ghi nhận lượt ký.');
 }
 function viewProof(id){
- const e=events.find(x=>x.id===id);if(!e?.signature||!/^data:image\/(webp|png);base64,/.test(e.signature))return;
+ const e=events.find(x=>x.id===id);if(!e?.signature||!/^data:image\/(webp|png|jpeg);base64,/.test(e.signature))return;
  $('radioProofName').textContent=label(e.deviceCode)+' · '+(ACTS[e.action]||e.action);
  $('radioProofImage').src=e.signature;
  const check=photoAudit(e);
@@ -464,7 +458,7 @@ function pdfBuild(canvases){
 }
 function proofImage(data){
  return new Promise((resolve,reject)=>{
-  if(!/^data:image\/(webp|png);base64,[A-Za-z0-9+/=]+$/.test(S(data)))return reject(Error('Không có ảnh bằng chứng hợp lệ'));
+  if(!/^data:image\/(webp|png|jpeg);base64,[A-Za-z0-9+/=]+$/.test(S(data)))return reject(Error('Không có ảnh bằng chứng hợp lệ'));
   const img=new Image(),timer=setTimeout(()=>{img.onload=null;img.onerror=null;reject(Error('Tải ảnh quá thời gian'))},5000);
   img.onload=()=>{clearTimeout(timer);resolve(img)};
   img.onerror=()=>{clearTimeout(timer);reject(Error('Không giải mã được ảnh bằng chứng'))};
@@ -514,7 +508,7 @@ async function exportPhotoPdf(){
  const a=$('radioExport'),b=$('radioSummaryExport');
  if(a?.disabled||b?.disabled)return;
  if(a)a.disabled=true;if(b)b.disabled=true;
- const proofCount=rows.filter(e=>/^data:image\/(webp|png);base64,/.test(S(e.signature))).length;
+ const proofCount=rows.filter(e=>/^data:image\/(webp|png|jpeg);base64,/.test(S(e.signature))).length;
  notify('Đang tạo PDF có bảng tổng hợp và '+rows.length+' trang đối chiếu ảnh/chữ ký…');
  try{
   const scope=dateFilter==='today'?'Hôm nay':dateFilter==='week'?'7 ngày':'Các sự kiện gần nhất đã tải';
