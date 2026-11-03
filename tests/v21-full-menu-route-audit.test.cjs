@@ -1,0 +1,50 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const shell=fs.readFileSync('app/boot/32-v6494-aviation-shell.js','utf8');
+const runtime=fs.readFileSync('app/generated/runtime-1.js','utf8');
+const canonical=fs.readFileSync('app/core/runtime.v503hf2.bundle.js','utf8');
+const shellDef=shell.slice(shell.indexOf('const DEF='),shell.indexOf('let syncing=false'));
+const runtimeDef=runtime.slice(runtime.indexOf('const menuDefs='),runtime.indexOf('const ACTIVE_MENU_KEY='));
+const oldKeys=[...shellDef.matchAll(/key:'([^']+)'/g)].map(x=>x[1]);
+const newKeys=[...runtimeDef.matchAll(/key:"([^"]+)"/g)].map(x=>x[1]);
+assert.equal(new Set(oldKeys).size,oldKeys.length,'PC menu has duplicate keys');
+assert.equal(new Set(newKeys).size,newKeys.length,'native menu has duplicate keys');
+for(const key of oldKeys.filter(x=>x!=='home'))assert(newKeys.includes(key),key+' missing in native route table');
+for(const key of newKeys)assert(oldKeys.includes(key),key+' missing in PC landing menu');
+assert.equal(newKeys.filter(k=>k==='radio').length,1);
+assert(runtimeDef.indexOf('key:"radio"')>runtimeDef.indexOf('key:"myflight"'));
+assert(runtimeDef.indexOf('key:"history"')>runtimeDef.indexOf('key:"radio"'));
+assert(!shell.includes('ensurePcRadioFallback'),'no duplicate inserted PC radio button');
+const begin=runtime.indexOf('function navigateNativeMenu(key)'),end=runtime.indexOf('const UI_BACK_KEY=',begin);
+assert(begin>0&&end>begin);
+const handled=[],menuDefs=[{items:newKeys.map(key=>({key,available:()=>true,action:()=>handled.push(key)}))}];
+const cx={menuDefs,root:{SAGSAviationBeforeRoute:key=>handled.push('before:'+key)},setActiveMenu:key=>handled.push('active:'+key),closeDrawer:()=>handled.push('drawer'),setTimeout:fn=>{},sync(){},console,menuInteractedSinceAuth:false};
+vm.createContext(cx);vm.runInContext(runtime.slice(begin,end)+'\nthis.navigate=navigateNativeMenu;',cx);
+for(const key of newKeys){
+ const prior=handled.length;
+ assert.equal(cx.navigate(key),true,'native route '+key);
+ assert.deepEqual(handled.slice(prior),['before:'+key,'active:'+key,'drawer',key],'exactly one action for '+key);
+}
+assert.equal(cx.menuInteractedSinceAuth,true);
+assert.equal(cx.navigate('invalid-menu'),false);
+menuDefs[0].items.find(x=>x.key==='adcontrol').available=()=>false;
+assert.equal(cx.navigate('adcontrol'),false,'role restrictions must be enforced before invocation');
+assert.equal(runtime.includes('btn.onclick=()=>{if(!btn.disabled)navigateNativeMenu(key)}'),true);
+assert(canonical.includes('function navigateNativeMenu(key)'),'canonical and generated dispatchers must match');
+assert(runtime.includes('menuInteractedSinceAuth||overlayOpen()'),'delayed login navigation must not hijack an open screen');
+assert(runtime.includes('root.sagsV157NavigateMenu=navigateNativeMenu'),'direct native API must be exported');
+const begin2=shell.indexOf('function legacyButton(key)'),end2=shell.indexOf('function todayText()',begin2);
+assert(begin2>0&&end2>begin2);
+const routes=[],radio=[],oldClicks=[],el={hidden:false,classList:{contains:x=>x==='open',remove(){}},setAttribute(){}};
+const els={sagsRadioPanel:{hidden:true},sagsHistoryOverlay:el,sagsHistoryClose:{click(){routes.push('close-history');els.sagsHistoryOverlay.classList.contains=()=>false}},v6494AviationHome:{classList:{remove(){}},setAttribute(){}}};
+const rc={root:{sagsV157NavigateMenu:key=>{routes.push(key);return true},SAGSRadioCustodyV1:{open(){radio.push('open')},close(){radio.push('close')}},sagsV479GoHome(){routes.push('home')}},
+ document:{getElementById:id=>els[id]||null,querySelector:()=>({click(){oldClicks.push('hidden')}}),head:{appendChild(){}},body:{classList:{remove(){}}}},$:id=>els[id],role:()=>'',sync(){},scheduleSync(){},observeStateTargets(){},setTimeout(){},encodeURIComponent,Date,console,navTransitionUntil:0};
+vm.createContext(rc);vm.runInContext(shell.slice(begin2,end2)+'\nthis.triggerTest=trigger;',rc);
+for(const key of newKeys.filter(k=>k!=='radio')){rc.triggerTest(key);assert.equal(routes.at(-1),key,'PC '+key+' must enter matching native action');}
+assert.equal(oldClicks.length,0,'No PC click should be synthesized on a hidden native menu');
+rc.triggerTest('radio');
+assert.deepEqual(radio,['open'],'radio must open once');
+els.sagsRadioPanel.hidden=false;
+rc.triggerTest('history');assert.deepEqual(radio,['open','close'],'switch away must close previous radio screen');
+rc.triggerTest('home');assert.equal(routes.at(-1),'home');
+console.log('Full PC/mobile route table: '+newKeys.length+' native tasks, '+oldKeys.length+' landing keys, one dispatch each PASS');
