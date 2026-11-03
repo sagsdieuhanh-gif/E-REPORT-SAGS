@@ -5,7 +5,6 @@
   const $ = id => document.getElementById(id);
   const brand = '<b>E-REPORT <em>SAGS</em></b><small>AIRPORT GROUND OPERATIONS</small>';
   const CARRIER_GUIDE = './data/carrier-service-guide.json';
-  // Display identity only; roster permissions continue to use the service guide.
   const AIRLINE_NAMES = {HAV:'HAV Aviation',VJ:'Vietjet Air',QH:'Bamboo Airways',DV:'SCAT Airlines',KC:'Air Astana',C6:'Centrum Air',KA:'Aero Nomad Airlines',N4:'Nordwind Airlines',AK:'AirAsia',FD:'Thai AirAsia',KE:'Korean Air',BX:'Air Busan',WE:'Parata Air',RF:'Aero K',TW:'Trinity Airways',OZ:'Asiana Airlines',LJ:'Jin Air','3U':'Sichuan Airlines',UQ:'Urumqi Air',DR:'Ruili Airlines',TR:'Scoot',HY:'Uzbekistan Airways',HU:'Hainan Airlines',VZ:'Thai Vietjet Air','9G':'Sun PhuQuoc Airways',B2:'Belavia',VU:'Vietravel Airlines',EO:'EO'};
   let pending = false, overviewKey = '', carrierPromise = null, logoObserver = null;
   let stripPending = false, flightView = null, showAll = false, tableFrame = 0, flightRevision = 0, lastFlightRenderKey = '', workspaceBrandTimer = 0, workspaceBrandRetryToken = 0;
@@ -142,7 +141,6 @@
     const {groups,carriers,api}=flightView;
     if(matchMedia('(max-width:767px)').matches)return;
     const scroll=queue.closest('.v6494Scroll');
-    // Home shows only the rows that fit below its header; expand on request.
     const queueTop=queue.getBoundingClientRect().top-(scroll?.getBoundingClientRect().top||0)+(scroll?.scrollTop||0);
     const available=(scroll?.clientHeight || innerHeight)-queueTop-100;
     const limit=Math.max(1,Math.min(10,Math.floor(available/48)));
