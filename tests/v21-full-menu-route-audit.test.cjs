@@ -36,7 +36,7 @@ assert(runtime.includes('root.sagsV157NavigateMenu=navigateNativeMenu'),'direct 
 const begin2=shell.indexOf('function legacyButton(key)'),end2=shell.indexOf('function todayText()',begin2);
 assert(begin2>0&&end2>begin2);
 const routes=[],radio=[],oldClicks=[],el={hidden:false,classList:{contains:x=>x==='open',remove(){}},setAttribute(){}};
-const els={sagsRadioPanel:{hidden:true},sagsHistoryOverlay:el,sagsHistoryClose:{click(){routes.push('close-history');els.sagsHistoryOverlay.classList.contains=()=>false}},v6494AviationHome:{classList:{remove(){}},setAttribute(){}}};
+const els={'sags-radio-custody-style':{},sagsRadioPanel:{hidden:true},sagsHistoryOverlay:el,sagsHistoryClose:{click(){routes.push('close-history');els.sagsHistoryOverlay.classList.contains=()=>false}},v6494AviationHome:{classList:{remove(){}},setAttribute(){}}};
 const rc={root:{sagsV157NavigateMenu:key=>{routes.push(key);return true},SAGSRadioCustodyV1:{open(){radio.push('open')},close(){radio.push('close')}},sagsV479GoHome(){routes.push('home')}},
  document:{getElementById:id=>els[id]||null,querySelector:()=>({click(){oldClicks.push('hidden')}}),head:{appendChild(){}},body:{classList:{remove(){}}}},$:id=>els[id],role:()=>'',sync(){},scheduleSync(){},observeStateTargets(){},setTimeout(){},encodeURIComponent,Date,console,navTransitionUntil:0};
 vm.createContext(rc);vm.runInContext(shell.slice(begin2,end2)+'\nthis.triggerTest=trigger;',rc);
