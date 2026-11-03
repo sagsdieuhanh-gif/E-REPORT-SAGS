@@ -47,7 +47,7 @@ const DEF=[
 {key:'settings',label:'Cài đặt',meta:'Giao diện & tùy chọn'}
 ]}
 ];
-let syncing=false,stateObserver=null,lastMenuSignature='',syncFrame=0,menuPointerActive=false,pendingMenuRender=false,pointerMenuKey='';
+let syncing=false,stateObserver=null,lastMenuSignature='',syncFrame=0,menuPointerActive=false,pendingMenuRender=false,pointerMenuKey='',pointerSerial=0;
 let navTransitionUntil=0;
 function session(){try{return root.__sagsGetSession?.()||{}}catch(_){return{}}}
 function profile(){const s=session();return s.profile||root.currentUserProfile||{}}
@@ -161,11 +161,11 @@ document.body.appendChild(el);
 el.addEventListener('pointerdown',e=>{
  const b=e.target?.closest?.('[data-v6494-key],[data-v6494-account]');
  pointerMenuKey=b?.dataset?.v6494Key||'';
- if(b)menuPointerActive=true;
+ if(b){menuPointerActive=true;pointerSerial++}
 });
 const releasePointer=()=>{
  if(!menuPointerActive)return;
- setTimeout(()=>{menuPointerActive=false;pointerMenuKey='';if(pendingMenuRender){pendingMenuRender=false;lastMenuSignature='';renderMenus()}},350);
+ const serial=pointerSerial;setTimeout(()=>{if(serial!==pointerSerial)return;menuPointerActive=false;pointerMenuKey='';if(pendingMenuRender){pendingMenuRender=false;lastMenuSignature='';renderMenus()}},350);
 };
 document.addEventListener('pointerup',releasePointer,true);
 document.addEventListener('pointercancel',releasePointer,true);
