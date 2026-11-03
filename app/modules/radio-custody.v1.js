@@ -352,6 +352,7 @@ async function submit(){
    }else sig=signature();
   }
   notify('Đang xác nhận với Firebase, vui lòng không bấm lại…');
+ const writeRadioTransaction=async()=>{
  const db=fs(),ref=db.collection(COLLECTION).doc(code);
  if(mode==='SWAP_OUT'){
   const other=$('radioSwapTarget').value,ref2=db.collection(COLLECTION).doc(other),swapId=db.collection(EVENTS).doc().id;
@@ -380,6 +381,21 @@ async function submit(){
    else throw Error('Tác vụ không được hỗ trợ.');
    updateDevice(tx,ref,d,action,after,{user,shift:shiftVal,reason:reasonCode,details:evidenceDetails(details,photos.old?.at),sig,related:'',swapId:''});
   });
+ }
+
+ };
+ try{await writeRadioTransaction()}
+ catch(error){
+  // Firebase Production may still have the legacy WebP/PNG-only rule.
+  // Permission-denied rejects the complete atomic transaction: retry once
+  // using the same real camera capture and ink as permitted PNG, never fake success.
+  const denied=String(error?.code||'').includes('permission-denied');
+  if(!denied||!/^data:image\/jpeg;base64,/.test(sig))throw error;
+  notify('Firebase chưa cho phép ảnh JPEG. Đang tự chuyển ảnh sang PNG để lưu an toàn…');
+  await new Promise(resolve=>requestAnimationFrame(resolve));
+  sig=combineProof('old','png');
+  if(mode==='SWAP_OUT')sigNew=combineProof('new','png');
+  await writeRadioTransaction();
  }
  cancel();notify('Đã ghi nhận lên Firebase với thời gian máy chủ và lưu sự kiện lịch sử.');
  }catch(e){notify(errText(e),true)}finally{setBusy(false)}
