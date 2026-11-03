@@ -47,7 +47,7 @@ const DEF=[
 {key:'settings',label:'Cài đặt',meta:'Giao diện & tùy chọn'}
 ]}
 ];
-let syncing=false,stateObserver=null,lastMenuSignature='',syncFrame=0,menuPointerActive=false,pendingMenuRender=false;
+let syncing=false,stateObserver=null,lastMenuSignature='',syncFrame=0,menuPointerActive=false,pendingMenuRender=false,pointerMenuKey='';
 let navTransitionUntil=0;
 function session(){try{return root.__sagsGetSession?.()||{}}catch(_){return{}}}
 function profile(){const s=session();return s.profile||root.currentUserProfile||{}}
@@ -95,6 +95,7 @@ setTimeout(()=>{observeStateTargets();scheduleSync()},2300);
 return ticket;
 }
 function trigger(key){
+if(key!=='home'&&key!=='radio'&&root.sagsV157NavigateMenu?.(key)){scheduleSync();return}
 const ticket=beforeRoute(key);
 if(key==='home'){try{root.sagsV479GoHome?.()}catch(_){}sync();return}
 if(key==='radio'){
@@ -159,17 +160,19 @@ el.innerHTML='<aside class="v6494Side">'+
 document.body.appendChild(el);
 el.addEventListener('pointerdown',e=>{
  const b=e.target?.closest?.('[data-v6494-key],[data-v6494-account]');
- if(!b)return;
- menuPointerActive=true;
+ pointerMenuKey=b?.dataset?.v6494Key||'';
+ if(b)menuPointerActive=true;
 });
 const releasePointer=()=>{
  if(!menuPointerActive)return;
- setTimeout(()=>{menuPointerActive=false;if(pendingMenuRender){pendingMenuRender=false;lastMenuSignature='';renderMenus()}},160);
+ setTimeout(()=>{menuPointerActive=false;pointerMenuKey='';if(pendingMenuRender){pendingMenuRender=false;lastMenuSignature='';renderMenus()}},350);
 };
 document.addEventListener('pointerup',releasePointer,true);
 document.addEventListener('pointercancel',releasePointer,true);
 el.addEventListener('click',e=>{
-const b=e.target.closest('[data-v6494-key]');if(b){e.preventDefault();e.stopPropagation();trigger(b.dataset.v6494Key);return}
+const b=e.target.closest('[data-v6494-key]');
+if(pointerMenuKey&&pointerMenuKey!==b?.dataset?.v6494Key){const key=pointerMenuKey;pointerMenuKey='';e.preventDefault();e.stopPropagation();trigger(key);return}
+if(b){pointerMenuKey='';e.preventDefault();e.stopPropagation();trigger(b.dataset.v6494Key);return}
 const a=e.target.closest('[data-v6494-account]');if(a){e.preventDefault();e.stopPropagation();if(a.dataset.v6494Account==='logout'){$('v157LogoutBtn')?.click()}else trigger('settings')}
 });
 const search=el.querySelector('#v6494Search');
