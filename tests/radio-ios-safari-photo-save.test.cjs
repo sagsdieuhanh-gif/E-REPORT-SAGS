@@ -63,6 +63,6 @@ assert.match(webp,/^data:image\/webp;base64,/);
 assert(webp.length<=44000);
 assert.equal(chromium.stats().readbacks,0,'WebP-capable browsers retain existing fast encoding path');
 const invalid=createHarness(false);
-vm.runInContext("document.createElement=()=>{const c={width:1,height:1,toDataURL:t=>t==='image/webp'?'data:image/png;base64,x':'data:image/png;base64,'+'B'.repeat(60000),getContext:()=>({fillRect(){},fillText(){},drawImage(){},getImageData:()=>({data:new Uint8ClampedArray(4)}),putImageData(){}})};return c}",invalid.ctx);
+vm.runInContext("document.createElement=()=>{const c={width:1,height:1,toDataURL:t=>t==='image/webp'?'data:image/png;base64,x':'data:image/png;base64,'+'B'.repeat(60000),getContext:()=>({clearRect(){},fillRect(){},fillText(){},drawImage(){},getImageData:()=>({data:new Uint8ClampedArray(4)}),putImageData(){}})};return c}",invalid.ctx);
 assert.throws(()=>invalid.ctx.combineProofTest('old'),/chưa được ghi nhận/,'never fabricate a successful save when evidence cannot fit');
 console.log('Safari PNG/WebP photo signatures, original camera+ink, Firebase 45k rules, and visible iOS save status PASS');
