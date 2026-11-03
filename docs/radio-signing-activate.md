@@ -5,7 +5,7 @@
 ## Đã kiểm thử trong Firebase Emulator
 - AD tạo danh mục 12 máy DH01–DH11 và TBDH02.
 - Nhận/trả/đổi máy an toàn, giao dịch đổi hai máy nguyên tử; không cấp trùng.
-- Người dùng ký WebP hoặc PNG (iOS/Safari fallback); ghi giờ máy chủ, trạng thái pin và mã người ký.
+- Người dùng ký WebP (Chrome/Android), JPEG (Safari/iOS sau khi cập nhật Rules) hoặc PNG (tương thích Rules cũ). Ảnh camera, giờ và nét ký được ghép chung; ghi giờ máy chủ, trạng thái pin và mã người ký.
 - Không cho sửa/xóa lịch sử, nhân viên chỉ xem lịch sử do mình thực hiện.
 - Máy pin yếu được cách ly; chỉ AD được xác nhận mở lại.
 
@@ -23,3 +23,9 @@
 - Lịch gửi email bị vô hiệu hóa, không cần và không sử dụng để ký nhận.
 - Không xóa IndexedDB/cache nháp chuyến bay; không xóa lịch sử ký nhận bộ đàm.
 - Commit GitHub và bài kiểm thử Emulator **không tự triển khai Firestore Rules lên Firebase Production**.
+
+## Chất lượng ảnh iOS · bản cập nhật 09
+- iOS Safari ưu tiên JPEG thay cho PNG giảm bảng màu khiến ảnh bị bệt; Android vẫn ưu tiên WebP.
+- Phải cập nhật **Firestore Production Rules** để bật JPEG. Đã chuẩn bị thay đổi trong cả `firebase/firestore.rules` và `firebase/radio-custody.rules.snippet`, chỉ mở thêm `data:image/jpeg` và không thay giới hạn 45.000 ký tự, phân quyền, dấu thời gian, hoặc tính bất biến.
+- Cập nhật mã trên GitHub Pages **không tự triển khai** Firestore Production Rules; xác nhận trong Firebase Console trước khi kết luận chất lượng ảnh đã được nâng cấp.
+- Khi JPEG bị từ chối `permission-denied` bởi Rules cũ, ứng dụng thử lại **một lần** với PNG ký xác nhận thực tế để nhân viên không bị kẹt; PNG tương thích cũ có thể mờ hơn. Không bao giờ ghi nhận thành công khi Firebase từ chối cả hai định dạng.
