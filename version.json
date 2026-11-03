@@ -2,11 +2,11 @@
   "version": "V2.1",
   "displayVersion": "V2.1",
   "label": "V2.1 - KÝ NHẬN BỘ ĐÀM: PC, LỊCH SỬ, PDF VÀ NHẮC VIỆC",
-  "build": "V2.1-20261103-IOS-RADIO-SAVE-08",
-  "releasedAt": "2026-11-03",
-  "type": "ios-safari-radio-proof-save-compatibility",
+  "build": "V2.1-20261104-IOS-RADIO-QUALITY-09",
+  "releasedAt": "2026-11-04",
+  "type": "ios-radio-proof-image-quality-jpeg",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Safari không thể xuất Canvas WebP. Tự phát hiện định dạng được hỗ trợ; trên iOS đóng gói ảnh camera + chữ ký thành PNG được tối ưu trong giới hạn 45.000 ký tự của Firestore Rules hiện có. Hiển thị tình trạng lưu và lỗi ngay cạnh nút xác nhận, bảo vệ pointer/touch ký và vùng an toàn Safari. Không cho lưu khi thiếu ảnh, chữ ký, ảnh cũ hoặc Firebase offline; không thay đổi phân quyền hoặc nghiệp vụ.",
-  "message": "Sửa lỗi không lưu được nhận/trả bộ đàm trên iPhone Safari: mã hóa bằng chứng PNG tương thích, bảo đảm vẫn có ảnh và chữ ký."
+  "notes": "Safari ưu tiên JPEG có chữ ký và giờ ảnh thay cho PNG giảm màu mạnh; tăng độ nét ảnh xem trước; lịch sử/PDF hỗ trợ JPEG; quy tắc Firestore đề xuất chấp nhận JPEG cùng WebP/PNG nhưng không mở rộng quyền. Khi Production Rules chưa cập nhật, giao dịch JPEG bị từ chối sẽ thử lại đúng một lần bằng ảnh PNG thật để bảo vệ việc nhận/trả. Ảnh mới không làm thay đổi lịch sử cũ; giữ xác nhận camera bắt buộc và thời gian máy chủ.",
+  "message": "Nâng chất lượng ảnh ký nhận bộ đàm iPhone: JPEG rõ nét, giữ PNG dự phòng khi Firebase chưa cho phép JPEG."
 }
