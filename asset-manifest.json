@@ -1,7 +1,7 @@
 {
   "schema": 2,
   "version": "V2.1",
-  "build": "V2.1-20261103-MENU-ROUTER-05",
+  "build": "V2.1-20261103-PC-STABLE-06",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -18,12 +18,12 @@
       "bytes": 1253
     },
     "./app/boot/05-legacy.js": {
-      "sha256": "971f2c6326eaab1d365e0fa546af441273b76afdd3551ab011c9f62caa76d9c7",
-      "bytes": 307227
+      "sha256": "dc754bed5522018898cb5a881959c5515c8e5d89139479430898c0104a75f082",
+      "bytes": 306710
     },
     "./app/boot/06-legacy.js": {
-      "sha256": "e1fb74054b389fc37a470148dc364e101b6e8e9eb8e0e54ec60ce36c24d6f690",
-      "bytes": 397937
+      "sha256": "d4bc56b772b86ab50da5cee374faf58bfdb4e28cc66d6c5de6e711945c7cb4d4",
+      "bytes": 397660
     },
     "./app/boot/07-legacy.js": {
       "sha256": "f08b12c510ccd4c0a537806995959c9b2a75891e2b8795308158b44ddce7d641",
@@ -90,12 +90,12 @@
       "bytes": 15990
     },
     "./app/boot/32-v6494-aviation-shell.js": {
-      "sha256": "1c3285e9a0e14c0aa01b67bbec10e477cbb271019251958c8a9763e07cbb7b4e",
-      "bytes": 17965
+      "sha256": "b8165751f628103ff7edb922213d12d2508cc9c1cddc1ea19a38e28b8edf6fdc",
+      "bytes": 19296
     },
     "./app/boot/33-v6497-dossier-enhancements.js": {
-      "sha256": "7ccc4b3372e1fc62b8658451fe98ecdc8e9d09d2ccc2041f0011e0db04d11c60",
-      "bytes": 19210
+      "sha256": "be20733f28cb8b04ea924d272294b17ce95ef6c688a4e2a60bc8a28f7bff24f3",
+      "bytes": 19039
     },
     "./app/generated/boot-group-1.js": {
       "sha256": "67bbcd6af335dcb6e97032a45fbee65ecff090e7f5e09314bde194074e944505",
@@ -190,8 +190,8 @@
       "bytes": 27827
     },
     "./app/modules/aviation-reference.v1.js": {
-      "sha256": "82e841ebd95426141f6257142d7710ba78992db64711d606ef8af09bf7eeef81",
-      "bytes": 20915
+      "sha256": "e13889cd06cded2e22d49fc248e9aae4123f7a473caeed0b3df601732f33a97d",
+      "bytes": 20755
     },
     "./app/modules/business-text.v1.js": {
       "sha256": "81a12f87e3969fb4bbb331ccd03535ccb096192a57b701ca8222f24aa15a0d38",
@@ -202,8 +202,8 @@
       "bytes": 3405
     },
     "./app/modules/carrier-notebook.v1.js": {
-      "sha256": "1d344c7717f1b7dae842f6e2447b5b9ea0791a02bbce36b448540fd63ab01cf9",
-      "bytes": 51899
+      "sha256": "8b3ee91344bf3489f0690a58926e2c05f9b863fe51656a3c5dbcefdafb520174",
+      "bytes": 52027
     },
     "./app/modules/cloud-draft-sync.v2.js": {
       "sha256": "fd8365746dd5363210d847cb607343339df20be495e3838d1664b3cc0706bf04",
@@ -290,16 +290,16 @@
       "bytes": 19587
     },
     "./app/modules/radio-custody.v1.js": {
-      "sha256": "3fd799debe0c865694925a0049aeca8fb852ee2e194aaa9c648771a4919984fe",
-      "bytes": 50689
+      "sha256": "efb2becb67aec8fd60cee06f82428ec7507969e58b69dee01b1c3ba3e9f383d9",
+      "bytes": 50913
     },
     "./app/modules/radio-reminders.v21.js": {
       "sha256": "d22a59b3fb19bb8175adf2c011b1b4990a455c9ed076087f313d983efdb8e757",
       "bytes": 9770
     },
     "./app/modules/roster-lite.v5.js": {
-      "sha256": "0a80b3cbdaf7e644270d361e74c2c89a09dae7523572b30f68a7bd6b9d684899",
-      "bytes": 26445
+      "sha256": "36ed4962af16d6365220fefb5319e2c81dbd05e11e32ca7ff3154443f54d06cc",
+      "bytes": 26114
     },
     "./app/modules/roster-open-guard.v1.js": {
       "sha256": "2dd621f3f4958d5830c0da7b9560dda5969e4198e6cfe3d9e90e1ff9ec8423c0",
@@ -774,8 +774,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "107f26ae68410357b2d7bbd128bd42a8e7756ca523c9109ab628a5e403b3c1f2",
-      "bytes": 104360
+      "sha256": "ca446908ecf12ec379758f11c20e1691f198e9a46f3b880b50e01ae727feb2e3",
+      "bytes": 104202
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -826,16 +826,20 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "1042ff5f53c51b5eae30df52a169f19d90dfce784a81c88987f6a13f90c1a803",
-      "bytes": 22543
+      "sha256": "8db75c156ca5d438a9856d381ca6f98f3f164c04ca21175a66324d2ed2035406",
+      "bytes": 22537
     },
     "./storage-recovery.html": {
       "sha256": "08817204a946fbdfa404e8c083dd0c2016e935fb8fe56ff8ef99f405978d3df6",
       "bytes": 26106
     },
     "./version.json": {
-      "sha256": "2488ec558ddb846cbd19aeda90fef1ee7ecedcb8c770f752e8bcac139c30f113",
-      "bytes": 854
+      "sha256": "0432abc2631f96c19535dda6e7a3defbf007196b52aa7475fd5efceb9aa56b5d",
+      "bytes": 856
+    },
+    "./app/boot/29-sags-v6118-carrier-lazy.js": {
+      "sha256": "bf085a833fd2d51d207f4778fd2632eb0cd305ca03088b073282cfc26522d798",
+      "bytes": 1466
     }
   },
   "mutableAssets": [
