@@ -94,7 +94,17 @@ setTimeout(()=>{observeStateTargets();scheduleSync()},2300);
 return ticket;
 }
 function trigger(key){
-if(key!=='home'&&key!=='radio'&&root.sagsV157NavigateMenu?.(key)){scheduleSync();return}
+if(key!=='home'&&key!=='radio'){
+ if(root.sagsV157NavigateMenu?.(key)){scheduleSync();return}
+ if(key==='history'&&typeof root.SAGSFormEditHistoryV1?.open==='function'){
+  beforeRoute(key);root.sagsV157MarkMenuInteraction?.();root.SAGSFormEditHistoryV1.open();return
+ }
+ if(key==='settings'&&typeof root.sagsOpenSettings==='function'){
+  beforeRoute(key);root.sagsV157MarkMenuInteraction?.();root.sagsOpenSettings();return
+ }
+ console.warn('PC menu route unavailable',key);return
+}
+root.sagsV157MarkMenuInteraction?.();
 const ticket=beforeRoute(key);
 if(key==='home'){try{root.sagsV479GoHome?.()}catch(_){}sync();return}
 if(key==='radio'){
@@ -119,16 +129,6 @@ root.__sagsRadioModuleLoading.then(()=>{if(ticket===navigationEpoch)root.SAGSRad
 }
 setTimeout(scheduleSync,0);return
 }
-if(key==='history'){if(root.sagsV157NavigateMenu?.('history'))return;try{root.SAGSFormEditHistoryV1?.open?.()}catch(e){console.warn('History UI unavailable',e)}return}
-if(key==='notice'){if(root.sagsV157NavigateMenu?.('notice'))return;if(typeof root.sagsFlightNoticeOpen==='function'){root.sagsFlightNoticeOpen();return}}
-if(key==='settings'){
-if(root.sagsV157NavigateMenu?.('settings'))return;
-const b=legacyButton('settings');
-if(b&&!b.disabled){b.click();return}
-try{root.sagsOpenSettings?.()}catch(e){console.error('Settings home action failed',e)}return;
-}
-if(root.sagsV157NavigateMenu?.(key)){scheduleSync();return}
-const b=legacyButton(key);if(b&&!b.disabled){b.click();scheduleSync();setTimeout(scheduleSync,120);return}
 }
 function todayText(){try{return new Intl.DateTimeFormat('vi-VN',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'}).format(new Date())}catch(_){return new Date().toLocaleDateString()}}
 function ensure(){

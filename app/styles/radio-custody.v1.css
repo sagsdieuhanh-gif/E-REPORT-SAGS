@@ -102,3 +102,11 @@
 .radioAuditRow .radioViewProof{margin:0;min-height:38px}
 @media(max-width:950px){.radioAuditHead{display:none}.radioAuditRow{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.radioAuditRow small{display:block;color:#8fbbca;font-size:9px;font-weight:750;margin-bottom:4px}.radioAuditRow>div:nth-child(n+4){grid-column:1/-1}}
 @media(max-width:560px){.radioHistoryFilters{grid-template-columns:1fr 1fr}.radioHistoryFilters label:last-child{grid-column:1/-1}.radioAuditRow{padding:10px}.radioAuditRow .radioViewProof{width:100%}}
+
+/* AD export decision: always visible next to radio history/summary, never a hidden second action. */
+.radioPdfChoice{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 0;padding:11px 13px;background:#103448;border:1px solid #4c91a2;border-radius:11px;color:#eafaff}
+.radioPdfChoice[hidden]{display:none!important}
+.radioPdfChoice label{display:flex;align-items:center;gap:9px;font-weight:750;font-size:13px;cursor:pointer}
+.radioPdfChoice input[type="checkbox"]{width:21px;height:21px;flex:0 0 21px;accent-color:#39d5d8;cursor:pointer}
+.radioPdfChoice small{font-size:11px;line-height:1.45;color:#c4e1ea}
+@media(max-width:680px){.radioPdfChoice{align-items:flex-start;flex-direction:column}.radioPdfChoice label{font-size:12px}}

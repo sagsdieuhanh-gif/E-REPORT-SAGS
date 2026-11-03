@@ -2,11 +2,11 @@
   "version": "V2.1",
   "displayVersion": "V2.1",
   "label": "V2.1 - KÝ NHẬN BỘ ĐÀM: PC, LỊCH SỬ, PDF VÀ NHẮC VIỆC",
-  "build": "V2.1-20261103-PC-STABLE-06",
+  "build": "V2.1-20261103-PC-ROUTE-PHOTO-PDF-07",
   "releasedAt": "2026-11-03",
-  "type": "pc-menu-click-stability",
+  "type": "pc-route-state-and-ad-pdf-photo-choice",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Chặn menu thay đổi DOM khi đang nhấn chuột; ưu tiên mã mục lúc pointerdown trước khi menu tái dựng. Bỏ lượt mở Sổ tay hãng tải trễ sau khi chọn tác vụ khác, đóng cửa sổ radio/history/notebook cũ an toàn. Không thay đổi quy tắc roster, biểu mẫu, ký nhận/ảnh/PDF và Firebase.",
-  "message": "V2.1 PC: cố định mục được nhấn, bỏ lệnh Sổ tay mở muộn, bảo đảm đóng Ký nhận khi chuyển menu."
+  "notes": "Chặn tự về Trang chủ/My Flight và tự khôi phục màn hình cũ sau khi bấm menu, bỏ hoàn toàn click hộ menu ẩn. AD chọn Kèm ảnh chụp và chữ ký khi xuất PDF trong Lịch sử ký nhận hoặc Tổng hợp; file gồm bảng tổng hợp cùng phụ lục ảnh từng sự kiện đã tải, báo rõ mục không có ảnh; không còn giới hạn 16 sự kiện/lần, xử lý ảnh JPEG tuần tự để giảm RAM. Giữ nguyên quy tắc biểu mẫu, roster, dữ liệu Firebase và bắt buộc chụp ảnh khi ký nhận.",
+  "message": "V2.1: sửa menu PC tự nhảy tác vụ và thêm lựa chọn PDF có hoặc không có ảnh ký nhận cho AD."
 }
