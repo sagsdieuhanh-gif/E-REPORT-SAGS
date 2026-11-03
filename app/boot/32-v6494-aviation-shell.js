@@ -1,4 +1,3 @@
-/* E-REPORT SAGS navigation shell */
 (function(root){
 'use strict';
 const BUILD='V6.4.101-20261006-MOBILE-UX-SPEED-01';
@@ -47,7 +46,7 @@ const DEF=[
 {key:'settings',label:'Cài đặt',meta:'Giao diện & tùy chọn'}
 ]}
 ];
-let syncing=false,stateObserver=null,lastMenuSignature='',syncFrame=0;
+let syncing=false,stateObserver=null,lastMenuSignature='',syncFrame=0,menuPointerActive=false,pendingMenuRender=false,pointerMenuKey='',pointerSerial=0;
 let navTransitionUntil=0;
 function session(){try{return root.__sagsGetSession?.()||{}}catch(_){return{}}}
 function profile(){const s=session();return s.profile||root.currentUserProfile||{}}
@@ -75,9 +74,16 @@ let navigationEpoch=0;
 function beforeRoute(key){
 const ticket=++navigationEpoch;
 const radioPanel=$('sagsRadioPanel');
-if(key!=='radio'&&radioPanel&&!radioPanel.hidden)root.SAGSRadioCustodyV1?.close?.();
+if(key!=='radio'&&radioPanel&&!radioPanel.hidden){
+ try{root.SAGSRadioCustodyV1?.close?.()}catch(e){console.warn('Radio close failed',e);radioPanel.hidden=true}
+}
 const history=$('sagsHistoryOverlay');
-if(key!=='history'&&history?.classList?.contains('open'))$('sagsHistoryClose')?.click?.();
+if(key!=='history'&&history?.classList?.contains('open')){
+ try{$('sagsHistoryClose')?.click?.()}catch(e){console.warn('History close failed',e)}
+ history.classList.remove('open');
+}
+const guide=$('csgModal');
+if(key!=='guide'&&guide?.classList?.contains('open'))guide.classList.remove('open');
 if(key!=='home'){
 navTransitionUntil=Date.now()+2200;
 const home=$('v6494AviationHome');
@@ -88,6 +94,7 @@ setTimeout(()=>{observeStateTargets();scheduleSync()},2300);
 return ticket;
 }
 function trigger(key){
+if(key!=='home'&&key!=='radio'&&root.sagsV157NavigateMenu?.(key)){scheduleSync();return}
 const ticket=beforeRoute(key);
 if(key==='home'){try{root.sagsV479GoHome?.()}catch(_){}sync();return}
 if(key==='radio'){
@@ -150,8 +157,21 @@ el.innerHTML='<aside class="v6494Side">'+
 '<nav class="v6494Bottom"><button class="active" type="button" data-v6494-key="home">'+ICONS.home+'<span>Trang chủ</span></button><button type="button" data-v6494-key="myflight">'+ICONS.myflight+'<span>My Flight</span></button><button type="button" data-v6494-key="notice">'+ICONS.notice+'<span>Thông báo</span></button></nav>'+
 '</section>';
 document.body.appendChild(el);
+el.addEventListener('pointerdown',e=>{
+ const b=e.target?.closest?.('[data-v6494-key],[data-v6494-account]');
+ pointerMenuKey=b?.dataset?.v6494Key||'';
+ if(b){menuPointerActive=true;pointerSerial++}
+});
+const releasePointer=()=>{
+ if(!menuPointerActive)return;
+ const serial=pointerSerial;setTimeout(()=>{if(serial!==pointerSerial)return;menuPointerActive=false;pointerMenuKey='';if(pendingMenuRender){pendingMenuRender=false;lastMenuSignature='';renderMenus()}},350);
+};
+document.addEventListener('pointerup',releasePointer,true);
+document.addEventListener('pointercancel',releasePointer,true);
 el.addEventListener('click',e=>{
-const b=e.target.closest('[data-v6494-key]');if(b){e.preventDefault();e.stopPropagation();trigger(b.dataset.v6494Key);return}
+const b=e.target.closest('[data-v6494-key]');
+if(pointerMenuKey&&pointerMenuKey!==b?.dataset?.v6494Key){const key=pointerMenuKey;pointerMenuKey='';e.preventDefault();e.stopPropagation();trigger(key);return}
+if(b){pointerMenuKey='';e.preventDefault();e.stopPropagation();trigger(b.dataset.v6494Key);return}
 const a=e.target.closest('[data-v6494-account]');if(a){e.preventDefault();e.stopPropagation();if(a.dataset.v6494Account==='logout'){$('v157LogoutBtn')?.click()}else trigger('settings')}
 });
 const search=el.querySelector('#v6494Search');
@@ -166,6 +186,7 @@ function renderMenus(){
 const visible=DEF.map(sec=>({group:sec.group,items:sec.items.filter(x=>available(x.key))})).filter(sec=>sec.items.length);
 const sig=visible.map(sec=>sec.group+':'+sec.items.map(x=>x.key).join(',')).join('|');
 if(sig===lastMenuSignature)return;
+if(menuPointerActive){pendingMenuRender=true;return}
 const el=ensure(),nav=el.querySelector('#v6494Nav'),mobile=el.querySelector('#v6494MobileMenu');
 const navHtml=visible.map(sec=>'<section><h3>'+esc(sec.group)+'</h3>'+sec.items.map(x=>menuCard(x,true)).join('')+'</section>').join('');
 const mobileHtml=visible.map(sec=>'<div class="v6494MobileGroup"><h3>'+esc(sec.group)+'</h3><div>'+sec.items.map(x=>menuCard(x,false)).join('')+'</div></div>').join('');
@@ -236,6 +257,16 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden){observeSt
 document.addEventListener('click',e=>{if(e.target?.closest?.('#v157MenuBody [data-v157-key]'))setTimeout(scheduleSync,0)},true);
 document.addEventListener('click',e=>{if(e.target?.closest?.('[data-v6494-key],[data-v6494-account],#v157LogoutBtn,.fwcHead button,.sagsAdminTopActions button'))setTimeout(scheduleSync,0)},true);
 }
+root.SAGSAviationRouteToken=()=>navigationEpoch;
+root.sagsV6118OpenCarrierNotebook=function(){
+ const ticket=navigationEpoch;
+ try{return root.sagsV6118LoadCarrierNotebook().then(()=>{
+  if(ticket!==navigationEpoch)return;
+  if(typeof root.sagsCarrierGuideOpen!=='function')throw Error('Sổ tay chưa khởi tạo');
+  return root.sagsCarrierGuideOpen();
+ }).catch(e=>{if(ticket===navigationEpoch)root.alert?.('Không mở được Sổ tay hãng: '+String(e?.message||e))})}
+ catch(e){if(ticket===navigationEpoch)root.alert?.(String(e?.message||e))}
+};
 root.SAGSAviationBeforeRoute=beforeRoute;
 root.SAGSAviationOpenRadio=()=>trigger('radio');
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();

@@ -29,7 +29,6 @@ function teardown(){if(live.ref&&live.handler)try{live.ref.off('value',live.hand
 function localRead(user,d){try{const o=JSON.parse(localStorage.getItem(cacheKey(user,d))||'null');if(o?.user===user&&o.date===d&&o.items&&typeof o.items==='object')return compact(o.items,user,d)}catch(_){}return null}
 function persistLocal(){try{localStorage.setItem(cacheKey(live.user,live.date),JSON.stringify({user:live.user,date:live.date,atMs:Date.now(),items:live.items}))}catch(_) {}}
 function waitMailbox(pending,owner,d){
-  // Show only a previously downloaded personal/day list if Firebase is offline.
   return Promise.race([pending,new Promise((resolve,reject)=>setTimeout(()=>{
     if(live.user!==owner||live.date!==d)return reject(new Error('Đã đổi tài khoản hoặc ngày, hãy mở lại MY FLIGHT.'));
     if(live.local)return resolve(live.items);
@@ -47,8 +46,6 @@ async function ensureMailbox(d){
   }
   const owner=u,day=d;live.promise=new Promise((resolve,reject)=>{live.resolve=resolve;live.reject=reject});const pending=live.promise;
   try{
-    // IMPORTANT: RTDB rules should index roster_mail/$uid/items on opDate.
-    // equalTo restricts the payload to this account's ONE requested operation date.
     const ref=root.sagsV470Ref(`roster_mail/${safe(owner)}/items`).orderByChild('opDate').equalTo(day);
     live.ref=ref;const handler=snap=>{
       if(live.user!==owner||live.date!==day)return;
@@ -300,7 +297,6 @@ async function refreshLite(){
   if(role()==='AD'||isCargoRole()){
     const d=date(),result=await baseRefresh?.call(root);scheduleCanonicalRoleView(d);return result;
   }
-  // A live mailbox is already current: reopening/refreshing must not download it again.
   if(live.loaded&&live.ref){root.sagsV477InvalidateQueueStatus?.();return openLite(date());}
   root.sagsV477InvalidateQueueStatus?.();if(live.ref){try{const snap=await live.ref.once('value');if(live.handler)live.handler(snap)}catch(_){}}return openLite(date());
 }
