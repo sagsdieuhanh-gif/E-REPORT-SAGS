@@ -43,9 +43,9 @@ function tpl(){
  p.innerHTML='<div class="radioShell"><header class="radioHeader"><div><small>QUẢN LÝ THIẾT BỊ · SAGS</small><h2>📻 Ký nhận bộ đàm</h2><p>Nhận · trả · đổi máy · báo lỗi · lịch sử</p></div><button id="radioClose" aria-label="Đóng" type="button">✕</button></header>'+
  '<div id="radioMessage" role="status" aria-live="polite"></div>'+
  '<div class="radioStats" id="radioStats"></div>'+
- '<div class="radioTabs"><button type="button" data-radio-tab="devices" class="selected">Danh sách máy</button><button type="button" data-radio-tab="history">Lịch sử ký nhận</button><button type="button" data-radio-tab="summary">Tổng hợp</button></div>'+
+ '<div class="radioTabs"><button type="button" data-radio-tab="devices" class="selected">Danh sách máy</button><button type="button" data-radio-tab="history">Lịch sử ký nhận</button><button type="button" data-radio-tab="summary">Tổng hợp</button></div><div id="radioPdfChoice" class="radioPdfChoice" hidden><label><input type="checkbox" id="radioPdfIncludePhotos"><span>Kèm ảnh chụp và chữ ký trong PDF</span></label><small>AD: Bật để xuất bảng tổng hợp kèm ảnh từng lần nhận/trả; tắt để xuất báo cáo gọn không có ảnh.</small></div>'+
  '<section id="radioDevicesTab"><div class="radioTools"><span>Trạng thái từng máy cập nhật từ Firebase</span><button type="button" id="radioSeed" hidden>+ Khởi tạo danh mục từ giấy</button></div><div id="radioDeviceList" class="radioDeviceList"></div></section>'+
- '<section id="radioHistoryTab" hidden><div class="radioTools"><label>Tra cứu <select id="radioDateFilter"><option value="all">Gần đây</option><option value="today">Hôm nay</option><option value="week">7 ngày</option></select></label><button type="button" id="radioExport" class="radioPrimary">📄 Xuất PDF</button><button type="button" id="radioExportPhotos" class="radioPrimary" hidden>📷 PDF kèm ảnh (AD)</button></div><div class="radioHistoryFilters"><label>Mã máy<select id="radioHistoryDevice"><option value="">Tất cả máy</option></select></label><label>Thao tác<select id="radioHistoryAction"><option value="">Tất cả</option><option value="ISSUE">Nhận máy</option><option value="RETURN">Trả máy</option><option value="SWAP_OUT">Đổi máy</option><option value="REPORT">Báo lỗi</option></select></label><label>Tìm kiếm<input id="radioHistorySearch" type="search" placeholder="Tên, UID hoặc ghi chú" autocomplete="off"></label></div><div id="radioHistoryMeta" class="radioHistoryMeta"></div><div id="radioHistoryList"></div></section>'+
+ '<section id="radioHistoryTab" hidden><div class="radioTools"><label>Tra cứu <select id="radioDateFilter"><option value="all">Gần đây</option><option value="today">Hôm nay</option><option value="week">7 ngày</option></select></label><button type="button" id="radioExport" class="radioPrimary">📄 Xuất PDF</button></div><div class="radioHistoryFilters"><label>Mã máy<select id="radioHistoryDevice"><option value="">Tất cả máy</option></select></label><label>Thao tác<select id="radioHistoryAction"><option value="">Tất cả</option><option value="ISSUE">Nhận máy</option><option value="RETURN">Trả máy</option><option value="SWAP_OUT">Đổi máy</option><option value="REPORT">Báo lỗi</option></select></label><label>Tìm kiếm<input id="radioHistorySearch" type="search" placeholder="Tên, UID hoặc ghi chú" autocomplete="off"></label></div><div id="radioHistoryMeta" class="radioHistoryMeta"></div><div id="radioHistoryList"></div></section>'+
  '<section id="radioSummaryTab" hidden><div class="radioTools"><span>Tổng hợp theo dữ liệu đã tải</span><button type="button" id="radioSummaryExport" class="radioPrimary">📄 Xuất PDF</button></div><div id="radioSummary"></div><p class="radioHint">Tổng hợp dữ liệu đã tải trên màn hình; không gửi email.</p></section>'+
  '<section id="radioAction" class="radioAction" hidden><div class="radioActionHeader"><h3 id="radioActionTitle">Ký nhận</h3><button type="button" id="radioActionCancel">✕</button></div><div class="radioFields"><label>Mã máy<input id="radioActionCode" readonly></label><label>Người thực hiện<input id="radioPerson" readonly></label><label>Ca làm việc<select id="radioShift"><option value="AM">Ca sáng</option><option value="PM">Ca chiều</option></select></label><label id="radioBatteryWrap">Pin lúc nhận/trả<select id="radioBattery"><option value="UNKNOWN">Chưa xác định</option><option value="FULL">Đầy</option><option value="GOOD">Đủ dùng</option><option value="LOW">Yếu</option><option value="EMPTY">Hết pin</option></select></label><label id="radioReasonWrap">Lý do<select id="radioReason">'+REASONS.map(([v,n])=>'<option value="'+v+'">'+esc(n)+'</option>').join('')+'</select></label><label id="radioReturnReasonWrap" hidden>Lý do trả<select id="radioReturnReason"><option value="END_SHIFT">Hết ca</option><option value="HANDOVER">Bàn giao ca tiếp theo</option><option value="STOP_USE">Không tiếp tục sử dụng</option><option value="OTHER">Lý do khác (ghi cụ thể)</option></select></label><label id="radioSwapWrap">Máy thay thế<select id="radioSwapTarget"></select></label><label id="radioSwapBatteryWrap" hidden>Pin máy thay thế<select id="radioSwapBattery"><option value="UNKNOWN">Chọn pin máy thay thế</option><option value="FULL">Đầy</option><option value="GOOD">Đủ dùng</option><option value="LOW">Yếu</option><option value="EMPTY">Hết pin</option></select></label><label class="wide">Ghi chú hiện trạng<textarea id="radioDetail" rows="2" placeholder="Ghi cụ thể hiện tượng, thời gian, vị trí..."></textarea></label></div><section id="radioPhotoArea" class="radioPhotoArea" hidden><div class="radioPhotoHeading"><strong id="radioPhotoStep">1 · Ảnh bộ đàm thực tế</strong><small>Camera trực tiếp · không chọn thư viện</small></div><div class="radioCameraView"><video id="radioCameraVideo" playsinline autoplay muted></video><img id="radioCameraPhoto" alt="Ảnh chụp mã máy và thời gian" hidden></div><div id="radioPhotoChips" class="radioPhotoChips"></div><div class="radioPhotoActions"><button id="radioTakePhoto" type="button" class="radioPrimary">📷 Chụp ảnh</button><button id="radioRetakePhoto" type="button" hidden>Chụp lại</button><button id="radioRetryPhoto" type="button" hidden>Mở camera</button></div><small class="radioHint">Giờ trên ảnh là giờ của điện thoại; Firebase ghi riêng thời điểm xác nhận trên máy chủ.</small></section><div id="radioSigWrap"><p>Chữ ký xác nhận của tài khoản đang đăng nhập</p><canvas id="radioSignature" width="540" height="150" aria-label="Ký bằng ngón tay hoặc chuột"></canvas><button type="button" id="radioClearSignature">Xóa nét ký</button></div><div class="radioActions"><button type="button" id="radioCancel">Hủy</button><button class="radioPrimary" type="button" id="radioConfirm">Xác nhận và lưu lịch sử</button></div></section>'+
  '<div class="radioProofViewer" id="radioProofViewer" hidden><div><header><strong id="radioProofName">Ảnh và chữ ký</strong><button type="button" id="radioProofClose">✕</button></header><img id="radioProofImage" alt="Bằng chứng ảnh có giờ và chữ ký"><p id="radioProofTimestamp"></p></div></div><footer>Giờ trên ảnh do thiết bị cung cấp; giờ xác nhận chính thức theo Firebase.</footer></div>';
@@ -55,7 +55,7 @@ function tpl(){
  $('radioTakePhoto').onclick=takePhoto;$('radioRetakePhoto').onclick=()=>void retakePhoto();$('radioRetryPhoto').onclick=()=>void startCamera(cameraLeg);$('radioProofClose').onclick=closeProof;
  $('radioProofViewer').onclick=e=>{if(e.target.id==='radioProofViewer')closeProof()};
  $('radioSeed').onclick=()=>void seed();$('radioDateFilter').onchange=e=>{dateFilter=e.target.value;renderHistory()};
- $('radioExport').onclick=()=>void exportPdf();$('radioSummaryExport').onclick=()=>void exportPdf();$('radioExportPhotos').onclick=()=>void exportPhotoPdf();
+ $('radioExport').onclick=()=>void exportPdf();$('radioSummaryExport').onclick=()=>void exportPdf();
  ['radioHistoryDevice','radioHistoryAction'].forEach(id=>{$(id).onchange=renderHistory});$('radioHistorySearch').oninput=renderHistory;
  p.querySelectorAll('[data-radio-tab]').forEach(b=>b.onclick=()=>tab(b.dataset.radioTab));
  const c=$('radioSignature');c.style.touchAction='none';
@@ -175,7 +175,7 @@ function closeProof(){const el=$('radioProofViewer');if(el)el.hidden=true;const 
 function mark(e){const c=$('radioSignature'),r=c.getBoundingClientRect(),x=Math.max(0,Math.min(c.width,Math.round((e.clientX-r.left)*c.width/r.width))),y=Math.max(0,Math.min(c.height,Math.round((e.clientY-r.top)*c.height/r.height)));const points=strokes.at(-1);if(!points||points.length>350)return;points.push([x,y]);const ctx=c.getContext('2d');ctx.strokeStyle='#123f66';ctx.lineWidth=2.8;ctx.lineCap='round';if(points.length===1){ctx.fillStyle='#123f66';ctx.beginPath();ctx.arc(x,y,1.4,0,Math.PI*2);ctx.fill()}else{const prev=points[points.length-2];ctx.beginPath();ctx.moveTo(prev[0],prev[1]);ctx.lineTo(x,y);ctx.stroke()}}
 function clearSignature(){strokes=[];canvasDirty=false;const c=$('radioSignature');if(c)c.getContext('2d').clearRect(0,0,c.width,c.height)}
 function signature(){if(!canvasDirty||!strokes.some(a=>a.length>=2))throw Error('Vui lòng ký xác nhận trực tiếp trên màn hình.');const c=$('radioSignature');let v=c.toDataURL('image/webp',0.45);if(!v.startsWith('data:image/webp;base64,')){v=c.toDataURL('image/png')}if(v.length>45000)throw Error('Chữ ký quá lớn. Xóa và ký lại nét ngắn gọn.');return v}
-function tab(t){for(const id of ['devices','history','summary']){$('radio'+id[0].toUpperCase()+id.slice(1)+'Tab').hidden=id!==t;const btn=document.querySelector('[data-radio-tab="'+id+'"]');btn?.classList.toggle('selected',t===id)}cancel();if(t==='history'||t==='summary')subscribeHistory();else stopHistory();if(t==='summary')renderSummary()}
+function tab(t){for(const id of ['devices','history','summary']){$('radio'+id[0].toUpperCase()+id.slice(1)+'Tab').hidden=id!==t;const btn=document.querySelector('[data-radio-tab="'+id+'"]');btn?.classList.toggle('selected',t===id)}$('radioPdfChoice').hidden=!isAdmin(currentUser())||t==='devices';cancel();if(t==='history'||t==='summary')subscribeHistory();else stopHistory();if(t==='summary')renderSummary()}
 function close(){
  try{closeProof()}catch(e){console.warn('Radio photo viewer close',e)}
  try{stopHistory()}catch(e){console.warn('Radio history close',e)}
@@ -240,8 +240,7 @@ function renderHistory(){
  const sel=$('radioHistoryDevice'),codes=[...new Set(events.map(e=>e.deviceCode).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'vi',{numeric:true})),key=codes.join('|');
  if(sel&&sel.dataset.codes!==key){const old=sel.value;sel.innerHTML='<option value="">Tất cả máy</option>'+codes.map(x=>'<option value="'+esc(x)+'">'+esc(label(x))+'</option>').join('');sel.value=codes.includes(old)?old:'';sel.dataset.codes=key}
  const rows=filteredHistory(),meta=$('radioHistoryMeta');
- const exportPhotos=$('radioExportPhotos');if(exportPhotos)exportPhotos.hidden=!isAdmin(currentUser());
- if(meta)meta.textContent=rows.length+' sự kiện phù hợp | '+(events.length>=120?'Chỉ có 120 sự kiện gần nhất được tải từ Firebase.':'Dữ liệu theo quyền tài khoản.')+(isAdmin(currentUser())?' | PDF kèm ảnh tối đa 16 sự kiện/lần; lọc để xuất đủ.':'');
+ if(meta)meta.textContent=rows.length+' sự kiện phù hợp | '+rows.filter(e=>!!e.signature).length+' có ảnh/chữ ký | '+(events.length>=120?'Chỉ tải 120 sự kiện gần nhất; lọc trước nếu cần đối soát ngày khác.':'Dữ liệu theo quyền tài khoản.');
  if(!rows.length){wrap.innerHTML='<p class="radioEmpty">Không có lịch sử phù hợp bộ lọc.</p>';return;}
  wrap.innerHTML='<div class="radioAudit"><div class="radioAuditHead"><span>Thời gian</span><span>Máy / sự kiện</span><span>Người thực hiện</span><span>Trạng thái / ghi chú</span><span>Bằng chứng</span></div>'+
  rows.map(e=>{
@@ -358,7 +357,7 @@ function pdfWrap(ctx,value,width){
  for(const word of words){const next=current?current+' '+word:word;if(current&&ctx.measureText(next).width>width){lines.push(current);current=word;if(lines.length===2)break}else current=next}
  if(lines.length<2&&current)lines.push(current);return lines.slice(0,2);
 }
-function pdfPage(rows,index,total,scope){
+function pdfPage(rows,index,total,scope,withPhotos=false){
  const cv=document.createElement('canvas');cv.width=1200;cv.height=1698;const x=cv.getContext('2d');
  x.fillStyle='#fff';x.fillRect(0,0,1200,1698);
  x.fillStyle='#0b354d';x.fillRect(0,0,1200,19);x.fillStyle='#00818d';x.fillRect(0,19,1200,5);
@@ -377,7 +376,7 @@ function pdfPage(rows,index,total,scope){
   values.forEach((v,j)=>{pdfWrap(x,v,widths[j]-18).forEach((line,k)=>x.fillText(line,left+8,y+26+22*k));left+=widths[j]});y+=66;
  });
  x.fillStyle='#456175';x.font='16px Arial';x.fillText('Dữ liệu từ Firebase, đối chiếu thời gian máy chủ. Chỉ xuất lịch sử đã tải.',47,1615);
- x.fillText('Ảnh và chữ ký không nhúng vào PDF. Mở lịch sử E-REPORT để kiểm tra bằng chứng.',47,1642);
+ x.fillText(withPhotos?'Ảnh và chữ ký nằm trong phụ lục bằng chứng kèm theo.':'Không kèm ảnh; chọn Kèm ảnh khi xuất để xem bằng chứng.',47,1642);
  x.textAlign='right';x.fillText('Trang '+index+'/'+total,1150,1642);
  return cv;
 }
@@ -457,6 +456,7 @@ async function exportPhotoPdf(){
  finally{button.disabled=false}
 }
 async function exportPdf(){
+ if($('radioPdfIncludePhotos')?.checked&&isAdmin(currentUser()))return exportPhotoPdf();
  const rows=filteredHistory();if(!rows.length)return notify('Không có sự kiện để xuất PDF.',true);
  const a=$('radioExport'),b=$('radioSummaryExport');if(a?.disabled||b?.disabled)return;
  if(a)a.disabled=true;if(b)b.disabled=true;notify('Đang tạo báo cáo PDF...');
@@ -488,7 +488,7 @@ function subscribeHistory(){
  },e=>{historyVerified=false;events=[];renderHistory();renderSummary();notify(errText(e),true)});
 }
 async function open(){
- tpl();const u=currentUser();$('radioExportPhotos').hidden=!isAdmin(u);if(!u.uid){$('sagsRadioPanel').hidden=false;notify('Đang chờ xác thực Firebase. Kiểm tra đăng nhập hoặc mở lại sau khi kết nối.',true);return}
+ tpl();const u=currentUser();$('radioPdfChoice').hidden=true;if(!u.uid){$('sagsRadioPanel').hidden=false;notify('Đang chờ xác thực Firebase. Kiểm tra đăng nhập hoặc mở lại sau khi kết nối.',true);return}
  $('sagsRadioPanel').hidden=false;notify('Đang tải danh mục thiết bị…');tab('devices');
  if(unsubs.length)return;
  connected=false;devices=[];events=[];render();
