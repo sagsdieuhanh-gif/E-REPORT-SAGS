@@ -127,7 +127,10 @@ function takePhoto(){
  ctx.fillText('SAGS · '+label(code)+' · '+(['ISSUE','SWAP_IN'].includes(operation)?'NHẬN':['RETURN','SWAP_OUT'].includes(operation)?'TRẢ':'BÁO LỖI'),15,374);
  ctx.font='bold 17px Arial';ctx.fillStyle='#9ee5eb';
  ctx.fillText(formatShotTime(at)+'  ·  giờ thiết bị (VN)',15,407);
- photos[cameraLeg]={canvas:c,preview:c.toDataURL('image/webp',.5),code,at:at.getTime()};
+ // WebKit on iOS can display WebP but cannot encode it from Canvas.
+ // JPEG here is ONLY the local preview; immutable signed proof remains WebP/PNG.
+ const preview=c.toDataURL('image/jpeg',.68);
+ photos[cameraLeg]={canvas:c,preview:preview.startsWith('data:image/jpeg;base64,')?preview:c.toDataURL('image/png'),code,at:at.getTime()};
  stopCamera();updatePhotoUI();
  if(mode==='SWAP_OUT'&&cameraLeg==='old'){notify('Đã chụp máy cũ. Tiếp tục chụp máy mới.');void startCamera('new')}
  else{
@@ -143,25 +146,66 @@ async function retakePhoto(){
  if(mode==='SWAP_OUT'&&photos.new){photos.new=null;updatePhotoUI();await startCamera('new')}
  else{photos={old:null,new:null};updatePhotoUI();await startCamera('old')}
 }
+function webpCanvasEncoderSupported(){
+ const c=document.createElement('canvas');c.width=1;c.height=1;
+ try{return c.toDataURL('image/webp',.5).startsWith('data:image/webp;base64,')}
+ catch(_){return false}
+}
+function quantizePngCanvas(canvas,levels){
+ // iOS Safari does not encode WebP Canvas output. Keep genuine PNG bytes
+ // inside the existing immutable Firestore proof field (<= 45,000 chars).
+ // Pixel quantization compresses a photograph without falsifying its capture.
+ const ctx=canvas.getContext('2d'),image=ctx.getImageData(0,0,canvas.width,canvas.height);
+ const rgb=image.data,scale=255/(levels-1);
+ for(let i=0;i<rgb.length;i+=4){
+  rgb[i]=Math.round(rgb[i]/scale)*scale;
+  rgb[i+1]=Math.round(rgb[i+1]/scale)*scale;
+  rgb[i+2]=Math.round(rgb[i+2]/scale)*scale;
+ }
+ ctx.putImageData(image,0,0);
+}
 function combineProof(leg){
  const photo=photos[leg];if(!photo)throw Error('Chưa chụp ảnh trực tiếp.');
  const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');
- // Same authenticated, immutable Firestore event field as the previous signature.
- // Preserve 45K character rules limit, keeping flight data and old events intact.
- for(const width of [640,560,512,448,384]){
+ const webp=webpCanvasEncoderSupported();
+ const maxBytes=44000;
+ // WebP is preferred where natively supported. Safari needs a real PNG
+ // fallback, not the PNG data silently returned by toDataURL('image/webp').
+ const widths=webp?[640,560,512,448,384]:[512,448,384,320,280,240,208,176];
+ for(const width of widths){
   const ph=Math.round(width*430/640),sh=Math.round(width*130/640);
-  canvas.width=width;canvas.height=ph+sh;ctx.fillStyle='#fff';ctx.fillRect(0,0,width,canvas.height);
+  canvas.width=width;canvas.height=ph+sh;
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,width,canvas.height);
   ctx.drawImage(photo.canvas,0,0,width,ph);
   ctx.fillStyle='#e7f3f9';ctx.fillRect(0,ph,width,sh);ctx.fillStyle='#193c4e';
   ctx.font='bold '+Math.max(9,Math.round(width*14/640))+'px Arial';
   ctx.fillText('CHỮ KÝ XÁC NHẬN',Math.round(width*.025),ph+Math.round(width*.025));
   ctx.drawImage($('radioSignature'),Math.round(width*.03),ph+Math.round(width*.035),Math.round(width*.85),Math.round(sh*.72));
-  for(const quality of [.7,.55,.4,.3,.2]){
-   const value=canvas.toDataURL('image/webp',quality);
-   if(value.startsWith('data:image/webp;base64,')&&value.length>120&&value.length<=44000)return value;
+  if(webp){
+   for(const quality of [.7,.55,.4,.3,.2]){
+    const value=canvas.toDataURL('image/webp',quality);
+    if(value.startsWith('data:image/webp;base64,')&&value.length>120&&value.length<=maxBytes)return value;
+   }
+  }else{
+   // Reduce palette detail progressively to fit the Firebase rule. Always
+   // retain the original camera pixels/time and drawn signature in the output.
+   for(const levels of [6,4,3,2]){
+    // Re-render each attempt, rather than successively degrading pixels.
+    if(levels!==6){
+     ctx.clearRect(0,0,width,canvas.height);ctx.fillStyle='#fff';ctx.fillRect(0,0,width,canvas.height);
+     ctx.drawImage(photo.canvas,0,0,width,ph);
+     ctx.fillStyle='#e7f3f9';ctx.fillRect(0,ph,width,sh);ctx.fillStyle='#193c4e';
+     ctx.font='bold '+Math.max(9,Math.round(width*14/640))+'px Arial';
+     ctx.fillText('CHỮ KÝ XÁC NHẬN',Math.round(width*.025),ph+Math.round(width*.025));
+     ctx.drawImage($('radioSignature'),Math.round(width*.03),ph+Math.round(width*.035),Math.round(width*.85),Math.round(sh*.72));
+    }
+    quantizePngCanvas(canvas,levels);
+    const value=canvas.toDataURL('image/png');
+    if(value.startsWith('data:image/png;base64,')&&value.length>120&&value.length<=maxBytes)return value;
+   }
   }
  }
- throw Error('Ảnh quá nhiều chi tiết để lưu rõ trong giới hạn hiện tại. Chụp gần mã máy, nền ít chi tiết và thử lại.');
+ throw Error('Ảnh quá nhiều chi tiết để lưu trong giới hạn Firebase. Chụp gần mã máy, nền ít chi tiết rồi thử lại; ảnh và chữ ký chưa được ghi nhận.');
 }
 function viewProof(id){
  const e=events.find(x=>x.id===id);if(!e?.signature||!/^data:image\/(webp|png);base64,/.test(e.signature))return;
