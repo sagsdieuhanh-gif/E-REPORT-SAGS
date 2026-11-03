@@ -31,7 +31,8 @@
         && (d.action in ['INIT','RELEASE']
           ? d.signature == ''
           : (d.signature.matches('^data:image/webp;base64,[A-Za-z0-9+/=]+')
-            || d.signature.matches('^data:image/png;base64,[A-Za-z0-9+/=]+'))
+            || d.signature.matches('^data:image/png;base64,[A-Za-z0-9+/=]+')
+            || d.signature.matches('^data:image/jpeg;base64,[A-Za-z0-9+/=]+'))
             && d.signature.size() > 120)
         && d.beforeStatus in ['', 'READY','OUT','CHARGING','FAULT','LOST']
         && d.afterStatus in ['READY','OUT','CHARGING','FAULT','LOST']
