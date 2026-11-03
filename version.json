@@ -2,11 +2,11 @@
   "version": "V2.1",
   "displayVersion": "V2.1",
   "label": "V2.1 - KÝ NHẬN BỘ ĐÀM: PC, LỊCH SỬ, PDF VÀ NHẮC VIỆC",
-  "build": "V2.1-20261103-PC-MENU-AUDIT-04",
+  "build": "V2.1-20261103-MENU-ROUTER-05",
   "releasedAt": "2026-11-03",
-  "type": "pc-menu-action-isolation-and-admin-proof-export",
+  "type": "unified-pc-mobile-navigation-stability",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "PC dùng một menu chuẩn: Ký nhận bộ đàm ngay dưới My Flight, không chèn nút riêng; ngăn tải bộ đàm trễ đè lên Lịch sử. AD được xuất PDF kèm toàn bộ ảnh/chữ ký của tối đa 16 sự kiện đã lọc, so sánh giờ Firebase và giờ thiết bị, cảnh báo lệch lớn. Không thay đổi Firestore Rules/schema.",
-  "message": "V2.1: sửa lẫn tác vụ menu PC và thêm xuất PDF ảnh ký nhận cho AD."
+  "notes": "Dùng chung dispatcher mã tác vụ của menu gốc cho menu PC và mobile. Chặn tự mở My Flight/Trang chủ khi người dùng đang thao tác. Đóng lớp Ký nhận/Lịch sử đã mở khi chuyển tác vụ. Giữ nguyên kiểm chứng ảnh PDF của AD, dữ liệu và quy tắc biểu mẫu.",
+  "message": "Chuẩn hóa menu PC/mobile: thao tác đúng chức năng, không kích hoạt nút ẩn, không nhảy về My Flight ngoài ý muốn."
 }
