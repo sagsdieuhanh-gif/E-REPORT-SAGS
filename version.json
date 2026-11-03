@@ -2,11 +2,11 @@
   "version": "V2.1",
   "displayVersion": "V2.1",
   "label": "V2.1 - KÝ NHẬN BỘ ĐÀM: PC, LỊCH SỬ, PDF VÀ NHẮC VIỆC",
-  "build": "V2.1-20261103-PC-ROUTE-PHOTO-PDF-07",
+  "build": "V2.1-20261103-IOS-RADIO-SAVE-08",
   "releasedAt": "2026-11-03",
-  "type": "pc-route-state-and-ad-pdf-photo-choice",
+  "type": "ios-safari-radio-proof-save-compatibility",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Chặn tự về Trang chủ/My Flight và tự khôi phục màn hình cũ sau khi bấm menu, bỏ hoàn toàn click hộ menu ẩn. AD chọn Kèm ảnh chụp và chữ ký khi xuất PDF trong Lịch sử ký nhận hoặc Tổng hợp; file gồm bảng tổng hợp cùng phụ lục ảnh từng sự kiện đã tải, báo rõ mục không có ảnh; không còn giới hạn 16 sự kiện/lần, xử lý ảnh JPEG tuần tự để giảm RAM. Giữ nguyên quy tắc biểu mẫu, roster, dữ liệu Firebase và bắt buộc chụp ảnh khi ký nhận.",
-  "message": "V2.1: sửa menu PC tự nhảy tác vụ và thêm lựa chọn PDF có hoặc không có ảnh ký nhận cho AD."
+  "notes": "Safari không thể xuất Canvas WebP. Tự phát hiện định dạng được hỗ trợ; trên iOS đóng gói ảnh camera + chữ ký thành PNG được tối ưu trong giới hạn 45.000 ký tự của Firestore Rules hiện có. Hiển thị tình trạng lưu và lỗi ngay cạnh nút xác nhận, bảo vệ pointer/touch ký và vùng an toàn Safari. Không cho lưu khi thiếu ảnh, chữ ký, ảnh cũ hoặc Firebase offline; không thay đổi phân quyền hoặc nghiệp vụ.",
+  "message": "Sửa lỗi không lưu được nhận/trả bộ đàm trên iPhone Safari: mã hóa bằng chứng PNG tương thích, bảo đảm vẫn có ảnh và chữ ký."
 }
