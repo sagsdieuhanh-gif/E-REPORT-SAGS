@@ -122,8 +122,6 @@ async function send(item){
 async function flushBatch(scope){
  const batch=batches.get(scope);if(!batch)return;
  clearTimeout(batch.timer);batches.delete(scope);
- // Persist first edit immediately, then only final aggregate when typing settles.
- // Never perform an IndexedDB transaction on each keystroke.
  try{
   await batch.written;
   if(batch.dirty)await saveLocal(batch.event);
@@ -158,7 +156,6 @@ function wrap(name){
   const m=meta(),before=m?envelope(m):null;
   const r=fn.apply(this,arguments);
   if(r===false||!m?.id)return r;
-  // Capture after the verified synchronous persistence, not before the save.
   const after=envelope(m);
   if(after&&before&&S(m.id)===S(meta()?.id))capture(m,before,after,name==='sagsV22SaveNow'?'Lưu biểu mẫu':'Lưu dữ liệu');
   return r;
@@ -183,7 +180,6 @@ async function entriesFor(m){
  const scope=scopeFor(m),local=adminRemote?[]:(await localList()).filter(x=>x.scope===scope).slice(0,MAX_ROWS);
  const remote=await remoteList(m?.rosterAssignmentId,adminRemote);
  const merged=new Map();
- // Only roster-assignment records the signed-in account is authorized to read are returned by Firebase.
  // Within that assigned flight, show the edits of all participating roles, not only the current author.
  for(const e of remote){
   const assignedSessionMatch=S(e.sessionId)===S(m.id)&&S(e.assignmentId)===S(m.rosterAssignmentId);
@@ -295,16 +291,12 @@ function actionButton(id,title){
 }
 function installButtons(){
  const account=user();if(!account.username)return;
- // Native KHAI THÁC menu item is registered in the canonical runtime menuDefs.
- // Do not append buttons to drawer: the menu is re-rendered on every open.
- // Independent entry inside My Flight / flight workspace.
  const workspace=document.querySelector('#fwcModal .fwcHead');
  if(workspace){
   const b=actionButton('sagsHistoryDossierShortcut','🕘 LỊCH SỬ');
   const close=workspace.querySelector('button[onclick*="flightWorkspaceClose"],#v477Close');
   if(b.parentElement!==workspace)workspace.insertBefore(b,close||null);
  }
- // Optional toolbar entry: never add an overlay or second mobile bottom dock.
  const formActions=$('v324FormActions');
  if(formActions){
   const b=actionButton('sagsHistoryFormShortcut','🕘 LỊCH SỬ');
