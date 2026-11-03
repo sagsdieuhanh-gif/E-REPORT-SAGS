@@ -86,7 +86,7 @@ async function main(){
  await assertSucceeds(getDoc(doc(getDb('alice'),root,'DH01')));
  await assertSucceeds(transition('alice','DH01','ISSUE',{
   status:'OUT',holderUid:'alice',holderName:names.alice,shift:'AM',
-  faultCode:'',faultDetail:'',battery:'GOOD'}));
+  faultCode:'',faultDetail:'',battery:'GOOD'},{signature:'data:image/jpeg;base64,'+'A'.repeat(180)}));
  await assertFails(transition('bob','DH01','RETURN',{
   status:'READY',holderUid:'',holderName:'',shift:'',faultCode:'',faultDetail:'',battery:'GOOD'}));
  await assertSucceeds(transition('alice','DH01','RETURN',{
