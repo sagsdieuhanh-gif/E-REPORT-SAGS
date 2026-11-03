@@ -33,8 +33,6 @@ function uppercaseFormState(){
  const st=currentState(),fs=currentFields();if(!st)return false;
  let changed=false;const typed=new Map();
  for(const f of fs){const k=S(f?.key);if(k)typed.set(k,f);if(!k||!isTextField(f)||typeof st[k]!=='string')continue;const up=upperText(st[k]);if(up!==st[k]){st[k]=up;changed=true}}
- // Registry/dynamic forms may expose state before their field objects are mounted.
- // Cover their textual keys as well while explicitly excluding binary/signature data.
  for(const [k,v] of Object.entries(st)){
   if(typeof v!=='string'||typed.has(k)||!/^(?:f\d+_|tvj|bbbt|fsags|final_)/i.test(k))continue;
   if(/signature|attach|image|photo|file|pdf|canvas|base64/i.test(k))continue;
