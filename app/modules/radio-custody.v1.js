@@ -435,25 +435,40 @@ async function photoPdfPage(e,index,total){
  x.fillText('Trang '+index+'/'+total+' · chỉ những sự kiện đã tải theo bộ lọc',35,1248);
  return cv;
 }
+function pdfStoredPage(cv){
+ const width=cv.width,height=cv.height;
+ const jpeg=cv.toDataURL('image/jpeg',0.76);
+ cv.width=1;cv.height=1;
+ return {width,height,toDataURL:()=>jpeg};
+}
 async function exportPhotoPdf(){
  if(!isAdmin(currentUser()))return notify('Chỉ tài khoản AD được xuất lịch sử kèm ảnh.',true);
- if(!connected||!historyVerified||!navigator.onLine)return notify('Cần lịch sử xác nhận trực tuyến từ Firebase, không xuất ảnh từ dữ liệu cache.',true);
+ if(!connected||!historyVerified||!navigator.onLine)return notify('Cần lịch sử xác nhận trực tuyến từ Firebase để xuất ảnh bằng chứng.',true);
  const rows=filteredHistory();
- if(!rows.length)return notify('Không có lịch sử phù hợp.',true);
- if(rows.length>16)return notify('Đang có '+rows.length+' sự kiện. Lọc theo máy/ngày/thao tác để còn tối đa 16 sự kiện rồi xuất toàn bộ ảnh, tránh bỏ sót.',true);
+ if(!rows.length)return notify('Không có lịch sử phù hợp bộ lọc.',true);
  if(rows.some(e=>!e.at?.toMillis?.()))return notify('Lịch sử có sự kiện chưa xác minh giờ Firebase. Hãy đồng bộ lại.',true);
- const button=$('radioExportPhotos');if(button?.disabled)return;
- button.disabled=true;notify('Đang dựng '+rows.length+' trang ảnh bằng chứng, vui lòng không đóng màn hình.');
+ const a=$('radioExport'),b=$('radioSummaryExport');
+ if(a?.disabled||b?.disabled)return;
+ if(a)a.disabled=true;if(b)b.disabled=true;
+ const proofCount=rows.filter(e=>/^data:image\/(webp|png);base64,/.test(S(e.signature))).length;
+ notify('Đang tạo PDF có bảng tổng hợp và '+rows.length+' trang đối chiếu ảnh/chữ ký…');
  try{
-  const canvases=[];
-  for(let i=0;i<rows.length;i++)canvases.push(await photoPdfPage(rows[i],i+1,rows.length));
+  const scope=dateFilter==='today'?'Hôm nay':dateFilter==='week'?'7 ngày':'Các sự kiện gần nhất đã tải';
+  const summaryPages=Math.ceil(rows.length/19),allPages=summaryPages+rows.length,stored=[];
+  for(let i=0;i<rows.length;i+=19){
+   stored.push(pdfStoredPage(pdfPage(rows.slice(i,i+19),stored.length+1,allPages,scope,true)));
+  }
+  for(let i=0;i<rows.length;i++){
+   if(i%5===0)await new Promise(done=>requestAnimationFrame(done));
+   stored.push(pdfStoredPage(await photoPdfPage(rows[i],summaryPages+i+1,allPages)));
+  }
   if(!isAdmin(currentUser()))throw Error('Tài khoản không còn quyền AD');
-  const blob=pdfBuild(canvases),url=URL.createObjectURL(blob),link=document.createElement('a');
-  link.href=url;link.download='SAGS-DOI-SOAT-ANH-BO-DAM-'+new Date().toISOString().slice(0,10)+'.pdf';
+  const blob=pdfBuild(stored),url=URL.createObjectURL(blob),link=document.createElement('a');
+  link.href=url;link.download='SAGS-BO-DAM-KEM-ANH-'+new Date().toISOString().slice(0,10)+'.pdf';
   document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
-  notify('Đã tạo PDF kèm ảnh cho '+rows.length+' sự kiện đã lọc (kể cả mục không có ảnh, được ghi rõ).');
- }catch(e){notify('Lỗi PDF kèm ảnh: '+S(e?.message||e),true)}
- finally{button.disabled=false}
+  notify('Đã xuất PDF kèm '+proofCount+' ảnh/chữ ký, '+(rows.length-proofCount)+' sự kiện không có ảnh, '+rows.length+' sự kiện tổng cộng.'+(events.length>=120?' Chỉ bao gồm 120 sự kiện gần nhất đã tải.':''));
+ }catch(e){notify('Không xuất được PDF kèm ảnh: '+S(e?.message||e),true)}
+ finally{if(a)a.disabled=false;if(b)b.disabled=false}
 }
 async function exportPdf(){
  if($('radioPdfIncludePhotos')?.checked&&isAdmin(currentUser()))return exportPhotoPdf();
