@@ -72,11 +72,12 @@ function available(key){
  const b=legacyButton(key);return !!b&&!b.disabled&&!b.hidden;
 }
 let navigationEpoch=0;
-function trigger(key){
+function beforeRoute(key){
  const ticket=++navigationEpoch;
- const radioPanel=document.getElementById?.('sagsRadioPanel');
+ const radioPanel=$('sagsRadioPanel');
  if(key!=='radio'&&radioPanel&&!radioPanel.hidden)root.SAGSRadioCustodyV1?.close?.();
- if(key!=='history'&&document.getElementById?.('sagsHistoryOverlay')?.classList?.contains('open'))document.getElementById?.('sagsHistoryClose')?.click?.();
+ const history=$('sagsHistoryOverlay');
+ if(key!=='history'&&history?.classList?.contains('open'))$('sagsHistoryClose')?.click?.();
  if(key!=='home'){
   navTransitionUntil=Date.now()+2200;
   const home=$('v6494AviationHome');
@@ -84,6 +85,10 @@ function trigger(key){
   document.body?.classList?.remove?.('v6494-home-active');
   setTimeout(()=>{observeStateTargets();scheduleSync()},2300);
  }else navTransitionUntil=0;
+ return ticket;
+}
+function trigger(key){
+ const ticket=beforeRoute(key);
  if(key==='home'){try{root.sagsV479GoHome?.()}catch(_){}sync();return}
  if(key==='radio'){
    const build=document.querySelector('meta[name="sags-release-build"]')?.content||'current';
@@ -107,13 +112,15 @@ function trigger(key){
    }
    setTimeout(scheduleSync,0);return
  }
- if(key==='history'){try{root.SAGSFormEditHistoryV1?.open?.()}catch(e){console.warn('History UI unavailable',e)}return}
- if(key==='notice'&&typeof root.sagsFlightNoticeOpen==='function'){root.sagsFlightNoticeOpen();return}
+ if(key==='history'){if(root.sagsV157NavigateMenu?.('history'))return;try{root.SAGSFormEditHistoryV1?.open?.()}catch(e){console.warn('History UI unavailable',e)}return}
+ if(key==='notice'){if(root.sagsV157NavigateMenu?.('notice'))return;if(typeof root.sagsFlightNoticeOpen==='function'){root.sagsFlightNoticeOpen();return}}
  if(key==='settings'){
+   if(root.sagsV157NavigateMenu?.('settings'))return;
    const b=legacyButton('settings');
    if(b&&!b.disabled){b.click();return}
    try{root.sagsOpenSettings?.()}catch(e){console.error('Settings home action failed',e)}return;
  }
+ if(root.sagsV157NavigateMenu?.(key)){scheduleSync();return}
  const b=legacyButton(key);if(b&&!b.disabled){b.click();scheduleSync();setTimeout(scheduleSync,120);return}
 }
 function todayText(){try{return new Intl.DateTimeFormat('vi-VN',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'}).format(new Date())}catch(_){return new Date().toLocaleDateString()}}
@@ -226,9 +233,10 @@ function boot(){
  window.addEventListener('pageshow',()=>{observeStateTargets();scheduleSync()},{passive:true});
  document.addEventListener('visibilitychange',()=>{if(!document.hidden){observeStateTargets();scheduleSync()}},{passive:true});
  ['sags:login','sags:logout','sags:rolechange','sags:profilechange','sags:ui-ready','sags:profile-display-updated'].forEach(name=>root.addEventListener?.(name,()=>{observeStateTargets();scheduleSync()}));
- document.addEventListener('click',e=>{const item=e.target?.closest?.('#v157MenuBody [data-v157-key]');if(item){if(item.dataset.v157Key!=='radio'){navigationEpoch++;root.SAGSRadioCustodyV1?.close?.()}navTransitionUntil=Date.now()+2200;setTimeout(scheduleSync,2300)}},true);
+ document.addEventListener('click',e=>{if(e.target?.closest?.('#v157MenuBody [data-v157-key]'))setTimeout(scheduleSync,0)},true);
  document.addEventListener('click',e=>{if(e.target?.closest?.('[data-v6494-key],[data-v6494-account],#v157LogoutBtn,.fwcHead button,.sagsAdminTopActions button'))setTimeout(scheduleSync,0)},true);
 }
+root.SAGSAviationBeforeRoute=beforeRoute;
 root.SAGSAviationOpenRadio=()=>trigger('radio');
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })(window);
