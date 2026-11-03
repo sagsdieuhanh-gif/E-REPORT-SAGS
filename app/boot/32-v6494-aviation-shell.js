@@ -1,4 +1,3 @@
-/* E-REPORT SAGS navigation shell */
 (function(root){
 'use strict';
 const BUILD='V6.4.101-20261006-MOBILE-UX-SPEED-01';
