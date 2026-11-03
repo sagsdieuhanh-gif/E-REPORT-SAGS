@@ -40,6 +40,7 @@ const els={'sags-radio-custody-style':{},sagsRadioPanel:{hidden:true},sagsHistor
 const rc={root:{sagsV157NavigateMenu:key=>{routes.push(key);return true},SAGSRadioCustodyV1:{open(){radio.push('open')},close(){radio.push('close')}},sagsV479GoHome(){routes.push('home')}},
  document:{getElementById:id=>els[id]||null,querySelector:()=>({click(){oldClicks.push('hidden')}}),head:{appendChild(){}},body:{classList:{remove(){}}}},$:id=>els[id],role:()=>'',sync(){},scheduleSync(){},observeStateTargets(){},setTimeout(){},encodeURIComponent,Date,console,navTransitionUntil:0};
 vm.createContext(rc);vm.runInContext(shell.slice(begin2,end2)+'\nthis.triggerTest=trigger;',rc);
+rc.root.sagsV157NavigateMenu=key=>{rc.beforeRoute(key);routes.push(key);return true};
 for(const key of newKeys.filter(k=>k!=='radio')){rc.triggerTest(key);assert.equal(routes.at(-1),key,'PC '+key+' must enter matching native action');}
 assert.equal(oldClicks.length,0,'No PC click should be synthesized on a hidden native menu');
 rc.triggerTest('radio');
