@@ -44,7 +44,14 @@
       // Commit fields to the existing per-account/per-flight recovery layers
       // *before* attempting the whole-envelope localStorage checkpoint.
       draft()?.snapshotAllEditors?.();
-      return root.sagsV22SaveNow?.(reason)!==false;
+      const ok=root.sagsV22SaveNow?.(reason)!==false;
+      if(ok){
+        try{root.sagsIndexedDbFlightStoreV1?.scheduleMirror?.('ios-urgent-checkpoint',350,[flightMeta().id])}catch(_){}
+      }else{
+        const badge=document.getElementById('sagsV61DraftStatus');
+        if(badge){badge.hidden=false;badge.textContent='⚠ Chưa lưu xong chuyến, dữ liệu ô nhập đang được bảo vệ';badge.dataset.level='error'}
+      }
+      return ok;
     }catch(e){console.warn('iOS urgent flight checkpoint',e);return false}
     finally{iosSnapshotBusy=false}
   }
@@ -139,7 +146,7 @@
     document.addEventListener('input',event=>{if(iosRecord(event.target))iosScheduleSave()},{capture:true});
     document.addEventListener('change',event=>{if(iosRecord(event.target))iosPersist('ios-change')},{capture:true});
     document.addEventListener('focusin',event=>iosRestore(event.target),{capture:true});
-    document.addEventListener('visibilitychange',()=>{if(document.hidden)iosPersist('ios-hidden')},{capture:true});
+    document.addEventListener('visibilitychange',()=>{if(document.hidden){iosPersist('ios-hidden');void root.sagsDraftV2Flush?.()}},{capture:true});
     root.addEventListener('pagehide',()=>iosPersist('ios-pagehide'),{capture:true});
     root.addEventListener('blur',()=>iosPersist('ios-blur'),{passive:true});
     root.addEventListener('pageshow',()=>{try{void root.sagsDraftV2RestoreLocal?.()}catch(_){}},{passive:true});
