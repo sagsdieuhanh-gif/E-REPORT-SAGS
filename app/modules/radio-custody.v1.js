@@ -346,6 +346,9 @@ function renderHistory(){
  }).join('')+'</div>';
 }
 function renderSummary(){
+ if(isAdmin(currentUser())&&!reportReady){
+  $('radioSummary').innerHTML='<p class="radioEmpty">Để xem báo cáo ca chính xác: chọn NGÀY và CA ở phía trên, rồi bấm TẢI BÁO CÁO CA. Không dùng dữ liệu gần đây để suy ra lịch sử ca trước.</p>';return;
+ }
  if(reportReady){
   const rows=filteredHistory(),n=rows.filter(x=>x.action==='ISSUE').length,r=rows.filter(x=>x.action==='RETURN').length,
    swaps=rows.filter(x=>x.action==='SWAP_OUT').length,errors=rows.filter(x=>x.action==='REPORT').length;
@@ -486,16 +489,26 @@ function pdfWrap(ctx,value,width){
  for(const word of words){const next=current?current+' '+word:word;if(current&&ctx.measureText(next).width>width){lines.push(current);current=word;if(lines.length===2)break}else current=next}
  if(lines.length<2&&current)lines.push(current);return lines.slice(0,2);
 }
-function pdfPage(rows,index,total,scope,withPhotos=false){
+function radioReportCounts(rows){
+ return {issue:rows.filter(e=>e.action==='ISSUE').length,
+  returned:rows.filter(e=>e.action==='RETURN').length,
+  swap:rows.filter(e=>e.action==='SWAP_OUT').length,
+  fault:rows.filter(e=>e.action==='REPORT').length};
+}
+function pdfPage(rows,index,total,scope,withPhotos=false,totals=null){
  const cv=document.createElement('canvas');cv.width=1200;cv.height=1698;const x=cv.getContext('2d');
  x.fillStyle='#fff';x.fillRect(0,0,1200,1698);
  x.fillStyle='#0b354d';x.fillRect(0,0,1200,19);x.fillStyle='#00818d';x.fillRect(0,19,1200,5);
  x.fillStyle='#0b354d';x.font='bold 27px Arial';x.fillText('SAGS  |  E-REPORT',47,72);
  x.font='bold 35px Arial';x.fillText('BÁO CÁO KÝ NHẬN - TRẢ BỘ ĐÀM',47,140);
  x.fillStyle='#446173';x.font='19px Arial';x.fillText('Ngày xuất: '+fmt(new Date())+'  |  Người xuất: '+currentUser().name,47,177);
- x.fillText('Phạm vi: '+scope+'  |  Tối đa 120 sự kiện mới nhất theo quyền tài khoản',47,209);
+ x.fillText('Phạm vi: '+scope+'  |  Sự kiện đã xác minh theo bộ lọc',47,209);
+ if(totals){
+  x.fillStyle='#0d5665';x.font='bold 18px Arial';
+  x.fillText('NHẬN '+totals.issue+'   •   TRẢ '+totals.returned+'   •   ĐỔI '+totals.swap+'   •   BÁO LỖI '+totals.fault,47,235);
+ }
  const widths=[175,115,155,190,150,315],titles=['THỜI GIAN','THIẾT BỊ','THAO TÁC','NGƯỜI KÝ','TRẠNG THÁI','GHI CHÚ / ẢNH'];
- let y=250,pos=46;x.fillStyle='#133e55';x.fillRect(46,y,1100,52);x.fillStyle='#fff';x.font='bold 16px Arial';
+ let y=258,pos=46;x.fillStyle='#133e55';x.fillRect(46,y,1100,52);x.fillStyle='#fff';x.font='bold 16px Arial';
  titles.forEach((v,i)=>{x.fillText(v,pos+8,y+32);pos+=widths[i]});y+=52;
  rows.forEach((e,i)=>{
   x.fillStyle=i%2?'#fff':'#eef5f8';x.fillRect(46,y,1100,66);
@@ -584,9 +597,9 @@ async function exportPhotoPdf(){
  notify('Đang tạo PDF có bảng tổng hợp và '+rows.length+' trang đối chiếu ảnh/chữ ký…');
  try{
   const scope=reportScope();
-  const summaryPages=Math.ceil(rows.length/19),allPages=summaryPages+rows.length,stored=[];
+  const summaryPages=Math.ceil(rows.length/19),allPages=summaryPages+rows.length,stored=[],totals=radioReportCounts(rows);
   for(let i=0;i<rows.length;i+=19){
-   stored.push(pdfStoredPage(pdfPage(rows.slice(i,i+19),stored.length+1,allPages,scope,true)));
+   stored.push(pdfStoredPage(pdfPage(rows.slice(i,i+19),stored.length+1,allPages,scope,true,totals)));
   }
   for(let i=0;i<rows.length;i++){
    if(i%5===0)await new Promise(done=>requestAnimationFrame(done));
@@ -594,7 +607,7 @@ async function exportPhotoPdf(){
   }
   if(!isAdmin(currentUser()))throw Error('Tài khoản không còn quyền AD');
   const blob=pdfBuild(stored),url=URL.createObjectURL(blob),link=document.createElement('a');
-  link.href=url;link.download='SAGS-BO-DAM-KEM-ANH-'+new Date().toISOString().slice(0,10)+'.pdf';
+  link.href=url;link.download='SAGS-BO-DAM-'+reportDate+'-'+reportShift+'-KEM-ANH.pdf';
   document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
   notify('Đã xuất PDF ca '+reportScope()+': '+rows.length+' sự kiện, '+proofCount+' có ảnh, '+(rows.length-proofCount)+' không có ảnh.');
  }catch(e){notify('Không xuất được PDF kèm ảnh: '+S(e?.message||e),true)}
@@ -610,8 +623,8 @@ async function exportPdf(){
   await new Promise(done=>requestAnimationFrame(done));
   const scope=isAdmin(currentUser())?reportScope():'Lịch sử cá nhân đã tải',pages=[];
   for(let i=0;i<rows.length;i+=19)pages.push(rows.slice(i,i+19));
-  const blob=pdfBuild(pages.map((v,i)=>pdfPage(v,i+1,pages.length,scope))),href=URL.createObjectURL(blob),link=document.createElement('a');
-  link.href=href;link.download='SAGS-BO-DAM-'+new Date().toISOString().slice(0,10)+'.pdf';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(href),60000);
+  const totals=radioReportCounts(rows),blob=pdfBuild(pages.map((v,i)=>pdfPage(v,i+1,pages.length,scope,false,totals))),href=URL.createObjectURL(blob),link=document.createElement('a');
+  link.href=href;link.download='SAGS-BO-DAM-'+(reportReady?reportDate+'-'+reportShift:new Date().toISOString().slice(0,10))+'-BAO-CAO.pdf';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(href),60000);
   notify('Đã xuất PDF '+rows.length+' sự kiện theo '+scope+'.');
  }catch(e){notify('Không xuất được PDF: '+S(e.message||e),true)}
  finally{if(a)a.disabled=false;if(b)b.disabled=false}
