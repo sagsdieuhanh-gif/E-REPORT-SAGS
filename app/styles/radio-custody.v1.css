@@ -118,3 +118,16 @@
 .radioActionMessage[data-error="1"]{color:#ffb9a8}
 #radioConfirm{min-height:48px;touch-action:manipulation}
 @media(max-width:680px){.radioActions{position:relative;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))}.radioActions #radioConfirm{flex:1;min-height:50px}}
+
+/* Shift report UI: date+shift are the explicit scope for administrator exports. */
+.radioReportControl{padding:14px;margin:12px 0;border:1px solid #528da0;border-radius:14px;background:#0a2c42;color:#edfaff}
+.radioReportControl[hidden]{display:none!important}
+.radioReportTitle{display:flex;flex-direction:column;gap:4px;margin-bottom:11px}
+.radioReportTitle strong{font-size:16px}.radioReportTitle small,.radioReportControl>small{font-size:12px;color:#b6d5e4;line-height:1.45}
+.radioReportInputs{display:flex;align-items:end;flex-wrap:wrap;gap:9px}
+.radioReportInputs label{display:flex;flex-direction:column;gap:5px;color:#d5edf5;font-size:12px;font-weight:750;flex:1 1 150px}
+.radioReportInputs input,.radioReportInputs select{height:44px;width:100%;min-width:0;background:#082438;border:1px solid #608fa2;color:#f1fcff;border-radius:9px;padding:9px 11px;font:inherit;color-scheme:dark}
+.radioReportInputs button{min-height:44px;flex:1 1 auto}
+#radioReportReset{background:#21485e;border:1px solid #527c91;border-radius:9px;color:#e8f8fc;padding:9px 12px;cursor:pointer}
+.radioReportState{min-height:22px;margin:10px 0 5px;color:#99eadb;font-size:12px;line-height:1.5}
+@media(max-width:680px){.radioReportControl{padding:11px}.radioReportInputs{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.radioReportInputs button{grid-column:1/-1}.radioReportTitle strong{font-size:14px}}
