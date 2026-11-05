@@ -1,12 +1,12 @@
 {
   "version": "V2.1",
   "displayVersion": "V2.1",
-  "label": "V2.1 - KÝ NHẬN BỘ ĐÀM: PC, LỊCH SỬ, PDF VÀ NHẮC VIỆC",
-  "build": "V2.1-20261104-IOS-RADIO-QUALITY-09",
-  "releasedAt": "2026-11-04",
-  "type": "ios-radio-proof-image-quality-jpeg",
+  "label": "V2.1 - AN TOÀN DỮ LIỆU iOS & BÁO CÁO BỘ ĐÀM THEO CA",
+  "build": "V2.1-20261105-IOS-DRAFT-SHIFT-10",
+  "releasedAt": "2026-11-05",
+  "type": "ios-flight-draft-guard-radio-shift-report",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Safari ưu tiên JPEG có chữ ký và giờ ảnh thay cho PNG giảm màu mạnh; tăng độ nét ảnh xem trước; lịch sử/PDF hỗ trợ JPEG; quy tắc Firestore đề xuất chấp nhận JPEG cùng WebP/PNG nhưng không mở rộng quyền. Khi Production Rules chưa cập nhật, giao dịch JPEG bị từ chối sẽ thử lại đúng một lần bằng ảnh PNG thật để bảo vệ việc nhận/trả. Ảnh mới không làm thay đổi lịch sử cũ; giữ xác nhận camera bắt buộc và thời gian máy chủ.",
-  "message": "Nâng chất lượng ảnh ký nhận bộ đàm iPhone: JPEG rõ nét, giữ PNG dự phòng khi Firebase chưa cho phép JPEG."
+  "notes": "iPhone ghi dữ liệu ô theo chuyến ngay khi nhập, đồng bộ checkpoint và IndexedDB trên sự kiện, làm nền, mở lại. Giữ nguyên việc nhập/chỉnh ký mẫu và roster. AD chọn ngày và ca AM/PM, tải dữ liệu Firestore theo giờ Việt Nam, xuất PDF đúng phạm vi với thống kê nhận/trả/đổi/lỗi, tùy chọn kèm ảnh; chặn xuất dữ liệu chưa xác minh hoặc vượt giới hạn 300 sự kiện/ngày. Camera tăng nguồn ảnh 960x645; ảnh lưu JPEG rõ hơn cần Firebase Production Rules cho phép JPEG, nếu chưa có thì PNG dự phòng và thông báo. Giảm tải sự kiện ảnh tự động trên iOS.",
+  "message": "Tăng bảo vệ nháp chuyến bay trên iPhone, thêm báo cáo ký nhận bộ đàm chọn ngày và ca sáng/tối, cải thiện ảnh/chữ thời gian."
 }
