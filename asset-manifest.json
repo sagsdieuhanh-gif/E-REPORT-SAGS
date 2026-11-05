@@ -1,7 +1,7 @@
 {
   "schema": 2,
   "version": "V2.1",
-  "build": "V2.1-20261104-IOS-RADIO-QUALITY-09",
+  "build": "V2.1-20261105-IOS-DRAFT-SHIFT-10",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -270,8 +270,8 @@
       "bytes": 14617
     },
     "./app/modules/mobile-draft-recovery.v1.js": {
-      "sha256": "1db1ca30cc6f4fb4fe6e8815d272d14330815d97bad87956c628ecae4bcb9127",
-      "bytes": 4798
+      "sha256": "570987d6bc1598272f102ff07ed653495e4806bf040b4a796cec3be7a488e677",
+      "bytes": 8357
     },
     "./app/modules/mobile-form-dock.v1.js": {
       "sha256": "7e2cb6f30aafaa4213f437f29d7cf9eb6bc5556b16da32100c16fd470ce718b1",
@@ -290,8 +290,8 @@
       "bytes": 19587
     },
     "./app/modules/radio-custody.v1.js": {
-      "sha256": "4adea0a79f4839da0641aeea4a7ed11f2bf64354cbd507f73b2b880313880b92",
-      "bytes": 55354
+      "sha256": "bbfa4aa10f3536e2a3d7aaa3aaf7d11527f942d8887b541357687ef8ea1cb106",
+      "bytes": 62643
     },
     "./app/modules/radio-reminders.v21.js": {
       "sha256": "d22a59b3fb19bb8175adf2c011b1b4990a455c9ed076087f313d983efdb8e757",
@@ -494,8 +494,8 @@
       "bytes": 376878
     },
     "./app/styles/radio-custody.v1.css": {
-      "sha256": "7f14f549218f000a47a11be6b702cb914cfd837a08f7dcbb281c3a99c2b7fd28",
-      "bytes": 12103
+      "sha256": "96fe62b0aa30cf5656489aeb90ba212da2f08ab9356a2cdce63500cd9eabf336",
+      "bytes": 13501
     },
     "./app/vendor/lz-string-1.5.0.js": {
       "sha256": "550034b821027008776cb9bcd1700bb5d31e8b3de224cb130fc966a75dab0e5e",
@@ -774,8 +774,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "0ea0ef9818456afc98319da5cca7d5963504c914004a1bab87c77f8fef724bd2",
-      "bytes": 104834
+      "sha256": "966b28265c4cd5a915f873cfe7dc7b20105af7f070eae8a620e774740d7fc7c6",
+      "bytes": 104676
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -826,16 +826,16 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "1900f189a5f88f0d4b3db79849b8bc5185d0c700ec8db60c583907f6ed2a4fd4",
-      "bytes": 22561
+      "sha256": "2086d797d40031adb0c0bb8bd41da4b56dd229ee815a594afc838c1749f32dba",
+      "bytes": 22555
     },
     "./storage-recovery.html": {
       "sha256": "08817204a946fbdfa404e8c083dd0c2016e935fb8fe56ff8ef99f405978d3df6",
       "bytes": 26106
     },
     "./version.json": {
-      "sha256": "6652646cb11502a3f2450519965729aa80ac1421afa47c46102f17413ca3068b",
-      "bytes": 1085
+      "sha256": "8c2d885e4b1fa39982a12cd7b37df31c4f89ed3cd46101e178f458355d146fd0",
+      "bytes": 1250
     }
   },
   "mutableAssets": [
