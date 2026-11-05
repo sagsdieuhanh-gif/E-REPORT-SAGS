@@ -15,6 +15,47 @@
   const value=el=>String(el.value??'');
   const field=el=>String(el.dataset.key||'');
   const draft=()=>root.sagsV61Draft;
+  const ios=/iPhone|iPad|iPod/i.test(root.navigator?.userAgent||'')||(/Macintosh/i.test(root.navigator?.userAgent||'')&&Number(root.navigator?.maxTouchPoints||0)>1);
+  let iosSaveTimer=0,iosSnapshotBusy=false;
+  const flightInput=el=>!!(el?.matches?.('input,textarea,select')&&el.dataset?.key&&el.closest?.('.page,.sheet')&&!el.closest?.('#finalFormsModal,#roleLoginModal,#sagsSettingsCenter'));
+  const flightMeta=()=>{try{return root.currentFlightSessionMeta?.()||null}catch(_){return null}};
+  function iosRecord(el){
+    if(!ios||!flightInput(el)||!flightMeta()?.id||!draft())return false;
+    return !!draft().record(String(el.dataset.key),String(el.value??''),'ios-live');
+  }
+  function iosRestore(el){
+    if(!ios||!flightInput(el)||!flightMeta()?.id||!draft())return;
+    const key=String(el.dataset.key),row=draft().read(key,'ios-live');
+    if(!row)return;
+    const durable=(()=>{try{return String(root.readFlightSessionEnvelope?.(flightMeta().id)?.state?.[key]??'')}catch(_){return''}})();
+    if(row.value===durable){draft().forget(key,'ios-live');return}
+    if(String(el.value??'')===row.value)return;
+    // Never overwrite data already present in an editor. The user decides if
+    // a recovered draft should replace the currently displayed value.
+    const ok=root.confirm?.('Safari đã khôi phục dữ liệu nhập dở cho ô này. Dùng nội dung chưa lưu trước đó?');
+    if(!ok)return;
+    el.value=row.value;
+    el.dispatchEvent(new Event('input',{bubbles:true}));
+  }
+  function iosPersist(reason){
+    if(!ios||iosSnapshotBusy||!flightMeta()?.id)return false;
+    iosSnapshotBusy=true;clearTimeout(iosSaveTimer);
+    try{
+      // Commit fields to the existing per-account/per-flight recovery layers
+      // *before* attempting the whole-envelope localStorage checkpoint.
+      draft()?.snapshotAllEditors?.();
+      return root.sagsV22SaveNow?.(reason)!==false;
+    }catch(e){console.warn('iOS urgent flight checkpoint',e);return false}
+    finally{iosSnapshotBusy=false}
+  }
+  function iosScheduleSave(){
+    if(!ios||!flightMeta()?.id)return;
+    clearTimeout(iosSaveTimer);
+    // Modest debounce avoids rewriting large flight envelopes per keystroke;
+    // every editable field has already been recorded synchronously above.
+    iosSaveTimer=setTimeout(()=>iosPersist('ios-input'),300);
+  }
+
   function canonical(fieldName){
     try{return typeof state!=='undefined'?String(state[fieldName]??''):'';}
     catch(_){return '';}
@@ -94,6 +135,16 @@
     else cleanCommitted();
   });
   root.addEventListener('pagehide',snapshotVisibleDirty);
+  if(ios){
+    document.addEventListener('input',event=>{if(iosRecord(event.target))iosScheduleSave()},{capture:true});
+    document.addEventListener('change',event=>{if(iosRecord(event.target))iosPersist('ios-change')},{capture:true});
+    document.addEventListener('focusin',event=>iosRestore(event.target),{capture:true});
+    document.addEventListener('visibilitychange',()=>{if(document.hidden)iosPersist('ios-hidden')},{capture:true});
+    root.addEventListener('pagehide',()=>iosPersist('ios-pagehide'),{capture:true});
+    root.addEventListener('blur',()=>iosPersist('ios-blur'),{passive:true});
+    root.addEventListener('pageshow',()=>{try{void root.sagsDraftV2RestoreLocal?.()}catch(_){}},{passive:true});
+  }
+  root.SAGSIosDraftGuard={enabled:ios,snapshot:iosPersist};
   // Make pending quick-time drafts visible through the existing V6 local-draft badge.
   root.SAGSMobileDraftRecovery={snapshotVisibleDirty,cleanCommitted};
 })(window);
