@@ -43,10 +43,17 @@
     try{
       // Commit fields to the existing per-account/per-flight recovery layers
       // *before* attempting the whole-envelope localStorage checkpoint.
-      draft()?.snapshotAllEditors?.();
-      const ok=root.sagsV22SaveNow?.(reason)!==false;
+      // During typing every edited field is already in its own verified draft.
+      // snapshotAllEditors() performs a full persistChangedCore() itself, so
+      // calling it and sagsV22SaveNow() together on every key pause wrote the
+      // full flight twice and increased Safari memory pressure.
+      if(reason!=='ios-input')draft()?.snapshotAllEditors?.();
+      const saved=typeof root.sagsV22SaveNow==='function'
+        ?root.sagsV22SaveNow(reason)
+        :false;
+      const ok=saved===true;
       if(ok){
-        try{root.sagsIndexedDbFlightStoreV1?.scheduleMirror?.('ios-urgent-checkpoint',350,[flightMeta().id])}catch(_){}
+        try{root.sagsIndexedDbFlightStoreV1?.scheduleMirror?.('ios-urgent-checkpoint',900,[flightMeta().id])}catch(_){}
       }else{
         const badge=document.getElementById('sagsV61DraftStatus');
         if(badge){badge.hidden=false;badge.textContent='⚠ Chưa lưu xong chuyến, dữ liệu ô nhập đang được bảo vệ';badge.dataset.level='error'}
