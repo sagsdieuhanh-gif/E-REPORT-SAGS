@@ -12,7 +12,7 @@ assert(radio.includes("if(rows.docs.length>=REPORT_LIMIT)throw Error"),'never si
 assert(radio.includes('reportReady?reportEvents:events'),'report must not be replaced by 120 most-recent records');
 assert(radio.includes('!reportReady||!reportVerified'),'block export until verified report loaded');
 assert(radio.includes("if(reportReady&&e.shift!==reportShift)return false"),'filter by stored AM/PM on signed event, not guessed clock');
-assert(radio.includes("date+'T00:00:00+07:00'"),'VN local-day boundaries');
+assert(radio.includes("day+'T00:00:00+07:00'"),'VN local-day boundaries');
 assert(radio.includes("reportReady?reportEvents:events).find("),'photo preview must use selected report events');
 assert(css.includes('.radioReportControl'),'date and shift must be visible in UI');
 assert(radio.includes("const historyLimit=/iPad|iPhone|iPod/"),'iOS history should not preload 120 image blobs');
