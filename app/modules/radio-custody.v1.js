@@ -135,16 +135,16 @@ function takePhoto(){
  if(!choice||!cameraStream||busy)return notify('Camera chưa hoạt động. Bấm Mở camera và thử lại.',true);
  const v=$('radioCameraVideo');if(v.readyState<2||!v.videoWidth)return notify('Camera chưa có hình.',true);
  const code=cameraLeg==='new'?$('radioSwapTarget').value:choice.code;if(!code)return notify('Chọn bộ đàm thay thế.',true);
- const c=document.createElement('canvas');c.width=640;c.height=430;
- const ctx=c.getContext('2d');ctx.fillStyle='#071827';ctx.fillRect(0,0,640,430);
- const scale=Math.min(640/v.videoWidth,345/v.videoHeight),dw=v.videoWidth*scale,dh=v.videoHeight*scale;
- ctx.drawImage(v,(640-dw)/2,(345-dh)/2,dw,dh);
+ const c=document.createElement('canvas');c.width=960;c.height=645;
+ const ctx=c.getContext('2d');ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.fillStyle='#071827';ctx.fillRect(0,0,960,645);
+ const scale=Math.min(960/v.videoWidth,517/v.videoHeight),dw=v.videoWidth*scale,dh=v.videoHeight*scale;
+ ctx.drawImage(v,(960-dw)/2,(517-dh)/2,dw,dh);
  const operation=cameraLeg==='new'?'SWAP_IN':mode,at=new Date();
- ctx.fillStyle='#041926';ctx.fillRect(0,345,640,85);
- ctx.fillStyle='#fff';ctx.textBaseline='middle';ctx.font='bold 23px Arial';
- ctx.fillText('SAGS · '+label(code)+' · '+(['ISSUE','SWAP_IN'].includes(operation)?'NHẬN':['RETURN','SWAP_OUT'].includes(operation)?'TRẢ':'BÁO LỖI'),15,374);
- ctx.font='bold 17px Arial';ctx.fillStyle='#9ee5eb';
- ctx.fillText(formatShotTime(at)+'  ·  giờ thiết bị (VN)',15,407);
+ ctx.fillStyle='#041926';ctx.fillRect(0,517,960,128);
+ ctx.fillStyle='#fff';ctx.textBaseline='middle';ctx.font='bold 33px Arial';
+ ctx.fillText('SAGS · '+label(code)+' · '+(['ISSUE','SWAP_IN'].includes(operation)?'NHẬN':['RETURN','SWAP_OUT'].includes(operation)?'TRẢ':'BÁO LỖI'),23,560);
+ ctx.font='bold 26px Arial';ctx.fillStyle='#9ee5eb';
+ ctx.fillText(formatShotTime(at)+'  ·  giờ thiết bị (VN)',23,610);
  // WebKit on iOS can display WebP but cannot encode it from Canvas.
  // JPEG here is ONLY the local preview; immutable signed proof remains WebP/PNG.
  const preview=c.toDataURL('image/jpeg',.84);
@@ -185,6 +185,7 @@ function quantizePngCanvas(canvas,levels){
 function combineProof(leg,requestedFormat='auto'){
  const photo=photos[leg];if(!photo)throw Error('Chưa chụp ảnh trực tiếp.');
  const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');
+ ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
  const mode=requestedFormat==='png'?'png':webpCanvasEncoderSupported()?'webp':'jpeg';
  const maxLength=44000;
  const widths=mode==='png'?[560,512,448,384,320,280,240,208,176]:[640,600,560,512,480,448,416,384,352];
@@ -335,7 +336,7 @@ function renderHistory(){
  const sel=$('radioHistoryDevice'),codes=[...new Set((reportReady?reportEvents:events).map(e=>e.deviceCode).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'vi',{numeric:true})),key=codes.join('|');
  if(sel&&sel.dataset.codes!==key){const old=sel.value;sel.innerHTML='<option value="">Tất cả máy</option>'+codes.map(x=>'<option value="'+esc(x)+'">'+esc(label(x))+'</option>').join('');sel.value=codes.includes(old)?old:'';sel.dataset.codes=key}
  const rows=filteredHistory(),meta=$('radioHistoryMeta');
- if(meta)meta.textContent=rows.length+' sự kiện phù hợp | '+rows.filter(e=>!!e.signature).length+' có ảnh/chữ ký | '+(reportReady?reportScope()+' · Đã kiểm tra máy chủ':events.length>=120?'Lịch sử gần đây, không dùng làm báo cáo đầy đủ theo ngày.':'Lịch sử theo quyền tài khoản.');
+ if(meta)meta.textContent=rows.length+' sự kiện phù hợp | '+rows.filter(e=>!!e.signature).length+' có ảnh/chữ ký | '+rows.filter(e=>/^data:image\/png;base64,/.test(S(e.signature))).length+' ảnh PNG | '+(reportReady?reportScope()+' · Đã kiểm tra máy chủ':events.length>=120?'Lịch sử gần đây, không dùng làm báo cáo đầy đủ theo ngày.':'Lịch sử theo quyền tài khoản.');
  if(!rows.length){wrap.innerHTML='<p class="radioEmpty">Không có lịch sử phù hợp bộ lọc.</p>';return;}
  wrap.innerHTML='<div class="radioAudit"><div class="radioAuditHead"><span>Thời gian</span><span>Máy / sự kiện</span><span>Người thực hiện</span><span>Trạng thái / ghi chú</span><span>Bằng chứng</span></div>'+
  rows.map(e=>{
@@ -389,7 +390,7 @@ async function submit(){
  const details=mode==='RETURN'?('Lý do trả: '+(RETURN_REASONS[returnReason]||RETURN_REASONS.END_SHIFT)+(rawDetail?' · '+rawDetail:'')):rawDetail;
  if(['REPORT','SWAP_OUT'].includes(mode)&&(reason==='OTHER'||reason==='LOST')&&details.length<10)return notify('Vui lòng mô tả lý do cụ thể (từ 10 ký tự).',true);
  if(mode==='RELEASE'&&details.length<10)return notify('AD phải ghi kết quả kiểm tra/sửa chữa (ít nhất 10 ký tự).',true);
- let sig='',sigNew='';try{if(mode!=='RELEASE'){signature();if(needsPhoto(mode)){if(!photosReady())throw Error('Phải chụp ảnh bằng camera trước khi ký.');if(Date.now()-photos.old.at>600000||(mode==='SWAP_OUT'&&Date.now()-photos.new.at>600000))throw Error('Ảnh quá 10 phút, vui lòng chụp lại.')}}}catch(e){return notify(e.message,true)}
+ let sig='',sigNew='',usedLegacyPng=false;try{if(mode!=='RELEASE'){signature();if(needsPhoto(mode)){if(!photosReady())throw Error('Phải chụp ảnh bằng camera trước khi ký.');if(Date.now()-photos.old.at>600000||(mode==='SWAP_OUT'&&Date.now()-photos.new.at>600000))throw Error('Ảnh quá 10 phút, vui lòng chụp lại.')}}}catch(e){return notify(e.message,true)}
  if(['ISSUE','RETURN'].includes(mode)&&bat==='UNKNOWN')return notify('Vui lòng kiểm tra mức pin trước khi nhận hoặc trả máy.',true);
  if(mode==='ISSUE'&&['LOW','EMPTY'].includes(bat))return notify('Máy pin yếu/hết pin không được cấp phát. Báo lỗi pin để đưa máy về trạng thái chờ sạc.',true);
  if(mode==='SWAP_OUT'&&!['FULL','GOOD'].includes(swapBattery))return notify('Vui lòng kiểm tra máy thay thế có pin Đầy hoặc Đủ dùng trước khi đổi.',true);
@@ -447,11 +448,11 @@ async function submit(){
   if(!denied||!/^data:image\/jpeg;base64,/.test(sig))throw error;
   notify('Firebase chưa cho phép ảnh JPEG. Đang tự chuyển ảnh sang PNG để lưu an toàn…');
   await new Promise(resolve=>requestAnimationFrame(resolve));
-  sig=combineProof('old','png');
+  sig=combineProof('old','png');usedLegacyPng=true;
   if(mode==='SWAP_OUT')sigNew=combineProof('new','png');
   await writeRadioTransaction();
  }
- cancel();notify('Đã ghi nhận lên Firebase với thời gian máy chủ và lưu sự kiện lịch sử.');
+ cancel();notify(usedLegacyPng?'Đã lưu nhận/trả lên Firebase bằng PNG dự phòng. Ảnh trên iPhone có thể mờ: AD cần cập nhật Firestore Rules để cho phép JPEG.':'Đã ghi nhận lên Firebase với thời gian máy chủ và lưu sự kiện lịch sử.');
  }catch(e){notify(errText(e),true)}finally{setBusy(false)}
 }
 async function seed(){
@@ -577,6 +578,7 @@ async function exportPhotoPdf(){
  if(rows.some(e=>!e.at?.toMillis?.()))return notify('Lịch sử có sự kiện chưa xác minh giờ Firebase. Hãy đồng bộ lại.',true);
  const a=$('radioExport'),b=$('radioSummaryExport');
  if(a?.disabled||b?.disabled)return;
+ if(/iPhone|iPad|iPod/.test(navigator.userAgent||'')&&rows.length>40)return notify('Báo cáo kèm quá 40 ảnh trên iPhone có thể khiến Safari tải lại. Chọn PDF không ảnh hoặc xuất kèm ảnh trên PC để đủ dữ liệu.',true);
  if(a)a.disabled=true;if(b)b.disabled=true;
  const proofCount=rows.filter(e=>/^data:image\/(webp|png|jpeg);base64,/.test(S(e.signature))).length;
  notify('Đang tạo PDF có bảng tổng hợp và '+rows.length+' trang đối chiếu ảnh/chữ ký…');
