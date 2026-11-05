@@ -2,11 +2,11 @@
   "version": "V2.1",
   "displayVersion": "V2.1",
   "label": "V2.1 - AN TOÀN DỮ LIỆU iOS & BÁO CÁO BỘ ĐÀM THEO CA",
-  "build": "V2.1-20261105-IOS-DRAFT-SHIFT-10",
+  "build": "V2.1-20261105-IOS-DRAFT-SHIFT-11",
   "releasedAt": "2026-11-05",
-  "type": "ios-flight-draft-guard-radio-shift-report",
+  "type": "ios-flight-draft-guard-low-memory",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "iPhone ghi dữ liệu ô theo chuyến ngay khi nhập, đồng bộ checkpoint và IndexedDB trên sự kiện, làm nền, mở lại. Giữ nguyên việc nhập/chỉnh ký mẫu và roster. AD chọn ngày và ca AM/PM, tải dữ liệu Firestore theo giờ Việt Nam, xuất PDF đúng phạm vi với thống kê nhận/trả/đổi/lỗi, tùy chọn kèm ảnh; chặn xuất dữ liệu chưa xác minh hoặc vượt giới hạn 300 sự kiện/ngày. Camera tăng nguồn ảnh 960x645; ảnh lưu JPEG rõ hơn cần Firebase Production Rules cho phép JPEG, nếu chưa có thì PNG dự phòng và thông báo. Giảm tải sự kiện ảnh tự động trên iOS.",
-  "message": "Tăng bảo vệ nháp chuyến bay trên iPhone, thêm báo cáo ký nhận bộ đàm chọn ngày và ca sáng/tối, cải thiện ảnh/chữ thời gian."
+  "notes": "Bản 11 giữ mọi tính năng báo cáo ngày/ca, ảnh bộ đàm, lấy trực tiếp dữ liệu Firebase và các quy tắc nghiệp vụ từ bản 10. Tối ưu riêng iPhone: từng trường vẫn ghi nháp tức thời; một checkpoint hồ sơ sau 300ms không còn ghi trùng toàn hồ sơ mỗi lần; khi Safari sang nền vẫn chụp tất cả editor, viết bản lưu bảo vệ và xếp lịch IndexedDB. Giảm áp lực CPU/bộ nhớ khi nhập liệu.",
+  "message": "Lưu nháp iOS một lượt mỗi chu kỳ, giảm ghi trùng và tránh mất dữ liệu; báo cáo bộ đàm theo ngày/ca."
 }

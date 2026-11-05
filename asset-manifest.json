@@ -1,7 +1,7 @@
 {
   "schema": 2,
   "version": "V2.1",
-  "build": "V2.1-20261105-IOS-DRAFT-SHIFT-10",
+  "build": "V2.1-20261105-IOS-DRAFT-SHIFT-11",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -270,8 +270,8 @@
       "bytes": 14617
     },
     "./app/modules/mobile-draft-recovery.v1.js": {
-      "sha256": "570987d6bc1598272f102ff07ed653495e4806bf040b4a796cec3be7a488e677",
-      "bytes": 8357
+      "sha256": "8f42b75b0c03fc623b3f3db3074c7919fad9ac98ec063c73ab5712dd01591fc0",
+      "bytes": 8769
     },
     "./app/modules/mobile-form-dock.v1.js": {
       "sha256": "7e2cb6f30aafaa4213f437f29d7cf9eb6bc5556b16da32100c16fd470ce718b1",
@@ -774,7 +774,7 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "966b28265c4cd5a915f873cfe7dc7b20105af7f070eae8a620e774740d7fc7c6",
+      "sha256": "cbb03a85415895ce086fad2ff3c0a3865b04a48a649b0d8d400b5b000f602384",
       "bytes": 104676
     },
     "./manifest.webmanifest": {
@@ -826,7 +826,7 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "2086d797d40031adb0c0bb8bd41da4b56dd229ee815a594afc838c1749f32dba",
+      "sha256": "a5e87d0e182b0ac74e9b2dcc643ab16acce7d12b820f16e43ad43c577482c54c",
       "bytes": 22555
     },
     "./storage-recovery.html": {
@@ -834,8 +834,8 @@
       "bytes": 26106
     },
     "./version.json": {
-      "sha256": "8c2d885e4b1fa39982a12cd7b37df31c4f89ed3cd46101e178f458355d146fd0",
-      "bytes": 1250
+      "sha256": "955ab86a44e3dee6ffc353b32e2d05aed0eee3d372018922f7a27a5af59c38d8",
+      "bytes": 1007
     }
   },
   "mutableAssets": [

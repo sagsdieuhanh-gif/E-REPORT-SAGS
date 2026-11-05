@@ -3,7 +3,7 @@ const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/st
 const src=fs.readFileSync('app/modules/mobile-draft-recovery.v1.js','utf8');
 const v61=fs.readFileSync('app/modules/stability.v6-core.js','utf8');
 const cloud=fs.readFileSync('app/modules/cloud-draft-sync.v2.js','utf8');
-for(const term of ["draft().record(String(el.dataset.key),String(el.value??''),'ios-live')","iosPersist('ios-hidden')","iosPersist('ios-pagehide')","iosPersist('ios-change')","iosPersist('ios-blur')","sagsV22SaveNow?.(reason)","sagsIndexedDbFlightStoreV1?.scheduleMirror?.","sagsDraftV2Flush?.()"]){
+for(const term of ["draft().record(String(el.dataset.key),String(el.value??''),'ios-live')","iosPersist('ios-hidden')","iosPersist('ios-pagehide')","iosPersist('ios-change')","iosPersist('ios-blur')","sagsV22SaveNow(reason)","sagsIndexedDbFlightStoreV1?.scheduleMirror?.","sagsDraftV2Flush?.()"]){
  assert(src.includes(term),'Missing iOS flight crash-recovery protection '+term);
 }
 assert(v61.includes("textarea.addEventListener(event,()=>{const f=currentManual();if(f)root.sagsV61Draft.record(f.key,textarea.value);"),'manual fields already save each keystroke');
@@ -35,7 +35,10 @@ assert.equal(h.c.record(h.el),true);
 assert.deepEqual(h.events,['record:pax'],'typing must synchronously store field before debounce');
 h.c.schedule();assert.equal(h.timers.length,1);
 h.timers[0]();
-assert(h.events.includes('snapshot')&&h.events.includes('save:ios-input')&&h.events.includes('idb:FLT01'));
+assert(h.events.includes('save:ios-input')&&h.events.includes('idb:FLT01'));
+assert(!h.events.includes('snapshot'),'typing must not double-persist the whole flight');
+h.c.snapshot('ios-hidden');assert(h.events.includes('snapshot'),'background must capture unfinished editors before checkpoint');
+assert(h.events.includes('save:ios-hidden'));
 h.el.value='';h.c.restore(h.el);assert.equal(h.el.value,'143');
 assert(h.events.includes('recovered:input'),'restored input must update original field state');
 const x=harness('Android');assert.equal(x.c.enabled,false);assert.equal(x.c.record(x.el),false);
