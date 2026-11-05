@@ -305,6 +305,7 @@ async function loadShiftReport(){
   if(rows.docs.length>=REPORT_LIMIT)throw Error('Ngày có trên 300 sự kiện. Không xuất báo cáo thiếu dữ liệu; cần chia nhỏ hoặc xuất từ máy chủ.');
   reportEvents=rows.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.at?.toMillis?.()||0)-(a.at?.toMillis?.()||0));
   reportDate=day;reportShift=shift;reportReady=true;reportVerified=true;
+  $('radioHistoryDevice').value='';$('radioHistoryAction').value='';$('radioHistorySearch').value='';
   const count=reportEvents.filter(e=>e.shift===shift).length;
   $('radioReportState').textContent='✓ '+reportScope()+': '+count+' sự kiện · '+reportEvents.length+' sự kiện cả ngày đã kiểm tra trực tuyến.';
   notify('Đã tải đủ '+count+' sự kiện của '+reportScope()+'. Chọn kèm ảnh (AD) nếu cần đối chiếu.',false);
