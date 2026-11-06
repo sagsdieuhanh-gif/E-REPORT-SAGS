@@ -277,13 +277,13 @@ function start(action,code){
 }
 function badge(state){return '<span class="radioStatus radioStatus-'+state+'">'+(STATUSES[state]||state)+'</span>'}
 
-function rosterLogin(v){return S(v).normalize('NFKC').toUpperCase().replace(/\\s+/g,'')}
+function rosterLogin(v){return S(v).normalize('NFKC').toUpperCase().replace(/\s+/g,'')}
 function rosterDutyShift(x){
  const direct=S(x.dutyShift||x.workShift||x.rosterShift||x.shiftCode||x.shift).toUpperCase();
  if(['AM','SANG','SÁNG','MORNING'].includes(direct))return 'AM';
  if(['PM','TOI','TỐI','EVENING','CHIEU','CHIỀU'].includes(direct))return 'PM';
  for(const key of ['dutyStart','shiftStart','startShift','sta','std']){
-  const m=S(x[key]).match(/^([01]?\\d|2[0-3]):?([0-5]\\d)(?:\\+\\d+)?$/);
+  const m=S(x[key]).match(/^([01]?\d|2[0-3]):?([0-5]\d)(?:\+\d+)?$/);
   if(m)return Number(m[1])<12?'AM':'PM';
  }
  return '';
@@ -294,7 +294,7 @@ function reconcileRoster(items,users,machines,history,day,which,now=Date.now()){
  end=start+43200000;
  for(const x of items){
   if(!x||x.active===false||x.duplicateInactive===true||!S(x.flightId||x.flightRaw||x.flightName))continue;
-  const names=S(x.user||x.targetUser).split(/[\\/;,]+/).map(rosterLogin).filter(Boolean),sh=rosterDutyShift(x);
+  const names=S(x.user||x.targetUser).split(/[\/;,]+/).map(rosterLogin).filter(Boolean),sh=rosterDutyShift(x);
   for(const n of names){if(sh===which)roster.add(n);else if(!sh)undated.add(n)}
  }
  for(const x of history)if(x.shift===which&&['ISSUE','SWAP_IN'].includes(x.action))issued.add(S(x.personUid));
@@ -339,7 +339,7 @@ function watchRoster(){
  stopRosterWatch();
  if(!isAdmin(currentUser())||$('sagsRadioPanel')?.hidden)return;
  const day=S($('radioRosterDate')?.value);
- if(!/^\\d{4}-\\d\\d-\\d\\d$/.test(day)||!['AM','PM'].includes(S($('radioRosterShift')?.value))||typeof root.sagsV470Ref!=='function')return renderRosterAlert();
+ if(!/^\d{4}-\d\d-\d\d$/.test(day)||!['AM','PM'].includes(S($('radioRosterShift')?.value))||typeof root.sagsV470Ref!=='function')return renderRosterAlert();
  try{
   rosterDate=day;const gen=rosterGen;rosterRef=root.sagsV470Ref('roster_manifests/'+day);
   rosterCb=snap=>{
