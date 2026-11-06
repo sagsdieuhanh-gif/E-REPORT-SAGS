@@ -1,7 +1,7 @@
 {
   "schema": 2,
   "version": "V2.1",
-  "build": "V2.1-20261105-IOS-DRAFT-SHIFT-11",
+  "build": "V2.1-20261106-RADIO-IOS-ADMIN-12",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -774,7 +774,7 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "cbb03a85415895ce086fad2ff3c0a3865b04a48a649b0d8d400b5b000f602384",
+      "sha256": "9eaaae71158ef9756a76fff684497be633e40439caa7a232195f48930d5d85cc",
       "bytes": 104676
     },
     "./manifest.webmanifest": {
@@ -826,7 +826,7 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "a5e87d0e182b0ac74e9b2dcc643ab16acce7d12b820f16e43ad43c577482c54c",
+      "sha256": "a3fc8d7f68c3e724cd0f0e7d5bdf747ff1e162079bf15b00457de906e6cc3123",
       "bytes": 22555
     },
     "./storage-recovery.html": {
@@ -834,8 +834,8 @@
       "bytes": 26106
     },
     "./version.json": {
-      "sha256": "955ab86a44e3dee6ffc353b32e2d05aed0eee3d372018922f7a27a5af59c38d8",
-      "bytes": 1007
+      "sha256": "721d36da0f41d4a3020456efbde73e13ead0425891c60e5f35043bbc15454bda",
+      "bytes": 888
     }
   },
   "mutableAssets": [
