@@ -49,6 +49,7 @@ function tpl(){
  p.innerHTML='<div class="radioShell"><header class="radioHeader"><div><small>QUẢN LÝ THIẾT BỊ · SAGS</small><h2>📻 Ký nhận bộ đàm</h2><p>Nhận · trả · đổi máy · báo lỗi · lịch sử</p></div><button id="radioClose" aria-label="Đóng" type="button">✕</button></header>'+
  '<div id="radioMessage" role="status" aria-live="polite"></div>'+
  '<div class="radioStats" id="radioStats"></div>'+
+ '<section id="radioAdminOverview" class="radioAdminOverview" hidden><div class="radioAdminHeading"><div><small>QUẢN TRỊ THIẾT BỊ · TRẠNG THÁI TRỰC TUYẾN</small><h3>Giám sát bàn giao bộ đàm</h3><p>Người giữ máy, máy cần xử lý và đối soát theo ca ở một nơi.</p></div><button type="button" data-radio-go="summary" class="radioPrimary">Báo cáo ngày / ca</button></div><div id="radioAdminDashboard" class="radioAdminDashboard"></div></section>'+
  '<div class="radioTabs"><button type="button" data-radio-tab="devices" class="selected">Danh sách máy</button><button type="button" data-radio-tab="history">Lịch sử ký nhận</button><button type="button" data-radio-tab="summary">Tổng hợp</button></div>'+
  '<section id="radioReportControl" class="radioReportControl" hidden><div class="radioReportTitle"><strong>📅 Báo cáo ký nhận theo ngày và ca</strong><small>1. Chọn ngày và ca → 2. Tải dữ liệu → 3. Chọn ảnh nếu cần → 4. Xuất PDF</small></div><div class="radioReportInputs"><label>Ngày cần báo cáo<input id="radioReportDate" type="date"></label><label>Ca trực<select id="radioReportShift"><option value="AM">Ca sáng (AM)</option><option value="PM">Ca tối (PM)</option></select></label><button type="button" id="radioReportLoad" class="radioPrimary">🔎 Tải báo cáo ca</button><button type="button" id="radioReportReset">Lịch sử gần đây</button></div><div id="radioPdfChoice" class="radioPdfChoice" hidden><label><input type="checkbox" id="radioPdfIncludePhotos"><span>Kèm ảnh chụp và chữ ký trong PDF</span></label><small>AD: Bật để xuất bảng tổng hợp kèm ảnh từng lần nhận/trả; tắt để xuất báo cáo gọn không có ảnh.</small></div><p id="radioReportState" class="radioReportState" role="status" aria-live="polite">Chọn ngày và ca để lấy đúng dữ liệu, không giới hạn ở lịch sử gần nhất.</p><small>Ca báo cáo tính theo ca AM/PM được ghi tại thời điểm ký nhận. Ngày tính theo giờ Việt Nam (UTC+7). Dữ liệu đã ghi không tự đổi ca.</small></section>'+ 
  '<section id="radioDevicesTab"><div class="radioTools"><span>Trạng thái từng máy cập nhật từ Firebase</span><button type="button" id="radioSeed" hidden>+ Khởi tạo danh mục từ giấy</button></div><div id="radioDeviceList" class="radioDeviceList"></div></section>'+
@@ -80,7 +81,7 @@ function tpl(){
   c.addEventListener('touchmove',e=>{if(!e.touches.length)return;e.preventDefault();move(mapped(e))},{passive:false});
   c.addEventListener('touchend',up,{passive:true});c.addEventListener('touchcancel',up,{passive:true});
  }
- p.addEventListener('click',e=>{const b=e.target.closest('[data-radio-act]');if(b)start(b.dataset.radioAct,b.dataset.radioCode);const el=e.target.closest('[data-radio-proof]');if(el)viewProof(el.dataset.radioProof)});
+ p.addEventListener('click',e=>{const go=e.target.closest('[data-radio-go]');if(go){tab(go.dataset.radioGo);$('radioReportControl')?.scrollIntoView({behavior:'smooth',block:'start'});return}const b=e.target.closest('[data-radio-act]');if(b)start(b.dataset.radioAct,b.dataset.radioCode);const el=e.target.closest('[data-radio-proof]');if(el)viewProof(el.dataset.radioProof)});
  $('radioSwapTarget').onchange=()=>{if(mode==='SWAP_OUT'&&choice){photos.new=null;clearSignature();updatePhotoUI();void startCamera('new')}};
 }
 
@@ -221,7 +222,9 @@ function combineProof(leg,requestedFormat='auto'){
  throw Error('Ảnh quá lớn trong giới hạn lưu trữ. Vui lòng chụp rõ mã bộ đàm, giảm chi tiết nền rồi thử lại; chưa ghi nhận lượt ký.');
 }
 function viewProof(id){
- const e=(reportReady?reportEvents:events).find(x=>x.id===id);if(!e?.signature||!/^data:image\/(webp|png|jpeg);base64,/.test(e.signature))return;
+ const e=(reportReady?reportEvents:events).find(x=>x.id===id);
+ if(!e)return notify('Không tìm thấy sự kiện trong lịch sử đang hiển thị. Hãy tải lại lịch sử.',true);
+ if(!e.signature||!/^data:image\/(webp|png|jpeg);base64,/.test(e.signature))return notify('Không có dữ liệu ảnh hợp lệ cho lượt ký này.',true);
  $('radioProofName').textContent=label(e.deviceCode)+' · '+(ACTS[e.action]||e.action);
  $('radioProofImage').src=e.signature;
  const check=photoAudit(e);
@@ -265,11 +268,31 @@ function start(action,code){
  $('radioAction').hidden=false;updatePhotoUI();$('radioAction').scrollIntoView({behavior:'smooth',block:'start'});if(needsPhoto(action))void startCamera('old');
 }
 function badge(state){return '<span class="radioStatus radioStatus-'+state+'">'+(STATUSES[state]||state)+'</span>'}
+function renderAdminOverview(){
+ const panel=$('radioAdminOverview'),target=$('radioAdminDashboard');
+ if(!panel||!target)return;
+ const admin=isAdmin(currentUser());panel.hidden=!admin;
+ if(!admin){target.replaceChildren();return}
+ const now=Date.now(),holds=devices.filter(d=>d.status==='OUT'),
+  needs=devices.filter(d=>['CHARGING','FAULT','LOST'].includes(d.status)),
+  overdue=holds.filter(d=>d.updatedAt?.toMillis?.()&&now-d.updatedAt.toMillis()>=OVERDUE_MS);
+ const hour=d=>d.updatedAt?.toDate?.()?fmt(d.updatedAt.toDate()):'Đang đồng bộ';
+ const holdItems=holds.length?holds.map(d=>{
+  const late=overdue.includes(d);
+  return '<li><div><strong>'+esc(label(d.code))+'</strong><span>'+esc(d.holderName||d.holderUid||'Chưa rõ người giữ')+'</span><small>'+esc(d.shift==='AM'?'Ca sáng':d.shift==='PM'?'Ca tối':'Chưa rõ ca')+' · Nhận/đổi gần nhất: '+esc(hour(d))+'</small></div>'+(late?'<em class="radioAdminWarn">Cần kiểm tra 12h+</em>':'<em class="radioAdminNormal">Đang giữ</em>')+'</li>'
+ }).join(''):'<li class="radioAdminEmpty">Không có máy đang được ghi nhận sử dụng.</li>';
+ const needItems=needs.length?needs.map(d=>'<li><div><strong>'+esc(label(d.code))+'</strong><span>'+esc(STATUSES[d.status]||d.status)+'</span><small>'+esc(REASON_TEXT[d.faultCode]||d.faultDetail||'Cần xác nhận tình trạng thực tế')+'</small></div><em class="radioAdminWarn">Theo dõi</em></li>').join(''):'<li class="radioAdminEmpty">Không có máy lỗi, mất hoặc đang sạc.</li>';
+ target.innerHTML='<div class="radioAdminHighlights"><div><strong>'+holds.length+'</strong><span>Đang có người giữ</span></div><div><strong>'+overdue.length+'</strong><span>Cần kiểm tra trên 12h</span></div><div><strong>'+needs.length+'</strong><span>Đang sạc / lỗi / mất</span></div></div>'+
+  '<div class="radioAdminColumns"><div class="radioAdminPanel"><h4>Người đang giữ máy <small>'+holds.length+' máy</small></h4><ul>'+holdItems+'</ul></div>'+
+  '<div class="radioAdminPanel"><h4>Máy cần theo dõi <small>'+needs.length+' máy</small></h4><ul>'+needItems+'</ul></div></div>'+
+  '<p class="radioAdminFoot">Danh sách này phản ánh trạng thái Firebase hiện tại, không suy ra máy chưa trả từ sự kiện một ca. Cảnh báo 12 giờ là mốc kiểm tra, không kết luận hết ca.</p>';
+}
 function render(){
  if(!$('radioDeviceList'))return;
  const u=currentUser();$('radioSeed').hidden=!connected||!isAdmin(u)||INIT.every(code=>devices.some(x=>x.code===code));
  const counts=Object.fromEntries(Object.keys(STATUSES).map(k=>[k,devices.filter(x=>x.status===k).length]));
  $('radioStats').innerHTML='<div><strong>'+devices.length+'</strong><small>Tổng thiết bị</small></div><div><strong>'+counts.READY+'</strong><small>Sẵn sàng</small></div><div><strong>'+counts.OUT+'</strong><small>Đang giữ</small></div><div><strong>'+counts.CHARGING+'</strong><small>Đang sạc</small></div><div><strong>'+counts.FAULT+counts.LOST+'</strong><small>Lỗi / mất</small></div>';
+ renderAdminOverview();
  $('radioDeviceList').innerHTML=devices.length?devices.map(d=>{
   const mine=d.holderUid===u.uid,admin=isAdmin(u),buttons=[];
   if(connected&&d.status==='READY')buttons.push(['ISSUE','Ký nhận'],['REPORT','Báo lỗi']);
@@ -337,7 +360,7 @@ function renderHistory(){
  const sel=$('radioHistoryDevice'),codes=[...new Set((reportReady?reportEvents:events).map(e=>e.deviceCode).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'vi',{numeric:true})),key=codes.join('|');
  if(sel&&sel.dataset.codes!==key){const old=sel.value;sel.innerHTML='<option value="">Tất cả máy</option>'+codes.map(x=>'<option value="'+esc(x)+'">'+esc(label(x))+'</option>').join('');sel.value=codes.includes(old)?old:'';sel.dataset.codes=key}
  const rows=filteredHistory(),meta=$('radioHistoryMeta');
- if(meta)meta.textContent=rows.length+' sự kiện phù hợp | '+rows.filter(e=>!!e.signature).length+' có ảnh/chữ ký | '+rows.filter(e=>/^data:image\/png;base64,/.test(S(e.signature))).length+' ảnh PNG | '+(reportReady?reportScope()+' · Đã kiểm tra máy chủ':events.length>=120?'Lịch sử gần đây, không dùng làm báo cáo đầy đủ theo ngày.':'Lịch sử theo quyền tài khoản.');
+ if(meta)meta.textContent=rows.length+' sự kiện phù hợp | '+rows.filter(e=>!!e.signature).length+' có ảnh/chữ ký | '+rows.filter(e=>/^data:image\/png;base64,/.test(S(e.signature))).length+' ảnh PNG dự phòng (có thể mờ; AD cần xác minh quy tắc JPEG trên Firebase) | '+(reportReady?reportScope()+' · Đã kiểm tra máy chủ':events.length>=120?'Lịch sử gần đây, không dùng làm báo cáo đầy đủ theo ngày.':'Lịch sử theo quyền tài khoản.');
  if(!rows.length){wrap.innerHTML='<p class="radioEmpty">Không có lịch sử phù hợp bộ lọc.</p>';return;}
  wrap.innerHTML='<div class="radioAudit"><div class="radioAuditHead"><span>Thời gian</span><span>Máy / sự kiện</span><span>Người thực hiện</span><span>Trạng thái / ghi chú</span><span>Bằng chứng</span></div>'+
  rows.map(e=>{
@@ -345,6 +368,25 @@ function renderHistory(){
   const note=[e.beforeStatus&&e.afterStatus?(STATUSES[e.beforeStatus]||e.beforeStatus)+' → '+(STATUSES[e.afterStatus]||e.afterStatus):'',REASON_TEXT[e.reasonCode]||'',e.details||''].filter(Boolean).join(' · ');
   return '<article class="radioAuditRow"><div><small>THỜI GIAN</small><b>'+esc(e.at?.toDate?.()?fmt(e.at.toDate()):'Đang đồng bộ')+'</b></div><div><small>THIẾT BỊ</small><strong>'+esc(label(e.deviceCode))+'</strong><span class="radioActionBadge radioActionBadge-'+kind+'">'+esc(ACTS[e.action]||e.action)+'</span></div><div><small>NGƯỜI KÝ</small><b>'+esc(e.actorName||e.actorUid||'—')+'</b><span class="radioDetailText">'+esc(e.shift||'—')+'</span></div><div><small>TRẠNG THÁI / GHI CHÚ</small><span class="radioDetailText">'+esc(note||'Không có ghi chú')+'</span></div><div><small>BẰNG CHỨNG</small>'+(e.signature?'<button type="button" class="radioViewProof" data-radio-proof="'+esc(e.id)+'">📷 Xem ảnh / chữ ký</button>':'<span class="radioDetailText">Không có ảnh</span>')+'</div></article>';
  }).join('')+'</div>';
+}
+function radioShiftDeviceMatrix(rows){
+ const byCode=new Map();
+ for(const e of [...rows].reverse()){
+  const code=S(e.deviceCode);if(!code)continue;
+  let item=byCode.get(code);
+  if(!item){item={code,received:0,returned:0,swap:0,fault:0,last:'',who:''};byCode.set(code,item)}
+  if(['ISSUE','SWAP_IN'].includes(e.action))item.received++;
+  if(['RETURN','SWAP_OUT'].includes(e.action))item.returned++;
+  if(e.action==='SWAP_OUT')item.swap++;
+  if(e.action==='REPORT')item.fault++;
+  item.last=ACTS[e.action]||e.action;
+  item.who=e.actorName||e.actorUid||'';
+ }
+ if(!byCode.size)return '<div class="radioAdminMatrix"><h4>Đối soát theo thiết bị</h4><p class="radioHint">Không phát sinh sự kiện trong phạm vi này.</p></div>';
+ const items=[...byCode.values()].sort((a,b)=>a.code.localeCompare(b.code,'vi',{numeric:true}));
+ return '<div class="radioAdminMatrix"><h4>Đối soát theo từng máy trong ca</h4><p class="radioHint">Số nhận/trả là lượt phát sinh trong ca đã chọn, không phải số máy còn giữ ở hiện tại.</p>'+
+ '<div class="radioAdminMatrixScroll"><table><thead><tr><th>Máy</th><th>Nhận</th><th>Trả</th><th>Đổi / lỗi</th><th>Thao tác cuối · người thực hiện</th></tr></thead><tbody>'+
+ items.map(d=>'<tr><th>'+esc(label(d.code))+'</th><td>'+d.received+'</td><td>'+d.returned+'</td><td>'+d.swap+' / '+d.fault+'</td><td>'+esc(d.last)+' · '+esc(d.who||'—')+'</td></tr>').join('')+'</tbody></table></div></div>';
 }
 function renderSummary(){
  if(isAdmin(currentUser())&&!reportReady){
@@ -355,7 +397,7 @@ function renderSummary(){
    swaps=rows.filter(x=>x.action==='SWAP_OUT').length,errors=rows.filter(x=>x.action==='REPORT').length;
   $('radioSummary').innerHTML='<h4>Đối soát '+esc(reportScope())+'</h4><div class="radioReportGrid">'+
    [['Nhận máy',n],['Trả máy',r],['Đổi máy',swaps],['Báo lỗi',errors]].map(x=>'<div><strong>'+x[1]+'</strong><small>'+x[0]+'</small></div>').join('')+
-   '</div><p class="radioHint">Tổng '+rows.length+' sự kiện theo bộ lọc. Số lượt không phải số máy hiện còn giữ; trạng thái hiện tại không dùng để suy ra lịch sử ca trước.</p>';
+   '</div>'+radioShiftDeviceMatrix(rows)+'<p class="radioHint">Tổng '+rows.length+' sự kiện theo bộ lọc. Số lượt không phải số máy hiện còn giữ; trạng thái hiện tại không dùng để suy ra lịch sử ca trước.</p>';
   return;
  }
  const n=events.filter(x=>['SWAP_OUT'].includes(x.action)).length,issues=events.filter(x=>['REPORT','SWAP_OUT'].includes(x.action)),pending=devices.filter(x=>['FAULT','CHARGING','LOST'].includes(x.status));
