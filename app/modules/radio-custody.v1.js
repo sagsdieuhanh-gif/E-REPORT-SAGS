@@ -248,10 +248,13 @@ function close(){
 }
 function cancel(){resetCamera();choice=null;$('radioAction').hidden=true;clearSignature()}
 function shift(){const h=Number(new Intl.DateTimeFormat('en-GB',{timeZone:VN,hour:'2-digit',hourCycle:'h23'}).format(new Date()));return h<12?'AM':'PM'}
+function heldBy(uid){return devices.filter(d=>d.status==='OUT'&&d.holderUid===uid)}
 function start(action,code){
  const u=currentUser(),d=devices.find(x=>x.code===code);
  if(!u.uid||!d)return notify('Cần đăng nhập và chọn máy hợp lệ.',true);
  if(!connected||!navigator.onLine)return notify('Chưa kết nối Firebase. Không thể ký nhận khi chưa đồng bộ trạng thái máy.',true);
+ if(action==='ISSUE'&&heldBy(u.uid).length)return notify('Bạn đang giữ '+heldBy(u.uid).map(x=>label(x.code)).join(', ')+'. Phải ký trả máy đang giữ trước khi nhận máy khác.',true);
+ if(action==='SWAP_OUT'&&heldBy(u.uid).some(x=>x.code!==code))return notify('Bạn đang giữ bộ đàm khác. Phải trả máy đó trước khi đổi máy.',true);
  if(action==='RELEASE'&&!isAdmin(u))return notify('Chỉ AD được đưa máy trở lại sử dụng.',true);
  if(['RETURN','SWAP_OUT'].includes(action)&&d.holderUid!==u.uid&&!isAdmin(u))return notify('Máy đang được người khác sử dụng; chỉ chủ máy hoặc AD được trả.',true);
  resetCamera();mode=action;choice=d;clearSignature();
@@ -289,18 +292,19 @@ function renderAdminOverview(){
 }
 function render(){
  if(!$('radioDeviceList'))return;
- const u=currentUser();$('radioSeed').hidden=!connected||!isAdmin(u)||INIT.every(code=>devices.some(x=>x.code===code));
+ const u=currentUser(),held=heldBy(u.uid);$('radioSeed').hidden=!connected||!isAdmin(u)||INIT.every(code=>devices.some(x=>x.code===code));
  const counts=Object.fromEntries(Object.keys(STATUSES).map(k=>[k,devices.filter(x=>x.status===k).length]));
  $('radioStats').innerHTML='<div><strong>'+devices.length+'</strong><small>Tổng thiết bị</small></div><div><strong>'+counts.READY+'</strong><small>Sẵn sàng</small></div><div><strong>'+counts.OUT+'</strong><small>Đang giữ</small></div><div><strong>'+counts.CHARGING+'</strong><small>Đang sạc</small></div><div><strong>'+counts.FAULT+counts.LOST+'</strong><small>Lỗi / mất</small></div>';
  renderAdminOverview();
  $('radioDeviceList').innerHTML=devices.length?devices.map(d=>{
   const mine=d.holderUid===u.uid,admin=isAdmin(u),buttons=[];
-  if(connected&&d.status==='READY')buttons.push(['ISSUE','Ký nhận'],['REPORT','Báo lỗi']);
+  if(connected&&d.status==='READY'){if(!held.length)buttons.push(['ISSUE','Ký nhận']);buttons.push(['REPORT','Báo lỗi'])}
   if(connected&&d.status==='OUT'&&(mine||admin))buttons.push(['RETURN','Trả máy'],['SWAP_OUT','Đổi máy'],['REPORT','Báo lỗi']);
   if(connected&&['FAULT','CHARGING','LOST'].includes(d.status)&&admin)buttons.push(['RELEASE','Đã kiểm tra / mở lại']);
   const status=d.status==='OUT'?'Đang giữ: '+esc(d.holderName||d.holderUid.slice(0,8)):(d.faultCode?('Lý do: '+esc(REASON_TEXT[d.faultCode]||d.faultCode)):'');
   return '<article class="radioDevice"><div><strong>'+esc(label(d.code))+'</strong>'+badge(d.status)+'<small>'+status+'</small></div><div class="radioButtons">'+buttons.map(([a,n])=>'<button type="button" data-radio-act="'+a+'" data-radio-code="'+esc(d.code)+'">'+n+'</button>').join('')+'</div></article>'
  }).join(''):'<p class="radioEmpty">'+(connected?'Chưa có mã máy. AD hãy khởi tạo danh mục bộ đàm từ sổ giấy.':'Chưa xác nhận kết nối Firebase. Không thể ký nhận cho đến khi kích hoạt.')+'</p>';
+ if(held.length&&!isAdmin(u))$('radioDeviceList').insertAdjacentHTML('afterbegin','<p class="radioHeldNotice">📻 Bạn đang giữ '+esc(held.map(x=>label(x.code)).join(', '))+'. Hãy ký trả trước khi nhận máy khác; thao tác Đổi máy được thực hiện đồng thời.</p>');
  renderHistory();if(!$('radioSummaryTab')?.hidden)renderSummary();
 }
 function vnDateKey(date){
@@ -429,6 +433,18 @@ function updateDevice(tx,ref,device,action,after,options){
  tx.set(evRef,ev);
  tx.update(ref,{...after,version:device.version+1,lastEventId:evRef.id,updatedAt:fv()});
 }
+async function transactionInventory(tx,db,primary,secondary=''){
+ // All currently registered devices are transactionally read before any write.
+ // Concurrent sign-ins on different radios share read dependencies, so the
+ // second transaction retries and observes the newly held machine.
+ const codes=[...new Set([...INIT,...devices.map(d=>d.code),primary,secondary].filter(Boolean))];
+ const snaps=await Promise.all(codes.map(code=>tx.get(db.collection(COLLECTION).doc(code))));
+ return new Map(codes.map((code,i)=>[code,snaps[i].data()||null]));
+}
+function assertSingleHolder(inventory,uid,exclude=''){
+ const other=[...inventory].filter(([code,d])=>code!==exclude&&d?.status==='OUT'&&d.holderUid===uid).map(([code])=>label(code));
+ if(other.length)throw Error('Tài khoản đang giữ '+other.join(', ')+'. Phải trả trước khi nhận thêm bộ đàm.');
+}
 async function submit(){
  if(busy||!choice)return;const user=currentUser();if(!user.uid)return notify('Phiên đăng nhập đã hết hạn.',true);
  const code=choice.code,reason=$('radioReason').value,rawDetail=S($('radioDetail').value),returnReason=$('radioReturnReason').value,shiftVal=$('radioShift').value,bat=$('radioBattery').value,swapBattery=$('radioSwapBattery').value;
@@ -458,7 +474,8 @@ async function submit(){
  if(mode==='SWAP_OUT'){
   const other=$('radioSwapTarget').value,ref2=db.collection(COLLECTION).doc(other),swapId=db.collection(EVENTS).doc().id;
   await db.runTransaction(async tx=>{
-   const rows=await Promise.all([tx.get(ref),tx.get(ref2)]),a=rows[0].data(),b=rows[1].data();
+   const inventory=await transactionInventory(tx,db,code,other),a=inventory.get(code),b=inventory.get(other);
+    assertSingleHolder(inventory,user.uid,code);
    if(!a||a.status!=='OUT'||(!isAdmin(user)&&a.holderUid!==user.uid))throw Error('Máy cũ không còn hợp lệ để đổi.');
    if(!b||b.status!=='READY')throw Error('Máy thay thế vừa có người nhận. Vui lòng chọn máy khác.');
    const oldNew={status:['BATTERY_EMPTY','BATTERY_WEAK'].includes(reason)?'CHARGING':'FAULT',holderUid:'',holderName:'',shift:'',faultCode:reason,faultDetail:details,battery:bat};
@@ -468,9 +485,9 @@ async function submit(){
   });
  }else{
   await db.runTransaction(async tx=>{
-   const snap=await tx.get(ref),d=snap.data();if(!d)throw Error('Không tìm thấy mã máy.');
+   const inventory=await transactionInventory(tx,db,code),d=inventory.get(code);if(!d)throw Error('Không tìm thấy mã máy.');
    let after,action=mode,reasonCode=reason;
-   if(mode==='ISSUE'){if(d.status!=='READY')throw Error('Máy đã được nhận hoặc chưa sẵn sàng.');after={status:'OUT',holderUid:user.uid,holderName:user.name,shift:shiftVal,faultCode:'',faultDetail:'',battery:bat};reasonCode='';}
+   if(mode==='ISSUE'){assertSingleHolder(inventory,user.uid);if(d.status!=='READY')throw Error('Máy đã được nhận hoặc chưa sẵn sàng.');after={status:'OUT',holderUid:user.uid,holderName:user.name,shift:shiftVal,faultCode:'',faultDetail:'',battery:bat};reasonCode='';}
    else if(mode==='RETURN'){
     if(d.status!=='OUT'||(d.holderUid!==user.uid&&!isAdmin(user)))throw Error('Chỉ người đang giữ máy hoặc AD được trả.');
     const f=bat==='EMPTY'||bat==='LOW';after={status:f?'CHARGING':'READY',holderUid:'',holderName:'',shift:'',faultCode:f?'BATTERY_WEAK':'',faultDetail:f?details:'',battery:bat};reasonCode=f?'BATTERY_WEAK':'';}
