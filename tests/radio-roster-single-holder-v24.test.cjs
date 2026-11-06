@@ -44,7 +44,7 @@ assert.equal(result.total,1);
 assert.equal(result.missing.join(''),'VUNP');
 const a=src.indexOf('async function transactionInventory('),b=src.indexOf('async function submit(){',a);
 assert(a>0&&b>a);
-const guard={INIT:['DH01','DH02','DH03'],devices:[{code:'DH01'},{code:'DH02'},{code:'DH03'}],Set,Map,Promise,label:x=>x};
+const guard={COLLECTION:'sags_radio_devices_v1',INIT:['DH01','DH02','DH03'],devices:[{code:'DH01'},{code:'DH02'},{code:'DH03'}],Set,Map,Promise,label:x=>x};
 vm.createContext(guard);vm.runInContext(src.slice(a,b)+'\nthis.inventory=transactionInventory;this.assertOne=assertSingleHolder;',guard);
 (async()=>{
  const stored={DH01:{status:'OUT',holderUid:'user1'},DH02:{status:'READY'},DH03:{status:'READY'}};
