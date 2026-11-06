@@ -1,12 +1,12 @@
 {
   "version": "V2.1",
   "displayVersion": "V2.1",
-  "label": "V2.1 - AN TOÀN DỮ LIỆU iOS & BÁO CÁO BỘ ĐÀM THEO CA",
-  "build": "V2.1-20261105-IOS-DRAFT-SHIFT-11",
-  "releasedAt": "2026-11-05",
-  "type": "ios-flight-draft-guard-low-memory",
+  "label": "V2.1 - GIÁM SÁT BỘ ĐÀM & CHẨN ĐOÁN ẢNH iOS",
+  "build": "V2.1-20261106-RADIO-IOS-ADMIN-12",
+  "releasedAt": "2026-11-06",
+  "type": "radio-admin-audit-ios-evidence-diagnostics",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Bản 11 giữ mọi tính năng báo cáo ngày/ca, ảnh bộ đàm, lấy trực tiếp dữ liệu Firebase và các quy tắc nghiệp vụ từ bản 10. Tối ưu riêng iPhone: từng trường vẫn ghi nháp tức thời; một checkpoint hồ sơ sau 300ms không còn ghi trùng toàn hồ sơ mỗi lần; khi Safari sang nền vẫn chụp tất cả editor, viết bản lưu bảo vệ và xếp lịch IndexedDB. Giảm áp lực CPU/bộ nhớ khi nhập liệu.",
-  "message": "Lưu nháp iOS một lượt mỗi chu kỳ, giảm ghi trùng và tránh mất dữ liệu; báo cáo bộ đàm theo ngày/ca."
+  "notes": "Bổ sung bảng giám sát AD: người đang giữ bộ đàm, máy cần xử lý, cảnh báo 12 giờ và đối soát theo ca. iOS hiển thị rõ ảnh PNG dự phòng và lỗi mở bằng chứng. Chất lượng ảnh JPEG yêu cầu xác minh quy tắc Firebase production; không tuyên bố đã khắc phục khi chưa kiểm thử thiết bị.",
+  "message": "Quản lý bộ đàm dễ theo dõi hơn, báo rõ ảnh bằng chứng PNG dự phòng và bảo toàn lịch sử ký nhận."
 }

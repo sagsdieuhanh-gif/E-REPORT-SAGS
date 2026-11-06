@@ -1,7 +1,7 @@
 {
   "schema": 2,
   "version": "V2.1",
-  "build": "V2.1-20261105-IOS-DRAFT-SHIFT-11",
+  "build": "V2.1-20261106-RADIO-IOS-ADMIN-12",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -290,8 +290,8 @@
       "bytes": 19587
     },
     "./app/modules/radio-custody.v1.js": {
-      "sha256": "e75bbe8ef5076223df017001352b8f72acbc672693cf06f54521817c625217af",
-      "bytes": 62666
+      "sha256": "a81e99e00465bb0dce297e131d8553b37259f892f4180418ae1b1a11eb8fc5da",
+      "bytes": 67527
     },
     "./app/modules/radio-reminders.v21.js": {
       "sha256": "d22a59b3fb19bb8175adf2c011b1b4990a455c9ed076087f313d983efdb8e757",
@@ -494,8 +494,8 @@
       "bytes": 376878
     },
     "./app/styles/radio-custody.v1.css": {
-      "sha256": "96fe62b0aa30cf5656489aeb90ba212da2f08ab9356a2cdce63500cd9eabf336",
-      "bytes": 13501
+      "sha256": "f6be19cf651c65c0bc544ab2978b0bd58ee3145f7277a3c8eb8eec967e2e37cb",
+      "bytes": 17244
     },
     "./app/vendor/lz-string-1.5.0.js": {
       "sha256": "550034b821027008776cb9bcd1700bb5d31e8b3de224cb130fc966a75dab0e5e",
@@ -774,7 +774,7 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "cbb03a85415895ce086fad2ff3c0a3865b04a48a649b0d8d400b5b000f602384",
+      "sha256": "9eaaae71158ef9756a76fff684497be633e40439caa7a232195f48930d5d85cc",
       "bytes": 104676
     },
     "./manifest.webmanifest": {
@@ -826,7 +826,7 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "a5e87d0e182b0ac74e9b2dcc643ab16acce7d12b820f16e43ad43c577482c54c",
+      "sha256": "a3fc8d7f68c3e724cd0f0e7d5bdf747ff1e162079bf15b00457de906e6cc3123",
       "bytes": 22555
     },
     "./storage-recovery.html": {
@@ -834,8 +834,8 @@
       "bytes": 26106
     },
     "./version.json": {
-      "sha256": "955ab86a44e3dee6ffc353b32e2d05aed0eee3d372018922f7a27a5af59c38d8",
-      "bytes": 1007
+      "sha256": "721d36da0f41d4a3020456efbde73e13ead0425891c60e5f35043bbc15454bda",
+      "bytes": 888
     }
   },
   "mutableAssets": [
