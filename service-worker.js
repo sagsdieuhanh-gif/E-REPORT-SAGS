@@ -2,7 +2,7 @@
    Base: V4.8.10B Layered PDF + HF1–HF4. Never mix navigation HTML with a different runtime.
 */
 'use strict';
-const BUILD='V2.1-20261105-IOS-DRAFT-SHIFT-11';
+const BUILD='V2.1-20261106-RADIO-IOS-ADMIN-12';
 const DISPLAY_VERSION='V2.1';
 const CACHE_NAME='sags-app-shell-v2.1-20261105-ios-draft-shift-11';
 const META_CACHE_NAME='sags-app-meta-v2.1-20261105-ios-draft-shift-11';
