@@ -7,7 +7,7 @@ for(const marker of [
  'function renderAdminOverview(){','function radioShiftDeviceMatrix(rows){',
  "renderAdminOverview();","radioShiftDeviceMatrix(rows)",
  'Không tìm thấy sự kiện trong lịch sử đang hiển thị',
- 'Ảnh PNG dự phòng (có thể mờ'
+ 'ảnh PNG dự phòng (có thể mờ'
 ])assert(radio.includes(marker),'Radio Admin/iOS enhancement missing: '+marker);
 for(const marker of ['.radioAdminOverview','.radioAdminColumns','.radioAdminMatrix','@media(max-width:680px)'])
  assert(style.includes(marker),'Radio dashboard responsive style missing: '+marker);
