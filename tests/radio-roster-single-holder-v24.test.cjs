@@ -3,7 +3,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
 const src=fs.readFileSync('app/modules/radio-custody.v1.js','utf8'),css=fs.readFileSync('app/styles/radio-custody.v1.css','utf8');
 for(const check of ['radioRosterDate','radioRosterShift','radioRosterAlert','function reconcileRoster(',
  'rosterRef.on(\'value\'','collection(\'users\').get({source:\'server\'})',
- "history.docs", "assertSingleHolder(inventory,user.uid)",
+ "e.docs", "assertSingleHolder(inventory,user.uid)",
  "transactionInventory(tx,db,code", "if(connected&&rosterDate)queueRosterAudit()"])
  assert(src.includes(check),'Radio roster/single holder integration missing: '+check);
 for(const check of ['.radioRosterMonitor','.radioRosterStats','.radioHeldNotice'])
