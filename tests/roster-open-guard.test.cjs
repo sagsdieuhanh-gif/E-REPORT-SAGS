@@ -3,7 +3,7 @@ const source=fs.readFileSync('app/modules/roster-open-guard.v1.js','utf8');
 function harness(base,ref){
  const timers=new Map(),nodes=new Map(),alerts=[];let next=0;
  const c={console,Promise,Proxy,Reflect,Set,Error,alert:m=>alerts.push(m),setTimeout:(f,ms)=>{const id=++next;timers.set(id,{f,ms});return id},clearTimeout:id=>timers.delete(id),document:{readyState:'complete',getElementById:id=>nodes.get(id),createElement:()=>({setAttribute(){},style:{}}),body:{appendChild:el=>nodes.set(el.id,el)}}};
- c.window=c;c.navigator={onLine:true};c.firebase={auth:()=>({currentUser:{uid:'worker-1'}}),firestore:()=>({collection:()=>({where:()=>({get:()=>Promise.resolve({metadata:{fromCache:false},docs:[{id:'DH01',data:()=>({status:'OUT',holderUid:'worker-1'})}]})})})})};c.sagsV470Ref=()=>ref;c.v324ReceiveOrOpen=function(){return base(c,...arguments)};
+ c.window=c;c.SAGSRadioWorkGate={requireRadio:async()=>({uid:'worker-1',deviceCode:'DH01'}),showRadioBlocked:e=>alerts.push(String(e?.message||e))};c.navigator={onLine:true};c.firebase={auth:()=>({currentUser:{uid:'worker-1'}}),firestore:()=>({collection:()=>({where:()=>({get:()=>Promise.resolve({metadata:{fromCache:false},docs:[{id:'DH01',data:()=>({status:'OUT',holderUid:'worker-1'})}]})})})})};c.sagsV470Ref=()=>ref;c.v324ReceiveOrOpen=function(){return base(c,...arguments)};
  vm.createContext(c);vm.runInContext(source,c);
  return {c,alerts,timers,expire:ms=>{for(const [id,t] of [...timers])if(t.ms===ms){timers.delete(id);t.f()}}};
 }
