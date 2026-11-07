@@ -1,12 +1,12 @@
 {
   "version": "V2.1",
   "displayVersion": "V2.1",
-  "label": "V2.1 - BẮT BUỘC KÝ NHẬN BỘ ĐÀM TRƯỚC KHI MỞ REPORT",
-  "build": "V2.1-20261107-RADIO-MANDATORY-14",
+  "label": "V2.1 - XÓA MẪU CHỮ KÝ CÁ NHÂN VÀ TỐI ƯU PDF",
+  "build": "V2.1-20261107-SIGNATURE-RESET-15",
   "releasedAt": "2026-11-07",
-  "type": "mandatory-radio-before-report",
+  "type": "personal-signature-reset-lean-image",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Yêu cầu một bộ đàm đang giữ, có ký nhận ảnh và sự kiện hợp lệ, được Firebase xác minh trực tuyến trước khi nhận/mở mọi biểu mẫu chuyến. Chặn NHẬN THAY và chỉnh sửa PUSHBACK trước khi ghi dữ liệu; báo lỗi và mở trực tiếp mục Ký nhận bộ đàm. Không cấp quyền từ cache/offline. Firestore/RTDB rules chưa cưỡng chế chéo máy chủ.",
-  "message": "Cần ký nhận bộ đàm thành công trước khi nhận chuyến và làm report; không thay đổi hồ sơ khi thiếu bộ đàm."
+  "notes": "Thêm nút xóa mẫu chữ ký theo tài khoản, xóa mẫu cục bộ và trường mẫu trên Firestore có xác nhận từ máy chủ; không xóa chữ ký đã gắn vào report, lịch sử hoặc chứng cứ bộ đàm. Mẫu chữ ký mới chuẩn hóa PNG nhỏ hơn để giảm việc xử lý ảnh khi xuất PDF. Chưa kết luận ảnh chữ ký là nguyên nhân duy nhất khiến PDF chậm.",
+  "message": "Mỗi tài khoản có thể xóa mẫu chữ ký đã lưu để tạo mới; giữ nguyên lịch sử và các báo cáo đã ký."
 }
