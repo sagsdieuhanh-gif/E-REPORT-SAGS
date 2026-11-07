@@ -1,6 +1,8 @@
 'use strict';
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
 const src=fs.readFileSync('app/modules/roster-open-guard.v1.js','utf8');
+const canonical=fs.readFileSync('app/modules/roster-open-guard.source.js','utf8');
+const gate=fs.readFileSync('app/modules/radio-work-gate.v1.js','utf8');
 const roster=fs.readFileSync('app/modules/daily-roster.v502.js','utf8');
 function harness(){
  const state={uid:'U-1',online:true,docs:[],fromCache:false,networkFailure:null,reads:0,opens:0,takeovers:0,alerts:[],requestedSource:[]};
@@ -27,7 +29,7 @@ function harness(){
  };
  c.window=c;c.v324ReceiveOrOpen=async()=>{state.opens++;return 'OPENED'};
  c.v324TakeoverWaiting=async()=>{state.takeovers++;return 'TAKEN'};
- vm.createContext(c);vm.runInContext(src,c);
+ vm.createContext(c);vm.runInContext(gate,c);vm.runInContext(src,c);
  return {c,state,sign:()=>{state.docs=[{id:'DH01',data:()=>({holderUid:'U-1',status:'OUT'})}]},
    malformed:()=>{state.docs=[{id:'DH01',data:()=>({holderUid:'U-1',status:'READY'})}]}};
 }
@@ -64,9 +66,9 @@ function harness(){
  t.sign();
  assert.equal(await t.c.v324TakeoverWaiting('VJ300'),'TAKEN');
  assert.equal(t.state.takeovers,1);
- assert(src.includes("await requireRadio();")&&src.includes("return base.apply(this,arguments)"),'Central claim must await custody');
- assert(src.includes("root.SAGSAviationOpenRadio()"),'Blocked user should reach camera/sign screen');
- assert(src.includes("source:'server'"),'Do not use local or cached custody state');
+ assert(canonical.includes("await requireRadio();")&&canonical.includes("return base.apply(this,arguments)"),'Central claim must await custody');
+ assert(gate.includes("root.SAGSAviationOpenRadio()"),'Blocked user should reach camera/sign screen');
+ assert(gate.includes("source:'server'"),'Do not use local or cached custody state');
  const open=roster.indexOf('async function openTask('),stale=roster.indexOf('await clearStaleClaimIfNeeded(item)',open),check=roster.indexOf('await root.SAGSRosterOpenGuard.requireRadio()',open);
  assert(open>0&&check>open&&check<stale,'Preflight must precede stale assignment mutations');
  const reopen=roster.indexOf('async function reopenPushback('),reopenCheck=roster.indexOf('await root.SAGSRosterOpenGuard.requireRadio()',reopen),patch=roster.indexOf('const t=Date.now(),u=me(),patch={}',reopen);
