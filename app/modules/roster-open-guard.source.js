@@ -49,7 +49,7 @@
     if(error)reject(fail(ctx,error));else resolve(value);
    };
    const timer=setTimeout(()=>{
-    const error=new Error('Firebase chưa trả dữ liệu chuyến sau 12 giây. Kiểm tra kết nối rồi bấm mở lại. Dữ liệu trên máy được giữ nguyên.');
+    const error=new Error('Firebase quá 12 giây chưa trả lời. Thử lại; dữ liệu nháp vẫn còn.');
     error.code='SAGS_ROSTER_READ_TIMEOUT';finish(error);
    },READ_MS);
    try{
@@ -75,7 +75,7 @@
     // Some legacy readers catch errors and return {}. A failed read MUST NOT
     // become permission to claim/reopen or overwrite a flight with empty data.
     if(active?.error)throw active.error;
-    if(active){active.phase='ĐANG CHỜ FIREBASE XÁC NHẬN';notice(active.phase+'…');}
+    if(active){active.phase='CHỜ FIREBASE XÁC NHẬN';notice(active.phase+'…');}
     return value.apply(target,args);
    };
    return value.bind(target);
@@ -107,12 +107,12 @@
   const base=root.v324ReceiveOrOpen;
   if(receiveInstalled||typeof base!=='function'||base.__sagsOpenGuard)return;
   const wrapped=function(){
-   if(active){notice(active.phase+'… YÊU CẦU TRƯỚC VẪN ĐANG XỬ LÝ.');return active.promise;}
+   if(active){notice(active.phase+'… YÊU CẦU ĐANG XỬ LÝ.');return active.promise;}
    const ctx={id:++sequence,error:null,phase:'ĐANG MỞ CHUYẾN',promise:null};active=ctx;
    notice(ctx.phase+'…');
    // Await confirmed writes; do not time them out and let a late write surprise
    // a retry. Long writes remain visibly pending and duplicate clicks are joined.
-   const slow=setTimeout(()=>{if(active===ctx)notice(ctx.phase+'… KẾT NỐI CHẬM, CHƯA NHẬN XÁC NHẬN. KHÔNG XÓA DỮ LIỆU TRÌNH DUYỆT.');},15000);
+   const slow=setTimeout(()=>{if(active===ctx)notice(ctx.phase+'… MẠNG CHẬM; DỮ LIỆU NHÁP VẪN GIỮ NGUYÊN.');},15000);
    ctx.promise=Promise.resolve().then(async()=>{
     ctx.phase='ĐANG KIỂM TRA KÝ NHẬN BỘ ĐÀM';notice(ctx.phase+'…');
     await requireRadio();
