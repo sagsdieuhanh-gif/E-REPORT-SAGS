@@ -21,7 +21,7 @@ function harness(){
       if(state.networkFailure)return Promise.reject(state.networkFailure);
       return Promise.resolve({metadata:{fromCache:state.fromCache},docs:state.docs.filter(d=>d.data().holderUid===uid)});
      }};
-    };
+    }};
    }})
   }
  };
