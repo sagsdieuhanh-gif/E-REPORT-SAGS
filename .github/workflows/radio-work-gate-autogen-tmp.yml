@@ -17,7 +17,7 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
-      - run: npm run release
+      - run: npm run build:runtime && npm run build:styles && node tools/release-manifest.cjs && npm run check:syntax
       - name: Commit generated runtime and hashed manifest
         run: |
           git config user.name "github-actions[bot]"
