@@ -306,8 +306,8 @@
       "bytes": 26114
     },
     "./app/modules/roster-open-guard.v1.js": {
-      "sha256": "e608dc0ca7a4fb000f4cd9cc0914b41fed95ff698e74696eda10043654c29202",
-      "bytes": 4425
+      "sha256": "bb5ce5b6a381db868ee52ffd01a1411a4af86871a4d31ba18493e6ce34ef409d",
+      "bytes": 4307
     },
     "./app/modules/settings.v1.js": {
       "sha256": "39ca4ecd27e5f77143037eaf102d5b6aa891dd8584a77221dfadf992c5470e97",
