@@ -35,9 +35,9 @@
    node.style.cssText='position:fixed;inset:0;z-index:2147483646;background:rgba(1,16,26,.76);display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box';
    node.innerHTML='<div role="alertdialog" aria-modal="true" aria-labelledby="sagsRadioRequiredTitle" style="width:min(100%,420px);padding:22px 18px;border:1px solid #4f9ead;border-radius:16px;background:#082b40;color:#f1fbff;font:14px/1.5 system-ui,-apple-system,sans-serif;box-shadow:0 24px 80px #001e31"><strong id="sagsRadioRequiredTitle" style="font-size:18px;display:block;margin-bottom:10px">📻 Yêu cầu ký nhận bộ đàm</strong><p id="sagsRadioRequiredText" style="margin:0 0 18px;white-space:pre-line"></p><div style="display:flex;gap:9px;flex-wrap:wrap"><button data-radio-required-open type="button" style="flex:1;min-height:44px;border:0;border-radius:9px;background:#70dfd5;color:#073044;font-weight:800">Ký nhận bộ đàm</button><button data-radio-required-close type="button" style="flex:1;min-height:44px;border:1px solid #688da0;border-radius:9px;background:#143c52;color:#fff;font-weight:700">Đóng</button></div><small style="display:block;margin-top:12px;color:#b8d4df">Sau khi lưu ký nhận thành công, quay lại My Flight và mở chuyến. Không xóa hoặc làm mới dữ liệu report đang nhập.</small></div>';
    document.body.appendChild(node);
-   node.querySelector('[data-radio-required-close]')?.addEventListener('click',()=>{node.hidden=true});
+   node.querySelector('[data-radio-required-close]')?.addEventListener('click',()=>{node.style.display='none'});
    node.querySelector('[data-radio-required-open]')?.addEventListener('click',()=>{
-    node.hidden=true;
+    node.style.display='none';
     if(typeof root.SAGSAviationOpenRadio==='function')root.SAGSAviationOpenRadio();
     else if(typeof root.SAGSRadioCustodyV1?.open==='function')root.SAGSRadioCustodyV1.open();
     else root.alert?.('Vào menu Ký nhận bộ đàm, ký và lưu thành công trước khi mở chuyến.');
@@ -45,7 +45,7 @@
   }
   const p=node.querySelector?.('#sagsRadioRequiredText');if(p)p.textContent=msg;
   const button=node.querySelector?.('[data-radio-required-open]');if(button)button.hidden=!canSign;
-  node.hidden=false;
+  node.style.display='flex';
  }
 
  let active=null,sequence=0,receiveInstalled=false;
@@ -108,7 +108,24 @@
    return value.bind(target);
   }});
  }
+ function installTakeover(){
+  // Legacy NHẬN THAY writes SKIPPED/claim metadata before it calls ReceiveOrOpen.
+  // It must pass the same Firebase check before any handover side effects.
+  const previous=root.v324TakeoverWaiting;
+  if(typeof previous!=='function'||previous.__sagsRadioGate)return;
+  const wrapped=async function(){
+   try{await requireRadio()}catch(e){
+    if(String(e?.code||'').startsWith('SAGS_RADIO_'))showRadioBlocked(e);
+    else root.alert?.('Không xác minh được bộ đàm: '+String(e?.message||e));
+    return false;
+   }
+   return previous.apply(this,arguments);
+  };
+  wrapped.__sagsRadioGate=true;wrapped.__sagsOriginal=previous;
+  root.v324TakeoverWaiting=wrapped;
+ }
  function install(){
+  installTakeover();
   const ref=root.sagsV470Ref;
   if(typeof ref==='function'&&!ref.__sagsOpenGuard){
    const wrapped=function(){return wrapRef(ref.apply(this,arguments));};
