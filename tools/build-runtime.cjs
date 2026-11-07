@@ -7,6 +7,17 @@ for(const phase of ['shared','archive','tools','flight','control','postcontrol',
 const runtime=read('app/core/runtime.v503hf2.bundle.js').split(/\/\* SAGS_RUNTIME_CHUNK:\d+ \*\/\n/).slice(1);if(runtime.length!==5)throw Error('Expected five canonical runtime chunks');runtime.forEach((s,i)=>emit('app/generated/runtime-'+(i+1)+'.js',s));
 const groups=JSON.parse(read('app/generated/boot-groups.json'));groups.forEach((files,i)=>emit('app/generated/boot-group-'+(i+1)+'.js',files.map(p=>'/* '+p+' */\n'+read(p).trimEnd()+'\n').join('\n;\n')));
 console.log('Canonical runtime built: 7 phases, '+runtime.length+' chunks, '+groups.length+' boot groups');
+// Preserve the startup parsed-JS budget while retaining a readable, testable
+// source for the mandatory radio/claim guard.
+const cp=require('child_process');
+const terserBin=path.join(root,'node_modules','terser','bin','terser');
+const guardSrc=read('app/modules/roster-open-guard.source.js');
+const minimized=cp.spawnSync(process.execPath,[terserBin,'--compress','--mangle','--ecma','2020'],{
+ input:guardSrc,encoding:'utf8',maxBuffer:4*1024*1024
+});
+if(minimized.status!==0||!minimized.stdout.trim())throw Error('Radio roster guard minification failed: '+(minimized.stderr||minimized.error||''));
+emit('app/modules/roster-open-guard.v1.js','/* Generated from roster-open-guard.source.js; edit source, not this file. */\n'+minimized.stdout.trim()+'\n');
+
 
 // Inline the storage decoder and codec together so old executable assets cannot
 // run before the reader is available, including on an offline launch.

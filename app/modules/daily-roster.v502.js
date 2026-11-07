@@ -557,7 +557,7 @@ async function renderPersonal(date=opDate(),reuseRecent=false){
     setHeader(date);
   }catch(e){if(token===renderToken){const next='<div class="v1199Empty">Không tải được công việc DAILY ROSTER: '+esc(e?.message||e)+'</div>';if(host.innerHTML!==next)host.innerHTML=next}}
 }
-async function reopenPushback(item,date){const aid=S(item?.assignmentId),fid=S(item?.flightId);if(!aid)throw new Error('Thiếu assignmentId.');if(!confirm(`MỞ LẠI CHỈNH SỬA PUSHBACK\n\n${flightLabel(item)} · ${formLabel(item)}\n\nChuyến sẽ chuyển ngay về CHƯA HOÀN THÀNH trong lúc chỉnh sửa. Giờ PUSHBACK cũ vẫn được giữ trong biểu mẫu để sửa.`))return false;const t=Date.now(),u=me(),patch={};patch[`roster_sessions/${safe(aid)}/pushbackEditReopened`]=true;patch[`roster_sessions/${safe(aid)}/pushbackEditReopenedAtMs`]=t;patch[`roster_sessions/${safe(aid)}/completedPushback`]=null;patch[`roster_sessions/${safe(aid)}/claimStatus`]='CLAIMED';patch[`roster_sessions/${safe(aid)}/workPartStatus`]='IN_PROGRESS';patch[`roster_sessions/${safe(aid)}/taskStatusV333`]='IN_PROGRESS';patch[`roster_sessions/${safe(aid)}/completedAtMs`]=null;patch[`roster_sessions/${safe(aid)}/completedBy`]=null;patch[`roster_sessions/${safe(aid)}/updatedAtMs`]=t;if(fid){patch[`flight_records/${safe(date)}/${safe(fid)}/taskClaims/${safe(u)}/${safe(aid)}/status`]='CLAIMED';patch[`flight_records/${safe(date)}/${safe(fid)}/taskClaims/${safe(u)}/${safe(aid)}/taskStatus`]='IN_PROGRESS';patch[`flight_records/${safe(date)}/${safe(fid)}/taskClaims/${safe(u)}/${safe(aid)}/reopenedAtMs`]=t}await db('').update(patch);setTimeout(()=>renderPersonal(date),60);await root.v324ReceiveOrOpen?.(fid,aid,date);return true}
+async function reopenPushback(item,date){const aid=S(item?.assignmentId),fid=S(item?.flightId);if(!aid)throw new Error('Thiếu assignmentId.');if(typeof root.SAGSRosterOpenGuard?.requireRadio!=='function')throw new Error('Bộ kiểm tra ký nhận bộ đàm chưa sẵn sàng. Hãy tải lại ứng dụng.');await root.SAGSRosterOpenGuard.requireRadio();if(!confirm(`MỞ LẠI CHỈNH SỬA PUSHBACK\n\n${flightLabel(item)} · ${formLabel(item)}\n\nChuyến sẽ chuyển ngay về CHƯA HOÀN THÀNH trong lúc chỉnh sửa. Giờ PUSHBACK cũ vẫn được giữ trong biểu mẫu để sửa.`))return false;const t=Date.now(),u=me(),patch={};patch[`roster_sessions/${safe(aid)}/pushbackEditReopened`]=true;patch[`roster_sessions/${safe(aid)}/pushbackEditReopenedAtMs`]=t;patch[`roster_sessions/${safe(aid)}/completedPushback`]=null;patch[`roster_sessions/${safe(aid)}/claimStatus`]='CLAIMED';patch[`roster_sessions/${safe(aid)}/workPartStatus`]='IN_PROGRESS';patch[`roster_sessions/${safe(aid)}/taskStatusV333`]='IN_PROGRESS';patch[`roster_sessions/${safe(aid)}/completedAtMs`]=null;patch[`roster_sessions/${safe(aid)}/completedBy`]=null;patch[`roster_sessions/${safe(aid)}/updatedAtMs`]=t;if(fid){patch[`flight_records/${safe(date)}/${safe(fid)}/taskClaims/${safe(u)}/${safe(aid)}/status`]='CLAIMED';patch[`flight_records/${safe(date)}/${safe(fid)}/taskClaims/${safe(u)}/${safe(aid)}/taskStatus`]='IN_PROGRESS';patch[`flight_records/${safe(date)}/${safe(fid)}/taskClaims/${safe(u)}/${safe(aid)}/reopenedAtMs`]=t}await db('').update(patch);setTimeout(()=>renderPersonal(date),60);await root.v324ReceiveOrOpen?.(fid,aid,date);return true}
 const openingTasks=new Set();
 async function openTask(aid,fid,completed,cardDate='',exact=false,button=null){
   const date=syncQueueDate(queueDate(cardDate)),key=date+'|'+S(aid||fid);
@@ -574,6 +574,10 @@ async function openTask(aid,fid,completed,cardDate='',exact=false,button=null){
     }
     if(!completed){await root.sagsAirlineFormPolicy?.ready();if(root.sagsAirlineFormPolicy?.allowed(item,item.formGroup)===false)throw new Error("Biểu mẫu này chưa được AD bật cho hãng hoặc loại tàu của chuyến.");}
     const realFid=S(item.flightId||fid);
+    // Mandatory preflight before any claim reset, handover or reopening write.
+    // This also covers completed-form edits, not just first-time NHẬN.
+    if(typeof root.SAGSRosterOpenGuard?.requireRadio!=='function')throw new Error('Bộ kiểm tra ký nhận bộ đàm chưa sẵn sàng. Hãy tải lại ứng dụng.');
+    await root.SAGSRosterOpenGuard.requireRadio();
     // Completed forms also go through the same exact-assignment NHẬN handler.
     if(!completed)try{await clearStaleClaimIfNeeded(item)}catch(e){
       console.warn('Không xác minh được claim cũ',e);
@@ -582,7 +586,7 @@ async function openTask(aid,fid,completed,cardDate='',exact=false,button=null){
     if(typeof root.v324ReceiveOrOpen!=='function')throw new Error('Bộ nhận chuyến chưa tải xong. Bấm UPDATE rồi mở lại.');
     root.sagsFlightDossierClose?.();const opened=await root.v324ReceiveOrOpen(realFid,S(item.assignmentId),date);
     // Opening a task no longer triggers a device pin or a second mailbox read.
-  }catch(e){console.error('Mở công việc roster thất bại',e);alert('Không mở được công việc '+date+': '+S(e?.message||e));}
+   }catch(e){console.error('Mở công việc roster thất bại',e);if(S(e?.code).startsWith('SAGS_RADIO_'))root.SAGSRosterOpenGuard?.showRadioBlocked?.(e);else alert('Không mở được công việc '+date+': '+S(e?.message||e));}
   finally{openingTasks.delete(key);if(button?.isConnected){button.disabled=false;button.classList.remove('v64100Opening');if(originalButtonText)button.textContent=originalButtonText;}}
 }
 root.v1199QueueTab=function(tab){activeTab=tab==='completed'?'completed':'pending';void renderPersonal(queueDate(currentQueueDate),true)};

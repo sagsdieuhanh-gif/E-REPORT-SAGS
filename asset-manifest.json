@@ -1,7 +1,7 @@
 {
   "schema": 2,
   "version": "V2.1",
-  "build": "V2.1-20261106-RADIO-ROSTER-SINGLE-13",
+  "build": "V2.1-20261107-RADIO-MANDATORY-14",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -214,8 +214,8 @@
       "bytes": 23630
     },
     "./app/modules/daily-roster.v502.js": {
-      "sha256": "58c5bcbce09411aaad68e5de0eaea0b741df014dd8920e3ebc382cd69e1090ed",
-      "bytes": 89028
+      "sha256": "1377444a5b75b66d35f555deef9a45de876d48bf0e8147bf160ee2a2c08a7acb",
+      "bytes": 89716
     },
     "./app/modules/feature-loader.v1.js": {
       "sha256": "dc738a8d7df5134fe41f208fa0a19f6624438dc3d82fc30a921e05541fbc91c9",
@@ -297,13 +297,17 @@
       "sha256": "d22a59b3fb19bb8175adf2c011b1b4990a455c9ed076087f313d983efdb8e757",
       "bytes": 9770
     },
+    "./app/modules/radio-work-gate.v1.js": {
+      "sha256": "9a625cd0a98b5434af393132d5cae177e3cf6d797375c10d09cba0e56d83b4a2",
+      "bytes": 5012
+    },
     "./app/modules/roster-lite.v5.js": {
       "sha256": "36ed4962af16d6365220fefb5319e2c81dbd05e11e32ca7ff3154443f54d06cc",
       "bytes": 26114
     },
     "./app/modules/roster-open-guard.v1.js": {
-      "sha256": "2dd621f3f4958d5830c0da7b9560dda5969e4198e6cfe3d9e90e1ff9ec8423c0",
-      "bytes": 4979
+      "sha256": "bb5ce5b6a381db868ee52ffd01a1411a4af86871a4d31ba18493e6ce34ef409d",
+      "bytes": 4307
     },
     "./app/modules/settings.v1.js": {
       "sha256": "39ca4ecd27e5f77143037eaf102d5b6aa891dd8584a77221dfadf992c5470e97",
@@ -774,8 +778,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "34624cb37f1e366859a11fd6729ca233927d54afda1905d08c801e2cc05a316f",
-      "bytes": 104992
+      "sha256": "6b52b929b6e22054afe7d4b09b6cd1c72ca1de475b4f0cac44f05d56b97a448b",
+      "bytes": 104676
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -826,16 +830,16 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "7856c7d6595825e2466e5fcd3dd25717268c54f64ac9aa19da209d740d615e86",
-      "bytes": 22567
+      "sha256": "9fcae057b40f3e130cc2b3a0776f3e3755f9c75aea31577abc923e126d6e1309",
+      "bytes": 22593
     },
     "./storage-recovery.html": {
       "sha256": "08817204a946fbdfa404e8c083dd0c2016e935fb8fe56ff8ef99f405978d3df6",
       "bytes": 26106
     },
     "./version.json": {
-      "sha256": "63990a95dffdbb687f5985df7b64aaef6cc6e8cd1f8bef6d9ef92badc9267ff9",
-      "bytes": 903
+      "sha256": "82de0df0a9ec6686fd93b822306c120ab880c0fed2110b186a8cbc6d0d748906",
+      "bytes": 963
     }
   },
   "mutableAssets": [
