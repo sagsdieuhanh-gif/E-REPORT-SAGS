@@ -1431,11 +1431,15 @@ if (typeof define === 'function' && define.amd) {
 <div id="templateModal">
 <div class="box templateBox">
 <h3>Chữ Kí</h3>
-<div class="templateStatus" id="templateStatus" style="display:none"></div>
+<div class="templateStatus" id="templateStatus" style="display:block;min-height:20px;margin:9px 0;font-size:12px;color:#32516a" aria-live="polite">Đang kiểm tra mẫu chữ ký tài khoản…</div>
 <div class="templateActions">
 <button class="dark" onclick="openSignatureSampleEditor()">Lấy mẫu</button>
 <button class="dark" onclick="applySavedSignatureTemplate()">Kí tên</button>
 <button class="cancel" onclick="closeTemplateMenu()">Đóng</button>
+</div>
+<div style="margin-top:11px;padding-top:10px;border-top:1px solid #d5e0ea">
+<button id="sagsClearSavedSignature" type="button" onclick="sagsResetSignatureSample()" style="width:100%;min-height:44px;border:1px solid #c86262;border-radius:10px;padding:10px 12px;background:#fff1f0;color:#822a2a;font:800 13px/1.35 Arial,sans-serif;cursor:pointer">🗑 Xóa sạch mẫu chữ ký đã lưu</button>
+<p style="margin:8px 0 0;font:11px/1.5 Arial,sans-serif;color:#375266">Chỉ xóa mẫu chữ ký của tài khoản đang đăng nhập để tạo mới. Không xóa chữ ký đã lưu trong các report, PDF và lịch sử ký nhận.</p>
 </div>
 </div>
 </div>
@@ -1636,5 +1640,17 @@ if (typeof define === 'function' && define.amd) {
 <script id="sags-mobile-form-dock-v2" src="./app/modules/mobile-form-dock.v2.js?v=V2.1-20261107-RADIO-MANDATORY-14"></script>
 <script src="./app/modules/roster-open-guard.v1.js?v=V2.1-20261107-RADIO-MANDATORY-14"></script>
 <script id="sags-form-edit-history-v1" src="./app/modules/form-edit-history.v1.js?v=V2.1-20261107-RADIO-MANDATORY-14"></script>
+<script>
+async function sagsResetSignatureSample(){
+ try{
+  const build=document.querySelector('meta[name="sags-release-build"]')?.content||'current';
+  const module=await import('./app/modules/signature-template-reset.v1.js?v='+encodeURIComponent(build));
+  return await module.clearSavedSignatureTemplate();
+ }catch(error){
+  alert('Không mở được chức năng xóa mẫu chữ ký. Kiểm tra mạng và tải lại ứng dụng. '+String(error?.message||error));
+  return false;
+ }
+}
+</script>
 </body>
 </html>
