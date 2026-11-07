@@ -1,12 +1,12 @@
 {
   "version": "V2.1",
   "displayVersion": "V2.1",
-  "label": "V2.1 - GIÁM SÁT ROSTER THEO CA VÀ MỘT BỘ ĐÀM/MỘT NGƯỜI",
-  "build": "V2.1-20261106-RADIO-ROSTER-SINGLE-13",
-  "releasedAt": "2026-11-06",
-  "type": "radio-roster-shift-one-holder",
+  "label": "V2.1 - BẮT BUỘC KÝ NHẬN BỘ ĐÀM TRƯỚC KHI MỞ REPORT",
+  "build": "V2.1-20261107-RADIO-MANDATORY-14",
+  "releasedAt": "2026-11-07",
+  "type": "mandatory-radio-before-report",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Đối chiếu nhân sự roster theo ca sáng/tối, loại trùng người nhiều chuyến, cảnh báo chưa nhận/chưa trả; chặn nhận bộ đàm thứ hai với kiểm tra nguyên tử trên danh mục thiết bị. Firebase Rules production chưa được triển khai lại; cần kiểm thử thực tế trước khi kết luận chống bỏ qua từ client cũ.",
-  "message": "Admin đối soát roster và bộ đàm theo ca; mỗi tài khoản chỉ được giữ một máy đến khi trả."
+  "notes": "Yêu cầu một bộ đàm đang giữ, có ký nhận ảnh và sự kiện hợp lệ, được Firebase xác minh trực tuyến trước khi nhận/mở mọi biểu mẫu chuyến. Chặn NHẬN THAY và chỉnh sửa PUSHBACK trước khi ghi dữ liệu; báo lỗi và mở trực tiếp mục Ký nhận bộ đàm. Không cấp quyền từ cache/offline. Firestore/RTDB rules chưa cưỡng chế chéo máy chủ.",
+  "message": "Cần ký nhận bộ đàm thành công trước khi nhận chuyến và làm report; không thay đổi hồ sơ khi thiếu bộ đàm."
 }
