@@ -1,7 +1,7 @@
 {
   "schema": 2,
   "version": "V2.1",
-  "build": "V2.1-20261107-RADIO-MANDATORY-14",
+  "build": "V2.1-20261107-SIGNATURE-RESET-15",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -840,7 +840,8 @@
     "./version.json": {
       "sha256": "82de0df0a9ec6686fd93b822306c120ab880c0fed2110b186a8cbc6d0d748906",
       "bytes": 963
-    }
+    },
+    "./app/modules/signature-template-reset.v1.js": {}
   },
   "mutableAssets": [
     "./forms/forms.registry.json",
