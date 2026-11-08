@@ -1,12 +1,12 @@
 {
-  "version": "V2.1",
-  "displayVersion": "V2.1",
-  "label": "V2.1 - XÓA MẪU CHỮ KÝ CÁ NHÂN VÀ TỐI ƯU PDF",
-  "build": "V2.1-20261107-SIGNATURE-RESET-15",
-  "releasedAt": "2026-11-07",
-  "type": "personal-signature-reset-lean-image",
+  "version": "V2.2",
+  "displayVersion": "V2.2",
+  "label": "V2.2 - ẢNH BỘ ĐÀM RÕ NÉT, GIỮ MÀU, XEM PHÓNG TO",
+  "build": "V2.2-20261108-RADIO-COLOR-PROOF-16",
+  "releasedAt": "2026-11-08",
+  "type": "radio-color-proof-quality",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Thêm nút xóa mẫu chữ ký theo tài khoản, xóa mẫu cục bộ và trường mẫu trên Firestore có xác nhận từ máy chủ; không xóa chữ ký đã gắn vào report, lịch sử hoặc chứng cứ bộ đàm. Mẫu chữ ký mới chuẩn hóa PNG nhỏ hơn để giảm việc xử lý ảnh khi xuất PDF. Chưa kết luận ảnh chữ ký là nguyên nhân duy nhất khiến PDF chậm.",
-  "message": "Mỗi tài khoản có thể xóa mẫu chữ ký đã lưu để tạo mới; giữ nguyên lịch sử và các báo cáo đã ký."
+  "notes": "Camera bộ đàm chụp 1280px, giữ màu gốc, ảnh rõ 960-1280px trong tài liệu bằng chứng Firestore riêng, chỉ đọc với người ký và AD. Xem phóng to, PDF dùng ảnh gốc nếu có. Ký nhận vẫn hoạt động với ảnh cũ khi quy tắc Firestore V2.2 chưa được kích hoạt và hiển thị cảnh báo chính xác. Chưa thể xác nhận Firestore production rules đã được triển khai.",
+  "message": "Ảnh bộ đàm được ưu tiên bản đầy đủ màu sắc và độ nét, có thể phóng to. Cần kích hoạt Firestore Rules V2.2 để lưu ảnh chất lượng cao trên máy chủ."
 }

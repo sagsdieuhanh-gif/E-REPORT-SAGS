@@ -2,7 +2,7 @@
    Base: V4.8.10B Layered PDF + HF1–HF4. Never mix navigation HTML with a different runtime.
 */
 'use strict';
-const BUILD='V2.1-20261107-SIGNATURE-RESET-15';
+const BUILD='V2.2-20261108-RADIO-COLOR-PROOF-16';
 const DISPLAY_VERSION='V2.1';
 const CACHE_NAME='sags-app-shell-v2.1-20261107-signature-reset-15';
 const META_CACHE_NAME='sags-app-meta-v2.1-20261107-signature-reset-15';
