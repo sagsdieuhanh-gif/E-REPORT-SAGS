@@ -5,7 +5,7 @@
 'use strict';
 if(root.SAGSRadioCustodyV1)return;
 const COLLECTION='sags_radio_devices_v1',EVENTS='sags_radio_events_v1',PROOFS='sags_radio_proofs_v22';
-const HIGH_PROOF_LIMIT=390000,proofCache=new Map();
+const HIGH_PROOF_LIMIT=235000,proofCache=new Map();
 const INIT=['DH01','DH02','DH03','DH04','DH05','DH06','DH07','DH08','DH09','DH10','DH11','TBDH02'];
 const REASONS=[
  ['BATTERY_EMPTY','Hết pin'],['BATTERY_WEAK','Pin yếu, tụt nhanh'],['WEAK_SIGNAL','Sóng yếu / mất sóng'],
@@ -163,7 +163,7 @@ function takePhoto(){
  else{
   v.hidden=true;const preview=$('radioCameraPhoto');
   preview.src=photos[cameraLeg].preview;preview.hidden=false;
-  notify('Đã chụp ảnh có giờ. Ký ở ô bên dưới rồi xác nhận để lưu Firebase.');
+  notify('Ảnh đã chụp có giờ. Hãy kiểm tra độ rõ và màu sắc; nếu mờ bấm Chụp lại trước khi ký.');
   $('radioSigWrap').scrollIntoView({behavior:'smooth',block:'nearest'});
  }
 }
@@ -253,6 +253,7 @@ function combineProof(leg,requestedFormat='auto'){
 async function highProofData(e){
  if(!e?.id||!e.signature)return e?.signature||'';
  const cached=proofCache.get(e.id);if(cached)return cached;
+ if(proofReadDenied)return e.signature;
  if(!navigator.onLine)return e.signature;
  try{
   const snap=await fs().collection(PROOFS).doc(e.id).get({source:'server'});
@@ -263,10 +264,13 @@ async function highProofData(e){
    proofCache.set(e.id,d.image);if(proofCache.size>8)proofCache.delete(proofCache.keys().next().value);
    return d.image;
   }
- }catch(error){console.info('Full-colour radio proof unavailable',String(error?.code||error?.message||error))}
+ }catch(error){
+   if(String(error?.code||'').includes('permission-denied'))proofReadDenied=true;
+   console.info('Full-colour radio proof unavailable',String(error?.code||error?.message||error))
+  }
  return e.signature;
 }
-let proofViewToken=0;
+let proofReadDenied=false,proofViewToken=0;
 async function viewProof(id){
  const e=(reportReady?reportEvents:events).find(x=>x.id===id);
  if(!e)return notify('Không tìm thấy sự kiện trong lịch sử đang hiển thị. Hãy tải lại lịch sử.',true);
