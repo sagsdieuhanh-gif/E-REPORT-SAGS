@@ -33,7 +33,7 @@ const jpeg='data:image/jpeg;base64,'+Buffer.from([255,216,255,217]).toString('ba
 const bcx={};vm.createContext(bcx);vm.runInContext(radio.slice(begin2,end2)+'\nthis.compress=pdfStoredPage;',bcx);
 let quality=0;const cv={width:900,height:1273,toDataURL:(type,q)=>{quality=q;return jpeg}};
 const page=bcx.compress(cv);
-assert.equal(quality,0.76);
+assert.equal(quality,0.9);
 assert.equal(page.width,900);assert.equal(page.height,1273);
 assert.equal(cv.width,1);assert.equal(cv.height,1,'raster backing memory must be freed after JPEG encoding');
 assert.equal(page.toDataURL('image/jpeg',0.82),jpeg);
