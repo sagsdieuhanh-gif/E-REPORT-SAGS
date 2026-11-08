@@ -12,7 +12,7 @@ for(const marker of [
 for(const marker of ['.radioAdminOverview','.radioAdminColumns','.radioAdminMatrix','@media(max-width:680px)'])
  assert(style.includes(marker),'Radio dashboard responsive style missing: '+marker);
 assert(radio.includes('if(!photosReady())throw Error'),'Camera proof still required before save');
-assert(radio.includes('await writeRadioTransaction()'),'Firestore atomic saving must remain intact');
+assert(radio.includes('await writeRadioTransaction(true)')&&radio.includes('await writeRadioTransaction(false)'),'High quality and compatibility writes remain atomic');
 assert(radio.includes('at:fv()'),'Authoritative server time must remain intact');
 const safe=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const a=radio.indexOf('function radioShiftDeviceMatrix(rows){');
