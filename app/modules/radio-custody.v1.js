@@ -581,6 +581,13 @@ function eventData(action,device,after,user,shiftVal,reason,details,sig,related=
 function updateDevice(tx,ref,device,action,after,options){
  const evRef=fs().collection(EVENTS).doc(),ev=eventData(action,device,after,options.user,options.shift,options.reason,options.details,options.sig,options.related,options.swapId);
  tx.set(evRef,ev);
+ // A single transaction commits both the compact receipt and high-quality proof.
+ if(options.fullProof){
+  tx.set(fs().collection(PROOFS).doc(evRef.id),{
+   schemaVersion:2,eventId:evRef.id,actorUid:options.user.uid,
+   deviceCode:device.code,action,capturedAtMs:options.photoAt,image:options.fullProof
+  });
+ }
  tx.update(ref,{...after,version:device.version+1,lastEventId:evRef.id,updatedAt:fv()});
 }
 async function transactionInventory(tx,db,primary,secondary=''){
@@ -602,7 +609,7 @@ async function submit(){
  const details=mode==='RETURN'?('Lý do trả: '+(RETURN_REASONS[returnReason]||RETURN_REASONS.END_SHIFT)+(rawDetail?' · '+rawDetail:'')):rawDetail;
  if(['REPORT','SWAP_OUT'].includes(mode)&&(reason==='OTHER'||reason==='LOST')&&details.length<10)return notify('Vui lòng mô tả lý do cụ thể (từ 10 ký tự).',true);
  if(mode==='RELEASE'&&details.length<10)return notify('AD phải ghi kết quả kiểm tra/sửa chữa (ít nhất 10 ký tự).',true);
- let sig='',sigNew='',usedLegacyPng=false;try{if(mode!=='RELEASE'){signature();if(needsPhoto(mode)){if(!photosReady())throw Error('Phải chụp ảnh bằng camera trước khi ký.');if(Date.now()-photos.old.at>600000||(mode==='SWAP_OUT'&&Date.now()-photos.new.at>600000))throw Error('Ảnh quá 10 phút, vui lòng chụp lại.')}}}catch(e){return notify(e.message,true)}
+ let sig='',sigNew='',hiOld='',hiNew='',usedLegacyPng=false,usedCompactOnly=false;try{if(mode!=='RELEASE'){signature();if(needsPhoto(mode)){if(!photosReady())throw Error('Phải chụp ảnh bằng camera trước khi ký.');if(Date.now()-photos.old.at>600000||(mode==='SWAP_OUT'&&Date.now()-photos.new.at>600000))throw Error('Ảnh quá 10 phút, vui lòng chụp lại.')}}}catch(e){return notify(e.message,true)}
  if(['ISSUE','RETURN'].includes(mode)&&bat==='UNKNOWN')return notify('Vui lòng kiểm tra mức pin trước khi nhận hoặc trả máy.',true);
  if(mode==='ISSUE'&&['LOW','EMPTY'].includes(bat))return notify('Máy pin yếu/hết pin không được cấp phát. Báo lỗi pin để đưa máy về trạng thái chờ sạc.',true);
  if(mode==='SWAP_OUT'&&!['FULL','GOOD'].includes(swapBattery))return notify('Vui lòng kiểm tra máy thay thế có pin Đầy hoặc Đủ dùng trước khi đổi.',true);
@@ -614,12 +621,12 @@ async function submit(){
   await new Promise(resolve=>requestAnimationFrame(resolve));
   if(mode!=='RELEASE'){
    if(needsPhoto(mode)){
-    sig=combineProof('old');
-    if(mode==='SWAP_OUT')sigNew=combineProof('new');
+    hiOld=combineFullProof('old');sig=combineProof('old');
+    if(mode==='SWAP_OUT'){hiNew=combineFullProof('new');sigNew=combineProof('new')}
    }else sig=signature();
   }
   notify('Đang xác nhận với Firebase, vui lòng không bấm lại…');
- const writeRadioTransaction=async()=>{
+ const writeRadioTransaction=async(withFull=true)=>{
  const db=fs(),ref=db.collection(COLLECTION).doc(code);
  if(mode==='SWAP_OUT'){
   const other=$('radioSwapTarget').value,ref2=db.collection(COLLECTION).doc(other),swapId=db.collection(EVENTS).doc().id;
@@ -629,9 +636,9 @@ async function submit(){
    if(!a||a.status!=='OUT'||(!isAdmin(user)&&a.holderUid!==user.uid))throw Error('Máy cũ không còn hợp lệ để đổi.');
    if(!b||b.status!=='READY')throw Error('Máy thay thế vừa có người nhận. Vui lòng chọn máy khác.');
    const oldNew={status:['BATTERY_EMPTY','BATTERY_WEAK'].includes(reason)?'CHARGING':'FAULT',holderUid:'',holderName:'',shift:'',faultCode:reason,faultDetail:details,battery:bat};
-   updateDevice(tx,ref,a,'SWAP_OUT',oldNew,{user,shift:shiftVal,reason,details:evidenceDetails(details,photos.old?.at),sig,related:other,swapId});
+   updateDevice(tx,ref,a,'SWAP_OUT',oldNew,{user,shift:shiftVal,reason,details:evidenceDetails(details,photos.old?.at),sig,related:other,swapId,fullProof:withFull?hiOld:'',photoAt:photos.old?.at});
    const newNew={status:'OUT',holderUid:user.uid,holderName:user.name,shift:shiftVal,faultCode:'',faultDetail:'',battery:swapBattery};
-   updateDevice(tx,ref2,b,'SWAP_IN',newNew,{user,shift:shiftVal,reason,details:evidenceDetails(details,photos.new?.at),sig:sigNew,related:code,swapId});
+   updateDevice(tx,ref2,b,'SWAP_IN',newNew,{user,shift:shiftVal,reason,details:evidenceDetails(details,photos.new?.at),sig:sigNew,related:code,swapId,fullProof:withFull?hiNew:'',photoAt:photos.new?.at});
   });
  }else{
   await db.runTransaction(async tx=>{
@@ -647,26 +654,31 @@ async function submit(){
     after={status:reason==='LOST'?'LOST':['BATTERY_EMPTY','BATTERY_WEAK'].includes(reason)?'CHARGING':'FAULT',holderUid:'',holderName:'',shift:'',faultCode:reason,faultDetail:details,battery:bat};}
    else if(mode==='RELEASE'){if(!isAdmin(user)||!['FAULT','CHARGING','LOST'].includes(d.status))throw Error('Chỉ AD mới có thể xác nhận máy đủ điều kiện sử dụng.');after={status:'READY',holderUid:'',holderName:'',shift:'',faultCode:'',faultDetail:'',battery:'GOOD'};reasonCode='';}
    else throw Error('Tác vụ không được hỗ trợ.');
-   updateDevice(tx,ref,d,action,after,{user,shift:shiftVal,reason:reasonCode,details:evidenceDetails(details,photos.old?.at),sig,related:'',swapId:''});
+   updateDevice(tx,ref,d,action,after,{user,shift:shiftVal,reason:reasonCode,details:evidenceDetails(details,photos.old?.at),sig,related:'',swapId:'',fullProof:withFull?hiOld:'',photoAt:photos.old?.at});
   });
  }
 
  };
- try{await writeRadioTransaction()}
+ try{await writeRadioTransaction(true)}
  catch(error){
-  // Firebase Production may still have the legacy WebP/PNG-only rule.
-  // Permission-denied rejects the complete atomic transaction: retry once
-  // using the same real camera capture and ink as permitted PNG, never fake success.
-  const denied=String(error?.code||'').includes('permission-denied');
-  if(!denied||!/^data:image\/jpeg;base64,/.test(sig))throw error;
-  notify('Firebase chưa cho phép ảnh JPEG. Đang tự chuyển ảnh sang PNG để lưu an toàn…');
-  await new Promise(resolve=>requestAnimationFrame(resolve));
-  sig=combineProof('old','png');usedLegacyPng=true;
-  if(mode==='SWAP_OUT')sigNew=combineProof('new','png');
-  await writeRadioTransaction();
+  // Rules not yet deployed? Keep the original atomic signing flow alive.
+  if(!String(error?.code||'').includes('permission-denied')||!hiOld)throw error;
+  usedCompactOnly=true;
+  try{await writeRadioTransaction(false)}
+  catch(legacyError){
+   if(!String(legacyError?.code||'').includes('permission-denied')||
+    !/^data:image\/jpeg;base64,/.test(sig))throw legacyError;
+   notify('Firebase chưa cho phép JPEG. Đang dùng ảnh PNG tương thích…');
+   await new Promise(resolve=>requestAnimationFrame(resolve));
+   sig=combineProof('old','png');usedLegacyPng=true;
+   if(mode==='SWAP_OUT')sigNew=combineProof('new','png');
+   await writeRadioTransaction(false);
+  }
  }
  if(isAdmin(user))queueRosterAudit(150);
-  cancel();notify(usedLegacyPng?'Đã lưu nhận/trả lên Firebase bằng PNG dự phòng. Ảnh trên iPhone có thể mờ: AD cần cập nhật Firestore Rules để cho phép JPEG.':'Đã ghi nhận lên Firebase với thời gian máy chủ và lưu sự kiện lịch sử.');
+  cancel();notify(usedCompactOnly?
+ 'Đã lưu ký nhận. ⚠ Firebase chưa kích hoạt ảnh V2.2 rõ nét'+(usedLegacyPng?' (dùng PNG tương thích).':' (dùng ảnh nén cũ).')+' AD cần cập nhật Firestore Rules.':
+ '✓ Đã lưu ảnh bộ đàm V2.2 rõ nét, đúng màu và chữ ký với giờ Firebase.');
  }catch(e){notify(errText(e),true)}finally{setBusy(false)}
 }
 async function seed(){
@@ -776,7 +788,7 @@ async function photoPdfPage(e,index,total){
  x.fillText(audit.status+(audit.delta!==null?' · chênh lệch khoảng '+audit.delta+' phút':''),35,284);
  x.fillStyle='#d2e1e8';x.fillRect(35,310,830,755);
  if(hasProof){
-  try{const img=await proofImage(e.signature);const ratio=Math.min(810/img.width,730/img.height);
+  try{const img=await proofImage(await highProofData(e));const ratio=Math.min(810/img.width,730/img.height);
    const w=img.width*ratio,h=img.height*ratio;x.drawImage(img,450-w/2,687-h/2,w,h);
   }catch(_){x.fillStyle='#aa2727';x.font='bold 20px Arial';x.fillText('ẢNH LỖI / KHÔNG ĐỌC ĐƯỢC',70,690)}
  }else{x.fillStyle='#744f2a';x.font='bold 21px Arial';x.fillText('SỰ KIỆN KHÔNG CÓ ẢNH',70,690)}
@@ -790,7 +802,7 @@ async function photoPdfPage(e,index,total){
 }
 function pdfStoredPage(cv){
  const width=cv.width,height=cv.height;
- const jpeg=cv.toDataURL('image/jpeg',0.76);
+ const jpeg=cv.toDataURL('image/jpeg',0.9);
  cv.width=1;cv.height=1;
  return {width,height,toDataURL:()=>jpeg};
 }
