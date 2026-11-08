@@ -40,6 +40,7 @@ async function createRadio(uid='admin',code='DH01'){
 }
 async function transition(uid,code,action,mutations={},opts={}){
  const db=actor(uid),ref=doc(db,root,code),evRef=doc(collection(db,audit));
+ const {fullProof,...eventExtras}=opts;
  return runTransaction(db,async tx=>{
   const existing=await tx.get(ref);
   if(!existing.exists())throw Error('No device');
@@ -49,10 +50,15 @@ async function transition(uid,code,action,mutations={},opts={}){
   const data=event(uid,action,code,old.status,newStatus,old.version+1,{
    personUid:action==='ISSUE'?uid:old.holderUid,
    personName:action==='ISSUE'?names[uid]:old.holderName,
-   reasonCode:update.faultCode||'',...opts
+   reasonCode:update.faultCode||'',...eventExtras
   });
   tx.update(ref,update);
   tx.set(evRef,data);
+  if(fullProof)tx.set(doc(db,'sags_radio_proofs_v22',evRef.id),{
+   schemaVersion:2,eventId:evRef.id,actorUid:uid,deviceCode:code,action,
+   capturedAtMs:Date.now(),image:fullProof
+  });
+  return evRef.id;
  });
 }
 async function atomicSwap(uid,oldCode,newCode){
@@ -83,6 +89,25 @@ async function main(){
  await assertFails(getDoc(doc(getDb('inactive'),root,'DH01')));
  await assertFails(createRadio('alice','DH02')); // staff must not initialize asset master
  await assertSucceeds(createRadio('admin','DH01'));
+ // V2.2 high-quality photo is an immutable, private atomic companion to
+ // the existing receipt; old readers continue reading event.signature.
+ await assertSucceeds(createRadio('admin','DH09'));
+ const proofId=await assertSucceeds(transition('alice','DH09','ISSUE',{
+  status:'OUT',holderUid:'alice',holderName:names.alice,shift:'AM',
+  faultCode:'',faultDetail:'',battery:'GOOD'
+ },{fullProof:'data:image/jpeg;base64,'+'A'.repeat(18000)}));
+ const proofDb='sags_radio_proofs_v22';
+ await assertSucceeds(getDoc(doc(getDb('admin'),proofDb,proofId)));
+ await assertSucceeds(getDoc(doc(getDb('alice'),proofDb,proofId)));
+ await assertFails(getDoc(doc(getDb('bob'),proofDb,proofId)));
+ await assertFails(getDoc(doc(getDb(),proofDb,proofId)));
+ await assertFails(getDocs(collection(getDb('alice'),proofDb)));
+ await assertFails(updateDoc(doc(getDb('alice'),proofDb,proofId),{image:'FAKE'}));
+ await assertFails(deleteDoc(doc(getDb('admin'),proofDb,proofId)));
+ await assertFails(setDoc(doc(getDb('alice'),proofDb,'FAKE_EVENT'),{
+  schemaVersion:2,eventId:'FAKE_EVENT',actorUid:'alice',deviceCode:'DH09',
+  action:'ISSUE',capturedAtMs:Date.now(),image:'data:image/jpeg;base64,'+'A'.repeat(18000)
+ }));
  await assertSucceeds(getDoc(doc(getDb('alice'),root,'DH01')));
  await assertSucceeds(transition('alice','DH01','ISSUE',{
   status:'OUT',holderUid:'alice',holderName:names.alice,shift:'AM',
@@ -135,6 +160,6 @@ async function main(){
  await assertFails(transition('bob','DH02','ISSUE',{
   status:'OUT',holderUid:'bob',holderName:names.bob,shift:'AM',faultCode:'',faultDetail:'',battery:'GOOD'
  }));
- console.log('Firebase emulator PASS: privacy, signed custody (WebP/PNG), battery quarantine, atomic replacement and immutable audit');
+ console.log('Firebase emulator PASS: privacy, signed custody (WebP/PNG), battery quarantine, atomic replacement, V2.2 private colour photo and immutable audit');
 }
 try{await main()}finally{await env.cleanup()}

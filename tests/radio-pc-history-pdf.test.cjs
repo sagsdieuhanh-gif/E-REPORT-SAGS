@@ -8,7 +8,7 @@ const pcCss=fs.readFileSync('app/styles/boot-36-v6494-aviation-final.css','utf8'
 const version=JSON.parse(fs.readFileSync('version.json','utf8'));
 const index=fs.readFileSync('index.html','utf8');
 const sw=fs.readFileSync('service-worker.js','utf8');
-assert.equal(version.version,'V2.1');
+assert.equal(version.version,'V2.2');
 assert.equal(index.includes(version.build),true);
 assert(sw.includes("const BUILD='"+version.build+"'"));
 assert(!shell.includes('function ensurePcRadioFallback()'),'Duplicate legacy radio injector must be removed');

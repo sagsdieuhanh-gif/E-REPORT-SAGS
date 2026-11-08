@@ -210,3 +210,14 @@
  .radioRosterStats b{font-size:19px}
  .radioRosterStats span{font-size:9px}
 }
+
+/* V2.2: full-resolution evidence viewer; no blur-filter or thumbnail scaling. */
+.radioProofViewer>div{width:min(94vw,1050px);max-height:94dvh}
+.radioProofViewer header{flex-wrap:wrap}
+.radioProofViewer header strong{flex:1;min-width:145px}
+.radioProofScroll{width:100%;max-height:70dvh;overflow:auto;overscroll-behavior:contain;background:#071827;border-radius:10px;touch-action:pan-x pan-y}
+.radioProofScroll img{display:block;max-width:100%;width:100%;height:auto;margin:0!important;object-fit:contain;image-rendering:auto}
+.radioProofZoomed .radioProofScroll img{width:auto;max-width:none;min-width:100%;height:auto}
+#radioProofZoom{min-height:42px}
+#radioProofQuality{margin:8px 0;font-size:12px;line-height:1.45;color:#b6eae9}
+@media(max-width:680px){.radioProofViewer{padding:6px}.radioProofViewer>div{width:100%;max-height:95dvh;padding:8px}.radioProofScroll{max-height:65dvh}}

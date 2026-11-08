@@ -5,7 +5,7 @@ const shell=read('app/boot/32-v6494-aviation-shell.js');
 const css=read('app/styles/new-ui-v1.css');
 const ver=JSON.parse(read('version.json'));
 
-assert.match(ver.version,/^V2\.1$/,'Avatar/Settings contract requires the V2.1 release identity');
+assert.match(ver.version,/^V2\.2$/,'Avatar/Settings contract requires the V2.2 release identity');
 assert.ok(ver.build.startsWith(ver.version+'-'),'Avatar/Settings contract requires build/version alignment');
 
 for(const id of ['v157DrawerAvatar','sagsWelcomeAvatar','v6494Avatar','v6494TopAvatar','v6494MobileAvatar']){
