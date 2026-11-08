@@ -148,6 +148,51 @@
         && (request.resource.data.action == 'INIT' ? request.resource.data.beforeStatus == '' : true);
       allow update, delete: if false;
     }
+    // V2.2 full-colour radio photo. One immutable photo for the event created
+    // in the SAME atomic custody transaction. Private to actor and AD.
+    // The old event.signature remains <=45k for historical compatibility.
+    match /sags_radio_proofs_v22/{eventId} {
+      allow get: if activeUser() && (isAdmin() || resource.data.actorUid == request.auth.uid);
+      allow list: if false;
+      allow create: if activeUser()
+        && request.resource.data.keys().hasOnly([
+          'schemaVersion','eventId','actorUid','deviceCode',
+          'action','capturedAtMs','image'
+        ])
+        && request.resource.data.keys().hasAll([
+          'schemaVersion','eventId','actorUid','deviceCode',
+          'action','capturedAtMs','image'
+        ])
+        && request.resource.data.schemaVersion == 2
+        && request.resource.data.eventId == eventId
+        && request.resource.data.actorUid == request.auth.uid
+        && request.resource.data.deviceCode is string
+        && request.resource.data.deviceCode.size() > 1
+        && request.resource.data.action in ['ISSUE','RETURN','REPORT','SWAP_OUT','SWAP_IN']
+        && request.resource.data.capturedAtMs is int
+        && request.resource.data.capturedAtMs > 0
+        && request.resource.data.image is string
+        && request.resource.data.image.size() > 12000
+        && request.resource.data.image.size() <= 235000
+        && request.resource.data.image.matches('^data:image/(webp|jpeg);base64,[A-Za-z0-9+/=]+
+      allow read: if isAdmin();
+      allow create, update, delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+})
+        && !exists(/databases/$(database)/documents/sags_radio_events_v1/$(eventId))
+        && existsAfter(/databases/$(database)/documents/sags_radio_events_v1/$(eventId))
+        && getAfter(/databases/$(database)/documents/sags_radio_events_v1/$(eventId)).data.actorUid == request.auth.uid
+        && getAfter(/databases/$(database)/documents/sags_radio_events_v1/$(eventId)).data.deviceCode == request.resource.data.deviceCode
+        && getAfter(/databases/$(database)/documents/sags_radio_events_v1/$(eventId)).data.action == request.resource.data.action
+        && getAfter(/databases/$(database)/documents/sags_radio_events_v1/$(eventId)).data.signature.size() > 120;
+      allow update, delete: if false;
+    }
+
     match /sags_radio_mail_runs_v1/{mailKey} {
       allow read: if isAdmin();
       allow create, update, delete: if false;
