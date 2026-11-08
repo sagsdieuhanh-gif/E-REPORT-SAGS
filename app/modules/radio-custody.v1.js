@@ -776,7 +776,7 @@ function proofImage(data){
   img.src=data;
  });
 }
-async function photoPdfPage(e,index,total){
+async function photoPdfPage(e,index,total,fullProof=''){
  const cv=document.createElement('canvas');cv.width=900;cv.height=1273;
  const x=cv.getContext('2d'),audit=photoAudit(e),hasProof=!!e.signature;
  x.fillStyle='#fff';x.fillRect(0,0,900,1273);
@@ -792,7 +792,7 @@ async function photoPdfPage(e,index,total){
  x.fillText(audit.status+(audit.delta!==null?' · chênh lệch khoảng '+audit.delta+' phút':''),35,284);
  x.fillStyle='#d2e1e8';x.fillRect(35,310,830,755);
  if(hasProof){
-  try{const img=await proofImage(await highProofData(e));const ratio=Math.min(810/img.width,730/img.height);
+  try{const img=await proofImage(fullProof||await highProofData(e));const ratio=Math.min(810/img.width,730/img.height);
    const w=img.width*ratio,h=img.height*ratio;x.drawImage(img,450-w/2,687-h/2,w,h);
   }catch(_){x.fillStyle='#aa2727';x.font='bold 20px Arial';x.fillText('ẢNH LỖI / KHÔNG ĐỌC ĐƯỢC',70,690)}
  }else{x.fillStyle='#744f2a';x.font='bold 21px Arial';x.fillText('SỰ KIỆN KHÔNG CÓ ẢNH',70,690)}
@@ -828,9 +828,12 @@ async function exportPhotoPdf(){
   for(let i=0;i<rows.length;i+=19){
    stored.push(pdfStoredPage(pdfPage(rows.slice(i,i+19),stored.length+1,allPages,scope,true,totals)));
   }
-  for(let i=0;i<rows.length;i++){
-   if(i%5===0)await new Promise(done=>requestAnimationFrame(done));
-   stored.push(pdfStoredPage(await photoPdfPage(rows[i],summaryPages+i+1,allPages)));
+  // Limit concurrent Firebase image loads to four to control mobile memory.
+  for(let i=0;i<rows.length;i+=4){
+   await new Promise(done=>requestAnimationFrame(done));
+   const batch=rows.slice(i,i+4),full=await Promise.all(batch.map(e=>highProofData(e)));
+   for(let j=0;j<batch.length;j++)
+    stored.push(pdfStoredPage(await photoPdfPage(batch[j],summaryPages+i+j+1,allPages,full[j])));
   }
   if(!isAdmin(currentUser()))throw Error('Tài khoản không còn quyền AD');
   const blob=pdfBuild(stored),url=URL.createObjectURL(blob),link=document.createElement('a');
