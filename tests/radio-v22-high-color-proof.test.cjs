@@ -16,7 +16,7 @@ assert(radio.includes("tx.set(fs().collection(PROOFS).doc(evRef.id)"),'event ID 
 assert(radio.includes('tx.set(evRef,ev)')&&radio.includes('tx.update(ref,'),'photo and event live inside one transaction');
 assert(radio.includes('await writeRadioTransaction(true)')&&radio.includes('await writeRadioTransaction(false)'), 'only permission errors should use legacy path');
 assert(radio.includes("snap=await fs().collection(PROOFS).doc(e.id).get({source:'server'})"),'photo must be fetched on demand from server');
-assert(radio.includes('await proofImage(await highProofData(e))'),'PDF must prefer original full-colour proof');
+assert(radio.includes('await proofImage(fullProof||await highProofData(e))'),'PDF must prefer original full-colour proof');
 assert(radio.includes("const jpeg=cv.toDataURL('image/jpeg',0.9)"),'avoid recompressing evidence appendix to 0.76');
 assert(css.includes('.radioProofZoomed .radioProofScroll img'),'viewer must support full size zoom');
 const ruleStart=rules.indexOf('match /sags_radio_proofs_v22/{eventId}');
