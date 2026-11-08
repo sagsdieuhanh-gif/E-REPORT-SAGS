@@ -148,20 +148,17 @@
         && (request.resource.data.action == 'INIT' ? request.resource.data.beforeStatus == '' : true);
       allow update, delete: if false;
     }
-    // V2.2 full-colour radio photo. One immutable photo for the event created
-    // in the SAME atomic custody transaction. Private to actor and AD.
-    // The old event.signature remains <=45k for historical compatibility.
+    // V2.2 full-colour radio proof: one immutable photo for a newly
+    // created signed custody event. No public access or retroactive forgery.
     match /sags_radio_proofs_v22/{eventId} {
       allow get: if activeUser() && (isAdmin() || resource.data.actorUid == request.auth.uid);
       allow list: if false;
       allow create: if activeUser()
         && request.resource.data.keys().hasOnly([
-          'schemaVersion','eventId','actorUid','deviceCode',
-          'action','capturedAtMs','image'
+          'schemaVersion','eventId','actorUid','deviceCode','action','capturedAtMs','image'
         ])
         && request.resource.data.keys().hasAll([
-          'schemaVersion','eventId','actorUid','deviceCode',
-          'action','capturedAtMs','image'
+          'schemaVersion','eventId','actorUid','deviceCode','action','capturedAtMs','image'
         ])
         && request.resource.data.schemaVersion == 2
         && request.resource.data.eventId == eventId
@@ -174,16 +171,7 @@
         && request.resource.data.image is string
         && request.resource.data.image.size() > 12000
         && request.resource.data.image.size() <= 235000
-        && request.resource.data.image.matches('^data:image/(webp|jpeg);base64,[A-Za-z0-9+/=]+
-      allow read: if isAdmin();
-      allow create, update, delete: if false;
-    }
-
-    match /{document=**} {
-      allow read, write: if false;
-    }
-  }
-})
+        && request.resource.data.image.matches('^data:image/(webp|jpeg);base64,[A-Za-z0-9+/=]+$')
         && !exists(/databases/$(database)/documents/sags_radio_events_v1/$(eventId))
         && existsAfter(/databases/$(database)/documents/sags_radio_events_v1/$(eventId))
         && getAfter(/databases/$(database)/documents/sags_radio_events_v1/$(eventId)).data.actorUid == request.auth.uid
