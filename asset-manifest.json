@@ -290,16 +290,16 @@
       "bytes": 19587
     },
     "./app/modules/radio-custody.v1.js": {
-      "sha256": "3e1f8a4fd4f9f6e1cd3be19597a93bc8fe43fb22e78461c96972a74ea4a980b0",
-      "bytes": 81121
+      "sha256": "5905fd6b68b9d08e5c22c0f1feb26abcdc2ff9c12d3573dc532fae6313fd3c1b",
+      "bytes": 85938
     },
     "./app/modules/radio-reminders.v21.js": {
       "sha256": "d22a59b3fb19bb8175adf2c011b1b4990a455c9ed076087f313d983efdb8e757",
       "bytes": 9770
     },
     "./app/modules/radio-work-gate.v1.js": {
-      "sha256": "9a625cd0a98b5434af393132d5cae177e3cf6d797375c10d09cba0e56d83b4a2",
-      "bytes": 5012
+      "sha256": "dbc84f5cc92cd111ffd136da7b348823fdbe0b936b0c74897505c6d5e99bb37c",
+      "bytes": 7377
     },
     "./app/modules/roster-lite.v5.js": {
       "sha256": "36ed4962af16d6365220fefb5319e2c81dbd05e11e32ca7ff3154443f54d06cc",
@@ -782,8 +782,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "0f89c6e95b784dd70e0f76923a2db9caab78a0a4b67a1e3d0ddce95c30399c78",
-      "bytes": 106111
+      "sha256": "2f9135325b189d273be070be57faabcf010e12f0c1a7b27479173ffa4da7f7e7",
+      "bytes": 106269
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -834,16 +834,16 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "8dd0215a9863842859f961afc43e84b9a3d6ab3ef965f39f2fc709b2362d5186",
-      "bytes": 22646
+      "sha256": "81c1af99b46865484b7828cf19b0a4c62636a2def7fc642132996cc94e1731dc",
+      "bytes": 22652
     },
     "./storage-recovery.html": {
       "sha256": "08817204a946fbdfa404e8c083dd0c2016e935fb8fe56ff8ef99f405978d3df6",
       "bytes": 26106
     },
     "./version.json": {
-      "sha256": "abc5f1f953fda6420a50adfe7bd5d29ecdf548ecf0c026b0f20612175c495619",
-      "bytes": 1023
+      "sha256": "e14e8b3ba37e3a5cff83c1ae517c7d356e34bd85fed5c66f0559416947755404",
+      "bytes": 1295
     }
   },
   "mutableAssets": [
