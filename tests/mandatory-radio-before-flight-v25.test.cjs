@@ -5,8 +5,8 @@ const canonical=fs.readFileSync('app/modules/roster-open-guard.source.js','utf8'
 const gate=fs.readFileSync('app/modules/radio-work-gate.v1.js','utf8');
 const roster=fs.readFileSync('app/modules/daily-roster.v502.js','utf8');
 function harness(){
- const state={uid:'U-1',online:true,docs:[],fromCache:false,networkFailure:null,reads:0,opens:0,takeovers:0,alerts:[],requestedSource:[]};
- const c={Promise,Error,Set,Proxy,Reflect,Object,Array,String,console,
+ const state={uid:'U-1',online:true,docs:[],fromCache:false,networkFailure:null,reads:0,opens:0,takeovers:0,alerts:[],requestedSource:[],now:Date.parse('2026-11-11T16:30:00.000Z'),receivedAt:0};
+ const c={Promise,Error,Set,Proxy,Reflect,Object,Array,String,console,Intl,Date:class extends Date {static now(){return state.now}},
   navigator:{get onLine(){return state.online}},
   document:{readyState:'complete',body:null,getElementById:()=>null},
   setTimeout(){return 1},clearTimeout(){},
@@ -30,7 +30,7 @@ function harness(){
  c.window=c;c.v324ReceiveOrOpen=async()=>{state.opens++;return 'OPENED'};
  c.v324TakeoverWaiting=async()=>{state.takeovers++;return 'TAKEN'};
  vm.createContext(c);vm.runInContext(gate,c);vm.runInContext(src,c);
- return {c,state,sign:()=>{state.docs=[{id:'DH01',data:()=>({holderUid:'U-1',status:'OUT'})}]},
+ return {c,state,sign:()=>{state.docs=[{id:'DH01',data:()=>({holderUid:'U-1',status:'OUT',updatedAt:{toMillis:()=>state.receivedAt||state.now}})}]},
    malformed:()=>{state.docs=[{id:'DH01',data:()=>({holderUid:'U-1',status:'READY'})}]}};
 }
 (async()=>{
@@ -42,6 +42,20 @@ function harness(){
  a.sign();
  assert.equal(await a.c.v324ReceiveOrOpen('VJ100'),'OPENED','Signed radio permits report');
  assert.equal(a.state.opens,1);assert.deepEqual(a.state.requestedSource,['server','server']);
+ // Night shift may finish after midnight; workday rolls over at 04:00 VN.
+ const night=harness();night.state.now=Date.parse('2026-11-11T20:59:00Z'); // 03:59 Nov 12 VN
+ night.state.receivedAt=Date.parse('2026-11-11T14:30:00Z'); // 21:30 Nov 11 VN
+ night.sign();assert.equal(await night.c.v324ReceiveOrOpen('VJ-NIGHT'),'OPENED','PM shift across midnight remains eligible until 04:00 VN');
+ night.state.now=Date.parse('2026-11-11T21:00:00Z'); // 04:00 Nov 12 VN
+ assert.equal(await night.c.v324ReceiveOrOpen('VJ-NEW-DAY'),false,'Held radio from prior workday blocks new flights from 04:00 VN');
+ assert.equal(night.state.opens,1);
+ assert(night.state.alerts.at(-1).includes('CHƯA TRẢ BỘ ĐÀM CA TRƯỚC'));
+ night.state.receivedAt=night.state.now;
+ assert.equal(await night.c.v324ReceiveOrOpen('VJ-NEW-DAY-REISSUE'),'OPENED','New signed custody in current workday restores flight access');
+ const missingStamp=harness();missingStamp.state.docs=[{id:'DH01',data:()=>({holderUid:'U-1',status:'OUT'})}];
+ assert.equal(await missingStamp.c.v324ReceiveOrOpen('VJ-NO-STAMP'),false,'No server issue time cannot bypass overnight gate');
+ const tomorrow=harness();tomorrow.sign();tomorrow.state.receivedAt=Date.parse('2026-11-11T22:00:00Z');
+ assert.equal(await tomorrow.c.v324ReceiveOrOpen('VJ-FUTURE-STAMP'),false,'Future radio timestamps cannot bypass gate');
  a.state.docs=[];assert.equal(await a.c.v324ReceiveOrOpen('VJ200'),false,'Returning radio revokes future openings');
  assert.equal(a.state.opens,1);
  a.malformed();assert.equal(await a.c.v324ReceiveOrOpen('VJ300'),false,'Inactive machine is not custody');
