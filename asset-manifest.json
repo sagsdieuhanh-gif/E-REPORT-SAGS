@@ -1,7 +1,7 @@
 {
   "schema": 2,
   "version": "V2.2",
-  "build": "V2.2-20261108-RADIO-COLOR-PROOF-16",
+  "build": "V2.2-20261112-RADIO-IOS-OVERNIGHT-17",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
