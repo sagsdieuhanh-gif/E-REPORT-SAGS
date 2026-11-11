@@ -1299,7 +1299,7 @@ service cloud.firestore {
         && request.resource.data.capturedAtMs > 0
         && request.resource.data.image is string
         && request.resource.data.image.size() > 12000
-        && request.resource.data.image.size() <= 235000
+        && request.resource.data.image.size() <= 700000
         && request.resource.data.image.matches('^data:image/(webp|jpeg);base64,[A-Za-z0-9+/=]+$')
         && !exists(/databases/$(database)/documents/sags_radio_events_v1/$(eventId))
         && existsAfter(/databases/$(database)/documents/sags_radio_events_v1/$(eventId))

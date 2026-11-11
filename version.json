@@ -1,12 +1,12 @@
 {
   "version": "V2.2",
   "displayVersion": "V2.2",
-  "label": "V2.2 - ẢNH BỘ ĐÀM IOS GIỮ MÀU VÀ CHẶN CHƯA TRẢ CA TRƯỚC",
-  "build": "V2.2-20261112-RADIO-IOS-OVERNIGHT-17",
+  "label": "V2.2 - ẢNH BỘ ĐÀM CHẤT LƯỢNG CAO TRÊN IOS / PDF",
+  "build": "V2.2-20261112-RADIO-HIFI-PHOTO-18",
   "releasedAt": "2026-11-12",
-  "type": "radio-ios-color-and-overnight-custody",
+  "type": "radio-high-fidelity-evidence",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Giữ tỷ lệ ảnh camera dọc/ngang gốc trên iOS, không phóng đại pixel hoặc lượng tử hóa màu PNG dự phòng; tối ưu ảnh JPEG và lưu bản ảnh rõ tạm riêng theo tài khoản trong IndexedDB nếu Firebase Rules chưa cho phép ảnh server V2.2. Ảnh tạm không dùng làm bằng chứng PDF chính thức. Người đang giữ máy từ ngày làm việc trước bị chặn nhận/mở report từ 04:00 giờ Việt Nam cho đến khi ký trả và nhận lại. Máy lỗi/đang sạc/thất lạc không cấp phát, chỉ AD kiểm tra thực tế + ghi kết quả mới mở lại. Cần cập nhật Firestore Rules production để ảnh rõ có thể xem từ thiết bị khác.",
-  "message": "Đã tối ưu ảnh bộ đàm iOS và bắt buộc ký trả máy ca trước; máy lỗi phải được AD kiểm tra trước khi cấp lại."
+  "notes": "iOS và Android giữ ảnh camera đúng tỷ lệ tới 2048px; chế độ autofocus khi có hỗ trợ; xem phóng to trước khi ký. JPEG/WebP lưu ảnh màu chất lượng cao tới 700k ký tự trong 1 tài liệu Firestore (giới hạn 1 MiB), tương thích bản Rules 235k, dự phòng bản ký 45k khi rules chưa được triển khai. Lưu bản ảnh rõ theo tài khoản trong IndexedDB trên máy chụp khi server chưa hỗ trợ. AD xuất ảnh PDF chất lượng cao hơn trên PC; ảnh chưa được Firebase xác minh không đưa vào PDF chính thức. Cần triển khai firestore.rules production. Không thay đổi quy tắc báo lỗi/khóa máy trong đợt chỉnh ảnh này.",
+  "message": "Ảnh bộ đàm rõ và giữ màu trên iPhone, được phóng to trước khi ký. Firebase Rules cần cập nhật để AD xem ảnh chất lượng cao từ máy khác."
 }
