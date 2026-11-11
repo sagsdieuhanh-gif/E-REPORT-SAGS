@@ -5,7 +5,8 @@
 'use strict';
 if(root.SAGSRadioCustodyV1)return;
 const COLLECTION='sags_radio_devices_v1',EVENTS='sags_radio_events_v1',PROOFS='sags_radio_proofs_v22';
-const HIGH_PROOF_LIMIT=235000,proofCache=new Map();
+// Firestore limit is 1 MiB per document; retain headroom for metadata.
+const HIGH_PROOF_LIMIT=700000,COMPAT_PROOF_LIMIT=235000,proofCache=new Map();
 const INIT=['DH01','DH02','DH03','DH04','DH05','DH06','DH07','DH08','DH09','DH10','DH11','TBDH02'];
 const REASONS=[
  ['BATTERY_EMPTY','Hết pin'],['BATTERY_WEAK','Pin yếu, tụt nhanh'],['WEAK_SIGNAL','Sóng yếu / mất sóng'],
@@ -126,9 +127,10 @@ async function startCamera(leg){
  $('radioTakePhoto').disabled=true;notify('Đang yêu cầu quyền camera...');const token=cameraToken;
  if(!navigator.mediaDevices?.getUserMedia){notify('Camera trực tiếp không hỗ trợ ở trình duyệt này. Hãy dùng HTTPS trên Chrome, Edge hoặc Safari.',true);updatePhotoUI();return}
  try{
-  const stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1080}}});
+  const stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:2560},height:{ideal:1440}}});
   if(token!==cameraToken||!choice){stream.getTracks().forEach(t=>t.stop());return}
   cameraStream=stream;v.srcObject=stream;await v.play();
+   try{const t=stream.getVideoTracks?.()[0],m=t?.getCapabilities?.()?.focusMode;if(Array.isArray(m)&&m.includes('continuous'))void t.applyConstraints({advanced:[{focusMode:'continuous'}]}).catch(()=>{});}catch(_){}
   if(token!==cameraToken){stopCamera();return}
   updatePhotoUI();notify('Chụp rõ mã số và thân bộ đàm, sau đó ký xác nhận.');
  }catch(e){
@@ -145,7 +147,7 @@ function takePhoto(){
  // Safari can supply a portrait 720x1280 or a lower-resolution live stream.
  // Never upscale/crop it into a fixed 1280x720 landscape canvas: doing so
  // used to leave huge dark bars and blur serial numbers on iPhones.
- const sensorW=v.videoWidth,sensorH=v.videoHeight,scale=Math.min(1,1600/Math.max(sensorW,sensorH));
+ const sensorW=v.videoWidth,sensorH=v.videoHeight,scale=Math.min(1,2048/Math.max(sensorW,sensorH));
  const width=Math.max(1,Math.round(sensorW*scale)),height=Math.max(1,Math.round(sensorH*scale));
  const stampH=Math.max(84,Math.min(144,Math.round(width*.125)));
  const c=document.createElement('canvas');c.width=width;c.height=height+stampH;
@@ -185,14 +187,14 @@ function webpCanvasEncoderSupported(){
  try{return c.toDataURL('image/webp',.5).startsWith('data:image/webp;base64,')}
  catch(_){return false}
 }
-function combineFullProof(leg){
+function combineFullProof(leg,maxLength=HIGH_PROOF_LIMIT){
  const photo=photos[leg];if(!photo)throw Error('Chưa chụp ảnh trực tiếp để tạo bằng chứng rõ nét.');
  const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d',{alpha:false});
  if(!ctx)throw Error('Không đọc được ảnh camera.');
  const webp=webpCanvasEncoderSupported(),mime=webp?'image/webp':'image/jpeg';
  const sw=photo.canvas.width,sh=photo.canvas.height;
  // Match the actual portrait/landscape source; never invent pixels by upscaling.
- const widths=[1,.9,.8,.72,.64,.56,.5].map(v=>Math.max(1,Math.round(sw*v)))
+ const widths=[1,.87,.75,.64,.54].map(v=>Math.max(1,Math.round(sw*v)))
   .filter((v,i,a)=>a.indexOf(v)===i);
  for(const width of widths){
   const ph=Math.round(width*sh/sw),signatureH=Math.max(70,Math.round(width*.15));
@@ -204,12 +206,12 @@ function combineFullProof(leg){
   ctx.fillStyle='#123a4e';ctx.font='bold '+Math.max(11,Math.round(width*.018))+'px Arial';
   ctx.fillText('CHỮ KÝ XÁC NHẬN',Math.round(width*.025),ph+signatureH*.22);
   ctx.drawImage($('radioSignature'),Math.round(width*.025),ph+Math.round(signatureH*.25),Math.round(width*.9),Math.round(signatureH*.68));
-  for(const q of webp?[.94,.9,.86,.81,.76,.7]:[.95,.92,.88,.84,.8,.74]){
+  for(const q of webp?[.95,.89,.83,.76]:[.96,.91,.85,.77]){
    const data=canvas.toDataURL(mime,q);
-   if(data.startsWith('data:'+mime+';base64,')&&data.length>120&&data.length<=HIGH_PROOF_LIMIT)return data;
+   if(data.startsWith('data:'+mime+';base64,')&&data.length>120&&data.length<=maxLength)return data;
   }
  }
- throw Error('Ảnh vượt giới hạn 235KB của bằng chứng Firebase. Hãy chụp lại gần máy, đủ sáng và ít hậu cảnh.');
+ throw Error('Ảnh vượt giới hạn lưu an toàn. Chụp gần mã máy, đủ sáng và giảm hậu cảnh.');
 }
 function combineProof(leg,requestedFormat='auto'){
  const photo=photos[leg];if(!photo)throw Error('Chưa chụp ảnh trực tiếp.');
@@ -670,7 +672,7 @@ async function submit(){
   if(details.length<20)return notify('AD phải ghi kết quả kiểm tra ít nhất 20 ký tự: pin, sóng, loa, mic/PTT và tình trạng thực tế.',true);
   if(!root.confirm('XÁC NHẬN ĐÃ KIỂM TRA TRỰC TIẾP '+label(code)+'?\n\nMáy chỉ được mở cấp lại sau khi pin, sóng phát/thu, loa và mic/PTT hoạt động tốt. Máy đã báo mất phải được thu hồi.\n\nKết quả đã ghi sẽ được lưu trên Firebase.'))return notify('Chưa xác nhận kiểm tra. Máy vẫn khóa cấp phát.',true);
  }
- let sig='',sigNew='',hiOld='',hiNew='',usedLegacyPng=false,usedCompactOnly=false;try{if(mode!=='RELEASE'){signature();if(needsPhoto(mode)){if(!photosReady())throw Error('Phải chụp ảnh bằng camera trước khi ký.');if(Date.now()-photos.old.at>600000||(mode==='SWAP_OUT'&&Date.now()-photos.new.at>600000))throw Error('Ảnh quá 10 phút, vui lòng chụp lại.')}}}catch(e){return notify(e.message,true)}
+ let sig='',sigNew='',hiOld='',hiNew='',serverOld='',serverNew='',usedLegacyPng=false,usedCompactOnly=false,usedCompatibleProof=false;try{if(mode!=='RELEASE'){signature();if(needsPhoto(mode)){if(!photosReady())throw Error('Phải chụp ảnh bằng camera trước khi ký.');if(Date.now()-photos.old.at>600000||(mode==='SWAP_OUT'&&Date.now()-photos.new.at>600000))throw Error('Ảnh quá 10 phút, vui lòng chụp lại.')}}}catch(e){return notify(e.message,true)}
  if(['ISSUE','RETURN'].includes(mode)&&bat==='UNKNOWN')return notify('Vui lòng kiểm tra mức pin trước khi nhận hoặc trả máy.',true);
  if(mode==='ISSUE'&&['LOW','EMPTY'].includes(bat))return notify('Máy pin yếu/hết pin không được cấp phát. Báo lỗi pin để đưa máy về trạng thái chờ sạc.',true);
  if(mode==='SWAP_OUT'&&!['FULL','GOOD'].includes(swapBattery))return notify('Vui lòng kiểm tra máy thay thế có pin Đầy hoặc Đủ dùng trước khi đổi.',true);
@@ -682,8 +684,8 @@ async function submit(){
   await new Promise(resolve=>requestAnimationFrame(resolve));
   if(mode!=='RELEASE'){
    if(needsPhoto(mode)){
-    hiOld=combineFullProof('old');sig=combineProof('old');
-    if(mode==='SWAP_OUT'){hiNew=combineFullProof('new');sigNew=combineProof('new')}
+    hiOld=combineFullProof('old');serverOld=hiOld;sig=combineProof('old');
+    if(mode==='SWAP_OUT'){hiNew=combineFullProof('new');serverNew=hiNew;sigNew=combineProof('new')}
    }else sig=signature();
   }
   notify('Đang xác nhận với Firebase, vui lòng không bấm lại…');
@@ -697,9 +699,9 @@ async function submit(){
    if(!a||a.status!=='OUT'||(!isAdmin(user)&&a.holderUid!==user.uid))throw Error('Máy cũ không còn hợp lệ để đổi.');
    if(!b||b.status!=='READY')throw Error('Máy thay thế vừa có người nhận. Vui lòng chọn máy khác.');
    const oldNew={status:['BATTERY_EMPTY','BATTERY_WEAK'].includes(reason)?'CHARGING':'FAULT',holderUid:'',holderName:'',shift:'',faultCode:reason,faultDetail:details,battery:bat};
-   updateDevice(tx,ref,a,'SWAP_OUT',oldNew,{user,shift:shiftVal,reason,details:evidenceDetails(details,photos.old?.at),sig,related:other,swapId,fullProof:withFull?hiOld:'',photoAt:photos.old?.at});
+   updateDevice(tx,ref,a,'SWAP_OUT',oldNew,{user,shift:shiftVal,reason,details:evidenceDetails(details,photos.old?.at),sig,related:other,swapId,fullProof:withFull?serverOld:'',photoAt:photos.old?.at});
    const newNew={status:'OUT',holderUid:user.uid,holderName:user.name,shift:shiftVal,faultCode:'',faultDetail:'',battery:swapBattery};
-   updateDevice(tx,ref2,b,'SWAP_IN',newNew,{user,shift:shiftVal,reason,details:evidenceDetails(details,photos.new?.at),sig:sigNew,related:code,swapId,fullProof:withFull?hiNew:'',photoAt:photos.new?.at});
+   updateDevice(tx,ref2,b,'SWAP_IN',newNew,{user,shift:shiftVal,reason,details:evidenceDetails(details,photos.new?.at),sig:sigNew,related:code,swapId,fullProof:withFull?serverNew:'',photoAt:photos.new?.at});
   });
  }else{
   await db.runTransaction(async tx=>{
@@ -715,7 +717,7 @@ async function submit(){
     after={status:reason==='LOST'?'LOST':['BATTERY_EMPTY','BATTERY_WEAK'].includes(reason)?'CHARGING':'FAULT',holderUid:'',holderName:'',shift:'',faultCode:reason,faultDetail:details,battery:bat};}
    else if(mode==='RELEASE'){if(!isAdmin(user)||!['FAULT','CHARGING','LOST'].includes(d.status))throw Error('Chỉ AD mới có thể xác nhận máy đủ điều kiện sử dụng.');after={status:'READY',holderUid:'',holderName:'',shift:'',faultCode:'',faultDetail:'',battery:'GOOD'};reasonCode='';}
    else throw Error('Tác vụ không được hỗ trợ.');
-   updateDevice(tx,ref,d,action,after,{user,shift:shiftVal,reason:reasonCode,details:evidenceDetails(details,photos.old?.at),sig,related:'',swapId:'',fullProof:withFull?hiOld:'',photoAt:photos.old?.at});
+   updateDevice(tx,ref,d,action,after,{user,shift:shiftVal,reason:reasonCode,details:evidenceDetails(details,photos.old?.at),sig,related:'',swapId:'',fullProof:withFull?serverOld:'',photoAt:photos.old?.at});
   });
  }
 
