@@ -724,22 +724,31 @@ async function submit(){
  };
  try{await writeRadioTransaction(true)}
  catch(error){
-  // Rules not yet deployed? Keep the original atomic signing flow alive.
   if(!String(error?.code||'').includes('permission-denied')||!hiOld)throw error;
-  usedCompactOnly=true;
-  try{await writeRadioTransaction(false)}
-  catch(legacyError){
-   if(!String(legacyError?.code||'').includes('permission-denied')||
-    !/^data:image\/jpeg;base64,/.test(sig))throw legacyError;
-   notify('Firebase chưa cho phép JPEG. Đang dùng ảnh PNG tương thích…');
-   await new Promise(resolve=>requestAnimationFrame(resolve));
-   sig=combineProof('old','png');usedLegacyPng=true;
-   if(mode==='SWAP_OUT')sigNew=combineProof('new','png');
-   await writeRadioTransaction(false);
+  // V2.2 servers may still enforce 235k. Preserve a coloured proof on
+  // Firebase if possible before using the 45k legacy-signature route.
+  try{
+   serverOld=combineFullProof('old',COMPAT_PROOF_LIMIT);
+   if(mode==='SWAP_OUT')serverNew=combineFullProof('new',COMPAT_PROOF_LIMIT);
+   await writeRadioTransaction(true);
+   usedCompatibleProof=true;
+  }catch(compatibleError){
+   if(!String(compatibleError?.code||'').includes('permission-denied'))throw compatibleError;
+   usedCompactOnly=true;
+   try{await writeRadioTransaction(false)}
+   catch(legacyError){
+    if(!String(legacyError?.code||'').includes('permission-denied')||
+       !/^data:image\/jpeg;base64,/.test(sig))throw legacyError;
+    notify('Firebase chưa cho phép JPEG. Đang lưu PNG tương thích với ảnh thu nhỏ…');
+    await new Promise(resolve=>requestAnimationFrame(resolve));
+    sig=combineProof('old','png');usedLegacyPng=true;
+    if(mode==='SWAP_OUT')sigNew=combineProof('new','png');
+    await writeRadioTransaction(false);
+   }
   }
  }
  let localBackupOk=true;
- if(usedCompactOnly&&hiOld){
+ if((usedCompactOnly||usedCompatibleProof)&&hiOld){
   try{
    const tasks=[saveLocalFullProof(user.uid,code,mode,photos.old,hiOld)];
    if(mode==='SWAP_OUT')tasks.push(saveLocalFullProof(user.uid,$('radioSwapTarget').value,'SWAP_IN',photos.new,hiNew));
@@ -748,10 +757,14 @@ async function submit(){
  }
  if(isAdmin(user))queueRosterAudit(150);
   cancel();notify(usedCompactOnly?
- 'Đã lưu ký nhận lên Firebase nhưng CHƯA lưu được ảnh rõ nét trên máy chủ'+(usedLegacyPng?' (PNG bị giảm kích thước).':'.')+
- (localBackupOk?' Ảnh rõ lưu tạm trên điện thoại này; AD máy khác chưa xem rõ.':' Không lưu được ảnh rõ trên thiết bị.')+
- ' AD cần triển khai Firestore Rules V2.2.':
- '✓ Đã lưu ảnh bộ đàm V2.2 rõ nét, đúng màu và chữ ký với giờ Firebase.');
+  'Đã ký nhận, nhưng Firebase CHƯA lưu được ảnh rõ nét'+(usedLegacyPng?' (ảnh server là PNG nhỏ).':'.')+
+  (localBackupOk?' Ảnh rõ lưu riêng trên điện thoại này, AD máy khác chưa xem được.':' Không thể lưu bản rõ trên điện thoại.')+
+  ' Cần triển khai Firestore Rules mới.':
+  usedCompatibleProof?
+   'Đã ký nhận. Firebase chỉ nhận ảnh tương thích 235KB.'+
+   (localBackupOk?' Ảnh rõ hơn được giữ trên điện thoại chụp.':' Không thể giữ bản rõ hơn trên điện thoại.')+
+   ' Cần nâng Firestore Rules để AD xem ảnh rõ hơn.':
+   '✓ Đã lưu ảnh chất lượng cao, giữ màu trên Firebase cùng chữ ký và giờ máy chủ.');
  }catch(e){notify(errText(e),true)}finally{setBusy(false)}
 }
 async function seed(){
