@@ -4,7 +4,7 @@ const radio=fs.readFileSync('app/modules/radio-custody.v1.js','utf8');
 const rules=fs.readFileSync('firebase/radio-custody.rules.snippet','utf8');
 const production=fs.readFileSync('firebase/firestore.rules','utf8');
 const style=fs.readFileSync('app/styles/radio-custody.v1.css','utf8');
-const from=radio.indexOf('function webpCanvasEncoderSupported(){'),until=radio.indexOf('async function highProofData(e){',from);
+const from=radio.indexOf('function webpCanvasEncoderSupported(){'),until=radio.indexOf('async function highProofData(e,allowLocal=false){',from);
 assert(from>0&&until>from);
 assert(radio.includes("preview=c.toDataURL('image/jpeg',.94)"),'Safari preview must use high-quality JPEG');
 assert(radio.includes('if(!root.PointerEvent)'));
