@@ -873,8 +873,12 @@ function proofImage(data){
  });
 }
 async function photoPdfPage(e,index,total,fullProof=''){
- const cv=document.createElement('canvas');cv.width=900;cv.height=1273;
+ // On PC generate a denser raster so PDF zoom retains camera serial details.
+ // Keep the original footprint on iOS to avoid Safari memory pressure.
+ const factor=/iPhone|iPad|iPod/.test(navigator.userAgent||'')?1:1.6;
+ const cv=document.createElement('canvas');cv.width=Math.round(900*factor);cv.height=Math.round(1273*factor);
  const x=cv.getContext('2d'),audit=photoAudit(e),hasProof=!!e.signature;
+ if(factor!==1)x.scale(factor,factor);
  x.fillStyle='#fff';x.fillRect(0,0,900,1273);
  x.fillStyle='#082e45';x.fillRect(0,0,900,16);
  x.fillStyle='#143d54';x.font='bold 23px Arial';x.fillText('SAGS | BẰNG CHỨNG KÝ NHẬN BỘ ĐÀM',35,65);
