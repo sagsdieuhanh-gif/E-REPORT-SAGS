@@ -247,27 +247,78 @@ function combineProof(leg,requestedFormat='auto'){
  }
  throw Error('Ảnh quá lớn trong giới hạn lưu trữ. Vui lòng chụp rõ mã bộ đàm, giảm chi tiết nền rồi thử lại; chưa ghi nhận lượt ký.');
 }
-async function highProofData(e){
- if(!e?.id||!e.signature)return e?.signature||'';
- const cached=proofCache.get(e.id);if(cached)return cached;
- if(proofReadDenied)return e.signature;
- if(!navigator.onLine)return e.signature;
+// Optional device-only backup when production Firestore Rules have not been
+// deployed. This is NOT an authoritative receipt or server-verified evidence.
+let localProofDbPromise=null;
+const localProofIds=new Set();
+function localProofKey(uid,code,action,at){return String(uid)+'|'+String(code)+'|'+String(action)+'|'+String(at)}
+function radioProofDb(){
+ if(!root.indexedDB)return Promise.reject(Error('IndexedDB không khả dụng'));
+ if(!localProofDbPromise)localProofDbPromise=new Promise((resolve,reject)=>{
+  let req;try{req=root.indexedDB.open('sags-radio-photo-local-v22',1)}catch(e){reject(e);return}
+  req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains('photos'))db.createObjectStore('photos',{keyPath:'key'})};
+  req.onsuccess=()=>resolve(req.result);
+  req.onerror=()=>reject(req.error||Error('Không mở được kho ảnh'));
+  req.onblocked=()=>reject(Error('Kho ảnh đang mở ở tab khác'));
+ }).catch(e=>{localProofDbPromise=null;throw e});
+ return localProofDbPromise;
+}
+async function saveLocalFullProof(uid,code,action,photo,image){
+ if(!photo?.at||typeof image!=='string'||image.length>HIGH_PROOF_LIMIT||!/^data:image\/(webp|jpeg);base64,/.test(image))return false;
+ const db=await radioProofDb();
+ return new Promise((resolve,reject)=>{
+  const tx=db.transaction('photos','readwrite');
+  tx.objectStore('photos').put({key:localProofKey(uid,code,action,photo.at),
+   uid,deviceCode:code,action,capturedAtMs:photo.at,storedAtMs:Date.now(),image});
+  tx.oncomplete=()=>resolve(true);
+  tx.onerror=()=>reject(tx.error||Error('Không lưu được ảnh trên máy'));
+  tx.onabort=()=>reject(tx.error||Error('Lưu ảnh trên máy bị hủy'));
+ });
+}
+async function readLocalFullProof(e){
+ const user=currentUser(),at=photoAudit(e).deviceMs;
+ if(!at||!user.uid||user.uid!==e.actorUid)return '';
  try{
-  const snap=await fs().collection(PROOFS).doc(e.id).get({source:'server'});
-  if(snap.metadata?.fromCache)throw Error('Ảnh gốc chưa được Firebase xác nhận.');
-  const d=snap.data();
-  if(snap.exists&&d?.eventId===e.id&&d?.actorUid===e.actorUid&&d?.deviceCode===e.deviceCode&&
-   typeof d.image==='string'&&/^data:image\/(webp|jpeg);base64,/.test(d.image)&&d.image.length<=HIGH_PROOF_LIMIT){
-   proofCache.set(e.id,d.image);if(proofCache.size>8)proofCache.delete(proofCache.keys().next().value);
-   return d.image;
+  const db=await radioProofDb(),key=localProofKey(user.uid,e.deviceCode,e.action,at);
+  return await new Promise(resolve=>{
+   const tx=db.transaction('photos','readonly'),req=tx.objectStore('photos').get(key);
+   req.onsuccess=()=>{
+    const item=req.result;
+    resolve(item?.uid===user.uid&&item?.capturedAtMs===at&&
+     typeof item.image==='string'&&/^data:image\/(webp|jpeg);base64,/.test(item.image)?item.image:'');
+   };
+   req.onerror=()=>resolve('');tx.onabort=()=>resolve('');
+  });
+ }catch(_){return ''}
+}
+async function highProofData(e,allowLocal=false){
+ if(!e?.id||!e.signature)return e?.signature||'';
+ const cached=proofCache.get(e.id);
+ if(cached){localProofIds.delete(e.id);return cached}
+ if(navigator.onLine){
+  try{
+   const snap=await fs().collection(PROOFS).doc(e.id).get({source:'server'});
+   if(snap.metadata?.fromCache)throw Error('Ảnh gốc chưa được Firebase xác nhận.');
+   const d=snap.data();
+   if(snap.exists&&d?.eventId===e.id&&d?.actorUid===e.actorUid&&d?.deviceCode===e.deviceCode&&
+    typeof d.image==='string'&&/^data:image\/(webp|jpeg);base64,/.test(d.image)&&d.image.length<=HIGH_PROOF_LIMIT){
+    proofCache.set(e.id,d.image);localProofIds.delete(e.id);
+    if(proofCache.size>8)proofCache.delete(proofCache.keys().next().value);
+    return d.image;
+   }
+  }catch(error){
+   // No global permission-denied flag: an old event must not prevent newer
+   // events from loading their correctly authorized full-colour server proof.
+   console.info('Radio full-colour proof unavailable',String(error?.code||error?.message||error));
   }
- }catch(error){
-   if(String(error?.code||'').includes('permission-denied'))proofReadDenied=true;
-   console.info('Full-colour radio proof unavailable',String(error?.code||error?.message||error))
-  }
+ }
+ if(allowLocal){
+  const local=await readLocalFullProof(e);
+  if(local){localProofIds.add(e.id);return local}
+ }
  return e.signature;
 }
-let proofReadDenied=false,proofViewToken=0;
+let proofViewToken=0;
 async function viewProof(id){
  const e=(reportReady?reportEvents:events).find(x=>x.id===id);
  if(!e)return notify('Không tìm thấy sự kiện trong lịch sử đang hiển thị. Hãy tải lại lịch sử.',true);
@@ -279,12 +330,14 @@ async function viewProof(id){
  const check=photoAudit(e);
  $('radioProofTimestamp').textContent='Giờ Firebase: '+(check.serverMs?fmt(new Date(check.serverMs)):'Chưa xác minh')+' · Giờ thiết bị: '+(check.deviceMs?fmt(new Date(check.deviceMs)):'xem trực tiếp trên ảnh')+' · '+check.status+(check.delta!==null?' ('+check.delta+' phút)':'');
  box.hidden=false;
- const data=await highProofData(e);
+ const data=await highProofData(e,true);
  if(token!==proofViewToken||box.hidden)return;
  $('radioProofImage').src=data;
  $('radioProofQuality').textContent=data===e.signature?
-  '⚠ Chỉ có ảnh cũ đã nén. Chưa có ảnh V2.2 hoặc quyền Firestore chưa được cập nhật.':
-  '✓ Ảnh gốc rõ nét V2.2 · giữ màu, có thể phóng to để đọc mã máy.';
+  '⚠ Chỉ có ảnh đã nén trên Firebase. Ảnh cũ không thể khôi phục độ nét đã mất.':
+  localProofIds.has(e.id)?
+   '📱 Ảnh rõ được lưu tạm trong điện thoại này, CHƯA xác minh trên Firebase. AD ở máy khác vẫn thấy bản nén.':
+   '✓ Ảnh rõ đã được xác minh trên Firebase, có thể phóng to đọc mã máy.';
 }
 function closeProof(){
  ++proofViewToken;const el=$('radioProofViewer');if(el){el.hidden=true;el.classList.remove('radioProofZoomed')}
@@ -676,9 +729,19 @@ async function submit(){
    await writeRadioTransaction(false);
   }
  }
+ let localBackupOk=true;
+ if(usedCompactOnly&&hiOld){
+  try{
+   const tasks=[saveLocalFullProof(user.uid,code,mode,photos.old,hiOld)];
+   if(mode==='SWAP_OUT')tasks.push(saveLocalFullProof(user.uid,$('radioSwapTarget').value,'SWAP_IN',photos.new,hiNew));
+   localBackupOk=(await Promise.all(tasks)).every(Boolean);
+  }catch(error){localBackupOk=false;console.warn('Radio local photo backup failed',error?.message||error)}
+ }
  if(isAdmin(user))queueRosterAudit(150);
   cancel();notify(usedCompactOnly?
- 'Đã lưu ký nhận. ⚠ Firebase chưa kích hoạt ảnh V2.2 rõ nét'+(usedLegacyPng?' (dùng PNG tương thích).':' (dùng ảnh nén cũ).')+' AD cần cập nhật Firestore Rules.':
+ 'Đã lưu ký nhận lên Firebase nhưng CHƯA lưu được ảnh rõ nét trên máy chủ'+(usedLegacyPng?' (PNG bị giảm kích thước).':'.')+
+ (localBackupOk?' Ảnh rõ lưu tạm trên điện thoại này; AD máy khác chưa xem rõ.':' Không lưu được ảnh rõ trên thiết bị.')+
+ ' AD cần triển khai Firestore Rules V2.2.':
  '✓ Đã lưu ảnh bộ đàm V2.2 rõ nét, đúng màu và chữ ký với giờ Firebase.');
  }catch(e){notify(errText(e),true)}finally{setBusy(false)}
 }
