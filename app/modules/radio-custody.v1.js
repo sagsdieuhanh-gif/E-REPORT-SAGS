@@ -26,7 +26,7 @@ const RETURN_REASONS=Object.freeze({
  OTHER:'Lý do khác'
 });
 const OVERDUE_MS=12*60*60*1000;
-const STATUSES={READY:'Sẵn sàng',OUT:'Đang sử dụng',CHARGING:'Đang sạc',FAULT:'Ngừng cấp / lỗi',LOST:'Thất lạc'};
+const STATUSES={READY:'Sẵn sàng',OUT:'Đang sử dụng',CHARGING:'Đang sạc',FAULT:'Cần kiểm tra / khóa cấp',LOST:'Thất lạc'};
 const ACTS={INIT:'Khởi tạo',ISSUE:'Nhận máy',RETURN:'Trả máy',REPORT:'Báo sự cố',SWAP_OUT:'Đổi – trả máy cũ',SWAP_IN:'Đổi – nhận máy mới',RELEASE:'Mở lại / sạc xong'};
 let unsubs=[],devices=[],events=[],busy=false,connected=false,choice=null,mode='ISSUE',canvasDirty=false,strokes=[],drawing=false,dateFilter='all';
 let cameraStream=null,cameraToken=0,cameraLeg='old',photos={old:null,new:null},historyStop=null,historyVerified=false;
@@ -140,30 +140,37 @@ async function startCamera(leg){
 function formatShotTime(d){return new Intl.DateTimeFormat('vi-VN',{timeZone:VN,day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(d)}
 function takePhoto(){
  if(!choice||!cameraStream||busy)return notify('Camera chưa hoạt động. Bấm Mở camera và thử lại.',true);
- const v=$('radioCameraVideo');if(v.readyState<2||!v.videoWidth)return notify('Camera chưa có hình.',true);
+ const v=$('radioCameraVideo');if(v.readyState<2||!v.videoWidth||!v.videoHeight)return notify('Camera chưa có hình.',true);
  const code=cameraLeg==='new'?$('radioSwapTarget').value:choice.code;if(!code)return notify('Chọn bộ đàm thay thế.',true);
- const c=document.createElement('canvas');c.width=1280;c.height=864;
- const ctx=c.getContext('2d',{alpha:false});ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
- ctx.fillStyle='#071827';ctx.fillRect(0,0,1280,864);
- const scale=Math.min(1280/v.videoWidth,720/v.videoHeight),dw=v.videoWidth*scale,dh=v.videoHeight*scale;
- // Preserve the real camera RGB without colour quantization or artificial filters.
- ctx.drawImage(v,(1280-dw)/2,(720-dh)/2,dw,dh);
- const operation=cameraLeg==='new'?'SWAP_IN':mode,at=new Date();
- ctx.fillStyle='#041926';ctx.fillRect(0,720,1280,144);
- ctx.fillStyle='#fff';ctx.textBaseline='middle';ctx.font='bold 40px Arial';
- ctx.fillText('SAGS · '+label(code)+' · '+(['ISSUE','SWAP_IN'].includes(operation)?'NHẬN':['RETURN','SWAP_OUT'].includes(operation)?'TRẢ':'BÁO LỖI'),30,765);
- ctx.font='bold 33px Arial';ctx.fillStyle='#9ee5eb';
- ctx.fillText(formatShotTime(at)+'  ·  giờ thiết bị (VN)',30,830);
- // WebKit on iOS can display WebP but cannot encode it from Canvas.
- // JPEG here is ONLY the local preview; immutable signed proof remains WebP/PNG.
- const preview=c.toDataURL('image/jpeg',.9);
- photos[cameraLeg]={canvas:c,preview:preview.startsWith('data:image/jpeg;base64,')?preview:c.toDataURL('image/png'),code,at:at.getTime()};
+ // Safari can supply a portrait 720x1280 or a lower-resolution live stream.
+ // Never upscale/crop it into a fixed 1280x720 landscape canvas: doing so
+ // used to leave huge dark bars and blur serial numbers on iPhones.
+ const sensorW=v.videoWidth,sensorH=v.videoHeight,scale=Math.min(1,1600/Math.max(sensorW,sensorH));
+ const width=Math.max(1,Math.round(sensorW*scale)),height=Math.max(1,Math.round(sensorH*scale));
+ const stampH=Math.max(84,Math.min(144,Math.round(width*.125)));
+ const c=document.createElement('canvas');c.width=width;c.height=height+stampH;
+ const ctx=c.getContext('2d',{alpha:false});
+ if(!ctx)return notify('Trình duyệt không tạo được ảnh camera.',true);
+ ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
+ ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);
+ ctx.drawImage(v,0,0,width,height); // Natural aspect ratio; no brightness or colour quantization
+ const operation=cameraLeg==='new'?'SWAP_IN':mode,at=new Date(),size=Math.max(14,Math.round(width*.029));
+ ctx.fillStyle='#041926';ctx.fillRect(0,height,width,stampH);
+ ctx.fillStyle='#fff';ctx.textBaseline='middle';ctx.font='bold '+size+'px Arial';
+ ctx.fillText('SAGS · '+label(code)+' · '+(['ISSUE','SWAP_IN'].includes(operation)?'NHẬN':['RETURN','SWAP_OUT'].includes(operation)?'TRẢ':'BÁO LỖI'),Math.round(width*.02),height+stampH*.33);
+ ctx.font='bold '+Math.max(12,Math.round(size*.8))+'px Arial';ctx.fillStyle='#9ee5eb';
+ ctx.fillText(formatShotTime(at)+' · giờ thiết bị (VN)',Math.round(width*.02),height+stampH*.76);
+ const preview=c.toDataURL('image/jpeg',.94);
+ if(!preview.startsWith('data:image/jpeg;base64,'))return notify('iPhone không mã hóa được ảnh JPEG rõ nét. Chụp lại hoặc mở Safari để thử lại.',true);
+ photos[cameraLeg]={canvas:c,preview,code,at:at.getTime(),captureWidth:width,captureHeight:height};
  stopCamera();updatePhotoUI();
- if(mode==='SWAP_OUT'&&cameraLeg==='old'){notify('Đã chụp máy cũ. Tiếp tục chụp máy mới.');void startCamera('new')}
- else{
-  v.hidden=true;const preview=$('radioCameraPhoto');
-  preview.src=photos[cameraLeg].preview;preview.hidden=false;
-  notify('Ảnh đã chụp có giờ. Hãy kiểm tra độ rõ và màu sắc; nếu mờ bấm Chụp lại trước khi ký.');
+ if(mode==='SWAP_OUT'&&cameraLeg==='old'){
+  notify('Đã chụp máy cũ '+width+'×'+height+' px. Tiếp tục chụp máy mới.');
+  void startCamera('new');
+ }else{
+  v.hidden=true;const image=$('radioCameraPhoto');
+  image.src=photos[cameraLeg].preview;image.hidden=false;
+  notify('Ảnh camera '+width+'×'+height+' px, không chỉnh màu. Kiểm tra rõ mã máy; bấm Chụp lại nếu chưa rõ, rồi ký.');
   $('radioSigWrap').scrollIntoView({behavior:'smooth',block:'nearest'});
  }
 }
@@ -178,39 +185,31 @@ function webpCanvasEncoderSupported(){
  try{return c.toDataURL('image/webp',.5).startsWith('data:image/webp;base64,')}
  catch(_){return false}
 }
-function quantizePngCanvas(canvas,levels){
- // iOS Safari does not encode WebP Canvas output. Keep genuine PNG bytes
- // inside the existing immutable Firestore proof field (<= 45,000 chars).
- // Pixel quantization compresses a photograph without falsifying its capture.
- const ctx=canvas.getContext('2d'),image=ctx.getImageData(0,0,canvas.width,canvas.height);
- const rgb=image.data,scale=255/(levels-1);
- for(let i=0;i<rgb.length;i+=4){
-  rgb[i]=Math.round(rgb[i]/scale)*scale;
-  rgb[i+1]=Math.round(rgb[i+1]/scale)*scale;
-  rgb[i+2]=Math.round(rgb[i+2]/scale)*scale;
- }
- ctx.putImageData(image,0,0);
-}
 function combineFullProof(leg){
  const photo=photos[leg];if(!photo)throw Error('Chưa chụp ảnh trực tiếp để tạo bằng chứng rõ nét.');
  const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d',{alpha:false});
+ if(!ctx)throw Error('Không đọc được ảnh camera.');
  const webp=webpCanvasEncoderSupported(),mime=webp?'image/webp':'image/jpeg';
- for(const width of [1280,1152,1024,960,896]){
-  const ph=Math.round(width*864/1280),sh=Math.round(width*185/1280);
-  canvas.width=width;canvas.height=ph+sh;
+ const sw=photo.canvas.width,sh=photo.canvas.height;
+ // Match the actual portrait/landscape source; never invent pixels by upscaling.
+ const widths=[1,.9,.8,.72,.64,.56,.5].map(v=>Math.max(1,Math.round(sw*v)))
+  .filter((v,i,a)=>a.indexOf(v)===i);
+ for(const width of widths){
+  const ph=Math.round(width*sh/sw),signatureH=Math.max(70,Math.round(width*.15));
+  canvas.width=width;canvas.height=ph+signatureH;
   ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
   ctx.fillStyle='#fff';ctx.fillRect(0,0,width,canvas.height);
   ctx.drawImage(photo.canvas,0,0,width,ph);
-  ctx.fillStyle='#e9f4f8';ctx.fillRect(0,ph,width,sh);
-  ctx.fillStyle='#123a4e';ctx.font='bold '+Math.max(13,Math.round(width*22/1280))+'px Arial';
-  ctx.fillText('CHỮ KÝ XÁC NHẬN',Math.round(width*.025),ph+Math.round(sh*.21));
-  ctx.drawImage($('radioSignature'),Math.round(width*.025),ph+Math.round(sh*.24),Math.round(width*.9),Math.round(sh*.7));
-  for(const q of webp?[.9,.85,.8,.75,.7]:[.92,.88,.84,.79,.74]){
+  ctx.fillStyle='#e9f4f8';ctx.fillRect(0,ph,width,signatureH);
+  ctx.fillStyle='#123a4e';ctx.font='bold '+Math.max(11,Math.round(width*.018))+'px Arial';
+  ctx.fillText('CHỮ KÝ XÁC NHẬN',Math.round(width*.025),ph+signatureH*.22);
+  ctx.drawImage($('radioSignature'),Math.round(width*.025),ph+Math.round(signatureH*.25),Math.round(width*.9),Math.round(signatureH*.68));
+  for(const q of webp?[.94,.9,.86,.81,.76,.7]:[.95,.92,.88,.84,.8,.74]){
    const data=canvas.toDataURL(mime,q);
    if(data.startsWith('data:'+mime+';base64,')&&data.length>120&&data.length<=HIGH_PROOF_LIMIT)return data;
   }
  }
- throw Error('Ảnh quá lớn để lưu rõ nét. Vui lòng chụp lại với hậu cảnh đơn giản và đủ ánh sáng.');
+ throw Error('Ảnh vượt giới hạn 235KB của bằng chứng Firebase. Hãy chụp lại gần máy, đủ sáng và ít hậu cảnh.');
 }
 function combineProof(leg,requestedFormat='auto'){
  const photo=photos[leg];if(!photo)throw Error('Chưa chụp ảnh trực tiếp.');
@@ -218,9 +217,9 @@ function combineProof(leg,requestedFormat='auto'){
  ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
  const mode=requestedFormat==='png'?'png':webpCanvasEncoderSupported()?'webp':'jpeg';
  const maxLength=44000;
- const widths=mode==='png'?[560,512,448,384,320,280,240,208,176]:[640,600,560,512,480,448,416,384,352];
+ const widths=mode==='png'?[640,600,560,512,448,384,320,280,240,208,176]:[640,600,560,512,480,448,416,384,352];
  function drawPage(width){
-  const ph=Math.round(width*430/640),sh=Math.round(width*130/640);
+  const ph=Math.round(width*photo.canvas.height/photo.canvas.width),sh=Math.round(width*.19);
   canvas.width=width;canvas.height=ph+sh;
   ctx.fillStyle='#fff';ctx.fillRect(0,0,width,canvas.height);
   ctx.drawImage(photo.canvas,0,0,width,ph);
@@ -232,12 +231,10 @@ function combineProof(leg,requestedFormat='auto'){
  for(const width of widths){
   drawPage(width);
   if(mode==='png'){
-   // Older deployed Firestore rules accept PNG even when JPEG is not enabled.
-   for(const levels of [24,16,12,8,6,4,3,2]){
-    drawPage(width);quantizePngCanvas(canvas,levels);
-    const value=canvas.toDataURL('image/png');
-    if(value.startsWith('data:image/png;base64,')&&value.length>120&&value.length<=maxLength)return value;
-   }
+   // Lossless RGB PNG fallback for older Firestore rules: reduce dimensions
+   // only, never quantize channels or turn real camera colour into posterized blocks.
+   const value=canvas.toDataURL('image/png');
+   if(value.startsWith('data:image/png;base64,')&&value.length>120&&value.length<=maxLength)return value;
   }else{
    const mime=mode==='webp'?'image/webp':'image/jpeg';
    const prefix='data:'+mime+';base64,';
@@ -250,27 +247,78 @@ function combineProof(leg,requestedFormat='auto'){
  }
  throw Error('Ảnh quá lớn trong giới hạn lưu trữ. Vui lòng chụp rõ mã bộ đàm, giảm chi tiết nền rồi thử lại; chưa ghi nhận lượt ký.');
 }
-async function highProofData(e){
- if(!e?.id||!e.signature)return e?.signature||'';
- const cached=proofCache.get(e.id);if(cached)return cached;
- if(proofReadDenied)return e.signature;
- if(!navigator.onLine)return e.signature;
+// Optional device-only backup when production Firestore Rules have not been
+// deployed. This is NOT an authoritative receipt or server-verified evidence.
+let localProofDbPromise=null;
+const localProofIds=new Set();
+function localProofKey(uid,code,action,at){return String(uid)+'|'+String(code)+'|'+String(action)+'|'+String(at)}
+function radioProofDb(){
+ if(!root.indexedDB)return Promise.reject(Error('IndexedDB không khả dụng'));
+ if(!localProofDbPromise)localProofDbPromise=new Promise((resolve,reject)=>{
+  let req;try{req=root.indexedDB.open('sags-radio-photo-local-v22',1)}catch(e){reject(e);return}
+  req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains('photos'))db.createObjectStore('photos',{keyPath:'key'})};
+  req.onsuccess=()=>resolve(req.result);
+  req.onerror=()=>reject(req.error||Error('Không mở được kho ảnh'));
+  req.onblocked=()=>reject(Error('Kho ảnh đang mở ở tab khác'));
+ }).catch(e=>{localProofDbPromise=null;throw e});
+ return localProofDbPromise;
+}
+async function saveLocalFullProof(uid,code,action,photo,image){
+ if(!photo?.at||typeof image!=='string'||image.length>HIGH_PROOF_LIMIT||!/^data:image\/(webp|jpeg);base64,/.test(image))return false;
+ const db=await radioProofDb();
+ return new Promise((resolve,reject)=>{
+  const tx=db.transaction('photos','readwrite');
+  tx.objectStore('photos').put({key:localProofKey(uid,code,action,photo.at),
+   uid,deviceCode:code,action,capturedAtMs:photo.at,storedAtMs:Date.now(),image});
+  tx.oncomplete=()=>resolve(true);
+  tx.onerror=()=>reject(tx.error||Error('Không lưu được ảnh trên máy'));
+  tx.onabort=()=>reject(tx.error||Error('Lưu ảnh trên máy bị hủy'));
+ });
+}
+async function readLocalFullProof(e){
+ const user=currentUser(),at=photoAudit(e).deviceMs;
+ if(!at||!user.uid||user.uid!==e.actorUid)return '';
  try{
-  const snap=await fs().collection(PROOFS).doc(e.id).get({source:'server'});
-  if(snap.metadata?.fromCache)throw Error('Ảnh gốc chưa được Firebase xác nhận.');
-  const d=snap.data();
-  if(snap.exists&&d?.eventId===e.id&&d?.actorUid===e.actorUid&&d?.deviceCode===e.deviceCode&&
-   typeof d.image==='string'&&/^data:image\/(webp|jpeg);base64,/.test(d.image)&&d.image.length<=HIGH_PROOF_LIMIT){
-   proofCache.set(e.id,d.image);if(proofCache.size>8)proofCache.delete(proofCache.keys().next().value);
-   return d.image;
+  const db=await radioProofDb(),key=localProofKey(user.uid,e.deviceCode,e.action,at);
+  return await new Promise(resolve=>{
+   const tx=db.transaction('photos','readonly'),req=tx.objectStore('photos').get(key);
+   req.onsuccess=()=>{
+    const item=req.result;
+    resolve(item?.uid===user.uid&&item?.capturedAtMs===at&&
+     typeof item.image==='string'&&/^data:image\/(webp|jpeg);base64,/.test(item.image)?item.image:'');
+   };
+   req.onerror=()=>resolve('');tx.onabort=()=>resolve('');
+  });
+ }catch(_){return ''}
+}
+async function highProofData(e,allowLocal=false){
+ if(!e?.id||!e.signature)return e?.signature||'';
+ const cached=proofCache.get(e.id);
+ if(cached){localProofIds.delete(e.id);return cached}
+ if(navigator.onLine){
+  try{
+   const snap=await fs().collection(PROOFS).doc(e.id).get({source:'server'});
+   if(snap.metadata?.fromCache)throw Error('Ảnh gốc chưa được Firebase xác nhận.');
+   const d=snap.data();
+   if(snap.exists&&d?.eventId===e.id&&d?.actorUid===e.actorUid&&d?.deviceCode===e.deviceCode&&
+    typeof d.image==='string'&&/^data:image\/(webp|jpeg);base64,/.test(d.image)&&d.image.length<=HIGH_PROOF_LIMIT){
+    proofCache.set(e.id,d.image);localProofIds.delete(e.id);
+    if(proofCache.size>8)proofCache.delete(proofCache.keys().next().value);
+    return d.image;
+   }
+  }catch(error){
+   // No global permission-denied flag: an old event must not prevent newer
+   // events from loading their correctly authorized full-colour server proof.
+   console.info('Radio full-colour proof unavailable',String(error?.code||error?.message||error));
   }
- }catch(error){
-   if(String(error?.code||'').includes('permission-denied'))proofReadDenied=true;
-   console.info('Full-colour radio proof unavailable',String(error?.code||error?.message||error))
-  }
+ }
+ if(allowLocal){
+  const local=await readLocalFullProof(e);
+  if(local){localProofIds.add(e.id);return local}
+ }
  return e.signature;
 }
-let proofReadDenied=false,proofViewToken=0;
+let proofViewToken=0;
 async function viewProof(id){
  const e=(reportReady?reportEvents:events).find(x=>x.id===id);
  if(!e)return notify('Không tìm thấy sự kiện trong lịch sử đang hiển thị. Hãy tải lại lịch sử.',true);
@@ -282,12 +330,14 @@ async function viewProof(id){
  const check=photoAudit(e);
  $('radioProofTimestamp').textContent='Giờ Firebase: '+(check.serverMs?fmt(new Date(check.serverMs)):'Chưa xác minh')+' · Giờ thiết bị: '+(check.deviceMs?fmt(new Date(check.deviceMs)):'xem trực tiếp trên ảnh')+' · '+check.status+(check.delta!==null?' ('+check.delta+' phút)':'');
  box.hidden=false;
- const data=await highProofData(e);
+ const data=await highProofData(e,true);
  if(token!==proofViewToken||box.hidden)return;
  $('radioProofImage').src=data;
  $('radioProofQuality').textContent=data===e.signature?
-  '⚠ Chỉ có ảnh cũ đã nén. Chưa có ảnh V2.2 hoặc quyền Firestore chưa được cập nhật.':
-  '✓ Ảnh gốc rõ nét V2.2 · giữ màu, có thể phóng to để đọc mã máy.';
+  '⚠ Chỉ có ảnh đã nén trên Firebase. Ảnh cũ không thể khôi phục độ nét đã mất.':
+  localProofIds.has(e.id)?
+   '📱 Ảnh rõ được lưu tạm trong điện thoại này, CHƯA xác minh trên Firebase. AD ở máy khác vẫn thấy bản nén.':
+   '✓ Ảnh rõ đã được xác minh trên Firebase, có thể phóng to đọc mã máy.';
 }
 function closeProof(){
  ++proofViewToken;const el=$('radioProofViewer');if(el){el.hidden=true;el.classList.remove('radioProofZoomed')}
@@ -322,7 +372,10 @@ function start(action,code){
  resetCamera();mode=action;choice=d;clearSignature();
  $('radioActionCode').value=label(code);$('radioPerson').value=u.name+' · '+u.uid.slice(0,8);
  $('radioShift').value=shift();$('radioReason').value='BATTERY_EMPTY';$('radioReturnReason').value='END_SHIFT';$('radioBattery').value='UNKNOWN';$('radioSwapBattery').value='UNKNOWN';$('radioDetail').value='';
- $('radioActionTitle').textContent=(ACTS[action]||'Báo cáo')+' · '+label(code);
+ $('radioActionTitle').textContent=(action==='RELEASE'?'AD kiểm tra và xác nhận mở cấp lại':ACTS[action]||'Báo cáo')+' · '+label(code);
+ $('radioDetail').placeholder=action==='RELEASE'?
+  'Ghi kết quả kiểm tra: pin, sóng phát/thu, loa, mic/PTT; máy thất lạc phải xác nhận thu hồi.':
+  'Ghi cụ thể hiện tượng, thời gian, vị trí…';
  $('radioReasonWrap').hidden=!['REPORT','SWAP_OUT'].includes(action);$('radioReturnReasonWrap').hidden=action!=='RETURN';
  $('radioBatteryWrap').hidden=action==='RELEASE';
  $('radioSwapWrap').hidden=action!=='SWAP_OUT';$('radioSwapBatteryWrap').hidden=action!=='SWAP_OUT';
@@ -442,7 +495,8 @@ function renderAdminOverview(){
  target.innerHTML='<div class="radioAdminHighlights"><div><strong>'+holds.length+'</strong><span>Đang có người giữ</span></div><div><strong>'+overdue.length+'</strong><span>Cần kiểm tra trên 12h</span></div><div><strong>'+needs.length+'</strong><span>Đang sạc / lỗi / mất</span></div></div>'+
   '<div class="radioAdminColumns"><div class="radioAdminPanel"><h4>Người đang giữ máy <small>'+holds.length+' máy</small></h4><ul>'+holdItems+'</ul></div>'+
   '<div class="radioAdminPanel"><h4>Máy cần theo dõi <small>'+needs.length+' máy</small></h4><ul>'+needItems+'</ul></div></div>'+
-  '<p class="radioAdminFoot">Danh sách này phản ánh trạng thái Firebase hiện tại, không suy ra máy chưa trả từ sự kiện một ca. Cảnh báo 12 giờ là mốc kiểm tra, không kết luận hết ca.</p>';
+  '<p class="radioAdminFoot"><b>Máy cần kiểm tra:</b> máy lỗi (FAULT) cách ly, không cấp phát; máy pin yếu (CHARGING) sạc rồi thử lại; máy mất (LOST) phải xác minh thu hồi. Chỉ AD sau khi kiểm tra pin, sóng, loa, mic/PTT và ghi kết quả mới được chọn “Đã kiểm tra / mở lại”.</p>'+
+ '<p class="radioAdminFoot">Cảnh báo 12 giờ là mốc kiểm tra. Từ 04:00 ngày làm việc tiếp theo (giờ Việt Nam), người chưa ký trả bộ đàm ca trước không được nhận/mở chuyến report.</p>';
 }
 function render(){
  if(!$('radioDeviceList'))return;
@@ -612,7 +666,10 @@ async function submit(){
  if(mode==='RETURN'&&returnReason==='OTHER'&&rawDetail.length<10)return notify('Lý do trả khác cần mô tả ít nhất 10 ký tự.',true);
  const details=mode==='RETURN'?('Lý do trả: '+(RETURN_REASONS[returnReason]||RETURN_REASONS.END_SHIFT)+(rawDetail?' · '+rawDetail:'')):rawDetail;
  if(['REPORT','SWAP_OUT'].includes(mode)&&(reason==='OTHER'||reason==='LOST')&&details.length<10)return notify('Vui lòng mô tả lý do cụ thể (từ 10 ký tự).',true);
- if(mode==='RELEASE'&&details.length<10)return notify('AD phải ghi kết quả kiểm tra/sửa chữa (ít nhất 10 ký tự).',true);
+ if(mode==='RELEASE'){
+  if(details.length<20)return notify('AD phải ghi kết quả kiểm tra ít nhất 20 ký tự: pin, sóng, loa, mic/PTT và tình trạng thực tế.',true);
+  if(!root.confirm('XÁC NHẬN ĐÃ KIỂM TRA TRỰC TIẾP '+label(code)+'?\n\nMáy chỉ được mở cấp lại sau khi pin, sóng phát/thu, loa và mic/PTT hoạt động tốt. Máy đã báo mất phải được thu hồi.\n\nKết quả đã ghi sẽ được lưu trên Firebase.'))return notify('Chưa xác nhận kiểm tra. Máy vẫn khóa cấp phát.',true);
+ }
  let sig='',sigNew='',hiOld='',hiNew='',usedLegacyPng=false,usedCompactOnly=false;try{if(mode!=='RELEASE'){signature();if(needsPhoto(mode)){if(!photosReady())throw Error('Phải chụp ảnh bằng camera trước khi ký.');if(Date.now()-photos.old.at>600000||(mode==='SWAP_OUT'&&Date.now()-photos.new.at>600000))throw Error('Ảnh quá 10 phút, vui lòng chụp lại.')}}}catch(e){return notify(e.message,true)}
  if(['ISSUE','RETURN'].includes(mode)&&bat==='UNKNOWN')return notify('Vui lòng kiểm tra mức pin trước khi nhận hoặc trả máy.',true);
  if(mode==='ISSUE'&&['LOW','EMPTY'].includes(bat))return notify('Máy pin yếu/hết pin không được cấp phát. Báo lỗi pin để đưa máy về trạng thái chờ sạc.',true);
@@ -679,9 +736,19 @@ async function submit(){
    await writeRadioTransaction(false);
   }
  }
+ let localBackupOk=true;
+ if(usedCompactOnly&&hiOld){
+  try{
+   const tasks=[saveLocalFullProof(user.uid,code,mode,photos.old,hiOld)];
+   if(mode==='SWAP_OUT')tasks.push(saveLocalFullProof(user.uid,$('radioSwapTarget').value,'SWAP_IN',photos.new,hiNew));
+   localBackupOk=(await Promise.all(tasks)).every(Boolean);
+  }catch(error){localBackupOk=false;console.warn('Radio local photo backup failed',error?.message||error)}
+ }
  if(isAdmin(user))queueRosterAudit(150);
   cancel();notify(usedCompactOnly?
- 'Đã lưu ký nhận. ⚠ Firebase chưa kích hoạt ảnh V2.2 rõ nét'+(usedLegacyPng?' (dùng PNG tương thích).':' (dùng ảnh nén cũ).')+' AD cần cập nhật Firestore Rules.':
+ 'Đã lưu ký nhận lên Firebase nhưng CHƯA lưu được ảnh rõ nét trên máy chủ'+(usedLegacyPng?' (PNG bị giảm kích thước).':'.')+
+ (localBackupOk?' Ảnh rõ lưu tạm trên điện thoại này; AD máy khác chưa xem rõ.':' Không lưu được ảnh rõ trên thiết bị.')+
+ ' AD cần triển khai Firestore Rules V2.2.':
  '✓ Đã lưu ảnh bộ đàm V2.2 rõ nét, đúng màu và chữ ký với giờ Firebase.');
  }catch(e){notify(errText(e),true)}finally{setBusy(false)}
 }
