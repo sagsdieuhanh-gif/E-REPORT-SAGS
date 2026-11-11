@@ -6,8 +6,8 @@ assert.equal(version.version,'V2.2','release must truly be V2.2');
 assert(radio.includes("PROOFS='sags_radio_proofs_v22'"));
 assert(radio.includes('HIGH_PROOF_LIMIT=235000'));
 assert(radio.includes("width:{ideal:1920},height:{ideal:1080}"),'request higher resolution camera sensor');
-assert(radio.includes('c.width=1280;c.height=864'),'retain 1280-wide original colour photo with VN timestamp');
-assert(radio.includes("preview=c.toDataURL('image/jpeg',.9)"),'high quality preview');
+assert(radio.includes('const sensorW=v.videoWidth,sensorH=v.videoHeight,scale=Math.min(1,1600/Math.max(sensorW,sensorH))'),'capture natural iPhone portrait/landscape pixels without upscaling');
+assert(radio.includes("preview=c.toDataURL('image/jpeg',.94)"),'high quality preview');
 assert(radio.includes("hiOld=combineFullProof('old');sig=combineProof('old')"),'full proof and legacy event receipt coexist');
 assert(radio.includes("hiNew=combineFullProof('new');sigNew=combineProof('new')"),'swap writes two separate colour proofs');
 assert(radio.includes('fullProof:withFull?hiOld'), 'transaction has full old photo');
@@ -36,7 +36,7 @@ const first=radio.indexOf('function combineFullProof('),last=radio.indexOf('func
 assert(first>0&&last>first);
 const calls={images:0,signs:0,pixels:0,encodes:0,widths:[]};
 function create(){
- const c={width:0,height:0};
+ const c={width:1280,height:864};
  const ctx={fillRect(){},fillText(){},drawImage(){calls.images++},getImageData(){calls.pixels++;throw Error('No posterization allowed')}};
  c.getContext=()=>ctx;
  c.toDataURL=(mime,q)=>{
