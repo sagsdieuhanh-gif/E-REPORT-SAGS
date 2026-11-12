@@ -1,7 +1,7 @@
 {
   "schema": 2,
   "version": "V2.2",
-  "build": "V2.2-20261112-RADIO-SHIFT-0830-1901-19",
+  "build": "V2.2-20261112-RADIO-PHOTO-AUTOCOMPRESS-20",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -290,8 +290,8 @@
       "bytes": 19587
     },
     "./app/modules/radio-custody.v1.js": {
-      "sha256": "4ef5c0cdf407b65da815471e050a555dbf6d9957ed0d0373e34dbe0c36a46a3b",
-      "bytes": 89644
+      "sha256": "66521871c0d6962382dc2230e31e1898ea139d8ea24bca758b293516dd60eae0",
+      "bytes": 90468
     },
     "./app/modules/radio-reminders.v21.js": {
       "sha256": "308b2bb48f24be07b0f9c34fa38984010c50ece1040dc820a8c10f683dcbcf3c",
@@ -782,8 +782,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "3959001e88eb3de94294a63656dfc490eee5c6b0071f37ea0704c4d006288d4d",
-      "bytes": 106427
+      "sha256": "1bde30d33961180129eff593df694426e75a06ef2582fd26cdefea30c51e9936",
+      "bytes": 106664
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -834,16 +834,16 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "ceb4926454a2f5f460f792ba261bc600d0e883c591af877477ebbe6f0a5be947",
-      "bytes": 22658
+      "sha256": "5e44ac537bfbdee9baa15971b6f2df675b5ad400497bbb1e9868bacb04c463d4",
+      "bytes": 22667
     },
     "./storage-recovery.html": {
       "sha256": "08817204a946fbdfa404e8c083dd0c2016e935fb8fe56ff8ef99f405978d3df6",
       "bytes": 26106
     },
     "./version.json": {
-      "sha256": "9f46a97a3f169b6807e70a2823e1c461717e966eb99ee887b70aca5e7c10457d",
-      "bytes": 1180
+      "sha256": "acdd9833a2029c2a9c4515865a6a99f8a07cf925d4002fe46838a4e51b2c9829",
+      "bytes": 1437
     }
   },
   "mutableAssets": [
