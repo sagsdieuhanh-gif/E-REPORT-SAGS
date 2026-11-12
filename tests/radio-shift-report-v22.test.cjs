@@ -30,7 +30,10 @@ let docs=[mockDoc('morning','PM','2026-11-05T01:30:00Z'),mockDoc('night','AM','2
 const query={where(field,op,value){actions.push(['where',field,op,value.toISOString()]);return this},
  orderBy(field,direction){actions.push(['orderBy',field,direction]);return this},
  limit(n){actions.push(['limit',n]);return this},
- async get(options){fromServer=options?.source==='server';if(error)throw error;return {docs}}};
+ async get(options){fromServer=options?.source==='server';if(error)throw error;
+  const windows=actions.filter(x=>x[0]==='where').slice(-2),from=Date.parse(windows[0][3]),to=Date.parse(windows[1][3]);
+  return {docs:docs.filter(d=>{const ms=d.data().at.toMillis();return ms>=from&&ms<to})};
+ }};
 const c={
  Intl,Date,Math,Object,Number,String,console,navigator:{get onLine(){return online}},
  connected,REPORT_LIMIT:301,events,reportReady:false,reportLoading:false,reportEvents:[],
