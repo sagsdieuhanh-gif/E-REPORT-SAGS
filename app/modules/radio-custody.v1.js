@@ -752,6 +752,11 @@ async function submit(){
  };
  // Retry only on a confirmed Firestore permission denial. Preserve every
  // existing atomic event/device write, regardless of photo quality.
+ const mayDowngradePhoto=e=>{
+  const code=String(e?.code||''),message=String(e?.message||'');
+  return code.includes('permission-denied')||code.includes('resource-exhausted')||
+   (code.includes('invalid-argument')&&/image|photo|too large|size|bytes|exceeds/i.test(message));
+ };
  const writeCompactReceipt=async()=>{
   try{await writeRadioTransaction(false)}
   catch(legacyError){
@@ -764,7 +769,9 @@ async function submit(){
    await writeRadioTransaction(false);
   }
  };
- if(!hiOld){
+ if(mode==='RELEASE'){
+  await writeRadioTransaction(false);
+ }else if(!hiOld){
   // The full-colour image was too heavy or not encodable. The signed compact
   // camera frame still has the real image, timestamp, and ink signature.
   usedCompactOnly=true;
@@ -772,7 +779,7 @@ async function submit(){
  }else{
   try{await writeRadioTransaction(true)}
   catch(error){
-   if(!String(error?.code||'').includes('permission-denied'))throw error;
+   if(!mayDowngradePhoto(error))throw error;
    // Older V2.2 server rules may accept only 235k full-colour proofs.
    let canTryCompatible=true;
    try{
@@ -785,7 +792,7 @@ async function submit(){
    if(canTryCompatible){
     try{await writeRadioTransaction(true);usedCompatibleProof=true}
     catch(compatibleError){
-     if(!String(compatibleError?.code||'').includes('permission-denied'))throw compatibleError;
+     if(!mayDowngradePhoto(compatibleError))throw compatibleError;
     }
    }
    if(!usedCompatibleProof){usedCompactOnly=true;await writeCompactReceipt()}
@@ -800,7 +807,7 @@ async function submit(){
   }catch(error){localBackupOk=false;console.warn('Radio local photo backup failed',error?.message||error)}
  }
  if(isAdmin(user))queueRosterAudit(150);
-  cancel();notify(usedCompactOnly?
+  cancel();notify(mode==='RELEASE'?'✓ Đã ghi nhận kết quả kiểm tra bộ đàm trên Firebase.':usedCompactOnly?
   'Đã ký nhận, nhưng Firebase CHƯA lưu được ảnh rõ nét'+(usedLegacyPng?' (ảnh server là PNG nhỏ).':'.')+
   (localBackupOk?' Ảnh rõ lưu riêng trên điện thoại này, AD máy khác chưa xem được.':' Không thể lưu bản rõ trên điện thoại.')+
   ' Cần triển khai Firestore Rules mới.':
