@@ -37,7 +37,7 @@ function build(webp=false,allTooLarge=false){
   return c;
  };
  const scope={document:{createElement:()=>make()},photos:{old:{canvas:input}},
-  $:()=>input,webpCanvasEncoderSupported:()=>webp,Error,Math,Set};
+  $:()=>input,webpCanvasEncoderSupported:()=>webp,Error,Math,Set,HIGH_PROOF_LIMIT:700000};
  vm.createContext(scope);
  vm.runInContext(src.slice(a,b)+'\nthis.compact=combineProof;this.full=combineFullProof;',scope);
  return {scope,stats:()=>({paints,encodes,smallest})};
