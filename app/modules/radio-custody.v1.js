@@ -206,7 +206,7 @@ function encodeProof(leg,maxLength,requestedFormat='auto',compact=false){
  const source=photo.canvas,sourceW=source.width||640,sourceH=source.height||480;
  const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d',{alpha:false});
  if(!ctx)throw Error('Trình duyệt không xử lý được ảnh. Vui lòng chụp lại.');
- const format=requestedFormat==='png'?'png':webpCanvasEncoderSupported()?'webp':'jpeg';
+ const format=requestedFormat==='png'?'png':requestedFormat==='jpeg'?'jpeg':webpCanvasEncoderSupported()?'webp':'jpeg';
  const mime='image/'+format,prefix='data:'+mime+';base64,';
  const longest=Math.max(sourceW,sourceH);
  // Step down resolution FIRST. For a large/complex iPhone image, allow a
@@ -242,7 +242,12 @@ function combineFullProof(leg,maxLength=HIGH_PROOF_LIMIT){
  return encodeProof(leg,maxLength,'auto',false);
 }
 function combineProof(leg,requestedFormat='auto'){
- return encodeProof(leg,44000,requestedFormat,true);
+ try{return encodeProof(leg,44000,requestedFormat,true)}
+ catch(error){
+  // A particular Safari/WebP encoder can fail even after downsizing.
+  if(requestedFormat==='auto')return encodeProof(leg,44000,'jpeg',true);
+  throw error;
+ }
 }
 // Optional device-only backup when production Firestore Rules have not been
 // deployed. This is NOT an authoritative receipt or server-verified evidence.
@@ -695,8 +700,20 @@ async function submit(){
   await new Promise(resolve=>requestAnimationFrame(resolve));
   if(mode!=='RELEASE'){
    if(needsPhoto(mode)){
-    hiOld=combineFullProof('old');serverOld=hiOld;sig=combineProof('old');
-    if(mode==='SWAP_OUT'){hiNew=combineFullProof('new');serverNew=hiNew;sigNew=combineProof('new')}
+    // Compact signed camera evidence is mandatory and encoded FIRST.
+    // Full-resolution proof is best-effort: oversized photos must not block
+    // accepting/returning a radio or initiating a flight after signing.
+    sig=combineProof('old');
+    if(mode==='SWAP_OUT')sigNew=combineProof('new');
+    try{
+     hiOld=combineFullProof('old');
+     if(mode==='SWAP_OUT')hiNew=combineFullProof('new');
+     serverOld=hiOld;serverNew=hiNew;
+    }catch(fullPhotoError){
+     hiOld='';hiNew='';serverOld='';serverNew='';
+     usedCompactOnly=true;
+     console.warn('Radio full photo too large; compact signed proof retained',fullPhotoError?.message||fullPhotoError);
+    }
    }else sig=signature();
   }
   notify('Đang xác nhận với Firebase, vui lòng không bấm lại…');
@@ -733,29 +750,45 @@ async function submit(){
  }
 
  };
- try{await writeRadioTransaction(true)}
- catch(error){
-  if(!String(error?.code||'').includes('permission-denied')||!hiOld)throw error;
-  // V2.2 servers may still enforce 235k. Preserve a coloured proof on
-  // Firebase if possible before using the 45k legacy-signature route.
-  try{
-   serverOld=combineFullProof('old',COMPAT_PROOF_LIMIT);
-   if(mode==='SWAP_OUT')serverNew=combineFullProof('new',COMPAT_PROOF_LIMIT);
-   await writeRadioTransaction(true);
-   usedCompatibleProof=true;
-  }catch(compatibleError){
-   if(!String(compatibleError?.code||'').includes('permission-denied'))throw compatibleError;
-   usedCompactOnly=true;
-   try{await writeRadioTransaction(false)}
-   catch(legacyError){
-    if(!String(legacyError?.code||'').includes('permission-denied')||
+ // Retry only on a confirmed Firestore permission denial. Preserve every
+ // existing atomic event/device write, regardless of photo quality.
+ const writeCompactReceipt=async()=>{
+  try{await writeRadioTransaction(false)}
+  catch(legacyError){
+   if(!String(legacyError?.code||'').includes('permission-denied')||
        !/^data:image\/jpeg;base64,/.test(sig))throw legacyError;
-    notify('Firebase chưa cho phép JPEG. Đang lưu PNG tương thích với ảnh thu nhỏ…');
-    await new Promise(resolve=>requestAnimationFrame(resolve));
-    sig=combineProof('old','png');usedLegacyPng=true;
-    if(mode==='SWAP_OUT')sigNew=combineProof('new','png');
-    await writeRadioTransaction(false);
+   notify('Firebase chưa cho phép ảnh JPEG. Đang nén PNG nhỏ hơn để lưu ký nhận…');
+   await new Promise(resolve=>requestAnimationFrame(resolve));
+   sig=combineProof('old','png');usedLegacyPng=true;
+   if(mode==='SWAP_OUT')sigNew=combineProof('new','png');
+   await writeRadioTransaction(false);
+  }
+ };
+ if(!hiOld){
+  // The full-colour image was too heavy or not encodable. The signed compact
+  // camera frame still has the real image, timestamp, and ink signature.
+  usedCompactOnly=true;
+  await writeCompactReceipt();
+ }else{
+  try{await writeRadioTransaction(true)}
+  catch(error){
+   if(!String(error?.code||'').includes('permission-denied'))throw error;
+   // Older V2.2 server rules may accept only 235k full-colour proofs.
+   let canTryCompatible=true;
+   try{
+    serverOld=combineFullProof('old',COMPAT_PROOF_LIMIT);
+    if(mode==='SWAP_OUT')serverNew=combineFullProof('new',COMPAT_PROOF_LIMIT);
+   }catch(compactFullError){
+    canTryCompatible=false;
+    console.info('Large full-colour proof exceeds compatibility cap',compactFullError?.message||compactFullError);
    }
+   if(canTryCompatible){
+    try{await writeRadioTransaction(true);usedCompatibleProof=true}
+    catch(compatibleError){
+     if(!String(compatibleError?.code||'').includes('permission-denied'))throw compatibleError;
+    }
+   }
+   if(!usedCompatibleProof){usedCompactOnly=true;await writeCompactReceipt()}
   }
  }
  let localBackupOk=true;
