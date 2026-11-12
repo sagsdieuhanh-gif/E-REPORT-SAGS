@@ -124,7 +124,7 @@ function subscribeDevices(uid){
 async function refreshRoster(){
  if(requestInFlight||!currentUid)return;
  const user=signedIn();if(user.uid!==currentUid)return detach();
- const d=dateVN();
+ const d=shiftKeyVN(Date.now()).split('/')[0]; // PM roster stays on the shift-start date until 08:29 next morning
  if(lastRosterDate!==d){lastRosterDate=d;roster=[];haveRoster=false;render()}
  if(typeof root.sagsV478ManifestForWorker!=='function')return;
  requestInFlight=true;
