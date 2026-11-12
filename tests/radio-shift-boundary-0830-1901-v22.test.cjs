@@ -13,7 +13,7 @@ assert(custody.includes('const {start,end}=shiftBounds(day,shift),db=fs()'),'Rep
 assert(custody.includes("const {start,end}=shiftBounds(day,S($('radioRosterShift').value))"),'Roster audit must query same time window');
 const gateStart=gate.indexOf(' function radioShiftAt(ms){'),gateEnd=gate.indexOf(' function radioTimestampMs(',gateStart);
 assert(gateStart>0&&gateEnd>gateStart);
-const g={Intl,Date,Number};vm.createContext(g);vm.runInContext(gate.slice(gateStart,gateEnd)+'\nthis.shiftAt=radioShiftAt;',g);
+const g={Intl,Date,Number,VN_ZONE:'Asia/Ho_Chi_Minh'};vm.createContext(g);vm.runInContext(gate.slice(gateStart,gateEnd)+'\nthis.shiftAt=radioShiftAt;',g);
 const a=custody.indexOf('function radioShiftAt(ms){'),b=custody.indexOf('function heldBy(uid){',a);
 const d=custody.indexOf('function vnDateKey('),e=custody.indexOf('function reportScope()',d);
 const r={Intl,Date,Number,Math,VN:'Asia/Ho_Chi_Minh'};
