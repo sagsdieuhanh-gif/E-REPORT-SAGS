@@ -750,8 +750,8 @@ async function submit(){
  }
 
  };
- // Retry only on a confirmed Firestore permission denial. Preserve every
- // existing atomic event/device write, regardless of photo quality.
+ // Downgrade on Firestore photo-size or Rules rejections only. Keep every
+ // receipt/device write atomic; do not hide network failures.
  const mayDowngradePhoto=e=>{
   const code=String(e?.code||''),message=String(e?.message||'');
   return code.includes('permission-denied')||code.includes('resource-exhausted')||
@@ -798,7 +798,7 @@ async function submit(){
    if(!usedCompatibleProof){usedCompactOnly=true;await writeCompactReceipt()}
   }
  }
- let localBackupOk=true;
+ let localBackupOk=!!hiOld;
  if((usedCompactOnly||usedCompatibleProof)&&hiOld){
   try{
    const tasks=[saveLocalFullProof(user.uid,code,mode,photos.old,hiOld)];
@@ -808,9 +808,11 @@ async function submit(){
  }
  if(isAdmin(user))queueRosterAudit(150);
   cancel();notify(mode==='RELEASE'?'✓ Đã ghi nhận kết quả kiểm tra bộ đàm trên Firebase.':usedCompactOnly?
-  'Đã ký nhận, nhưng Firebase CHƯA lưu được ảnh rõ nét'+(usedLegacyPng?' (ảnh server là PNG nhỏ).':'.')+
-  (localBackupOk?' Ảnh rõ lưu riêng trên điện thoại này, AD máy khác chưa xem được.':' Không thể lưu bản rõ trên điện thoại.')+
-  ' Cần triển khai Firestore Rules mới.':
+  '✓ Đã ký nhận và lưu ảnh tự nén lên Firebase.'+
+  (hiOld?(localBackupOk?' Bản rõ hơn chỉ lưu trên điện thoại chụp; AD thiết bị khác xem ảnh nén.':' AD thiết bị khác chỉ xem được ảnh nén.')+
+   ' Cần cập nhật Firestore Rules để lưu ảnh rõ trên máy chủ.':
+   ' Ảnh quá lớn đã được thu nhỏ tự động để không cản trở nhận/trả bộ đàm.')+
+  (usedLegacyPng?' (Chế độ PNG tương thích).':''):
   usedCompatibleProof?
    'Đã ký nhận. Firebase chỉ nhận ảnh tương thích 235KB.'+
    (localBackupOk?' Ảnh rõ hơn được giữ trên điện thoại chụp.':' Không thể giữ bản rõ hơn trên điện thoại.')+
