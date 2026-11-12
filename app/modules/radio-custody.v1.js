@@ -67,8 +67,8 @@ function tpl(){
  $('radioProofViewer').onclick=e=>{if(e.target.id==='radioProofViewer')closeProof()};
   $('radioProofZoom').onclick=()=>{const box=$('radioProofViewer');box.classList.toggle('radioProofZoomed');$('radioProofZoom').textContent=box.classList.contains('radioProofZoomed')?'↩ Thu vừa':'🔎 Phóng to'};
  $('radioSeed').onclick=()=>void seed();
- $('radioReportDate').value=vnDateKey(new Date());
-  $('radioRosterDate').value=vnDateKey(new Date());$('radioRosterShift').value=shift();
+ $('radioReportDate').value=radioShiftAt(Date.now()).day;$('radioReportShift').value=shift();
+  $('radioRosterDate').value=radioShiftAt(Date.now()).day;$('radioRosterShift').value=shift();
   $('radioRosterReload').onclick=()=>void refreshRosterAudit();
   for(const id of ['radioRosterDate','radioRosterShift'])$(id).onchange=watchRoster;
  $('radioReportLoad').onclick=()=>void loadShiftReport();
@@ -548,7 +548,7 @@ function vnDateKey(date){
  const parts=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:VN,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(date).map(x=>[x.type,x.value]));
  return parts.year+'-'+parts.month+'-'+parts.day;
 }
-function reportScope(){return reportDate+' · '+(reportShift==='AM'?'Ca sáng':'Ca tối')+' (giờ VN)'}
+function reportScope(){return reportDate+' · '+(reportShift==='AM'?'Ca sáng 08:30–19:00':'Ca tối 19:01–08:29 hôm sau')+' (giờ VN)'}
 function clearShiftReport(){
  reportToken++;reportReady=false;reportLoading=false;reportVerified=false;reportEvents=[];reportDate='';reportShift='AM';
  const x=$('radioReportState');if(x)x.textContent='Chọn ngày và ca, bấm Tải báo cáo ca để lấy đúng lịch sử Firebase.';
@@ -563,15 +563,15 @@ async function loadShiftReport(){
  const token=++reportToken;reportLoading=true;reportReady=false;reportVerified=false;reportEvents=[];
  $('radioReportLoad').disabled=true;$('radioReportState').textContent='Đang lấy dữ liệu ngày '+day+' từ Firebase. Không sử dụng dữ liệu cache…';
  try{
-  const start=new Date(day+'T00:00:00+07:00'),end=new Date(start.getTime()+86400000),db=fs();
+  const {start,end}=shiftBounds(day,shift),db=fs();
   const rows=await db.collection(EVENTS).where('at','>=',start).where('at','<',end).orderBy('at','asc').limit(REPORT_LIMIT).get({source:'server'});
   if(token!==reportToken||!isAdmin(currentUser()))return;
-  if(rows.docs.length>=REPORT_LIMIT)throw Error('Ngày có trên 300 sự kiện. Không xuất báo cáo thiếu dữ liệu; cần chia nhỏ hoặc xuất từ máy chủ.');
+  if(rows.docs.length>=REPORT_LIMIT)throw Error('Ca có trên 300 sự kiện. Không xuất báo cáo thiếu dữ liệu; cần chia nhỏ hoặc xuất từ máy chủ.');
   reportEvents=rows.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.at?.toMillis?.()||0)-(a.at?.toMillis?.()||0));
   reportDate=day;reportShift=shift;reportReady=true;reportVerified=true;
   $('radioHistoryDevice').value='';$('radioHistoryAction').value='';$('radioHistorySearch').value='';
-  const count=reportEvents.filter(e=>e.shift===shift).length;
-  $('radioReportState').textContent='✓ '+reportScope()+': '+count+' sự kiện · '+reportEvents.length+' sự kiện cả ngày đã kiểm tra trực tuyến.';
+  const count=reportEvents.length; // server-confirmed actual time, including legacy records labelled with the wrong shift
+  $('radioReportState').textContent='✓ '+reportScope()+': '+count+' sự kiện đã kiểm tra trực tuyến trong đúng khoảng giờ ca.';
   notify('Đã tải đủ '+count+' sự kiện của '+reportScope()+'. Chọn kèm ảnh (AD) nếu cần đối chiếu.',false);
  }catch(e){
   if(token!==reportToken)return;
@@ -586,8 +586,8 @@ function filteredHistory(){
  const now=Date.now(),device=S($('radioHistoryDevice')?.value),action=S($('radioHistoryAction')?.value),search=S($('radioHistorySearch')?.value).toLocaleLowerCase('vi-VN');
  const date=d=>new Intl.DateTimeFormat('en-CA',{timeZone:VN,year:'numeric',month:'2-digit',day:'2-digit'}).format(d);
  return (reportReady?reportEvents:events).filter(e=>{
-  if(reportReady&&e.shift!==reportShift)return false;
   const at=e.at?.toMillis?.()||0;
+  if(reportReady){const {startMs,endMs}=shiftBounds(reportDate,reportShift);if(!at||at<startMs||at>=endMs)return false;}
   if(!reportReady&&dateFilter==='today'&&(!at||date(new Date(at))!==date(new Date(now))))return false;
   if(!reportReady&&dateFilter==='week'&&(!at||at<now-7*86400000))return false;
   if(device&&e.deviceCode!==device)return false;
