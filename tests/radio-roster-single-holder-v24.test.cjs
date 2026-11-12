@@ -11,10 +11,11 @@ for(const check of ['.radioRosterMonitor','.radioRosterStats','.radioHeldNotice'
 const start=src.indexOf('function rosterLogin('),end=src.indexOf('function renderAdminOverview(){',start);
 assert(start>0&&end>start);
 const today='2026-11-06',base=Date.parse('2026-11-06T00:00:00+07:00');
-const ctx={S:x=>String(x??'').trim(),label:x=>x,vnDateKey:()=>today,Date,Map,Set,Number,Math};
-vm.createContext(ctx);vm.runInContext(src.slice(start,end)+'\nthis.reconcile=reconcileRoster;this.duty=rosterDutyShift;',ctx);
+const ctx={S:x=>String(x??'').trim(),label:x=>x,vnDateKey:()=>today,Date,Map,Set,Number,Math,Intl,VN:'Asia/Ho_Chi_Minh'};
+vm.createContext(ctx);const helpers=src.slice(src.indexOf('function radioShiftAt('),src.indexOf('function heldBy('));
+vm.runInContext(helpers+'\n'+src.slice(start,end)+'\nthis.reconcile=reconcileRoster;this.duty=rosterDutyShift;',ctx);
 assert.equal(ctx.duty({sta:'09:30'}),'AM');
-assert.equal(ctx.duty({std:'15:05'}),'PM');
+assert.equal(ctx.duty({std:'15:05'}),'AM');
 assert.equal(ctx.duty({sta:'2345+1'}),'PM');
 assert.equal(ctx.duty({sta:'NOT_SET'}),'');
 const rows=[
@@ -26,20 +27,20 @@ const rows=[
  {user:'UNKNOWN_SHIFT',flightId:'VJ105'}
 ];
 const users=new Map([['KIENNT','uid-k'],['PHUONGDD','uid-p'],['HUYNT','uid-h'],['VUNP','uid-v']]);
-const history=[{action:'ISSUE',personUid:'uid-p',shift:'AM'},{action:'RETURN',personUid:'uid-p',shift:'AM'}];
-const holder={code:'DH01',status:'OUT',holderUid:'uid-h',shift:'AM',updatedAt:{toDate:()=>new Date(base+2*3600000)}};
+const history=[{action:'ISSUE',personUid:'uid-p',shift:'PM',at:{toMillis:()=>base+9*3600000}},{action:'RETURN',personUid:'uid-p',shift:'AM',at:{toMillis:()=>base+10*3600000}}];
+const holder={code:'DH01',status:'OUT',holderUid:'uid-h',shift:'AM',updatedAt:{toMillis:()=>base+9*3600000,toDate:()=>new Date(base+9*3600000)}};
 let result=ctx.reconcile(rows,users,[holder],history,today,'AM',base+10*3600000);
 assert.equal(result.total,3,'One employee counts once despite multiple roster flights');
 assert.equal(result.missing.join('|'),'KIENNT');
 assert.equal(result.completed.join('|'),'PHUONGDD','Returned user not falsely missing');
 assert.equal(result.holding.length,1,'Holding user has not yet missed return during shift');
 assert.equal(result.unreturned.length,0);
-result=ctx.reconcile(rows,users,[holder],history,today,'AM',base+13*3600000);
+result=ctx.reconcile(rows,users,[holder],history,today,'AM',base+19*3600000+60000);
 assert.equal(result.unreturned.length,1,'After shift, still holding is a missing return');
 result=ctx.reconcile(rows,users,[],history,today,'AM',base+10*3600000);
 assert.equal(result.missing.length,2);
 assert.equal(result.completed.length,1);
-result=ctx.reconcile(rows,users,[],history,today,'PM',base+17*3600000);
+result=ctx.reconcile(rows,users,[],history,today,'PM',base+20*3600000);
 assert.equal(result.total,1);
 assert.equal(result.missing.join(''),'VUNP');
 const a=src.indexOf('async function transactionInventory('),b=src.indexOf('async function submit(){',a);

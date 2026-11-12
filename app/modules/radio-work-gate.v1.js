@@ -4,18 +4,23 @@
 if(root.SAGSRadioWorkGate)return;
 const RADIOS='sags_radio_devices_v1';
  const VN_ZONE='Asia/Ho_Chi_Minh';
- const WORKDAY_CUTOFF_HOUR=4;
- function radioWorkdayKey(ms){
+ // Duty shift boundaries, Vietnam time, are exact to the minute:
+ // AM: 08:30 - 19:00; PM: 19:01 - 08:29 the following calendar day.
+ // Use the PM START date as the shift date across midnight.
+ function radioShiftAt(ms){
   if(!Number.isFinite(ms)||ms<=0)throw gateError('SAGS_RADIO_UNVERIFIED','Thiếu thời điểm ký nhận bộ đàm đã xác minh; liên hệ AD để đối soát.');
   const entries=new Intl.DateTimeFormat('en-GB',{
    timeZone:VN_ZONE,year:'numeric',month:'2-digit',day:'2-digit',
-   hour:'2-digit',hourCycle:'h23'
+   hour:'2-digit',minute:'2-digit',hourCycle:'h23'
   }).formatToParts(new Date(ms));
   const part=key=>Number(entries.find(e=>e.type===key)?.value);
-  const year=part('year'),month=part('month'),day=part('day'),hour=part('hour');
-  if(!year||!month||!day||!Number.isFinite(hour))throw gateError('SAGS_RADIO_UNVERIFIED','Không xác định được ngày làm việc Việt Nam.');
-  // A late evening shift crossing midnight is still one workday until 04:00 VN.
-  return new Date(Date.UTC(year,month-1,day-(hour<WORKDAY_CUTOFF_HOUR?1:0))).toISOString().slice(0,10);
+  const year=part('year'),month=part('month'),day=part('day'),hour=part('hour'),minute=part('minute');
+  if(!year||!month||!day||!Number.isFinite(hour)||!Number.isFinite(minute))
+   throw gateError('SAGS_RADIO_UNVERIFIED','Không xác định được giờ ca làm việc Việt Nam.');
+  const clock=hour*60+minute,am=clock>=8*60+30&&clock<=19*60;
+  const shift=am?'AM':'PM';
+  const shiftDay=new Date(Date.UTC(year,month-1,day-(clock<8*60+30?1:0))).toISOString().slice(0,10);
+  return {key:shiftDay+'/'+shift,shift,shiftDay};
  }
  function radioTimestampMs(v){
   if(v&&typeof v.toMillis==='function')return Number(v.toMillis());
@@ -46,10 +51,10 @@ const RADIOS='sags_radio_devices_v1';
   const now=Date.now();
   if(!Number.isFinite(receivedMs)||receivedMs>now+5*60000)
    throw gateError('SAGS_RADIO_UNVERIFIED','Không xác minh được giờ nhận bộ đàm trên Firebase. Liên hệ AD kiểm tra lịch sử nhận/trả; không mở report.');
-  const issuedDay=radioWorkdayKey(receivedMs),currentDay=radioWorkdayKey(now);
-  if(issuedDay<currentDay)
-   throw gateError('SAGS_RADIO_OVERDUE','CHƯA TRẢ BỘ ĐÀM CA TRƯỚC: Tài khoản còn giữ '+device.id+' từ ngày làm việc '+issuedDay+'. Bạn bị chặn nhận/mở chuyến mới. Hãy vào Ký nhận bộ đàm để CHỤP ẢNH, KÝ TRẢ và lưu lên Firebase; sau đó ký nhận máy cho ca mới. Ca tối qua 0 giờ chỉ tính sang ngày mới sau 04:00 (giờ Việt Nam).');
-  return {uid,deviceCode:device.id,issuedDay,workday:currentDay};
+  const issued=radioShiftAt(receivedMs),current=radioShiftAt(now);
+  if(issued.key!==current.key)
+   throw gateError('SAGS_RADIO_OVERDUE','CHƯA TRẢ BỘ ĐÀM CA TRƯỚC: Bạn còn giữ '+device.id+' từ ca '+(issued.shift==='AM'?'sáng':'tối')+' ngày '+issued.shiftDay+'. Không được nhận/mở chuyến mới. Hãy CHỤP ẢNH, KÝ TRẢ máy ca trước lên Firebase, rồi ký nhận cho ca mới. Giờ ca VN: sáng 08:30–19:00; tối 19:01–08:29 hôm sau.');
+  return {uid,deviceCode:device.id,issuedShift:issued.key,currentShift:current.key};
  }
  function showRadioBlocked(error){
   const msg=String(error?.message||'Bạn cần ký nhận bộ đàm trước khi mở report.');

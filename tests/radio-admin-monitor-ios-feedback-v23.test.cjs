@@ -41,13 +41,13 @@ const ctx={Date,Number,Map,Math,devices:[
  {code:'DH02',status:'FAULT',faultCode:'MIC'},
  {code:'DH03',status:'READY'}
 ],currentUser:()=>({role:'AD'}),isAdmin:u=>u.role==='AD',$:id=>boxes[id],OVERDUE_MS:12*3600000,
- fmt:()=> '09:00',label:x=>x,esc:safe,STATUSES:{FAULT:'Ngừng cấp / lỗi'},REASON_TEXT:{MIC:'Micro không phát tiếng'}};
+ fmt:()=> '09:00',label:x=>x,esc:safe,radioShiftAt:ms=>({key:ms>=t-60000?'current':'previous'}),STATUSES:{FAULT:'Ngừng cấp / lỗi'},REASON_TEXT:{MIC:'Micro không phát tiếng'}};
 vm.createContext(ctx);
 vm.runInContext(radio.slice(x,y)+'\nthis.renderMonitor=renderAdminOverview;',ctx);
 ctx.renderMonitor();
 assert.equal(panel.hidden,false);
 assert.match(dashboard.innerHTML,/Hòa/);
-assert.match(dashboard.innerHTML,/Cần kiểm tra 12h/);
+assert.match(dashboard.innerHTML,/Chưa trả ca trước/);
 assert.match(dashboard.innerHTML,/Micro không phát tiếng/);
 ctx.currentUser=()=>({role:'DH'});
 ctx.renderMonitor();

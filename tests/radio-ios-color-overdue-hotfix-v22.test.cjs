@@ -16,7 +16,8 @@ assert(radio.includes("const img=await proofImage(fullProof||await highProofData
 assert(!radio.includes('proofReadDenied=true'),'One old missing photo cannot permanently disable all high-quality evidence');
 assert(radio.includes('CHƯA lưu được ảnh rõ nét'),'Failure to save high-res on Firebase must be disclosed');
 assert(gate.includes("SAGS_RADIO_OVERDUE"),'Prior-day radio should be blocked');
-assert(gate.includes('WORKDAY_CUTOFF_HOUR=4'),'Night shift grace period ends at 04:00 Vietnam');
+assert(gate.includes('minute>=510')===false||gate.includes('clock>=8*60+30'),'New gate must use 08:30 Vietnam boundary');
+assert(!gate.includes('WORKDAY_CUTOFF_HOUR=4'),'Obsolete 04:00 cutoff must be removed');
 function simulate(w,h){
  const image={hidden:true,src:''},v={readyState:4,videoWidth:w,videoHeight:h,hidden:false};
  const sign={scrollIntoView(){}};

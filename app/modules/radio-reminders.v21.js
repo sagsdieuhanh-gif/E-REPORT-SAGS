@@ -5,16 +5,26 @@
 'use strict';
 if(root.SAGSRadioRemindersV21)return;
 const $=id=>document.getElementById(id),S=x=>String(x??'').trim();
-const VN='Asia/Ho_Chi_Minh',COLLECTION='sags_radio_devices_v1',OVERDUE_MS=12*60*60*1000;
+const VN='Asia/Ho_Chi_Minh',COLLECTION='sags_radio_devices_v1';
 const esc=x=>S(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let roster=[],devices=[],haveRoster=false,haveDevices=false,lastRosterDate='',currentUid='',listener=null,timer=null,requestInFlight=false,scheduleId=null,lastNotice='';
-function dateVN(){
- const data=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:VN,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()).map(p=>[p.type,p.value]));
+function dateVN(date=new Date()){
+ const data=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:VN,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(date).map(p=>[p.type,p.value]));
  return data.year+'-'+data.month+'-'+data.day;
 }
 function clockVN(){
  const data=Object.fromEntries(new Intl.DateTimeFormat('en-GB',{timeZone:VN,hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date()).map(p=>[p.type,p.value]));
  return Number(data.hour)*60+Number(data.minute);
+}
+function shiftKeyVN(at){
+ if(!Number.isFinite(at)||at<=0)return '';
+ const clock=new Intl.DateTimeFormat('en-GB',{timeZone:VN,hour:'2-digit',minute:'2-digit',hourCycle:'h23'})
+  .formatToParts(new Date(at));
+ const values=Object.fromEntries(clock.map(x=>[x.type,x.value]));
+ const minute=Number(values.hour)*60+Number(values.minute),am=minute>=510&&minute<=1140;
+ const calendar=dateVN(new Date(at)),day=minute<510?
+  new Date(Date.parse(calendar+'T00:00:00Z')-86400000).toISOString().slice(0,10):calendar;
+ return day+'/'+(am?'AM':'PM');
 }
 function hhmm(raw){
  const match=S(raw).match(/^([01]\d|2[0-3]):([0-5]\d)$/);return match?Number(match[1])*60+Number(match[2]):null;
@@ -42,15 +52,13 @@ function evaluate(assignments,machines,uid,nowMs=Date.now()){
  const primary=held[0]||null;
  const serverMs=d=>d.updatedAt?.toMillis?.()||d.updatedAt?.toDate?.()?.getTime?.()||0;
  if(primary){
-  const overdue=held.some(d=>serverMs(d)>0&&nowMs-serverMs(d)>=OVERDUE_MS);
+  const overdue=held.some(d=>serverMs(d)>0&&shiftKeyVN(serverMs(d))!==shiftKeyVN(nowMs));
   const finished=active.length>0&&active.every(isDone);
-  const endTimes=active.map(explicitDutyEnd);
-  const endReached=active.length>0&&endTimes.every(x=>x!==null)&&clockVN()>=Math.max(...endTimes);
-  const needsReturn=overdue||finished||endReached||active.length===0;
+  const needsReturn=overdue||finished||active.length===0;
   if(!needsReturn)return null;
   const allCodes=held.map(x=>S(x.code)).filter(Boolean);
-  const suffix=overdue?' (đã giữ trên 12 giờ)':'';
-  return {kind:'RETURN',code:primary.code,text:'Bạn đang giữ '+allCodes.join(', ')+suffix+'. '+(overdue?'Cần kiểm tra và ký trả máy ngay.':finished?'Các phân công My Flight đã hoàn thành. Nếu đã hết ca, vui lòng ký trả máy.':endReached?'Đã đến giờ kết thúc ca theo lịch phân công. Vui lòng ký trả máy.':'Hôm nay không có phân công My Flight đang hiệu lực. Hãy kiểm tra và trả máy nếu đã hết ca.')};
+  const suffix=overdue?' (đã qua giờ hết ca)':'';
+  return {kind:'RETURN',code:primary.code,text:'Bạn đang giữ '+allCodes.join(', ')+suffix+'. '+(overdue?'Đã hết ca cũ (sáng 19:00 / tối 08:29 hôm sau). Vui lòng ký trả bộ đàm trước khi nhận chuyến mới.':finished?'Các phân công My Flight đã hoàn thành. Nếu đã hết ca, vui lòng ký trả máy.':'Hôm nay không có phân công My Flight đang hiệu lực. Hãy kiểm tra và trả máy nếu đã hết ca.')};
  }
  if(!active.some(x=>!isDone(x)))return null;
  const starts=active.map(x=>hhmm(x.dutyStart||x.shiftStart||x.startShift));
@@ -116,7 +124,7 @@ function subscribeDevices(uid){
 async function refreshRoster(){
  if(requestInFlight||!currentUid)return;
  const user=signedIn();if(user.uid!==currentUid)return detach();
- const d=dateVN();
+ const d=shiftKeyVN(Date.now()).split('/')[0]; // PM roster stays on the shift-start date until 08:29 next morning
  if(lastRosterDate!==d){lastRosterDate=d;roster=[];haveRoster=false;render()}
  if(typeof root.sagsV478ManifestForWorker!=='function')return;
  requestInFlight=true;
