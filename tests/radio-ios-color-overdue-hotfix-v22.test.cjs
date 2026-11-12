@@ -14,7 +14,7 @@ assert(radio.includes('if(!at||!user.uid||user.uid!==e.actorUid)return'), 'Never
 assert(radio.includes('const data=await highProofData(e,true)'),'Viewer may show clear device-only picture');
 assert(radio.includes("const img=await proofImage(fullProof||await highProofData(e))"),'Official PDF remains server-verified; never use local photo backup in PDF');
 assert(!radio.includes('proofReadDenied=true'),'One old missing photo cannot permanently disable all high-quality evidence');
-assert(radio.includes('CHƯA lưu được ảnh rõ nét'),'Failure to save high-res on Firebase must be disclosed');
+assert(radio.includes('AD thiết bị khác xem ảnh nén'),'Failure to save high-res on Firebase must be disclosed');
 assert(gate.includes("SAGS_RADIO_OVERDUE"),'Prior-day radio should be blocked');
 assert(gate.includes('minute>=510')===false||gate.includes('clock>=8*60+30'),'New gate must use 08:30 Vietnam boundary');
 assert(!gate.includes('WORKDAY_CUTOFF_HOUR=4'),'Obsolete 04:00 cutoff must be removed');
