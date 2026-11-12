@@ -7,7 +7,7 @@ assert(!gate.includes('WORKDAY_CUTOFF_HOUR=4'),'4 AM cutoff must be removed');
 assert(!custody.includes('Từ 04:00'),'Admin UI must not claim incorrect prior cutoff');
 assert(!custody.includes('>=OVERDUE_MS'),'Never use fixed hours to decide a missed return');
 assert(!reminders.includes('OVERDUE_MS=12'),'Visual reminders must use shift rollover');
-assert(custody.includes('shiftVal=shift()'),'Signing shift must follow actual clock, not manual UI');
+assert(custody.includes('shiftVal=nativeDraft?.shift||shift()'),'Signing shift must follow actual clock, not manual UI');
 assert(custody.includes("e.disabled=busy||e.id==='radioShift'"),'Signing form must not let user override clock-derived shift');
 assert(custody.includes('const {start,end}=shiftBounds(day,shift),db=fs()'),'Report must use exact time window');
 assert(custody.includes("const {start,end}=shiftBounds(day,S($('radioRosterShift').value))"),'Roster audit must query same time window');

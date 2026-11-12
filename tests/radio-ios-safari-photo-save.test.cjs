@@ -11,7 +11,7 @@ assert(radio.includes('if(!root.PointerEvent)'));
 assert(radio.includes("try{c.setPointerCapture?.(e.pointerId)}catch(_){}mark(e)"));
 assert(radio.includes('if(!photosReady())throw Error'),'live photo mandatory');
 assert(radio.includes("hiNew=combineFullProof('new');"),'swap creates two high-quality images');
-assert(radio.includes("sig=combineProof('old','png')"),'old Firestore rules must have one transaction-rejected fallback');
+assert(radio.includes("combineProof('old','png')"),'old Firestore rules must have one transaction-rejected fallback');
 assert(radio.includes("if(mode==='SWAP_OUT')sigNew=combineProof('new','png')"));
 assert(radio.includes("!String(legacyError?.code||'').includes('permission-denied')"),'only denied compact JPEG rules may trigger PNG fallback');
 assert(radio.includes('await writeRadioTransaction(false);'),'legacy retry remains atomic');

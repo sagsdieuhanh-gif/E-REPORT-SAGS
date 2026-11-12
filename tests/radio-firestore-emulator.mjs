@@ -10,6 +10,10 @@ const getDb=uid=>uid?env.authenticatedContext(uid).firestore():env.unauthenticat
 const root='sags_radio_devices_v1',audit='sags_radio_events_v1';
 const d=code=>doc(getDb('admin'),root,code);
 const sig='data:image/webp;base64,'+'a'.repeat(180);
+const jpegWithin=limit=>{
+ const prefix='data:image/jpeg;base64,';
+ return prefix+'A'.repeat(4*Math.floor((limit-prefix.length)/4));
+};
 const names={admin:'Quản trị',alice:'Nhân viên A',bob:'Nhân viên B'};
 const baseDevice=(code,eventId)=>({
  schemaVersion:1,code,label:code,status:'READY',holderUid:'',holderName:'',shift:'',faultCode:'',faultDetail:'',battery:'UNKNOWN',
@@ -95,7 +99,7 @@ async function main(){
  const proofId=await assertSucceeds(transition('alice','DH09','ISSUE',{
   status:'OUT',holderUid:'alice',holderName:names.alice,shift:'AM',
   faultCode:'',faultDetail:'',battery:'GOOD'
- },{fullProof:'data:image/jpeg;base64,'+'A'.repeat(18000)}));
+ },{fullProof:jpegWithin(700000),signature:jpegWithin(44000)}));
  const proofDb='sags_radio_proofs_v22';
  await assertSucceeds(getDoc(doc(getDb('admin'),proofDb,proofId)));
  await assertSucceeds(getDoc(doc(getDb('alice'),proofDb,proofId)));
@@ -108,6 +112,16 @@ async function main(){
   schemaVersion:2,eventId:'FAKE_EVENT',actorUid:'alice',deviceCode:'DH09',
   action:'ISSUE',capturedAtMs:Date.now(),image:'data:image/jpeg;base64,'+'A'.repeat(18000)
  }));
+ const returnDevice={status:'READY',holderUid:'',holderName:'',shift:'',faultCode:'',faultDetail:'',battery:'GOOD'};
+ await assertFails(transition('alice','DH09','RETURN',returnDevice,{
+  fullProof:jpegWithin(701000),signature:jpegWithin(44000)
+ }));
+ assert.equal((await getDoc(d('DH09'))).data().status,'OUT','rejected evidence leaves custody intact');
+ const returnId=await assertSucceeds(transition('alice','DH09','RETURN',returnDevice,{
+  fullProof:jpegWithin(235000),signature:jpegWithin(44000)
+ }));
+ assert.equal((await getDoc(doc(getDb('admin'),proofDb,returnId))).data().image.length,jpegWithin(235000).length);
+ assert.equal((await getDoc(d('DH09'))).data().lastEventId,returnId);
  await assertSucceeds(getDoc(doc(getDb('alice'),root,'DH01')));
  await assertSucceeds(transition('alice','DH01','ISSUE',{
   status:'OUT',holderUid:'alice',holderName:names.alice,shift:'AM',

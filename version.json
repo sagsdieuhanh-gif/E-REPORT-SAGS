@@ -1,12 +1,12 @@
 {
   "version": "V2.2",
   "displayVersion": "V2.2",
-  "label": "V2.2 - ẢNH BỘ ĐÀM TỰ NÉN, KÝ NHẬN KHÔNG BỊ CHẶN VÌ ẢNH NẶNG",
-  "build": "V2.2-20261112-RADIO-PHOTO-AUTOCOMPRESS-20",
+  "label": "V2.2 - ẢNH TĨNH CAMERA iOS VÀ KHÔI PHỤC BẢN NHÁP BỘ ĐÀM",
+  "build": "V2.2-20261112-RADIO-IOS-STILL-21",
   "releasedAt": "2026-11-12",
-  "type": "radio-photo-overweight-autocompress-hotfix",
+  "type": "radio-ios-still-capture",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Khắc phục ảnh bộ đàm iPhone/Android quá nặng khiến thao tác ký nhận/trả thất bại. Bắt buộc chụp camera trực tiếp, chữ ký, dấu giờ trên ảnh và giao dịch nguyên tử Firebase. Tạo bằng chứng ảnh nhỏ <=44.000 ký tự trước, tự giảm độ phân giải/quality JPEG-WebP hoặc PNG tương thích đến khi nằm trong giới hạn Rules; ảnh lớn 235k/700k chỉ là tăng chất lượng tùy chọn, thất bại không chặn ký nhận. Nếu Firestore từ chối ảnh lớn do Rules hay kích thước, hạ cấp dần ảnh đã ký, không báo thành công khi thực tế chưa ghi nhận. Chức năng Admin xác nhận kiểm tra máy không cần ảnh. Giữ ca sáng 08:30-19:00, ca tối 19:01-08:29 hôm sau. Chưa triển khai Firebase Rules production và chưa xác minh trên iPhone thực.",
-  "message": "Đã sửa ảnh bộ đàm quá nặng: tự nén ảnh để ký nhận/trả, giữ camera và chữ ký bắt buộc."
+  "notes": "Luồng nhận/trả trên iOS dùng ảnh tĩnh camera hệ thống, tự tối ưu JPEG theo giới hạn Firebase. Giữ giờ chụp từ EXIF khi có và ghi riêng giờ xác nhận Firebase. Ảnh, thông tin và nét ký được lưu nháp trên máy để tiếp tục khi mạng ổn định. PDF kèm ảnh dùng trực tiếp JPEG đã lưu.",
+  "message": "Ảnh ký nhận/trả bộ đàm trên iOS rõ hơn và có thể khôi phục bản nháp."
 }

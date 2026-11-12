@@ -10,7 +10,7 @@ assert(src.indexOf("sig=combineProof('old');")<src.indexOf("hiOld=combineFullPro
 assert(src.includes("catch(fullPhotoError){"),'Oversized original must not abort signing');
 assert(src.includes("if(!hiOld){"),'No full-resolution proof must activate compact transaction');
 assert(src.includes("await writeCompactReceipt();"),'Compact signed image must be submitted to Firestore');
-assert(src.includes("sig=combineProof('old','png')"),'Last-resort old-rules PNG must remain supported');
+assert(src.includes("combineProof('old','png')"),'Last-resort old-rules PNG must remain supported');
 assert(src.includes("if(mode==='RELEASE'){\n  await writeRadioTransaction(false);"),
  'Admin inspection requires no camera evidence and must not report misleading photo quality');
 assert(src.includes("if(!photosReady())throw Error"),'Do not sign without real camera photo');

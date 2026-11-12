@@ -9,8 +9,8 @@ const i=menu.indexOf("key:'myflight'"),j=menu.indexOf("key:'radio'"),k=menu.inde
 assert(i>=0&&j>i&&k>j,'Radio menu must appear immediately below My Flight');
 assert.equal((menu.match(/key:'radio',label:/g)||[]).length,1,'Radio menu must not duplicate');
 assert(radio.includes("getUserMedia({audio:false"),'Only live camera, not gallery');
-assert(!radio.includes('input type="file"'),'No image library import');
-assert(radio.includes("if(needsPhoto(action))void startCamera('old')"),'Camera opens immediately on entering signing');
+assert(radio.includes('id="radioNativeCamera" type="file" accept="image/*" capture="environment" hidden'),'iOS uses the system rear camera control');
+assert(radio.includes("if(needsPhoto(action)&&!nativeMode(action))void startCamera('old')"),'Live preview remains unchanged for the existing camera path');
 assert(radio.includes('if(!photosReady())throw Error'),'Photo required to submit');
 assert(radio.includes('mode===\'SWAP_OUT\'&&Date.now()-photos.new.at>600000'),'Swap requires recent images');
 assert(radio.includes("combineProof('old')")&&radio.includes("combineProof('new')"),'Old and new machines require separate evidence');
