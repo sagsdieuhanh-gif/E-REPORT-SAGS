@@ -424,27 +424,26 @@ function rosterDutyShift(x){
  if(['PM','TOI','TỐI','EVENING','CHIEU','CHIỀU'].includes(direct))return 'PM';
  for(const key of ['dutyStart','shiftStart','startShift','sta','std']){
   const m=S(x[key]).match(/^([01]?\d|2[0-3]):?([0-5]\d)(?:\+\d+)?$/);
-  if(m)return Number(m[1])<12?'AM':'PM';
+  if(m){const minute=Number(m[1])*60+Number(m[2]);return minute>=510&&minute<=1140?'AM':'PM'}
  }
  return '';
 }
 function reconcileRoster(items,users,machines,history,day,which,now=Date.now()){
- const roster=new Set(),undated=new Set(),issued=new Set(),
- start=Date.parse(day+'T'+(which==='AM'?'00:00:00':'12:00:00')+'+07:00'),
- end=start+43200000;
+ const roster=new Set(),undated=new Set(),issued=new Set(),bounds=shiftBounds(day,which),
+ start=bounds.startMs,end=bounds.endMs;
  for(const x of items){
   if(!x||x.active===false||x.duplicateInactive===true||!S(x.flightId||x.flightRaw||x.flightName))continue;
   const names=S(x.user||x.targetUser).split(/[\/;,]+/).map(rosterLogin).filter(Boolean),sh=rosterDutyShift(x);
   for(const n of names){if(sh===which)roster.add(n);else if(!sh)undated.add(n)}
  }
- for(const x of history)if(x.shift===which&&['ISSUE','SWAP_IN'].includes(x.action))issued.add(S(x.personUid));
+ for(const x of history){const ms=x.at?.toMillis?.();if(ms>=start&&ms<end&&['ISSUE','SWAP_IN'].includes(x.action))issued.add(S(x.personUid));}
  const result={total:roster.size,missing:[],unreturned:[],holding:[],completed:[],unmapped:[],upcoming:[],undated:[...undated].filter(x=>!roster.has(x))};
  for(const name of roster){
   const uid=users.get(name),held=uid?machines.filter(d=>d.status==='OUT'&&d.holderUid===uid):[];
   if(!uid)result.unmapped.push(name);
   else if(held.length){
    const summary=name+' · '+held.map(d=>label(d.code)).join(', ');
-   if(now>=end&&held.some(d=>d.shift===which&&d.updatedAt?.toDate?.()&&vnDateKey(d.updatedAt.toDate())===day))result.unreturned.push(summary);else result.holding.push(summary);
+   if(now>=end&&held.some(d=>d.updatedAt?.toMillis?.()&&radioShiftAt(d.updatedAt.toMillis()).key===day+'/'+which))result.unreturned.push(summary);else result.holding.push(summary);
   }else if(issued.has(uid))result.completed.push(name);
   else if(now<start)result.upcoming.push(name);
   else result.missing.push(name);
@@ -496,7 +495,7 @@ async function refreshRosterAudit(){
  if(rosterBusy){queueRosterAudit(1700);return}
  const day=rosterDate,gen=rosterGen;rosterBusy=true;rosterReady=false;renderRosterAlert();
  try{
-  const start=new Date(day+'T00:00:00+07:00'),end=new Date(start.getTime()+86400000);
+  const {start,end}=shiftBounds(day,S($('radioRosterShift').value));
   const [u,e]=await Promise.all([
    fs().collection('users').get({source:'server'}),
    fs().collection(EVENTS).where('at','>=',start).where('at','<',end).orderBy('at','asc').limit(REPORT_LIMIT).get({source:'server'})
@@ -515,18 +514,18 @@ function renderAdminOverview(){
  if(!admin){target.replaceChildren();return}
  const now=Date.now(),holds=devices.filter(d=>d.status==='OUT'),
   needs=devices.filter(d=>['CHARGING','FAULT','LOST'].includes(d.status)),
-  overdue=holds.filter(d=>d.updatedAt?.toMillis?.()&&now-d.updatedAt.toMillis()>=OVERDUE_MS);
+  overdue=holds.filter(d=>d.updatedAt?.toMillis?.()&&radioShiftAt(d.updatedAt.toMillis()).key!==radioShiftAt(now).key);
  const hour=d=>d.updatedAt?.toDate?.()?fmt(d.updatedAt.toDate()):'Đang đồng bộ';
  const holdItems=holds.length?holds.map(d=>{
   const late=overdue.includes(d);
-  return '<li><div><strong>'+esc(label(d.code))+'</strong><span>'+esc(d.holderName||d.holderUid||'Chưa rõ người giữ')+'</span><small>'+esc(d.shift==='AM'?'Ca sáng':d.shift==='PM'?'Ca tối':'Chưa rõ ca')+' · Nhận/đổi gần nhất: '+esc(hour(d))+'</small></div>'+(late?'<em class="radioAdminWarn">Cần kiểm tra 12h+</em>':'<em class="radioAdminNormal">Đang giữ</em>')+'</li>'
+  return '<li><div><strong>'+esc(label(d.code))+'</strong><span>'+esc(d.holderName||d.holderUid||'Chưa rõ người giữ')+'</span><small>'+esc(d.shift==='AM'?'Ca sáng':d.shift==='PM'?'Ca tối':'Chưa rõ ca')+' · Nhận/đổi gần nhất: '+esc(hour(d))+'</small></div>'+(late?'<em class="radioAdminWarn">Chưa trả ca trước</em>':'<em class="radioAdminNormal">Đang giữ</em>')+'</li>'
  }).join(''):'<li class="radioAdminEmpty">Không có máy đang được ghi nhận sử dụng.</li>';
  const needItems=needs.length?needs.map(d=>'<li><div><strong>'+esc(label(d.code))+'</strong><span>'+esc(STATUSES[d.status]||d.status)+'</span><small>'+esc(REASON_TEXT[d.faultCode]||d.faultDetail||'Cần xác nhận tình trạng thực tế')+'</small></div><em class="radioAdminWarn">Theo dõi</em></li>').join(''):'<li class="radioAdminEmpty">Không có máy lỗi, mất hoặc đang sạc.</li>';
  target.innerHTML='<div class="radioAdminHighlights"><div><strong>'+holds.length+'</strong><span>Đang có người giữ</span></div><div><strong>'+overdue.length+'</strong><span>Cần kiểm tra trên 12h</span></div><div><strong>'+needs.length+'</strong><span>Đang sạc / lỗi / mất</span></div></div>'+
   '<div class="radioAdminColumns"><div class="radioAdminPanel"><h4>Người đang giữ máy <small>'+holds.length+' máy</small></h4><ul>'+holdItems+'</ul></div>'+
   '<div class="radioAdminPanel"><h4>Máy cần theo dõi <small>'+needs.length+' máy</small></h4><ul>'+needItems+'</ul></div></div>'+
   '<p class="radioAdminFoot"><b>Máy cần kiểm tra:</b> máy lỗi (FAULT) cách ly, không cấp phát; máy pin yếu (CHARGING) sạc rồi thử lại; máy mất (LOST) phải xác minh thu hồi. Chỉ AD sau khi kiểm tra pin, sóng, loa, mic/PTT và ghi kết quả mới được chọn “Đã kiểm tra / mở lại”.</p>'+
- '<p class="radioAdminFoot">Cảnh báo 12 giờ là mốc kiểm tra. Từ 04:00 ngày làm việc tiếp theo (giờ Việt Nam), người chưa ký trả bộ đàm ca trước không được nhận/mở chuyến report.</p>';
+ '<p class="radioAdminFoot">Chưa trả bộ đàm sau khi kết thúc ca sẽ bị chặn nhận/mở chuyến mới: ca sáng hết 19:00, ca tối hết 08:29 hôm sau (giờ Việt Nam).</p>';
 }
 function render(){
  if(!$('radioDeviceList'))return;
@@ -643,9 +642,9 @@ function renderSummary(){
   return;
  }
  const n=events.filter(x=>['SWAP_OUT'].includes(x.action)).length,issues=events.filter(x=>['REPORT','SWAP_OUT'].includes(x.action)),pending=devices.filter(x=>['FAULT','CHARGING','LOST'].includes(x.status));
- const now=Date.now(),using=devices.filter(x=>x.status==='OUT'),overdue=using.filter(x=>x.updatedAt?.toMillis?.()&&now-x.updatedAt.toMillis()>=OVERDUE_MS);
- const admin=isAdmin(currentUser()),holds=using.map(x=>'<p>'+esc(label(x.code))+' · '+esc(x.holderName||'Không rõ người nhận')+(overdue.includes(x)?' <strong class="radioOverdue">ĐANG GIỮ TRÊN 12 GIỜ</strong>':'')+'</p>').join('');
- $('radioSummary').innerHTML='<div class="radioReportGrid"><div><strong>'+n+'</strong><small>Lần đổi máy (lịch sử gần đây)</small></div><div><strong>'+issues.length+'</strong><small>Lần ghi nhận vấn đề</small></div><div><strong>'+pending.length+'</strong><small>Máy cần xử lý ngay</small></div>'+(admin?'<div><strong>'+overdue.length+'</strong><small>Máy giữ trên 12 giờ</small></div>':'')+'</div><h4>Cần kiểm tra</h4>'+(pending.length?pending.map(d=>'<p>'+esc(label(d.code))+' · '+esc(STATUSES[d.status])+' · '+esc(REASON_TEXT[d.faultCode]||'')+'</p>').join(''):'<p>Không có máy đang treo trạng thái lỗi/sạc.</p>')+(admin?'<h4>Đang sử dụng / đối soát người giữ</h4>'+(using.length?holds:'<p>Tất cả máy đã được trả hoặc chưa cấp.</p>'):'')+'<p class="radioHint">Cảnh báo giữ trên 12 giờ là ngưỡng kiểm tra, không kết luận nhân viên hết ca. Giờ máy chủ Firebase là thời điểm ghi nhận.</p><p class="radioHint">Báo cáo này chỉ tổng hợp sự kiện đã tải. Báo cáo ngày/tuần chính thức được tính trên máy chủ, không dựa vào giới hạn 120 mục.</p>';
+ const now=Date.now(),using=devices.filter(x=>x.status==='OUT'),overdue=using.filter(x=>x.updatedAt?.toMillis?.()&&radioShiftAt(x.updatedAt.toMillis()).key!==radioShiftAt(now).key);
+ const admin=isAdmin(currentUser()),holds=using.map(x=>'<p>'+esc(label(x.code))+' · '+esc(x.holderName||'Không rõ người nhận')+(overdue.includes(x)?' <strong class="radioOverdue">CHƯA TRẢ CA TRƯỚC</strong>':'')+'</p>').join('');
+ $('radioSummary').innerHTML='<div class="radioReportGrid"><div><strong>'+n+'</strong><small>Lần đổi máy (lịch sử gần đây)</small></div><div><strong>'+issues.length+'</strong><small>Lần ghi nhận vấn đề</small></div><div><strong>'+pending.length+'</strong><small>Máy cần xử lý ngay</small></div>'+(admin?'<div><strong>'+overdue.length+'</strong><small>Chưa trả ca trước</small></div>':'')+'</div><h4>Cần kiểm tra</h4>'+(pending.length?pending.map(d=>'<p>'+esc(label(d.code))+' · '+esc(STATUSES[d.status])+' · '+esc(REASON_TEXT[d.faultCode]||'')+'</p>').join(''):'<p>Không có máy đang treo trạng thái lỗi/sạc.</p>')+(admin?'<h4>Đang sử dụng / đối soát người giữ</h4>'+(using.length?holds:'<p>Tất cả máy đã được trả hoặc chưa cấp.</p>'):'')+'<p class="radioHint">Ca sáng hết 19:00, ca tối hết 08:29 hôm sau; máy còn giữ khi đã chuyển ca phải ký trả trước khi mở chuyến mới. Giờ máy chủ Firebase là thời điểm ghi nhận.</p><p class="radioHint">Báo cáo này chỉ tổng hợp sự kiện đã tải. Báo cáo ngày/tuần chính thức được tính trên máy chủ, không dựa vào giới hạn 120 mục.</p>';
 }
 function evidenceDetails(details,captureMs){
  if(!Number.isFinite(captureMs)||captureMs<=0)return details;
