@@ -1,7 +1,7 @@
 {
   "schema": 2,
   "version": "V2.2",
-  "build": "V2.2-20261112-RADIO-HIFI-PHOTO-18",
+  "build": "V2.2-20261112-RADIO-SHIFT-0830-1901-19",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",

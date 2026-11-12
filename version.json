@@ -1,12 +1,12 @@
 {
   "version": "V2.2",
   "displayVersion": "V2.2",
-  "label": "V2.2 - ẢNH BỘ ĐÀM CHẤT LƯỢNG CAO TRÊN IOS / PDF",
-  "build": "V2.2-20261112-RADIO-HIFI-PHOTO-18",
+  "label": "V2.2 - CA BỘ ĐÀM SÁNG 08:30–19:00 / TỐI 19:01–08:29",
+  "build": "V2.2-20261112-RADIO-SHIFT-0830-1901-19",
   "releasedAt": "2026-11-12",
-  "type": "radio-high-fidelity-evidence",
+  "type": "radio-shift-policy-0830-1901",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "iOS và Android giữ ảnh camera đúng tỷ lệ tới 2048px; chế độ autofocus khi có hỗ trợ; xem phóng to trước khi ký. JPEG/WebP lưu ảnh màu chất lượng cao tới 700k ký tự trong 1 tài liệu Firestore (giới hạn 1 MiB), tương thích bản Rules 235k, dự phòng bản ký 45k khi rules chưa được triển khai. Lưu bản ảnh rõ theo tài khoản trong IndexedDB trên máy chụp khi server chưa hỗ trợ. AD xuất ảnh PDF chất lượng cao hơn trên PC; ảnh chưa được Firebase xác minh không đưa vào PDF chính thức. Cần triển khai firestore.rules production. Không thay đổi quy tắc báo lỗi/khóa máy trong đợt chỉnh ảnh này.",
-  "message": "Ảnh bộ đàm rõ và giữ màu trên iPhone, được phóng to trước khi ký. Firebase Rules cần cập nhật để AD xem ảnh chất lượng cao từ máy khác."
+  "notes": "Quy tắc giờ Việt Nam: ca sáng 08:30 đến 19:00:59; ca tối 19:01 đến 08:29:59 hôm sau. Không dùng mốc 04:00. Chỉ chặn nhận/mở chuyến mới khi bộ đàm chưa ký trả qua ranh giới 19:01 hoặc 08:30. Ký nhận tự động chọn ca tại thời điểm ký; báo cáo ca, roster, nhắc trả và bảng AD dùng cùng khoảng giờ, ca tối được gắn với ngày bắt đầu và lấy đủ dữ liệu qua nửa đêm. Các sự kiện cũ được phân ca báo cáo theo timestamp Firebase, không sửa lịch sử. Không thay đổi mã xử lý ảnh hay cơ chế báo lỗi bộ đàm trong bản cập nhật này.",
+  "message": "Giờ ca bộ đàm mới: sáng 08:30–19:00, tối 19:01–08:29 hôm sau; không khóa ca tối lúc 04:00."
 }
