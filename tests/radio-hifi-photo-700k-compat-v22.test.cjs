@@ -20,7 +20,7 @@ for(const body of [rules,snippet]){
  assert(body.includes("request.resource.data.image.size() <= 700000"),'Firestore authorizes quality up to 700k characters');
  assert(body.includes("allow update, delete: if false"),'Evidence remains immutable');
 }
-const begin=app.indexOf('function combineFullProof('),end=app.indexOf('function combineProof(',begin);
+const begin=app.indexOf('function encodeProof('),end=app.indexOf('// Optional device-only backup',begin);
 assert(begin>=0&&end>begin);
 let rendered=0,quantized=0;
 function canvas(width=1600,height=1067){
