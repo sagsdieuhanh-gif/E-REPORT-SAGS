@@ -18,6 +18,10 @@ assert.equal(api.evaluate([active],[own],'user-1'),null,'issue reminder ends whe
 assert.equal(api.evaluate([completed],[own],'user-1').kind,'RETURN');
 assert.equal(api.evaluate([completed],[],'user-1'),null,'return reminder ends when Firebase has no held device');
 assert.equal(api.evaluate([active],[overdue],'user-1').kind,'RETURN');
+ const at=Date.parse('2026-11-11T14:30:00Z'); // 21:30 VN, night
+ const radioAt={...own,updatedAt:{toMillis:()=>at}};
+ assert.equal(api.evaluate([active],[radioAt],'user-1',Date.parse('2026-11-12T01:29:59Z')),null,'Night shift still valid at 08:29:59');
+ assert.equal(api.evaluate([active],[radioAt],'user-1',Date.parse('2026-11-12T01:30:00Z')).kind,'RETURN','Night overdue at 08:30');
 assert.equal(api.evaluate([{...active,active:false}],[],'user-1'),null);
 assert.equal(api.evaluate([active],[{...own,holderUid:'someone-else'}],'user-1').kind,'ISSUE');
 assert(code.includes('!s.metadata.fromCache&&navigator.onLine'),'do not silently accept offline or cached data');
@@ -26,5 +30,5 @@ assert(!/(sendGmf|ZALO_OA|navigator\.vibrate|AudioContext|sendSms|sendSMS)/i.tes
 assert(radio.includes("END_SHIFT:'Hết ca'"));
 assert(radio.includes("radioReturnReason').value='END_SHIFT'"));
 assert(radio.includes("reasonCode=f?'BATTERY_WEAK':''"),'return reason must not become a battery fault');
-assert(radio.includes('Máy giữ trên 12 giờ'));
+assert(radio.includes('Chưa trả ca trước'));
 console.log('V2.1 radio visual reminders, return reason and AD monitoring regression PASS');
