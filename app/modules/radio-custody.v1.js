@@ -199,67 +199,50 @@ function webpCanvasEncoderSupported(){
  try{return c.toDataURL('image/webp',.5).startsWith('data:image/webp;base64,')}
  catch(_){return false}
 }
-function combineFullProof(leg,maxLength=HIGH_PROOF_LIMIT){
- const photo=photos[leg];if(!photo)throw Error('Chưa chụp ảnh trực tiếp để tạo bằng chứng rõ nét.');
+// Emergency-safe encoding: a valid live photo must NEVER prevent the user from
+// signing merely because full-resolution evidence exceeds the Firebase budget.
+function encodeProof(leg,maxLength,requestedFormat='auto',compact=false){
+ const photo=photos[leg];if(!photo?.canvas)throw Error('Chưa chụp ảnh trực tiếp.');
+ const source=photo.canvas,sourceW=source.width||640,sourceH=source.height||480;
  const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d',{alpha:false});
- if(!ctx)throw Error('Không đọc được ảnh camera.');
- const webp=webpCanvasEncoderSupported(),mime=webp?'image/webp':'image/jpeg';
- const sw=photo.canvas.width,sh=photo.canvas.height;
- // Match the actual portrait/landscape source; never invent pixels by upscaling.
- const widths=[1,.87,.75,.64,.54].map(v=>Math.max(1,Math.round(sw*v)))
-  .filter((v,i,a)=>a.indexOf(v)===i);
- for(const width of widths){
-  const ph=Math.round(width*sh/sw),signatureH=Math.max(70,Math.round(width*.15));
-  canvas.width=width;canvas.height=ph+signatureH;
+ if(!ctx)throw Error('Trình duyệt không xử lý được ảnh. Vui lòng chụp lại.');
+ const format=requestedFormat==='png'?'png':webpCanvasEncoderSupported()?'webp':'jpeg';
+ const mime='image/'+format,prefix='data:'+mime+';base64,';
+ const longest=Math.max(sourceW,sourceH);
+ // Step down resolution FIRST. For a large/complex iPhone image, allow a
+ // small emergency receipt with timestamp + signature instead of blocking.
+ const targets=compact?[640,512,400,320,256,192,160,128,96,72,48]:
+  [1280,1024,800,640,480,360,280,200,160];
+ const qualities=compact?[.82,.65,.5,.35,.25]:[.9,.78,.65,.5,.4];
+ const attempted=new Set();
+ for(const longestSide of targets){
+  const scale=Math.min(1,longestSide/longest),width=Math.max(1,Math.round(sourceW*scale));
+  if(attempted.has(width))continue;
+  attempted.add(width);
+  const pictureHeight=Math.max(1,Math.round(sourceH*scale));
+  const signatureHeight=Math.max(compact?24:36,Math.round(width*(compact?.19:.15)));
+  canvas.width=width;canvas.height=pictureHeight+signatureHeight;
   ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
-  ctx.fillStyle='#fff';ctx.fillRect(0,0,width,canvas.height);
-  ctx.drawImage(photo.canvas,0,0,width,ph);
-  ctx.fillStyle='#e9f4f8';ctx.fillRect(0,ph,width,signatureH);
-  ctx.fillStyle='#123a4e';ctx.font='bold '+Math.max(11,Math.round(width*.018))+'px Arial';
-  ctx.fillText('CHỮ KÝ XÁC NHẬN',Math.round(width*.025),ph+signatureH*.22);
-  ctx.drawImage($('radioSignature'),Math.round(width*.025),ph+Math.round(signatureH*.25),Math.round(width*.9),Math.round(signatureH*.68));
-  for(const q of webp?[.95,.89,.83,.76]:[.96,.91,.85,.77]){
-   const data=canvas.toDataURL(mime,q);
-   if(data.startsWith('data:'+mime+';base64,')&&data.length>120&&data.length<=maxLength)return data;
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.drawImage(source,0,0,width,pictureHeight);
+  ctx.fillStyle='#e9f4f8';ctx.fillRect(0,pictureHeight,width,signatureHeight);
+  ctx.fillStyle='#193c4e';ctx.font='bold '+Math.max(8,Math.round(width*.018))+'px Arial';
+  ctx.fillText('CHỮ KÝ XÁC NHẬN',Math.round(width*.025),pictureHeight+signatureHeight*.22);
+  ctx.drawImage($('radioSignature'),Math.round(width*.025),pictureHeight+signatureHeight*.25,
+   Math.round(width*.9),Math.round(signatureHeight*.68));
+  for(const quality of format==='png'?[1]:qualities){
+   let data='';
+   try{data=canvas.toDataURL(mime,quality)}catch(_){continue}
+   if(data.startsWith(prefix)&&data.length>120&&data.length<=maxLength)return data;
   }
  }
- throw Error('Ảnh vượt giới hạn lưu an toàn. Chụp gần mã máy, đủ sáng và giảm hậu cảnh.');
+ throw Error('Không thể tạo ảnh ký nhận nằm trong giới hạn lưu trữ, kể cả khi đã tự giảm độ phân giải.');
+}
+function combineFullProof(leg,maxLength=HIGH_PROOF_LIMIT){
+ return encodeProof(leg,maxLength,'auto',false);
 }
 function combineProof(leg,requestedFormat='auto'){
- const photo=photos[leg];if(!photo)throw Error('Chưa chụp ảnh trực tiếp.');
- const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');
- ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
- const mode=requestedFormat==='png'?'png':webpCanvasEncoderSupported()?'webp':'jpeg';
- const maxLength=44000;
- const widths=mode==='png'?[640,600,560,512,448,384,320,280,240,208,176]:[640,600,560,512,480,448,416,384,352];
- function drawPage(width){
-  const ph=Math.round(width*photo.canvas.height/photo.canvas.width),sh=Math.round(width*.19);
-  canvas.width=width;canvas.height=ph+sh;
-  ctx.fillStyle='#fff';ctx.fillRect(0,0,width,canvas.height);
-  ctx.drawImage(photo.canvas,0,0,width,ph);
-  ctx.fillStyle='#e7f3f9';ctx.fillRect(0,ph,width,sh);
-  ctx.fillStyle='#193c4e';ctx.font='bold '+Math.max(9,Math.round(width*14/640))+'px Arial';
-  ctx.fillText('CHỮ KÝ XÁC NHẬN',Math.round(width*.025),ph+Math.round(width*.025));
-  ctx.drawImage($('radioSignature'),Math.round(width*.03),ph+Math.round(width*.035),Math.round(width*.85),Math.round(sh*.72));
- }
- for(const width of widths){
-  drawPage(width);
-  if(mode==='png'){
-   // Lossless RGB PNG fallback for older Firestore rules: reduce dimensions
-   // only, never quantize channels or turn real camera colour into posterized blocks.
-   const value=canvas.toDataURL('image/png');
-   if(value.startsWith('data:image/png;base64,')&&value.length>120&&value.length<=maxLength)return value;
-  }else{
-   const mime=mode==='webp'?'image/webp':'image/jpeg';
-   const prefix='data:'+mime+';base64,';
-   const qualities=mode==='webp'?[.85,.78,.7,.62,.54,.46,.38,.3]:[.88,.82,.76,.7,.64,.58,.52,.46,.4];
-   for(const quality of qualities){
-    const value=canvas.toDataURL(mime,quality);
-    if(value.startsWith(prefix)&&value.length>120&&value.length<=maxLength)return value;
-   }
-  }
- }
- throw Error('Ảnh quá lớn trong giới hạn lưu trữ. Vui lòng chụp rõ mã bộ đàm, giảm chi tiết nền rồi thử lại; chưa ghi nhận lượt ký.');
+ return encodeProof(leg,44000,requestedFormat,true);
 }
 // Optional device-only backup when production Firestore Rules have not been
 // deployed. This is NOT an authoritative receipt or server-verified evidence.
