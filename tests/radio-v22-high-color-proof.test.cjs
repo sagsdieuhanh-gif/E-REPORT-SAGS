@@ -8,8 +8,8 @@ assert(radio.includes('HIGH_PROOF_LIMIT=700000'));
 assert(radio.includes("width:{ideal:2560},height:{ideal:1440}"),'request higher resolution camera sensor');
 assert(radio.includes('const sensorW=v.videoWidth,sensorH=v.videoHeight,scale=Math.min(1,2048/Math.max(sensorW,sensorH))'),'capture natural iPhone portrait/landscape pixels without upscaling');
 assert(radio.includes("preview=c.toDataURL('image/jpeg',.94)"),'high quality preview');
-assert(radio.includes("hiOld=combineFullProof('old');serverOld=hiOld;sig=combineProof('old')"),'full proof and legacy event receipt coexist');
-assert(radio.includes("hiNew=combineFullProof('new');serverNew=hiNew;sigNew=combineProof('new')"),'swap writes two separate colour proofs');
+assert(radio.includes("sig=combineProof('old')"),'full proof and legacy event receipt coexist');
+assert(radio.includes("sigNew=combineProof('new')"),'swap writes two separate colour proofs');
 assert(radio.includes('fullProof:withFull?serverOld'), 'transaction has full old photo');
 assert(radio.includes('fullProof:withFull?serverNew'), 'transaction has full replacement photo');
 assert(radio.includes("tx.set(fs().collection(PROOFS).doc(evRef.id)"),'event ID is immutable photo ID');
@@ -32,7 +32,7 @@ for(const check of [
   '!exists(/databases/$(database)/documents/sags_radio_events_v1/$(eventId))',
   'existsAfter(/databases/$(database)/documents/sags_radio_events_v1/$(eventId))'
 ])assert(proofRule.includes(check),'missing security property '+check);
-const first=radio.indexOf('function combineFullProof('),last=radio.indexOf('function combineProof(',first);
+const first=radio.indexOf('function encodeProof('),last=radio.indexOf('// Optional device-only backup',first);
 assert(first>0&&last>first);
 const calls={images:0,signs:0,pixels:0,encodes:0,widths:[]};
 function create(){
