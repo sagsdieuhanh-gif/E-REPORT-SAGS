@@ -11,12 +11,12 @@ assert(radio.includes("limit(REPORT_LIMIT)"),'bounded full-day server query');
 assert(radio.includes("if(rows.docs.length>=REPORT_LIMIT)throw Error"),'never silently truncate large shift reports');
 assert(radio.includes('reportReady?reportEvents:events'),'report must not be replaced by 120 most-recent records');
 assert(radio.includes('!reportReady||!reportVerified'),'block export until verified report loaded');
-assert(radio.includes("if(reportReady&&e.shift!==reportShift)return false"),'filter by stored AM/PM on signed event, not guessed clock');
-assert(radio.includes("day+'T00:00:00+07:00'"),'VN local-day boundaries');
+assert(radio.includes('if(!at||at<startMs||at>=endMs)return false'),'filter by Firebase timestamps, not potentially incorrect old shift labels');
+assert(radio.includes("which==='AM'?'08:30:00':'19:01:00'"),'correct Vietnam shift boundaries');
 assert(radio.includes("reportReady?reportEvents:events).find("),'photo preview must use selected report events');
 assert(css.includes('.radioReportControl'),'date and shift must be visible in UI');
 assert(radio.includes("const historyLimit=/iPad|iPhone|iPod/"),'iOS history should not preload 120 image blobs');
-const a=radio.indexOf('function vnDateKey('),b=radio.indexOf('function renderHistory(){',a);
+const a=radio.indexOf('function radioShiftAt('),b=radio.indexOf('function renderHistory(){',a);
 assert(a>0&&b>a);
 const boxes={
  radioReportDate:{value:'2026-11-05'},radioReportShift:{value:'AM'},
@@ -24,8 +24,9 @@ const boxes={
  radioHistoryDevice:{value:''},radioHistoryAction:{value:''},radioHistorySearch:{value:''}
 };
 let user='AD',online=true,connected=true,fromServer=false,events=[],actions=[],error=null;
-const mockDoc=(id,shift)=>({id,data:()=>({id,shift,action:'ISSUE',deviceCode:'DH01',actorName:'A',at:{toMillis:()=>Date.parse('2026-11-05T01:00:00Z')}})});
-let docs=[mockDoc('morning','AM'),mockDoc('night','PM')];
+const mockDoc=(id,shift,at)=>({id,data:()=>({id,shift,action:'ISSUE',deviceCode:'DH01',actorName:'A',at:{toMillis:()=>Date.parse(at)}})});
+// Intentionally wrong historical shift labels: report must trust Firebase timestamp.
+let docs=[mockDoc('morning','PM','2026-11-05T01:30:00Z'),mockDoc('night','AM','2026-11-05T12:01:00Z')];
 const query={where(field,op,value){actions.push(['where',field,op,value.toISOString()]);return this},
  orderBy(field,direction){actions.push(['orderBy',field,direction]);return this},
  limit(n){actions.push(['limit',n]);return this},
@@ -48,16 +49,19 @@ vm.runInContext(radio.slice(a,b)+'\nthis.load=loadShiftReport;this.filter=filter
  assert.equal(c.reportReady,true);assert.equal(c.reportVerified,true);
  assert.equal(c.filter().length,1);assert.equal(c.filter()[0].id,'morning');
  assert.deepEqual(actions.filter(x=>x[0]==='where').map(x=>[x[1],x[2],x[3]]),[
-  ['at','>=','2026-11-04T17:00:00.000Z'],['at','<','2026-11-05T17:00:00.000Z']
+  ['at','>=','2026-11-05T01:30:00.000Z'],['at','<','2026-11-05T12:01:00.000Z']
  ]);
  assert(actions.some(x=>x[0]==='limit'&&x[1]===301));
  assert.match(boxes.radioReportState.textContent,/Ca sáng.*1 sự kiện/);
  c.clearReport();boxes.radioReportShift.value='PM';await c.load();
- assert.equal(c.filter()[0].id,'night','PM must only show saved PM shift events');
- c.clearReport();docs=Array.from({length:301},(_,i)=>mockDoc('r'+i,'PM'));await c.load();
+ assert.equal(c.filter()[0].id,'night','Night shift is selected by real time, ignoring old AM label');
+ assert.deepEqual(actions.filter(x=>x[0]==='where').slice(-2).map(x=>[x[1],x[2],x[3]]),[
+  ['at','>=','2026-11-05T12:01:00.000Z'],['at','<','2026-11-06T01:30:00.000Z']
+ ]);
+ c.clearReport();docs=Array.from({length:301},(_,i)=>mockDoc('r'+i,'PM','2026-11-05T12:30:00Z'));await c.load();
  assert.equal(c.reportReady,false,'300+ events must not create truncated report');
  assert.match(boxes.radioReportState.textContent,/trên 300 sự kiện/);
- c.clearReport();user='DH';docs=[mockDoc('x','AM')];await c.load();
+ c.clearReport();user='DH';docs=[mockDoc('x','AM','2026-11-05T02:00:00Z')];await c.load();
  assert.equal(c.reportReady,false,'staff must not fetch all users photograph evidence');
  console.log('Radio date+AM/PM report, VN timezone, server query, anti-truncation, authorization, and optional photos PASS');
 })().catch(e=>{console.error(e);process.exitCode=1});
