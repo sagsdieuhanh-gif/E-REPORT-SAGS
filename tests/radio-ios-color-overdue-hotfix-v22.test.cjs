@@ -6,7 +6,7 @@ const from=radio.indexOf('function takePhoto(){'),until=radio.indexOf('async fun
 assert(from>0&&until>from);
 assert(!radio.includes('function quantizePngCanvas('),'Never posterize camera RGB to squeeze PNG under Firebase rules');
 assert(!radio.includes('ctx.getImageData('),'Evidence image must not pass through colour-channel quantization');
-assert(radio.includes('photo.canvas.height/photo.canvas.width'),'Legacy picture must use source aspect ratio');
+assert(radio.includes('sourceW=source.width||640,sourceH=source.height||480'),'Legacy picture must use source aspect ratio');
 assert(radio.includes("const preview=c.toDataURL('image/jpeg',.94)"),'Safari preview uses high JPEG quality');
 assert(radio.includes("root.indexedDB.open('sags-radio-photo-local-v22',1)"),'Local high-quality evidence needs a scoped IndexedDB backup');
 assert(radio.includes('localProofKey(uid,code,action,photo.at)'),'Backups must be identified by actor, device, action and capture timestamp');
