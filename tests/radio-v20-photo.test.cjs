@@ -14,7 +14,7 @@ assert(radio.includes("if(needsPhoto(action))void startCamera('old')"),'Camera o
 assert(radio.includes('if(!photosReady())throw Error'),'Photo required to submit');
 assert(radio.includes('mode===\'SWAP_OUT\'&&Date.now()-photos.new.at>600000'),'Swap requires recent images');
 assert(radio.includes("combineProof('old')")&&radio.includes("combineProof('new')"),'Old and new machines require separate evidence');
-assert(radio.includes('ctx.drawImage(photo.canvas')&&radio.includes("ctx.drawImage($('radioSignature')"),'Photo + ink combined in auditable event');
+assert(radio.includes('ctx.drawImage(source')&&radio.includes("ctx.drawImage($('radioSignature')"),'Photo + ink combined in auditable event');
 const shot=radio.slice(radio.indexOf('function takePhoto()'),radio.indexOf('async function retakePhoto()'));
 assert(shot.includes('formatShotTime(at)')&&shot.includes('giờ thiết bị (VN)'),'VN timestamp is stamped on the actual image');
 assert(radio.includes("data-radio-proof="),'History exposes evidence from same restricted Firestore event');
