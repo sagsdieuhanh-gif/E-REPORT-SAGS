@@ -42,16 +42,33 @@ function harness(){
  a.sign();
  assert.equal(await a.c.v324ReceiveOrOpen('VJ100'),'OPENED','Signed radio permits report');
  assert.equal(a.state.opens,1);assert.deepEqual(a.state.requestedSource,['server','server']);
- // Night shift may finish after midnight; workday rolls over at 04:00 VN.
- const night=harness();night.state.now=Date.parse('2026-11-11T20:59:00Z'); // 03:59 Nov 12 VN
+ // Night shift spans midnight and stays valid through 08:29:59 VN.
+ const night=harness();
+ night.state.now=Date.parse('2026-11-12T01:29:59Z'); // 08:29:59 Nov 12 VN
  night.state.receivedAt=Date.parse('2026-11-11T14:30:00Z'); // 21:30 Nov 11 VN
- night.sign();assert.equal(await night.c.v324ReceiveOrOpen('VJ-NIGHT'),'OPENED','PM shift across midnight remains eligible until 04:00 VN');
- night.state.now=Date.parse('2026-11-11T21:00:00Z'); // 04:00 Nov 12 VN
- assert.equal(await night.c.v324ReceiveOrOpen('VJ-NEW-DAY'),false,'Held radio from prior workday blocks new flights from 04:00 VN');
+ night.sign();
+ assert.equal(await night.c.v324ReceiveOrOpen('VJ-NIGHT'),'OPENED','Night shift through 08:29:59 may still open flight');
+ night.state.now=Date.parse('2026-11-12T01:30:00Z'); // 08:30 Nov 12 VN
+ assert.equal(await night.c.v324ReceiveOrOpen('VJ-AM-CHANGE'),false,'At 08:30 VN prior night custody must block next shift');
  assert.equal(night.state.opens,1);
  assert(night.state.alerts.at(-1).includes('CHƯA TRẢ BỘ ĐÀM CA TRƯỚC'));
  night.state.receivedAt=night.state.now;
- assert.equal(await night.c.v324ReceiveOrOpen('VJ-NEW-DAY-REISSUE'),'OPENED','New signed custody in current workday restores flight access');
+ assert.equal(await night.c.v324ReceiveOrOpen('VJ-NEW-AM-ISSUE'),'OPENED','New AM sign-in restores report access');
+ const morning=harness();
+ morning.state.now=Date.parse('2026-11-11T12:00:59Z'); // 19:00:59 Nov 11 VN
+ morning.state.receivedAt=Date.parse('2026-11-11T01:30:00Z'); // 08:30 Nov 11 VN
+ morning.sign();
+ assert.equal(await morning.c.v324ReceiveOrOpen('VJ-AM-END'),'OPENED','AM shift through 19:00:59 VN remains eligible');
+ morning.state.now=Date.parse('2026-11-11T12:01:00Z'); // 19:01 Nov 11 VN
+ assert.equal(await morning.c.v324ReceiveOrOpen('VJ-PM-CHANGE'),false,'At 19:01 VN prior AM custody blocks next flight');
+ morning.state.receivedAt=morning.state.now;
+ assert.equal(await morning.c.v324ReceiveOrOpen('VJ-NEW-PM-ISSUE'),'OPENED','New PM sign-in unlocks flight');
+ // 04:00 is no longer a shift boundary.
+ const oldFour=harness();
+ oldFour.state.now=Date.parse('2026-11-11T21:00:00Z'); // 04:00 Nov 12 VN
+ oldFour.state.receivedAt=Date.parse('2026-11-11T14:45:00Z'); // 21:45 Nov 11 VN
+ oldFour.sign();
+ assert.equal(await oldFour.c.v324ReceiveOrOpen('VJ-FOUR-AM'),'OPENED','No lock at 04:00 during PM shift');
  const missingStamp=harness();missingStamp.state.docs=[{id:'DH01',data:()=>({holderUid:'U-1',status:'OUT'})}];
  assert.equal(await missingStamp.c.v324ReceiveOrOpen('VJ-NO-STAMP'),false,'No server issue time cannot bypass overnight gate');
  const tomorrow=harness();tomorrow.sign();tomorrow.state.receivedAt=Date.parse('2026-11-11T22:00:00Z');
