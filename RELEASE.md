@@ -6,6 +6,6 @@ The audit baseline had source/generated drift: monolith compilation dropped the 
 
 Never edit app/generated directly. `node tools/build-runtime.cjs --check` verifies canonical JS/output equality. CSS sources/groups remain unchanged. JS/CSS builders do not calculate release hashes; tools/release-manifest.cjs hashes only final asset bytes, in stable order. `npm run verify:release` is a read-only byte verification and fails on any mismatch. Mutable metadata is explicitly listed in manifest.mutableAssets; it remains part of the packaged manifest verification but is not pinned in executable bootstrap. Existing SW network metadata behavior is retained.
 
-The PR/workflow-dispatch CI gate also checks that rebuilding leaves no tracked diff. No deploy, promotion, cache reset or Firebase production mutation is part of these commands. Vercel hosting settings are unchanged. Run the release gate before requesting approval to merge/deploy.
+The PR/workflow-dispatch CI gate also checks that rebuilding leaves no tracked diff. No deploy, promotion, cache reset or Firebase production mutation is part of these commands. Run the release gate before requesting approval to merge/deploy.
 
 Remaining production prerequisites: Firebase transaction/read rules under roster_sessions, old read/set clients during rollout, real-browser/phone workflow and update QA. Node simulations cannot certify those.

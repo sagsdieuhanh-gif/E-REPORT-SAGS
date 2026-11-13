@@ -23,7 +23,7 @@ Tổng byte theo số lần gọi giảm khoảng 58%, chủ yếu nhờ bỏ vi
 
 ## Bảo trì
 
-Nguồn nghiệp vụ giữ tại app/core và app/boot. Không chỉnh tay app/generated. Chạy npm ci, npm run build:runtime, node tools/build-runtime.cjs --check rồi npm test sau khi sửa nguồn. Build Vercel chạy toàn bộ test trước khi tạo gói deploy.
+Nguồn nghiệp vụ giữ tại app/core và app/boot. Không chỉnh tay app/generated. Chạy npm ci, npm run build:runtime, node tools/build-runtime.cjs --check rồi npm test sau khi sửa nguồn. Lệnh npm run release chạy toàn bộ test và xác minh gói phát hành.
 
 ## Kiểm tra và giới hạn
 
@@ -31,6 +31,6 @@ Test bao phủ cấu hình/JSON tất cả biểu mẫu, nhận-mở-sửa-gửi
 
 Trang đăng nhập được kiểm tra trên trình duyệt ở 390×844 và không tràn ngang. Chưa có benchmark Safari/Cốc Cốc trên thiết bị thật hoặc thử tải 40–50 người dùng thật. Việc tách hoàn toàn trình chỉnh form để tải trễ cần tách riêng phần nó dùng chung với live/PDF trước.
 
-Bản V6.4.61 sửa xác minh checkpoint sau khi bộ nhớ rút gọn rồi dựng lại JSON: chấp nhận metadata bổ sung, vẫn từ chối dữ liệu thiếu, sai hoặc revision cũ. Kiểm tra thực tế trên Vercel đã khôi phục phiên đăng nhập và mở My Flight; không nhận/gửi dữ liệu chuyến thật trong quá trình kiểm tra.
+Bản V6.4.61 sửa xác minh checkpoint sau khi bộ nhớ rút gọn rồi dựng lại JSON: chấp nhận metadata bổ sung, vẫn từ chối dữ liệu thiếu, sai hoặc revision cũ. Kiểm tra trình duyệt trên bản phát hành lúc đó đã khôi phục phiên đăng nhập và mở My Flight; không nhận/gửi dữ liệu chuyến thật trong quá trình kiểm tra.
 
 Bộ lọc số hiệu chuyến được gắn ở lớp danh sách chung, áp dụng lại khi thẻ chuyến cập nhật; observer chỉ xử lý thay đổi danh sách, không phản ứng thay đổi chữ/đồ họa toàn trang.

@@ -59,7 +59,7 @@ async function aclAiModel(){
  const cfg=await window.sagsAiLoadConfig();
  if(cfg?.enabled===false)throw Error("AI đang tắt trong CẤU HÌNH AI.");
  const siteKey=String(cfg?.appCheckSiteKey||"").trim();
- if(!siteKey)throw Error("Chưa cấu hình reCAPTCHA Enterprise Site Key cho e-report-sags.vercel.app.");
+ if(!siteKey)throw Error("Chưa cấu hình reCAPTCHA Enterprise Site Key cho tên miền đang mở.");
  const modelName="gemini-3.8-flash";
  const identity=siteKey+"|"+modelName;
  if(aiSdkPromise&&aiSdkIdentity===identity)return aiSdkPromise;
@@ -93,7 +93,7 @@ async function aclAiModel(){
    const code=String(e?.code||"APP_CHECK_TOKEN").slice(0,80),msg=String(e?.message||e||"").slice(0,220);
    const reason=msg.replace(/6L[A-Za-z0-9_-]{25,}/g,"[SITE KEY]");
    const detail=new Error("Không xác minh được App Check ["+code+"]. "+reason+
-    " Kiểm tra Web App Firebase, reCAPTCHA Enterprise và hostname e-report-sags.vercel.app.");
+    " Kiểm tra Web App Firebase, reCAPTCHA Enterprise và tên miền đang mở.");
    detail.code="SAGS_ACL_APP_CHECK";detail.cause=e;throw detail;
   }
   const ai=aiMod.getAI(app,{backend:new aiMod.GoogleAIBackend});

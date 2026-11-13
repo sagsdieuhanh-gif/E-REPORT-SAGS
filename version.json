@@ -2,11 +2,11 @@
   "version": "V2.2",
   "displayVersion": "V2.2",
   "label": "V2.2 - ẢNH TĨNH CAMERA iOS VÀ KHÔI PHỤC BẢN NHÁP BỘ ĐÀM",
-  "build": "V2.2-20261112-RADIO-IOS-STILL-21",
-  "releasedAt": "2026-11-12",
+  "build": "V2.2-20261113-PAGES-22",
+  "releasedAt": "2026-11-13",
   "type": "radio-ios-still-capture",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Luồng nhận/trả trên iOS dùng ảnh tĩnh camera hệ thống, tự tối ưu JPEG theo giới hạn Firebase. Giữ giờ chụp từ EXIF khi có và ghi riêng giờ xác nhận Firebase. Ảnh, thông tin và nét ký được lưu nháp trên máy để tiếp tục khi mạng ổn định. PDF kèm ảnh dùng trực tiếp JPEG đã lưu.",
+  "notes": "Luồng nhận/trả trên iOS dùng ảnh tĩnh camera hệ thống, tự tối ưu JPEG theo giới hạn Firebase. Giữ giờ chụp từ EXIF khi có và ghi riêng giờ xác nhận Firebase. Ảnh, thông tin và nét ký được lưu nháp trên máy để tiếp tục khi mạng ổn định. PDF kèm ảnh dùng trực tiếp JPEG đã lưu. Bản phát hành phục vụ qua GitHub Pages.",
   "message": "Ảnh ký nhận/trả bộ đàm trên iOS rõ hơn và có thể khôi phục bản nháp."
 }

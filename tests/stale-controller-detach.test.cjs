@@ -3,7 +3,6 @@ const root=path.resolve(__dirname,'..');
 const repair=fs.readFileSync(path.join(root,'repair.html'),'utf8');
 const legacy=fs.readFileSync(path.join(root,'app/boot/05-legacy.js'),'utf8');
 const index=fs.readFileSync(path.join(root,'index.html'),'utf8');
-const vercel=JSON.parse(fs.readFileSync(path.join(root,'vercel.json'),'utf8'));
 assert.match(repair,/navigator\.serviceWorker\?\.controller/,'repair must inspect the current controller');
 assert.match(repair,/detachOldController/,'repair must detach a stale controller before reopening app');
 assert.match(repair,/stage','2'/,'repair must use a second network navigation stage');
@@ -12,7 +11,7 @@ assert.match(repair,/Server version:/,'repair should expose network release diag
 assert.match(index,/meta name="sags-release-date" content="\d{2}\/\d{2}\/\d{2}"/,'index release date metadata missing');
 assert.match(legacy,/APP_RELEASE_DATE_LABEL/,'visible release date must come from release metadata');
 assert.ok(!legacy.includes('APP_DISPLAY_VERSION+" 02/10/26"'),'legacy hardcoded release date must be removed');
-const row=vercel.headers.find(x=>x.source==='/repair.html');
-assert.ok(row,'repair Vercel header rule missing');
-assert.equal(row.headers.find(h=>String(h.key).toLowerCase()==='clear-site-data')?.value,'"cache"');
+assert.match(repair,/r\.unregister\(/,'repair must unregister the stale worker on static hosts');
+assert.match(repair,/caches\.keys\(\).*caches\.delete\(n\)/,'repair must clear application caches without hosting headers');
+assert.match(repair,/cache:'no-store'/,'repair must bypass HTTP caches when checking the release');
 console.log('Stale-controller detach regression checks passed');

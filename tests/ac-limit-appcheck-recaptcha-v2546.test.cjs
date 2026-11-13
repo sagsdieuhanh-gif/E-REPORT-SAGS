@@ -21,7 +21,7 @@ assert(importer.includes('sags-v2211-import-ai-'),'new site keys get a distinct 
 assert(importer.includes('runAiImportDiagnostic()'),'admin can independently check App Check token before importing');
 assert(importer.includes('id="v2211Diag"'),'AI Import provides a dedicated diagnostic button');
 assert(importer.includes('SAGS_ACL_APP_CHECK_RECAPTCHA'),'recaptcha-error must be classified');
-assert(importer.includes('e-report-sags.vercel.app'),'diagnostics point to correct production hostname');
+assert(importer.includes('tên miền đang mở'),'diagnostics refer to the active host');
 assert(importer.includes('A/C LIMITS → AI ĐỌC ẢNH (OCR dự phòng)'),'safe review fallback is explained');
 assert(importer.includes('catch(e){aiSdkPromise=null;const msg="AI đọc/gán ảnh thất bại:'),'failed import must remain unsuccessful without automatic writes');
 assert(importer.includes('$(\"v2211Images\").value=\"\";renderSelectedFiles()'),'successful import resets selection');
@@ -32,7 +32,7 @@ const ex=Object.assign(new Error('AppCheck: reCAPTCHA error'),{code:'appcheck/re
 const classified=makeError(ex);
 assert.equal(classified.code,'SAGS_ACL_APP_CHECK_RECAPTCHA');
 assert.equal(classified.cause,ex,'diagnostic error should preserve original error');
-assert.match(classified.message,/e-report-sags\.vercel\.app/);
+assert.match(classified.message,/tên miền đang mở/);
 assert.match(classified.message,/App Check/);
 const noCaptcha=new Error('Ảnh không hợp lệ');
 assert.equal(makeError(noCaptcha),noCaptcha,'do not relabel unrelated image errors as App Check');
