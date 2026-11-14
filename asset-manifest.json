@@ -1,7 +1,7 @@
 {
   "schema": 2,
   "version": "V2.2",
-  "build": "V2.2-20261114-MH-F27-23",
+  "build": "V2.2-20261114-MH-F27-24",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -268,6 +268,10 @@
     "./app/modules/indexeddb-flight-store.v1.js": {
       "sha256": "655934f4550bb7f9dea67dd12538e9df2ac14085ca27b275329c7a2b27fc5153",
       "bytes": 14617
+    },
+    "./app/modules/mh-f27.v1.js": {
+      "sha256": "PENDING_RELEASE_BUILD",
+      "bytes": 0
     },
     "./app/modules/mobile-draft-recovery.v1.js": {
       "sha256": "8f42b75b0c03fc623b3f3db3074c7919fad9ac98ec063c73ab5712dd01591fc0",
@@ -692,6 +696,10 @@
     "./assets/icons/icon-512.png": {
       "sha256": "90aa4e4ece11944460015926ca2aaf4271b439c06d3f808aeaaa9ba7b71f33b7",
       "bytes": 104295
+    },
+    "./assets/mh/AS_RM_F27_Iss1Rev4_2026-04-30.pdf": {
+      "sha256": "PENDING_RELEASE_BUILD",
+      "bytes": 0
     },
     "./data/airline-form-catalog.json": {
       "sha256": "36d030e47c95c84a4649da8998650af55fab40120a2d587a0b02a68da34f5826",
