@@ -270,151 +270,228 @@ async function open(options){
  else $('mhF27Status').textContent=lastServer?'✓ Đã khôi phục bản Firebase':'Mẫu MH mới · chưa có dữ liệu';
  return true;
 }
-function wrap(ctx,text,maxWidth,fontSize=15){
- ctx.font=fontSize+'px Arial';const rows=[];
- for(const block of S(text).split('\n')){let line='';for(const word of block.split(/\s+/)){
-  const next=line?line+' '+word:word;
-  if(line&&ctx.measureText(next).width>maxWidth){rows.push(line);line=word}else line=next;
- }if(line)rows.push(line)}
- return rows;
-}
-function pageCanvas(index,total){
- const c=document.createElement('canvas');c.width=1200;c.height=1698;
- const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,1200,1698);
- x.fillStyle='#112f4d';x.fillRect(35,35,1130,12);x.fillStyle='#f5f9fc';x.fillRect(35,47,1130,86);
- x.fillStyle='#112f4d';x.font='bold 27px Arial';x.fillText('REF: AS/RM/F27',50,88);
- x.font='bold 24px Arial';x.fillText('360 DEGREE SAFETY WALKABOUT CHECKLIST',284,88);
- x.font='bold 19px Arial';x.fillText('MALAYSIA AIRLINES',930,120);
- x.fillStyle='#415770';x.font='17px Arial';x.fillText('Issue 1 Revision 4  ·  Effective 30 April 2026  ·  Internal Use',50,162);
- x.strokeStyle='#d0dce7';x.beginPath();x.moveTo(50,1600);x.lineTo(1150,1600);x.stroke();
- x.fillStyle='#476077';x.font='16px Arial';x.fillText('Issued by Regulatory Management / Airport Services Department',50,1640);
- x.textAlign='right';x.fillText('SAGS digital entry  ·  Page '+index+' of '+total,1150,1640);x.textAlign='left';
- return {c,x,y:190};
-}
-function pdfTableHead(x,y){
- x.fillStyle='#d6e5f3';x.fillRect(55,y,1090,48);x.fillStyle='#16364b';x.font='bold 17px Arial';
- for(const [t,p] of [['Key',67],['Safety Walkabout Activities',143],['ICP',805],['Yes',887],['No',945],['N/A',990],['Remarks',1045]])x.fillText(t,p,y+30);
- return y+48;
-}
-function pdfRows(x,items,y,lastY=1550){
- y=pdfTableHead(x,y);
- for(let idx=0;idx<items.length;idx++){
-  const row=items[idx],selected=S(model.answers[row.key]?.value),remark=S(model.answers[row.key]?.remarks);
-  const lines=wrap(x,row.activity,650,15),remarkLines=wrap(x,remark,135,14);
-  const height=Math.max(60,(lines.length+1)*22,remarkLines.length*20+24);
-  if(y+height>lastY)return {remaining:items.slice(idx),y};
-  x.fillStyle=Number(row.key.split('.')[0])%2?'#fff':'#f8fbfd';x.fillRect(55,y,1090,height);
-  x.strokeStyle='#cddae5';x.strokeRect(55,y,1090,height);
-  for(const col of [129,797,877,934,982,1030]){x.beginPath();x.moveTo(col,y);x.lineTo(col,y+height);x.stroke()}
-  x.fillStyle='#15364c';x.font='bold 19px Arial';x.fillText(row.key,65,y+28);
-  x.font='bold 14px Arial';wrap(x,row.inCharge,73,14).slice(0,3).forEach((t,n)=>x.fillText(t,803,y+24+n*18));
-  x.font='15px Arial';lines.forEach((t,n)=>x.fillText(t,138,y+24+n*21));
-  x.font='bold 21px Arial';if(selected){const px=selected==='YES'?899:selected==='NO'?950:997;x.fillText('X',px,y+29)}
-  x.font='14px Arial';remarkLines.slice(0,Math.floor((height-10)/20)).forEach((t,n)=>x.fillText(t,1038,y+23+n*19));
-  y+=height;
- }
- return {remaining:[],y};
-}
-function pdfLabel(c,index,total){
- const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(926,1610,237,45);
- x.fillStyle='#476077';x.font='16px Arial';x.textAlign='right';x.fillText('SAGS digital entry · Page '+index+' of '+total,1150,1640);x.textAlign='left';
-}
-function proofImg(data){return new Promise(resolve=>{
- if(!/^data:image\/png;base64,/.test(S(data)))return resolve(null);
- const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src=data;
-})}
-function pdfBuild(canvases){
- const offsets=[],chunks=[];let pos=0;
- const add=v=>{chunks.push(v);pos+=typeof v==='string'?v.length:v.byteLength};
- const obj=(n,text)=>{offsets[n]=pos;add(n+' 0 obj\n'+text+'\nendobj\n')};
- const image=(n,c)=>{
-  const jpg=Uint8Array.from(atob(c.toDataURL('image/jpeg',.87).split(',')[1]),b=>b.charCodeAt(0));
-  offsets[n]=pos;add(n+' 0 obj\n<< /Type /XObject /Subtype /Image /Width '+c.width+' /Height '+c.height+' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length '+jpg.length+' >>\nstream\n');add(jpg);add('\nendstream\nendobj\n');
- };
- add('%PDF-1.4\n');obj(1,'<< /Type /Catalog /Pages 2 0 R >>');
- obj(2,'<< /Type /Pages /Kids ['+canvases.map((_,i)=>(3+i*3)+' 0 R').join(' ')+'] /Count '+canvases.length+' >>');
- canvases.forEach((c,i)=>{
-  const n=3+i*3,cmd='q\n595 0 0 842 0 0 cm\n/Im1 Do\nQ\n';
-  obj(n,'<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /XObject << /Im1 '+(n+2)+' 0 R >> >> /Contents '+(n+1)+' 0 R >>');
-  obj(n+1,'<< /Length '+cmd.length+' >>\nstream\n'+cmd+'endstream');image(n+2,c);
-  c.width=1;c.height=1;
+
+/* PDF export: overlay values onto the actual nine-page AS/RM/F27.
+ * Coordinates are PDF points measured against the user-supplied Issue 1 Revision 4 source.
+ * DO NOT redraw the form, logo, headings, tables, or three airline safety appendices.
+ */
+const MH_F27_PDF_SOURCE='./assets/mh/AS_RM_F27_Iss1Rev4_2026-04-30.pdf';
+const MH_F27_SOURCE_BYTES=547484;
+const MH_F27_ROWS=Object.freeze({"1.1":[1,431.95,471.91],"1.2":[1,471.91,617.62],"1.3":[1,617.62,703.9],"1.4":[2,89.06,116.06],"1.5":[2,116.06,156.62],"1.6":[2,156.62,196.7],"2.1":[2,196.7,263.21],"2.2":[2,263.21,278.93],"2.3":[2,278.93,323.93],"2.4":[2,323.93,339.65],"2.5":[2,339.65,392.93],"2.6":[2,392.93,432.91],"2.7":[2,432.91,591.79],"2.8":[2,591.79,618.58],"2.9":[2,618.58,654.58],"2.10":[2,654.58,681.46],"2.11":[3,89.06,115.7],"2.12":[3,115.7,150.74],"2.13":[3,150.74,201.02],"2.14":[3,201.02,227.9],"3.1":[3,227.9,386.69],"3.2":[3,386.69,413.69],"3.3":[3,413.69,453.79],"3.4":[3,453.79,706.06],"3.5":[4,231.38,260.57],"3.6":[4,260.57,300.65],"3.7":[4,300.65,313.73],"3.8":[4,313.73,326.69],"4.1":[4,326.69,526.63],"5.1":[4,526.63,579.91],"5.2":[4,579.91,595.63],"5.3":[4,595.63,622.54],"5.4":[4,622.54,646.54],"6.1":[5,89.06,115.7],"6.2":[5,115.7,142.7],"6.3":[5,142.7,182.78],"6.4":[5,182.78,209.66],"6.5":[5,209.66,225.38],"6.6":[5,225.38,265.61],"6.7":[5,265.61,292.37],"6.8":[5,292.37,315.77],"6.9":[5,315.77,342.65],"6.10":[5,342.65,395.93],"6.11":[5,395.93,430.87],"6.12":[5,430.87,457.63],"6.13":[5,457.63,484.51],"6.14":[5,484.51,511.51],"6.15":[5,511.51,538.39],"6.16":[5,538.39,565.27],"6.17":[5,565.27,580.99],"6.18":[5,580.99,603.1],"7.1":[6,65.52,189.98],"7.2":[6,189.98,255.05],"7.3":[6,255.05,356.21]});
+const MH_F27_HEADER=[
+ ['aircraftRegistration','aircraftType','date'],
+ ['station','parkingBay','trc'],
+ ['arrivalFlightNo','departureFlightNo','rampOfficer'],
+ ['arrivalSector','departureSector','gseOperator1'],
+ ['staEtaAta','stdEtdAtd','gseOperator2'],
+ ['arrivalPHLead','departurePHLead','gseOperator3']
+];
+const MH_F27_HEADER_TOPS=[66,80.76,95.66,110.54,125.54,140.42];
+let pdfLibLoading=null,pdfExporting=false;
+function loadLibraryScript(url){
+ return new Promise((resolve,reject)=>{
+  const s=document.createElement('script');
+  s.async=true;s.src=url;s.onload=resolve;s.onerror=()=>reject(Error('Không thể tải PDF library '+url));
+  document.head.appendChild(s);
  });
- const end=pos,max=2+canvases.length*3;add('xref\n0 '+(max+1)+'\n0000000000 65535 f \n');
- for(let n=1;n<=max;n++)add(String(offsets[n]||0).padStart(10,'0')+' 00000 n \n');
- add('trailer\n<< /Size '+(max+1)+' /Root 1 0 R >>\nstartxref\n'+end+'\n%%EOF');
- return new Blob(chunks,{type:'application/pdf'});
+}
+async function loadPdfLibrary(){
+ if(root.PDFLib?.PDFDocument)return root.PDFLib;
+ if(!pdfLibLoading)pdfLibLoading=(async()=>{
+  for(const url of [
+   'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js',
+   'https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js'
+  ]){
+   try{await loadLibraryScript(url);if(root.PDFLib?.PDFDocument)return root.PDFLib}
+   catch(e){console.warn('MH F27 PDF library',e?.message||e)}
+  }
+  throw Error('Không tải được thư viện ghi PDF. Vui lòng kiểm tra kết nối và xuất lại; không sử dụng PDF tự vẽ thay thế.');
+ })().catch(e=>{pdfLibLoading=null;throw e});
+ return pdfLibLoading;
+}
+function pdfText(ctx,val,x,y,width,height,initial=7.6){
+ const txt=S(val).replace(/\s+/g,' ');
+ if(!txt)return;
+ ctx.save();ctx.beginPath();ctx.rect(x,y,width,height);ctx.clip();
+ ctx.fillStyle='#111';ctx.textBaseline='middle';
+ let font=initial;
+ do{ctx.font=font+'px Arial, sans-serif';if(ctx.measureText(txt).width<=width-2)break;font-=.3}while(font>4.2);
+ ctx.fillText(txt,x+1,y+height/2);
+ ctx.restore();
+}
+function pdfLines(ctx,raw,maxWidth){
+ const result=[];
+ for(const paragraph of S(raw).split(/\r?\n/)){
+  if(!paragraph.trim()){result.push('');continue}
+  let line='';
+  for(const rawWord of paragraph.trim().split(/\s+/)){
+   let word=rawWord;
+   while(word&&ctx.measureText(word).width>maxWidth){
+    let n=1;while(n<word.length&&ctx.measureText(word.slice(0,n+1)).width<=maxWidth)n++;
+    if(line){result.push(line);line=''}
+    result.push(word.slice(0,n));word=word.slice(n);
+   }
+   if(!word)continue;
+   const next=line?line+' '+word:word;
+   if(line&&ctx.measureText(next).width>maxWidth){result.push(line);line=word}
+   else line=next;
+  }
+  result.push(line);
+ }
+ return result;
+}
+function pdfRemarks(ctx,raw,key,x,y,width,height,overflows){
+ if(!S(raw))return;
+ const small=height<20,fs=small?5.2:6,lh=small?6.2:7.6;
+ ctx.save();ctx.beginPath();ctx.rect(x,y,width,height);ctx.clip();
+ ctx.fillStyle='#111';ctx.font=fs+'px Arial, sans-serif';ctx.textBaseline='top';
+ const all=pdfLines(ctx,raw,width-3),capacity=Math.max(1,Math.floor((height-4)/lh));
+ for(let i=0;i<Math.min(all.length,capacity);i++)ctx.fillText(all[i],x+1,y+2+i*lh);
+ ctx.restore();
+ if(all.length>capacity)overflows.push({key,text:S(raw)});
+}
+function newOverlayCanvas(w,h){
+ const canvas=document.createElement('canvas'),scale=2;
+ canvas.width=Math.round(w*scale);canvas.height=Math.round(h*scale);
+ const ctx=canvas.getContext('2d',{alpha:true});
+ if(!ctx)throw Error('Thiết bị không tạo được lớp chữ PDF.');
+ ctx.scale(scale,scale);
+ return {canvas,ctx};
+}
+function checkRowsForPage(ctx,pageNum,snapshot,overflows){
+ for(const [key,pos]of Object.entries(MH_F27_ROWS)){
+  const [page,top,bottom]=pos;
+  if(page!==pageNum)continue;
+  const row=snapshot.answers?.[key]||{},v=S(row.value);
+  if(v==='YES'||v==='NO'||v==='NA'){
+   const x=v==='YES'?459:v==='NO'?484:506.5;
+   const centerY=(bottom-top)>45?top+13:(top+bottom)/2;
+   ctx.save();ctx.fillStyle='#101010';ctx.font='bold '+(v==='NA'?7.1:10)+'px Arial, sans-serif';
+   ctx.textAlign='center';ctx.textBaseline='middle';
+   ctx.fillText(v==='YES'?'✓':v==='NO'?'X':'N/A',x,centerY);
+   ctx.restore();
+  }
+  pdfRemarks(ctx,row.remarks,key,521.6,top+1,57.2,bottom-top-2,overflows);
+ }
+}
+function checkHeader(ctx,snapshot){
+ const xs=[161,352.5,508.5],widths=[69.8,69.5,70.5];
+ for(let row=0;row<MH_F27_HEADER.length;row++){
+  const top=MH_F27_HEADER_TOPS[row],height=row===5?16.8:14.3;
+  for(let col=0;col<3;col++){
+   const key=MH_F27_HEADER[row][col];
+   pdfText(ctx,snapshot.headers?.[key],xs[col],top,widths[col],height,7.8);
+  }
+ }
+ pdfText(ctx,snapshot.headers?.additionalDetails,161,158.05,419,15.2,7.8);
+}
+function signatureImage(data){
+ return new Promise((resolve,reject)=>{
+  if(!S(data))return resolve(null);
+  if(!/^data:image\/png;base64,/.test(S(data)))return reject(Error('Chữ ký MH không đúng định dạng PNG.'));
+  const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>reject(Error('Không giải mã được chữ ký MH để xuất PDF.'));img.src=data;
+ });
+}
+async function checkSignatures(ctx,snapshot,overflows){
+ pdfRemarks(ctx,snapshot.remarks,'Remarks chung',39,369,117,144,overflows);
+ for(const [key,x]of [['groundHandler',167],['stationHead',383]]){
+  const s=snapshot.signers?.[key]||{};
+  const im=await signatureImage(s.image);
+  if(im){
+   const ratio=Math.min(179/im.width,16/im.height);
+   ctx.drawImage(im,x,430,im.width*ratio,im.height*ratio);
+  }
+  pdfText(ctx,s.name,x,461,183,11,7.5);
+  pdfText(ctx,s.designation,x,489,183,15,7.5);
+ }
+}
+function pdfContinuationPage(doc,PDFLib,overflows,w,h){
+ if(!overflows.length)return 0;
+ // A spill page is only created when the tiny original Remarks cells cannot
+ // hold all content. The approved nine source pages remain visually unmodified.
+ let count=0,page=null,ctx=null,canvas=null,y=0;
+ const flush=async()=>{};
+ const pages=[];
+ for(const row of overflows){
+  if(!ctx||y>h-100){
+   if(ctx)pages.push({page,canvas});
+   page=doc.addPage([w,h]);({ctx,canvas}=newOverlayCanvas(w,h));
+   ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);
+   ctx.fillStyle='#1b344c';ctx.font='bold 13px Arial';ctx.fillText('MH AS/RM/F27 - REMARKS CONTINUATION',38,45);
+   ctx.fillStyle='#333';ctx.font='8px Arial';ctx.fillText('Additional entries only. The first 9 pages are the official MH checklist.',38,62);
+   y=85;count++;
+  }
+  ctx.fillStyle='#111';ctx.font='bold 9px Arial';ctx.fillText(row.key+':',38,y);
+  ctx.font='8px Arial';
+  const lines=pdfLines(ctx,row.text,w-96);
+  const maxPossible=Math.max(1,Math.floor((h-y-50)/11));
+  for(let i=0;i<Math.min(lines.length,maxPossible);i++)ctx.fillText(lines[i],83,y+i*11);
+  y+=Math.min(lines.length,maxPossible)*11+20;
+  // Lengthy notes must never be dropped: create more continuation entries.
+  if(lines.length>maxPossible)overflows.push({key:row.key+' (continued)',text:lines.slice(maxPossible).join(' ')});
+ }
+ if(ctx)pages.push({page,canvas});
+ return Promise.all(pages.map(async e=>{
+  const image=await doc.embedPng(e.canvas.toDataURL('image/png'));
+  e.page.drawImage(image,{x:0,y:0,width:w,height:h});
+  e.canvas.width=1;e.canvas.height=1;
+ })).then(()=>count);
 }
 async function exportPdf(){
- if(!current||!model)return;
- if(dirty&&navigator.onLine){const ok=await saveServer(true);if(!ok&&!root.confirm('Dữ liệu chưa đồng bộ Firebase. Vẫn xuất bản PDF nháp trên thiết bị này?'))return}
+ if(!current||!model||pdfExporting)return;
+ const button=$('mhF27Layer')?.querySelector('[data-mh-act="pdf"]');
+ pdfExporting=true;if(button)button.disabled=true;
+ const status=$('mhF27Status');
  try{
-  const printPages=[
-   spec.items.filter(x=>['1.1','1.2','1.3'].includes(x.key)),
-   spec.items.filter(x=>['1.4','1.5','1.6'].includes(x.key)||x.phase==='2'&&Number(x.key.split('.')[1])<=10),
-   spec.items.filter(x=>x.phase==='2'&&Number(x.key.split('.')[1])>10||x.phase==='3'&&Number(x.key.split('.')[1])<=4),
-   spec.items.filter(x=>x.phase==='3'&&Number(x.key.split('.')[1])>4||x.phase==='4'||x.phase==='5'),
-   spec.items.filter(x=>x.phase==='6'),
-   spec.items.filter(x=>x.phase==='7')
-  ];
-  const canvases=[];
-  for(let i=0;i<printPages.length;i++){
-   let remaining=printPages[i],part=0;
-   do{
-    const pg=pageCanvas(canvases.length+1,0),x=pg.x;let y=pg.y;
-    if(i===0&&part===0){
-     x.fillStyle='#15364c';x.font='bold 21px Arial';x.fillText('Flight / Aircraft details',60,y+20);y+=42;
-     for(let j=0;j<spec.headerFields.length;j+=3){
-      const fields=spec.headerFields.slice(j,j+3);
-      for(let k=0;k<fields.length;k++){
-       const field=fields[k],left=60+k*360;
-       x.fillStyle='#e7eff5';x.fillRect(left,y,342,45);
-       x.fillStyle='#273e55';x.font='bold 14px Arial';x.fillText(field.label,left+8,y+17);
-       x.font='16px Arial';x.fillText(S(model.headers[field.key]).slice(0,37),left+8,y+37);
-      }y+=48;
-     }
-     x.font='bold 18px Arial';x.fillStyle='#123d54';
-     x.fillText('IMPORTANT REMINDER · STOP unsafe acts · report hazards immediately',60,y+26);y+=48;
-    }else{
-     x.fillStyle='#163b58';x.font='bold 22px Arial';
-     x.fillText('MH AS/RM/F27 · '+(part?'Continued checks':'Checklist phases'),60,y+25);y+=52;
-    }
-    const result=pdfRows(x,remaining,y,i===5?1110:1540);
-    if(result.remaining.length===remaining.length)throw Error('Một mục kiểm tra quá dài để xuất PDF. Vui lòng giảm cỡ chữ hoặc kiểm tra dữ liệu.');
-    remaining=result.remaining;
-    if(i===5&&!remaining.length){
-     x.font='16px Arial';x.fillStyle='#193b56';x.fillText('Certification:',65,1150);
-     for(let j=0;j<2;j++){
-      const who=spec.signers[j],a=model.signers[who.key]||{},left=65+j*545;
-      x.font='bold 16px Arial';x.fillText(who.title,left,1195);
-      x.font='15px Arial';x.fillText('Name: '+S(a.name),left,1230);
-      x.fillText('Designation: '+S(a.designation),left,1260);
-      x.fillText('Signed by: '+S(a.signedBy),left,1290);
-      const signature=await proofImg(a.image);
-      if(signature){const ratio=Math.min(330/signature.width,140/signature.height);x.drawImage(signature,left,1320,signature.width*ratio,signature.height*ratio)}
-     }
-    }
-    canvases.push(pg.c);part++;
-   }while(remaining.length);
+  if(dirty&&navigator.onLine){
+   const saved=await saveServer(true);
+   if(!saved&&!root.confirm('Dữ liệu chưa đồng bộ Firebase. Vẫn xuất PDF nháp trên thiết bị này?'))return;
   }
-  for(let i=0;i<spec.appendix.length;i++){
-   const a=spec.appendix[i],pg=pageCanvas(canvases.length+1,0),x=pg.x;
-   x.fillStyle='#18354c';x.font='bold 27px Arial';x.fillText(a.title.toUpperCase(),65,245);
-   x.font='20px Arial';wrap(x,a.details,1030,20).forEach((t,n)=>x.fillText(t,65,317+n*33));
-   x.strokeStyle='#c9dbe9';x.strokeRect(80,470,1040,835);
-   x.fillStyle='#edf4f8';x.fillRect(81,471,1038,833);
-   x.fillStyle='#173e5b';x.font='bold 24px Arial';x.fillText('OFFICIAL MH ILLUSTRATION REFERENCE',130,650);
-   x.font='20px Arial';
-   wrap(x,'Use the exact Appendix '+(i+1)+' illustration from the approved Malaysia Airlines AS/RM/F27 source. This digital PDF does not replace the authoritative airline technical drawing.',890,20)
-    .forEach((t,n)=>x.fillText(t,130,708+n*38));
-   canvases.push(pg.c);
+  const snapshot=JSON.parse(JSON.stringify(model));
+  const flight={date:current.date,id:S(current.item.flightId)};
+  if(status)status.textContent='Đang lấy PDF gốc của Malaysia Airlines…';
+  const [lib,response]=await Promise.all([
+   loadPdfLibrary(),
+   fetch(MH_F27_PDF_SOURCE,{cache:'no-store'})
+  ]);
+  if(!response.ok)throw Error('Không tải được PDF nguồn MH (HTTP '+response.status+').');
+  const raw=await response.arrayBuffer();
+  if(raw.byteLength!==MH_F27_SOURCE_BYTES)throw Error('PDF nguồn MH không đúng phiên bản đã duyệt.');
+  const pdf=await lib.PDFDocument.load(raw);
+  if(pdf.getPageCount()!==9)throw Error('PDF MH gốc phải có đúng 9 trang.');
+  const first=pdf.getPage(0),w=first.getWidth(),h=first.getHeight();
+  if(Math.abs(w-615.48)>.5||Math.abs(h-792)>.5)
+   throw Error('Kích thước trang PDF MH không đúng tài liệu gốc.');
+  const overflows=[];
+  for(let n=1;n<=6;n++){
+   if(status)status.textContent='Đang điền dữ liệu lên bản gốc · trang '+n+'/9';
+   const pg=pdf.getPage(n-1),sz=pg.getSize();
+   if(Math.abs(sz.width-w)>.1||Math.abs(sz.height-h)>.1)
+    throw Error('Một trang PDF MH có kích thước khác tài liệu gốc.');
+   const {canvas,ctx}=newOverlayCanvas(w,h);
+   if(n===1)checkHeader(ctx,snapshot);
+   checkRowsForPage(ctx,n,snapshot,overflows);
+   if(n===6)await checkSignatures(ctx,snapshot,overflows);
+   const png=await pdf.embedPng(canvas.toDataURL('image/png'));
+   pg.drawImage(png,{x:0,y:0,width:w,height:h});
+   canvas.width=1;canvas.height=1;
+   await new Promise(resolve=>root.requestAnimationFrame?root.requestAnimationFrame(resolve):setTimeout(resolve,0));
   }
-  const total=canvases.length;
-  canvases.forEach((c,i)=>pdfLabel(c,i+1,total));
-  const pdf=pdfBuild(canvases),url=URL.createObjectURL(pdf),a=document.createElement('a');
-  a.href=url;a.download='MH_AS-RM-F27_'+clean(current.date)+'_'+clean(current.item.flightId)+'.pdf';
-  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),45000);
-  $('mhF27Status').textContent='Đã tạo PDF · '+total+' trang';
- }catch(e){alert('Không xuất được PDF MH: '+S(e?.message||e))}
+  const extra=await pdfContinuationPage(pdf,lib,overflows,w,h);
+  if(status)status.textContent='Đang kết xuất PDF gốc…';
+  const bytes=await pdf.save({useObjectStreams:true});
+  const url=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'}));
+  const a=document.createElement('a');
+  a.href=url;a.download='MH_AS-RM-F27_'+clean(flight.date)+'_'+clean(flight.id)+'.pdf';
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),60000);
+  if(status)status.textContent='✓ Đã xuất PDF theo đúng '+(9+extra)+' trang (9 trang gốc'+(extra?' + '+extra+' trang ghi chú':'')+')';
+ }catch(e){
+  if(status)status.textContent='⚠ Lỗi xuất MH F27: '+S(e?.message||e);
+  alert('Không thể xuất PDF MH theo mẫu gốc: '+S(e?.message||e));
+ }finally{
+  pdfExporting=false;if(button)button.disabled=false;
+ }
 }
-root.SAGSMHF27=Object.freeze({open,close,formId:ID});
+root.SAGSMHF27=Object.freeze({open,close,formId:ID,pdfSourcePath:MH_F27_PDF_SOURCE,pdfRows:MH_F27_ROWS});
 })(window);

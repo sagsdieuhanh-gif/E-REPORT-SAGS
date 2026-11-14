@@ -1,7 +1,7 @@
 {
   "schema": 2,
   "version": "V2.2",
-  "build": "V2.2-20261114-MH-F27-23",
+  "build": "V2.2-20261114-MH-F27-24",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -214,7 +214,7 @@
       "bytes": 23630
     },
     "./app/modules/daily-roster.v502.js": {
-      "sha256": "29ded7486d82d7dbc5fadc096f3da8f7dc391cbc8f5554b4e51322070be839ea",
+      "sha256": "7eeba7373c1fbda151673e2a43124e4f8373927505bcc3c08ddd84705a32bc2c",
       "bytes": 89275
     },
     "./app/modules/feature-loader.v1.js": {
@@ -268,6 +268,10 @@
     "./app/modules/indexeddb-flight-store.v1.js": {
       "sha256": "655934f4550bb7f9dea67dd12538e9df2ac14085ca27b275329c7a2b27fc5153",
       "bytes": 14617
+    },
+    "./app/modules/mh-f27.v1.js": {
+      "sha256": "b531dddb47c35002c21fff2fccaa742bafe279977593a12e8f7c691ac81a8f4f",
+      "bytes": 31561
     },
     "./app/modules/mobile-draft-recovery.v1.js": {
       "sha256": "8f42b75b0c03fc623b3f3db3074c7919fad9ac98ec063c73ab5712dd01591fc0",
@@ -693,6 +697,10 @@
       "sha256": "90aa4e4ece11944460015926ca2aaf4271b439c06d3f808aeaaa9ba7b71f33b7",
       "bytes": 104295
     },
+    "./assets/mh/AS_RM_F27_Iss1Rev4_2026-04-30.pdf": {
+      "sha256": "f7e5a31e9e78c523cfb28dc4824c95d1b49d4a79dd4681c8133bbf3cea396699",
+      "bytes": 547484
+    },
     "./data/airline-form-catalog.json": {
       "sha256": "36d030e47c95c84a4649da8998650af55fab40120a2d587a0b02a68da34f5826",
       "bytes": 2774
@@ -786,7 +794,7 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "7bea45eff66e52660d178d55cf1bfeea3c0af58619e64672b48de87ea1b367c4",
+      "sha256": "41a4b63d254584c192ffcd8e97951b71434e1dbdeda1ae0a421d08a11cb693ce",
       "bytes": 105217
     },
     "./manifest.webmanifest": {
@@ -838,7 +846,7 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "49a7919f76f9f8ba090f50920cd3501c8bdc2d87357a8e587325f689c9391c3c",
+      "sha256": "6a4892eab7ea95ac5bd9be2be51466cd93c36d8222b4ee794911cdb0fdf4f7ea",
       "bytes": 22648
     },
     "./storage-recovery.html": {
@@ -846,8 +854,8 @@
       "bytes": 26106
     },
     "./version.json": {
-      "sha256": "99b7d4e16df3510abd6534e554a397eefec8f0f91509d1a33d4dd4b96c551f1f",
-      "bytes": 1190
+      "sha256": "75f8d5f859dffdeee6052da6f9942304c34032d082fc1a9676f9b9295eab3720",
+      "bytes": 897
     }
   },
   "mutableAssets": [

@@ -2,11 +2,11 @@
   "version": "V2.2",
   "displayVersion": "V2.2",
   "label": "V2.2 - MALAYSIA AIRLINES MH + 360 DEGREE SAFETY WALKABOUT CHECKLIST",
-  "build": "V2.2-20261114-MH-F27-23",
+  "build": "V2.2-20261114-MH-F27-24",
   "releasedAt": "2026-11-14",
-  "type": "new-airline-mh-as-rm-f27",
+  "type": "mh-f27-original-pdf-fidelity-fix",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Thêm Malaysia Airlines MH/MAS và AS/RM/F27 Issue 1 Revision 4 (30/04/2026). Nhân viên Grnd_Cor được tự động tạo mục MH F27 trên My Flight cho chuyến MH. Gồm 54 mục trong 7 giai đoạn; Yes/No/N/A, remarks bắt buộc No/N/A; thông tin chuyến; 2 chữ ký trực tiếp; nháp localStorage và IndexedDB; xác minh mailbox Firebase khi mở/lưu; chống ghi đè đồng thời; xuất PDF từng trang bằng chứng, không cắt mục dài. Ba trang phụ lục hiện dẫn chiếu tài liệu MH đã được phê duyệt, chưa nhúng bản vẽ kỹ thuật gốc lên máy chủ. Các hãng khác không bị thêm mẫu MH.",
-  "message": "Hãng Malaysia Airlines (MH) và form 360 Degree Safety Walkabout Checklist AS/RM/F27 đã được thêm vào My Flight, dành riêng cho MH."
+  "notes": "MH AS/RM/F27 xuất PDF trực tiếp trên tài liệu gốc 9 trang Issue 1 Revision 4 (30/04/2026), không vẽ lại logo, bảng hay 3 phụ lục. Dữ liệu chuyến, 54 ô Yes/No/N/A, Remarks và chữ ký điền đúng vị trí; ghi chú quá dài được đưa vào trang tiếp nối để không mất dữ liệu. Không thay đổi nghiệp vụ các hãng khác.",
+  "message": "Đã sửa xuất PDF MH: giữ nguyên biểu mẫu Malaysia Airlines gốc 9 trang, điền dữ liệu vào ô chuẩn."
 }
