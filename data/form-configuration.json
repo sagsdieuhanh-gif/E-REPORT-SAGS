@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "revision": 9,
+  "revision": 10,
   "source": "repository",
   "carriers": {
     "HAV": {
@@ -246,6 +246,15 @@
       ],
       "fsags54": true,
       "fsags94": false
+    },
+    "MH": {
+      "label": "Malaysia Airlines",
+      "prefixes": [
+        "MH",
+        "MAS"
+      ],
+      "fsags54": false,
+      "fsags94": false
     }
   },
   "forms": {
@@ -368,7 +377,17 @@
       "carriers": [],
       "aircraftClass": "ALL",
       "aircraftTypes": []
+    },
+    "mhf27": {
+      "order": 12,
+      "enabled": true,
+      "allCarriers": false,
+      "carriers": [
+        "MH"
+      ],
+      "aircraftClass": "ALL",
+      "aircraftTypes": []
     }
   },
-  "updatedAt": "2026-10-03T04:47:27.167Z"
+  "updatedAt": "2026-11-14T12:21:00.000Z"
 }
