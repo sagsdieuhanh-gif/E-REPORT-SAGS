@@ -1,7 +1,7 @@
 {
   "schema": 2,
   "version": "V2.2",
-  "build": "V2.2-20261114-MH-F27-24",
+  "build": "V2.2-20261114-MH-F27-25",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -214,7 +214,7 @@
       "bytes": 23630
     },
     "./app/modules/daily-roster.v502.js": {
-      "sha256": "7eeba7373c1fbda151673e2a43124e4f8373927505bcc3c08ddd84705a32bc2c",
+      "sha256": "66c633daed5789495295d7a65d895308c433b292a879e19c66f5faad9cec1f00",
       "bytes": 89275
     },
     "./app/modules/feature-loader.v1.js": {
@@ -270,8 +270,8 @@
       "bytes": 14617
     },
     "./app/modules/mh-f27.v1.js": {
-      "sha256": "b531dddb47c35002c21fff2fccaa742bafe279977593a12e8f7c691ac81a8f4f",
-      "bytes": 31561
+      "sha256": "fbd2a699b56988b28d9e17522ef32240e8df47698c59cbd2be271288a367de1f",
+      "bytes": 44690
     },
     "./app/modules/mobile-draft-recovery.v1.js": {
       "sha256": "8f42b75b0c03fc623b3f3db3074c7919fad9ac98ec063c73ab5712dd01591fc0",
@@ -500,6 +500,10 @@
     "./app/styles/boot-bundle-2.css": {
       "sha256": "c6ddb035894bf2c231426db8c48aa9b842174d61c823a43e0687378088d82907",
       "bytes": 26603
+    },
+    "./app/styles/mh-f27.v1.css": {
+      "sha256": "958a2558b6929d5683c144b6d49ce89ae06cd4c78ac457fa0f0f7a392e50bc20",
+      "bytes": 17736
     },
     "./app/styles/new-ui-v1.css": {
       "sha256": "6d70c544e3e1782e71e85ddfbd3c2f8fc213a275dd5ef70227412cddc092e432",
@@ -794,7 +798,7 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "41a4b63d254584c192ffcd8e97951b71434e1dbdeda1ae0a421d08a11cb693ce",
+      "sha256": "55f6bd63c6b0e72fe2776bdda33091d4ac273b8e96a9a5f389042de1db8bc559",
       "bytes": 105217
     },
     "./manifest.webmanifest": {
@@ -846,7 +850,7 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "6a4892eab7ea95ac5bd9be2be51466cd93c36d8222b4ee794911cdb0fdf4f7ea",
+      "sha256": "c12ce0c5002c523a830a054d36d81930b534b2f15405c3396825dec710b9af8e",
       "bytes": 22648
     },
     "./storage-recovery.html": {
@@ -854,8 +858,8 @@
       "bytes": 26106
     },
     "./version.json": {
-      "sha256": "75f8d5f859dffdeee6052da6f9942304c34032d082fc1a9676f9b9295eab3720",
-      "bytes": 897
+      "sha256": "8d02d1b14e86cb56ea3d2bbd04afa1667f18a56679671444187b3e28d63576b5",
+      "bytes": 997
     }
   },
   "mutableAssets": [
