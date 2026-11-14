@@ -290,11 +290,11 @@ function pdfTableHead(x,y){
 }
 function pdfRows(x,items,y,lastY=1550){
  y=pdfTableHead(x,y);
- for(const row of items){
-  const selected=S(model.answers[row.key]?.value),remark=S(model.answers[row.key]?.remarks);
+ for(let idx=0;idx<items.length;idx++){
+  const row=items[idx],selected=S(model.answers[row.key]?.value),remark=S(model.answers[row.key]?.remarks);
   const lines=wrap(x,row.activity,650,15),remarkLines=wrap(x,remark,135,14);
   const height=Math.max(60,(lines.length+1)*22,remarkLines.length*20+24);
-  if(y+height>lastY){x.fillStyle='#b51e35';x.font='bold 14px Arial';x.fillText('Continued on next export page - source text preserved in app.',70,lastY-10);break}
+  if(y+height>lastY)return {remaining:items.slice(idx),y};
   x.fillStyle=Number(row.key.split('.')[0])%2?'#fff':'#f8fbfd';x.fillRect(55,y,1090,height);
   x.strokeStyle='#cddae5';x.strokeRect(55,y,1090,height);
   for(const col of [129,797,877,934,982,1030]){x.beginPath();x.moveTo(col,y);x.lineTo(col,y+height);x.stroke()}
@@ -305,8 +305,16 @@ function pdfRows(x,items,y,lastY=1550){
   x.font='14px Arial';remarkLines.slice(0,Math.floor((height-10)/20)).forEach((t,n)=>x.fillText(t,1038,y+23+n*19));
   y+=height;
  }
- return y;
+ return {remaining:[],y};
 }
+function pdfLabel(c,index,total){
+ const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(926,1610,237,45);
+ x.fillStyle='#476077';x.font='16px Arial';x.textAlign='right';x.fillText('SAGS digital entry · Page '+index+' of '+total,1150,1640);x.textAlign='left';
+}
+function proofImg(data){return new Promise(resolve=>{
+ if(!/^data:image\/png;base64,/.test(S(data)))return resolve(null);
+ const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src=data;
+})}
 function pdfBuild(canvases){
  const offsets=[],chunks=[];let pos=0;
  const add=v=>{chunks.push(v);pos+=typeof v==='string'?v.length:v.byteLength};
@@ -340,44 +348,60 @@ async function exportPdf(){
    spec.items.filter(x=>x.phase==='6'),
    spec.items.filter(x=>x.phase==='7')
   ];
-  const total=9,canvases=[];
+  const canvases=[];
   for(let i=0;i<printPages.length;i++){
-   const pg=pageCanvas(i+1,total),x=pg.x;let y=pg.y;
-   if(i===0){
-    x.fillStyle='#15364c';x.font='bold 21px Arial';x.fillText('Flight / Aircraft details',60,y+20);y+=42;
-    const keys=spec.headerFields;for(let j=0;j<keys.length;j+=3){
-     const part=keys.slice(j,j+3);
-     for(let k=0;k<part.length;k++){
-      const f=part[k],left=60+k*360;
-      x.fillStyle='#e7eff5';x.fillRect(left,y,342,45);
-      x.fillStyle='#273e55';x.font='bold 14px Arial';x.fillText(f.label,left+8,y+17);
-      x.font='16px Arial';x.fillText(S(model.headers[f.key]).slice(0,37),left+8,y+37);
-     }y+=48;
+   let remaining=printPages[i],part=0;
+   do{
+    const pg=pageCanvas(canvases.length+1,0),x=pg.x;let y=pg.y;
+    if(i===0&&part===0){
+     x.fillStyle='#15364c';x.font='bold 21px Arial';x.fillText('Flight / Aircraft details',60,y+20);y+=42;
+     for(let j=0;j<spec.headerFields.length;j+=3){
+      const fields=spec.headerFields.slice(j,j+3);
+      for(let k=0;k<fields.length;k++){
+       const field=fields[k],left=60+k*360;
+       x.fillStyle='#e7eff5';x.fillRect(left,y,342,45);
+       x.fillStyle='#273e55';x.font='bold 14px Arial';x.fillText(field.label,left+8,y+17);
+       x.font='16px Arial';x.fillText(S(model.headers[field.key]).slice(0,37),left+8,y+37);
+      }y+=48;
+     }
+     x.font='bold 18px Arial';x.fillStyle='#123d54';
+     x.fillText('IMPORTANT REMINDER · STOP unsafe acts · report hazards immediately',60,y+26);y+=48;
+    }else{
+     x.fillStyle='#163b58';x.font='bold 22px Arial';
+     x.fillText('MH AS/RM/F27 · '+(part?'Continued checks':'Checklist phases'),60,y+25);y+=52;
     }
-    x.font='bold 18px Arial';x.fillStyle='#123d54';x.fillText('IMPORTANT REMINDER · STOP unsafe acts · report hazards immediately',60,y+26);y+=48;
-   }else{x.fillStyle='#163b58';x.font='bold 22px Arial';x.fillText('MH AS/RM/F27 · Checklist phases',60,y+25);y+=52}
-   pdfRows(x,printPages[i],y,1540);
-   if(i===5){
-    x.font='16px Arial';x.fillStyle='#193b56';x.fillText('Certification:',65,1135);
-    for(let j=0;j<2;j++){const who=spec.signers[j],a=model.signers[who.key]||{};
-     x.font='bold 16px Arial';x.fillText(who.title,65+j*545,1180);
-     x.font='15px Arial';x.fillText('Name: '+S(a.name),65+j*545,1215);
-     x.fillText('Designation: '+S(a.designation),65+j*545,1245);
-     x.fillText('Signed by: '+S(a.signedBy),65+j*545,1275);
+    const result=pdfRows(x,remaining,y,i===5?1110:1540);
+    if(result.remaining.length===remaining.length)throw Error('Một mục kiểm tra quá dài để xuất PDF. Vui lòng giảm cỡ chữ hoặc kiểm tra dữ liệu.');
+    remaining=result.remaining;
+    if(i===5&&!remaining.length){
+     x.font='16px Arial';x.fillStyle='#193b56';x.fillText('Certification:',65,1150);
+     for(let j=0;j<2;j++){
+      const who=spec.signers[j],a=model.signers[who.key]||{},left=65+j*545;
+      x.font='bold 16px Arial';x.fillText(who.title,left,1195);
+      x.font='15px Arial';x.fillText('Name: '+S(a.name),left,1230);
+      x.fillText('Designation: '+S(a.designation),left,1260);
+      x.fillText('Signed by: '+S(a.signedBy),left,1290);
+      const signature=await proofImg(a.image);
+      if(signature){const ratio=Math.min(330/signature.width,140/signature.height);x.drawImage(signature,left,1320,signature.width*ratio,signature.height*ratio)}
+     }
     }
-   }
-   canvases.push(pg.c);
+    canvases.push(pg.c);part++;
+   }while(remaining.length);
   }
   for(let i=0;i<spec.appendix.length;i++){
-   const a=spec.appendix[i],pg=pageCanvas(i+7,total),x=pg.x;
+   const a=spec.appendix[i],pg=pageCanvas(canvases.length+1,0),x=pg.x;
    x.fillStyle='#18354c';x.font='bold 27px Arial';x.fillText(a.title.toUpperCase(),65,245);
    x.font='20px Arial';wrap(x,a.details,1030,20).forEach((t,n)=>x.fillText(t,65,317+n*33));
    x.strokeStyle='#c9dbe9';x.strokeRect(80,470,1040,835);
    x.fillStyle='#edf4f8';x.fillRect(81,471,1038,833);
    x.fillStyle='#173e5b';x.font='bold 24px Arial';x.fillText('OFFICIAL MH ILLUSTRATION REFERENCE',130,650);
-   x.font='20px Arial';wrap(x,'For operational placement/positioning, use the exact Appendix '+(i+1)+' illustration in the approved Malaysia Airlines AS/RM/F27 source. This E-REPORT export does not replace the airline-approved technical drawing.',890,20).forEach((t,n)=>x.fillText(t,130,708+n*38));
+   x.font='20px Arial';
+   wrap(x,'Use the exact Appendix '+(i+1)+' illustration from the approved Malaysia Airlines AS/RM/F27 source. This digital PDF does not replace the authoritative airline technical drawing.',890,20)
+    .forEach((t,n)=>x.fillText(t,130,708+n*38));
    canvases.push(pg.c);
   }
+  const total=canvases.length;
+  canvases.forEach((c,i)=>pdfLabel(c,i+1,total));
   const pdf=pdfBuild(canvases),url=URL.createObjectURL(pdf),a=document.createElement('a');
   a.href=url;a.download='MH_AS-RM-F27_'+clean(current.date)+'_'+clean(current.item.flightId)+'.pdf';
   document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),45000);
