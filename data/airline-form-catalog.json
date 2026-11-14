@@ -212,5 +212,13 @@
     "prefixes": [
       "EO"
     ]
+  },
+  {
+    "code": "MH",
+    "label": "Malaysia Airlines",
+    "prefixes": [
+      "MH",
+      "MAS"
+    ]
   }
 ]

@@ -1,0 +1,478 @@
+{
+  "schemaVersion": 1,
+  "id": "mhf27",
+  "formCode": "AS/RM/F27",
+  "carrier": "MH",
+  "carrierName": "Malaysia Airlines",
+  "title": "360 DEGREE SAFETY WALKABOUT CHECKLIST",
+  "issue": "Issue 1 Revision 4",
+  "effectiveDate": "2026-04-30",
+  "sourcePages": 9,
+  "notice": "Ground operations safety checklist. Reference to the latest GOM. Stop all unsafe acts. Raise HAZARD REPORT immediately for identified hazards, irregularities, non-compliance, incidents or damage. Notify LAE/Technician for aircraft defects and keep GSE out of ERA during FOD checks.",
+  "decisions": [
+    "YES",
+    "NO",
+    "NA"
+  ],
+  "headerFields": [
+    {
+      "key": "aircraftRegistration",
+      "label": "Aircraft Registration"
+    },
+    {
+      "key": "aircraftType",
+      "label": "Aircraft Type"
+    },
+    {
+      "key": "date",
+      "label": "Date"
+    },
+    {
+      "key": "station",
+      "label": "Station"
+    },
+    {
+      "key": "parkingBay",
+      "label": "Parking/Bay"
+    },
+    {
+      "key": "trc",
+      "label": "TRC"
+    },
+    {
+      "key": "arrivalFlightNo",
+      "label": "Arrival Flight No"
+    },
+    {
+      "key": "departureFlightNo",
+      "label": "Departure Flight No"
+    },
+    {
+      "key": "rampOfficer",
+      "label": "Ramp Officer"
+    },
+    {
+      "key": "arrivalSector",
+      "label": "Arrival Sector"
+    },
+    {
+      "key": "departureSector",
+      "label": "Departure Sector"
+    },
+    {
+      "key": "gseOperator1",
+      "label": "GSE Operator 1"
+    },
+    {
+      "key": "staEtaAta",
+      "label": "STA/ETA/ATA"
+    },
+    {
+      "key": "stdEtdAtd",
+      "label": "STD/ETD/ATD"
+    },
+    {
+      "key": "gseOperator2",
+      "label": "GSE Operator 2"
+    },
+    {
+      "key": "arrivalPHLead",
+      "label": "Arrival PH Lead Officer"
+    },
+    {
+      "key": "departurePHLead",
+      "label": "Departure PH Lead Officer"
+    },
+    {
+      "key": "gseOperator3",
+      "label": "GSE Operator 3"
+    },
+    {
+      "key": "additionalDetails",
+      "label": "Additional Details (if any)"
+    }
+  ],
+  "phases": [
+    {
+      "id": "1",
+      "title": "Pre-Aircraft Arrival"
+    },
+    {
+      "id": "2",
+      "title": "Aircraft Arrival at the Gate"
+    },
+    {
+      "id": "3",
+      "title": "Aircraft Turnaround / Pre-Departure"
+    },
+    {
+      "id": "4",
+      "title": "Loading"
+    },
+    {
+      "id": "5",
+      "title": "Post-Loading"
+    },
+    {
+      "id": "6",
+      "title": "Aircraft Departure"
+    },
+    {
+      "id": "7",
+      "title": "Post-Aircraft Departure"
+    }
+  ],
+  "items": [
+    {
+      "key": "1.1",
+      "phase": "1",
+      "inCharge": "TRC/RO",
+      "activity": "Conduct Safety Briefing, Personal Protective Equipment (PPE), Airside Driving Permit (ADP), Airside Vehicle Permit (AVP) compliance check and update flight requirements."
+    },
+    {
+      "key": "1.2",
+      "phase": "1",
+      "inCharge": "GEO/AHU",
+      "activity": "Ground Service Equipment (GSE) operator to perform 360-degree checks:\na. All GSE positioned out of ERA and staff readily available 5 min prior to STA/ETA.\nb. GSE operators shall carry out 360-degree check of the GSE assigned prior to initial use, in particular the parking brakes, rubber protective bumpers, safety system, beacon light if applicable, and validity of FIREX.\nNote: This 360-degree check shall also include motorized and non-motorized GSE. Defects or abnormalities must be communicated to the GSE Manager or officer-in-charge."
+    },
+    {
+      "key": "1.3",
+      "phase": "1",
+      "inCharge": "TRC",
+      "activity": "Passenger Boarding Bridge (PBB) shall be:\na. Fully retracted prior to arrival. If drivable type, parked within its Ramp Box.\nb. Moved slowly to aircraft cabin access door.\nc. Engaged using the auto-levelling safety system.\nd. Secured to prevent movement by non-authorised persons."
+    },
+    {
+      "key": "1.4",
+      "phase": "1",
+      "inCharge": "TRC/RO/GEO/AHU",
+      "activity": "Sufficient chocks and cones for aircraft type, in good condition and available on stand."
+    },
+    {
+      "key": "1.5",
+      "phase": "1",
+      "inCharge": "ALL (Led by TRC & RO)",
+      "activity": "Conduct 1st Foreign Object Debris (FOD) check 10 minutes prior to aircraft arrival at parking bay Equipment Restraint Area (ERA) as per the FOD Check SOP."
+    },
+    {
+      "key": "1.6",
+      "phase": "1",
+      "inCharge": "AHU",
+      "activity": "Headset man readily available in position prior to STA/ETA and VDGS activated or Aircraft Marshaller equipped with appropriate hand signal equipment in position in case no VDGS available."
+    },
+    {
+      "key": "2.1",
+      "phase": "2",
+      "inCharge": "ALL",
+      "activity": "Staff/PBB/GSE stay clear of ERA and wait until aircraft has come to a complete stop, chocks are inserted at Nose Landing Gear, anti-collision light switched off, engines spooled down and all clear given by Aircraft Marshaller before approaching."
+    },
+    {
+      "key": "2.2",
+      "phase": "2",
+      "inCharge": "GEO",
+      "activity": "Aircraft chocks and cones positioned as per procedure."
+    },
+    {
+      "key": "2.3",
+      "phase": "2",
+      "inCharge": "RO/TRC",
+      "activity": "360 walkabout check - inspect areas surrounding cargo door for scratches, dents or other damage prior to opening and after closing. Report abnormalities or damage through the Hazard Reporting System in accordance with company procedures."
+    },
+    {
+      "key": "2.4",
+      "phase": "2",
+      "inCharge": "AHU",
+      "activity": "Provide 1st thumbs-up to PBB operator to connect PBB to aircraft."
+    },
+    {
+      "key": "2.5",
+      "phase": "2",
+      "inCharge": "TRC",
+      "activity": "Provide 2nd thumbs-up to GSE operator for GSE movements to approach aircraft. No GSE shall approach aircraft until all chocks and cones are safely placed."
+    },
+    {
+      "key": "2.6",
+      "phase": "2",
+      "inCharge": "RO/AHU",
+      "activity": "Only authorized personnel to open cargo door and/or operate GSE. No touch policy strictly adhered to for all ground equipment attached to aircraft except PBB."
+    },
+    {
+      "key": "2.7",
+      "phase": "2",
+      "inCharge": "GEO/RO",
+      "activity": "GSE positioning checks:\na. Marshall available at all times to guide GSE approach to aircraft.\nb. Maximum 5 km/h speed (no faster than normal walking speed).\nc. 1st brake check 5 meters away.\nd. 2nd brake check 2 meters away from aircraft.\ne. Guard rails lowered.\nf. Comply with No Touch Policy.\ng. GSE not placed under aircraft doors/evacuation points where slides cannot deploy.\nh. GSE not blocking emergency egress of fuel truck or other vehicles on ramp."
+    },
+    {
+      "key": "2.8",
+      "phase": "2",
+      "inCharge": "PBBO",
+      "activity": "Aerobridge or stairs positioned at cabin door before aircraft door is open."
+    },
+    {
+      "key": "2.9",
+      "phase": "2",
+      "inCharge": "PH",
+      "activity": "Secure passenger movement on ramp between aircraft, bus and terminal during remote bay operations."
+    },
+    {
+      "key": "2.10",
+      "phase": "2",
+      "inCharge": "RO",
+      "activity": "Unloading of baggage and cargo to follow procedure and sequence guided by LDM/CPM to avoid incidents such as aircraft tipping."
+    },
+    {
+      "key": "2.11",
+      "phase": "2",
+      "inCharge": "RO",
+      "activity": "All unload baggage to be counted by piece and reconciled with the recorded number of baggage in LDM/CPM."
+    },
+    {
+      "key": "2.12",
+      "phase": "2",
+      "inCharge": "TRC/RO",
+      "activity": "Upon completion of unloading, cargo holds and ULDs to be inspected, damage reported (if any), and FAK available and securely lashed."
+    },
+    {
+      "key": "2.13",
+      "phase": "2",
+      "inCharge": "AHU/CAT",
+      "activity": "Water/lavatory/catering truck properly marshalled, chocked and stabilizer deployed accordingly before activities. Transfer bridge for hi-lift operations must be straight, firmly placed and handrails extended from hi-lift container."
+    },
+    {
+      "key": "2.14",
+      "phase": "2",
+      "inCharge": "FUELER / TRC",
+      "activity": "Fuel bowser properly positioned, grounding secured and bowser escape route not obstructed."
+    },
+    {
+      "key": "3.1",
+      "phase": "3",
+      "inCharge": "GEO",
+      "activity": "GSE positioning checks:\na. Marshall available at all times to guide GSE approach.\nb. Maximum 5 km/h speed.\nc. 1st brake check 5 meters away.\nd. 2nd brake check 2 meters away.\ne. Guard rails lowered.\nf. Comply with No Touch Policy.\ng. GSE not placed under aircraft doors/evacuation points where slides cannot deploy.\nh. GSE not blocking emergency egress of fuel truck or other vehicles."
+    },
+    {
+      "key": "3.2",
+      "phase": "3",
+      "inCharge": "RO",
+      "activity": "Latest LIR readily available and used before commencement of loading."
+    },
+    {
+      "key": "3.3",
+      "phase": "3",
+      "inCharge": "RO",
+      "activity": "All onload baggage to be counted by piece and reconciled with recorded number of baggage in DCS system via scanner or container record card (CRC)."
+    },
+    {
+      "key": "3.4",
+      "phase": "3",
+      "inCharge": "RO",
+      "activity": "Before loading ULDs onto aircraft, ensure:\na. Relevant documents and special instructions for applicable flight received as per MH procedures.\nb. No nets, ropes, straps or protective materials dragging, tangled or jammed in rollers, ball-mats or wheels.\nc. All built-up cargo/mail/baggage safe to move and will not shift, roll or topple.\nd. No spillage or leakage from load.\ne. No damage to packing material or cargo load.\nf. No tampering (cuts/tears of plastic foil, etc.).\ng. No visually detectable ULD distortion/damage.\nh. No build-up/absence of contamination (snow, water, ice) on ULDs and bulk loads.\ni. ULD container curtain doors/nets properly closed/latched/secured.\nj. Protective tarpaulin/plastic sheet over ULDs/loads in wet weather removed before loading.\nk. ULD pallet contour correct, without visible shifting/collapsing.\nl. ULD pallet nets/straps correctly tensioned within allowable 5–7.5 cm (2–3 inch) by hand.\nm. No pallet edges bent upward.\nn. No Cargo Aircraft Only shipment on passenger aircraft.\no. Extra attention to oversized, protruding, overhanging cargo and merged pallets."
+    },
+    {
+      "key": "3.5",
+      "phase": "3",
+      "inCharge": "RO",
+      "activity": "Immediately report baggage, cargo or mail damage, spillage, contamination, etc. to TRC for action."
+    },
+    {
+      "key": "3.6",
+      "phase": "3",
+      "inCharge": "Cargo RO",
+      "activity": "Cargo Load Manifest, UWS, AWB and relevant documents available and kept in Cargo document; document loaded in Bulk Hold."
+    },
+    {
+      "key": "3.7",
+      "phase": "3",
+      "inCharge": "TRC/RO",
+      "activity": "Ensure potable water is sufficient for flight."
+    },
+    {
+      "key": "3.8",
+      "phase": "3",
+      "inCharge": "TRC/RO",
+      "activity": "Ensure toilet servicing is completed."
+    },
+    {
+      "key": "4.1",
+      "phase": "4",
+      "inCharge": "TRC/RO",
+      "activity": "While loading cargo/ULDs, check:\na. Loading follows LIR. Any deviation requires RO to inform CLC or Station CLC Coordinator (SCC) to liaise with Load Control.\nb. Protective tarpaulin/plastic sheet used to protect aircraft floor for wet cargo (live/wet/frozen seafood).\nc. Follow This Side Up orientation label.\nd. B737-800 cargo stack does not exceed maximum loading height marking.\ne. Minimum 2-inch gap to cargo compartment ceiling.\nf. No Cargo Aircraft Only cargo loaded onto passenger aircraft.\ng. No dangerous goods in aircraft cabin except as permitted by Authority / MAB.\nh. AVI cage secured and latched."
+    },
+    {
+      "key": "5.1",
+      "phase": "5",
+      "inCharge": "RO",
+      "activity": "Physically inspect all loads:\na. No unprotected protruding cargo left unsecured.\nb. No cargo/baggage stacked above maximum cargo loading height marking."
+    },
+    {
+      "key": "5.2",
+      "phase": "5",
+      "inCharge": "RO",
+      "activity": "Final LIR produced and signed by RO."
+    },
+    {
+      "key": "5.3",
+      "phase": "5",
+      "inCharge": "RO",
+      "activity": "NOTOC produced for special loads and acknowledged and/or signed by Pilot in Command."
+    },
+    {
+      "key": "5.4",
+      "phase": "5",
+      "inCharge": "RO",
+      "activity": "Printed Electronic NOTOC produced for DGR shipment, if any, and Pilot in Command acknowledgement/signature obtained."
+    },
+    {
+      "key": "6.1",
+      "phase": "6",
+      "inCharge": "AIC",
+      "activity": "AIC team leader reports required information to TRC upon completion of cabin cleaning."
+    },
+    {
+      "key": "6.2",
+      "phase": "6",
+      "inCharge": "RO",
+      "activity": "Baggage, mail and/or cargo commodities correctly loaded and securely handled as per LIR."
+    },
+    {
+      "key": "6.3",
+      "phase": "6",
+      "inCharge": "RO",
+      "activity": "All special loads (AVI, PER, HUM, DGR, Diplomatic Cargo/Mail and security handling shipments including firearm and VAL, etc.) loaded, secured and stowed as per SOP."
+    },
+    {
+      "key": "6.4",
+      "phase": "6",
+      "inCharge": "RO",
+      "activity": "Final inspection of serviceability of locks/nets/lashes upon completion of loading."
+    },
+    {
+      "key": "6.5",
+      "phase": "6",
+      "inCharge": "RO/LC",
+      "activity": "Final cargo load confirmation with load control (if applicable)."
+    },
+    {
+      "key": "6.6",
+      "phase": "6",
+      "inCharge": "RO",
+      "activity": "ULD inspected for damage before loading into aircraft. If damaged, immediately report to TRC/Ramp Officer. For palletized cargo, loaders to check."
+    },
+    {
+      "key": "6.7",
+      "phase": "6",
+      "inCharge": "GEO",
+      "activity": "All GSE equipment safely removed from ERA upon completion of activities."
+    },
+    {
+      "key": "6.8",
+      "phase": "6",
+      "inCharge": "AHU",
+      "activity": "Suitable tow tug and tow bar positioned at bay 10 minutes prior to STD."
+    },
+    {
+      "key": "6.9",
+      "phase": "6",
+      "inCharge": "PH",
+      "activity": "Gate staff communicate with TRC 10 minutes before STD about gate items and/or A17 cases."
+    },
+    {
+      "key": "6.10",
+      "phase": "6",
+      "inCharge": "RO",
+      "activity": "Conduct 2nd FOD check after service and cargo doors closed and before pushback; inspect ramp surface after ramp activities to ensure area safe for operations."
+    },
+    {
+      "key": "6.11",
+      "phase": "6",
+      "inCharge": "TRC/RO/HSM",
+      "activity": "TRC, RO or Headset Man verifies all pitot covers removed and probes free of foreign objects during pre-departure walkaround."
+    },
+    {
+      "key": "6.12",
+      "phase": "6",
+      "inCharge": "ALL",
+      "activity": "All personnel exit ERA except wing walker(s) and headset operator."
+    },
+    {
+      "key": "6.13",
+      "phase": "6",
+      "inCharge": "RO/GO/PBBO",
+      "activity": "All cables/hoses connected to aircraft properly removed/disconnected (e.g. GPU, ACU)."
+    },
+    {
+      "key": "6.14",
+      "phase": "6",
+      "inCharge": "RO/TRC",
+      "activity": "Aircraft servicing panels and/or hatches closed and secured, except external power/headset panel."
+    },
+    {
+      "key": "6.15",
+      "phase": "6",
+      "inCharge": "RO/TRC",
+      "activity": "Aircraft cabin/cargo doors closed and handles flush with fuselage."
+    },
+    {
+      "key": "6.16",
+      "phase": "6",
+      "inCharge": "GEO/AHU",
+      "activity": "Maximum aircraft nose gear not exceeded and standard verbal communication used between ground and flight crew."
+    },
+    {
+      "key": "6.17",
+      "phase": "6",
+      "inCharge": "GEO/AHU",
+      "activity": "Landing gear safety pins removed."
+    },
+    {
+      "key": "6.18",
+      "phase": "6",
+      "inCharge": "GEO",
+      "activity": "Chocks and towing equipment removed as per SOP."
+    },
+    {
+      "key": "7.1",
+      "phase": "7",
+      "inCharge": "RO",
+      "activity": "Conduct 3rd FOD check immediately after aircraft pushback completed."
+    },
+    {
+      "key": "7.2",
+      "phase": "7",
+      "inCharge": "GEO",
+      "activity": "Chocks and cones positioned at designated area."
+    },
+    {
+      "key": "7.3",
+      "phase": "7",
+      "inCharge": "GO/RO/TRC",
+      "activity": "All GSE, ULDs and other loose ground equipment (chocks, cones, FIREX and other aerodrome safety/rescue equipment) removed from ERA and parked at designated area."
+    }
+  ],
+  "appendix": [
+    {
+      "page": 7,
+      "title": "Appendix 1 - Safety Cones Positions",
+      "details": "Cones maximum 1 m (3 ft) from wingtips, winglets, nose and tail. Positions differ for B738, B737-8 and wide-body A332/A332F/A333/A359. Refer to the approved Malaysia Airlines diagram."
+    },
+    {
+      "page": 8,
+      "title": "Appendix 2 - Wheels Chock Placements",
+      "details": "Normal and out-of-service/night stop/high-wind/adverse weather configurations; single axle B737, double/triple axle A330/A350."
+    },
+    {
+      "page": 9,
+      "title": "Appendix 3 - FOD Check Walk-About Pathway",
+      "details": "FOD checks around and within ERA. No GSE shall enter ERA or surrounding area during FOD walkabout. Refer to the approved Malaysia Airlines diagram."
+    }
+  ],
+  "signers": [
+    {
+      "key": "groundHandler",
+      "title": "Ground Handler Personnel"
+    },
+    {
+      "key": "stationHead",
+      "title": "Station Head"
+    }
+  ]
+}

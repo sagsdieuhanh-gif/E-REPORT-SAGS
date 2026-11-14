@@ -33,10 +33,6 @@ function sanitizeEnvelope(env){const x=env&&typeof env==='object'?env:{},src=x.s
 function mergeSeedSafe(target,source){target=clone(target)||{};source=source||{};target.state=target.state&&typeof target.state==='object'?target.state:{};const src=source.state&&typeof source.state==='object'?source.state:{};const seed=target.rosterSeed&&typeof target.rosterSeed==='object'?target.rosterSeed:{};for(const [k,v] of Object.entries(src)){if(/attachment/i.test(k))continue;const cur=target.state[k],old=seed[k];const blank=cur===null||cur===undefined||S(cur)==='';let sameSeed=false;try{sameSeed=(k in seed)&&JSON.stringify(cur)===JSON.stringify(old)}catch(_){sameSeed=S(cur)===S(old)}if(blank||sameSeed)target.state[k]=clone(v)}return target}
 
 /* ---------- Root RTDB patch normalization ---------- */
-// V1.1.102: Firebase RTDB rejects one update() when the same patch contains
-// both an ancestor path and one of its descendants. Older Daily Roster code can
-// write assignments/{id} while the clean layer adds assignments/{id}/active.
-// Collapse descendant writes into the ancestor object before sending to RTDB.
 function collapseUpdatePathConflicts(patch){
   if(!patch||typeof patch!=='object'||Array.isArray(patch))return patch;
   const out={...patch};
@@ -61,7 +57,6 @@ function installRefClean(){
   root.__SAGS_V11102_REF_CLEAN=true;
   root.sagsV470Ref=function(path=''){
     const p=S(path),ref=prev(p);
-    // Capture workspace metadata from the actual child_added/child_changed mailbox stream.
     if(/^roster_mail\/[^/]+\/items$/.test(p)&&ref&&typeof ref.on==='function'&&!ref.__v1198mail){
       const bon=ref.on.bind(ref),boff=typeof ref.off==='function'?ref.off.bind(ref):null,cbMap=new Map();
       ref.on=function(event,cb,...rest){if(['child_added','child_changed'].includes(event)&&typeof cb==='function'){const w=snap=>{try{const v=snap?.val?.();if(v)rememberWorkspace(v,v.opDate)}catch(_){}return cb(snap)};cbMap.set(cb,w);return bon(event,w,...rest)}return bon(event,cb,...rest)};
@@ -72,14 +67,11 @@ function installRefClean(){
     const baseUpdate=ref.update.bind(ref);
     ref.update=async function(patch){
       if(!patch||typeof patch!=='object'||Array.isArray(patch))return baseUpdate(collapseUpdatePathConflicts(patch));
-      // Any parent-manifest write becomes cumulative by construction, so older wrappers
-      // cannot accidentally turn a later roster batch into REPLACE_SAME_DAY.
       for(const k of Object.keys(patch)){
         const m=/^roster_manifests\/([^/]+)$/.exec(k);if(!m||!patch[k]?.items)continue;
         let old={};try{old=(await prev(`${MANIFEST}/${m[1]}`).once('value')).val()||{}}catch(_){old={}}
         patch[k]={...old,...patch[k],items:{...(old.items||{}),...(patch[k].items||{})},cumulative:true,cumulativeMode:'MERGE_UPDATE',syncMode:'MERGE_UPDATE_SAME_DAY',dailyRosterCleanBuild:DISPLAY};
       }
-      // Normalize item-level writes used by the current daily-roster publisher.
       const itemRows=[];
       for(const [k,v0] of Object.entries(patch)){
         const m=/^roster_manifests\/([^/]+)\/items\/([^/]+)$/.exec(k);if(!m||!v0||typeof v0!=='object')continue;
@@ -89,7 +81,6 @@ function installRefClean(){
           const mm=new RegExp(`^${mailPrefix.replace('/','\\/')}([^/]+)\\/items\\/${aid.replace(/[.*+?^${}()|[\\]\\]/g,'\\$&')}$`).exec(mk);if(!mm||!patch[mk]||typeof patch[mk]!=='object')continue;patch[mk]={...patch[mk],flightId:S(v.flightId||patch[mk].flightId),workspaceKey:v.workspaceKey,rosterWorkspaceKey:v.workspaceKey,rosterWorkSlotKey:v.rosterWorkSlotKey,assignmentScope:S(v.assignmentScope||patch[mk].assignmentScope||'TURNAROUND'),dailyRosterCleanBuild:DISPLAY};rememberWorkspace(patch[mk],date);
         }
       }
-      // Keep Flight Record assignment-owner metadata in the same atomic update.
       const t=Date.now();
       for(const {date,aid,item} of itemRows){const fid=S(item.flightId);if(!fid)continue;const u=normUser(item.user||item.targetUser),unit=unitFor(item),base=`${FLIGHTS}/${safe(date)}/${safe(fid)}`;patch[`${base}/assignments/${safe(aid)}/assignmentId`]=aid;patch[`${base}/assignments/${safe(aid)}/user`]=u;patch[`${base}/assignments/${safe(aid)}/originalUser`]=normUser(item.originalUser||item.originalTargetUser||u);patch[`${base}/assignments/${safe(aid)}/formGroup`]=S(item.formGroup);patch[`${base}/assignments/${safe(aid)}/sourceColumn`]=S(item.sourceColumn);patch[`${base}/assignments/${safe(aid)}/roleKey`]=S(item.roleKey);patch[`${base}/assignments/${safe(aid)}/workspaceKey`]=S(item.workspaceKey);patch[`${base}/assignments/${safe(aid)}/assignmentScope`]=S(item.assignmentScope||'TURNAROUND');patch[`${base}/assignments/${safe(aid)}/active`]=item.active!==false;patch[`${base}/taskStatus/${safe(aid)}/ownerUser`]=u;patch[`${base}/taskStatus/${safe(aid)}/workspaceKey`]=S(item.workspaceKey);patch[`${base}/taskStatus/${safe(aid)}/updatedAtMs`]=t;
         if(unit&&u){let fromUser='';for(const [mk,mv] of Object.entries(patch)){if(mk.startsWith(`${MAIL}/`)&&mk.endsWith(`/items/${aid}`)&&mv&&typeof mv==='object'&&S(mv.reassignedFrom)){fromUser=normUser(mv.reassignedFrom);break}}if(fromUser){try{const ua=(await prev(`${FLIGHTS}/${safe(date)}/${safe(fid)}/unitAssignments/${safe(unit)}`).once('value')).val()||null;if(ua?.username&&normUser(ua.username)===fromUser){patch[`${base}/unitAssignments/${safe(unit)}/username`]=u;patch[`${base}/unitAssignments/${safe(unit)}/name`]=u;patch[`${base}/unitAssignments/${safe(unit)}/updatedAtMs`]=t;patch[`${base}/unitAssignments/${safe(unit)}/claimSource`]='ROSTER_REASSIGN_SYNC';}}catch(_){}}}
@@ -120,8 +111,6 @@ function workspaceDelta(prev,next){
   for(const k of ['mainForm','activeFormGroup','currentPage','scrollY','arrivalOp','departureOp','rosterSeed'])if(!jsonSame(prev[k],next[k]))patch[`envelope/${k}`]=clone(next[k]);
   return patch;
 }
-// HF4: an old tab must not overwrite the shared workspace after another
-// employee self-accepts its assignment. Check fresh personal mailbox ownership.
 async function hf4StillOwns(aid,date='',fid=''){
   const u=normUser(root.currentUserProfile?.username||'');
   if(!u||!aid||typeof root.sagsV470Ref!=='function')return false;
@@ -129,9 +118,6 @@ async function hf4StillOwns(aid,date='',fid=''){
     const owns=!!(item&&item.active!==false&&normUser(item.targetUser||item.user)===u&&(!date||S(item.opDate)===S(date))&&(!fid||S(item.flightId)===S(fid)));
     if(!owns)return false;
     const gid=S(item.coAssigneeGroupId);if(!gid)return true;
-    // The mailbox alone is insufficient after a co-worker selects NHẬN TIẾP.
-    // Stop cloud draft writes from the former editor when a new owner holds
-    // the transactional co-group lease. Keep their unsynced local draft intact.
     const lock=(await root.sagsV470Ref(`roster_co_claims/${safe(S(date||item.opDate))}/${safe(gid)}`).once('value')).val()||{};
     if(S(lock.status).toUpperCase()!=='CLAIMED'||normUser(lock.claimedBy)!==u||S(lock.claimedAssignmentId)!==S(aid)){
       const who=normUser(lock.claimedBy||'');
@@ -156,13 +142,8 @@ async function writeWorkspaceForActive(delay=420){
     await root.sagsV470Ref(`${WORKSPACE}/${safe(info.workspaceKey)}`).update(delta);rememberWsBaseline(info.workspaceKey,clean);
   }catch(e){console.info('V1.1.105 workspace delta sync',e?.message||e)}},delay)
 }
-// V4.7.7: NEVER scan every assignment on a flight or copy a workspace into
-// another person's session just because they have the same flight number.
-// Only the explicitly selected assignment may be hydrated, on actual open.
 async function hydrateWorkspaceForFlight(date,fid,aid){
   aid=S(aid);date=S(date);if(!aid||!date||typeof root.sagsV470Ref!=='function')return 0;
-  // Fresh per-assignment mailbox check; stale on-device workspace mapping alone
-  // must never authorize a read or an automatic copy after reassignment.
   let item=null;
   try{
     item=root.sagsV478GetAssignmentFast?.(aid,date)||null;
@@ -179,8 +160,6 @@ async function hydrateWorkspaceForFlight(date,fid,aid){
   try{source=(await root.sagsV470Ref(`${WORKSPACE}/${safe(wk)}/envelope`).once('value')).val()||null}catch(_){return 0}
   if(!source||!meaningfulEnvelope(source))return 0;
   const clean=sanitizeEnvelope(source),target=root.sagsV470Ref(`${SESSION}/${safe(aid)}/envelope`);
-  // A transaction prevents the initial hydration from overwriting another device's
-  // saved work (or a form that the receiver already started editing).
   if(typeof target.transaction!=='function')return 0;
   const result=await target.transaction(current=>{
     if(current&&meaningfulEnvelope(current))return;
@@ -206,7 +185,6 @@ async function syncPushbackFromActive(){
     if(typeof root.sagsV470Ref!=='function')return; // Do not mark an offline attempt as synced.
     const aid=S(meta.rosterAssignmentId),fid=S(meta.rosterFlightId||workspaceMap[aid]?.flightId);
     if(!await hf4StillOwns(aid,date,fid))return;
-    // Hub consumers still receive the complete state when it CHANGES. Avoid
     // redundant writes after no-op persist, page switches and repeated hooks.
     const syncSig=JSON.stringify([date,sig,aid,fid,S(meta.id),S(meta.name),normUser(root.currentUserProfile?.username||''),S(workspaceMap[aid]?.workspaceKey),st]);
     if(syncSig===lastRampSyncSig)return;
@@ -247,18 +225,24 @@ async function reconcilePolicyAuxForms(date=opDate()){
  const [policy,manSnap,flightSnap]=await Promise.all([root.sagsAirlineFormPolicy.ready?.(true),root.sagsV470Ref(`${MANIFEST}/${safe(date)}`).once('value'),root.sagsV470Ref(`${FLIGHTS}/${safe(date)}`).once('value')]);
  const man=manSnap.val()||{},flights=flightSnap.val()||{},allItems=Object.values(man.items||{}).filter(Boolean);
  const bases=allItems.filter(x=>x.active!==false&&U(x.roleKey)==='CBTT'&&(U(x.formGroup)==='FINAL'||U(x.sourceColumn).includes('GRND_LS'))&&!['FSAGS54','FSAGS94'].includes(canonicalForm(x)));
- const specs=[{group:'FSAGS54',canon:'FSAGS54'},{group:'clc_checklist',canon:'FSAGS94'}],desired=new Map(),patch={},now=Date.now();let added=0,reactivated=0,deactivated=0,already=0;
- for(const base0 of bases){const user=normUser(base0.user||base0.targetUser),fid=S(base0.flightId);if(!user||!fid)continue;const base=policyFlightRecord(flights,fid,base0);
+ const mhBases=allItems.filter(x=>x.active!==false&&x.policyGenerated!==true&&
+  U(x.sourceColumn).includes('GRND_COR')&&canonicalForm(x)!=='MHF27');
+ const jobs=[
+  ...bases.map(base0=>({base0,specs:[{group:'FSAGS54',canon:'FSAGS54'},{group:'clc_checklist',canon:'FSAGS94'}]})),
+  ...mhBases.map(base0=>({base0,specs:[{group:'mhf27',canon:'MHF27',sourceColumn:'Grnd_Cor',roleKey:'DH'}]}))
+ ];
+ const desired=new Map(),patch={},now=Date.now();let added=0,reactivated=0,deactivated=0,already=0;
+ for(const {base0,specs} of jobs){const user=normUser(base0.user||base0.targetUser),fid=S(base0.flightId);if(!user||!fid)continue;const base=policyFlightRecord(flights,fid,base0);
    for(const spec of specs){if(root.sagsAirlineFormPolicy.allowed(base,spec.group)!==true)continue;const key=[user,fid,spec.canon].join('|');desired.set(key,{base,user,fid,spec});
      const matches=allItems.filter(x=>normUser(x.user||x.targetUser)===user&&S(x.flightId)===fid&&canonicalForm(x)===spec.canon),active=matches.find(x=>x.active!==false);
      if(active){const aid=S(active.assignmentId);if(aid)patch[`${FLIGHTS}/${safe(date)}/${safe(fid)}/assignments/${safe(aid)}`]={...active,active:true,opDate:date,flightId:fid,policyRevision:Number(policy?.revision||0)};already++;continue}
      const old=matches.find(x=>x.policyGenerated===true);
-     if(old){const aid=S(old.assignmentId),item={...old,...base,assignmentId:aid,user,targetUser:user,formGroup:spec.group,sourceColumn:'Grnd_Ls',roleKey:'CBTT',active:true,policyGenerated:true,policyReactivatedAtMs:now,policyRevision:Number(policy?.revision||0),updatedAtMs:now};patch[`${MANIFEST}/${safe(date)}/items/${safe(aid)}`]=item;patch[`${MAIL}/${safe(user)}/items/${safe(aid)}`]={...item,engine:item.engine||'daily-roster-v2',schema:item.schema||2,opDate:date,date:S(item.date||date)};patch[`${SESSION}/${safe(aid)}/active`]=true;patch[`${SESSION}/${safe(aid)}/policyGenerated`]=true;patch[`${SESSION}/${safe(aid)}/policyRevision`]=Number(policy?.revision||0);patch[`${SESSION}/${safe(aid)}/updatedAtMs`]=now;patch[`${FLIGHTS}/${safe(date)}/${safe(fid)}/assignments/${safe(aid)}`]=item;reactivated++;continue}
-     const aid=policyAuxAid(date,base,spec.group),item={...clone(base),assignmentId:aid,user,targetUser:user,originalUser:normUser(base.originalUser||base.originalTargetUser||user),originalTargetUser:normUser(base.originalUser||base.originalTargetUser||user),formGroup:spec.group,sourceColumn:'Grnd_Ls',roleKey:'CBTT',assignmentLeg:'',assignmentScope:'TURNAROUND',workPartOrder:1,workPartTotal:1,workPartSequenceSource:'Grnd_Ls',coAssigneeGroupId:'',coAssigneeMode:'',coAssigneeRank:1,coAssigneeTotal:1,coAssigneeUsers:[user],manualOverride:false,active:true,policyGenerated:true,policyGeneratedAtMs:now,policyRevision:Number(policy?.revision||0),updatedAtMs:now};delete item.workspaceKey;delete item.rosterWorkspaceKey;delete item.rosterWorkSlotKey;
+     if(old){const aid=S(old.assignmentId),item={...old,...base,assignmentId:aid,user,targetUser:user,formGroup:spec.group,sourceColumn:spec.sourceColumn||'Grnd_Ls',roleKey:spec.roleKey||'CBTT',active:true,policyGenerated:true,policyReactivatedAtMs:now,policyRevision:Number(policy?.revision||0),updatedAtMs:now};patch[`${MANIFEST}/${safe(date)}/items/${safe(aid)}`]=item;patch[`${MAIL}/${safe(user)}/items/${safe(aid)}`]={...item,engine:item.engine||'daily-roster-v2',schema:item.schema||2,opDate:date,date:S(item.date||date)};patch[`${SESSION}/${safe(aid)}/active`]=true;patch[`${SESSION}/${safe(aid)}/policyGenerated`]=true;patch[`${SESSION}/${safe(aid)}/policyRevision`]=Number(policy?.revision||0);patch[`${SESSION}/${safe(aid)}/updatedAtMs`]=now;patch[`${FLIGHTS}/${safe(date)}/${safe(fid)}/assignments/${safe(aid)}`]=item;reactivated++;continue}
+     const aid=policyAuxAid(date,base,spec.group),item={...clone(base),assignmentId:aid,user,targetUser:user,originalUser:normUser(base.originalUser||base.originalTargetUser||user),originalTargetUser:normUser(base.originalUser||base.originalTargetUser||user),formGroup:spec.group,sourceColumn:spec.sourceColumn||'Grnd_Ls',roleKey:spec.roleKey||'CBTT',formLabel:spec.canon==='MHF27'?'MH · AS/RM/F27 360° WALKABOUT':'',assignmentLeg:'',assignmentScope:'TURNAROUND',workPartOrder:1,workPartTotal:1,workPartSequenceSource:spec.sourceColumn||'Grnd_Ls',coAssigneeGroupId:'',coAssigneeMode:'',coAssigneeRank:1,coAssigneeTotal:1,coAssigneeUsers:[user],manualOverride:false,active:true,policyGenerated:true,policyGeneratedAtMs:now,policyRevision:Number(policy?.revision||0),updatedAtMs:now};delete item.workspaceKey;delete item.rosterWorkspaceKey;delete item.rosterWorkSlotKey;
      patch[`${MANIFEST}/${safe(date)}/items/${safe(aid)}`]=item;patch[`${MAIL}/${safe(user)}/items/${safe(aid)}`]={...item,engine:'daily-roster-v2',schema:2,opDate:date,date:S(item.date||date)};patch[`${SESSION}/${safe(aid)}`]={engine:'daily-roster-v2',schema:1,assignmentId:aid,ownerUser:user,formGroup:spec.group,claimStatus:'READY',taskStatusV333:'UNCLAIMED',taskAvailabilityV333:'READY',active:true,policyGenerated:true,policyRevision:Number(policy?.revision||0),createdAtMs:now,updatedAtMs:now};patch[`${FLIGHTS}/${safe(date)}/${safe(fid)}/assignments/${safe(aid)}`]=item;added++;
    }
  }
- for(const item of allItems){const canon=canonicalForm(item);if(item.policyGenerated!==true||!['FSAGS54','FSAGS94'].includes(canon)||item.active===false)continue;const user=normUser(item.user||item.targetUser),fid=S(item.flightId),key=[user,fid,canon].join('|');if(desired.has(key))continue;const aid=S(item.assignmentId);if(!aid)continue;const disabled={...item,active:false,policyDisabledAtMs:now,policyRevision:Number(policy?.revision||0),updatedAtMs:now};patch[`${MANIFEST}/${safe(date)}/items/${safe(aid)}`]=disabled;if(user)patch[`${MAIL}/${safe(user)}/items/${safe(aid)}`]={...disabled,engine:item.engine||'daily-roster-v2',schema:item.schema||2,opDate:date,date:S(item.date||date)};patch[`${SESSION}/${safe(aid)}/active`]=false;patch[`${SESSION}/${safe(aid)}/policyDisabledAtMs`]=now;patch[`${SESSION}/${safe(aid)}/policyRevision`]=Number(policy?.revision||0);patch[`${SESSION}/${safe(aid)}/updatedAtMs`]=now;if(fid)patch[`${FLIGHTS}/${safe(date)}/${safe(fid)}/assignments/${safe(aid)}`]=disabled;deactivated++}
+ for(const item of allItems){const canon=canonicalForm(item);if(item.policyGenerated!==true||!['FSAGS54','FSAGS94','MHF27'].includes(canon)||item.active===false)continue;const user=normUser(item.user||item.targetUser),fid=S(item.flightId),key=[user,fid,canon].join('|');if(desired.has(key))continue;const aid=S(item.assignmentId);if(!aid)continue;const disabled={...item,active:false,policyDisabledAtMs:now,policyRevision:Number(policy?.revision||0),updatedAtMs:now};patch[`${MANIFEST}/${safe(date)}/items/${safe(aid)}`]=disabled;if(user)patch[`${MAIL}/${safe(user)}/items/${safe(aid)}`]={...disabled,engine:item.engine||'daily-roster-v2',schema:item.schema||2,opDate:date,date:S(item.date||date)};patch[`${SESSION}/${safe(aid)}/active`]=false;patch[`${SESSION}/${safe(aid)}/policyDisabledAtMs`]=now;patch[`${SESSION}/${safe(aid)}/policyRevision`]=Number(policy?.revision||0);patch[`${SESSION}/${safe(aid)}/updatedAtMs`]=now;if(fid)patch[`${FLIGHTS}/${safe(date)}/${safe(fid)}/assignments/${safe(aid)}`]=disabled;deactivated++}
  patch[`${MANIFEST}/${safe(date)}/policyAuxReconciledAtMs`]=now;patch[`${MANIFEST}/${safe(date)}/policyAuxReconciledBuild`]=BUILD;patch[`${MANIFEST}/${safe(date)}/policyAuxRevision`]=Number(policy?.revision||0);patch[`${MANIFEST}/${safe(date)}/policyAuxExpectedCount`]=desired.size;patch[`${MANIFEST}/${safe(date)}/policyAuxAddedCount`]=added;patch[`${MANIFEST}/${safe(date)}/policyAuxReactivatedCount`]=reactivated;patch[`${MANIFEST}/${safe(date)}/policyAuxDeactivatedCount`]=deactivated;
  await root.sagsV470Ref('').update(patch);try{root.sagsV477InvalidateQueueStatus?.()}catch(_){}try{root.dispatchEvent(new CustomEvent('sags:policy-assignments-reconciled',{detail:{date,revision:Number(policy?.revision||0),added,reactivated,deactivated}}))}catch(_){}
  return {ok:true,date,policyRevision:Number(policy?.revision||0),expected:desired.size,added,reactivated,deactivated,already}
@@ -330,7 +314,7 @@ function configuredFormLabel(id,fallback=''){
  }catch(_){}
  return cleanFormUiLabel(fallback);
 }
-function formLabel(x){const g=canonicalForm(x),src=sourceKey(x);if(g==='TVJGOF035')return 'TVJ-GOF-035';if(g==='FSAGS54')return configuredFormLabel('fsags54','F/SAGS-CXR/54');if(g==='FSAGS94')return configuredFormLabel('fsags94','F/SAGS-CXR/94');if(g==='FSAGS423')return '42.3';if(g==='FSAGS421')return '42.1';if(g==='FSAGS551')return '55.1';if(g==='FSAGS09')return 'KẾT SỔ';if(g==='FINAL')return 'BẢNG TẢI CUỐI CÙNG';return src==='GRND_COR'?'ĐIỀU HÀNH':src==='GRND_LD'?'ĐIỀU HÀNH':src==='GRND_LS'?'CÂN BẰNG TRỌNG TẢI':src==='PAX_SUPR'?'PHỤC VỤ HÀNH KHÁCH':g}
+function formLabel(x){const g=canonicalForm(x),src=sourceKey(x);if(g==='TVJGOF035')return 'TVJ-GOF-035';if(g==='MHF27')return 'MH · AS/RM/F27';if(g==='FSAGS54')return configuredFormLabel('fsags54','F/SAGS-CXR/54');if(g==='FSAGS94')return configuredFormLabel('fsags94','F/SAGS-CXR/94');if(g==='FSAGS423')return '42.3';if(g==='FSAGS421')return '42.1';if(g==='FSAGS551')return '55.1';if(g==='FSAGS09')return 'KẾT SỔ';if(g==='FINAL')return 'BẢNG TẢI CUỐI CÙNG';return src==='GRND_COR'?'ĐIỀU HÀNH':src==='GRND_LD'?'ĐIỀU HÀNH':src==='GRND_LS'?'CÂN BẰNG TRỌNG TẢI':src==='PAX_SUPR'?'PHỤC VỤ HÀNH KHÁCH':g}
 function pbOf(st){const e=st?.envelope?.state||{},c=st?.completionEnvelope?.state||{};return S(st?.completedPushback||e.h24Start||e.f421_h24Start||c.h24Start||c.f421_h24Start)}
 function isPushbackSource(x){return ['FSAGS','FSAGS423','FSAGS421'].includes(U(x?.formGroup))}
 function normalizedTask(st){return U(st?.taskStatusV333||st?.taskStatus||st?.workPartStatus||st?.claimStatus).replace(/[\s-]+/g,'_')}
@@ -578,6 +562,21 @@ async function openTask(aid,fid,completed,cardDate='',exact=false,button=null){
     // This also covers completed-form edits, not just first-time NHẬN.
     if(typeof root.SAGSRosterOpenGuard?.requireRadio!=='function')throw new Error('Bộ kiểm tra ký nhận bộ đàm chưa sẵn sàng. Hãy tải lại ứng dụng.');
     await root.SAGSRosterOpenGuard.requireRadio();
+    if(U(item.formGroup)==='MHF27'){
+      if(!root.SAGSMHF27){
+        if(!root.__sagsMHF27Promise)root.__sagsMHF27Promise=new Promise((resolve,reject)=>{
+          const sc=document.createElement('script');
+          sc.src='./app/modules/mh-f27.v1.js?v=V2.2-20261114-MH-F27-23';
+          sc.async=true;sc.onload=resolve;sc.onerror=()=>reject(new Error('Không tải được biểu mẫu MH F27.'));
+          document.head.appendChild(sc);
+        }).catch(e=>{root.__sagsMHF27Promise=null;throw e});
+        await root.__sagsMHF27Promise;
+      }
+      if(typeof root.SAGSMHF27?.open!=='function')throw new Error('Biểu mẫu MH chưa được khởi tạo.');
+      root.sagsFlightDossierClose?.();
+      await root.SAGSMHF27.open({item,date,completed});
+      return;
+    }
     // Completed forms also go through the same exact-assignment NHẬN handler.
     if(!completed)try{await clearStaleClaimIfNeeded(item)}catch(e){
       console.warn('Không xác minh được claim cũ',e);
