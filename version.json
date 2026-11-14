@@ -1,12 +1,12 @@
 {
   "version": "V2.2",
   "displayVersion": "V2.2",
-  "label": "V2.2 - MALAYSIA AIRLINES MH + 360 DEGREE SAFETY WALKABOUT CHECKLIST",
-  "build": "V2.2-20261114-MH-F27-24",
+  "label": "V2.2 - MH AS/RM/F27 TWO-MODE INPUT",
+  "build": "V2.2-20261114-MH-F27-25",
   "releasedAt": "2026-11-14",
-  "type": "mh-f27-original-pdf-fidelity-fix",
+  "type": "mh-f27-pdf-and-quick-entry-redesign",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "MH AS/RM/F27 xuất PDF trực tiếp trên tài liệu gốc 9 trang Issue 1 Revision 4 (30/04/2026), không vẽ lại logo, bảng hay 3 phụ lục. Dữ liệu chuyến, 54 ô Yes/No/N/A, Remarks và chữ ký điền đúng vị trí; ghi chú quá dài được đưa vào trang tiếp nối để không mất dữ liệu. Không thay đổi nghiệp vụ các hãng khác.",
-  "message": "Đã sửa xuất PDF MH: giữ nguyên biểu mẫu Malaysia Airlines gốc 9 trang, điền dữ liệu vào ô chuẩn."
+  "notes": "Thay giao diện MH F27: chế độ mặc định xem đầy đủ 9 trang PDF Malaysia Airlines gốc, phóng to 100–300%, chạm vùng thông tin chuyến / YES-NO-NA / Remarks / chữ ký để nhập. Chế độ Nhập nhanh là từng mục với phím chọn lớn; YES tự chuyển mục tiếp, NO/N/A nhập lý do. Hai chế độ dùng chung một bản dữ liệu, vẫn tự lưu localStorage/IndexedDB/Firebase, xuất PDF đúng mẫu hãng. Không đổi phân công/roster/bộ đàm/các hãng khác.",
+  "message": "MH F27 có hai cách nhập: ngay trên PDF gốc hoặc Nhập nhanh từng mục, dữ liệu đồng bộ."
 }
