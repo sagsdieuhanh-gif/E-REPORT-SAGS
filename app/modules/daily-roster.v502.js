@@ -247,18 +247,24 @@ async function reconcilePolicyAuxForms(date=opDate()){
  const [policy,manSnap,flightSnap]=await Promise.all([root.sagsAirlineFormPolicy.ready?.(true),root.sagsV470Ref(`${MANIFEST}/${safe(date)}`).once('value'),root.sagsV470Ref(`${FLIGHTS}/${safe(date)}`).once('value')]);
  const man=manSnap.val()||{},flights=flightSnap.val()||{},allItems=Object.values(man.items||{}).filter(Boolean);
  const bases=allItems.filter(x=>x.active!==false&&U(x.roleKey)==='CBTT'&&(U(x.formGroup)==='FINAL'||U(x.sourceColumn).includes('GRND_LS'))&&!['FSAGS54','FSAGS94'].includes(canonicalForm(x)));
- const specs=[{group:'FSAGS54',canon:'FSAGS54'},{group:'clc_checklist',canon:'FSAGS94'}],desired=new Map(),patch={},now=Date.now();let added=0,reactivated=0,deactivated=0,already=0;
- for(const base0 of bases){const user=normUser(base0.user||base0.targetUser),fid=S(base0.flightId);if(!user||!fid)continue;const base=policyFlightRecord(flights,fid,base0);
+ const mhBases=allItems.filter(x=>x.active!==false&&x.policyGenerated!==true&&
+  U(x.sourceColumn).includes('GRND_COR')&&canonicalForm(x)!=='MHF27');
+ const jobs=[
+  ...bases.map(base0=>({base0,specs:[{group:'FSAGS54',canon:'FSAGS54'},{group:'clc_checklist',canon:'FSAGS94'}]})),
+  ...mhBases.map(base0=>({base0,specs:[{group:'mhf27',canon:'MHF27',sourceColumn:'Grnd_Cor',roleKey:'DH'}]}))
+ ];
+ const desired=new Map(),patch={},now=Date.now();let added=0,reactivated=0,deactivated=0,already=0;
+ for(const {base0,specs} of jobs){const user=normUser(base0.user||base0.targetUser),fid=S(base0.flightId);if(!user||!fid)continue;const base=policyFlightRecord(flights,fid,base0);
    for(const spec of specs){if(root.sagsAirlineFormPolicy.allowed(base,spec.group)!==true)continue;const key=[user,fid,spec.canon].join('|');desired.set(key,{base,user,fid,spec});
      const matches=allItems.filter(x=>normUser(x.user||x.targetUser)===user&&S(x.flightId)===fid&&canonicalForm(x)===spec.canon),active=matches.find(x=>x.active!==false);
      if(active){const aid=S(active.assignmentId);if(aid)patch[`${FLIGHTS}/${safe(date)}/${safe(fid)}/assignments/${safe(aid)}`]={...active,active:true,opDate:date,flightId:fid,policyRevision:Number(policy?.revision||0)};already++;continue}
      const old=matches.find(x=>x.policyGenerated===true);
-     if(old){const aid=S(old.assignmentId),item={...old,...base,assignmentId:aid,user,targetUser:user,formGroup:spec.group,sourceColumn:'Grnd_Ls',roleKey:'CBTT',active:true,policyGenerated:true,policyReactivatedAtMs:now,policyRevision:Number(policy?.revision||0),updatedAtMs:now};patch[`${MANIFEST}/${safe(date)}/items/${safe(aid)}`]=item;patch[`${MAIL}/${safe(user)}/items/${safe(aid)}`]={...item,engine:item.engine||'daily-roster-v2',schema:item.schema||2,opDate:date,date:S(item.date||date)};patch[`${SESSION}/${safe(aid)}/active`]=true;patch[`${SESSION}/${safe(aid)}/policyGenerated`]=true;patch[`${SESSION}/${safe(aid)}/policyRevision`]=Number(policy?.revision||0);patch[`${SESSION}/${safe(aid)}/updatedAtMs`]=now;patch[`${FLIGHTS}/${safe(date)}/${safe(fid)}/assignments/${safe(aid)}`]=item;reactivated++;continue}
-     const aid=policyAuxAid(date,base,spec.group),item={...clone(base),assignmentId:aid,user,targetUser:user,originalUser:normUser(base.originalUser||base.originalTargetUser||user),originalTargetUser:normUser(base.originalUser||base.originalTargetUser||user),formGroup:spec.group,sourceColumn:'Grnd_Ls',roleKey:'CBTT',assignmentLeg:'',assignmentScope:'TURNAROUND',workPartOrder:1,workPartTotal:1,workPartSequenceSource:'Grnd_Ls',coAssigneeGroupId:'',coAssigneeMode:'',coAssigneeRank:1,coAssigneeTotal:1,coAssigneeUsers:[user],manualOverride:false,active:true,policyGenerated:true,policyGeneratedAtMs:now,policyRevision:Number(policy?.revision||0),updatedAtMs:now};delete item.workspaceKey;delete item.rosterWorkspaceKey;delete item.rosterWorkSlotKey;
+     if(old){const aid=S(old.assignmentId),item={...old,...base,assignmentId:aid,user,targetUser:user,formGroup:spec.group,sourceColumn:spec.sourceColumn||'Grnd_Ls',roleKey:spec.roleKey||'CBTT',active:true,policyGenerated:true,policyReactivatedAtMs:now,policyRevision:Number(policy?.revision||0),updatedAtMs:now};patch[`${MANIFEST}/${safe(date)}/items/${safe(aid)}`]=item;patch[`${MAIL}/${safe(user)}/items/${safe(aid)}`]={...item,engine:item.engine||'daily-roster-v2',schema:item.schema||2,opDate:date,date:S(item.date||date)};patch[`${SESSION}/${safe(aid)}/active`]=true;patch[`${SESSION}/${safe(aid)}/policyGenerated`]=true;patch[`${SESSION}/${safe(aid)}/policyRevision`]=Number(policy?.revision||0);patch[`${SESSION}/${safe(aid)}/updatedAtMs`]=now;patch[`${FLIGHTS}/${safe(date)}/${safe(fid)}/assignments/${safe(aid)}`]=item;reactivated++;continue}
+     const aid=policyAuxAid(date,base,spec.group),item={...clone(base),assignmentId:aid,user,targetUser:user,originalUser:normUser(base.originalUser||base.originalTargetUser||user),originalTargetUser:normUser(base.originalUser||base.originalTargetUser||user),formGroup:spec.group,sourceColumn:spec.sourceColumn||'Grnd_Ls',roleKey:spec.roleKey||'CBTT',formLabel:spec.canon==='MHF27'?'MH · AS/RM/F27 360° WALKABOUT':'',assignmentLeg:'',assignmentScope:'TURNAROUND',workPartOrder:1,workPartTotal:1,workPartSequenceSource:spec.sourceColumn||'Grnd_Ls',coAssigneeGroupId:'',coAssigneeMode:'',coAssigneeRank:1,coAssigneeTotal:1,coAssigneeUsers:[user],manualOverride:false,active:true,policyGenerated:true,policyGeneratedAtMs:now,policyRevision:Number(policy?.revision||0),updatedAtMs:now};delete item.workspaceKey;delete item.rosterWorkspaceKey;delete item.rosterWorkSlotKey;
      patch[`${MANIFEST}/${safe(date)}/items/${safe(aid)}`]=item;patch[`${MAIL}/${safe(user)}/items/${safe(aid)}`]={...item,engine:'daily-roster-v2',schema:2,opDate:date,date:S(item.date||date)};patch[`${SESSION}/${safe(aid)}`]={engine:'daily-roster-v2',schema:1,assignmentId:aid,ownerUser:user,formGroup:spec.group,claimStatus:'READY',taskStatusV333:'UNCLAIMED',taskAvailabilityV333:'READY',active:true,policyGenerated:true,policyRevision:Number(policy?.revision||0),createdAtMs:now,updatedAtMs:now};patch[`${FLIGHTS}/${safe(date)}/${safe(fid)}/assignments/${safe(aid)}`]=item;added++;
    }
  }
- for(const item of allItems){const canon=canonicalForm(item);if(item.policyGenerated!==true||!['FSAGS54','FSAGS94'].includes(canon)||item.active===false)continue;const user=normUser(item.user||item.targetUser),fid=S(item.flightId),key=[user,fid,canon].join('|');if(desired.has(key))continue;const aid=S(item.assignmentId);if(!aid)continue;const disabled={...item,active:false,policyDisabledAtMs:now,policyRevision:Number(policy?.revision||0),updatedAtMs:now};patch[`${MANIFEST}/${safe(date)}/items/${safe(aid)}`]=disabled;if(user)patch[`${MAIL}/${safe(user)}/items/${safe(aid)}`]={...disabled,engine:item.engine||'daily-roster-v2',schema:item.schema||2,opDate:date,date:S(item.date||date)};patch[`${SESSION}/${safe(aid)}/active`]=false;patch[`${SESSION}/${safe(aid)}/policyDisabledAtMs`]=now;patch[`${SESSION}/${safe(aid)}/policyRevision`]=Number(policy?.revision||0);patch[`${SESSION}/${safe(aid)}/updatedAtMs`]=now;if(fid)patch[`${FLIGHTS}/${safe(date)}/${safe(fid)}/assignments/${safe(aid)}`]=disabled;deactivated++}
+ for(const item of allItems){const canon=canonicalForm(item);if(item.policyGenerated!==true||!['FSAGS54','FSAGS94','MHF27'].includes(canon)||item.active===false)continue;const user=normUser(item.user||item.targetUser),fid=S(item.flightId),key=[user,fid,canon].join('|');if(desired.has(key))continue;const aid=S(item.assignmentId);if(!aid)continue;const disabled={...item,active:false,policyDisabledAtMs:now,policyRevision:Number(policy?.revision||0),updatedAtMs:now};patch[`${MANIFEST}/${safe(date)}/items/${safe(aid)}`]=disabled;if(user)patch[`${MAIL}/${safe(user)}/items/${safe(aid)}`]={...disabled,engine:item.engine||'daily-roster-v2',schema:item.schema||2,opDate:date,date:S(item.date||date)};patch[`${SESSION}/${safe(aid)}/active`]=false;patch[`${SESSION}/${safe(aid)}/policyDisabledAtMs`]=now;patch[`${SESSION}/${safe(aid)}/policyRevision`]=Number(policy?.revision||0);patch[`${SESSION}/${safe(aid)}/updatedAtMs`]=now;if(fid)patch[`${FLIGHTS}/${safe(date)}/${safe(fid)}/assignments/${safe(aid)}`]=disabled;deactivated++}
  patch[`${MANIFEST}/${safe(date)}/policyAuxReconciledAtMs`]=now;patch[`${MANIFEST}/${safe(date)}/policyAuxReconciledBuild`]=BUILD;patch[`${MANIFEST}/${safe(date)}/policyAuxRevision`]=Number(policy?.revision||0);patch[`${MANIFEST}/${safe(date)}/policyAuxExpectedCount`]=desired.size;patch[`${MANIFEST}/${safe(date)}/policyAuxAddedCount`]=added;patch[`${MANIFEST}/${safe(date)}/policyAuxReactivatedCount`]=reactivated;patch[`${MANIFEST}/${safe(date)}/policyAuxDeactivatedCount`]=deactivated;
  await root.sagsV470Ref('').update(patch);try{root.sagsV477InvalidateQueueStatus?.()}catch(_){}try{root.dispatchEvent(new CustomEvent('sags:policy-assignments-reconciled',{detail:{date,revision:Number(policy?.revision||0),added,reactivated,deactivated}}))}catch(_){}
  return {ok:true,date,policyRevision:Number(policy?.revision||0),expected:desired.size,added,reactivated,deactivated,already}
@@ -330,7 +336,7 @@ function configuredFormLabel(id,fallback=''){
  }catch(_){}
  return cleanFormUiLabel(fallback);
 }
-function formLabel(x){const g=canonicalForm(x),src=sourceKey(x);if(g==='TVJGOF035')return 'TVJ-GOF-035';if(g==='FSAGS54')return configuredFormLabel('fsags54','F/SAGS-CXR/54');if(g==='FSAGS94')return configuredFormLabel('fsags94','F/SAGS-CXR/94');if(g==='FSAGS423')return '42.3';if(g==='FSAGS421')return '42.1';if(g==='FSAGS551')return '55.1';if(g==='FSAGS09')return 'KẾT SỔ';if(g==='FINAL')return 'BẢNG TẢI CUỐI CÙNG';return src==='GRND_COR'?'ĐIỀU HÀNH':src==='GRND_LD'?'ĐIỀU HÀNH':src==='GRND_LS'?'CÂN BẰNG TRỌNG TẢI':src==='PAX_SUPR'?'PHỤC VỤ HÀNH KHÁCH':g}
+function formLabel(x){const g=canonicalForm(x),src=sourceKey(x);if(g==='TVJGOF035')return 'TVJ-GOF-035';if(g==='MHF27')return 'MH · AS/RM/F27';if(g==='FSAGS54')return configuredFormLabel('fsags54','F/SAGS-CXR/54');if(g==='FSAGS94')return configuredFormLabel('fsags94','F/SAGS-CXR/94');if(g==='FSAGS423')return '42.3';if(g==='FSAGS421')return '42.1';if(g==='FSAGS551')return '55.1';if(g==='FSAGS09')return 'KẾT SỔ';if(g==='FINAL')return 'BẢNG TẢI CUỐI CÙNG';return src==='GRND_COR'?'ĐIỀU HÀNH':src==='GRND_LD'?'ĐIỀU HÀNH':src==='GRND_LS'?'CÂN BẰNG TRỌNG TẢI':src==='PAX_SUPR'?'PHỤC VỤ HÀNH KHÁCH':g}
 function pbOf(st){const e=st?.envelope?.state||{},c=st?.completionEnvelope?.state||{};return S(st?.completedPushback||e.h24Start||e.f421_h24Start||c.h24Start||c.f421_h24Start)}
 function isPushbackSource(x){return ['FSAGS','FSAGS423','FSAGS421'].includes(U(x?.formGroup))}
 function normalizedTask(st){return U(st?.taskStatusV333||st?.taskStatus||st?.workPartStatus||st?.claimStatus).replace(/[\s-]+/g,'_')}
@@ -578,6 +584,21 @@ async function openTask(aid,fid,completed,cardDate='',exact=false,button=null){
     // This also covers completed-form edits, not just first-time NHẬN.
     if(typeof root.SAGSRosterOpenGuard?.requireRadio!=='function')throw new Error('Bộ kiểm tra ký nhận bộ đàm chưa sẵn sàng. Hãy tải lại ứng dụng.');
     await root.SAGSRosterOpenGuard.requireRadio();
+    if(U(item.formGroup)==='MHF27'){
+      if(!root.SAGSMHF27){
+        if(!root.__sagsMHF27Promise)root.__sagsMHF27Promise=new Promise((resolve,reject)=>{
+          const sc=document.createElement('script');
+          sc.src='./app/modules/mh-f27.v1.js?v=V2.2-20261114-MH-F27-23';
+          sc.async=true;sc.onload=resolve;sc.onerror=()=>reject(new Error('Không tải được biểu mẫu MH F27.'));
+          document.head.appendChild(sc);
+        }).catch(e=>{root.__sagsMHF27Promise=null;throw e});
+        await root.__sagsMHF27Promise;
+      }
+      if(typeof root.SAGSMHF27?.open!=='function')throw new Error('Biểu mẫu MH chưa được khởi tạo.');
+      root.sagsFlightDossierClose?.();
+      await root.SAGSMHF27.open({item,date,completed});
+      return;
+    }
     // Completed forms also go through the same exact-assignment NHẬN handler.
     if(!completed)try{await clearStaleClaimIfNeeded(item)}catch(e){
       console.warn('Không xác minh được claim cũ',e);
