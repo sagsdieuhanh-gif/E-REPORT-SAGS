@@ -66,6 +66,7 @@ assert(src.includes("if(act==='choice')")&&src.includes("setDecision(btn.dataset
 assert(src.includes("if(btn.dataset.value==='YES')")&&src.includes("renderQuick()"),'Quick YES advances one task');
 assert(src.includes("function validAnswer(key)")&&src.includes("S(a.remarks).length>=5"),'NO/NA require remarks to count as complete');
 assert(src.includes("p.addEventListener('input',e=>"),'Both UIs need immediate state saves');
+assert(src.includes('dirty=changeCounter!==syncedChange')&&src.includes('if(committed&&dirty&&current&&!offline())'),'Rapid quick edits must not be marked synced until persisted');
 assert(src.includes("saveLocal();")&&src.includes("writeIdb();"),'Local and IndexedDB drafts stay intact');
 assert(style.includes('.mhF27PaperScroller')&&style.includes('touch-action:pan-x pan-y'),'iOS PDF zoomed paper must pan naturally');
 assert(style.includes('.mhF27QuickCard')&&style.includes('.mhF27Choices button'),'Quick mode must expose large single-step controls');
