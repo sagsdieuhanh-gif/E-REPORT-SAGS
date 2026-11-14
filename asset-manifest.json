@@ -1,7 +1,7 @@
 {
   "schema": 2,
   "version": "V2.2",
-  "build": "V2.2-20261113-PAGES-22",
+  "build": "V2.2-20261114-MH-F27-23",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
