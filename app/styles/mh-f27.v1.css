@@ -18,3 +18,124 @@
 .mhF27SignOverlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(4,20,34,.86);z-index:3;padding:10px}.mhF27SignDialog{background:#fff;border-radius:14px;max-width:620px;width:100%;padding:20px;display:flex;flex-direction:column;gap:12px;color:#163f56}.mhF27SignDialog strong{font-size:20px}.mhF27SignDialog p{font-size:13px;margin:0}.mhF27SignDialog canvas{display:block;width:100%;height:auto;aspect-ratio:28/9;border:2px solid #b2cbd7;border-radius:8px;background:#fff;touch-action:none}.mhF27SignDialog>div{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap}.mhF27SignDialog button{min-height:42px;border:1px solid #adc1cf;border-radius:8px;padding:9px 13px;background:#f1f6f8;color:#0c425a;font-weight:800}
 @media(max-width:700px){.mhF27Layer{padding:0}.mhF27Card{border-radius:0;border:0}.mhF27Head{padding:13px}.mhF27Body{padding:12px}.mhF27Fields{grid-template-columns:repeat(2,minmax(0,1fr))}.mhF27Footer{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));padding:8px max(8px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))}.mhF27Footer button{min-width:0;font-size:12px;padding:8px 5px}.mhF27Signer{grid-template-columns:1fr}.mhF27Item p{font-size:13px}}
 @media(max-width:390px){.mhF27Fields{grid-template-columns:1fr}.mhF27Checks{gap:5px}.mhF27Checks label{font-size:12px}.mhF27Title strong{font-size:16px}}
+
+
+/* MH F27 dual-mode editor: paper-faithful PDF and efficient phone entry. */
+.mhF27Card{width:min(1360px,100%);background:#e9f0f5}
+.mhF27Head{padding:12px 17px;align-items:center;background:linear-gradient(130deg,#09283e,#134965);gap:8px}
+.mhF27Title{gap:3px}.mhF27Title strong{font-size:clamp(15px,1.8vw,21px)}.mhF27Title small{font-size:10px}.mhF27Title span{font-size:11px}
+.mhF27Toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:9px 13px;background:#fff;border-bottom:1px solid #d2e0e9;flex:0 0 auto;min-width:0}
+.mhF27Modes{display:inline-flex;gap:3px;padding:4px;background:#e5edf2;border-radius:11px;flex:0 0 auto}
+.mhF27Modes button{border:0;background:transparent;color:#43667a;min-height:38px;padding:7px 14px;font-size:13px;font-weight:800;border-radius:8px;cursor:pointer}
+.mhF27Modes button.active{color:#fff;background:#0c6478;box-shadow:0 2px 9px #0a576b33}
+.mhF27Toolbar .mhF27Progress{border:0;background:transparent;padding:0;flex:1;justify-content:flex-end;min-width:0;gap:8px}
+.mhF27Toolbar .mhF27Progress strong{white-space:nowrap;font-size:12px}
+.mhF27Toolbar .mhF27Progress span{max-width:46vw;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.mhF27Nav{padding:7px 10px;background:#f1f6f8;gap:5px}
+.mhF27Nav button{min-height:35px;padding:7px 11px;border-radius:8px;background:white}
+.mhF27Nav button.active{background:#0e677a}
+.mhF27Body{background:#e6eef4;padding:0;overscroll-behavior:contain}
+.mhF27PdfWorkspace{display:flex;flex-direction:column;min-height:100%;background:#dbe6ee}
+.mhF27PageControls{position:sticky;top:0;z-index:4;display:flex;align-items:center;justify-content:space-between;gap:9px;padding:9px 14px;background:#fff;border-bottom:1px solid #c4d8e5}
+.mhF27PageMove,.mhF27Zoom{display:flex;align-items:center;gap:6px}
+.mhF27PageControls button{display:inline-grid;place-items:center;min-width:35px;min-height:35px;background:#f4f8fb;color:#194a61;font-size:21px;border:1px solid #c8dce5;border-radius:8px}
+.mhF27PageControls button:disabled,.mhF27QuickActions button:disabled{opacity:.32;cursor:not-allowed}
+.mhF27PageMove label{display:flex;gap:5px;align-items:center;font-size:11px;font-weight:800;color:#3c6374}
+.mhF27PageMove select{min-height:35px;background:#fff!important;color:#153b50!important;border:1px solid #bfd1db;border-radius:8px;padding:5px;font:700 13px Arial}
+.mhF27Zoom span{font-size:12px;font-weight:800;color:#3b677a;min-width:38px;text-align:center}
+.mhF27PdfHelp{margin:7px 10px;text-align:center;color:#3d6176;font-size:12px;line-height:1.35}
+.mhF27PaperScroller{min-height:160px;flex:1;overflow:auto;overscroll-behavior:contain;padding:5px 10px 30px;display:block;text-align:center;touch-action:pan-x pan-y}
+.mhF27Paper{position:relative;margin:0 auto;max-width:none;min-width:0;flex:none;background:#fff;box-shadow:0 7px 32px #17374e44;text-align:left;isolation:isolate}
+.mhF27Paper>canvas{display:block;position:absolute;top:0;left:0;width:100%;height:100%}
+#mhF27PdfCanvas{z-index:0}
+#mhF27PdfInk{z-index:1;pointer-events:none}
+.mhF27PdfHotspots{position:absolute;inset:0;z-index:2;pointer-events:none}
+.mhF27PdfHotspot{position:absolute;pointer-events:auto;border:1px dashed rgba(7,126,155,.48);border-radius:2px;background:rgba(43,173,205,.055);padding:0;cursor:pointer;touch-action:manipulation}
+.mhF27PdfHotspot:focus-visible{outline:3px solid #e29a20;outline-offset:2px}
+.mhF27PdfHotspot:hover{background:rgba(7,143,169,.17);border-color:#0a6d81}
+.mhF27PdfHotspotRow.isDone{border-color:rgba(2,134,100,.48);background:rgba(14,166,128,.035)}
+.mhF27PdfPencil{position:absolute;right:2px;top:1px;border-radius:3px;background:#0a667a;color:white;font-size:9px;min-width:12px;line-height:12px;text-align:center;opacity:.8}
+.mhF27PdfLoading{position:absolute;left:5%;top:40%;width:90%;z-index:3;background:#fffdf4;color:#284c64;border:1px solid #dbd5b4;border-radius:10px;padding:18px 12px;text-align:center;font-size:12px;line-height:1.6;box-shadow:0 4px 30px #0002}
+.mhF27PdfLoading[hidden]{display:none}
+.mhF27PdfLoading a{color:#006c85;text-decoration:underline}
+.mhF27Quick{max-width:790px;margin:0 auto;padding:14px 15px 30px}
+.mhF27QuickTop{display:flex;justify-content:space-between;gap:12px;align-items:flex-end;margin-bottom:12px}
+.mhF27QuickTop>div{display:flex;flex-direction:column;gap:4px;min-width:0}
+.mhF27QuickTop small{font-size:11px;color:#537184;font-weight:800}
+.mhF27QuickTop strong{color:#0d3854;font-size:23px}
+.mhF27QuickTop span{color:#58778b;font-size:12px}
+.mhF27Jump{display:flex;flex-direction:column;gap:5px;align-items:flex-end;font-size:11px;color:#496c7d;font-weight:800}
+.mhF27Jump select{min-height:39px;border:1px solid #b5cbd8;border-radius:9px;padding:6px 9px;background:white!important;color:#1e4b60!important;font-size:14px}
+.mhF27QuickCard{border:1px solid #c4d7e1;background:#fff;border-radius:17px;box-shadow:0 4px 18px #193f5714;overflow:hidden}
+.mhF27QuickLabel{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:13px 17px;background:#edf5f8;border-bottom:1px solid #dbe6ed}
+.mhF27QuickLabel b{font-size:12px;color:#1a566c}
+.mhF27QuickLabel span{font-size:11px;border-radius:50px;padding:5px 9px;font-weight:800;white-space:nowrap}
+.mhF27QuickLabel .complete{color:#08795b;background:#d9f3e6}.mhF27QuickLabel .pending{color:#8b691a;background:#fff2cf}
+.mhF27Activity{white-space:normal!important;line-height:1.7;font-size:15px;color:#203e52;margin:0;padding:18px;overflow-wrap:anywhere}
+.mhF27Choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 16px}
+.mhF27Choices button{min-height:64px;display:flex;align-items:center;justify-content:center;gap:7px;border-radius:12px;border:1px solid #aec7d6;background:#f0f6f9;color:#22526a;font-size:14px;font-weight:900;touch-action:manipulation}
+.mhF27Choices button span{font-size:21px}
+.mhF27Choices button.selected.value-yes{background:#def6e9;border-color:#0d9874;color:#086b55}
+.mhF27Choices button.selected.value-no{background:#fff0ef;border-color:#dc6b5d;color:#b13c34}
+.mhF27Choices button.selected.value-na{background:#fff4d9;border-color:#c39339;color:#8e6619}
+.mhF27QuickRemark{margin:4px 17px 16px;display:none}
+.mhF27QuickRemark.visible{display:flex}
+.mhF27QuickActions{display:grid;grid-template-columns:1fr 1.2fr 1fr;gap:8px;margin:13px 0}
+.mhF27QuickActions button{min-height:44px;border:1px solid #bdd0dc;color:#164960;background:#fff;border-radius:10px;font-size:13px;font-weight:800}
+.mhF27QuickActions button:last-child{background:#0d6d7e;color:#fff;border-color:#0d6d7e}
+.mhF27QuickTip{line-height:1.55;font-size:12px;color:#4c7387;margin:12px 2px}
+.mhF27Editor[hidden]{display:none!important}
+.mhF27Editor{position:absolute;inset:0;z-index:7;display:flex;align-items:stretch;justify-content:flex-end;color:#153e55;font-family:Arial,sans-serif}
+.mhF27EditorBackdrop{position:absolute;inset:0;background:#061b2b9a}
+.mhF27EditorPanel{position:relative;display:flex;flex-direction:column;min-height:0;width:min(580px,100%);background:#f5fafc;box-shadow:-8px 0 38px #0004}
+.mhF27EditorPanel>header{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:17px 19px;background:#0a3c55;color:#fff}
+.mhF27EditorPanel>header strong{font-size:16px}.mhF27EditorPanel>header button{border:1px solid #7892a0;background:#194e67;color:#fff;min-width:37px;min-height:37px;font-size:24px;border-radius:9px}
+.mhF27EditorContent{overflow-y:auto;flex:1;padding:17px;overscroll-behavior:contain}
+.mhF27EditorContent>small{display:block;color:#52788c;margin:12px 0}
+.mhF27EditorActivity{line-height:1.65;color:#214355;font-size:14px;background:#fff;padding:13px;border-radius:10px;border:1px solid #d5e3ed;white-space:normal}
+.mhF27EditorContent .mhF27Choices{margin:16px 0}
+.mhF27EditorContent .mhF27Remark{margin:12px 0}
+.mhF27EditorContent .mhF27Fields{grid-template-columns:repeat(2,minmax(0,1fr))}
+.mhF27EditorField{display:flex;flex-direction:column;gap:9px;font-size:13px;font-weight:800}
+.mhF27EditorField input{font:500 16px Arial!important;background:#fff!important;color:#123d55!important;border:1px solid #b3cedb!important;border-radius:10px!important;min-height:48px!important;padding:12px!important}
+.mhF27EditorPanel>footer{padding:12px 17px max(13px,env(safe-area-inset-bottom));border-top:1px solid #d5e4ee;background:#fff;display:flex;justify-content:space-between;gap:8px;align-items:center}
+.mhF27EditorPanel>footer span{font-size:12px;color:#5d7b8b}
+.mhF27EditorPanel>footer button{border:0;padding:9px 22px;border-radius:9px;min-height:42px;font-weight:800}
+.mhF27SignSummary{background:#e6f1f7;color:#285a70;font-size:12px;font-weight:800;border-radius:10px;padding:11px}
+.mhF27SignOverlay{z-index:10}
+.mhF27Footer{padding:8px 12px max(9px,env(safe-area-inset-bottom))}
+.mhF27Footer button{min-height:42px}
+@media(max-width:700px){
+ .mhF27Layer{height:100dvh;min-height:0}
+ .mhF27Card{height:100dvh;min-height:0}
+ .mhF27Head{padding:9px 11px}
+ .mhF27Title strong{font-size:15px}
+ .mhF27Title span{font-size:10px}
+ .mhF27Toolbar{display:block;padding:7px 10px}
+ .mhF27Modes{width:100%;display:grid;grid-template-columns:1fr 1fr}
+ .mhF27Modes button{min-height:41px;padding:6px}
+ .mhF27Toolbar .mhF27Progress{min-height:26px;display:flex;justify-content:space-between;margin-top:4px;padding:0 4px}
+ .mhF27Toolbar .mhF27Progress span{max-width:70%;font-size:10px}
+ .mhF27Nav{padding:5px 8px}.mhF27Nav button{min-height:33px;padding:6px 9px}
+ .mhF27PageControls{padding:7px 8px}
+ .mhF27PdfHelp{font-size:11px}
+ .mhF27PaperScroller{padding:4px 6px 20px}
+ .mhF27Paper{margin:0 auto}
+ .mhF27PdfPencil{font-size:8px;line-height:10px;min-width:10px}
+ .mhF27Quick{padding:12px 10px 22px}
+ .mhF27QuickTop strong{font-size:20px}
+ .mhF27Activity{font-size:14px;line-height:1.65;padding:14px}
+ .mhF27Choices{gap:6px;margin:10px}
+ .mhF27Choices button{min-height:58px;flex-direction:column;gap:0;font-size:13px}
+ .mhF27Choices button span{font-size:20px}
+ .mhF27QuickRemark{margin:6px 11px 12px}
+ .mhF27Editor{align-items:flex-end}
+ .mhF27EditorPanel{width:100%;max-height:83dvh;height:auto;min-height:min(35dvh,230px);border-radius:19px 19px 0 0}
+ .mhF27EditorContent{min-height:0;max-height:62dvh}
+ .mhF27EditorPanel>header{padding:13px 14px}
+ .mhF27EditorContent .mhF27Fields{grid-template-columns:1fr}
+ .mhF27EditorContent{padding:12px}
+ .mhF27Footer{gap:6px;padding:7px max(8px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))}
+ .mhF27Footer button{min-height:45px;font-size:11px}
+}
+@media(prefers-reduced-motion:reduce){.mhF27Layer *, .mhF27Editor *{scroll-behavior:auto!important}}
