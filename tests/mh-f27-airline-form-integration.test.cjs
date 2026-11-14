@@ -55,6 +55,23 @@ assert(src.includes("if(!['YES','NO','NA'].includes(v))"),'Completion must valid
 assert(src.includes("['NO','NA'].includes(v)"),'No/N/A remarks required');
 assert(src.includes("if(dirty&&navigator.onLine)"),'Never imply an offline save completed server sync');
 assert(style.includes('env(safe-area-inset-bottom)'),'iPhone navigation must remain usable');
+assert(src.includes("viewMode='pdf'")&&src.includes("viewMode=btn.dataset.mode==='quick'"),'Full PDF must be default and both modes switchable');
+assert(src.includes("lib.getDocument({data:new Uint8Array(buf)})"),'Viewer must render exact approved PDF source via PDF.js');
+assert(src.includes("sourcePage.render({canvasContext:ctx,viewport"),'Viewer must render the real page instead of HTML recreation');
+assert(src.includes("if(pdf.numPages!==9)"),'Viewer must validate all original nine pages');
+assert(src.includes("if(page===4)o.push(box('edit-row','3.4'"),'Continued item 3.4 remains editable on page 4');
+assert(src.includes("if(page===6)")&&src.includes("o.push(box('edit-signers'"),'On-page signatures must remain touch accessible');
+assert(src.includes("viewZoom=Math.max(1,Math.min(3"),'Touch page supports bounded zoom');
+assert(src.includes("if(act==='choice')")&&src.includes("setDecision(btn.dataset.key,btn.dataset.value)"),'PDF/Quick choices must share saved form state');
+assert(src.includes("if(btn.dataset.value==='YES')")&&src.includes("renderQuick()"),'Quick YES advances one task');
+assert(src.includes("function validAnswer(key)")&&src.includes("S(a.remarks).length>=5"),'NO/NA require remarks to count as complete');
+assert(src.includes("p.addEventListener('input',e=>"),'Both UIs need immediate state saves');
+assert(src.includes('dirty=changeCounter!==syncedChange')&&src.includes('if(committed&&dirty&&current&&!offline())'),'Rapid quick edits must not be marked synced until persisted');
+assert(src.includes("saveLocal();")&&src.includes("writeIdb();"),'Local and IndexedDB drafts stay intact');
+assert(style.includes('.mhF27PaperScroller')&&style.includes('touch-action:pan-x pan-y'),'iOS PDF zoomed paper must pan naturally');
+assert(style.includes('.mhF27QuickCard')&&style.includes('.mhF27Choices button'),'Quick mode must expose large single-step controls');
+assert(style.includes('.mhF27EditorPanel')&&style.includes('max-height:83dvh'),'Keyboard-safe mobile sheet is required');
+
 const root={};vm.runInNewContext(src,{window:root});
 assert.equal(root.SAGSMHF27?.formId,'mhf27');
 assert.equal(root.SAGSMHF27.pdfSourcePath,'./'+sourcePDF);
@@ -64,4 +81,4 @@ for(const key of data.items.map(x=>x.key)) {
  assert(pos&&pos.length===3&&pos[0]>=1&&pos[0]<=6&&pos[2]>pos[1],'Invalid source PDF placement '+key);
 }
 assert.equal(typeof root.SAGSMHF27.open,'function');
-console.log('MH AS/RM/F27 integration: 54/54 source tasks, MH-only, Grnd_Cor roster, mandatory radio, original-layout PDF, signatures, iOS-safe draft PASS');
+console.log('MH AS/RM/F27 integration: 54/54 source tasks, MH-only, Grnd_Cor roster, mandatory radio, original PDF touch editing, one-step quick mode, signatures, iOS-safe draft PASS');

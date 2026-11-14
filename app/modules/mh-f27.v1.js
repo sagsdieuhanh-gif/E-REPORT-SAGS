@@ -6,7 +6,7 @@ const ID='mhf27',S=v=>String(v??'').trim(),U=v=>S(v).toUpperCase();
 const $=id=>document.getElementById(id);
 const esc=v=>S(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const clean=v=>S(v).replace(/[.#$\[\]/]/g,'_');
-let spec=null,current=null,model=null,lastServer=0,syncing=false,dirty=false,saveTimer=null,dbPromise=null,signKey='';
+let spec=null,current=null,model=null,lastServer=0,syncing=false,dirty=false,changeCounter=0,saveTimer=null,dbPromise=null,signKey='';
 function username(){return U(root.currentUserProfile?.username||root.__sagsGetSession?.()?.profile?.username)}
 function authUid(){return S(root.firebase?.auth?.()?.currentUser?.uid)}
 function offline(){return !navigator.onLine||!root.sagsV470Ref}
@@ -44,7 +44,7 @@ function writeIdb(){
 }
 function saveLocal(){
  if(!current||!model)return;
- model.updatedAtMs=Date.now();dirty=true;
+ model.updatedAtMs=Date.now();changeCounter++;dirty=true;
  try{localStorage.setItem(key(),JSON.stringify(model))}catch(e){console.warn('MH F27 localStorage',e?.message||e)}
  writeIdb();
  const el=$('mhF27Status');if(el)el.textContent='Đã lưu nháp trên thiết bị · chưa xác nhận máy chủ';
@@ -63,11 +63,11 @@ async function owns(){
 async function saveServer(force=false){
  if(!current||!model||syncing||(!dirty&&!force))return false;
  if(offline()){const x=$('mhF27Status');if(x)x.textContent='Đã lưu nháp trên thiết bị · cần có mạng để đồng bộ';return false}
- syncing=true;const x=$('mhF27Status');if(x)x.textContent='Đang đồng bộ nháp MH lên Firebase…';
+ syncing=true;let committed=false;const x=$('mhF27Status');if(x)x.textContent='Đang đồng bộ nháp MH lên Firebase…';
  try{
   await owns();
   const aid=clean(current.item.assignmentId),ref=root.sagsV470Ref('roster_sessions/'+aid+'/mhF27');
-  const copy=JSON.parse(JSON.stringify(model)),stamp=Date.now();let conflict=false;
+  const copy=JSON.parse(JSON.stringify(model)),stamp=Date.now(),syncedChange=changeCounter;let conflict=false;
   const result=await ref.transaction(prev=>{
    if(prev&&Number(prev.updatedAtMs)>lastServer){
     conflict=true;return;
@@ -77,7 +77,8 @@ async function saveServer(force=false){
   },undefined,false);
   if(!result?.committed){if(conflict)throw Error('Dữ liệu trên Firebase đã được sửa từ thiết bị khác. Nháp trên máy được giữ nguyên; cần đối chiếu trước khi ghi đè.');throw Error('Firebase chưa xác nhận lưu.');}
   lastServer=stamp;model.revision=Number(result.snapshot.val()?.revision)||model.revision;
-  dirty=false;try{localStorage.setItem(key(),JSON.stringify(model))}catch(_){}
+  committed=true;dirty=changeCounter!==syncedChange;
+  if(!dirty)try{localStorage.setItem(key(),JSON.stringify(model))}catch(_){}
   const status=model.completedAtMs?'COMPLETED':'IN_PROGRESS',base='roster_sessions/'+aid;
   await root.sagsV470Ref('').update({
    [base+'/taskStatusV333']:status,
@@ -87,18 +88,20 @@ async function saveServer(force=false){
    [base+'/updatedAtMs']:stamp,
    ...(model.completedAtMs?{[base+'/completedAtMs']:model.completedAtMs,[base+'/completedBy']:username()}:{})
   });
-  if(x)x.textContent='✓ Đã lưu lên Firebase · '+new Date().toLocaleTimeString('vi-VN');
+  if(x)x.textContent=dirty?'Nháp mới hơn đang chờ đồng bộ…':'✓ Đã lưu lên Firebase · '+new Date().toLocaleTimeString('vi-VN');
   return true;
  }catch(e){if(x)x.textContent='⚠ Chưa đồng bộ Firebase: '+S(e?.message||e);return false}
- finally{syncing=false}
+ finally{syncing=false;if(committed&&dirty&&current&&!offline()){
+  clearTimeout(saveTimer);saveTimer=setTimeout(()=>{void saveServer(false)},350);
+ }}
 }
 function styles(){
  if($('mhF27Css'))return;
- const link=document.createElement('link');link.rel='stylesheet';link.id='mhF27Css';link.href='./app/styles/mh-f27.v1.css';document.head.appendChild(link);
+ const link=document.createElement('link');link.rel='stylesheet';link.id='mhF27Css';link.href='./app/styles/mh-f27.v1.css?v=V2.2-20261114-MH-F27-25';document.head.appendChild(link);
 }
 function phaseName(id){return spec?.phases?.find(p=>p.id===id)?.title||id}
 function allCount(){return spec.items.length}
-function countDone(){return spec.items.filter(r=>['YES','NO','NA'].includes(model.answers[r.key]?.value)).length}
+function countDone(){return spec.items.filter(r=>validAnswer(r.key)).length}
 function invalidateSignoff(){
  if(!model)return;
  model.completedAtMs=0;
@@ -115,92 +118,310 @@ function headerSeed(h){
   aircraftRegistration:S(item.acReg),aircraftType:S(item.acType),station:'CXR',parkingBay:S(item.bay||item.parkingBay)};
  for(const [k,v]of Object.entries(assign))if(!S(h[k])&&v)h[k]=v;
 }
+
+/* MH F27 user interface: exact full-page PDF plus one-item quick entry.
+ * Both views edit the same model and retain the current local/IDB/Firebase persistence.
+ * The source PDF is drawn by PDF.js, never recreated from HTML.
+ */
+let viewMode='pdf',viewPage=1,viewZoom=1,quickIndex=0,pdfDocPromise=null,pdfRenderSeq=0,editKind='',editKey='';
+const PDF_W=615.48,PDF_H=792;
+const MH_PDF_VIEW_LIBRARIES=[
+ ['https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js','https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js'],
+ ['https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.min.js','https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js']
+];
 function shell(){
  styles();let p=$('mhF27Layer');if(p)return p;
  p=document.createElement('div');p.id='mhF27Layer';p.className='mhF27Layer';p.hidden=true;
- p.innerHTML='<div class="mhF27Card" role="dialog" aria-modal="true" aria-label="Malaysia Airlines safety walkabout checklist">'+
- '<header class="mhF27Head"><div class="mhF27Title"><small>MALAYSIA AIRLINES · MH</small><strong>360 DEGREE SAFETY WALKABOUT CHECKLIST</strong><span>AS/RM/F27 · Issue 1 Revision 4 · Effective 30 April 2026</span></div><button type="button" data-mh-act="close" aria-label="Đóng biểu mẫu">×</button></header>'+
- '<nav class="mhF27Nav" id="mhF27Nav"></nav><div class="mhF27Progress"><strong id="mhF27Progress">0/54</strong><span id="mhF27Status">Đang tải bản làm việc…</span></div>'+
- '<main class="mhF27Body" id="mhF27Body"></main>'+
- '<footer class="mhF27Footer"><button type="button" data-mh-act="save">Lưu nháp</button><button type="button" data-mh-act="pdf">Xuất PDF</button><button type="button" data-mh-act="complete" class="mhF27Primary">Hoàn tất</button></footer>'+
- '</div><div class="mhF27SignOverlay" id="mhF27SignOverlay" hidden><div class="mhF27SignDialog"><strong id="mhF27SignTitle">Ký xác nhận</strong><p>Vui lòng ký trực tiếp trên màn hình.</p><canvas width="560" height="180" id="mhF27SignCanvas"></canvas><div><button type="button" data-mh-act="clear-sign">Xóa nét ký</button><button type="button" data-mh-act="cancel-sign">Hủy</button><button type="button" data-mh-act="save-sign" class="mhF27Primary">Lưu chữ ký</button></div></div></div>';
+ p.innerHTML='<div class="mhF27Card" role="dialog" aria-modal="true" aria-label="Malaysia Airlines 360 Degree Safety Walkabout Checklist">'+
+ '<header class="mhF27Head"><div class="mhF27Title"><small>MH · MALAYSIA AIRLINES</small><strong>360° SAFETY WALKABOUT</strong><span>AS/RM/F27 · Issue 1 Revision 4 · 30/04/2026</span></div><button type="button" data-mh-act="close" aria-label="Đóng biểu mẫu">×</button></header>'+
+ '<div class="mhF27Toolbar"><div class="mhF27Modes" role="group" aria-label="Chế độ nhập liệu"><button type="button" data-mh-act="mode" data-mode="pdf">▤ Trên PDF</button><button type="button" data-mh-act="mode" data-mode="quick">⚡ Nhập nhanh</button></div><div class="mhF27Progress"><strong id="mhF27Progress">0/54</strong><span id="mhF27Status">Đang tải biểu mẫu…</span></div></div>'+
+ '<nav class="mhF27Nav" id="mhF27Nav" aria-label="Điều hướng biểu mẫu"></nav><main class="mhF27Body" id="mhF27Body"></main>'+
+ '<footer class="mhF27Footer"><button type="button" data-mh-act="save">Lưu nháp</button><button type="button" data-mh-act="pdf">Xuất PDF gốc</button><button type="button" data-mh-act="complete" class="mhF27Primary">Hoàn tất</button></footer>'+
+ '</div><div class="mhF27Editor" id="mhF27Editor" hidden><div class="mhF27EditorBackdrop" data-mh-act="edit-close"></div><section class="mhF27EditorPanel" role="dialog" aria-modal="true" aria-labelledby="mhF27EditTitle"><header><strong id="mhF27EditTitle"></strong><button type="button" data-mh-act="edit-close" aria-label="Đóng bảng nhập">×</button></header><div class="mhF27EditorContent" id="mhF27EditContent"></div><footer><span>Tự lưu khi nhập</span><button type="button" data-mh-act="edit-close" class="mhF27Primary">Xong</button></footer></section></div>'+
+ '<div class="mhF27SignOverlay" id="mhF27SignOverlay" hidden><div class="mhF27SignDialog"><strong id="mhF27SignTitle">Ký xác nhận</strong><p>Vui lòng ký trực tiếp trên màn hình.</p><canvas width="560" height="180" id="mhF27SignCanvas"></canvas><div><button type="button" data-mh-act="clear-sign">Xóa nét ký</button><button type="button" data-mh-act="cancel-sign">Hủy</button><button type="button" data-mh-act="save-sign" class="mhF27Primary">Lưu chữ ký</button></div></div></div>';
  document.body.appendChild(p);
  p.addEventListener('input',e=>{
-  const k=e.target.dataset.mhHead,remark=e.target.dataset.mhRemark,person=e.target.dataset.mhSigner;
-  if(k){invalidateSignoff();model.headers[k]=e.target.value;saveLocal()}
-  else if(remark){invalidateSignoff();const row=model.answers[remark]||{};model.answers[remark]={...row,remarks:e.target.value};saveLocal()}
-  else if(person){const [who,field]=person.split(':');const old=model.signers[who]||{};model.signers[who]={...old,[field]:e.target.value,image:''};invalidateSignoff();saveLocal()}
-  else if(e.target.id==='mhF27Remarks'){invalidateSignoff();model.remarks=e.target.value;saveLocal()}
- });
- p.addEventListener('change',e=>{
-  if(e.target.dataset.mhChoice){
-   const row=model.answers[e.target.dataset.mhChoice]||{},value=e.target.value;
-   invalidateSignoff();model.answers[e.target.dataset.mhChoice]={...row,value,atMs:Date.now(),by:username()};
-   saveLocal();renderNav();renderPhase(current.phase);
-  }
+  if(!model)return;
+  const target=e.target,k=target.dataset.mhHead,remark=target.dataset.mhRemark,person=target.dataset.mhSigner;
+  if(k){invalidateSignoff();model.headers[k]=target.value;saveLocal()}
+  else if(remark){
+   invalidateSignoff();const row=model.answers[remark]||{};
+   model.answers[remark]={...row,remarks:target.value};saveLocal();
+  }else if(person){
+   const [who,field]=person.split(':'),old=model.signers[who]||{};
+   invalidateSignoff();model.signers[who]={...old,[field]:target.value,image:''};saveLocal();
+  }else if(target.id==='mhF27Remarks'){invalidateSignoff();model.remarks=target.value;saveLocal()}
+  refreshProgress();void paintPdfOverlay();
  });
  p.addEventListener('click',e=>{
-  const btn=e.target.closest('[data-mh-act]');
-  if(!btn)return;const action=btn.dataset.mhAct;
-  if(action==='phase'){current.phase=btn.dataset.phase;renderPhase(current.phase);renderNav();return}
-  if(action==='close'){close();return}
-  if(action==='save'){void saveServer(true);return}
-  if(action==='complete'){void complete();return}
-  if(action==='pdf'){void exportPdf();return}
-  if(action==='sign'){startSign(btn.dataset.signer);return}
-  if(action==='clear-sign'){clearInk();return}
-  if(action==='cancel-sign'){hideSign();return}
-  if(action==='save-sign'){finishSign();return}
+  const btn=e.target.closest('[data-mh-act]');if(!btn||!model||!current)return;
+  const act=btn.dataset.mhAct;
+  if(act==='close'){void close();return}
+  if(act==='save'){void saveServer(true);return}
+  if(act==='complete'){void complete();return}
+  if(act==='pdf'){void exportPdf();return}
+  if(act==='mode'){viewMode=btn.dataset.mode==='quick'?'quick':'pdf';renderMode();return}
+  if(act==='page'){viewPage=Math.min(9,Math.max(1,Number(btn.dataset.page)||1));renderMode();return}
+  if(act==='zoom'){viewZoom=Math.max(1,Math.min(3,Math.round((viewZoom+(Number(btn.dataset.direction)||0)*.25)*100)/100));renderMode();return}
+  if(act==='quick-prev'){quickIndex=Math.max(0,quickIndex-1);renderQuick();return}
+  if(act==='quick-next'){quickIndex=Math.min(spec.items.length-1,quickIndex+1);renderQuick();return}
+  if(act==='quick-missing'){
+   const first=spec.items.findIndex(x=>!validAnswer(x.key));
+   if(first!==-1){quickIndex=first;renderQuick()}
+   return;
+  }
+  if(act==='quick-phase'){
+   const phase=btn.dataset.phase,idx=spec.items.findIndex(x=>x.phase===phase&&!validAnswer(x.key));
+   quickIndex=idx!==-1?idx:spec.items.findIndex(x=>x.phase===phase);
+   renderQuick();return;
+  }
+  if(act==='edit-row'){openEditor('row',btn.dataset.key);return}
+  if(act==='edit-header'){openEditor('header',btn.dataset.key);return}
+  if(act==='edit-general'){openEditor('general');return}
+  if(act==='edit-info'){openEditor('info');return}
+  if(act==='edit-signers'){openEditor('signers');return}
+  if(act==='edit-close'){hideEditor();return}
+  if(act==='choice'){
+   setDecision(btn.dataset.key,btn.dataset.value);
+   if(viewMode==='quick'){
+    if(btn.dataset.value==='YES'){
+     if(quickIndex<spec.items.length-1)quickIndex++;
+     renderQuick();
+    }else{
+     renderQuick();
+     const r=$('mhF27Body')?.querySelector('[data-mh-remark]');
+     r?.focus?.({preventScroll:true});
+    }
+   }else if(editKind==='row')renderEditorContent();
+   refreshProgress();void paintPdfOverlay();return;
+  }
+  if(act==='sign'){startSign(btn.dataset.signer);return}
+  if(act==='clear-sign'){clearInk();return}
+  if(act==='cancel-sign'){hideSign();return}
+  if(act==='save-sign'){finishSign();return}
  });
- initPad();
- return p;
+ p.addEventListener('change',e=>{
+  if(e.target.id==='mhF27JumpPage'){
+   viewPage=Math.max(1,Math.min(9,Number(e.target.value)||1));renderMode();
+  }else if(e.target.id==='mhF27JumpItem'){
+   quickIndex=Math.max(0,spec.items.findIndex(x=>x.key===e.target.value));renderQuick();
+  }
+ });
+ initPad();return p;
+}
+function validAnswer(key){
+ const a=model?.answers?.[key],v=a?.value;
+ return ['YES','NO','NA'].includes(v)&&(!['NO','NA'].includes(v)||S(a.remarks).length>=5);
+}
+function setDecision(key,value){
+ if(!spec.items.some(i=>i.key===key)||!['YES','NO','NA'].includes(value))return;
+ const old=model.answers[key]||{};
+ invalidateSignoff();
+ model.answers[key]={...old,value,atMs:Date.now(),by:username()};
+ saveLocal();
+}
+function refreshProgress(){
+ if(!spec||!model)return;
+ const valid=spec.items.filter(i=>validAnswer(i.key)).length;
+ const x=$('mhF27Progress');if(x)x.textContent=valid+'/'+spec.items.length+' mục hợp lệ';
+ for(const mode of ['pdf','quick']){
+  const b=$('mhF27Layer')?.querySelector('[data-mh-act="mode"][data-mode="'+mode+'"]');
+  if(b){b.classList.toggle('active',mode===viewMode);b.setAttribute('aria-pressed',String(mode===viewMode))}
+ }
 }
 function renderNav(){
- const n=$('mhF27Nav');if(!n)return;
- n.innerHTML=['0',...spec.phases.map(x=>x.id),'A'].map(id=>{
-  const title=id==='0'?'THÔNG TIN':id==='A'?'XÁC NHẬN':'P.'+id;
-  const done=id==='0'?spec.headerFields.filter(f=>S(model.headers[f.key])).length:
-   id==='A'?Object.values(model.signers).filter(x=>x.image).length:
-    spec.items.filter(i=>i.phase===id&&model.answers[i.key]?.value).length;
-  const all=id==='0'?spec.headerFields.length:id==='A'?2:spec.items.filter(i=>i.phase===id).length;
-  return '<button type="button" data-mh-act="phase" data-phase="'+id+'" class="'+(current.phase===id?'active':'')+'">'+title+' <small>'+done+'/'+all+'</small></button>';
- }).join('');
- $('mhF27Progress').textContent=countDone()+'/'+allCount()+' mục đã kiểm tra';
+ const nav=$('mhF27Nav');if(!nav)return;
+ if(viewMode==='pdf'){
+  nav.innerHTML=Array.from({length:9},(_,i)=>{
+   const pg=i+1,count=spec.items.filter(row=>MH_F27_ROWS[row.key]?.[0]===pg&&validAnswer(row.key)).length;
+   const total=spec.items.filter(row=>MH_F27_ROWS[row.key]?.[0]===pg).length;
+   return '<button type="button" data-mh-act="page" data-page="'+pg+'" class="'+(pg===viewPage?'active':'')+'">Trang '+pg+(total?' <small>'+count+'/'+total+'</small>':'')+'</button>';
+  }).join('');
+ }else{
+  const buttons=spec.phases.map(x=>{
+   const rows=spec.items.filter(i=>i.phase===x.id),num=rows.filter(i=>validAnswer(i.key)).length;
+   return '<button type="button" data-mh-act="quick-phase" data-phase="'+esc(x.id)+'" class="'+(spec.items[quickIndex]?.phase===x.id?'active':'')+'">P.'+esc(x.id)+' <small>'+num+'/'+rows.length+'</small></button>';
+  });
+  nav.innerHTML='<button type="button" data-mh-act="edit-info">Thông tin chuyến</button>'+buttons.join('')+'<button type="button" data-mh-act="edit-signers">Xác nhận ký</button>';
+ }
+ const active=nav.querySelector('button.active');active?.scrollIntoView?.({block:'nearest',inline:'nearest'});
 }
-function fieldForm(){
- return '<div class="mhF27Intro"><strong>Thông tin chuyến bay</strong><p>Điền thông tin MH và đối chiếu với hồ sơ chuyến. Nội dung ghi theo mẫu AS/RM/F27.</p></div>'+
- '<div class="mhF27Fields">'+spec.headerFields.map(f=>'<label><span>'+esc(f.label)+'</span><input data-mh-head="'+esc(f.key)+'" autocomplete="off" value="'+esc(model.headers[f.key]||'')+'"></label>').join('')+'</div>'+
- '<div class="mhF27Reminder"><b>IMPORTANT REMINDER</b><p>HAZARD REPORT must be raised immediately for identified hazards, irregularities, non-compliance, incidents and damage. Notify LAE/Technician of aircraft defects. No GSE shall enter ERA during FOD checks.</p><b>How to record</b><p>YES = conforms, NO = non-conformance/incomplete, N/A = not applicable. For NO or N/A, enter a meaningful remark and any corrective action.</p></div>';
+function renderMode(){
+ if(!model||!spec||!current)return;
+ refreshProgress();renderNav();
+ if(viewMode==='pdf')renderFullPdf();
+ else renderQuick();
 }
-function phaseForm(id){
- const items=spec.items.filter(i=>i.phase===id);
- return '<div class="mhF27Intro"><strong>P.'+id+' · '+esc(phaseName(id))+'</strong><p>Reference to the latest Malaysia Airlines GOM.</p></div>'+
- items.map(i=>{
-  const value=S(model.answers[i.key]?.value),remark=S(model.answers[i.key]?.remarks);
-  return '<article class="mhF27Item"><div class="mhF27ItemTop"><strong>'+esc(i.key)+'</strong><span>ICP: '+esc(i.inCharge)+'</span></div>'+
-   '<p>'+esc(i.activity).replace(/\n/g,'<br>')+'</p><div class="mhF27Checks">'+
-   ['YES','NO','NA'].map(v=>'<label class="'+(value===v?'selected ':'')+v.toLowerCase()+'"><input type="radio" name="mh_'+esc(i.key)+'" data-mh-choice="'+esc(i.key)+'" value="'+v+'" '+(value===v?'checked':'')+'><span>'+({'YES':'Yes','NO':'No','NA':'N/A'}[v])+'</span></label>').join('')+
-   '</div><label class="mhF27Remark"><span>Remarks '+(value==='NO'||value==='NA'?'(bắt buộc)':'')+'</span><textarea rows="2" data-mh-remark="'+esc(i.key)+'" placeholder="Nêu lý do / hành động khắc phục khi No hoặc N/A">'+esc(remark)+'</textarea></label></article>';
- }).join('');
+function rowButtons(key,value){
+ return '<div class="mhF27Choices" role="group" aria-label="Chọn kết quả '+esc(key)+'">'+
+ [['YES','✓','YES'],['NO','✕','NO'],['NA','—','N/A']].map(([v,icon,label])=>
+  '<button type="button" class="'+(value===v?'selected value-'+v.toLowerCase():'')+'" data-mh-act="choice" data-key="'+esc(key)+'" data-value="'+v+'" aria-pressed="'+(value===v)+'"><span>'+icon+'</span>'+label+'</button>'
+ ).join('')+'</div>';
 }
-function signForm(){
- const overview=summary();
- return '<div class="mhF27Intro"><strong>P.7 · Chứng nhận / Sign-off</strong><p>Ground Handler Personnel certifies all checks performed. Station Head certifies information verified.</p></div>'+
- '<div class="mhF27Sum">YES: '+overview.YES+' · NO: '+overview.NO+' · N/A: '+overview.NA+' · CHƯA KIỂM TRA: '+overview.EMPTY+'</div>'+
- '<label class="mhF27Remark"><span>Remarks chung</span><textarea id="mhF27Remarks" rows="4">'+esc(model.remarks)+'</textarea></label>'+
- spec.signers.map(person=>{
-  const v=model.signers[person.key]||{};
-  return '<section class="mhF27Signer"><strong>'+esc(person.title)+'</strong><label>Name<input data-mh-signer="'+person.key+':name" value="'+esc(v.name||'')+'"></label><label>Designation<input data-mh-signer="'+person.key+':designation" value="'+esc(v.designation||'')+'"></label>'+
-  (v.image?'<img alt="Chữ ký đã lưu" src="'+esc(v.image)+'"><small>Đã ký: '+new Date(v.atMs||0).toLocaleString('vi-VN')+' · '+esc(v.signedBy||'')+'</small>':'<p>Chưa có chữ ký trực tiếp.</p>')+
-  '<button type="button" data-mh-act="sign" data-signer="'+person.key+'">'+(v.image?'Ký lại':'Ký xác nhận')+'</button></section>';
- }).join('')+
- '<div class="mhF27Appendices"><strong>Phụ lục minh họa theo tài liệu MH</strong>'+spec.appendix.map(a=>'<p>'+esc(a.title)+': '+esc(a.details)+'</p>').join('')+
- '<p class="mhF27Warning">Hình minh họa kỹ thuật phải được đối chiếu với phụ lục bản gốc do Malaysia Airlines ban hành; bản điện tử không tự thay đổi vị trí cọc tiêu/chèn bánh.</p></div>';
-}
-function renderPhase(id){
+function renderQuick(){
+ if(viewMode!=='quick'||!model)return;
+ quickIndex=Math.min(spec.items.length-1,Math.max(0,quickIndex));
+ const entry=spec.items[quickIndex],saved=model.answers[entry.key]||{},valid=validAnswer(entry.key);
  const el=$('mhF27Body');if(!el)return;
- el.innerHTML=id==='0'?fieldForm():id==='A'?signForm():phaseForm(id);
- el.scrollTop=0;renderNav();
+ el.innerHTML='<section class="mhF27Quick"><header class="mhF27QuickTop"><div><small>GIAI ĐOẠN P.'+esc(entry.phase)+' · '+esc(phaseName(entry.phase))+'</small><strong>Mục '+esc(entry.key)+'</strong><span>'+ (quickIndex+1)+' / '+spec.items.length+' mục</span></div>'+
+ '<label class="mhF27Jump"><span>Chuyển tới</span><select id="mhF27JumpItem">'+spec.items.map(r=>'<option value="'+esc(r.key)+'" '+(r.key===entry.key?'selected':'')+'>'+esc(r.key)+(validAnswer(r.key)?' ✓':' ·')+'</option>').join('')+'</select></label></header>'+
+ '<article class="mhF27QuickCard"><div class="mhF27QuickLabel"><b>ICP · '+esc(entry.inCharge)+'</b><span class="'+(valid?'complete':'pending')+'">'+(valid?'✓ Đã kiểm tra':'Cần kiểm tra')+'</span></div>'+
+ '<p class="mhF27Activity">'+esc(entry.activity).replace(/\n/g,'<br>')+'</p>'+rowButtons(entry.key,saved.value)+
+ '<label class="mhF27Remark mhF27QuickRemark '+(['NO','NA'].includes(saved.value)||saved.remarks?'visible':'')+'"><span>Remarks '+(['NO','NA'].includes(saved.value)?'· Bắt buộc ghi lý do':'· Không bắt buộc')+'</span><textarea data-mh-remark="'+esc(entry.key)+'" rows="3" placeholder="Lý do / biện pháp khắc phục (nếu No hoặc N/A)">'+esc(saved.remarks||'')+'</textarea></label>'+
+ '</article><div class="mhF27QuickActions"><button type="button" data-mh-act="quick-prev" '+(!quickIndex?'disabled':'')+'>← Trước</button><button type="button" data-mh-act="quick-missing">Mục chưa xong</button><button type="button" data-mh-act="quick-next" '+(quickIndex===spec.items.length-1?'disabled':'')+'>Tiếp →</button></div>'+
+ '<p class="mhF27QuickTip">Chọn <b>YES</b> để tự qua mục kế tiếp. Chọn <b>NO / N/A</b> để bổ sung lý do. Dữ liệu lưu ngay trên thiết bị và đồng bộ Firebase.</p></section>';
+ renderNav();refreshProgress();
+ el.scrollTop=0;
+}
+function fullPdfHitboxes(page){
+ const o=[],pct=(n,axis)=> (100*n/(axis==='w'?PDF_W:PDF_H)).toFixed(4)+'%';
+ const box=(action,key,x,y,w,h,extra='')=>
+  '<button type="button" data-mh-act="'+action+'" '+(key?'data-key="'+esc(key)+'"':'')+' class="mhF27PdfHotspot '+extra+'" style="left:'+pct(x,'w')+';top:'+pct(y,'h')+';width:'+pct(w,'w')+';height:'+pct(h,'h')+';" aria-label="Nhấn để nhập '+esc(key||'Remarks')+'"><span class="mhF27PdfPencil" aria-hidden="true">✎</span></button>';
+ if(page===1){
+  const xs=[158,351,507],widths=[77,75,75];
+  for(let row=0;row<MH_F27_HEADER.length;row++){
+   for(let col=0;col<3;col++){
+    o.push(box('edit-header',MH_F27_HEADER[row][col],xs[col],MH_F27_HEADER_TOPS[row],widths[col],row===5?17:14,'mhF27PdfHotspotHeader'));
+   }
+  }
+  o.push(box('edit-header','additionalDetails',158,157.7,425,16,'mhF27PdfHotspotHeader'));
+ }
+ for(const [key,pos]of Object.entries(MH_F27_ROWS)){
+  if(pos[0]!==page)continue;
+  o.push(box('edit-row',key,450,Math.max(0,pos[1]+1),136,Math.max(16,pos[2]-pos[1]-2),'mhF27PdfHotspotRow'+(validAnswer(key)?' isDone':'')));
+ }
+ // Item 3.4 spans pages 3 and 4 in the airline source PDF.
+ if(page===4)o.push(box('edit-row','3.4',450,90,136,139,'mhF27PdfHotspotRow'+(validAnswer('3.4')?' isDone':'')));
+ if(page===6){
+  o.push(box('edit-general','',39,366,119,145,'mhF27PdfHotspotHeader'));
+  o.push(box('edit-signers','',161,411,204,103,'mhF27PdfHotspotHeader'));
+  o.push(box('edit-signers','',377,411,204,103,'mhF27PdfHotspotHeader'));
+ }
+ return o.join('');
+}
+function renderFullPdf(){
+ const el=$('mhF27Body');if(!el)return;
+ const curr=viewPage;
+ el.innerHTML='<div class="mhF27PdfWorkspace">'+
+ '<div class="mhF27PageControls"><div class="mhF27PageMove"><button type="button" data-mh-act="page" data-page="'+(curr-1)+'" '+(curr===1?'disabled':'')+'>‹</button><label><span>Trang PDF</span><select id="mhF27JumpPage">'+Array.from({length:9},(_,i)=>'<option value="'+(i+1)+'" '+(i+1===curr?'selected':'')+'>'+(i+1)+' / 9</option>').join('')+'</select></label><button type="button" data-mh-act="page" data-page="'+(curr+1)+'" '+(curr===9?'disabled':'')+'>›</button></div>'+
+ '<div class="mhF27Zoom"><button type="button" data-mh-act="zoom" data-direction="-1" '+(viewZoom<=1?'disabled':'')+'>−</button><span>'+Math.round(viewZoom*100)+'%</span><button type="button" data-mh-act="zoom" data-direction="1" '+(viewZoom>=3?'disabled':'')+'>+</button></div></div>'+
+ '<p class="mhF27PdfHelp">'+(curr<=6?'Chạm vào vùng <b>thông tin / ô Yes – No – N/A / Remarks / chữ ký</b> trên PDF để nhập. Dùng + để phóng to khi cần.':'Phụ lục hình minh họa gốc của Malaysia Airlines · chỉ xem.')+'</p>'+
+ '<div class="mhF27PaperScroller" id="mhF27PaperScroller"><div class="mhF27Paper" id="mhF27Paper">'+
+ '<canvas id="mhF27PdfCanvas" aria-label="Trang '+curr+' của PDF MH"></canvas><canvas id="mhF27PdfInk" aria-hidden="true"></canvas><div class="mhF27PdfHotspots" id="mhF27PdfHotspots">'+fullPdfHitboxes(curr)+'</div>'+
+ '<span id="mhF27PdfLoading" class="mhF27PdfLoading">Đang hiển thị trang PDF gốc…</span></div></div></div>';
+ refreshProgress();renderNav();
+ pdfRenderSeq++;void paintPage(curr,pdfRenderSeq);
+}
+async function loadPdfViewer(){
+ if(root.pdfjsLib?.getDocument)return root.pdfjsLib;
+ for(const [src,worker]of MH_PDF_VIEW_LIBRARIES){
+  try{
+   await loadLibraryScript(src);
+   if(root.pdfjsLib?.getDocument){
+    root.pdfjsLib.GlobalWorkerOptions.workerSrc=worker;
+    return root.pdfjsLib;
+   }
+  }catch(e){console.warn('MH PDF viewer fallback',e?.message||e)}
+ }
+ throw Error('Không tải được bộ đọc PDF trên trình duyệt.');
+}
+async function reader(){
+ if(pdfDocPromise)return pdfDocPromise;
+ pdfDocPromise=(async()=>{
+  const lib=await loadPdfViewer();
+  const response=await fetch(MH_F27_PDF_SOURCE,{cache:'no-store'});
+  if(!response.ok)throw Error('Không tải được PDF gốc của MH.');
+  const buf=await response.arrayBuffer();
+  if(buf.byteLength!==MH_F27_SOURCE_BYTES)throw Error('PDF gốc MH không đúng phiên bản.');
+  const pdf=await lib.getDocument({data:new Uint8Array(buf)}).promise;
+  if(pdf.numPages!==9)throw Error('PDF gốc phải có 9 trang.');
+  return pdf;
+ })().catch(e=>{pdfDocPromise=null;throw e});
+ return pdfDocPromise;
+}
+async function paintPage(page,seq){
+ const paper=$('mhF27Paper'),scroller=$('mhF27PaperScroller'),base=$('mhF27PdfCanvas');
+ if(!paper||!scroller||!base)return;
+ const fit=Math.min(960,Math.max(270,scroller.clientWidth-20)),width=Math.round(fit*viewZoom);
+ paper.style.width=width+'px';paper.style.height=(width*PDF_H/PDF_W)+'px';
+ const message=$('mhF27PdfLoading');
+ try{
+  const pdf=await reader();
+  if(seq!==pdfRenderSeq||page!==viewPage||viewMode!=='pdf'||!current)return;
+  const sourcePage=await pdf.getPage(page);
+  if(seq!==pdfRenderSeq||!current)return;
+  const scale=width/PDF_W,viewport=sourcePage.getViewport({scale});
+  const dpr=Math.min(2,root.devicePixelRatio||1,2300/viewport.width,3100/viewport.height);
+  base.width=Math.round(viewport.width*dpr);base.height=Math.round(viewport.height*dpr);
+  base.style.width=width+'px';base.style.height=paper.style.height;
+  const ctx=base.getContext('2d',{alpha:false});
+  if(!ctx)throw Error('Không vẽ được trang PDF trên thiết bị.');
+  await sourcePage.render({canvasContext:ctx,viewport,transform:dpr!==1?[dpr,0,0,dpr,0,0]:null}).promise;
+  if(seq!==pdfRenderSeq||!current)return;
+  if(message)message.hidden=true;
+  await paintPdfOverlay();
+ }catch(e){
+  if(seq!==pdfRenderSeq||!current)return;
+  if(message){
+   message.hidden=false;
+   message.innerHTML='Không tải được bản xem PDF: '+esc(e?.message||e)+'.<br><a href="'+MH_F27_PDF_SOURCE+'" target="_blank" rel="noopener">Mở bản PDF gốc</a> hoặc chuyển sang Nhập nhanh.';
+  }
+ }
+}
+async function paintPdfOverlay(){
+ if(viewMode!=='pdf'||!model||!current)return;
+ const ink=$('mhF27PdfInk'),paper=$('mhF27Paper');if(!ink||!paper)return;
+ const width=paper.clientWidth||615,height=width*PDF_H/PDF_W;
+ const dpr=Math.min(2,root.devicePixelRatio||1,2300/width,3100/height),scale=width/PDF_W;
+ ink.width=Math.round(width*dpr);ink.height=Math.round(height*dpr);
+ ink.style.width=width+'px';ink.style.height=height+'px';
+ const ctx=ink.getContext('2d');if(!ctx)return;
+ ctx.setTransform(dpr*scale,0,0,dpr*scale,0,0);
+ const page=viewPage,copy=JSON.parse(JSON.stringify(model));
+ if(page===1)checkHeader(ctx,copy);
+ if(page<=6)checkRowsForPage(ctx,page,copy,[]);
+ if(page===6){try{await checkSignatures(ctx,copy,[])}catch(e){console.warn('MH sign preview',e)}}
+}
+function showEditor(kind,key=''){
+ editKind=kind;editKey=key;
+ renderEditorContent();
+ const el=$('mhF27Editor');if(el)el.hidden=false;
+}
+function openEditor(kind,key=''){showEditor(kind,key)}
+function hideEditor(){
+ const el=$('mhF27Editor');if(el)el.hidden=true;
+ editKind='';editKey='';
+ refreshProgress();void paintPdfOverlay();
+ if(viewMode==='pdf'){const n=$('mhF27Nav');if(n)renderNav()}
+}
+function renderEditorContent(){
+ const title=$('mhF27EditTitle'),content=$('mhF27EditContent');if(!title||!content)return;
+ if(editKind==='row'){
+  const row=spec.items.find(i=>i.key===editKey);if(!row)return;
+  const a=model.answers[editKey]||{};
+  title.textContent='Mục '+row.key+' · P.'+row.phase;
+  content.innerHTML='<p class="mhF27EditorActivity">'+esc(row.activity).replace(/\n/g,'<br>')+'</p><small>ICP · '+esc(row.inCharge)+'</small>'+
+   rowButtons(row.key,a.value)+
+   '<label class="mhF27Remark visible"><span>Remarks '+(['NO','NA'].includes(a.value)?'· bắt buộc':'· không bắt buộc')+'</span><textarea rows="4" data-mh-remark="'+esc(editKey)+'" placeholder="Ghi lý do / hành động khắc phục">'+esc(a.remarks||'')+'</textarea></label>';
+ }else if(editKind==='header'){
+  const f=spec.headerFields.find(x=>x.key===editKey);if(!f)return;
+  title.textContent=f.label;content.innerHTML='<label class="mhF27EditorField"><span>'+esc(f.label)+'</span><input data-mh-head="'+esc(editKey)+'" value="'+esc(model.headers[editKey]||'')+'" autocomplete="off"></label>';
+ }else if(editKind==='info'){
+  title.textContent='Thông tin chuyến bay';
+  content.innerHTML='<div class="mhF27Fields">'+spec.headerFields.map(f=>'<label><span>'+esc(f.label)+'</span><input data-mh-head="'+esc(f.key)+'" value="'+esc(model.headers[f.key]||'')+'"></label>').join('')+'</div>';
+ }else if(editKind==='general'){
+  title.textContent='Remarks chung';
+  content.innerHTML='<label class="mhF27Remark visible"><span>Remarks</span><textarea id="mhF27Remarks" rows="6">'+esc(model.remarks)+'</textarea></label>';
+ }else if(editKind==='signers'){
+  title.textContent='Xác nhận và chữ ký';
+  content.innerHTML='<div class="mhF27SignSummary">YES: '+summary().YES+' · NO: '+summary().NO+' · N/A: '+summary().NA+' · CHƯA CHỌN: '+summary().EMPTY+'</div>'+
+  spec.signers.map(person=>{
+   const v=model.signers[person.key]||{};
+   return '<section class="mhF27Signer"><strong>'+esc(person.title)+'</strong><label>Name<input data-mh-signer="'+person.key+':name" value="'+esc(v.name||'')+'"></label><label>Designation<input data-mh-signer="'+person.key+':designation" value="'+esc(v.designation||'')+'"></label>'+
+   (v.image?'<img alt="Chữ ký đã lưu" src="'+esc(v.image)+'"><small>Đã ký: '+new Date(v.atMs||0).toLocaleString('vi-VN')+'</small>':'<p>Chưa có chữ ký.</p>')+
+   '<button type="button" data-mh-act="sign" data-signer="'+person.key+'">'+(v.image?'Ký lại':'Ký xác nhận')+'</button></section>';
+  }).join('');
+ }
 }
 function initPad(){
  const c=$('mhF27SignCanvas');c.style.touchAction='none';let draw=false,last=null;
@@ -220,7 +441,7 @@ function finishSign(){
  const image=c.toDataURL('image/png');
  if(image.length>60000){alert('Chữ ký quá lớn, hãy ký lại nét gọn hơn.');return}
  model.signers[signKey]={...info,image,atMs:Date.now(),signedBy:username(),uid:authUid()};
- saveLocal();hideSign();renderPhase('A');
+ saveLocal();hideSign();if(editKind==='signers')renderEditorContent();refreshProgress();void paintPdfOverlay();
 }
 function issues(){
  const errs=[];
@@ -243,7 +464,7 @@ async function close(){
  clearTimeout(saveTimer);
  if(dirty&&navigator.onLine)await saveServer(true);
  const el=$('mhF27Layer');if(el)el.hidden=true;
- hideSign();current=null;model=null;lastServer=0;dirty=false;
+ hideSign();hideEditor();pdfRenderSeq++;current=null;model=null;lastServer=0;dirty=false;
  root.dispatchEvent(new Event('sags:ui-ready'));
 }
 async function open(options){
@@ -255,7 +476,7 @@ async function open(options){
  if(typeof root.SAGSRosterOpenGuard?.requireRadio==='function')await root.SAGSRosterOpenGuard.requireRadio();
  if(!spec){const r=await fetch('./data/mh-f27-checklist.json',{cache:'no-cache'});if(!r.ok)throw Error('Không tải được mẫu Malaysia Airlines.');spec=await r.json()}
  if(spec.carrier!=='MH'||spec.items?.length!==54)throw Error('Dữ liệu mẫu MH F27 không hợp lệ hoặc bị thiếu.');
- current={item,date,phase:'0'};await owns();
+ current={item,date,phase:'0'};viewMode='pdf';viewPage=1;viewZoom=1;quickIndex=0;pdfRenderSeq++;hideEditor();await owns();
  const local=readLocal(),indexed=await readIdb();
  const saved=indexed.updatedAtMs>local.updatedAtMs?indexed:local;
  let remote=null;
@@ -265,7 +486,7 @@ async function open(options){
  headerSeed(model.headers);
  if(!model.signers.groundHandler)model.signers.groundHandler={name:S(root.currentUserProfile?.fullName||root.currentUserProfile?.name||''),designation:S(root.currentUserProfile?.jobTitle||'')};
  dirty=!!(saved.updatedAtMs>lastServer);
- const p=shell();p.hidden=false;renderNav();renderPhase('0');
+ const p=shell();p.hidden=false;renderMode();
  if(dirty){$('mhF27Status').textContent='Đã khôi phục nháp mới hơn từ thiết bị này · cần đồng bộ';void saveServer(true)}
  else $('mhF27Status').textContent=lastServer?'✓ Đã khôi phục bản Firebase':'Mẫu MH mới · chưa có dữ liệu';
  return true;
@@ -493,5 +714,5 @@ async function exportPdf(){
   pdfExporting=false;if(button)button.disabled=false;
  }
 }
-root.SAGSMHF27=Object.freeze({open,close,formId:ID,pdfSourcePath:MH_F27_PDF_SOURCE,pdfRows:MH_F27_ROWS});
+root.SAGSMHF27=Object.freeze({open,close,formId:ID,pdfSourcePath:MH_F27_PDF_SOURCE,pdfRows:MH_F27_ROWS,views:['pdf','quick']});
 })(window);
