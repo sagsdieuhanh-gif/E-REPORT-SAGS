@@ -94,7 +94,7 @@ async function saveServer(force=false){
 }
 function styles(){
  if($('mhF27Css'))return;
- const link=document.createElement('link');link.rel='stylesheet';link.id='mhF27Css';link.href='./app/styles/mh-f27.v1.css';document.head.appendChild(link);
+ const link=document.createElement('link');link.rel='stylesheet';link.id='mhF27Css';link.href='./app/styles/mh-f27.v1.css?v=V2.2-20261114-MH-F27-25';document.head.appendChild(link);
 }
 function phaseName(id){return spec?.phases?.find(p=>p.id===id)?.title||id}
 function allCount(){return spec.items.length}
@@ -348,7 +348,7 @@ async function paintPage(page,seq){
   const sourcePage=await pdf.getPage(page);
   if(seq!==pdfRenderSeq||!current)return;
   const scale=width/PDF_W,viewport=sourcePage.getViewport({scale});
-  const dpr=Math.min(2,root.devicePixelRatio||1);
+  const dpr=Math.min(2,root.devicePixelRatio||1,2300/viewport.width,3100/viewport.height);
   base.width=Math.round(viewport.width*dpr);base.height=Math.round(viewport.height*dpr);
   base.style.width=width+'px';base.style.height=paper.style.height;
   const ctx=base.getContext('2d',{alpha:false});
@@ -369,7 +369,7 @@ async function paintPdfOverlay(){
  if(viewMode!=='pdf'||!model||!current)return;
  const ink=$('mhF27PdfInk'),paper=$('mhF27Paper');if(!ink||!paper)return;
  const width=paper.clientWidth||615,height=width*PDF_H/PDF_W;
- const dpr=Math.min(2,root.devicePixelRatio||1),scale=width/PDF_W;
+ const dpr=Math.min(2,root.devicePixelRatio||1,2300/width,3100/height),scale=width/PDF_W;
  ink.width=Math.round(width*dpr);ink.height=Math.round(height*dpr);
  ink.style.width=width+'px';ink.style.height=height+'px';
  const ctx=ink.getContext('2d');if(!ctx)return;
