@@ -566,7 +566,7 @@ async function openTask(aid,fid,completed,cardDate='',exact=false,button=null){
       if(!root.SAGSMHF27){
         if(!root.__sagsMHF27Promise)root.__sagsMHF27Promise=new Promise((resolve,reject)=>{
           const sc=document.createElement('script');
-          sc.src='./app/modules/mh-f27.v1.js?v=V2.2-20261114-MH-F27-23';
+          sc.src='./app/modules/mh-f27.v1.js?v=V2.2-20261114-MH-F27-24';
           sc.async=true;sc.onload=resolve;sc.onerror=()=>reject(new Error('Không tải được biểu mẫu MH F27.'));
           document.head.appendChild(sc);
         }).catch(e=>{root.__sagsMHF27Promise=null;throw e});
