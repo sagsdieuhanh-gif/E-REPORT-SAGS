@@ -20,6 +20,12 @@ function normalize(raw){
   updatedAtMs:Number(x.updatedAtMs)||0,completedAtMs:Number(x.completedAtMs)||0};
 }
 function readLocal(){try{return normalize(JSON.parse(localStorage.getItem(key())||'null'))}catch(_){return normalize(null)}}
+async function readIdb(){
+ try{const db=await openDb();return await new Promise(resolve=>{
+  const tx=db.transaction('drafts','readonly'),req=tx.objectStore('drafts').get(key());
+  req.onsuccess=()=>resolve(normalize(req.result));req.onerror=()=>resolve(normalize(null));
+ });}catch(_){return normalize(null)}
+}
 function openDb(){
  if(!root.indexedDB)return Promise.reject(Error('IndexedDB unavailable'));
  if(!dbPromise)dbPromise=new Promise((resolve,reject)=>{
@@ -63,7 +69,7 @@ async function saveServer(force=false){
   const aid=clean(current.item.assignmentId),ref=root.sagsV470Ref('roster_sessions/'+aid+'/mhF27');
   const copy=JSON.parse(JSON.stringify(model)),stamp=Date.now();let conflict=false;
   const result=await ref.transaction(prev=>{
-   if(prev&&Number(prev.updatedAtMs)>lastServer&&prev.updatedByUid!==authUid()){
+   if(prev&&Number(prev.updatedAtMs)>lastServer){
     conflict=true;return;
    }
    return {...copy,updatedByUid:authUid(),updatedBy:username(),
@@ -79,9 +85,7 @@ async function saveServer(force=false){
    [base+'/claimedBy']:username(),
    [base+'/claimedAtMs']:Number(result.snapshot.val()?.claimedAtMs)||stamp,
    [base+'/updatedAtMs']:stamp,
-   ...(model.completedAtMs?{[base+'/completedAtMs']:model.completedAtMs,[base+'/completedBy']:username()}:{}),
-   ['flight_hub/'+clean(current.date)+'/'+clean(current.item.flightId)+'/modules/MHF27']:{
-    status,assignmentId:aid,updatedAtMs:stamp,operator:username(),completedAtMs:model.completedAtMs||0}
+   ...(model.completedAtMs?{[base+'/completedAtMs']:model.completedAtMs,[base+'/completedBy']:username()}:{})
   });
   if(x)x.textContent='✓ Đã lưu lên Firebase · '+new Date().toLocaleTimeString('vi-VN');
   return true;
@@ -95,6 +99,7 @@ function styles(){
 function phaseName(id){return spec?.phases?.find(p=>p.id===id)?.title||id}
 function allCount(){return spec.items.length}
 function countDone(){return spec.items.filter(r=>['YES','NO','NA'].includes(model.answers[r.key]?.value)).length}
+function invalidateSignoff(){if(model?.completedAtMs)model.completedAtMs=0}
 function summary(){const out={YES:0,NO:0,NA:0,EMPTY:0};for(const i of spec.items){const v=model.answers[i.key]?.value;out[v]!==undefined?out[v]++:out.EMPTY++}return out}
 function headerSeed(h){
  const item=current.item;
@@ -114,15 +119,15 @@ function shell(){
  document.body.appendChild(p);
  p.addEventListener('input',e=>{
   const k=e.target.dataset.mhHead,remark=e.target.dataset.mhRemark,person=e.target.dataset.mhSigner;
-  if(k){model.headers[k]=e.target.value;saveLocal()}
-  else if(remark){const row=model.answers[remark]||{};model.answers[remark]={...row,remarks:e.target.value};saveLocal()}
-  else if(person){const [who,field]=person.split(':');model.signers[who]={...(model.signers[who]||{}),[field]:e.target.value};saveLocal()}
-  else if(e.target.id==='mhF27Remarks'){model.remarks=e.target.value;saveLocal()}
+  if(k){invalidateSignoff();model.headers[k]=e.target.value;saveLocal()}
+  else if(remark){invalidateSignoff();const row=model.answers[remark]||{};model.answers[remark]={...row,remarks:e.target.value};saveLocal()}
+  else if(person){const [who,field]=person.split(':');const old=model.signers[who]||{};model.signers[who]={...old,[field]:e.target.value,image:''};invalidateSignoff();saveLocal()}
+  else if(e.target.id==='mhF27Remarks'){invalidateSignoff();model.remarks=e.target.value;saveLocal()}
  });
  p.addEventListener('change',e=>{
   if(e.target.dataset.mhChoice){
    const row=model.answers[e.target.dataset.mhChoice]||{},value=e.target.value;
-   model.answers[e.target.dataset.mhChoice]={...row,value,atMs:Date.now(),by:username()};
+   invalidateSignoff();model.answers[e.target.dataset.mhChoice]={...row,value,atMs:Date.now(),by:username()};
    saveLocal();renderNav();renderPhase(current.phase);
   }
  });
@@ -186,7 +191,6 @@ function signForm(){
 }
 function renderPhase(id){
  const el=$('mhF27Body');if(!el)return;
- const keepScroll=el.scrollTop;
  el.innerHTML=id==='0'?fieldForm():id==='A'?signForm():phaseForm(id);
  el.scrollTop=0;renderNav();
 }
@@ -227,8 +231,9 @@ async function complete(){
  if(ok){alert('Đã hoàn tất và đồng bộ MH AS/RM/F27 lên Firebase.');root.dispatchEvent(new Event('sags:personal-roster-updated'))}
  else{model.completedAtMs=old||0;saveLocal();alert('Chưa xác nhận được hoàn tất trên Firebase. Bản nháp vẫn còn trên thiết bị.')}
 }
-function close(){
- clearTimeout(saveTimer);if(dirty)void saveServer(true);
+async function close(){
+ clearTimeout(saveTimer);
+ if(dirty&&navigator.onLine)await saveServer(true);
  const el=$('mhF27Layer');if(el)el.hidden=true;
  hideSign();current=null;model=null;lastServer=0;dirty=false;
  root.dispatchEvent(new Event('sags:ui-ready'));
@@ -243,7 +248,8 @@ async function open(options){
  if(!spec){const r=await fetch('./data/mh-f27-checklist.json',{cache:'no-cache'});if(!r.ok)throw Error('Không tải được mẫu Malaysia Airlines.');spec=await r.json()}
  if(spec.carrier!=='MH'||spec.items?.length!==54)throw Error('Dữ liệu mẫu MH F27 không hợp lệ hoặc bị thiếu.');
  current={item,date,phase:'0'};await owns();
- const saved=readLocal();
+ const local=readLocal(),indexed=await readIdb();
+ const saved=indexed.updatedAtMs>local.updatedAtMs?indexed:local;
  let remote=null;
  try{remote=(await root.sagsV470Ref('roster_sessions/'+clean(item.assignmentId)+'/mhF27').once('value')).val()}catch(e){console.warn('MH F27 server',e?.message||e)}
  lastServer=Number(remote?.updatedAtMs)||0;
