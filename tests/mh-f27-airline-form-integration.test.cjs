@@ -40,14 +40,28 @@ assert(src.includes("root.indexedDB.open('sags-mh-f27-drafts-v1'"),'iOS draft sh
 assert(src.includes("localStorage.setItem(key(),JSON.stringify(model))"),'Immediate local draft checkpoint required');
 assert(src.includes("await root.SAGSRosterOpenGuard.requireRadio()"),'Direct open cannot bypass radio custody');
 assert(src.includes("Number(prev.updatedAtMs)>lastServer"),'Prevent stale cross-device overwrite');
-assert(src.includes("function pdfRows(")&&src.includes("return {remaining:items.slice(idx),y}"),'PDF cannot silently truncate long checklist rows');
-assert(src.includes("function proofImg(data)"),'PDF should render the actual saved signature');
-assert(src.includes("const pdf=pdfBuild(canvases)"),'Must download PDF without external dependencies');
+const sourcePDF='assets/mh/AS_RM_F27_Iss1Rev4_2026-04-30.pdf';
+const sourceBuffer=fs.readFileSync(sourcePDF);
+assert.equal(sourceBuffer.length,547484,'Exact uploaded source PDF must be retained');
+assert.equal(sourceBuffer.toString('ascii',0,8).startsWith('%PDF-1.'),true,'Source must be an actual PDF');
+assert(src.includes("const pdf=await lib.PDFDocument.load(raw)"),'PDF export must import original source');
+assert(src.includes("if(pdf.getPageCount()!==9)"),'PDF must retain 9 original pages');
+assert(src.includes("pg.drawImage(png,{x:0,y:0,width:w,height:h})"),'Fill fields as transparent overlays');
+assert(src.includes("const extra=await pdfContinuationPage"),'Long notes must never be silently truncated');
+assert(src.includes("if(n===6)await checkSignatures"),'Place saved signatures on original page six');
+assert(src.includes("const MH_F27_SOURCE_BYTES=547484"),'Reject mismatched source file');
+assert(!src.includes("function pageCanvas("),'Do not redraw/copy branding and appendices into substitute pages');
 assert(src.includes("if(!['YES','NO','NA'].includes(v))"),'Completion must validate every checkbox');
 assert(src.includes("['NO','NA'].includes(v)"),'No/N/A remarks required');
 assert(src.includes("if(dirty&&navigator.onLine)"),'Never imply an offline save completed server sync');
 assert(style.includes('env(safe-area-inset-bottom)'),'iPhone navigation must remain usable');
 const root={};vm.runInNewContext(src,{window:root});
 assert.equal(root.SAGSMHF27?.formId,'mhf27');
+assert.equal(root.SAGSMHF27.pdfSourcePath,'./'+sourcePDF);
+assert.equal(Object.keys(root.SAGSMHF27.pdfRows).length,54);
+for(const key of data.items.map(x=>x.key)) {
+ const pos=root.SAGSMHF27.pdfRows[key];
+ assert(pos&&pos.length===3&&pos[0]>=1&&pos[0]<=6&&pos[2]>pos[1],'Invalid source PDF placement '+key);
+}
 assert.equal(typeof root.SAGSMHF27.open,'function');
-console.log('MH AS/RM/F27 integration: 54/54 source tasks, MH-only, Grnd_Cor roster, mandatory radio, signatures, PDF, iOS-safe draft PASS');
+console.log('MH AS/RM/F27 integration: 54/54 source tasks, MH-only, Grnd_Cor roster, mandatory radio, original-layout PDF, signatures, iOS-safe draft PASS');
