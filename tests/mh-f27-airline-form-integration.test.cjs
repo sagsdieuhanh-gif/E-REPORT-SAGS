@@ -7,6 +7,7 @@ const fallback=JSON.parse(fs.readFileSync('form-configuration.json','utf8'));
 const roster=fs.readFileSync('app/modules/daily-roster.v502.js','utf8');
 const src=fs.readFileSync('app/modules/mh-f27.v1.js','utf8');
 const style=fs.readFileSync('app/styles/mh-f27.v1.css','utf8');
+const airlinePolicy=fs.readFileSync('app/modules/airline-form-policy.v1.js','utf8');
 assert.equal(data.id,'mhf27');assert.equal(data.carrier,'MH');
 assert.equal(data.formCode,'AS/RM/F27');
 assert.equal(data.issue,'Issue 1 Revision 4');
@@ -20,6 +21,7 @@ for(const item of data.items)assert(item.activity.length>15&&item.inCharge,'Miss
 assert.equal(data.headerFields.length,19);
 assert.equal(data.signers.length,2);assert.equal(data.appendix.length,3);
 assert(catalog.some(c=>c.code==='MH'&&c.label==='Malaysia Airlines'&&c.prefixes.includes('MH')));
+assert(airlinePolicy.includes("formCatalog.push({id:'mhf27'"),'AD should manage MH F27 availability');
 for(const config of [policy,fallback]){
  assert(config.carriers.MH?.prefixes.includes('MAS'));
  assert.equal(config.forms.mhf27.enabled,true);
