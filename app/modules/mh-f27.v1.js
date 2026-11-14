@@ -99,7 +99,15 @@ function styles(){
 function phaseName(id){return spec?.phases?.find(p=>p.id===id)?.title||id}
 function allCount(){return spec.items.length}
 function countDone(){return spec.items.filter(r=>['YES','NO','NA'].includes(model.answers[r.key]?.value)).length}
-function invalidateSignoff(){if(model?.completedAtMs)model.completedAtMs=0}
+function invalidateSignoff(){
+ if(!model)return;
+ model.completedAtMs=0;
+ // A signature must not certify checks that were changed after signing.
+ for(const signer of Object.values(model.signers||{})){
+  if(!signer?.image)continue;
+  delete signer.image;delete signer.atMs;delete signer.signedBy;delete signer.uid;
+ }
+}
 function summary(){const out={YES:0,NO:0,NA:0,EMPTY:0};for(const i of spec.items){const v=model.answers[i.key]?.value;out[v]!==undefined?out[v]++:out.EMPTY++}return out}
 function headerSeed(h){
  const item=current.item;
