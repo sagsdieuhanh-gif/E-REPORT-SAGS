@@ -6,7 +6,7 @@ const ID='mhf27',S=v=>String(v??'').trim(),U=v=>S(v).toUpperCase();
 const $=id=>document.getElementById(id);
 const esc=v=>S(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const clean=v=>S(v).replace(/[.#$\[\]/]/g,'_');
-let spec=null,current=null,model=null,lastServer=0,syncing=false,dirty=false,saveTimer=null,dbPromise=null,signKey='';
+let spec=null,current=null,model=null,lastServer=0,syncing=false,dirty=false,changeCounter=0,saveTimer=null,dbPromise=null,signKey='';
 function username(){return U(root.currentUserProfile?.username||root.__sagsGetSession?.()?.profile?.username)}
 function authUid(){return S(root.firebase?.auth?.()?.currentUser?.uid)}
 function offline(){return !navigator.onLine||!root.sagsV470Ref}
@@ -44,7 +44,7 @@ function writeIdb(){
 }
 function saveLocal(){
  if(!current||!model)return;
- model.updatedAtMs=Date.now();dirty=true;
+ model.updatedAtMs=Date.now();changeCounter++;dirty=true;
  try{localStorage.setItem(key(),JSON.stringify(model))}catch(e){console.warn('MH F27 localStorage',e?.message||e)}
  writeIdb();
  const el=$('mhF27Status');if(el)el.textContent='Đã lưu nháp trên thiết bị · chưa xác nhận máy chủ';
@@ -63,11 +63,11 @@ async function owns(){
 async function saveServer(force=false){
  if(!current||!model||syncing||(!dirty&&!force))return false;
  if(offline()){const x=$('mhF27Status');if(x)x.textContent='Đã lưu nháp trên thiết bị · cần có mạng để đồng bộ';return false}
- syncing=true;const x=$('mhF27Status');if(x)x.textContent='Đang đồng bộ nháp MH lên Firebase…';
+ syncing=true;let committed=false;const x=$('mhF27Status');if(x)x.textContent='Đang đồng bộ nháp MH lên Firebase…';
  try{
   await owns();
   const aid=clean(current.item.assignmentId),ref=root.sagsV470Ref('roster_sessions/'+aid+'/mhF27');
-  const copy=JSON.parse(JSON.stringify(model)),stamp=Date.now();let conflict=false;
+  const copy=JSON.parse(JSON.stringify(model)),stamp=Date.now(),syncedChange=changeCounter;let conflict=false;
   const result=await ref.transaction(prev=>{
    if(prev&&Number(prev.updatedAtMs)>lastServer){
     conflict=true;return;
@@ -77,7 +77,8 @@ async function saveServer(force=false){
   },undefined,false);
   if(!result?.committed){if(conflict)throw Error('Dữ liệu trên Firebase đã được sửa từ thiết bị khác. Nháp trên máy được giữ nguyên; cần đối chiếu trước khi ghi đè.');throw Error('Firebase chưa xác nhận lưu.');}
   lastServer=stamp;model.revision=Number(result.snapshot.val()?.revision)||model.revision;
-  dirty=false;try{localStorage.setItem(key(),JSON.stringify(model))}catch(_){}
+  committed=true;dirty=changeCounter!==syncedChange;
+  if(!dirty)try{localStorage.setItem(key(),JSON.stringify(model))}catch(_){}
   const status=model.completedAtMs?'COMPLETED':'IN_PROGRESS',base='roster_sessions/'+aid;
   await root.sagsV470Ref('').update({
    [base+'/taskStatusV333']:status,
@@ -87,10 +88,12 @@ async function saveServer(force=false){
    [base+'/updatedAtMs']:stamp,
    ...(model.completedAtMs?{[base+'/completedAtMs']:model.completedAtMs,[base+'/completedBy']:username()}:{})
   });
-  if(x)x.textContent='✓ Đã lưu lên Firebase · '+new Date().toLocaleTimeString('vi-VN');
+  if(x)x.textContent=dirty?'Nháp mới hơn đang chờ đồng bộ…':'✓ Đã lưu lên Firebase · '+new Date().toLocaleTimeString('vi-VN');
   return true;
  }catch(e){if(x)x.textContent='⚠ Chưa đồng bộ Firebase: '+S(e?.message||e);return false}
- finally{syncing=false}
+ finally{syncing=false;if(committed&&dirty&&current&&!offline()){
+  clearTimeout(saveTimer);saveTimer=setTimeout(()=>{void saveServer(false)},350);
+ }}
 }
 function styles(){
  if($('mhF27Css'))return;
