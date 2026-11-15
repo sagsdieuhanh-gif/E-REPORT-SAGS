@@ -160,6 +160,9 @@ function shell(){
   if(act==='save'){void saveServer(true);return}
   if(act==='complete'){void complete();return}
   if(act==='pdf'){void exportPdf();return}
+  if(act==='preset-apply'){applyMarkingPreset();return}
+  if(act==='confirm-row'){confirmSample(btn.dataset.key,'');return}
+  if(act==='confirm-phase'){confirmSample('',btn.dataset.phase);return}
   if(act==='mode'){viewMode=btn.dataset.mode==='quick'?'quick':'pdf';renderMode();return}
   if(act==='page'){viewPage=Math.min(9,Math.max(1,Number(btn.dataset.page)||1));renderMode();return}
   if(act==='zoom'){viewZoom=Math.max(1,Math.min(3,Math.round((viewZoom+(Number(btn.dataset.direction)||0)*.25)*100)/100));renderMode();return}
@@ -209,21 +212,82 @@ function shell(){
  });
  initPad();return p;
 }
+
+function markingPreset(){
+ const preset=spec?.markingPresets?.find(p=>p.id==='mh8711-ferry-sample-2026-11-15');
+ if(!preset||!spec?.items||spec.items.length!==54)return null;
+ const decisions=preset.decisions||{};
+ if(Object.keys(decisions).length!==54||spec.items.some(item=>!['YES','NO','NA'].includes(decisions[item.key])))return null;
+ return preset;
+}
+function presetPendingCount(){
+ return spec?.items?.filter(item=>model?.answers?.[item.key]?.presetPending===true).length||0;
+}
+function presetBanner(){
+ if(!markingPreset())return '';
+ const pending=presetPendingCount();
+ return '<div class="mhF27PresetBanner"><div><strong>✓ Mẫu dấu tích MH8711 · Ferry</strong>'+
+  '<span>36 YES · 18 N/A · 0 NO · không sao chép tên, giờ, chữ ký.</span>'+
+  (pending?'<small>'+pending+' mục từ mẫu đang chờ nhân viên xác nhận thực tế.</small>':'')+
+  '</div><button type="button" data-mh-act="preset-apply">Áp dụng vào ô trống</button></div>';
+}
+function applyMarkingPreset(){
+ const preset=markingPreset();if(!preset)return;
+ const targets=spec.items.filter(item=>!['YES','NO','NA'].includes(model.answers[item.key]?.value));
+ if(!targets.length){
+  alert('54 mục đã được chọn. Mẫu MH8711 sẽ không ghi đè bất kỳ dấu tích nào đã nhập.');
+  return;
+ }
+ const msg='MẪU THAM KHẢO MH8711 · FERRY\n\n'+
+  'Dấu tích mẫu: 36 YES, 18 N/A. Áp dụng vào '+targets.length+' mục chưa chọn, KHÔNG ghi đè các mục đã nhập.\n'+
+  'Các kết quả này sẽ được đánh dấu CHƯA XÁC NHẬN cho đến khi người dùng kiểm tra thực tế và xác nhận từng mục/giai đoạn.\n'+
+  '14 mục N/A thiếu lý do trong file mẫu vẫn phải nhập Remarks trước khi hoàn tất.\n'+
+  'Không sao chép thông tin chuyến, tên, chữ ký từ MH8711.\n\nÁp dụng dấu tích mẫu?';
+ if(!root.confirm(msg))return;
+ invalidateSignoff();
+ for(const item of targets){
+  const prev=model.answers[item.key]||{},note=S(prev.remarks)||S(preset.remarks?.[item.key]);
+  model.answers[item.key]={
+   ...prev,value:preset.decisions[item.key],remarks:note,
+   presetPending:true,presetId:preset.id,verifiedAtMs:0,
+   atMs:Date.now(),by:username()
+  };
+ }
+ saveLocal();renderMode();
+ const missing=spec.items.filter(item=>model.answers[item.key]?.value==='NA'&&S(model.answers[item.key]?.remarks).length<5).length;
+ const status=$('mhF27Status');
+ if(status)status.textContent='Mẫu đã áp dụng vào '+targets.length+' mục · '+missing+' N/A thiếu lý do · cần xác nhận từng giai đoạn';
+}
+function confirmSample(key,phase){
+ if(!model||!spec)return;
+ const rows=spec.items.filter(item=>phase?item.phase===phase:item.key===key);
+ const candidates=rows.filter(item=>model.answers[item.key]?.presetPending===true);
+ if(!candidates.length){alert('Không có dấu tích mẫu đang chờ xác nhận tại '+(phase?'P.'+phase:key)+'.');return}
+ if(!root.confirm('Xác nhận đã kiểm tra thực tế '+candidates.length+' mục '+(phase?'thuộc P.'+phase:'số '+key)+'? Chỉ xác nhận khi các điều kiện an toàn đã được đối chiếu; cần sửa các dấu tích không phù hợp trước khi xác nhận.'))return;
+ invalidateSignoff();
+ for(const item of candidates){
+  const row=model.answers[item.key];
+  model.answers[item.key]={...row,presetPending:false,verifiedAtMs:Date.now(),by:username()};
+ }
+ saveLocal();renderMode();
+}
+
 function validAnswer(key){
  const a=model?.answers?.[key],v=a?.value;
- return ['YES','NO','NA'].includes(v)&&(!['NO','NA'].includes(v)||S(a.remarks).length>=5);
+ return a?.presetPending!==true&&['YES','NO','NA'].includes(v)&&(!['NO','NA'].includes(v)||S(a.remarks).length>=5);
 }
 function setDecision(key,value){
  if(!spec.items.some(i=>i.key===key)||!['YES','NO','NA'].includes(value))return;
  const old=model.answers[key]||{};
  invalidateSignoff();
- model.answers[key]={...old,value,atMs:Date.now(),by:username()};
+ model.answers[key]={...old,value,presetPending:false,verifiedAtMs:Date.now(),atMs:Date.now(),by:username()};
  saveLocal();
 }
 function refreshProgress(){
  if(!spec||!model)return;
  const valid=spec.items.filter(i=>validAnswer(i.key)).length;
- const x=$('mhF27Progress');if(x)x.textContent=valid+'/'+spec.items.length+' mục hợp lệ';
+ const pending=presetPendingCount();
+ const x=$('mhF27Progress');if(x)x.textContent=valid+'/'+spec.items.length+' mục hợp lệ'+(pending?' · '+pending+' chờ xác nhận':'');
  for(const mode of ['pdf','quick']){
   const b=$('mhF27Layer')?.querySelector('[data-mh-act="mode"][data-mode="'+mode+'"]');
   if(b){b.classList.toggle('active',mode===viewMode);b.setAttribute('aria-pressed',String(mode===viewMode))}
@@ -263,12 +327,13 @@ function renderQuick(){
  quickIndex=Math.min(spec.items.length-1,Math.max(0,quickIndex));
  const entry=spec.items[quickIndex],saved=model.answers[entry.key]||{},valid=validAnswer(entry.key);
  const el=$('mhF27Body');if(!el)return;
- el.innerHTML='<section class="mhF27Quick"><header class="mhF27QuickTop"><div><small>GIAI ĐOẠN P.'+esc(entry.phase)+' · '+esc(phaseName(entry.phase))+'</small><strong>Mục '+esc(entry.key)+'</strong><span>'+ (quickIndex+1)+' / '+spec.items.length+' mục</span></div>'+
+ el.innerHTML=presetBanner()+'<section class="mhF27Quick"><header class="mhF27QuickTop"><div><small>GIAI ĐOẠN P.'+esc(entry.phase)+' · '+esc(phaseName(entry.phase))+'</small><strong>Mục '+esc(entry.key)+'</strong><span>'+ (quickIndex+1)+' / '+spec.items.length+' mục</span></div>'+
  '<label class="mhF27Jump"><span>Chuyển tới</span><select id="mhF27JumpItem">'+spec.items.map(r=>'<option value="'+esc(r.key)+'" '+(r.key===entry.key?'selected':'')+'>'+esc(r.key)+(validAnswer(r.key)?' ✓':' ·')+'</option>').join('')+'</select></label></header>'+
  '<article class="mhF27QuickCard"><div class="mhF27QuickLabel"><b>ICP · '+esc(entry.inCharge)+'</b><span class="'+(valid?'complete':'pending')+'">'+(valid?'✓ Đã kiểm tra':'Cần kiểm tra')+'</span></div>'+
  '<p class="mhF27Activity">'+esc(entry.activity).replace(/\n/g,'<br>')+'</p>'+rowButtons(entry.key,saved.value)+
+ (saved.presetPending?'<div class="mhF27PresetPending"><span>Gợi ý từ mẫu MH8711, chưa xác nhận kiểm tra thực tế</span><button type="button" data-mh-act="confirm-row" data-key="'+esc(entry.key)+'">✓ Xác nhận mục</button></div>':'')+
  '<label class="mhF27Remark mhF27QuickRemark '+(['NO','NA'].includes(saved.value)||saved.remarks?'visible':'')+'"><span>Remarks '+(['NO','NA'].includes(saved.value)?'· Bắt buộc ghi lý do':'· Không bắt buộc')+'</span><textarea data-mh-remark="'+esc(entry.key)+'" rows="3" placeholder="Lý do / biện pháp khắc phục (nếu No hoặc N/A)">'+esc(saved.remarks||'')+'</textarea></label>'+
- '</article><div class="mhF27QuickActions"><button type="button" data-mh-act="quick-prev" '+(!quickIndex?'disabled':'')+'>← Trước</button><button type="button" data-mh-act="quick-missing">Mục chưa xong</button><button type="button" data-mh-act="quick-next" '+(quickIndex===spec.items.length-1?'disabled':'')+'>Tiếp →</button></div>'+
+ '</article>'+(spec.items.some(i=>i.phase===entry.phase&&model.answers[i.key]?.presetPending)?'<div class="mhF27PresetPhase"><span>P.'+esc(entry.phase)+' · Cần xác nhận dấu tích mẫu</span><button type="button" data-mh-act="confirm-phase" data-phase="'+esc(entry.phase)+'">Xác nhận cả giai đoạn P.'+esc(entry.phase)+'</button></div>':'')+'<div class="mhF27QuickActions"><button type="button" data-mh-act="quick-prev" '+(!quickIndex?'disabled':'')+'>← Trước</button><button type="button" data-mh-act="quick-missing">Mục chưa xong</button><button type="button" data-mh-act="quick-next" '+(quickIndex===spec.items.length-1?'disabled':'')+'>Tiếp →</button></div>'+
  '<p class="mhF27QuickTip">Chọn <b>YES</b> để tự qua mục kế tiếp. Chọn <b>NO / N/A</b> để bổ sung lý do. Dữ liệu lưu ngay trên thiết bị và đồng bộ Firebase.</p></section>';
  renderNav();refreshProgress();
  el.scrollTop=0;
@@ -302,7 +367,7 @@ function fullPdfHitboxes(page){
 function renderFullPdf(){
  const el=$('mhF27Body');if(!el)return;
  const curr=viewPage;
- el.innerHTML='<div class="mhF27PdfWorkspace">'+
+ el.innerHTML=presetBanner()+'<div class="mhF27PdfWorkspace">'+
  '<div class="mhF27PageControls"><div class="mhF27PageMove"><button type="button" data-mh-act="page" data-page="'+(curr-1)+'" '+(curr===1?'disabled':'')+'>‹</button><label><span>Trang PDF</span><select id="mhF27JumpPage">'+Array.from({length:9},(_,i)=>'<option value="'+(i+1)+'" '+(i+1===curr?'selected':'')+'>'+(i+1)+' / 9</option>').join('')+'</select></label><button type="button" data-mh-act="page" data-page="'+(curr+1)+'" '+(curr===9?'disabled':'')+'>›</button></div>'+
  '<div class="mhF27Zoom"><button type="button" data-mh-act="zoom" data-direction="-1" '+(viewZoom<=1?'disabled':'')+'>−</button><span>'+Math.round(viewZoom*100)+'%</span><button type="button" data-mh-act="zoom" data-direction="1" '+(viewZoom>=3?'disabled':'')+'>+</button></div></div>'+
  '<p class="mhF27PdfHelp">'+(curr<=6?'Chạm vào vùng <b>thông tin / ô Yes – No – N/A / Remarks / chữ ký</b> trên PDF để nhập. Dùng + để phóng to khi cần.':'Phụ lục hình minh họa gốc của Malaysia Airlines · chỉ xem.')+'</p>'+
@@ -446,6 +511,7 @@ function finishSign(){
 function issues(){
  const errs=[];
  for(const i of spec.items){const v=model.answers[i.key]?.value;
+  if(model.answers[i.key]?.presetPending===true)errs.push(i.key+' chưa xác nhận kiểm tra thực tế sau khi áp dụng mẫu');
   if(!['YES','NO','NA'].includes(v))errs.push(i.key+' chưa đánh dấu');
   else if(['NO','NA'].includes(v)&&S(model.answers[i.key]?.remarks).length<5)errs.push(i.key+' thiếu Remarks');
  }
@@ -660,6 +726,8 @@ function pdfContinuationPage(doc,PDFLib,overflows,w,h){
 }
 async function exportPdf(){
  if(!current||!model||pdfExporting)return;
+ const pending=presetPendingCount();
+ if(pending){alert('Có '+pending+' mục từ mẫu MH8711 chưa được xác nhận kiểm tra thực tế. Xác nhận các mục/giai đoạn trước khi xuất PDF, tránh xuất báo cáo có dấu tích chưa kiểm chứng.');return}
  const button=$('mhF27Layer')?.querySelector('[data-mh-act="pdf"]');
  pdfExporting=true;if(button)button.disabled=true;
  const status=$('mhF27Status');
@@ -714,5 +782,5 @@ async function exportPdf(){
   pdfExporting=false;if(button)button.disabled=false;
  }
 }
-root.SAGSMHF27=Object.freeze({open,close,formId:ID,pdfSourcePath:MH_F27_PDF_SOURCE,pdfRows:MH_F27_ROWS,views:['pdf','quick']});
+root.SAGSMHF27=Object.freeze({open,close,formId:ID,pdfSourcePath:MH_F27_PDF_SOURCE,pdfRows:MH_F27_ROWS,views:['pdf','quick'],samplePresetId:'mh8711-ferry-sample-2026-11-15'});
 })(window);
