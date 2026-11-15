@@ -72,9 +72,37 @@ assert(style.includes('.mhF27PaperScroller')&&style.includes('touch-action:pan-x
 assert(style.includes('.mhF27QuickCard')&&style.includes('.mhF27Choices button'),'Quick mode must expose large single-step controls');
 assert(style.includes('.mhF27EditorPanel')&&style.includes('max-height:83dvh'),'Keyboard-safe mobile sheet is required');
 
+
+/* MH8711 filled reference: statuses are suggestions only, never automatic certification. */
+assert(Array.isArray(data.markingPresets)&&data.markingPresets.length===1,'One named reference preset expected');
+const preset=data.markingPresets[0];
+assert.equal(preset.id,'mh8711-ferry-sample-2026-11-15');
+assert.equal(preset.type,'reference-only');
+assert.equal(preset.flightType,'Ferry');
+assert.deepEqual(Object.keys(preset.decisions).sort(),data.items.map(x=>x.key).sort(),'Every one of 54 PDF checklist rows must be mapped');
+const yes=Object.keys(preset.decisions).filter(k=>preset.decisions[k]==='YES');
+const na=Object.keys(preset.decisions).filter(k=>preset.decisions[k]==='NA');
+const no=Object.keys(preset.decisions).filter(k=>preset.decisions[k]==='NO');
+assert.equal(yes.length,36);assert.equal(na.length,18);assert.equal(no.length,0);
+assert.deepEqual(na.sort(),['2.9','2.13','2.14','3.3','3.4','3.5','3.6','3.8','4.1','5.1','5.3','5.4','6.2','6.3','6.6','6.9','6.13','6.17'].sort());
+assert.deepEqual(preset.remarks,{'3.3':'Ferry','3.6':'No Cargo','6.2':'Ferry','6.9':'Ferry'});
+assert.equal(na.filter(k=>!preset.remarks[k]).length,14,'All missing N/A reasons must remain unresolved');
+assert(!('headers' in preset)&&!('signers' in preset),'Do not copy source flight identity and signatures');
+assert(src.includes("function applyMarkingPreset()"),'Preset one-tap action must be available');
+assert(src.includes("targets=spec.items.filter(item=>!['YES','NO','NA'].includes(model.answers[item.key]?.value))"),'Do not overwrite existing flight checks');
+assert(src.includes("if(!root.confirm(msg))return"),'Require user to explicitly apply reference marks');
+assert(src.includes("presetPending:true"),'Marks copied from file must remain unverified until inspected');
+assert(src.includes("function confirmSample(key,phase)"),'Allow review per item/phase without 54 redundant steps');
+assert(src.includes("a?.presetPending!==true&&['YES','NO','NA'].includes(v)"),'Unverified sample marks cannot count as completed');
+assert(src.includes("if(model.answers[i.key]?.presetPending===true)errs.push"),'Completion gate must block unverified sample marks');
+assert(src.includes("if(pending){alert('Có '+pending+' mục từ mẫu MH8711 chưa được xác nhận"),'PDF export must block unverified preset checks');
+assert(src.includes("root.matchMedia?.('(max-width: 700px)')?.matches?'quick':'pdf'"),'Mobile should open quick view, desktop keeps PDF');
+assert(style.includes(".mhF27PresetBanner")&&style.includes(".mhF27PresetPending")&&style.includes(".mhF27PresetPhase"),'Mobile must show pending safety verification controls');
+
 const root={};vm.runInNewContext(src,{window:root});
 assert.equal(root.SAGSMHF27?.formId,'mhf27');
 assert.equal(root.SAGSMHF27.pdfSourcePath,'./'+sourcePDF);
+assert.equal(root.SAGSMHF27.samplePresetId,preset.id);
 assert.equal(Object.keys(root.SAGSMHF27.pdfRows).length,54);
 for(const key of data.items.map(x=>x.key)) {
  const pos=root.SAGSMHF27.pdfRows[key];
