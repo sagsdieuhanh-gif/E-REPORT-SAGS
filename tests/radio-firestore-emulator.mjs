@@ -73,11 +73,11 @@ async function atomicSwap(uid,oldCode,newCode){
   const [oldSnap,newSnap]=await Promise.all([tx.get(oldRef),tx.get(newRef)]);
   const old=oldSnap.data(),next=newSnap.data();
   assert.equal(old.status,'OUT');assert.equal(next.status,'READY');
-  const oldState={status:'CHARGING',holderUid:'',holderName:'',shift:'',faultCode:'BATTERY_EMPTY',faultDetail:'Hết pin trong ca trực',battery:'EMPTY',version:old.version+1,lastEventId:oldEv.id,updatedAt:serverTimestamp()};
+  const oldState={status:'READY',holderUid:'',holderName:'',shift:'',faultCode:'BATTERY_EMPTY',faultDetail:'Hết pin trong ca trực',battery:'EMPTY',version:old.version+1,lastEventId:oldEv.id,updatedAt:serverTimestamp()};
   const newState={status:'OUT',holderUid:uid,holderName:names[uid],shift:'AM',faultCode:'',faultDetail:'',battery:'GOOD',version:next.version+1,lastEventId:newEv.id,updatedAt:serverTimestamp()};
   tx.update(oldRef,oldState);
   tx.update(newRef,newState);
-  tx.set(oldEv,event(uid,'SWAP_OUT',oldCode,'OUT','CHARGING',oldState.version,{
+  tx.set(oldEv,event(uid,'SWAP_OUT',oldCode,'OUT','READY',oldState.version,{
    personUid:uid,personName:names[uid],reasonCode:'BATTERY_EMPTY',
    details:'Hết pin trong ca trực',relatedDeviceCode:newCode,swapId
   }));
@@ -135,11 +135,11 @@ async function main(){
  await assertFails(transition('alice','DH01','RETURN',{
   status:'READY',holderUid:'',holderName:'',shift:'',faultCode:'',faultDetail:'',battery:'LOW'}));
  await assertSucceeds(transition('alice','DH01','RETURN',{
-  status:'CHARGING',holderUid:'',holderName:'',shift:'',faultCode:'BATTERY_WEAK',faultDetail:'',battery:'LOW'}));
+  status:'READY',holderUid:'',holderName:'',shift:'',faultCode:'BATTERY_WEAK',faultDetail:'Pin yếu ghi nhận',battery:'LOW'}));
  await assertFails(transition('alice','DH01','RELEASE',{
   status:'READY',holderUid:'',holderName:'',shift:'',faultCode:'',faultDetail:'',battery:'GOOD'}, {signature:'',details:'Đã sạc và kiểm tra đạt'}));
  await assertSucceeds(transition('admin','DH01','RELEASE',{
-  status:'READY',holderUid:'',holderName:'',shift:'',faultCode:'',faultDetail:'',battery:'GOOD'}, {signature:'',details:'Đã sạc pin, kiểm tra phát sóng đạt'}));
+  status:'READY',holderUid:'',holderName:'',shift:'',faultCode:'',faultDetail:'',battery:'LOW'}, {signature:'',details:'Đã tiếp nhận và xử lý thông tin lỗi'}));
  await assertFails(updateDoc(doc(getDb('alice'),root,'DH01'),{label:'HACK'}));
  const own=query(collection(getDb('alice'),audit),where('actorUid','==','alice'));
  await assertSucceeds(getDocs(own));
@@ -153,10 +153,13 @@ async function main(){
  const initial=(await getDoc(doc(getDb('admin'),root,'DH01'))).data();
  assert.equal(initial.status,'READY');
  assert.equal(initial.version,5);
- // Tested on a second radio; failed attempts cannot mark broken/low-battery radios as issued.
+ // Low battery is advisory and cannot prevent receipt, even though the user must inspect it.
  await assertSucceeds(createRadio('admin','DH02'));
- await assertFails(transition('alice','DH02','ISSUE',{
-  status:'OUT',holderUid:'alice',holderName:names.alice,shift:'AM',faultCode:'',faultDetail:'',battery:'LOW'
+ await assertSucceeds(transition('bob','DH02','ISSUE',{
+  status:'OUT',holderUid:'bob',holderName:names.bob,shift:'AM',faultCode:'',faultDetail:'',battery:'LOW'
+ }));
+ await assertSucceeds(transition('bob','DH02','RETURN',{
+  status:'READY',holderUid:'',holderName:'',shift:'',faultCode:'',faultDetail:'',battery:'GOOD'
  }));
  await assertSucceeds(transition('alice','DH01','ISSUE',{
   status:'OUT',holderUid:'alice',holderName:names.alice,shift:'AM',faultCode:'',faultDetail:'',battery:'GOOD'
@@ -165,15 +168,62 @@ async function main(){
  await assertSucceeds(atomicSwap('alice','DH01','DH02'));
  const old=(await getDoc(doc(getDb('admin'),root,'DH01'))).data();
  const newer=(await getDoc(doc(getDb('admin'),root,'DH02'))).data();
- assert.equal(old.status,'CHARGING');
+ assert.equal(old.status,'READY');
+ assert.equal(old.faultCode,'BATTERY_EMPTY','Fault details remain visible but not isolated');
  assert.equal(old.version,7);
  assert.equal(newer.status,'OUT');
  assert.equal(newer.holderUid,'alice');
  assert.equal(newer.battery,'GOOD');
- assert.equal(newer.version,1);
+ assert.equal(newer.version,3);
  await assertFails(transition('bob','DH02','ISSUE',{
   status:'OUT',holderUid:'bob',holderName:names.bob,shift:'AM',faultCode:'',faultDetail:'',battery:'GOOD'
  }));
- console.log('Firebase emulator PASS: privacy, signed custody (WebP/PNG), battery quarantine, atomic replacement, V2.2 private colour photo and immutable audit');
+
+ // Fault reports must never alter current custody or require an admin unlock.
+ await assertSucceeds(createRadio('admin','DH03'));
+ await assertSucceeds(transition('alice','DH03','REPORT',{
+  status:'READY',holderUid:'',holderName:'',shift:'',
+  faultCode:'MIC',faultDetail:'Micro rè, kiểm tra sau',battery:'LOW'
+ },{details:'Micro rè, kiểm tra sau'}));
+ assert.equal((await getDoc(d('DH03'))).data().status,'READY');
+ await assertSucceeds(transition('bob','DH03','ISSUE',{
+  status:'OUT',holderUid:'bob',holderName:names.bob,shift:'AM',
+  faultCode:'MIC',faultDetail:'Micro rè, kiểm tra sau',battery:'LOW'
+ }));
+ await assertFails(transition('alice','DH03','REPORT',{
+  status:'OUT',holderUid:'bob',holderName:names.bob,shift:'AM',
+  faultCode:'PTT',faultDetail:'Lỗi nút PTT',battery:'LOW'
+ },{details:'Lỗi nút PTT'}));
+ await assertFails(transition('bob','DH03','REPORT',{
+  status:'READY',holderUid:'',holderName:'',shift:'',
+  faultCode:'PTT',faultDetail:'Lỗi nút PTT',battery:'LOW'
+ },{details:'Không được tự động trả máy'}));
+ await assertSucceeds(transition('bob','DH03','REPORT',{
+  status:'OUT',holderUid:'bob',holderName:names.bob,shift:'AM',
+  faultCode:'PTT',faultDetail:'Lỗi nút PTT',battery:'LOW'
+ },{details:'Lỗi nút PTT'}));
+ const reported=(await getDoc(d('DH03'))).data();
+ assert.equal(reported.status,'OUT');
+ assert.equal(reported.holderUid,'bob','Reporting a defect must preserve the current owner');
+ await assertSucceeds(transition('bob','DH03','RETURN',{
+  status:'READY',holderUid:'',holderName:'',shift:'',
+  faultCode:'PTT',faultDetail:'Lỗi nút PTT',battery:'LOW'
+ }));
+ await assertSucceeds(transition('alice','DH03','ISSUE',{
+  status:'OUT',holderUid:'alice',holderName:names.alice,shift:'PM',
+  faultCode:'PTT',faultDetail:'Lỗi nút PTT',battery:'LOW'
+ }));
+ // A lost device is physically unavailable, unlike a damaged one.
+ await assertSucceeds(createRadio('admin','DH04'));
+ await assertSucceeds(transition('alice','DH04','REPORT',{
+  status:'LOST',holderUid:'',holderName:'',shift:'',
+  faultCode:'LOST',faultDetail:'Mất thiết bị cần xác minh',battery:'UNKNOWN'
+ },{details:'Mất thiết bị cần xác minh'}));
+ await assertFails(transition('bob','DH04','ISSUE',{
+  status:'OUT',holderUid:'bob',holderName:names.bob,shift:'AM',
+  faultCode:'LOST',faultDetail:'Mất thiết bị cần xác minh',battery:'GOOD'
+ }));
+
+ console.log('Firebase emulator PASS: private signed custody, advisory faults and low battery, atomic swaps, real lost-device handling, full-colour photo, immutable audit');
 }
 try{await main()}finally{await env.cleanup()}
