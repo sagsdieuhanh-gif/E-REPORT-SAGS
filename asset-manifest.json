@@ -1,7 +1,7 @@
 {
   "schema": 2,
   "version": "V2.2",
-  "build": "V2.2-20261114-MH-F27-25",
+  "build": "V2.2-20261115-MH-F27-26",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -214,7 +214,7 @@
       "bytes": 23630
     },
     "./app/modules/daily-roster.v502.js": {
-      "sha256": "66c633daed5789495295d7a65d895308c433b292a879e19c66f5faad9cec1f00",
+      "sha256": "d6472c227e7cdc79afe6169b3e22e3875128c7628434129bc04873383a442ba3",
       "bytes": 89275
     },
     "./app/modules/feature-loader.v1.js": {
@@ -270,8 +270,8 @@
       "bytes": 14617
     },
     "./app/modules/mh-f27.v1.js": {
-      "sha256": "f3e3365e9529715f6efe80f073e345caec68d9609b761ff6cf0a93e87d2f2d78",
-      "bytes": 45001
+      "sha256": "3bb20b82b44b583fc9a5b59d663fdc93fe19529d7246be6f25577959db64dbf4",
+      "bytes": 49970
     },
     "./app/modules/mobile-draft-recovery.v1.js": {
       "sha256": "8f42b75b0c03fc623b3f3db3074c7919fad9ac98ec063c73ab5712dd01591fc0",
@@ -502,8 +502,8 @@
       "bytes": 26603
     },
     "./app/styles/mh-f27.v1.css": {
-      "sha256": "958a2558b6929d5683c144b6d49ce89ae06cd4c78ac457fa0f0f7a392e50bc20",
-      "bytes": 17736
+      "sha256": "9f9221fc033196cafc7c5c35b61eb8a73ecff9ed7751c86a7b3bd4175fcab09a",
+      "bytes": 19733
     },
     "./app/styles/new-ui-v1.css": {
       "sha256": "6d70c544e3e1782e71e85ddfbd3c2f8fc213a275dd5ef70227412cddc092e432",
@@ -725,6 +725,10 @@
       "sha256": "9ba95aab8420c74b377970e082e81a43f6402c262d6d82aa2dcc13fd7834b4be",
       "bytes": 13254
     },
+    "./data/mh-f27-checklist.json": {
+      "sha256": "212305b957ed40137a2d821552e0fa6be3f730e5da8e86583878da9438f60828",
+      "bytes": 19372
+    },
     "./forms/9g/page-01.png": {
       "sha256": "8e8a65b7370ef2ec7a733e28e6df369e27a5c59fdaef44009d0b34251c87f75a",
       "bytes": 321831
@@ -798,7 +802,7 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "55f6bd63c6b0e72fe2776bdda33091d4ac273b8e96a9a5f389042de1db8bc559",
+      "sha256": "fc02481fb40151612b623994da4a921966ccdaddf17fe79d772807d7464ade94",
       "bytes": 105217
     },
     "./manifest.webmanifest": {
@@ -850,7 +854,7 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "c12ce0c5002c523a830a054d36d81930b534b2f15405c3396825dec710b9af8e",
+      "sha256": "7528444fc7d07ec79a6779071e6d2018ca5cef431cdd55d7ba7c7d3ac6fdd47c",
       "bytes": 22648
     },
     "./storage-recovery.html": {
@@ -858,8 +862,8 @@
       "bytes": 26106
     },
     "./version.json": {
-      "sha256": "8d02d1b14e86cb56ea3d2bbd04afa1667f18a56679671444187b3e28d63576b5",
-      "bytes": 997
+      "sha256": "b22192b62004843d1d4c38573fbd5c86c9c01927a3d09e553616dcabb752da31",
+      "bytes": 1092
     }
   },
   "mutableAssets": [

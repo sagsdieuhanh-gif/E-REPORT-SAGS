@@ -1,12 +1,12 @@
 {
   "version": "V2.2",
   "displayVersion": "V2.2",
-  "label": "V2.2 - MH AS/RM/F27 TWO-MODE INPUT",
-  "build": "V2.2-20261114-MH-F27-25",
-  "releasedAt": "2026-11-14",
-  "type": "mh-f27-pdf-and-quick-entry-redesign",
+  "label": "V2.2 - MH F27 ONE-TAP FERRY CHECKLIST PRESET",
+  "build": "V2.2-20261115-MH-F27-26",
+  "releasedAt": "2026-11-15",
+  "type": "mh-f27-ferry-checklist-reference-preset",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Thay giao diện MH F27: chế độ mặc định xem đầy đủ 9 trang PDF Malaysia Airlines gốc, phóng to 100–300%, chạm vùng thông tin chuyến / YES-NO-NA / Remarks / chữ ký để nhập. Chế độ Nhập nhanh là từng mục với phím chọn lớn; YES tự chuyển mục tiếp, NO/N/A nhập lý do. Hai chế độ dùng chung một bản dữ liệu, vẫn tự lưu localStorage/IndexedDB/Firebase, xuất PDF đúng mẫu hãng. Không đổi phân công/roster/bộ đàm/các hãng khác.",
-  "message": "MH F27 có hai cách nhập: ngay trên PDF gốc hoặc Nhập nhanh từng mục, dữ liệu đồng bộ."
+  "notes": "Đưa mẫu dấu tích thực tế MH8711 Ferry ngày 15/11/2026 vào MH F27 (36 YES, 18 N/A, không có NO), 4 ghi chú mẫu: 3.3 Ferry, 3.6 No Cargo, 6.2 Ferry, 6.9 Ferry. Nút áp dụng chỉ điền ô trống, không sao chép chuyến hoặc chữ ký và không ghi đè dữ liệu hiện có. Tất cả đánh dấu lấy từ mẫu cần nhân viên xác nhận sau khi kiểm tra thực tế; 14 ô N/A thiếu lý do phải bổ sung trước khi hoàn tất. Mặc định giao diện nhập nhanh trên mobile, PDF gốc trên PC. Giữ nguyên các biểu mẫu hãng khác.",
+  "message": "Đã thêm mẫu dấu tích MH8711 Ferry với xác nhận an toàn và giao diện nhập nhanh ưu tiên trên mobile."
 }
