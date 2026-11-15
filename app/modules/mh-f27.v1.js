@@ -97,7 +97,7 @@ async function saveServer(force=false){
 }
 function styles(){
  if($('mhF27Css'))return;
- const link=document.createElement('link');link.rel='stylesheet';link.id='mhF27Css';link.href='./app/styles/mh-f27.v1.css?v=V2.2-20261114-MH-F27-25';document.head.appendChild(link);
+ const link=document.createElement('link');link.rel='stylesheet';link.id='mhF27Css';link.href='./app/styles/mh-f27.v1.css?v=V2.2-20261115-MH-F27-26';document.head.appendChild(link);
 }
 function phaseName(id){return spec?.phases?.find(p=>p.id===id)?.title||id}
 function allCount(){return spec.items.length}
