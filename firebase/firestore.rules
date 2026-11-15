@@ -1223,7 +1223,8 @@ service cloud.firestore {
           && next.status == 'READY' && next.holderUid == ''
           && next.holderName == '' && next.shift == ''
           && next.battery in ['FULL','GOOD','LOW','EMPTY']
-          && (next.faultCode == old.faultCode
+          && ((next.faultCode == old.faultCode
+              && (next.battery in ['FULL','GOOD'] || old.faultCode != ''))
             || (old.faultCode == '' && next.faultCode == 'BATTERY_WEAK'
               && next.battery in ['LOW','EMPTY']))
           && (next.faultDetail == old.faultDetail
