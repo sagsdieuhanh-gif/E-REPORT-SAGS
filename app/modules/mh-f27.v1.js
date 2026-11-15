@@ -542,7 +542,7 @@ async function open(options){
  if(typeof root.SAGSRosterOpenGuard?.requireRadio==='function')await root.SAGSRosterOpenGuard.requireRadio();
  if(!spec){const r=await fetch('./data/mh-f27-checklist.json',{cache:'no-cache'});if(!r.ok)throw Error('Không tải được mẫu Malaysia Airlines.');spec=await r.json()}
  if(spec.carrier!=='MH'||spec.items?.length!==54)throw Error('Dữ liệu mẫu MH F27 không hợp lệ hoặc bị thiếu.');
- current={item,date,phase:'0'};viewMode='pdf';viewPage=1;viewZoom=1;quickIndex=0;pdfRenderSeq++;hideEditor();await owns();
+ current={item,date,phase:'0'};viewMode=root.matchMedia?.('(max-width: 700px)')?.matches?'quick':'pdf';viewPage=1;viewZoom=1;quickIndex=0;pdfRenderSeq++;hideEditor();await owns();
  const local=readLocal(),indexed=await readIdb();
  const saved=indexed.updatedAtMs>local.updatedAtMs?indexed:local;
  let remote=null;
