@@ -7,8 +7,8 @@ const email=fs.readFileSync('.github/workflows/radio-daily-weekly.yml','utf8');
 for(const t of ["swapBattery=$('radioSwapBattery').value","battery:swapBattery","Pin máy thay thế","if(!connected)","s.metadata.fromCache","toDataURL('image/png')","dateFilter==='today'"]){
  assert(radio.includes(t),t+' signing support missing');
 }
-assert(radio.includes("if(mode==='ISSUE'&&['LOW','EMPTY'].includes(bat))"));
-assert(rules.includes("next.battery in ['FULL','GOOD']"));
+assert(!radio.includes("if(mode==='ISSUE'&&['LOW','EMPTY'].includes(bat))"),'Low battery cannot block radio issue');
+assert(rules.includes("next.battery in ['FULL','GOOD','LOW','EMPTY']"),'Reported battery defects are advisory');
 assert(rules.includes("d.signature.matches('^data:image/png;base64,"));
 assert(shell.includes("if(key==='radio')")&&shell.includes("sags-radio-custody-v1"));
 assert(!fs.readFileSync('index.html','utf8').includes('id="sags-radio-custody-v1"'),'radio must load only when selected');
