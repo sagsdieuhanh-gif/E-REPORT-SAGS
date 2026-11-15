@@ -29,6 +29,7 @@ assert(code.includes('fromDeviceCache===false'),'roster must be server verified'
 assert(!/(sendGmf|ZALO_OA|navigator\.vibrate|AudioContext|sendSms|sendSMS)/i.test(code),'no Zalo, SMS, vibration or sound');
 assert(radio.includes("END_SHIFT:'Hết ca'"));
 assert(radio.includes("radioReturnReason').value='END_SHIFT'"));
-assert(radio.includes("reasonCode=f?'BATTERY_WEAK':''"),'return reason must not become a battery fault');
+assert(radio.includes("reasonCode=low?'BATTERY_WEAK':''"),'Return reason remains distinct; battery warning is logged separately');
+assert(radio.includes("after={status:'READY'"),'Returning a radio must not create quarantine');
 assert(radio.includes('Chưa trả ca trước'));
 console.log('V2.1 radio visual reminders, return reason and AD monitoring regression PASS');
