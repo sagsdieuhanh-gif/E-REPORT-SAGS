@@ -8,6 +8,7 @@ Verified on 2026-11-17 (Asia/Ho_Chi_Minh):
 - Existing Supabase public tables: e_report_profiles, e_report_flights, e_report_assignments, e_report_documents, e_report_drafts, e_report_roster_imports, e_report_handoffs, e_report_audit_events, e_report_migration_batches, e_report_migration_entries.
 - **All ten data tables currently have zero records; Supabase Auth has zero users and Storage has zero buckets.** These are baseline schemas, NOT a replica. The migration staging tables are denied to ordinary authenticated clients through RLS.
 - No Supabase Edge Functions currently deployed. No verified scheduled or near-real-time replication.
+- 2026-11-17: Private server-only mirror/batch/checkpoint/failover/journal tables and private evidence bucket created on Supabase. Strictly no mirrored Firebase rows yet. A guarded backup worker and an **opt-in** scheduled workflow have been prepared in this PR, but the last Firebase maintenance workflow explicitly failed because machine Firebase credentials were not connected. Do not enable without a successful, matched, full-source dry-run and server-to-server snapshot.
 - Supabase Free is not an always-on disaster recovery guarantee: it may pause after a week of insufficient activity; reliable standby needs continuous monitored activity and an appropriate paid availability plan if downtime guarantees are required.
 
 ## Non-negotiable invariants
