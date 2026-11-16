@@ -1,12 +1,12 @@
 {
   "version": "V2.2",
   "displayVersion": "V2.2",
-  "label": "V2.2 - MH F27 ONE-TAP FERRY CHECKLIST PRESET",
-  "build": "V2.2-20261115-MH-F27-26",
-  "releasedAt": "2026-11-15",
-  "type": "mh-f27-ferry-checklist-reference-preset",
+  "label": "V2.2 - RADIO ADVISORY SHIFT 08:00/18:16",
+  "build": "V2.2-20261116-RADIO-SHIFT-28",
+  "releasedAt": "2026-11-16",
+  "type": "radio-shift-advisory-new-hours",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Đưa mẫu dấu tích thực tế MH8711 Ferry ngày 15/11/2026 vào MH F27 (36 YES, 18 N/A, không có NO), 4 ghi chú mẫu: 3.3 Ferry, 3.6 No Cargo, 6.2 Ferry, 6.9 Ferry. Nút áp dụng chỉ điền ô trống, không sao chép chuyến hoặc chữ ký và không ghi đè dữ liệu hiện có. Tất cả đánh dấu lấy từ mẫu cần nhân viên xác nhận sau khi kiểm tra thực tế; 14 ô N/A thiếu lý do phải bổ sung trước khi hoàn tất. Mặc định giao diện nhập nhanh trên mobile, PDF gốc trên PC. Giữ nguyên các biểu mẫu hãng khác.",
-  "message": "Đã thêm mẫu dấu tích MH8711 Ferry với xác nhận an toàn và giao diện nhập nhanh ưu tiên trên mobile."
+  "notes": "Điều chỉnh ca tham chiếu bộ đàm theo giờ Việt Nam: 08:00–18:15 sáng và 18:16–07:59 hôm sau tối. Nhắc trả máy chỉ là cảnh báo; đang giữ máy qua mốc chuyển ca vẫn mở My Flight bình thường nếu quyền ký nhận hiện tại được Firebase xác nhận. Thống kê/báo cáo và đối chiếu ca tính theo mốc giờ mới. Không yêu cầu ký trả/nhận lại chỉ vì đổi ca; giữ kiểm tra một người một bộ đàm, ảnh và chữ ký khi ký nhận/trả, lưu dữ liệu an toàn. Không thay đổi quy tắc Firebase hoặc biểu mẫu hãng.",
+  "message": "Đã cập nhật giờ nhắc ca bộ đàm: sáng 08:00–18:15, tối 18:16–07:59; không khóa mở chuyến khi chuyển ca."
 }
