@@ -42,27 +42,29 @@ function harness(){
  a.sign();
  assert.equal(await a.c.v324ReceiveOrOpen('VJ100'),'OPENED','Signed radio permits report');
  assert.equal(a.state.opens,1);assert.deepEqual(a.state.requestedSource,['server','server']);
- // Night shift spans midnight and stays valid through 08:29:59 VN.
+ // Advisory window changes must NEVER deny report access to a verified holder.
  const night=harness();
- night.state.now=Date.parse('2026-11-12T01:29:59Z'); // 08:29:59 Nov 12 VN
+ night.state.now=Date.parse('2026-11-12T00:59:59Z'); // 07:59:59 Nov 12 VN
  night.state.receivedAt=Date.parse('2026-11-11T14:30:00Z'); // 21:30 Nov 11 VN
  night.sign();
- assert.equal(await night.c.v324ReceiveOrOpen('VJ-NIGHT'),'OPENED','Night shift through 08:29:59 may still open flight');
- night.state.now=Date.parse('2026-11-12T01:30:00Z'); // 08:30 Nov 12 VN
- assert.equal(await night.c.v324ReceiveOrOpen('VJ-AM-CHANGE'),false,'At 08:30 VN prior night custody must block next shift');
- assert.equal(night.state.opens,1);
- assert(night.state.alerts.at(-1).includes('CHƯA TRẢ BỘ ĐÀM CA TRƯỚC'));
- night.state.receivedAt=night.state.now;
- assert.equal(await night.c.v324ReceiveOrOpen('VJ-NEW-AM-ISSUE'),'OPENED','New AM sign-in restores report access');
+ assert.equal(await night.c.v324ReceiveOrOpen('VJ-NIGHT'),'OPENED','Night shift 07:59:59 permits opening');
+ night.state.now=Date.parse('2026-11-12T01:00:00Z'); // 08:00 Nov 12 VN
+ assert.equal(await night.c.v324ReceiveOrOpen('VJ-AM-CHANGE'),'OPENED','08:00 rollover is reminder-only, never blocks');
+ assert.equal(night.state.opens,2);
+ assert.equal(night.state.alerts.length,0,'No modal for overnight radio rollover');
+ const advisory=await night.c.SAGSRadioWorkGate.requireRadio();
+ assert.match(advisory.shiftReminder,/Nhắc trả bộ đàm/,'Return reminder is still available');
+ assert.equal(advisory.issuedShift,'2026-11-11/PM');
+ assert.equal(advisory.currentShift,'2026-11-12/AM');
  const morning=harness();
- morning.state.now=Date.parse('2026-11-11T12:00:59Z'); // 19:00:59 Nov 11 VN
- morning.state.receivedAt=Date.parse('2026-11-11T01:30:00Z'); // 08:30 Nov 11 VN
+ morning.state.now=Date.parse('2026-11-11T11:15:59Z'); // 18:15:59 Nov 11 VN
+ morning.state.receivedAt=Date.parse('2026-11-11T01:00:00Z'); // 08:00 Nov 11 VN
  morning.sign();
- assert.equal(await morning.c.v324ReceiveOrOpen('VJ-AM-END'),'OPENED','AM shift through 19:00:59 VN remains eligible');
- morning.state.now=Date.parse('2026-11-11T12:01:00Z'); // 19:01 Nov 11 VN
- assert.equal(await morning.c.v324ReceiveOrOpen('VJ-PM-CHANGE'),false,'At 19:01 VN prior AM custody blocks next flight');
- morning.state.receivedAt=morning.state.now;
- assert.equal(await morning.c.v324ReceiveOrOpen('VJ-NEW-PM-ISSUE'),'OPENED','New PM sign-in unlocks flight');
+ assert.equal(await morning.c.v324ReceiveOrOpen('VJ-AM-END'),'OPENED','AM shift through 18:15:59 permits work');
+ morning.state.now=Date.parse('2026-11-11T11:16:00Z'); // 18:16 Nov 11 VN
+ assert.equal(await morning.c.v324ReceiveOrOpen('VJ-PM-CHANGE'),'OPENED','18:16 PM boundary is not a hard cutoff');
+ assert.equal(morning.state.opens,2);
+ assert.equal(morning.state.alerts.length,0);
  // 04:00 is no longer a shift boundary.
  const oldFour=harness();
  oldFour.state.now=Date.parse('2026-11-11T21:00:00Z'); // 04:00 Nov 12 VN
@@ -70,9 +72,10 @@ function harness(){
  oldFour.sign();
  assert.equal(await oldFour.c.v324ReceiveOrOpen('VJ-FOUR-AM'),'OPENED','No lock at 04:00 during PM shift');
  const missingStamp=harness();missingStamp.state.docs=[{id:'DH01',data:()=>({holderUid:'U-1',status:'OUT'})}];
- assert.equal(await missingStamp.c.v324ReceiveOrOpen('VJ-NO-STAMP'),false,'No server issue time cannot bypass overnight gate');
+ assert.equal(await missingStamp.c.v324ReceiveOrOpen('VJ-NO-STAMP'),'OPENED','Unknown timestamp gives reminder, not denial of server-verified custody');
+ assert.match((await missingStamp.c.SAGSRadioWorkGate.requireRadio()).shiftReminder,/đối soát lịch sử/);
  const tomorrow=harness();tomorrow.sign();tomorrow.state.receivedAt=Date.parse('2026-11-11T22:00:00Z');
- assert.equal(await tomorrow.c.v324ReceiveOrOpen('VJ-FUTURE-STAMP'),false,'Future radio timestamps cannot bypass gate');
+ assert.equal(await tomorrow.c.v324ReceiveOrOpen('VJ-FUTURE-STAMP'),'OPENED','Unusual radio timestamp cannot trigger shift lock');
  a.state.docs=[];assert.equal(await a.c.v324ReceiveOrOpen('VJ200'),false,'Returning radio revokes future openings');
  assert.equal(a.state.opens,1);
  a.malformed();assert.equal(await a.c.v324ReceiveOrOpen('VJ300'),false,'Inactive machine is not custody');
@@ -104,5 +107,5 @@ function harness(){
  assert(open>0&&check>open&&check<stale,'Preflight must precede stale assignment mutations');
  const reopen=roster.indexOf('async function reopenPushback('),reopenCheck=roster.indexOf('await root.SAGSRosterOpenGuard.requireRadio()',reopen),patch=roster.indexOf('const t=Date.now(),u=me(),patch={}',reopen);
  assert(reopen>0&&reopenCheck>reopen&&reopenCheck<patch,'Reopen pushback must not mutate before custody check');
- console.log('Mandatory signed-radio-before-report gate: server-only, return revocation, offline/error fail closed, mobile UI, legacy takeover and prewrite guards PASS');
+ console.log('Server-verified radio custody gate: new shift is advisory only, no rollover lock, offline/error guards and mandatory checkout unchanged PASS');
 })().catch(e=>{console.error(e);process.exitCode=1});

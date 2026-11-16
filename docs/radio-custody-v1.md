@@ -10,8 +10,8 @@ Implementation staging branch: feature/radio-checkout-audit-mail-v1, NOT yet pro
 - Báo lỗi: chọn lý do chuẩn; lỗi chỉ là thông tin theo dõi. Khi máy đang giữ (OUT), báo lỗi vẫn giữ nguyên UID người nhận, ca và trạng thái OUT; khi máy chưa cấp thì vẫn READY. Lịch sử REPORT là bất biến và không tự tạo thao tác trả.
 - AD xác nhận đã xử lý thông tin lỗi khi cần (RELEASE) để bỏ cờ ghi nhận. Việc xác nhận này **không phải mở khóa** cho phép cấp máy.
 - Thất lạc (LOST) là trường hợp riêng: không thể cấp một máy không hiện hữu, cần xác minh thu hồi trước khi ghi nhận tìm thấy.
-- Tiếp tục yêu cầu ảnh thực tế, chữ ký và kết nối mạng khi ký nhận/trả; quy định ca sáng 08:30–19:00, ca tối 19:01–08:29 không thay đổi.
-- Bảng trạng thái, 120 sự kiện gần nhất (UI), xuất CSV; lịch sử server append-only, cấm nhân viên xóa/sửa.
+- Tiếp tục yêu cầu ảnh thực tế, chữ ký và kết nối mạng khi ký nhận/trả; ca sáng 08:00–18:15 và ca tối 18:16–07:59 hôm sau chỉ dùng để nhắc nhở, thống kê và báo cáo.
+- Bảng trạng thái, 120 sự kiện gần nhất (UI), xuất PDF; lịch sử server append-only, cấm nhân viên xóa/sửa.
 - Mẫu phiếu giấy không được tự động OCR hoặc coi người ký tay trên ảnh là nhân viên đăng nhập. Bản giấy là chứng cứ tham khảo.
 - Không cho nhận/trả khi ngoại tuyến, vì có thể dẫn đến một máy được cấp cho hai người.
 

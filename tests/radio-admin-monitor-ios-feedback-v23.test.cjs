@@ -37,18 +37,20 @@ const panel={hidden:true};
 const boxes={radioAdminOverview:panel,radioAdminDashboard:dashboard};
 const t=Date.now();
 const ctx={Date,Number,Map,Math,devices:[
- {code:'DH01',status:'OUT',holderName:'Hòa',shift:'AM',updatedAt:{toMillis:()=>t-13*3600000,toDate:()=>new Date(t-13*3600000)}},
- {code:'DH02',status:'FAULT',faultCode:'MIC'},
+ {code:'DH01',status:'OUT',holderName:'Hòa',shift:'AM',faultCode:'MIC',updatedAt:{toMillis:()=>t},heldSince:{toMillis:()=>t-13*3600000,toDate:()=>new Date(t-13*3600000)}},
+ {code:'DH02',status:'READY',faultCode:'AUDIO'},
  {code:'DH03',status:'READY'}
 ],currentUser:()=>({role:'AD'}),isAdmin:u=>u.role==='AD',$:id=>boxes[id],OVERDUE_MS:12*3600000,
- fmt:()=> '09:00',label:x=>x,esc:safe,radioShiftAt:ms=>({key:ms>=t-60000?'current':'previous'}),STATUSES:{FAULT:'Ngừng cấp / lỗi'},REASON_TEXT:{MIC:'Micro không phát tiếng'}};
+ fmt:()=> '09:00',label:x=>x,esc:safe,radioShiftAt:ms=>({key:ms>=t-60000?'current':'previous'}),STATUSES:{FAULT:'Ngừng cấp / lỗi'},REASON_TEXT:{MIC:'Micro không phát tiếng',AUDIO:'Loa rè'}};
 vm.createContext(ctx);
-vm.runInContext(radio.slice(x,y)+'\nthis.renderMonitor=renderAdminOverview;',ctx);
+const monitorHelpers=radio.match(/^const (hasRadioWarning|radioHeldSince)=.*$/gm).join('\n');
+vm.runInContext(monitorHelpers+'\n'+radio.slice(x,y)+'\nthis.renderMonitor=renderAdminOverview;',ctx);
 ctx.renderMonitor();
 assert.equal(panel.hidden,false);
 assert.match(dashboard.innerHTML,/Hòa/);
 assert.match(dashboard.innerHTML,/Chưa trả ca trước/);
 assert.match(dashboard.innerHTML,/Micro không phát tiếng/);
+assert.match(dashboard.innerHTML,/Loa rè/);
 ctx.currentUser=()=>({role:'DH'});
 ctx.renderMonitor();
 assert.equal(panel.hidden,true,'Employee cannot see Admin monitoring');

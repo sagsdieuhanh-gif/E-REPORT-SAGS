@@ -23,6 +23,6 @@ assert(rules.includes("next.status == 'READY' && next.holderUid == ''"),'Rules m
 assert(rules.includes("next.faultCode == old.faultCode"),'Rules must preserve fault information when issuing');
 assert(rules.includes("next.faultCode == 'LOST'")&&rules.includes("next.status == 'LOST'"),'A physically missing radio remains separate');
 assert(app.includes('assertSingleHolder(inventory,user.uid)'), 'Single holder protection cannot be relaxed');
-assert(gate.includes('SAGS_RADIO_OVERDUE'),'Shift-overdue handover guard must be preserved');
+assert(!gate.includes('SAGS_RADIO_OVERDUE'),'Shift rollover must remain advisory');
 assert(app.includes("if(!photosReady())throw Error")&&app.includes("signature()"),'Real handover photo and signature remain required');
 console.log('Radio defects are advisory only; no quarantine, holder/signature/photo and anti-duplicate guards PASS');

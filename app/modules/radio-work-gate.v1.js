@@ -5,7 +5,8 @@ if(root.SAGSRadioWorkGate)return;
 const RADIOS='sags_radio_devices_v1';
  const VN_ZONE='Asia/Ho_Chi_Minh';
  // Duty shift boundaries, Vietnam time, are exact to the minute:
- // AM: 08:30 - 19:00; PM: 19:01 - 08:29 the following calendar day.
+ // AM: 08:00 - 18:15; PM: 18:16 - 07:59 the following calendar day.
+ // The window is advisory for return reminders, never a permission cutoff.
  // Use the PM START date as the shift date across midnight.
  function radioShiftAt(ms){
   if(!Number.isFinite(ms)||ms<=0)throw gateError('SAGS_RADIO_UNVERIFIED','Thiếu thời điểm ký nhận bộ đàm đã xác minh; liên hệ AD để đối soát.');
@@ -17,9 +18,9 @@ const RADIOS='sags_radio_devices_v1';
   const year=part('year'),month=part('month'),day=part('day'),hour=part('hour'),minute=part('minute');
   if(!year||!month||!day||!Number.isFinite(hour)||!Number.isFinite(minute))
    throw gateError('SAGS_RADIO_UNVERIFIED','Không xác định được giờ ca làm việc Việt Nam.');
-  const clock=hour*60+minute,am=clock>=8*60+30&&clock<=19*60;
+  const clock=hour*60+minute,am=clock>=8*60&&clock<=18*60+15;
   const shift=am?'AM':'PM';
-  const shiftDay=new Date(Date.UTC(year,month-1,day-(clock<8*60+30?1:0))).toISOString().slice(0,10);
+  const shiftDay=new Date(Date.UTC(year,month-1,day-(clock<8*60?1:0))).toISOString().slice(0,10);
   return {key:shiftDay+'/'+shift,shift,shiftDay};
  }
  function radioTimestampMs(v){
@@ -47,18 +48,21 @@ const RADIOS='sags_radio_devices_v1';
   const held=snapshot.docs.filter(doc=>doc?.data?.()?.status==='OUT'&&doc.data().holderUid===uid);
   if(!held.length)throw gateError('SAGS_RADIO_REQUIRED','BẮT BUỘC KÝ NHẬN BỘ ĐÀM: Bạn chưa có bộ đàm đang giữ trên Firebase. Hãy chụp ảnh, ký nhận và lưu thành công trước khi mở chuyến làm report.');
   if(held.length!==1)throw gateError('SAGS_RADIO_MULTIPLE','Tài khoản đang ghi nhận giữ nhiều hơn một bộ đàm. Vui lòng liên hệ AD đối soát và trả máy thừa trước khi làm report.');
-  const device=held[0],details=device.data(),receivedMs=radioTimestampMs(details?.updatedAt);
-  const now=Date.now();
-  if(!Number.isFinite(receivedMs)||receivedMs>now+5*60000)
-   throw gateError('SAGS_RADIO_UNVERIFIED','Không xác minh được giờ nhận bộ đàm trên Firebase. Liên hệ AD kiểm tra lịch sử nhận/trả; không mở report.');
-  const issued=radioShiftAt(receivedMs),current=radioShiftAt(now);
-  if(issued.key!==current.key)
-   throw gateError('SAGS_RADIO_OVERDUE','CHƯA TRẢ BỘ ĐÀM CA TRƯỚC: Bạn còn giữ '+device.id+' từ ca '+(issued.shift==='AM'?'sáng':'tối')+' ngày '+issued.shiftDay+'. Không được nhận/mở chuyến mới. Hãy CHỤP ẢNH, KÝ TRẢ máy ca trước lên Firebase, rồi ký nhận cho ca mới. Giờ ca VN: sáng 08:30–19:00; tối 19:01–08:29 hôm sau.');
-  return {uid,deviceCode:device.id,issuedShift:issued.key,currentShift:current.key};
+  // Only signed, server-confirmed custody gates flight access. Shift changes
+  // and missing/odd radio timestamps are advisory; never block opening work.
+  const device=held[0],details=device.data(),receivedMs=radioTimestampMs(details?.heldSince||details?.updatedAt);
+  const now=Date.now(),current=radioShiftAt(now);
+  const issued=Number.isFinite(receivedMs)&&receivedMs>0&&receivedMs<=now+5*60000
+   ?radioShiftAt(receivedMs):null;
+  const shiftReminder=issued&&issued.key!==current.key
+   ?'Nhắc trả bộ đàm '+device.id+': đã qua mốc ca '+(issued.shift==='AM'?'sáng':'tối')+
+    ' ('+issued.shiftDay+'). Có thể tiếp tục làm việc; ký trả khi hoàn tất bàn giao.'
+   :(!issued?'Không xác định được giờ nhận máy; vui lòng đối soát lịch sử khi có điều kiện.':'');
+  return {uid,deviceCode:device.id,issuedShift:issued?.key||'',currentShift:current.key,shiftReminder};
  }
  function showRadioBlocked(error){
   const msg=String(error?.message||'Bạn cần ký nhận bộ đàm trước khi mở report.');
-  const canSign=['SAGS_RADIO_REQUIRED','SAGS_RADIO_OVERDUE'].includes(error?.code);
+  const canSign=error?.code==='SAGS_RADIO_REQUIRED';
   if(!document.body||typeof document.createElement!=='function'){root.alert?.(msg);return}
   let node=document.getElementById('sagsRadioRequiredDialog');
   if(!node){
@@ -75,9 +79,9 @@ const RADIOS='sags_radio_devices_v1';
    });
   }
   const title=node.querySelector?.('#sagsRadioRequiredTitle');
-  if(title)title.textContent=error?.code==='SAGS_RADIO_OVERDUE'?'📻 Chưa trả bộ đàm ca trước':'📻 Yêu cầu ký nhận bộ đàm';
+  if(title)title.textContent='📻 Yêu cầu ký nhận bộ đàm';
   const p=node.querySelector?.('#sagsRadioRequiredText');if(p)p.textContent=msg;
-  const button=node.querySelector?.('[data-radio-required-open]');if(button){button.hidden=!canSign;button.textContent=error?.code==='SAGS_RADIO_OVERDUE'?'Trả bộ đàm ca trước':'Ký nhận bộ đàm';}
+  const button=node.querySelector?.('[data-radio-required-open]');if(button){button.hidden=!canSign;button.textContent='Ký nhận bộ đàm';}
   node.style.display='flex';
  }
 

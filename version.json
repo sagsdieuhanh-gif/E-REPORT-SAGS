@@ -1,12 +1,12 @@
 {
   "version": "V2.2",
   "displayVersion": "V2.2",
-  "label": "V2.2 - RADIO DEFECTS INFORMATION ONLY",
-  "build": "V2.2-20261115-RADIO-INFO-27",
-  "releasedAt": "2026-11-15",
-  "type": "radio-defects-advisory-only",
+  "label": "V2.2 - RADIO DEFECTS ADVISORY",
+  "build": "V2.2-20261116-RADIO-INFO-29",
+  "releasedAt": "2026-11-16",
+  "type": "radio-defects-advisory",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Bộ đàm có thông tin lỗi (FAULT/CHARGING cũ, kể cả pin yếu) vẫn được nhận, trả, đổi và sử dụng; báo lỗi khi đang giữ không xóa người nhận; máy trả về READY cùng ghi nhận. Mất máy LOST vẫn cần xác minh thu hồi. Thông tin lỗi tiếp tục hiển thị trong tổng hợp/lịch sử/PDF. Không thay đổi yêu cầu ảnh thật, chữ ký, giờ chụp, chống nhận trùng, quy tắc ca sáng 08:30-19:00 và ca tối 19:01-08:29. Thay đổi này chỉ hoạt động sau khi quy tắc Firestore production được cập nhật đồng bộ.",
-  "message": "Bộ đàm báo lỗi chỉ ghi nhận và theo dõi; không tự cách ly, khóa nhận hay xóa người giữ."
+  "notes": "Lỗi và pin yếu chỉ để theo dõi, thống kê và báo cáo. Báo lỗi giữ nguyên người giữ, thời điểm và ca nhận. Thiết bị thất lạc cần xác nhận tìm thấy. Ca sáng 08:00–18:15 và ca tối 18:16–07:59 hôm sau là mốc nhắc nhở và báo cáo. Giữ ảnh, chữ ký và lịch sử giao nhận.",
+  "message": "Bộ đàm có cảnh báo lỗi vẫn được ký nhận, trả và đổi. Máy thất lạc được quản lý riêng."
 }
