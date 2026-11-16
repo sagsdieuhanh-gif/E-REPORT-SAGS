@@ -351,7 +351,10 @@ async function discardNativeDraft(){
 function nativeProofPlan(longest,compact,format){
  const steps=compact?(format==='png'?[[640,1],[400,1],[256,1],[160,1],[96,1],[64,1],[48,1]]:
   [[640,.82],[512,.72],[400,.62],[320,.55],[256,.48],[160,.42],[96,.35],[64,.35],[48,.3]]):
-  [[Math.min(longest,2560),.94],[1600,.85],[1280,.80],[1024,.72]];
+  // Preserve source detail when fitting iPhone proof within the Firebase cap.
+  // Every attempt is encoded directly from the untouched full-size camera image.
+  [[Math.min(longest,2560),.94],[2240,.88],[2048,.84],[1920,.82],
+   [1600,.85],[1440,.82],[1280,.80],[1024,.72]];
  return steps.map(([edge,quality])=>[Math.min(edge,longest),quality]);
 }
 function drawNativeProof(canvas,photo,edge,compact){
@@ -521,11 +524,12 @@ function encodeProof(leg,maxLength,requestedFormat='auto',compact=false){
  const format=requestedFormat==='png'?'png':requestedFormat==='jpeg'?'jpeg':webpCanvasEncoderSupported()?'webp':'jpeg';
  const mime='image/'+format,prefix='data:'+mime+';base64,';
  const longest=Math.max(sourceW,sourceH);
- // Step down resolution FIRST. For a large/complex iPhone image, allow a
- // small emergency receipt with timestamp + signature instead of blocking.
+ // The full-resolution archive MUST NOT start at 1280px when the camera
+ // provided a sharper 2048px image. The 44KB receipt remains lightweight.
+ // All size attempts are drawn from the same original canvas, never cascaded.
  const targets=compact?[640,512,400,320,256,192,160,128,96,72,48]:
-  [1280,1024,800,640,480,360,280,200,160];
- const qualities=compact?[.82,.65,.5,.35,.25]:[.9,.78,.65,.5,.4];
+  [2048,1920,1800,1600,1440,1280,1120,1024,900,800,640,480,360,280,200,160];
+ const qualities=compact?[.82,.65,.5,.35,.25]:[.94,.88,.82,.74,.65,.55];
  const attempted=new Set();
  for(const longestSide of targets){
   const scale=Math.min(1,longestSide/longest),width=Math.max(1,Math.round(sourceW*scale));
