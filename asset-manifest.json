@@ -1,7 +1,7 @@
 {
   "schema": 2,
   "version": "V2.2",
-  "build": "V2.2-20261115-MH-F27-26",
+  "build": "V2.2-20261116-RADIO-SHIFT-28",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -294,16 +294,16 @@
       "bytes": 19587
     },
     "./app/modules/radio-custody.v1.js": {
-      "sha256": "303756dd485ee67c4848599e190454842d5e059225fbe5982294d1a50de58fd5",
-      "bytes": 109488
+      "sha256": "a74687bfa6aa33f58855204c817eaea0ee4cb8e61c81bc29829ab7666ee1d84c",
+      "bytes": 109561
     },
     "./app/modules/radio-reminders.v21.js": {
-      "sha256": "308b2bb48f24be07b0f9c34fa38984010c50ece1040dc820a8c10f683dcbcf3c",
-      "bytes": 10230
+      "sha256": "4961ba7095b1bac7264ec21683f1dadf0bda8490d94104efa97a046a53319fd3",
+      "bytes": 10273
     },
     "./app/modules/radio-work-gate.v1.js": {
-      "sha256": "5e658a9f7cebad43c9a9cae0d596694f8a7df7ccc32ae84de808667c68983d6c",
-      "bytes": 7660
+      "sha256": "f007c10a529cd0fbd04a4a32accf781f145fe947f6933dbc8e3673b2f8191e77",
+      "bytes": 7536
     },
     "./app/modules/roster-lite.v5.js": {
       "sha256": "36ed4962af16d6365220fefb5319e2c81dbd05e11e32ca7ff3154443f54d06cc",
@@ -802,8 +802,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "fc02481fb40151612b623994da4a921966ccdaddf17fe79d772807d7464ade94",
-      "bytes": 105217
+      "sha256": "8563a0f2b1ed2458540fd42e454b58a388b92d1fd7b9bb90b9aa2d6289ae8288",
+      "bytes": 105612
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -854,16 +854,16 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "7528444fc7d07ec79a6779071e6d2018ca5cef431cdd55d7ba7c7d3ac6fdd47c",
-      "bytes": 22648
+      "sha256": "da814506cb172277d09baba605f3b6260be89afbbd31ab16e26399ea191d75c5",
+      "bytes": 22663
     },
     "./storage-recovery.html": {
       "sha256": "08817204a946fbdfa404e8c083dd0c2016e935fb8fe56ff8ef99f405978d3df6",
       "bytes": 26106
     },
     "./version.json": {
-      "sha256": "b22192b62004843d1d4c38573fbd5c86c9c01927a3d09e553616dcabb752da31",
-      "bytes": 1092
+      "sha256": "fc0c71ded425ac76ea104e13b1a209b324be9625cc53ba77e2fe31ce6b37889f",
+      "bytes": 1125
     }
   },
   "mutableAssets": [

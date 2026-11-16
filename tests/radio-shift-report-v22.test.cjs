@@ -12,7 +12,7 @@ assert(radio.includes("if(rows.docs.length>=REPORT_LIMIT)throw Error"),'never si
 assert(radio.includes('reportReady?reportEvents:events'),'report must not be replaced by 120 most-recent records');
 assert(radio.includes('!reportReady||!reportVerified'),'block export until verified report loaded');
 assert(radio.includes('if(!at||at<startMs||at>=endMs)return false'),'filter by Firebase timestamps, not potentially incorrect old shift labels');
-assert(radio.includes("which==='AM'?'08:30:00':'19:01:00'"),'correct Vietnam shift boundaries');
+assert(radio.includes("which==='AM'?'08:00:00':'18:16:00'"),'correct Vietnam shift boundaries');
 assert(radio.includes("reportReady?reportEvents:events).find("),'photo preview must use selected report events');
 assert(css.includes('.radioReportControl'),'date and shift must be visible in UI');
 assert(radio.includes("const historyLimit=/iPad|iPhone|iPod/"),'iOS history should not preload 120 image blobs');
@@ -52,14 +52,14 @@ vm.runInContext(radio.slice(a,b)+'\nthis.load=loadShiftReport;this.filter=filter
  assert.equal(c.reportReady,true);assert.equal(c.reportVerified,true);
  assert.equal(c.filter().length,1);assert.equal(c.filter()[0].id,'morning');
  assert.deepEqual(actions.filter(x=>x[0]==='where').map(x=>[x[1],x[2],x[3]]),[
-  ['at','>=','2026-11-05T01:30:00.000Z'],['at','<','2026-11-05T12:01:00.000Z']
+  ['at','>=','2026-11-05T01:00:00.000Z'],['at','<','2026-11-05T11:16:00.000Z']
  ]);
  assert(actions.some(x=>x[0]==='limit'&&x[1]===301));
  assert.match(boxes.radioReportState.textContent,/Ca sáng.*1 sự kiện/);
  c.clearReport();boxes.radioReportShift.value='PM';await c.load();
  assert.equal(c.filter()[0].id,'night','Night shift is selected by real time, ignoring old AM label');
  assert.deepEqual(actions.filter(x=>x[0]==='where').slice(-2).map(x=>[x[1],x[2],x[3]]),[
-  ['at','>=','2026-11-05T12:01:00.000Z'],['at','<','2026-11-06T01:30:00.000Z']
+  ['at','>=','2026-11-05T11:16:00.000Z'],['at','<','2026-11-06T01:00:00.000Z']
  ]);
  c.clearReport();docs=Array.from({length:301},(_,i)=>mockDoc('r'+i,'PM','2026-11-05T12:30:00Z'));await c.load();
  assert.equal(c.reportReady,false,'300+ events must not create truncated report');

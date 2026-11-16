@@ -30,7 +30,7 @@ These rules apply to all modifications in this repository. The operational workf
 2. Confirm color, orientation, sharpness and legibility from the **stored image**, not only the camera preview.
 3. Check large HEIC/JPEG images and upload-size fallback; no failure that prevents signing.
 4. Simulate poor connectivity, reload and retry; no missing image, signature or handover data.
-5. Verify timestamp in image, metadata and relevant shift/date; schedule: morning 08:30–19:00, evening 19:01–08:29 next day. Do not reintroduce old 04:00 split.
+5. Verify timestamp in image, metadata and relevant shift/date; advisory schedule: morning 08:00–18:15, evening 18:16–07:59 next day. These are reminders/report windows only; shift rollover must never quarantine a radio or block flight work. Do not reintroduce old 04:00 split.
 6. Export reports/PDF with photos enabled and disabled; verify image quality when included.
 7. Smoke-test Android and desktop; do not degrade image quality for other platforms.
 8. Run repository checks/tests/build if available; report results accurately, including tests not run.
