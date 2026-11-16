@@ -1314,9 +1314,34 @@ async function photoPdfPage(e,index,total,fullProof=''){
  if(hasProof){
   try{const img=await proofImage(fullProof||await highProofData(e));const ratio=Math.min(810/img.width,730/img.height);
    const w=img.width*ratio,h=img.height*ratio,left=450-w/2,top=687-h/2;
-   if(audit.unverified&&img.src.startsWith('data:image/jpeg;base64,'))
+   // Keep full-resolution evidence independent of PDF rasterization.
+   // The old code embedded an original JPEG only when audit UNVERIFIED;
+   // verified photos were re-rasterized and compressed as a page thumbnail.
+   if(img.src.startsWith('data:image/jpeg;base64,')){
     cv.proofJpeg={data:img.src,width:img.width,height:img.height,x:left,y:top,w,h};
-   else x.drawImage(img,left,top,w,h);
+   }else{
+    // PDF DCTDecode cannot embed Android WebP/PNG natively. Convert that
+    // image once at native pixel dimensions instead of flattening the page.
+    let hi=null;
+    try{
+     const maxEdge=Math.max(img.naturalWidth||img.width,img.naturalHeight||img.height);
+     const ratio=Math.min(1,3072/maxEdge);
+     hi=document.createElement('canvas');
+     hi.width=Math.max(1,Math.round(img.width*ratio));
+     hi.height=Math.max(1,Math.round(img.height*ratio));
+     const hctx=hi.getContext('2d',{alpha:false,colorSpace:'srgb'});
+     if(!hctx)throw Error('Cannot decode high-resolution proof');
+     hctx.fillStyle='#fff';hctx.fillRect(0,0,hi.width,hi.height);
+     hctx.imageSmoothingEnabled=true;hctx.imageSmoothingQuality='high';
+     hctx.drawImage(img,0,0,hi.width,hi.height);
+     const jpeg=hi.toDataURL('image/jpeg',.94);
+     if(!jpeg.startsWith('data:image/jpeg;base64,'))throw Error('JPEG export unavailable');
+     cv.proofJpeg={data:jpeg,width:hi.width,height:hi.height,x:left,y:top,w,h};
+    }catch(error){
+     // Keep a visible picture even on an unsupported browser.
+     x.drawImage(img,left,top,w,h);
+    }finally{if(hi){hi.width=1;hi.height=1}}
+   }
   }catch(_){x.fillStyle='#aa2727';x.font='bold 20px Arial';x.fillText('ẢNH LỖI / KHÔNG ĐỌC ĐƯỢC',70,690)}
  }else{x.fillStyle='#744f2a';x.font='bold 21px Arial';x.fillText('SỰ KIỆN KHÔNG CÓ ẢNH',70,690)}
  x.fillStyle='#24475b';x.font='16px Arial';x.fillText('ID bất biến: '+S(e.id||'—').slice(0,85),35,1104);
