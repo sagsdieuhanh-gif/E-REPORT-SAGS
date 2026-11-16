@@ -108,7 +108,7 @@ function tpl(){
 
 function nativeMode(action=mode){
  return ['ISSUE','RETURN'].includes(action)&&
-  (/iPhone|iPad|iPod/.test(navigator.userAgent||'')||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1));
+  (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent||'')||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1));
 }
 function openNativeCamera(){
  if(busy||!choice||currentUser().uid!==signingUid)return;
@@ -151,7 +151,7 @@ async function decodeNativePhoto(file,clock,code){
   image.style.imageOrientation='from-image';
   await new Promise((resolve,reject)=>{
    image.onload=resolve;
-   image.onerror=()=>reject(Error('Safari không đọc được ảnh. Cập nhật iOS hoặc chọn Camera → Định dạng → Tương thích nhất (JPEG), rồi chụp lại.'));
+   image.onerror=()=>reject(Error('Không giải mã được ảnh từ camera. Hãy dùng camera mặc định và thử chụp lại ở định dạng JPEG (iPhone: Cài đặt → Camera → Định dạng → Tương thích nhất).'));
    image.src=preview;
   });
   image.onload=null;image.onerror=null;
@@ -351,7 +351,10 @@ async function discardNativeDraft(){
 function nativeProofPlan(longest,compact,format){
  const steps=compact?(format==='png'?[[640,1],[400,1],[256,1],[160,1],[96,1],[64,1],[48,1]]:
   [[640,.82],[512,.72],[400,.62],[320,.55],[256,.48],[160,.42],[96,.35],[64,.35],[48,.3]]):
-  [[Math.min(longest,2560),.94],[1600,.85],[1280,.80],[1024,.72]];
+  // Preserve source detail when fitting iPhone proof within the Firebase cap.
+  // Every attempt is encoded directly from the untouched full-size camera image.
+  [[Math.min(longest,2560),.94],[2240,.88],[2048,.84],[1920,.82],
+   [1600,.85],[1440,.82],[1280,.80],[1024,.72]];
  return steps.map(([edge,quality])=>[Math.min(edge,longest),quality]);
 }
 function drawNativeProof(canvas,photo,edge,compact){
@@ -521,11 +524,12 @@ function encodeProof(leg,maxLength,requestedFormat='auto',compact=false){
  const format=requestedFormat==='png'?'png':requestedFormat==='jpeg'?'jpeg':webpCanvasEncoderSupported()?'webp':'jpeg';
  const mime='image/'+format,prefix='data:'+mime+';base64,';
  const longest=Math.max(sourceW,sourceH);
- // Step down resolution FIRST. For a large/complex iPhone image, allow a
- // small emergency receipt with timestamp + signature instead of blocking.
+ // The full-resolution archive MUST NOT start at 1280px when the camera
+ // provided a sharper 2048px image. The 44KB receipt remains lightweight.
+ // All size attempts are drawn from the same original canvas, never cascaded.
  const targets=compact?[640,512,400,320,256,192,160,128,96,72,48]:
-  [1280,1024,800,640,480,360,280,200,160];
- const qualities=compact?[.82,.65,.5,.35,.25]:[.9,.78,.65,.5,.4];
+  [2048,1920,1800,1600,1440,1280,1120,1024,900,800,640,480,360,280,200,160];
+ const qualities=compact?[.82,.65,.5,.35,.25]:[.94,.88,.82,.74,.65,.55];
  const attempted=new Set();
  for(const longestSide of targets){
   const scale=Math.min(1,longestSide/longest),width=Math.max(1,Math.round(sourceW*scale));
@@ -1310,9 +1314,34 @@ async function photoPdfPage(e,index,total,fullProof=''){
  if(hasProof){
   try{const img=await proofImage(fullProof||await highProofData(e));const ratio=Math.min(810/img.width,730/img.height);
    const w=img.width*ratio,h=img.height*ratio,left=450-w/2,top=687-h/2;
-   if(audit.unverified&&img.src.startsWith('data:image/jpeg;base64,'))
+   // Keep full-resolution evidence independent of PDF rasterization.
+   // The old code embedded an original JPEG only when audit UNVERIFIED;
+   // verified photos were re-rasterized and compressed as a page thumbnail.
+   if(img.src.startsWith('data:image/jpeg;base64,')){
     cv.proofJpeg={data:img.src,width:img.width,height:img.height,x:left,y:top,w,h};
-   else x.drawImage(img,left,top,w,h);
+   }else{
+    // PDF DCTDecode cannot embed Android WebP/PNG natively. Convert that
+    // image once at native pixel dimensions instead of flattening the page.
+    let hi=null;
+    try{
+     const maxEdge=Math.max(img.naturalWidth||img.width,img.naturalHeight||img.height);
+     const ratio=Math.min(1,3072/maxEdge);
+     hi=document.createElement('canvas');
+     hi.width=Math.max(1,Math.round(img.width*ratio));
+     hi.height=Math.max(1,Math.round(img.height*ratio));
+     const hctx=hi.getContext('2d',{alpha:false,colorSpace:'srgb'});
+     if(!hctx)throw Error('Cannot decode high-resolution proof');
+     hctx.fillStyle='#fff';hctx.fillRect(0,0,hi.width,hi.height);
+     hctx.imageSmoothingEnabled=true;hctx.imageSmoothingQuality='high';
+     hctx.drawImage(img,0,0,hi.width,hi.height);
+     const jpeg=hi.toDataURL('image/jpeg',.94);
+     if(!jpeg.startsWith('data:image/jpeg;base64,'))throw Error('JPEG export unavailable');
+     cv.proofJpeg={data:jpeg,width:hi.width,height:hi.height,x:left,y:top,w,h};
+    }catch(error){
+     // Keep a visible picture even on an unsupported browser.
+     x.drawImage(img,left,top,w,h);
+    }finally{if(hi){hi.width=1;hi.height=1}}
+   }
   }catch(_){x.fillStyle='#aa2727';x.font='bold 20px Arial';x.fillText('ẢNH LỖI / KHÔNG ĐỌC ĐƯỢC',70,690)}
  }else{x.fillStyle='#744f2a';x.font='bold 21px Arial';x.fillText('SỰ KIỆN KHÔNG CÓ ẢNH',70,690)}
  x.fillStyle='#24475b';x.font='16px Arial';x.fillText('ID bất biến: '+S(e.id||'—').slice(0,85),35,1104);
