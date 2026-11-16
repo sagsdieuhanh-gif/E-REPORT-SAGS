@@ -19,7 +19,7 @@ const source=s.slice(start,end);
 assert(source.includes("const originalAvailable=actualProof!==e.signature"),'Each page must audit actual image source');
 assert(source.includes("cv.proofJpeg={data:img.src,width:img.width,height:img.height,x:left,y:top,w,h}"),
  'Keep the original JPEG embedded pixel-for-pixel without PDF thumbnail recompression');
-assert(source.includes("Nguồn: "+'photoSource'),'Source quality and dimensions must appear in report');
+assert(source.includes("x.fillText('Nguồn: '+photoSource"),'Source quality and dimensions must appear in report');
 
 const photo='data:image/jpeg;base64,'+Buffer.from([255,216,1,2,3,255,217]).toString('base64');
 const high='data:image/jpeg;base64,'+Buffer.from([255,216,10,11,12,13,255,217]).toString('base64');
