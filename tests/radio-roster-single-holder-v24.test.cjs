@@ -13,7 +13,8 @@ assert(start>0&&end>start);
 const today='2026-11-06',base=Date.parse('2026-11-06T00:00:00+07:00');
 const ctx={S:x=>String(x??'').trim(),label:x=>x,vnDateKey:()=>today,Date,Map,Set,Number,Math,Intl,VN:'Asia/Ho_Chi_Minh'};
 vm.createContext(ctx);const helpers=src.slice(src.indexOf('function radioShiftAt('),src.indexOf('function heldBy('));
-vm.runInContext(helpers+'\n'+src.slice(start,end)+'\nthis.reconcile=reconcileRoster;this.duty=rosterDutyShift;',ctx);
+const heldSinceHelper=src.match(/^const radioHeldSince=.*$/m)[0];
+vm.runInContext(heldSinceHelper+'\n'+helpers+'\n'+src.slice(start,end)+'\nthis.reconcile=reconcileRoster;this.duty=rosterDutyShift;',ctx);
 assert.equal(ctx.duty({sta:'09:30'}),'AM');
 assert.equal(ctx.duty({std:'15:05'}),'AM');
 assert.equal(ctx.duty({sta:'2345+1'}),'PM');
@@ -28,7 +29,7 @@ const rows=[
 ];
 const users=new Map([['KIENNT','uid-k'],['PHUONGDD','uid-p'],['HUYNT','uid-h'],['VUNP','uid-v']]);
 const history=[{action:'ISSUE',personUid:'uid-p',shift:'PM',at:{toMillis:()=>base+9*3600000}},{action:'RETURN',personUid:'uid-p',shift:'AM',at:{toMillis:()=>base+10*3600000}}];
-const holder={code:'DH01',status:'OUT',holderUid:'uid-h',shift:'AM',updatedAt:{toMillis:()=>base+9*3600000,toDate:()=>new Date(base+9*3600000)}};
+const holder={code:'DH01',status:'OUT',holderUid:'uid-h',shift:'AM',updatedAt:{toMillis:()=>base+19*3600000},heldSince:{toMillis:()=>base+9*3600000,toDate:()=>new Date(base+9*3600000)}};
 let result=ctx.reconcile(rows,users,[holder],history,today,'AM',base+10*3600000);
 assert.equal(result.total,3,'One employee counts once despite multiple roster flights');
 assert.equal(result.missing.join('|'),'KIENNT');

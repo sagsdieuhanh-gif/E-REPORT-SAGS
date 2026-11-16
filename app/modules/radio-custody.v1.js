@@ -26,9 +26,12 @@ const RETURN_REASONS=Object.freeze({
  STOP_USE:'Không tiếp tục sử dụng',
  OTHER:'Lý do khác'
 });
-// One radio custody shift is AM 08:00–18:15 or PM 18:16–07:59 next day (advisory only) (VN).
-const STATUSES={READY:'Sẵn sàng',OUT:'Đang sử dụng',CHARGING:'Đang sạc',FAULT:'Cần kiểm tra / khóa cấp',LOST:'Thất lạc'};
-const ACTS={INIT:'Khởi tạo',ISSUE:'Nhận máy',RETURN:'Trả máy',REPORT:'Báo sự cố',SWAP_OUT:'Đổi – trả máy cũ',SWAP_IN:'Đổi – nhận máy mới',RELEASE:'Mở lại / sạc xong'};
+// Advisory shift in Vietnam time: AM 08:00–18:15; PM 18:16–07:59 next day.
+const STATUSES={READY:'Sẵn sàng',OUT:'Đang sử dụng',CHARGING:'Đang sạc / có cảnh báo (vẫn được nhận)',FAULT:'Đã ghi nhận lỗi (vẫn được nhận)',LOST:'Thất lạc'};
+const radioIssueable=d=>!!d&&['READY','CHARGING','FAULT'].includes(d.status)&&!d.holderUid&&d.faultCode!=='LOST';
+const hasRadioWarning=d=>!!d.faultCode||['CHARGING','FAULT','LOST'].includes(d.status);
+const radioHeldSince=d=>d.heldSince||d.updatedAt;
+const ACTS={INIT:'Khởi tạo',ISSUE:'Nhận máy',RETURN:'Trả máy',REPORT:'Báo sự cố',SWAP_OUT:'Đổi – trả máy cũ',SWAP_IN:'Đổi – nhận máy mới',RELEASE:'Đã xử lý thông tin lỗi'};
 let unsubs=[],devices=[],events=[],busy=false,connected=false,choice=null,mode='ISSUE',canvasDirty=false,strokes=[],drawing=false,dateFilter='all';
 let cameraStream=null,cameraToken=0,cameraLeg='old',photos={old:null,new:null},historyStop=null,historyVerified=false;
 const radioScriptUrl=document.currentScript?.src;
@@ -250,7 +253,11 @@ function readNativeDraft(uid,includeFile=false){
    const draft=request.result;
    if(!includeFile||!draft){done(draft);return}
    const raw=files.get(draft.id);
-   raw.onsuccess=()=>done({...draft,file:raw.result});
+   raw.onsuccess=()=>{
+    const stored=raw.result;
+    const file=stored?.buffer?new Blob([stored.buffer],{type:stored.type}):stored;
+    done({...draft,file});
+   };
   };
  });
 }
@@ -259,6 +266,8 @@ async function saveNativeDraft(file,draft=nativeDraft,ink=strokes){
  const snapshot={...draft,fields:Object.fromEntries(DRAFT_FIELDS.map(id=>[id,$(id).value])),
   strokes:ink.map(points=>points.map(point=>[...point]))};
  try{
+  const source=file?{buffer:await file.arrayBuffer(),type:file.type}:null;
+  if(currentUser().uid!==draft.uid)throw Error('Phiên ký nhận đã thay đổi.');
   await nativeDraftTransaction('readwrite',(drafts,files,done,abort)=>{
    const request=drafts.get(snapshot.uid);
    request.onsuccess=()=>{
@@ -268,7 +277,7 @@ async function saveNativeDraft(file,draft=nativeDraft,ink=strokes){
      return;
     }
     drafts.put(snapshot);
-    if(file)files.put(file,snapshot.id);
+    if(source)files.put(source,snapshot.id);
    };
   });
  }catch(e){throw Error(draftError(e))}
@@ -354,7 +363,7 @@ function nativeProofPlan(longest,compact,format){
   // Preserve source detail when fitting iPhone proof within the Firebase cap.
   // Every attempt is encoded directly from the untouched full-size camera image.
   [[Math.min(longest,2560),.94],[2240,.88],[2048,.84],[1920,.82],
-   [1600,.85],[1440,.82],[1280,.80],[1024,.72]];
+   [1600,.85],[1440,.82],[1280,.80],[1024,.72],[896,.72],[768,.68],[640,.66]];
  return steps.map(([edge,quality])=>[Math.min(edge,longest),quality]);
 }
 function drawNativeProof(canvas,photo,edge,compact){
@@ -568,7 +577,6 @@ function combineProof(leg,requestedFormat='auto'){
 // Optional device-only backup when production Firestore Rules have not been
 // deployed. This is NOT an authoritative receipt or server-verified evidence.
 let localProofDbPromise=null;
-const localProofIds=new Set();
 function localProofKey(uid,code,action,at){return String(uid)+'|'+String(code)+'|'+String(action)+'|'+String(at)}
 function radioProofDb(){
  if(!root.indexedDB)return Promise.reject(Error('IndexedDB không khả dụng'));
@@ -609,34 +617,35 @@ async function readLocalFullProof(e){
   });
  }catch(_){return ''}
 }
+async function readServerFullProof(e){
+ if(!e?.id||!e.signature)return {source:'none',data:''};
+ const uid=currentUser().uid,key=uid+'|'+e.id;
+ if(!uid)return {source:'unverified',data:e.signature};
+ const cached=proofCache.get(key);
+ if(cached)return {source:'archive',data:cached};
+ try{
+  if(!navigator.onLine)throw Error('Ngoại tuyến');
+  const snap=await fs().collection(PROOFS).doc(e.id).get({source:'server'});
+  if(currentUser().uid!==uid||snap.metadata?.fromCache)throw Error('Ảnh gốc chưa được Firebase xác nhận.');
+  if(!snap.exists)return {source:'receipt',data:e.signature};
+  const d=snap.data();
+  if(d?.eventId!==e.id||d?.actorUid!==e.actorUid||d?.deviceCode!==e.deviceCode||d?.action!==e.action||
+    typeof d.image!=='string'||!/^data:image\/(webp|jpeg);base64,/.test(d.image)||d.image.length>HIGH_PROOF_LIMIT)
+   throw Error('Ảnh lưu trữ không khớp lượt ký.');
+  proofCache.set(key,d.image);
+  if(proofCache.size>8)proofCache.delete(proofCache.keys().next().value);
+  return {source:'archive',data:d.image};
+ }catch(error){
+  console.info('Radio full-colour proof unavailable',String(error?.code||error?.message||error));
+  return {source:'unverified',data:e.signature};
+ }
+}
 async function highProofData(e,allowLocal=false){
- if(!e?.id||!e.signature)return e?.signature||'';
+ if(!e?.id||!e.signature)return {source:'none',data:''};
  const local=allowLocal?await readLocalFullProof(e):'';
- const cached=proofCache.get(e.id);
- if(cached){
-  if(local&&local.length>cached.length){localProofIds.add(e.id);return local}
-  localProofIds.delete(e.id);return cached
- }
- if(navigator.onLine){
-  try{
-   const snap=await fs().collection(PROOFS).doc(e.id).get({source:'server'});
-   if(snap.metadata?.fromCache)throw Error('Ảnh gốc chưa được Firebase xác nhận.');
-   const d=snap.data();
-   if(snap.exists&&d?.eventId===e.id&&d?.actorUid===e.actorUid&&d?.deviceCode===e.deviceCode&&
-    typeof d.image==='string'&&/^data:image\/(webp|jpeg);base64,/.test(d.image)&&d.image.length<=HIGH_PROOF_LIMIT){
-    proofCache.set(e.id,d.image);localProofIds.delete(e.id);
-    if(proofCache.size>8)proofCache.delete(proofCache.keys().next().value);
-    if(local&&local.length>d.image.length){localProofIds.add(e.id);return local}
-    return d.image;
-   }
-  }catch(error){
-   // No global permission-denied flag: an old event must not prevent newer
-   // events from loading their correctly authorized full-colour server proof.
-   console.info('Radio full-colour proof unavailable',String(error?.code||error?.message||error));
-  }
- }
- if(local){localProofIds.add(e.id);return local}
- return e.signature;
+ const proof=await readServerFullProof(e);
+ if(local&&(proof.source!=='archive'||local.length>proof.data.length))return {source:'local',data:local};
+ return proof;
 }
 let proofViewToken=0;
 async function viewProof(id){
@@ -650,14 +659,15 @@ async function viewProof(id){
  const check=photoAudit(e);
  $('radioProofTimestamp').textContent='Giờ Firebase: '+(check.serverMs?fmt(new Date(check.serverMs)):'Chưa xác minh')+' · Giờ thiết bị: '+(check.deviceMs?fmt(new Date(check.deviceMs)):'xem trực tiếp trên ảnh')+' · '+check.status+(check.delta!==null?' ('+check.delta+' phút)':'');
  box.hidden=false;
- const data=await highProofData(e,true);
+ const proof=await highProofData(e,true);
  if(token!==proofViewToken||box.hidden)return;
- $('radioProofImage').src=data;
- $('radioProofQuality').textContent=data===e.signature?
-  '⚠ Chỉ có ảnh đã nén trên Firebase. Ảnh cũ không thể khôi phục độ nét đã mất.':
-  localProofIds.has(e.id)?
-   '📱 Ảnh rõ được lưu tạm trong điện thoại này, CHƯA xác minh trên Firebase. AD ở máy khác vẫn thấy bản nén.':
-   '✓ Ảnh rõ đã được xác minh trên Firebase, có thể phóng to đọc mã máy.';
+ $('radioProofImage').src=proof.data;
+ $('radioProofQuality').textContent={
+  archive:'Ảnh lưu trữ từ Firebase. Phóng to để kiểm tra mã máy.',
+  local:'Ảnh rõ lưu trên thiết bị chụp, chưa xác minh trên Firebase.',
+  receipt:'Firebase chỉ có ảnh trong biên nhận. Độ nét đã mất do nén không thể khôi phục.',
+  unverified:'Chưa đọc được ảnh lưu trữ từ Firebase. Đang hiển thị ảnh trong biên nhận.'
+ }[proof.source]||'';
 }
 function closeProof(){
  ++proofViewToken;const el=$('radioProofViewer');if(el){el.hidden=true;el.classList.remove('radioProofZoomed')}
@@ -707,7 +717,7 @@ async function start(action,code){
  if(!connected||!navigator.onLine)return notify('Chưa kết nối Firebase. Không thể ký nhận khi chưa đồng bộ trạng thái máy.',true);
  if(action==='ISSUE'&&heldBy(u.uid).length)return notify('Bạn đang giữ '+heldBy(u.uid).map(x=>label(x.code)).join(', ')+'. Phải ký trả máy đang giữ trước khi nhận máy khác.',true);
  if(action==='SWAP_OUT'&&heldBy(u.uid).some(x=>x.code!==code))return notify('Bạn đang giữ bộ đàm khác. Phải trả máy đó trước khi đổi máy.',true);
- if(action==='RELEASE'&&!isAdmin(u))return notify('Chỉ AD được đưa máy trở lại sử dụng.',true);
+ if(action==='RELEASE'&&!isAdmin(u))return notify('Chỉ AD được xác nhận đã xử lý thông tin lỗi.',true);
  if(['RETURN','SWAP_OUT'].includes(action)&&d.holderUid!==u.uid&&!isAdmin(u))return notify('Máy đang được người khác sử dụng; chỉ chủ máy hoặc AD được trả.',true);
  if(nativeMode(action)){
   setBusy(true);
@@ -725,8 +735,8 @@ function showSigningForm(action,d,u){
  const code=d.code;
  resetCamera();mode=action;choice=d;nativeDraft=null;signingUid=u.uid;clearSignature();
  $('radioActionCode').value=label(code);$('radioPerson').value=u.name+' · '+u.uid.slice(0,8);
- $('radioShift').value=shift();$('radioReason').value='BATTERY_EMPTY';$('radioReturnReason').value='END_SHIFT';$('radioBattery').value='UNKNOWN';$('radioSwapBattery').value='UNKNOWN';$('radioDetail').value='';
- $('radioActionTitle').textContent=(action==='RELEASE'?'AD kiểm tra và xác nhận mở cấp lại':ACTS[action]||'Báo cáo')+' · '+label(code);
+ $('radioShift').value=shift();$('radioReason').value='BATTERY_EMPTY';$('radioReason').querySelector('option[value=LOST]').disabled=action==='SWAP_OUT';$('radioReturnReason').value='END_SHIFT';$('radioBattery').value='UNKNOWN';$('radioSwapBattery').value='UNKNOWN';$('radioDetail').value='';
+ $('radioActionTitle').textContent=(action==='RELEASE'?'AD xác nhận đã xử lý thông tin lỗi':ACTS[action]||'Báo cáo')+' · '+label(code);
  $('radioDetail').placeholder=action==='RELEASE'?
   'Ghi kết quả kiểm tra: pin, sóng phát/thu, loa, mic/PTT; máy thất lạc phải xác nhận thu hồi.':
   'Ghi cụ thể hiện tượng, thời gian, vị trí…';
@@ -734,10 +744,10 @@ function showSigningForm(action,d,u){
  $('radioBatteryWrap').hidden=action==='RELEASE';
  $('radioSwapWrap').hidden=action!=='SWAP_OUT';$('radioSwapBatteryWrap').hidden=action!=='SWAP_OUT';
  $('radioSigWrap').hidden=action==='RELEASE'||needsPhoto(action);
- const available=devices.filter(x=>x.status==='READY'&&x.code!==code);
- $('radioSwapTarget').innerHTML=available.map(x=>'<option value="'+esc(x.code)+'">'+esc(label(x.code))+'</option>').join('');
+ const available=devices.filter(x=>radioIssueable(x)&&x.code!==code);
+ $('radioSwapTarget').innerHTML=available.map(x=>'<option value="'+esc(x.code)+'">'+esc(label(x.code)+(hasRadioWarning(x)?' · Có cảnh báo':''))+'</option>').join('');
  if(action==='SWAP_OUT'&&!available.length){
-  notify('Không có máy sẵn sàng để đổi. Báo lỗi và liên hệ AD.',true);
+  notify('Không còn bộ đàm khác có thể đổi. Kiểm tra máy chưa được giao và thử lại.',true);
   return false;
  }
  $('radioCameraVideo').hidden=nativeMode(action);
@@ -772,7 +782,7 @@ function reconcileRoster(items,users,machines,history,day,which,now=Date.now()){
   if(!uid)result.unmapped.push(name);
   else if(held.length){
    const summary=name+' · '+held.map(d=>label(d.code)).join(', ');
-   if(now>=end&&held.some(d=>d.updatedAt?.toMillis?.()&&radioShiftAt(d.updatedAt.toMillis()).key===day+'/'+which))result.unreturned.push(summary);else result.holding.push(summary);
+   if(now>=end&&held.some(d=>radioHeldSince(d)?.toMillis?.()&&radioShiftAt(radioHeldSince(d).toMillis()).key===day+'/'+which))result.unreturned.push(summary);else result.holding.push(summary);
   }else if(issued.has(uid))result.completed.push(name);
   else if(now<start)result.upcoming.push(name);
   else result.missing.push(name);
@@ -842,32 +852,32 @@ function renderAdminOverview(){
  const admin=isAdmin(currentUser());panel.hidden=!admin;
  if(!admin){target.replaceChildren();return}
  const now=Date.now(),holds=devices.filter(d=>d.status==='OUT'),
-  needs=devices.filter(d=>['CHARGING','FAULT','LOST'].includes(d.status)),
-  overdue=holds.filter(d=>d.updatedAt?.toMillis?.()&&radioShiftAt(d.updatedAt.toMillis()).key!==radioShiftAt(now).key);
- const hour=d=>d.updatedAt?.toDate?.()?fmt(d.updatedAt.toDate()):'Đang đồng bộ';
+  needs=devices.filter(hasRadioWarning),
+  overdue=holds.filter(d=>radioHeldSince(d)?.toMillis?.()&&radioShiftAt(radioHeldSince(d).toMillis()).key!==radioShiftAt(now).key);
+ const hour=d=>radioHeldSince(d)?.toDate?.()?fmt(radioHeldSince(d).toDate()):'Đang đồng bộ';
  const holdItems=holds.length?holds.map(d=>{
   const late=overdue.includes(d);
   return '<li><div><strong>'+esc(label(d.code))+'</strong><span>'+esc(d.holderName||d.holderUid||'Chưa rõ người giữ')+'</span><small>'+esc(d.shift==='AM'?'Ca sáng':d.shift==='PM'?'Ca tối':'Chưa rõ ca')+' · Nhận/đổi gần nhất: '+esc(hour(d))+'</small></div>'+(late?'<em class="radioAdminWarn">Chưa trả ca trước</em>':'<em class="radioAdminNormal">Đang giữ</em>')+'</li>'
  }).join(''):'<li class="radioAdminEmpty">Không có máy đang được ghi nhận sử dụng.</li>';
  const needItems=needs.length?needs.map(d=>'<li><div><strong>'+esc(label(d.code))+'</strong><span>'+esc(STATUSES[d.status]||d.status)+'</span><small>'+esc(REASON_TEXT[d.faultCode]||d.faultDetail||'Cần xác nhận tình trạng thực tế')+'</small></div><em class="radioAdminWarn">Theo dõi</em></li>').join(''):'<li class="radioAdminEmpty">Không có máy lỗi, mất hoặc đang sạc.</li>';
- target.innerHTML='<div class="radioAdminHighlights"><div><strong>'+holds.length+'</strong><span>Đang có người giữ</span></div><div><strong>'+overdue.length+'</strong><span>Chưa trả sau chuyển ca</span></div><div><strong>'+needs.length+'</strong><span>Đang sạc / lỗi / mất</span></div></div>'+
+ target.innerHTML='<div class="radioAdminHighlights"><div><strong>'+holds.length+'</strong><span>Đang có người giữ</span></div><div><strong>'+overdue.length+'</strong><span>Chưa trả sau chuyển ca</span></div><div><strong>'+needs.length+'</strong><span>Có thông tin cần theo dõi</span></div></div>'+
   '<div class="radioAdminColumns"><div class="radioAdminPanel"><h4>Người đang giữ máy <small>'+holds.length+' máy</small></h4><ul>'+holdItems+'</ul></div>'+
   '<div class="radioAdminPanel"><h4>Máy cần theo dõi <small>'+needs.length+' máy</small></h4><ul>'+needItems+'</ul></div></div>'+
-  '<p class="radioAdminFoot"><b>Máy cần kiểm tra:</b> máy lỗi (FAULT) cách ly, không cấp phát; máy pin yếu (CHARGING) sạc rồi thử lại; máy mất (LOST) phải xác minh thu hồi. Chỉ AD sau khi kiểm tra pin, sóng, loa, mic/PTT và ghi kết quả mới được chọn “Đã kiểm tra / mở lại”.</p>'+
- '<p class="radioAdminFoot">Nhắc nhở ký trả bộ đàm khi chuyển ca (không khóa nhận/mở chuyến): ca sáng kết thúc khoảng 18:15, ca tối kết thúc khoảng 07:59 hôm sau (giờ Việt Nam).</p>';
+  '<p class="radioAdminFoot"><b>Ghi nhận thông tin:</b> bộ đàm có báo lỗi vẫn được nhận, trả, đổi và sử dụng; lỗi chỉ phục vụ theo dõi, thống kê. Máy thất lạc (LOST) cần xác minh có máy thực tế trước khi bàn giao. AD xác nhận đã xử lý ghi nhận, không phải mở khóa cấp phát.</p>'+
+ '<p class="radioAdminFoot">Nhắc nhở ký trả bộ đàm khi chuyển ca (không khóa nhận/mở chuyến): ca sáng kết thúc 18:15, ca tối kết thúc 07:59 hôm sau (giờ Việt Nam).</p>';
 }
 function render(){
  if(!$('radioDeviceList'))return;
  const u=currentUser(),held=heldBy(u.uid);$('radioSeed').hidden=!connected||!isAdmin(u)||INIT.every(code=>devices.some(x=>x.code===code));
  const counts=Object.fromEntries(Object.keys(STATUSES).map(k=>[k,devices.filter(x=>x.status===k).length]));
- $('radioStats').innerHTML='<div><strong>'+devices.length+'</strong><small>Tổng thiết bị</small></div><div><strong>'+counts.READY+'</strong><small>Sẵn sàng</small></div><div><strong>'+counts.OUT+'</strong><small>Đang giữ</small></div><div><strong>'+counts.CHARGING+'</strong><small>Đang sạc</small></div><div><strong>'+counts.FAULT+counts.LOST+'</strong><small>Lỗi / mất</small></div>';
+ $('radioStats').innerHTML='<div><strong>'+devices.length+'</strong><small>Tổng thiết bị</small></div><div><strong>'+counts.READY+'</strong><small>Sẵn sàng</small></div><div><strong>'+counts.OUT+'</strong><small>Đang giữ</small></div><div><strong>'+counts.CHARGING+'</strong><small>Đang sạc</small></div><div><strong>'+devices.filter(hasRadioWarning).length+'</strong><small>Thông tin lỗi / mất</small></div>';
  renderAdminOverview();renderRosterAlert();
  $('radioDeviceList').innerHTML=devices.length?devices.map(d=>{
   const mine=d.holderUid===u.uid,admin=isAdmin(u),buttons=[];
-  if(connected&&d.status==='READY'){if(!held.length)buttons.push(['ISSUE','Ký nhận']);buttons.push(['REPORT','Báo lỗi'])}
+  if(connected&&radioIssueable(d)){if(!held.length)buttons.push(['ISSUE','Ký nhận']);buttons.push(['REPORT','Báo lỗi'])}
   if(connected&&d.status==='OUT'&&(mine||admin))buttons.push(['RETURN','Trả máy'],['SWAP_OUT','Đổi máy'],['REPORT','Báo lỗi']);
-  if(connected&&['FAULT','CHARGING','LOST'].includes(d.status)&&admin)buttons.push(['RELEASE','Đã kiểm tra / mở lại']);
-  const status=d.status==='OUT'?'Đang giữ: '+esc(d.holderName||d.holderUid.slice(0,8)):(d.faultCode?('Lý do: '+esc(REASON_TEXT[d.faultCode]||d.faultCode)):'');
+  if(connected&&admin&&hasRadioWarning(d))buttons.push(['RELEASE',d.status==='LOST'||d.faultCode==='LOST'?'Xác nhận đã tìm thấy':'Đã xử lý ghi nhận']);
+  const status=(d.status==='OUT'?'Đang giữ: '+esc(d.holderName||d.holderUid.slice(0,8)):'')+(d.faultCode?(' · Lỗi ghi nhận: '+esc(REASON_TEXT[d.faultCode]||d.faultCode)):'')+(d.faultDetail?(' · '+esc(d.faultDetail)):'');
   return '<article class="radioDevice"><div><strong>'+esc(label(d.code))+'</strong>'+badge(d.status)+'<small>'+status+'</small></div><div class="radioButtons">'+buttons.map(([a,n])=>'<button type="button" data-radio-act="'+a+'" data-radio-code="'+esc(d.code)+'">'+n+'</button>').join('')+'</div></article>'
  }).join(''):'<p class="radioEmpty">'+(connected?'Chưa có mã máy. AD hãy khởi tạo danh mục bộ đàm từ sổ giấy.':'Chưa xác nhận kết nối Firebase. Không thể ký nhận cho đến khi kích hoạt.')+'</p>';
  if(held.length&&!isAdmin(u))$('radioDeviceList').insertAdjacentHTML('afterbegin','<p class="radioHeldNotice">📻 Bạn đang giữ '+esc(held.map(x=>label(x.code)).join(', '))+'. Hãy ký trả trước khi nhận máy khác; thao tác Đổi máy được thực hiện đồng thời.</p>');
@@ -970,10 +980,10 @@ function renderSummary(){
    '</div>'+radioShiftDeviceMatrix(rows)+'<p class="radioHint">Tổng '+rows.length+' sự kiện theo bộ lọc. Số lượt không phải số máy hiện còn giữ; trạng thái hiện tại không dùng để suy ra lịch sử ca trước.</p>';
   return;
  }
- const n=events.filter(x=>['SWAP_OUT'].includes(x.action)).length,issues=events.filter(x=>['REPORT','SWAP_OUT'].includes(x.action)),pending=devices.filter(x=>['FAULT','CHARGING','LOST'].includes(x.status));
- const now=Date.now(),using=devices.filter(x=>x.status==='OUT'),overdue=using.filter(x=>x.updatedAt?.toMillis?.()&&radioShiftAt(x.updatedAt.toMillis()).key!==radioShiftAt(now).key);
+ const n=events.filter(x=>['SWAP_OUT'].includes(x.action)).length,issues=events.filter(x=>['REPORT','SWAP_OUT'].includes(x.action)||(x.action==='RETURN'&&x.reasonCode==='BATTERY_WEAK')),pending=devices.filter(hasRadioWarning);
+ const now=Date.now(),using=devices.filter(x=>x.status==='OUT'),overdue=using.filter(x=>radioHeldSince(x)?.toMillis?.()&&radioShiftAt(radioHeldSince(x).toMillis()).key!==radioShiftAt(now).key);
  const admin=isAdmin(currentUser()),holds=using.map(x=>'<p>'+esc(label(x.code))+' · '+esc(x.holderName||'Không rõ người nhận')+(overdue.includes(x)?' <strong class="radioOverdue">CHƯA TRẢ CA TRƯỚC</strong>':'')+'</p>').join('');
- $('radioSummary').innerHTML='<div class="radioReportGrid"><div><strong>'+n+'</strong><small>Lần đổi máy (lịch sử gần đây)</small></div><div><strong>'+issues.length+'</strong><small>Lần ghi nhận vấn đề</small></div><div><strong>'+pending.length+'</strong><small>Máy cần xử lý ngay</small></div>'+(admin?'<div><strong>'+overdue.length+'</strong><small>Chưa trả ca trước</small></div>':'')+'</div><h4>Cần kiểm tra</h4>'+(pending.length?pending.map(d=>'<p>'+esc(label(d.code))+' · '+esc(STATUSES[d.status])+' · '+esc(REASON_TEXT[d.faultCode]||'')+'</p>').join(''):'<p>Không có máy đang treo trạng thái lỗi/sạc.</p>')+(admin?'<h4>Đang sử dụng / đối soát người giữ</h4>'+(using.length?holds:'<p>Tất cả máy đã được trả hoặc chưa cấp.</p>'):'')+'<p class="radioHint">Mốc nhắc trả máy: ca sáng 18:15, ca tối 07:59 hôm sau; có thể tiếp tục làm việc và bàn giao sau mốc này. Không khóa mở chuyến do đổi ca. Giờ máy chủ Firebase là thời điểm ghi nhận.</p><p class="radioHint">Báo cáo này chỉ tổng hợp sự kiện đã tải. Báo cáo ngày/tuần chính thức được tính trên máy chủ, không dựa vào giới hạn 120 mục.</p>';
+ $('radioSummary').innerHTML='<div class="radioReportGrid"><div><strong>'+n+'</strong><small>Lần đổi máy (lịch sử gần đây)</small></div><div><strong>'+issues.length+'</strong><small>Lần ghi nhận vấn đề</small></div><div><strong>'+pending.length+'</strong><small>Máy cần theo dõi</small></div>'+(admin?'<div><strong>'+overdue.length+'</strong><small>Chưa trả ca trước</small></div>':'')+'</div><h4>Cần kiểm tra</h4>'+(pending.length?pending.map(d=>'<p>'+esc(label(d.code))+' · '+esc(STATUSES[d.status])+' · '+esc(REASON_TEXT[d.faultCode]||'')+'</p>').join(''):'<p>Không có cảnh báo đang theo dõi.</p>')+(admin?'<h4>Đang sử dụng / đối soát người giữ</h4>'+(using.length?holds:'<p>Tất cả máy đã được trả hoặc chưa cấp.</p>'):'')+'<p class="radioHint">Ca sáng hết 18:15, ca tối hết 07:59 hôm sau; có thể tiếp tục mở chuyến và bàn giao sau mốc chuyển ca. Giờ máy chủ Firebase là thời điểm ghi nhận.</p><p class="radioHint">Báo cáo này chỉ tổng hợp sự kiện đã tải. Báo cáo ngày/tuần chính thức được tính trên máy chủ, không dựa vào giới hạn 120 mục.</p>';
 }
 function evidenceDetails(details,captureMs,clock){
  if(!Number.isFinite(captureMs)||captureMs<=0)return details;
@@ -1007,7 +1017,8 @@ function updateDevice(tx,ref,device,action,after,options){
    deviceCode:device.code,action,capturedAtMs:options.photoAt,image:options.fullProof
   });
  }
- tx.update(ref,{...after,version:device.version+1,lastEventId:evRef.id,updatedAt:fv()});
+ const heldSince=after.status!=='OUT'?null:device.status==='OUT'?radioHeldSince(device):fv();
+ tx.update(ref,{...after,heldSince,version:device.version+1,lastEventId:evRef.id,updatedAt:fv()});
 }
 async function transactionInventory(tx,db,primary,secondary=''){
  // All currently registered devices are transactionally read before any write.
@@ -1027,15 +1038,16 @@ async function submit(){
  $('radioShift').value=shiftVal; // the authoritative shift is assigned at signing, not manually selected
  if(mode==='RETURN'&&returnReason==='OTHER'&&rawDetail.length<10)return notify('Lý do trả khác cần mô tả ít nhất 10 ký tự.',true);
  const details=mode==='RETURN'?('Lý do trả: '+(RETURN_REASONS[returnReason]||RETURN_REASONS.END_SHIFT)+(rawDetail?' · '+rawDetail:'')):rawDetail;
+ if(mode==='SWAP_OUT'&&reason==='LOST')return notify('Hãy báo thất lạc máy cũ trước khi ký nhận máy khác.',true);
  if(['REPORT','SWAP_OUT'].includes(mode)&&(reason==='OTHER'||reason==='LOST')&&details.length<10)return notify('Vui lòng mô tả lý do cụ thể (từ 10 ký tự).',true);
  if(mode==='RELEASE'){
   if(details.length<20)return notify('AD phải ghi kết quả kiểm tra ít nhất 20 ký tự: pin, sóng, loa, mic/PTT và tình trạng thực tế.',true);
-  if(!root.confirm('XÁC NHẬN ĐÃ KIỂM TRA TRỰC TIẾP '+label(code)+'?\n\nMáy chỉ được mở cấp lại sau khi pin, sóng phát/thu, loa và mic/PTT hoạt động tốt. Máy đã báo mất phải được thu hồi.\n\nKết quả đã ghi sẽ được lưu trên Firebase.'))return notify('Chưa xác nhận kiểm tra. Máy vẫn khóa cấp phát.',true);
+  if(!root.confirm('XÁC NHẬN ĐÃ XỬ LÝ THÔNG TIN LỖI CHO '+label(code)+'?\n\nThao tác chỉ cập nhật ghi nhận, KHÔNG phải mở khóa sử dụng. Thiết bị thất lạc phải được thu hồi thực tế trước khi xác nhận.\n\nKết quả lưu trong lịch sử Firebase.'))return notify('Chưa xác nhận cập nhật thông tin lỗi.',true);
  }
- let sig='',sigNew='',hiOld='',hiNew='',serverOld='',serverNew='',usedLegacyPng=false,usedCompactOnly=false,usedCompatibleProof=false;try{if(mode!=='RELEASE'){signature();if(needsPhoto(mode)){if(!photosReady())throw Error('Phải chụp ảnh bằng camera trước khi ký.');if((!nativeDraft&&Date.now()-photos.old.at>600000)||(mode==='SWAP_OUT'&&Date.now()-photos.new.at>600000))throw Error('Ảnh quá 10 phút, vui lòng chụp lại.')}}}catch(e){return notify(e.message,true)}
+ let sig='',sigNew='',serverOld='',serverNew='',usedCompatibleProof=false;try{if(mode!=='RELEASE'){signature();if(needsPhoto(mode)){if(!photosReady())throw Error('Phải chụp ảnh bằng camera trước khi ký.');if((!nativeDraft&&Date.now()-photos.old.at>600000)||(mode==='SWAP_OUT'&&Date.now()-photos.new.at>600000))throw Error('Ảnh quá 10 phút, vui lòng chụp lại.')}}}catch(e){return notify(e.message,true)}
  if(['ISSUE','RETURN'].includes(mode)&&bat==='UNKNOWN')return notify('Vui lòng kiểm tra mức pin trước khi nhận hoặc trả máy.',true);
- if(mode==='ISSUE'&&['LOW','EMPTY'].includes(bat))return notify('Máy pin yếu/hết pin không được cấp phát. Báo lỗi pin để đưa máy về trạng thái chờ sạc.',true);
- if(mode==='SWAP_OUT'&&!['FULL','GOOD'].includes(swapBattery))return notify('Vui lòng kiểm tra máy thay thế có pin Đầy hoặc Đủ dùng trước khi đổi.',true);
+ // A reported low battery is information only; do not block checkout.
+ if(mode==='SWAP_OUT'&&swapBattery==='UNKNOWN')return notify('Vui lòng ghi mức pin máy thay thế trước khi đổi.',true);
  if(nativeMode()&&(!nativeDraft||nativeDraft.uid!==user.uid))return notify('Phiên ký nhận đã thay đổi. Hãy mở lại bản nháp của tài khoản này.',true);
  if(!connected)return notify('Chưa xác nhận kết nối Firebase. Không thể ghi nhận.',true);
  if(!navigator.onLine)return notify('Đang ngoại tuyến: không cho phép nhận/trả vì có thể xảy ra nhận trùng máy.',true);
@@ -1049,33 +1061,21 @@ async function submit(){
     await finishNativeDraft('✓ Lượt ký này đã được xác nhận trên Firebase.');
     return;
    }
-   try{hiOld=await encodeNativeProof(HIGH_PROOF_LIMIT)}
-   catch(e){if(e.code!=='radio-photo-size')throw e}
-   sig=hiOld&&hiOld.length<=44000?hiOld:await encodeNativeProof(44000,true);
-   // A tiny but complete photo can fit directly in the event. Firestore
-   // requires full-proof documents to have more than 12k characters.
-   if(hiOld.length<=12000)hiOld='';
-   serverOld=hiOld;
+   serverOld=await encodeNativeProof(HIGH_PROOF_LIMIT);
+   sig=serverOld.length<=44000?serverOld:await encodeNativeProof(44000,true);
   }else if(mode!=='RELEASE'){
    if(needsPhoto(mode)){
-    // Compact signed camera evidence is mandatory and encoded FIRST.
-    // Full-resolution proof is best-effort: oversized photos must not block
-    // accepting/returning a radio or initiating a flight after signing.
-    sig=combineProof('old');
-    if(mode==='SWAP_OUT')sigNew=combineProof('new');
-    try{
-     hiOld=combineFullProof('old');
-     if(mode==='SWAP_OUT')hiNew=combineFullProof('new');
-     serverOld=hiOld;serverNew=hiNew;
-    }catch(fullPhotoError){
-     hiOld='';hiNew='';serverOld='';serverNew='';
-     usedCompactOnly=true;
-     console.warn('Radio full photo too large; compact signed proof retained',fullPhotoError?.message||fullPhotoError);
+    serverOld=combineFullProof('old');
+    sig=serverOld.length<=44000?serverOld:combineProof('old');
+    if(mode==='SWAP_OUT'){
+     serverNew=combineFullProof('new');
+     sigNew=serverNew.length<=44000?serverNew:combineProof('new');
     }
    }else sig=signature();
   }
+  const hasArchive=photo=>photo.length>12000;
   notify('Đang xác nhận với Firebase, vui lòng không bấm lại…');
- const writeRadioTransaction=async(withFull=true)=>{
+ const writeRadioTransaction=async()=>{
  const db=fs(),ref=db.collection(COLLECTION).doc(code);
  if(mode==='SWAP_OUT'){
   const other=$('radioSwapTarget').value,ref2=db.collection(COLLECTION).doc(other),swapId=db.collection(EVENTS).doc().id;
@@ -1083,11 +1083,11 @@ async function submit(){
    const inventory=await transactionInventory(tx,db,code,other),a=inventory.get(code),b=inventory.get(other);
     assertSingleHolder(inventory,user.uid,code);
    if(!a||a.status!=='OUT'||(!isAdmin(user)&&a.holderUid!==user.uid))throw Error('Máy cũ không còn hợp lệ để đổi.');
-   if(!b||b.status!=='READY')throw Error('Máy thay thế vừa có người nhận. Vui lòng chọn máy khác.');
-   const oldNew={status:['BATTERY_EMPTY','BATTERY_WEAK'].includes(reason)?'CHARGING':'FAULT',holderUid:'',holderName:'',shift:'',faultCode:reason,faultDetail:details,battery:bat};
-   updateDevice(tx,ref,a,'SWAP_OUT',oldNew,{user,shift:shiftVal,reason,details:evidenceDetails(details,photos.old?.at),sig,related:other,swapId,fullProof:withFull?serverOld:'',photoAt:photos.old?.at});
-   const newNew={status:'OUT',holderUid:user.uid,holderName:user.name,shift:shiftVal,faultCode:'',faultDetail:'',battery:swapBattery};
-   updateDevice(tx,ref2,b,'SWAP_IN',newNew,{user,shift:shiftVal,reason,details:evidenceDetails(details,photos.new?.at),sig:sigNew,related:code,swapId,fullProof:withFull?serverNew:'',photoAt:photos.new?.at});
+   if(!radioIssueable(b))throw Error('Máy thay thế đang có người giữ hoặc đã báo thất lạc. Vui lòng chọn máy khác.');
+   const oldNew={status:'READY',holderUid:'',holderName:'',shift:'',faultCode:reason,faultDetail:details,battery:bat};
+   updateDevice(tx,ref,a,'SWAP_OUT',oldNew,{user,shift:shiftVal,reason,details:evidenceDetails(details,photos.old?.at),sig,related:other,swapId,fullProof:hasArchive(serverOld)?serverOld:'',photoAt:photos.old?.at});
+   const newNew={status:'OUT',holderUid:user.uid,holderName:user.name,shift:shiftVal,faultCode:b.faultCode||'',faultDetail:b.faultDetail||'',battery:swapBattery};
+   updateDevice(tx,ref2,b,'SWAP_IN',newNew,{user,shift:shiftVal,reason,details:evidenceDetails(details,photos.new?.at),sig:sigNew,related:code,swapId,fullProof:hasArchive(serverNew)?serverNew:'',photoAt:photos.new?.at});
   });
  }else{
   await db.runTransaction(async tx=>{
@@ -1097,94 +1097,55 @@ async function submit(){
     if(d.version!==nativeDraft.deviceVersion)throw Error('Thiết bị đã có giao dịch khác. Kiểm tra lịch sử trước khi tiếp tục.');
    }
    let after,action=mode,reasonCode=reason;
-   if(mode==='ISSUE'){assertSingleHolder(inventory,user.uid);if(d.status!=='READY')throw Error('Máy đã được nhận hoặc chưa sẵn sàng.');after={status:'OUT',holderUid:user.uid,holderName:user.name,shift:shiftVal,faultCode:'',faultDetail:'',battery:bat};reasonCode='';}
+   if(mode==='ISSUE'){assertSingleHolder(inventory,user.uid);if(!radioIssueable(d))throw Error('Máy đang có người giữ hoặc đã báo thất lạc.');after={status:'OUT',holderUid:user.uid,holderName:user.name,shift:shiftVal,faultCode:d.faultCode||'',faultDetail:d.faultDetail||'',battery:bat};reasonCode='';}
    else if(mode==='RETURN'){
     if(d.status!=='OUT'||(d.holderUid!==user.uid&&!isAdmin(user)))throw Error('Chỉ người đang giữ máy hoặc AD được trả.');
-    const f=bat==='EMPTY'||bat==='LOW';after={status:f?'CHARGING':'READY',holderUid:'',holderName:'',shift:'',faultCode:f?'BATTERY_WEAK':'',faultDetail:f?details:'',battery:bat};reasonCode=f?'BATTERY_WEAK':'';}
+    const low=bat==='EMPTY'||bat==='LOW',fault=d.faultCode||(low?'BATTERY_WEAK':'');
+    after={status:'READY',holderUid:'',holderName:'',shift:'',faultCode:fault,faultDetail:d.faultDetail||(low?'Pin yếu/hết pin lúc trả bộ đàm':''),battery:bat};reasonCode=low?'BATTERY_WEAK':'';}
    else if(mode==='REPORT'){
-    if(d.status!=='OUT'&&d.status!=='READY')throw Error('Không thể ghi sự cố trên trạng thái hiện tại.');
+    if(d.status==='LOST'||d.faultCode==='LOST')throw Error('Máy đang báo thất lạc; cần xác minh thu hồi trước khi ghi nhận tiếp.');
     if(d.status==='OUT'&&d.holderUid!==user.uid&&!isAdmin(user))throw Error('Chỉ người giữ hoặc AD được báo lỗi máy đang dùng.');
-    after={status:reason==='LOST'?'LOST':['BATTERY_EMPTY','BATTERY_WEAK'].includes(reason)?'CHARGING':'FAULT',holderUid:'',holderName:'',shift:'',faultCode:reason,faultDetail:details,battery:bat};}
-   else if(mode==='RELEASE'){if(!isAdmin(user)||!['FAULT','CHARGING','LOST'].includes(d.status))throw Error('Chỉ AD mới có thể xác nhận máy đủ điều kiện sử dụng.');after={status:'READY',holderUid:'',holderName:'',shift:'',faultCode:'',faultDetail:'',battery:'GOOD'};reasonCode='';}
+    after=reason==='LOST'?{status:'LOST',holderUid:'',holderName:'',shift:'',faultCode:reason,faultDetail:details,battery:bat}:
+      {status:d.status,holderUid:d.holderUid,holderName:d.holderName,shift:d.shift,faultCode:reason,faultDetail:details,battery:bat};}
+   else if(mode==='RELEASE'){if(!isAdmin(user)||!hasRadioWarning(d))throw Error('Không có thông tin lỗi cần xác nhận.');
+    after={status:d.status==='OUT'?'OUT':'READY',holderUid:d.status==='OUT'?d.holderUid:'',holderName:d.status==='OUT'?d.holderName:'',shift:d.status==='OUT'?d.shift:'',faultCode:'',faultDetail:'',battery:d.battery};reasonCode='';}
    else throw Error('Tác vụ không được hỗ trợ.');
-   updateDevice(tx,ref,d,action,after,{user,shift:shiftVal,reason:reasonCode,details:evidenceDetails(details,photos.old?.at,photos.old?.clock),sig,related:'',swapId:'',fullProof:withFull?serverOld:'',photoAt:photos.old?.at,eventId:nativeDraft?.id});
+   updateDevice(tx,ref,d,action,after,{user,shift:shiftVal,reason:reasonCode,details:evidenceDetails(details,photos.old?.at,photos.old?.clock),sig,related:'',swapId:'',fullProof:hasArchive(serverOld)?serverOld:'',photoAt:photos.old?.at,eventId:nativeDraft?.id});
   });
  }
 
  };
- // Downgrade on Firestore photo-size or Rules rejections only. Keep every
- // receipt/device write atomic; do not hide network failures.
- const mayDowngradePhoto=e=>{
-  const code=String(e?.code||''),message=String(e?.message||'');
-  return code.includes('permission-denied')||code.includes('resource-exhausted')||
+ const originalOld=serverOld,originalNew=serverNew;
+ try{await writeRadioTransaction()}
+ catch(error){
+  const code=String(error?.code||''),message=String(error?.message||'');
+  const mayFitOlderRules=code.includes('permission-denied')||
    (code.includes('invalid-argument')&&/image|photo|too large|size|bytes|exceeds/i.test(message));
- };
- const writeCompactReceipt=async()=>{
-  try{await writeRadioTransaction(false)}
-  catch(legacyError){
-   if(!String(legacyError?.code||'').includes('permission-denied')||
-       !/^data:image\/jpeg;base64,/.test(sig))throw legacyError;
-   notify('Firebase chưa cho phép ảnh JPEG. Đang nén PNG nhỏ hơn để lưu ký nhận…');
-   await new Promise(resolve=>requestAnimationFrame(resolve));
-   sig=nativeDraft?await encodeNativeProof(44000,true,'png'):combineProof('old','png');usedLegacyPng=true;
-   if(mode==='SWAP_OUT')sigNew=combineProof('new','png');
-   await writeRadioTransaction(false);
-  }
- };
- if(mode==='RELEASE'){
-  await writeRadioTransaction(false);
- }else if(!hiOld){
-  // The full-colour image was too heavy or not encodable. The signed compact
-  // camera frame still has the real image, timestamp, and ink signature.
-  usedCompactOnly=true;
-  await writeCompactReceipt();
- }else{
-  try{await writeRadioTransaction(true)}
-  catch(error){
-   if(!mayDowngradePhoto(error))throw error;
-   // Older V2.2 server rules may accept only 235k full-colour proofs.
-   let canTryCompatible=!nativeDraft||hiOld.length>COMPAT_PROOF_LIMIT;
-   try{
-    if(nativeDraft&&canTryCompatible)serverOld=await encodeNativeProof(COMPAT_PROOF_LIMIT);
-    if(!nativeDraft)serverOld=combineFullProof('old',COMPAT_PROOF_LIMIT);
-    if(mode==='SWAP_OUT')serverNew=combineFullProof('new',COMPAT_PROOF_LIMIT);
-   }catch(compactFullError){
-    canTryCompatible=false;
-    console.info('Large full-colour proof exceeds compatibility cap',compactFullError?.message||compactFullError);
-   }
-   if(canTryCompatible){
-    try{await writeRadioTransaction(true);usedCompatibleProof=true}
-    catch(compatibleError){
-     if(!mayDowngradePhoto(compatibleError))throw compatibleError;
-    }
-   }
-   if(!usedCompatibleProof){usedCompactOnly=true;await writeCompactReceipt()}
-  }
- }
- let localBackupOk=!!hiOld;
- if((usedCompactOnly||usedCompatibleProof)&&hiOld){
-  try{
-   const tasks=[saveLocalFullProof(user.uid,code,mode,photos.old,hiOld)];
-   if(mode==='SWAP_OUT')tasks.push(saveLocalFullProof(user.uid,$('radioSwapTarget').value,'SWAP_IN',photos.new,hiNew));
-   localBackupOk=(await Promise.all(tasks)).every(Boolean);
-  }catch(error){localBackupOk=false;console.warn('Radio local photo backup failed',error?.message||error)}
+  if(!mayFitOlderRules||Math.max(serverOld.length,serverNew.length)<=COMPAT_PROOF_LIMIT)throw error;
+  if(serverOld.length>COMPAT_PROOF_LIMIT)
+   serverOld=nativeDraft?await encodeNativeProof(COMPAT_PROOF_LIMIT):combineFullProof('old',COMPAT_PROOF_LIMIT);
+  if(serverNew.length>COMPAT_PROOF_LIMIT)serverNew=combineFullProof('new',COMPAT_PROOF_LIMIT);
+  // A small full-quality image fits entirely in the signed receipt.
+  if(serverOld.length<=12000)sig=serverOld;
+  if(serverNew&&serverNew.length<=12000)sigNew=serverNew;
+  await writeRadioTransaction();
+  usedCompatibleProof=true;
+  // The official report uses the server copy. Keep the sharper copy for
+  // on-device review by the account that captured the photo.
+  const backups=[];
+  if(serverOld!==originalOld)backups.push(saveLocalFullProof(user.uid,choice.code,mode,photos.old,originalOld));
+  if(serverNew!==originalNew)backups.push(saveLocalFullProof(user.uid,$('radioSwapTarget').value,'SWAP_IN',photos.new,originalNew));
+  await Promise.allSettled(backups);
  }
  if(isAdmin(user))queueRosterAudit(150);
  if(nativeDraft)await removeNativeDraft(nativeDraft.uid,nativeDraft.id).catch(e=>console.warn('Radio draft cleanup',e));
-  cancel();notify(mode==='RELEASE'?'✓ Đã ghi nhận kết quả kiểm tra bộ đàm trên Firebase.':usedCompactOnly?
-  '✓ Đã ký nhận và lưu ảnh tự nén lên Firebase.'+
-  (hiOld?(localBackupOk?' Bản rõ hơn chỉ lưu trên điện thoại chụp; AD thiết bị khác xem ảnh nén.':' AD thiết bị khác chỉ xem được ảnh nén.')+
-   ' Cần cập nhật Firestore Rules để lưu ảnh rõ trên máy chủ.':
-   ' Ảnh quá lớn đã được thu nhỏ tự động để không cản trở nhận/trả bộ đàm.')+
-  (usedLegacyPng?' (Chế độ PNG tương thích).':''):
-  usedCompatibleProof?
-   'Đã ký nhận. Firebase chỉ nhận ảnh tương thích 235KB.'+
-   (localBackupOk?' Ảnh rõ hơn được giữ trên điện thoại chụp.':' Không thể giữ bản rõ hơn trên điện thoại.')+
-   ' Cần nâng Firestore Rules để AD xem ảnh rõ hơn.':
-   '✓ Đã lưu ảnh chất lượng cao, giữ màu trên Firebase cùng chữ ký và giờ máy chủ.');
+ const message=mode==='RELEASE'?'✓ Đã lưu kết quả kiểm tra trên Firebase.':
+  usedCompatibleProof?'✓ Đã lưu ảnh và chữ ký trên Firebase ở mức dung lượng tương thích.':
+  '✓ Đã lưu ảnh, chữ ký và giờ máy chủ trên Firebase.';
+ cancel();notify(message);
  }catch(e){notify(nativeDraft?
   errText(e)+' Bản nháp ảnh và chữ ký vẫn lưu trên máy. Mở lại để thử lưu khi kết nối ổn định.':
-  errText(e),true)}finally{setBusy(false)}
+  errText(e)+' Thông tin và ảnh vẫn còn trong phiên ký để thử lại.',true)}finally{setBusy(false)}
 }
 async function seed(){
  if(busy)return;
@@ -1292,12 +1253,12 @@ function proofImage(data){
   img.src=data;
  });
 }
-async function photoPdfPage(e,index,total,fullProof=''){
+async function photoPdfPage(e,index,total,proof){
  // On PC generate a denser raster so PDF zoom retains camera serial details.
  // Keep the original footprint on iOS to avoid Safari memory pressure.
  const factor=/iPhone|iPad|iPod/.test(navigator.userAgent||'')?1:1.6;
  const cv=document.createElement('canvas');cv.width=Math.round(900*factor);cv.height=Math.round(1273*factor);
- const x=cv.getContext('2d',{colorSpace:'srgb'}),audit=photoAudit(e),hasProof=!!e.signature;
+ const x=cv.getContext('2d',{colorSpace:'srgb'}),audit=photoAudit(e);
  if(factor!==1)x.scale(factor,factor);
  x.fillStyle='#fff';x.fillRect(0,0,900,1273);
  x.fillStyle='#082e45';x.fillRect(0,0,900,16);
@@ -1311,24 +1272,34 @@ async function photoPdfPage(e,index,total,fullProof=''){
  x.fillStyle=audit.delta>10?'#ad2626':'#235c65';x.font='bold 18px Arial';
  x.fillText(audit.status+(audit.delta!==null?' · chênh lệch khoảng '+audit.delta+' phút':''),35,284);
  x.fillStyle='#d2e1e8';x.fillRect(35,310,830,755);
- if(hasProof){
-  try{const img=await proofImage(fullProof||await highProofData(e));const ratio=Math.min(810/img.width,730/img.height);
-   const w=img.width*ratio,h=img.height*ratio,left=450-w/2,top=687-h/2;
+ if(proof.data){
+  try{
+   let img;
+   try{img=await proofImage(proof.data)}
+   catch(error){
+    if(proof.source!=='archive')throw error;
+    proof={source:'unverified',data:e.signature};
+    img=await proofImage(proof.data);
+   }
+   const width=img.naturalWidth||img.width,height=img.naturalHeight||img.height;
+   const maxScale=proof.source==='archive'?Infinity:1;
+   const ratio=Math.min(810/width,730/height,maxScale);
+   const w=width*ratio,h=height*ratio,left=450-w/2,top=687-h/2;
    // Keep full-resolution evidence independent of PDF rasterization.
    // The old code embedded an original JPEG only when audit UNVERIFIED;
    // verified photos were re-rasterized and compressed as a page thumbnail.
    if(img.src.startsWith('data:image/jpeg;base64,')){
-    cv.proofJpeg={data:img.src,width:img.width,height:img.height,x:left,y:top,w,h};
+    cv.proofJpeg={data:img.src,width,height,x:left,y:top,w,h};
    }else{
     // PDF DCTDecode cannot embed Android WebP/PNG natively. Convert that
     // image once at native pixel dimensions instead of flattening the page.
     let hi=null;
     try{
-     const maxEdge=Math.max(img.naturalWidth||img.width,img.naturalHeight||img.height);
+     const maxEdge=Math.max(width,height);
      const ratio=Math.min(1,3072/maxEdge);
      hi=document.createElement('canvas');
-     hi.width=Math.max(1,Math.round(img.width*ratio));
-     hi.height=Math.max(1,Math.round(img.height*ratio));
+     hi.width=Math.max(1,Math.round(width*ratio));
+     hi.height=Math.max(1,Math.round(height*ratio));
      const hctx=hi.getContext('2d',{alpha:false,colorSpace:'srgb'});
      if(!hctx)throw Error('Cannot decode high-resolution proof');
      hctx.fillStyle='#fff';hctx.fillRect(0,0,hi.width,hi.height);
@@ -1340,9 +1311,18 @@ async function photoPdfPage(e,index,total,fullProof=''){
     }catch(error){
      // Keep a visible picture even on an unsupported browser.
      x.drawImage(img,left,top,w,h);
+     proof={...proof,source:'page-raster'};
     }finally{if(hi){hi.width=1;hi.height=1}}
    }
-  }catch(_){x.fillStyle='#aa2727';x.font='bold 20px Arial';x.fillText('ẢNH LỖI / KHÔNG ĐỌC ĐƯỢC',70,690)}
+   const caption={
+    archive:'Ảnh lưu trữ từ Firebase',
+    receipt:'Ảnh trong biên nhận · độ chi tiết phụ thuộc ảnh đã lưu',
+    unverified:'Ảnh trong biên nhận · chưa đọc được ảnh lưu trữ từ Firebase',
+    'page-raster':'Ảnh chuyển sang định dạng trang PDF'
+   }[proof.source];
+   x.fillStyle=proof.source==='archive'?'#235c65':'#925226';x.font='bold 15px Arial';
+   x.fillText(caption+' · '+width+' × '+height+' px',35,1084,830);
+  }catch(_){proof={source:'unreadable'};x.fillStyle='#aa2727';x.font='bold 20px Arial';x.fillText('ẢNH LỖI / KHÔNG ĐỌC ĐƯỢC',70,690)}
  }else{x.fillStyle='#744f2a';x.font='bold 21px Arial';x.fillText('SỰ KIỆN KHÔNG CÓ ẢNH',70,690)}
  x.fillStyle='#24475b';x.font='16px Arial';x.fillText('ID bất biến: '+S(e.id||'—').slice(0,85),35,1104);
  x.font='15px Arial';pdfWrap(x,e.details||'Không có ghi chú',815).forEach((line,i)=>x.fillText(line,35,1140+22*i));
@@ -1350,6 +1330,7 @@ async function photoPdfPage(e,index,total,fullProof=''){
  x.fillText('Ảnh gồm hình camera và chữ ký. Giờ ảnh do thiết bị cung cấp, không phải đồng hồ máy chủ.',35,1202);
  x.fillText('Đối chiếu trực quan ảnh thực tế; không coi timestamp trên ảnh là bằng chứng độc lập.',35,1225);
  x.fillText('Trang '+index+'/'+total+' · chỉ những sự kiện đã tải theo bộ lọc',35,1248);
+ cv.proofSource=proof.source;
  return cv;
 }
 function pdfStoredPage(cv){
@@ -1368,7 +1349,7 @@ async function exportPhotoPdf(){
  if(a?.disabled||b?.disabled)return;
  if(/iPhone|iPad|iPod/.test(navigator.userAgent||'')&&rows.length>40)return notify('Báo cáo kèm quá 40 ảnh trên iPhone có thể khiến Safari tải lại. Chọn PDF không ảnh hoặc xuất kèm ảnh trên PC để đủ dữ liệu.',true);
  if(a)a.disabled=true;if(b)b.disabled=true;
- const proofCount=rows.filter(e=>/^data:image\/(webp|png|jpeg);base64,/.test(S(e.signature))).length;
+ const counts={archive:0,receipt:0,unverified:0,none:0,unreadable:0,'page-raster':0};
  notify('Đang tạo PDF có bảng tổng hợp và '+rows.length+' trang đối chiếu ảnh/chữ ký…');
  try{
   const scope=reportScope();
@@ -1379,15 +1360,20 @@ async function exportPhotoPdf(){
   // Limit concurrent Firebase image loads to four to control mobile memory.
   for(let i=0;i<rows.length;i+=4){
    await new Promise(done=>requestAnimationFrame(done));
-   const batch=rows.slice(i,i+4),full=await Promise.all(batch.map(e=>highProofData(e)));
-   for(let j=0;j<batch.length;j++)
-    stored.push(pdfStoredPage(await photoPdfPage(batch[j],summaryPages+i+j+1,allPages,full[j])));
+   const batch=rows.slice(i,i+4),proofs=await Promise.all(batch.map(readServerFullProof));
+   for(const [j,event] of batch.entries()){
+    const page=await photoPdfPage(event,summaryPages+i+j+1,allPages,proofs[j]);
+    counts[page.proofSource]++;
+    stored.push(pdfStoredPage(page));
+   }
   }
   if(!isAdmin(currentUser()))throw Error('Tài khoản không còn quyền AD');
   const blob=pdfBuild(stored),url=URL.createObjectURL(blob),link=document.createElement('a');
   link.href=url;link.download='SAGS-BO-DAM-'+reportDate+'-'+reportShift+'-KEM-ANH.pdf';
   document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
-  notify('Đã xuất PDF ca '+reportScope()+': '+rows.length+' sự kiện, '+proofCount+' có ảnh, '+(rows.length-proofCount)+' không có ảnh.');
+  notify('Đã xuất PDF ca '+reportScope()+' · '+counts.archive+' ảnh lưu trữ, '+counts.receipt+' ảnh biên nhận, '+
+   counts.unverified+' ảnh chưa tải được bản lưu trữ, '+(counts.none+counts.unreadable)+' mục không có ảnh đọc được'+
+   (counts['page-raster']?', '+counts['page-raster']+' ảnh chuyển theo trang':'')+'.');
  }catch(e){notify('Không xuất được PDF kèm ảnh: '+S(e?.message||e),true)}
  finally{if(a)a.disabled=false;if(b)b.disabled=false}
 }

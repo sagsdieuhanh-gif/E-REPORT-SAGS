@@ -31,10 +31,11 @@ function eventRow(e){
 function summarize(devices,events,r,now=Date.now()){
  const status=Object.fromEntries(Object.keys(STATUS).map(s=>[s,devices.filter(d=>d.status===s).length]));
  const actions=Object.fromEntries(['INIT','ISSUE','RETURN','REPORT','SWAP_OUT','SWAP_IN','RELEASE'].map(s=>[s,events.filter(e=>e.action===s).length]));
- const problems=events.filter(e=>['REPORT','SWAP_OUT'].includes(e.action)).map(eventRow);
- const unresolved=devices.filter(d=>['FAULT','CHARGING','LOST'].includes(d.status)).map(d=>({code:safe(d.code),status:STATUS[d.status],reason:safe(WHY[d.faultCode]||d.faultCode)}));
- const overdue=devices.filter(d=>d.status==='OUT'&&d.updatedAt?.toMillis?.()&&now-d.updatedAt.toMillis()>43200000).map(d=>({code:safe(d.code),holder:safe(d.holderName)}));
- const counts={};for(const e of events.filter(e=>['REPORT','SWAP_OUT'].includes(e.action)))counts[e.deviceCode]=(counts[e.deviceCode]||0)+1;
+ const problemEvents=events.filter(e=>['REPORT','SWAP_OUT'].includes(e.action)||(e.action==='RETURN'&&e.reasonCode==='BATTERY_WEAK'));
+ const problems=problemEvents.map(eventRow);
+ const unresolved=devices.filter(d=>d.faultCode||['FAULT','CHARGING','LOST'].includes(d.status)).map(d=>({code:safe(d.code),status:STATUS[d.status],reason:safe(WHY[d.faultCode]||d.faultCode)}));
+ const overdue=devices.filter(d=>d.status==='OUT'&&(d.heldSince||d.updatedAt)?.toMillis?.()&&now-(d.heldSince||d.updatedAt).toMillis()>43200000).map(d=>({code:safe(d.code),holder:safe(d.holderName)}));
+ const counts={};for(const e of problemEvents)counts[e.deviceCode]=(counts[e.deviceCode]||0)+1;
  const recurring=Object.entries(counts).filter(([,count])=>count>=2).map(([code,count])=>({code,count}));
  return {period:r.period,from:r.start,to:day(r.end,-1),recipients:[...RECIPIENTS],status,actions,
  totalDevices:devices.length,totalEvents:events.length,problems,unresolved,overdue,recurring,rows:events.map(eventRow),generatedAt:new Date(now).toISOString()};

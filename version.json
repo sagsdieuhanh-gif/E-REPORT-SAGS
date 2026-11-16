@@ -1,12 +1,12 @@
 {
   "version": "V2.2",
   "displayVersion": "V2.2",
-  "label": "V2.2 - RADIO HIGH-RES CAMERA & PDF",
-  "build": "V2.2-20261116-RADIO-PHOTO-29",
+  "label": "V2.2 - RADIO PHOTO PROOF & PDF",
+  "build": "V2.2-20261116-RADIO-PROOF-30",
   "releasedAt": "2026-11-16",
-  "type": "radio-hifi-original-stills-pdf",
+  "type": "radio-advisory-photo-pdf",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Nhận/trả bộ đàm trên Android/iPhone sử dụng ảnh chụp tĩnh từ camera thay vì khung video có thể mờ. Chất lượng cao trong Firebase ưu tiên ảnh tối đa 2048px từ camera và các bước nén thích ứng trong ngưỡng 700KB, iPhone giữ mức độ phân giải trung gian 2240/2048/1920 để không giảm ngay xuống 1600px. Bằng chứng JPEG khi xuất PDF được nhúng trực tiếp ở kích thước gốc kể cả khi xác minh Firebase; WebP/PNG chuyển JPEG một lần ở độ phân giải gốc, không raster hóa thành ảnh trang PDF. Giữ nguyên ảnh chụp giờ thật, chữ ký, lưu nháp IndexedDB, fallback 235KB và 44KB nếu Firebase chưa chấp nhận ảnh lớn; không sửa ghi nhận bộ đàm lỗi, giờ ca 08:00/18:16, biểu mẫu hãng hoặc Firebase Security Rules. Ảnh lịch sử đã bị nén từ trước không thể tự phục hồi chi tiết.",
-  "message": "Nâng chất lượng ảnh bộ đàm: chụp ảnh tĩnh độ phân giải cao trên Android/iPhone, giữ ảnh rõ khi lưu và xuất PDF."
+  "notes": "Giữ độ phân giải ảnh khi xuất PDF. Ghi rõ nguồn và độ phân giải ảnh trên từng trang. Nếu Firestore từ chối ảnh lưu trữ sau khi thử dung lượng tương thích, giữ lượt ký để thử lại. Lỗi bộ đàm chỉ dùng để theo dõi, máy thất lạc quản lý riêng. Ca sáng 08:00–18:15 và ca tối 18:16–07:59 hôm sau dùng để nhắc nhở và báo cáo.",
+  "message": "PDF giữ chất lượng ảnh lưu trữ và ghi rõ khi chỉ đọc được ảnh biên nhận."
 }

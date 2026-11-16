@@ -45,11 +45,11 @@ const pageStart=source.indexOf('async function photoPdfPage('),pageEnd=source.in
 assert(pageStart>0&&pageEnd>pageStart);
 const jpeg='data:image/jpeg;base64,'+Buffer.from([255,216,4,8,15,16,255,217]).toString('base64');
 const webp='data:image/webp;base64,'+Buffer.from([8,9,10]).toString('base64');
-const created=[],drawn=[];
-let actualProof=jpeg;
+const created=[],drawn=[],captions=[];
+let imageSize=[2000,1500];
 function makePdfCanvas(){
  const canvas={width:0,height:0,proofJpeg:null};
- const context={scale(){},fillRect(){},fillText(){},drawImage(){drawn.push('page-resampled')},set imageSmoothingEnabled(_){},set imageSmoothingQuality(_){}};
+ const context={scale(){},fillRect(){},fillText(text){captions.push(text)},drawImage(){drawn.push('page-resampled')},set imageSmoothingEnabled(_){},set imageSmoothingQuality(_){}};
  canvas.getContext=()=>context;
  canvas.toDataURL=(mime,q)=>jpeg;
  created.push(canvas);
@@ -60,23 +60,34 @@ const scope={navigator:{userAgent:'desktop'},document:{createElement:()=>makePdf
  S:x=>String(x??''),label:x=>x,ACTS:{ISSUE:'Nhận máy'},fmt:()=> '16/11/2026',
  pdfWrap:()=>[],photoAudit:()=>({serverMs:Date.now(),deviceMs:Date.now(),delta:0,
   status:'Đã xác minh Firebase',estimated:false,unverified:false}),
- proofImage:async data=>({src:data,width:2000,height:1500,naturalWidth:2000,naturalHeight:1500}),
- highProofData:async()=>actualProof};
+ proofImage:async data=>{
+  if(data==='corrupt')throw Error('decode');
+  const [width,height]=imageSize;
+  return {src:data,width,height,naturalWidth:width,naturalHeight:height};
+ }};
 vm.createContext(scope);
 vm.runInContext(source.slice(pageStart,pageEnd)+'\nthis.page=photoPdfPage;',scope);
 const event={deviceCode:'DH01',actorName:'Staff',actorUid:'uid',shift:'AM',
- id:'event1',action:'ISSUE',details:'Kiểm tra máy',signature:'signed'};
+ id:'event1',action:'ISSUE',details:'Kiểm tra máy',signature:jpeg};
 (async()=>{
- let page=await scope.page(event,1,1);
+ let page=await scope.page(event,1,1,{source:'archive',data:jpeg});
  assert.equal(page.proofJpeg.data,jpeg,'Exact JPEG bytes must be embedded for a Firebase-verified event');
  assert.equal(page.proofJpeg.width,2000);
  assert.equal(page.proofJpeg.height,1500);
  assert.equal(drawn.length,0,'No page-thumbnail resampling of a genuine JPEG');
- actualProof=webp;
- page=await scope.page(event,1,1);
+ page=await scope.page(event,1,1,{source:'archive',data:webp});
  assert.equal(page.proofJpeg.data,jpeg,'WebP should get a single native-size JPEG conversion for PDF');
  assert.equal(page.proofJpeg.width,2000);
  assert.equal(page.proofJpeg.height,1500);
  assert.equal(drawn.length,1,'WebP should be converted at source dimensions, not page dimensions');
+ assert.equal(page.proofSource,'archive');
+ imageSize=[96,120];
+ page=await scope.page(event,1,1,{source:'receipt',data:jpeg});
+ assert.equal(page.proofSource,'receipt');
+ assert.equal(page.proofJpeg.w,96,'Do not enlarge a tiny historical receipt to full page width');
+ assert.ok(captions.some(text=>text.includes('độ chi tiết phụ thuộc')&&text.includes('96 × 120 px')));
+ page=await scope.page(event,1,1,{source:'archive',data:'corrupt'});
+ assert.equal(page.proofSource,'unverified','A corrupt archived image must be reported explicitly');
+ assert.ok(captions.some(text=>text.includes('chưa đọc được ảnh lưu trữ')));
  console.log('Radio photo fidelity PASS: Android still camera, 2048px originals, 700k/235k archive, 44k receipt, raw JPEG in verified PDF');
 })().catch(e=>{console.error(e);process.exitCode=1});

@@ -11,10 +11,10 @@ assert(radio.includes("const preview=c.toDataURL('image/jpeg',.94)"),'Safari pre
 assert(radio.includes("root.indexedDB.open('sags-radio-photo-local-v22',1)"),'Local high-quality evidence needs a scoped IndexedDB backup');
 assert(radio.includes('localProofKey(uid,code,action,photo.at)'),'Backups must be identified by actor, device, action and capture timestamp');
 assert(radio.includes('if(!at||!user.uid||user.uid!==e.actorUid)return'), 'Never show another account’s local photo');
-assert(radio.includes('const data=await highProofData(e,true)'),'Viewer may show clear device-only picture');
-assert(radio.includes("const img=await proofImage(fullProof||await highProofData(e))"),'Official PDF remains server-verified; never use local photo backup in PDF');
+assert(radio.includes('const proof=await highProofData(e,true)'),'Viewer may show clear device-only picture');
+assert(radio.includes("batch.map(readServerFullProof)"),'Official PDF remains server-verified; never use local photo backup in PDF');
 assert(!radio.includes('proofReadDenied=true'),'One old missing photo cannot permanently disable all high-quality evidence');
-assert(radio.includes('AD thiết bị khác xem ảnh nén'),'Failure to save high-res on Firebase must be disclosed');
+assert(radio.includes('Đang hiển thị ảnh trong biên nhận'),'Failure to save high-res on Firebase must be disclosed');
 assert(!gate.includes("throw gateError('SAGS_RADIO_OVERDUE'"),'Prior-day radio should only trigger reminders, not a blocked report');
 assert(gate.includes('clock>=8*60&&clock<=18*60+15'),'New reminder shift uses 08:00 Vietnam boundary');
 assert(!gate.includes('WORKDAY_CUTOFF_HOUR=4'),'Obsolete 04:00 cutoff must be removed');

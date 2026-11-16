@@ -8,7 +8,7 @@ const source=fs.readFileSync('app/modules/radio-custody.v1.js','utf8');
 const index=source.lastIndexOf('})(window);');
 const exposed=source.slice(0,index)+`
  root.test={CAPTURE_EXIF_OPTIONS,captureClock,nativeMode,encodeNativeProof,evidenceDetails,photoAudit,pdfBuild,
-  saveNativeDraft,readNativeDraft,removeNativeDraft,radioShiftAt,
+  saveNativeDraft,readNativeDraft,removeNativeDraft,radioShiftAt,nativeDraftTransaction,
   setPhoto(photo,action){photos.old=photo;mode=action}
  };
 `+source.slice(index);
@@ -118,6 +118,9 @@ function harness(navigator={userAgent:'iPhone'}){
   assert.equal(saved.fields.radioReturnReason,'HANDOVER');
   assert.deepEqual(Array.from(saved.strokes[0][1]),[32,50]);
   assert.equal(await saved.file.text(),'camera bytes');
+  // A draft written before this build stored the File/Blob directly.
+  await api.nativeDraftTransaction('readwrite',(_drafts,files)=>files.put(file,draft.id));
+  assert.equal(await (await afterReload.readNativeDraft('staff',true)).file.text(),'camera bytes');
   assert.equal(await afterReload.readNativeDraft('other'),undefined);
   account='other';
   await assert.rejects(afterReload.saveNativeDraft(file,draft,[]),/Phiên ký nhận/);

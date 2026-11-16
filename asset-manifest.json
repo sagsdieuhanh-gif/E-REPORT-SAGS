@@ -1,7 +1,7 @@
 {
   "schema": 2,
   "version": "V2.2",
-  "build": "V2.2-20261116-RADIO-PHOTO-29",
+  "build": "V2.2-20261116-RADIO-PROOF-30",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -294,16 +294,16 @@
       "bytes": 19587
     },
     "./app/modules/radio-custody.v1.js": {
-      "sha256": "fa0b08836d78b35ec5f024047bd85b19070ed71e60b5f9b915328d0bc73e5139",
-      "bytes": 111299
+      "sha256": "02dca0ee73a8bdc221cc760723b57ead0f3ea4a7c8ee16e66960bb4e5ee0ffc7",
+      "bytes": 111019
     },
     "./app/modules/radio-reminders.v21.js": {
-      "sha256": "4961ba7095b1bac7264ec21683f1dadf0bda8490d94104efa97a046a53319fd3",
-      "bytes": 10273
+      "sha256": "88ffeb127839aecba586083f0439201d719c4df9daeccf8421cc6aa064281bfe",
+      "bytes": 10296
     },
     "./app/modules/radio-work-gate.v1.js": {
-      "sha256": "f007c10a529cd0fbd04a4a32accf781f145fe947f6933dbc8e3673b2f8191e77",
-      "bytes": 7536
+      "sha256": "f72cda1de545165c0433b21b6d59b5f2b251ef816b45008ae50c66b3a18df14b",
+      "bytes": 7556
     },
     "./app/modules/roster-lite.v5.js": {
       "sha256": "36ed4962af16d6365220fefb5319e2c81dbd05e11e32ca7ff3154443f54d06cc",
@@ -802,7 +802,7 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "de29a3564c9fb5ec0c268675135f154a78423deb36d2ef6c94a23e717ee513ae",
+      "sha256": "3d404772bcdee0a423066f51ade59115eb89e700ad26f35edcd0470a426af4c1",
       "bytes": 105612
     },
     "./manifest.webmanifest": {
@@ -854,7 +854,7 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "1426987dbd60f9b1506b99274251edf4bf374c4658d74ef565241be3530339c6",
+      "sha256": "725d76878c603d1f441761dbeb7be04a9f7455c3a830cc0d56c4abffc4f955f0",
       "bytes": 22663
     },
     "./storage-recovery.html": {
@@ -862,8 +862,8 @@
       "bytes": 26106
     },
     "./version.json": {
-      "sha256": "1c5dad64692f5b49d817afa51eb8ecc2e90bce696b8b1e8aab2fd7b3d35f0756",
-      "bytes": 1458
+      "sha256": "fa5291ac083dd766ae3cd84d618ace4ae8cfe16b19d2a38815b2883ae298323a",
+      "bytes": 873
     }
   },
   "mutableAssets": [
