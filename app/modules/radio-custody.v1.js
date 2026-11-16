@@ -1311,8 +1311,13 @@ async function photoPdfPage(e,index,total,fullProof=''){
  x.fillStyle=audit.delta>10?'#ad2626':'#235c65';x.font='bold 18px Arial';
  x.fillText(audit.status+(audit.delta!==null?' · chênh lệch khoảng '+audit.delta+' phút':''),35,284);
  x.fillStyle='#d2e1e8';x.fillRect(35,310,830,755);
+ let photoSource='KHÔNG CÓ ẢNH';
  if(hasProof){
-  try{const img=await proofImage(fullProof||await highProofData(e));const ratio=Math.min(810/img.width,730/img.height);
+  try{
+   const actualProof=fullProof||await highProofData(e);
+   const originalAvailable=actualProof!==e.signature;
+   const img=await proofImage(actualProof),ratio=Math.min(810/img.width,730/img.height);
+   photoSource=(originalAvailable?(Math.max(img.width,img.height)>=1280?'Ảnh lưu riêng trên Firebase':'Ảnh Firebase độ phân giải thấp'):'CHỈ CÓ ẢNH KÝ NHẬN NÉN')+' · '+img.width+'×'+img.height+' px';
    const w=img.width*ratio,h=img.height*ratio,left=450-w/2,top=687-h/2;
    // Keep full-resolution evidence independent of PDF rasterization.
    // The old code embedded an original JPEG only when audit UNVERIFIED;
@@ -1344,6 +1349,10 @@ async function photoPdfPage(e,index,total,fullProof=''){
    }
   }catch(_){x.fillStyle='#aa2727';x.font='bold 20px Arial';x.fillText('ẢNH LỖI / KHÔNG ĐỌC ĐƯỢC',70,690)}
  }else{x.fillStyle='#744f2a';x.font='bold 21px Arial';x.fillText('SỰ KIỆN KHÔNG CÓ ẢNH',70,690)}
+ // This line is outside the embedded photograph, so it cannot obscure serials.
+ // A 44KB receipt is evidence of signing, never a high-resolution device photo.
+ x.fillStyle=photoSource.startsWith('Ảnh lưu riêng')?'#235c65':'#ad2626';x.font='bold 16px Arial';
+ x.fillText('Nguồn: '+photoSource,35,1086,830);
  x.fillStyle='#24475b';x.font='16px Arial';x.fillText('ID bất biến: '+S(e.id||'—').slice(0,85),35,1104);
  x.font='15px Arial';pdfWrap(x,e.details||'Không có ghi chú',815).forEach((line,i)=>x.fillText(line,35,1140+22*i));
  x.fillStyle='#667b87';x.font='13px Arial';
@@ -1373,6 +1382,7 @@ async function exportPhotoPdf(){
  try{
   const scope=reportScope();
   const summaryPages=Math.ceil(rows.length/19),allPages=summaryPages+rows.length,stored=[],totals=radioReportCounts(rows);
+  const compactOnly=[];let originalCount=0,missingCount=0;
   for(let i=0;i<rows.length;i+=19){
    stored.push(pdfStoredPage(pdfPage(rows.slice(i,i+19),stored.length+1,allPages,scope,true,totals)));
   }
@@ -1380,14 +1390,28 @@ async function exportPhotoPdf(){
   for(let i=0;i<rows.length;i+=4){
    await new Promise(done=>requestAnimationFrame(done));
    const batch=rows.slice(i,i+4),full=await Promise.all(batch.map(e=>highProofData(e)));
-   for(let j=0;j<batch.length;j++)
+   for(let j=0;j<batch.length;j++){
+    if(!batch[j].signature)missingCount++;
+    else if(full[j]===batch[j].signature)compactOnly.push(label(batch[j].deviceCode)+' · '+(ACTS[batch[j].action]||batch[j].action));
+    else originalCount++;
     stored.push(pdfStoredPage(await photoPdfPage(batch[j],summaryPages+i+j+1,allPages,full[j])));
+   }
   }
   if(!isAdmin(currentUser()))throw Error('Tài khoản không còn quyền AD');
+  if(compactOnly.length){
+   const examples=compactOnly.slice(0,5).join('; ');
+   const question='CẢNH BÁO CHẤT LƯỢNG ẢNH BỘ ĐÀM\n\n'+
+    compactOnly.length+' lượt chỉ còn ảnh ký nhận đã nén, không có ảnh rõ trên Firebase. '+
+    'PDF không thể khôi phục số máy/tem đã mất nét từ bản nén.\n\n'+
+    'Ví dụ: '+examples+(compactOnly.length>5?'…':'')+'\n\n'+
+    'Có '+originalCount+' ảnh riêng trên máy chủ và '+missingCount+' sự kiện không có ảnh. '+
+    'Bạn có muốn tiếp tục xuất PDF và ghi rõ nguồn ảnh ở từng trang?';
+   if(!root.confirm(question)){notify('Đã hủy xuất PDF kèm ảnh mờ. Kiểm tra ảnh rõ trên Firebase hoặc chọn báo cáo không ảnh.');return}
+  }
   const blob=pdfBuild(stored),url=URL.createObjectURL(blob),link=document.createElement('a');
   link.href=url;link.download='SAGS-BO-DAM-'+reportDate+'-'+reportShift+'-KEM-ANH.pdf';
   document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
-  notify('Đã xuất PDF ca '+reportScope()+': '+rows.length+' sự kiện, '+proofCount+' có ảnh, '+(rows.length-proofCount)+' không có ảnh.');
+  notify('Đã xuất PDF ca '+reportScope()+': '+rows.length+' sự kiện, '+originalCount+' ảnh riêng từ Firebase, '+compactOnly.length+' chỉ có ảnh nén, '+missingCount+' không có ảnh.');
  }catch(e){notify('Không xuất được PDF kèm ảnh: '+S(e?.message||e),true)}
  finally{if(a)a.disabled=false;if(b)b.disabled=false}
 }
