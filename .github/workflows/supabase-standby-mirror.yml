@@ -1,0 +1,80 @@
+name: Supabase standby snapshot replication (guarded)
+on:
+  schedule:
+    # Hourly backup only AFTER standby replication has been explicitly enabled.
+    # Scheduled GitHub Actions is best-effort; not a hot failover guarantee.
+    - cron: '17 * * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Read Firebase and validate source capacity without writing Supabase"
+        type: boolean
+        default: true
+permissions:
+  contents: read
+  id-token: write
+concurrency:
+  group: sags-standby-replication
+  cancel-in-progress: false
+jobs:
+  mirror:
+    if: github.repository == 'sagsdieuhanh-gif/E-REPORT-SAGS' && github.ref == 'refs/heads/main' && (vars.SAGS_STANDBY_REPLICATION_ACTIVE == 'true' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      FIREBASE_PROJECT_ID: e-report-sags
+      FIREBASE_DATABASE_URL: https://e-report-sags-default-rtdb.asia-southeast1.firebasedatabase.app
+      SAGS_STANDBY_SUPABASE_URL: https://wggirxzdcfnxyjgjvpgh.supabase.co
+      SAGS_STANDBY_SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SAGS_STANDBY_SUPABASE_SERVICE_ROLE_KEY }}
+    steps:
+      - name: Verify independent server credentials
+        env:
+          PROVIDER: ${{ vars.SAGS_STANDBY_FIREBASE_WIF_PROVIDER }}
+          SERVICE_ACCOUNT: ${{ vars.SAGS_STANDBY_FIREBASE_SA_EMAIL }}
+          HAS_JSON: ${{ secrets.SAGS_STANDBY_FIREBASE_SERVICE_ACCOUNT_JSON != '' }}
+          HAS_SUPABASE: ${{ secrets.SAGS_STANDBY_SUPABASE_SERVICE_ROLE_KEY != '' }}
+        run: |
+          set -euo pipefail
+          if [ "$HAS_SUPABASE" != 'true' ]; then
+            echo "::error::STANDBY DISABLED: Supabase service key not configured."
+            exit 1
+          fi
+          if [ -z "$PROVIDER" ] && [ "$HAS_JSON" != 'true' ]; then
+            echo "::error::STANDBY DISABLED: Firebase backup reader credentials not configured."
+            exit 1
+          fi
+          if [ -n "$PROVIDER" ] && [ -z "$SERVICE_ACCOUNT" ]; then
+            echo "::error::STANDBY DISABLED: Workload Identity service account missing."
+            exit 1
+          fi
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: firebase/functions/package-lock.json
+      - name: Authenticate Firebase with Workload Identity (preferred)
+        if: vars.SAGS_STANDBY_FIREBASE_WIF_PROVIDER != ''
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093
+        with:
+          workload_identity_provider: ${{ vars.SAGS_STANDBY_FIREBASE_WIF_PROVIDER }}
+          service_account: ${{ vars.SAGS_STANDBY_FIREBASE_SA_EMAIL }}
+          project_id: e-report-sags
+      - name: Authenticate Firebase with dedicated service account
+        if: vars.SAGS_STANDBY_FIREBASE_WIF_PROVIDER == ''
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093
+        with:
+          credentials_json: ${{ secrets.SAGS_STANDBY_FIREBASE_SERVICE_ACCOUNT_JSON }}
+          project_id: e-report-sags
+      - name: Install Firebase server libraries
+        run: npm ci --ignore-scripts --prefix firebase/functions
+      - name: Replicate read-only Firebase snapshot
+        env:
+          ACTION_DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
+        run: |
+          set -euo pipefail
+          if [ "$ACTION_DRY_RUN" = "true" ]; then
+            node firebase/functions/standby-replicate.cjs --dry-run
+          else
+            node firebase/functions/standby-replicate.cjs --apply
+          fi
