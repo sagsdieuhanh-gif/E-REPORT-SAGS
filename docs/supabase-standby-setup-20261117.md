@@ -11,6 +11,7 @@
   - `public.sags_standby_checkpoints_v1` — mốc đồng bộ hoàn thành theo từng namespace.
   - `public.sags_standby_failover_v1` — khóa cutover, **primary_provider=firebase**, **standby_writes_allowed=false**, **failover_tested=false**.
   - `public.sags_standby_pending_ops_v1` — nhật ký cho giao dịch dự phòng trong tương lai, chưa hoạt động.
+  - `public.sags_standby_identity_v1` — ánh xạ Firebase UID với tài khoản Supabase Auth độc lập, hiện chưa tạo tài khoản/mapping.
 - Bucket `sags-standby-evidence`: **private**, tối đa 20 MiB/file; không cấp quyền đọc/ghi cho trình duyệt/nhân viên. Chỉ worker máy chủ có thể lưu bằng chứng.
 - Đã đối chiếu các quyền, không cấp khóa Supabase service-role cho website.
 
@@ -41,7 +42,7 @@ Không gửi khóa dịch vụ qua chat và **không commit** file JSON tài kho
 - Worker có danh sách giới hạn **11 nhánh RTDB** và **4 collection Firestore**. Những nhánh/collection khác cần được kiểm kê và thêm bằng kiểm thử trước khi kết luận dữ liệu đã đầy đủ. Các nhánh hiện biết nằm dưới `sags_live_v470`.
 - Worker tự từ chối khi số lượng/dung lượng namespace vượt ngưỡng. Không tự xóa bằng chứng hoặc ghi đè lịch sử gốc khi Firebase đọc lỗi.
 - Ảnh được lưu riêng trong private Storage theo SHA-256; bản mirror lưu tham chiếu và checksum. Việc chuyển ngược về Firebase để phục hồi phải khôi phục bytes trước khi ghi.
-- Chưa sao lưu cấu hình Firebase Auth và mật khẩu; không sao chép mật khẩu bằng giả định. Cần mời/tạo tài khoản Supabase Auth riêng và ánh xạ quyền chuẩn.
+- Đã chuẩn bị bảng ánh xạ identity an toàn nhưng chưa tạo bất kỳ Supabase Auth account nào. Chưa sao lưu cấu hình Firebase Auth và mật khẩu; không sao chép mật khẩu bằng giả định. Cần mời/tạo tài khoản Supabase Auth riêng và ánh xạ quyền chuẩn.
 - Gói Supabase Free có thể tự tạm dừng. Hệ thống dự phòng 24/7 cần kế hoạch sử dụng trả phí phù hợp sau khi người quản trị chấp thuận.
 - Không chuyển `primary_provider` sang `supabase` hoặc mở `standby_writes_allowed` trước khi kiểm thử chuyển đổi/failback thực tế thành công.
 
