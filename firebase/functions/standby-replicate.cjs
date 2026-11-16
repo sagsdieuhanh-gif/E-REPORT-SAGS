@@ -14,7 +14,7 @@ const ROOT='sags_live_v470';
 const RTDB_NAMESPACES=['flight_records','roster_mail','roster_manifests',
  'roster_sessions','roster_revocations','roster_flight_status',
  'roster_workspaces','roster_co_claims','closeouts','ramp_presence',
- 'aircraft_cleaning','cloud_drafts'];
+ 'aircraft_cleaning']; // Draft Recovery V2 resides under roster_sessions/<id>/draftRecoveryV2.
 const FIRESTORE_COLLECTIONS=['users','sags_radio_devices_v1','sags_radio_events_v1',
  'sags_radio_proofs_v22'];
 const MAX_ITEMS=Math.max(1,Math.min(5000,Number(process.env.SAGS_STANDBY_MAX_ITEMS||1500)));
@@ -177,7 +177,7 @@ async function mirrorSource(source){
  await upsert(TABLES.mirror,[...fresh,...removed]);
  const expected=new Map([...fresh,...removed].map(x=>[x.key_hash,x.content_sha256]));
  const q='origin=eq.'+enc(origin)+'&namespace=eq.'+enc(namespace)+
-  '&batch_id=eq.'+enc(batchId)+'&select=key_hash,content_sha256&limit='+enc(String(MAX_ITEMS+100));
+  '&batch_id=eq.'+enc(batchId)+'&select=key_hash,content_sha256&limit='+enc(String(2*MAX_ITEMS+200));
  const verified=await http('GET',urlFor(TABLES.mirror,q));
  if(!Array.isArray(verified)||verified.length!==expected.size||
   verified.some(row=>expected.get(row.key_hash)!==row.content_sha256))
