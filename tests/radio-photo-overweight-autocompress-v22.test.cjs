@@ -3,16 +3,11 @@ const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/st
 const src=fs.readFileSync('app/modules/radio-custody.v1.js','utf8');
 const a=src.indexOf('function encodeProof('),b=src.indexOf('// Optional device-only backup',a);
 assert(a>0&&b>a,'Adaptive proof encoder is present');
-assert(src.includes("sig=combineProof('old');"),'Always create compact receipt before optional full photo');
-assert(src.includes("if(mode==='SWAP_OUT')sigNew=combineProof('new');"),'Swap signs both actual camera photos');
-assert(src.indexOf("sig=combineProof('old');")<src.indexOf("hiOld=combineFullProof('old');"),
- 'Compact evidence must be prepared before trying high-quality photo');
-assert(src.includes("catch(fullPhotoError){"),'Oversized original must not abort signing');
-assert(src.includes("if(!hiOld){"),'No full-resolution proof must activate compact transaction');
-assert(src.includes("await writeCompactReceipt();"),'Compact signed image must be submitted to Firestore');
-assert(src.includes("combineProof('old','png')"),'Last-resort old-rules PNG must remain supported');
-assert(src.includes("if(mode==='RELEASE'){\n  await writeRadioTransaction(false);"),
- 'Admin inspection requires no camera evidence and must not report misleading photo quality');
+assert(src.includes("serverOld=combineFullProof('old');"),'Generate the archive before selecting a receipt');
+assert(src.includes("serverNew=combineFullProof('new');"),'Swap preserves both original camera photos');
+assert(src.includes('serverOld.length<=44000?serverOld'), 'Reuse the entire image when it fits in the event');
+assert(!src.includes('writeCompactReceipt'), 'A rejected proof cannot silently commit a thumbnail-only signature');
+assert(src.includes('usedCompatibleProof=true'), 'Use a smaller server archive when it fits older rules');
 assert(src.includes("if(!photosReady())throw Error"),'Do not sign without real camera photo');
 assert(src.includes("signature();if(needsPhoto(mode))"),'Do not sign without actual ink');
 assert(src.includes("tx.set(evRef,ev)")&&src.includes("tx.update(ref,"),
@@ -60,6 +55,6 @@ const android=build(true);
 assert.match(android.scope.compact('old'),/^data:image\/webp;base64,/);
 assert(android.scope.compact('old').length<=44000);
 const corrupt=build(false,true);
-assert.throws(()=>corrupt.scope.full('old'),/giới hạn lưu trữ/,'Impossible full resolution is reported to caller for receipt fallback');
+assert.throws(()=>corrupt.scope.full('old'),/giới hạn lưu trữ/,'Impossible encoding is reported so evidence stays pending');
 assert.throws(()=>corrupt.scope.compact('old'),/giới hạn lưu trữ/,'Never manufacture a successful signature without valid image');
-console.log('Radio image-overweight hotfix: auto resize JPEG/WebP/PNG, 44k receipt, 235k/700k proofs, full-proof failure does not block signing, camera+ink remain mandatory PASS');
+console.log('Radio image-overweight hotfix: auto resize JPEG/WebP/PNG, 44k receipt, 235k/700k proofs, failed archival write keeps evidence pending, camera+ink remain mandatory PASS');

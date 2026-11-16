@@ -1,12 +1,12 @@
 {
   "version": "V2.2",
   "displayVersion": "V2.2",
-  "label": "V2.2 - RADIO DEFECTS ADVISORY",
-  "build": "V2.2-20261116-RADIO-INFO-29",
+  "label": "V2.2 - RADIO PHOTO PROOF & PDF",
+  "build": "V2.2-20261116-RADIO-PROOF-30",
   "releasedAt": "2026-11-16",
-  "type": "radio-defects-advisory",
+  "type": "radio-advisory-photo-pdf",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Lỗi và pin yếu chỉ để theo dõi, thống kê và báo cáo. Báo lỗi giữ nguyên người giữ, thời điểm và ca nhận. Thiết bị thất lạc cần xác nhận tìm thấy. Ca sáng 08:00–18:15 và ca tối 18:16–07:59 hôm sau là mốc nhắc nhở và báo cáo. Giữ ảnh, chữ ký và lịch sử giao nhận.",
-  "message": "Bộ đàm có cảnh báo lỗi vẫn được ký nhận, trả và đổi. Máy thất lạc được quản lý riêng."
+  "notes": "Giữ độ phân giải ảnh khi xuất PDF. Ghi rõ nguồn và độ phân giải ảnh trên từng trang. Nếu Firestore từ chối ảnh lưu trữ sau khi thử dung lượng tương thích, giữ lượt ký để thử lại. Lỗi bộ đàm chỉ dùng để theo dõi, máy thất lạc quản lý riêng. Ca sáng 08:00–18:15 và ca tối 18:16–07:59 hôm sau dùng để nhắc nhở và báo cáo.",
+  "message": "PDF giữ chất lượng ảnh lưu trữ và ghi rõ khi chỉ đọc được ảnh biên nhận."
 }

@@ -8,7 +8,7 @@ const source=fs.readFileSync('app/modules/radio-custody.v1.js','utf8');
 const index=source.lastIndexOf('})(window);');
 const exposed=source.slice(0,index)+`
  root.test={CAPTURE_EXIF_OPTIONS,captureClock,nativeMode,encodeNativeProof,evidenceDetails,photoAudit,pdfBuild,
-  saveNativeDraft,readNativeDraft,removeNativeDraft,radioShiftAt,
+  saveNativeDraft,readNativeDraft,removeNativeDraft,radioShiftAt,nativeDraftTransaction,
   setPhoto(photo,action){photos.old=photo;mode=action}
  };
 `+source.slice(index);
@@ -46,7 +46,8 @@ function harness(navigator={userAgent:'iPhone'}){
  const {api,canvas}=harness();
  assert(api.nativeMode('ISSUE')&&api.nativeMode('RETURN'));
  assert(!api.nativeMode('SWAP_OUT')&&!api.nativeMode('REPORT'));
- assert(!harness({userAgent:'Android',platform:'Linux'}).api.nativeMode('ISSUE'));
+ assert(harness({userAgent:'Android',platform:'Linux'}).api.nativeMode('ISSUE'),'Android checkout must use original-resolution native still, not a blurry video preview');
+ assert(harness({userAgent:'Android',platform:'Linux'}).api.nativeMode('RETURN'),'Android return must use the high-resolution camera still');
  assert(!harness({userAgent:'Macintosh',platform:'MacIntel',maxTouchPoints:0}).api.nativeMode('RETURN'));
  assert(harness({userAgent:'Macintosh',platform:'MacIntel',maxTouchPoints:5}).api.nativeMode('RETURN'));
  // A real JPEG APP1 block with both EXIF timestamp fields and portrait orientation.
@@ -82,7 +83,7 @@ function harness(navigator={userAgent:'iPhone'}){
  sizes=[700000,600000,540000,320000];
  const evidence=await api.encodeNativeProof(700000);
  assert(evidence.startsWith('data:image/jpeg;base64,')&&evidence.length<=700000);
- assert.deepEqual(attempts,[[1920,.94],[1200,.85],[960,.8],[768,.72]]);
+ assert.deepEqual(attempts,[[1920,.94],[1680,.88],[1536,.84],[1440,.82]],'High resolution must be tried before 1600px or smaller downgrade');
  assert(draws.filter(x=>x[0]===original).every(([,x,y,w,h])=>x===0&&y===0&&w/h===.75));
  assert.equal(draws.filter(x=>x[0]===ink).length,4);
  assert(captions.some(s=>s.includes('NHẬN'))&&captions.some(s=>s.includes('19:01:05')));
@@ -117,6 +118,9 @@ function harness(navigator={userAgent:'iPhone'}){
   assert.equal(saved.fields.radioReturnReason,'HANDOVER');
   assert.deepEqual(Array.from(saved.strokes[0][1]),[32,50]);
   assert.equal(await saved.file.text(),'camera bytes');
+  // A draft written before this build stored the File/Blob directly.
+  await api.nativeDraftTransaction('readwrite',(_drafts,files)=>files.put(file,draft.id));
+  assert.equal(await (await afterReload.readNativeDraft('staff',true)).file.text(),'camera bytes');
   assert.equal(await afterReload.readNativeDraft('other'),undefined);
   account='other';
   await assert.rejects(afterReload.saveNativeDraft(file,draft,[]),/Phiên ký nhận/);
@@ -128,5 +132,5 @@ function harness(navigator={userAgent:'iPhone'}){
   assert.equal(await afterReload.readNativeDraft('staff'),undefined);
  }
  assert(returned.length<700000);
- console.log('Native iOS capture policy, timestamp, single-source fallback, signed proof PDF and reload-safe private drafts PASS');
+ console.log('Native iOS/Android high-resolution camera, iPhone EXIF, adaptive proof ladder, original PDF proof and private drafts PASS');
 })().catch(e=>{console.error(e);process.exitCode=1});

@@ -8,7 +8,7 @@ assert(c.includes("if($('radioPdfIncludePhotos')?.checked&&isAdmin(currentUser()
 assert(c.includes("if(!isAdmin(currentUser()))return notify('Chỉ tài khoản AD"),'PDF operation must check permissions again');
 assert(c.includes('historyVerified=!s.metadata.fromCache&&navigator.onLine'),'photos require server-verified history');
 assert(!c.includes("if(rows.length>16)"),'do not silently omit evidence');
-assert(c.includes('stored.push(pdfStoredPage(await photoPdfPage('),'every filtered event must produce image appendix page');
+assert(c.includes('const page=await photoPdfPage('),'every filtered event must produce image appendix page');
 assert(c.includes('async function photoPdfPage('),'photo PDF canvas missing');
 assert(c.includes('x.drawImage(img,'),'actual image must be embedded in evidence PDF');
 assert(c.includes('const blob=pdfBuild(stored)'),'photo pages must use binary PDF builder');

@@ -10,11 +10,11 @@ assert(app.includes("id=\"radioInspectPhoto\""),'Staff can zoom the real capture
 assert(app.includes("$('radioInspectPhoto')"),'Zoom control should be wired'); // Replaced below if selector style uses double quotation.
 assert(app.includes('function inspectCapturedPhoto(){'));
 assert(app.includes('usedCompatibleProof=true'),'Legacy server photo mode must be explicit');
-assert(app.includes("serverOld=combineFullProof('old',COMPAT_PROOF_LIMIT)"));
-assert(app.includes('if((usedCompactOnly||usedCompatibleProof)&&hiOld)'),'Keep full original locally when server rejects large evidence');
+assert(app.includes("combineFullProof('old',COMPAT_PROOF_LIMIT)"));
+assert(app.includes('saveLocalFullProof(user.uid,choice.code,mode,photos.old,originalOld)'),'Keep full original locally when server rejects large evidence');
 assert(app.includes("const local=allowLocal?await readLocalFullProof(e):'';"),'Only actor preview can prefer local full-resolution backup');
-assert(app.includes("if(local&&local.length>d.image.length)"),'Show higher-quality local original on recording iPhone');
-assert(app.includes("const img=await proofImage(fullProof||await highProofData(e))"),'Official AD PDF MUST use server evidence, not an unverified local photo');
+assert(app.includes("local.length>proof.data.length"),'Show higher-quality local original on recording iPhone');
+assert(app.includes("batch.map(readServerFullProof)"),'Official AD PDF MUST use server evidence, not an unverified local photo');
 assert(app.includes("const factor=/iPhone|iPad|iPod/.test(navigator.userAgent||'')?1:1.6;"),'Desktop PDF appendix should be rendered at higher DPI');
 for(const body of [rules,snippet]){
  assert(body.includes("request.resource.data.image.size() <= 700000"),'Firestore authorizes quality up to 700k characters');

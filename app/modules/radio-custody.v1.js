@@ -111,7 +111,7 @@ function tpl(){
 
 function nativeMode(action=mode){
  return ['ISSUE','RETURN'].includes(action)&&
-  (/iPhone|iPad|iPod/.test(navigator.userAgent||'')||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1));
+  (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent||'')||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1));
 }
 function openNativeCamera(){
  if(busy||!choice||currentUser().uid!==signingUid)return;
@@ -154,7 +154,7 @@ async function decodeNativePhoto(file,clock,code){
   image.style.imageOrientation='from-image';
   await new Promise((resolve,reject)=>{
    image.onload=resolve;
-   image.onerror=()=>reject(Error('Safari không đọc được ảnh. Cập nhật iOS hoặc chọn Camera → Định dạng → Tương thích nhất (JPEG), rồi chụp lại.'));
+   image.onerror=()=>reject(Error('Không giải mã được ảnh từ camera. Hãy dùng camera mặc định và thử chụp lại ở định dạng JPEG (iPhone: Cài đặt → Camera → Định dạng → Tương thích nhất).'));
    image.src=preview;
   });
   image.onload=null;image.onerror=null;
@@ -253,7 +253,11 @@ function readNativeDraft(uid,includeFile=false){
    const draft=request.result;
    if(!includeFile||!draft){done(draft);return}
    const raw=files.get(draft.id);
-   raw.onsuccess=()=>done({...draft,file:raw.result});
+   raw.onsuccess=()=>{
+    const stored=raw.result;
+    const file=stored?.buffer?new Blob([stored.buffer],{type:stored.type}):stored;
+    done({...draft,file});
+   };
   };
  });
 }
@@ -262,6 +266,8 @@ async function saveNativeDraft(file,draft=nativeDraft,ink=strokes){
  const snapshot={...draft,fields:Object.fromEntries(DRAFT_FIELDS.map(id=>[id,$(id).value])),
   strokes:ink.map(points=>points.map(point=>[...point]))};
  try{
+  const source=file?{buffer:await file.arrayBuffer(),type:file.type}:null;
+  if(currentUser().uid!==draft.uid)throw Error('Phiên ký nhận đã thay đổi.');
   await nativeDraftTransaction('readwrite',(drafts,files,done,abort)=>{
    const request=drafts.get(snapshot.uid);
    request.onsuccess=()=>{
@@ -271,7 +277,7 @@ async function saveNativeDraft(file,draft=nativeDraft,ink=strokes){
      return;
     }
     drafts.put(snapshot);
-    if(file)files.put(file,snapshot.id);
+    if(source)files.put(source,snapshot.id);
    };
   });
  }catch(e){throw Error(draftError(e))}
@@ -354,7 +360,10 @@ async function discardNativeDraft(){
 function nativeProofPlan(longest,compact,format){
  const steps=compact?(format==='png'?[[640,1],[400,1],[256,1],[160,1],[96,1],[64,1],[48,1]]:
   [[640,.82],[512,.72],[400,.62],[320,.55],[256,.48],[160,.42],[96,.35],[64,.35],[48,.3]]):
-  [[Math.min(longest,2560),.94],[1600,.85],[1280,.80],[1024,.72]];
+  // Preserve source detail when fitting iPhone proof within the Firebase cap.
+  // Every attempt is encoded directly from the untouched full-size camera image.
+  [[Math.min(longest,2560),.94],[2240,.88],[2048,.84],[1920,.82],
+   [1600,.85],[1440,.82],[1280,.80],[1024,.72],[896,.72],[768,.68],[640,.66]];
  return steps.map(([edge,quality])=>[Math.min(edge,longest),quality]);
 }
 function drawNativeProof(canvas,photo,edge,compact){
@@ -524,11 +533,12 @@ function encodeProof(leg,maxLength,requestedFormat='auto',compact=false){
  const format=requestedFormat==='png'?'png':requestedFormat==='jpeg'?'jpeg':webpCanvasEncoderSupported()?'webp':'jpeg';
  const mime='image/'+format,prefix='data:'+mime+';base64,';
  const longest=Math.max(sourceW,sourceH);
- // Step down resolution FIRST. For a large/complex iPhone image, allow a
- // small emergency receipt with timestamp + signature instead of blocking.
+ // The full-resolution archive MUST NOT start at 1280px when the camera
+ // provided a sharper 2048px image. The 44KB receipt remains lightweight.
+ // All size attempts are drawn from the same original canvas, never cascaded.
  const targets=compact?[640,512,400,320,256,192,160,128,96,72,48]:
-  [1280,1024,800,640,480,360,280,200,160];
- const qualities=compact?[.82,.65,.5,.35,.25]:[.9,.78,.65,.5,.4];
+  [2048,1920,1800,1600,1440,1280,1120,1024,900,800,640,480,360,280,200,160];
+ const qualities=compact?[.82,.65,.5,.35,.25]:[.94,.88,.82,.74,.65,.55];
  const attempted=new Set();
  for(const longestSide of targets){
   const scale=Math.min(1,longestSide/longest),width=Math.max(1,Math.round(sourceW*scale));
@@ -567,7 +577,6 @@ function combineProof(leg,requestedFormat='auto'){
 // Optional device-only backup when production Firestore Rules have not been
 // deployed. This is NOT an authoritative receipt or server-verified evidence.
 let localProofDbPromise=null;
-const localProofIds=new Set();
 function localProofKey(uid,code,action,at){return String(uid)+'|'+String(code)+'|'+String(action)+'|'+String(at)}
 function radioProofDb(){
  if(!root.indexedDB)return Promise.reject(Error('IndexedDB không khả dụng'));
@@ -608,34 +617,35 @@ async function readLocalFullProof(e){
   });
  }catch(_){return ''}
 }
+async function readServerFullProof(e){
+ if(!e?.id||!e.signature)return {source:'none',data:''};
+ const uid=currentUser().uid,key=uid+'|'+e.id;
+ if(!uid)return {source:'unverified',data:e.signature};
+ const cached=proofCache.get(key);
+ if(cached)return {source:'archive',data:cached};
+ try{
+  if(!navigator.onLine)throw Error('Ngoại tuyến');
+  const snap=await fs().collection(PROOFS).doc(e.id).get({source:'server'});
+  if(currentUser().uid!==uid||snap.metadata?.fromCache)throw Error('Ảnh gốc chưa được Firebase xác nhận.');
+  if(!snap.exists)return {source:'receipt',data:e.signature};
+  const d=snap.data();
+  if(d?.eventId!==e.id||d?.actorUid!==e.actorUid||d?.deviceCode!==e.deviceCode||d?.action!==e.action||
+    typeof d.image!=='string'||!/^data:image\/(webp|jpeg);base64,/.test(d.image)||d.image.length>HIGH_PROOF_LIMIT)
+   throw Error('Ảnh lưu trữ không khớp lượt ký.');
+  proofCache.set(key,d.image);
+  if(proofCache.size>8)proofCache.delete(proofCache.keys().next().value);
+  return {source:'archive',data:d.image};
+ }catch(error){
+  console.info('Radio full-colour proof unavailable',String(error?.code||error?.message||error));
+  return {source:'unverified',data:e.signature};
+ }
+}
 async function highProofData(e,allowLocal=false){
- if(!e?.id||!e.signature)return e?.signature||'';
+ if(!e?.id||!e.signature)return {source:'none',data:''};
  const local=allowLocal?await readLocalFullProof(e):'';
- const cached=proofCache.get(e.id);
- if(cached){
-  if(local&&local.length>cached.length){localProofIds.add(e.id);return local}
-  localProofIds.delete(e.id);return cached
- }
- if(navigator.onLine){
-  try{
-   const snap=await fs().collection(PROOFS).doc(e.id).get({source:'server'});
-   if(snap.metadata?.fromCache)throw Error('Ảnh gốc chưa được Firebase xác nhận.');
-   const d=snap.data();
-   if(snap.exists&&d?.eventId===e.id&&d?.actorUid===e.actorUid&&d?.deviceCode===e.deviceCode&&
-    typeof d.image==='string'&&/^data:image\/(webp|jpeg);base64,/.test(d.image)&&d.image.length<=HIGH_PROOF_LIMIT){
-    proofCache.set(e.id,d.image);localProofIds.delete(e.id);
-    if(proofCache.size>8)proofCache.delete(proofCache.keys().next().value);
-    if(local&&local.length>d.image.length){localProofIds.add(e.id);return local}
-    return d.image;
-   }
-  }catch(error){
-   // No global permission-denied flag: an old event must not prevent newer
-   // events from loading their correctly authorized full-colour server proof.
-   console.info('Radio full-colour proof unavailable',String(error?.code||error?.message||error));
-  }
- }
- if(local){localProofIds.add(e.id);return local}
- return e.signature;
+ const proof=await readServerFullProof(e);
+ if(local&&(proof.source!=='archive'||local.length>proof.data.length))return {source:'local',data:local};
+ return proof;
 }
 let proofViewToken=0;
 async function viewProof(id){
@@ -649,14 +659,15 @@ async function viewProof(id){
  const check=photoAudit(e);
  $('radioProofTimestamp').textContent='Giờ Firebase: '+(check.serverMs?fmt(new Date(check.serverMs)):'Chưa xác minh')+' · Giờ thiết bị: '+(check.deviceMs?fmt(new Date(check.deviceMs)):'xem trực tiếp trên ảnh')+' · '+check.status+(check.delta!==null?' ('+check.delta+' phút)':'');
  box.hidden=false;
- const data=await highProofData(e,true);
+ const proof=await highProofData(e,true);
  if(token!==proofViewToken||box.hidden)return;
- $('radioProofImage').src=data;
- $('radioProofQuality').textContent=data===e.signature?
-  '⚠ Chỉ có ảnh đã nén trên Firebase. Ảnh cũ không thể khôi phục độ nét đã mất.':
-  localProofIds.has(e.id)?
-   '📱 Ảnh rõ được lưu tạm trong điện thoại này, CHƯA xác minh trên Firebase. AD ở máy khác vẫn thấy bản nén.':
-   '✓ Ảnh rõ đã được xác minh trên Firebase, có thể phóng to đọc mã máy.';
+ $('radioProofImage').src=proof.data;
+ $('radioProofQuality').textContent={
+  archive:'Ảnh lưu trữ từ Firebase. Phóng to để kiểm tra mã máy.',
+  local:'Ảnh rõ lưu trên thiết bị chụp, chưa xác minh trên Firebase.',
+  receipt:'Firebase chỉ có ảnh trong biên nhận. Độ nét đã mất do nén không thể khôi phục.',
+  unverified:'Chưa đọc được ảnh lưu trữ từ Firebase. Đang hiển thị ảnh trong biên nhận.'
+ }[proof.source]||'';
 }
 function closeProof(){
  ++proofViewToken;const el=$('radioProofViewer');if(el){el.hidden=true;el.classList.remove('radioProofZoomed')}
@@ -1033,7 +1044,7 @@ async function submit(){
   if(details.length<20)return notify('AD phải ghi kết quả kiểm tra ít nhất 20 ký tự: pin, sóng, loa, mic/PTT và tình trạng thực tế.',true);
   if(!root.confirm('XÁC NHẬN ĐÃ XỬ LÝ THÔNG TIN LỖI CHO '+label(code)+'?\n\nThao tác chỉ cập nhật ghi nhận, KHÔNG phải mở khóa sử dụng. Thiết bị thất lạc phải được thu hồi thực tế trước khi xác nhận.\n\nKết quả lưu trong lịch sử Firebase.'))return notify('Chưa xác nhận cập nhật thông tin lỗi.',true);
  }
- let sig='',sigNew='',hiOld='',hiNew='',serverOld='',serverNew='',usedLegacyPng=false,usedCompactOnly=false,usedCompatibleProof=false;try{if(mode!=='RELEASE'){signature();if(needsPhoto(mode)){if(!photosReady())throw Error('Phải chụp ảnh bằng camera trước khi ký.');if((!nativeDraft&&Date.now()-photos.old.at>600000)||(mode==='SWAP_OUT'&&Date.now()-photos.new.at>600000))throw Error('Ảnh quá 10 phút, vui lòng chụp lại.')}}}catch(e){return notify(e.message,true)}
+ let sig='',sigNew='',serverOld='',serverNew='',usedCompatibleProof=false;try{if(mode!=='RELEASE'){signature();if(needsPhoto(mode)){if(!photosReady())throw Error('Phải chụp ảnh bằng camera trước khi ký.');if((!nativeDraft&&Date.now()-photos.old.at>600000)||(mode==='SWAP_OUT'&&Date.now()-photos.new.at>600000))throw Error('Ảnh quá 10 phút, vui lòng chụp lại.')}}}catch(e){return notify(e.message,true)}
  if(['ISSUE','RETURN'].includes(mode)&&bat==='UNKNOWN')return notify('Vui lòng kiểm tra mức pin trước khi nhận hoặc trả máy.',true);
  // A reported low battery is information only; do not block checkout.
  if(mode==='SWAP_OUT'&&swapBattery==='UNKNOWN')return notify('Vui lòng ghi mức pin máy thay thế trước khi đổi.',true);
@@ -1050,33 +1061,21 @@ async function submit(){
     await finishNativeDraft('✓ Lượt ký này đã được xác nhận trên Firebase.');
     return;
    }
-   try{hiOld=await encodeNativeProof(HIGH_PROOF_LIMIT)}
-   catch(e){if(e.code!=='radio-photo-size')throw e}
-   sig=hiOld&&hiOld.length<=44000?hiOld:await encodeNativeProof(44000,true);
-   // A tiny but complete photo can fit directly in the event. Firestore
-   // requires full-proof documents to have more than 12k characters.
-   if(hiOld.length<=12000)hiOld='';
-   serverOld=hiOld;
+   serverOld=await encodeNativeProof(HIGH_PROOF_LIMIT);
+   sig=serverOld.length<=44000?serverOld:await encodeNativeProof(44000,true);
   }else if(mode!=='RELEASE'){
    if(needsPhoto(mode)){
-    // Compact signed camera evidence is mandatory and encoded FIRST.
-    // Full-resolution proof is best-effort: oversized photos must not block
-    // accepting/returning a radio or initiating a flight after signing.
-    sig=combineProof('old');
-    if(mode==='SWAP_OUT')sigNew=combineProof('new');
-    try{
-     hiOld=combineFullProof('old');
-     if(mode==='SWAP_OUT')hiNew=combineFullProof('new');
-     serverOld=hiOld;serverNew=hiNew;
-    }catch(fullPhotoError){
-     hiOld='';hiNew='';serverOld='';serverNew='';
-     usedCompactOnly=true;
-     console.warn('Radio full photo too large; compact signed proof retained',fullPhotoError?.message||fullPhotoError);
+    serverOld=combineFullProof('old');
+    sig=serverOld.length<=44000?serverOld:combineProof('old');
+    if(mode==='SWAP_OUT'){
+     serverNew=combineFullProof('new');
+     sigNew=serverNew.length<=44000?serverNew:combineProof('new');
     }
    }else sig=signature();
   }
+  const hasArchive=photo=>photo.length>12000;
   notify('Đang xác nhận với Firebase, vui lòng không bấm lại…');
- const writeRadioTransaction=async(withFull=true)=>{
+ const writeRadioTransaction=async()=>{
  const db=fs(),ref=db.collection(COLLECTION).doc(code);
  if(mode==='SWAP_OUT'){
   const other=$('radioSwapTarget').value,ref2=db.collection(COLLECTION).doc(other),swapId=db.collection(EVENTS).doc().id;
@@ -1086,9 +1085,9 @@ async function submit(){
    if(!a||a.status!=='OUT'||(!isAdmin(user)&&a.holderUid!==user.uid))throw Error('Máy cũ không còn hợp lệ để đổi.');
    if(!radioIssueable(b))throw Error('Máy thay thế đang có người giữ hoặc đã báo thất lạc. Vui lòng chọn máy khác.');
    const oldNew={status:'READY',holderUid:'',holderName:'',shift:'',faultCode:reason,faultDetail:details,battery:bat};
-   updateDevice(tx,ref,a,'SWAP_OUT',oldNew,{user,shift:shiftVal,reason,details:evidenceDetails(details,photos.old?.at),sig,related:other,swapId,fullProof:withFull?serverOld:'',photoAt:photos.old?.at});
+   updateDevice(tx,ref,a,'SWAP_OUT',oldNew,{user,shift:shiftVal,reason,details:evidenceDetails(details,photos.old?.at),sig,related:other,swapId,fullProof:hasArchive(serverOld)?serverOld:'',photoAt:photos.old?.at});
    const newNew={status:'OUT',holderUid:user.uid,holderName:user.name,shift:shiftVal,faultCode:b.faultCode||'',faultDetail:b.faultDetail||'',battery:swapBattery};
-   updateDevice(tx,ref2,b,'SWAP_IN',newNew,{user,shift:shiftVal,reason,details:evidenceDetails(details,photos.new?.at),sig:sigNew,related:code,swapId,fullProof:withFull?serverNew:'',photoAt:photos.new?.at});
+   updateDevice(tx,ref2,b,'SWAP_IN',newNew,{user,shift:shiftVal,reason,details:evidenceDetails(details,photos.new?.at),sig:sigNew,related:code,swapId,fullProof:hasArchive(serverNew)?serverNew:'',photoAt:photos.new?.at});
   });
  }else{
   await db.runTransaction(async tx=>{
@@ -1111,84 +1110,42 @@ async function submit(){
    else if(mode==='RELEASE'){if(!isAdmin(user)||!hasRadioWarning(d))throw Error('Không có thông tin lỗi cần xác nhận.');
     after={status:d.status==='OUT'?'OUT':'READY',holderUid:d.status==='OUT'?d.holderUid:'',holderName:d.status==='OUT'?d.holderName:'',shift:d.status==='OUT'?d.shift:'',faultCode:'',faultDetail:'',battery:d.battery};reasonCode='';}
    else throw Error('Tác vụ không được hỗ trợ.');
-   updateDevice(tx,ref,d,action,after,{user,shift:shiftVal,reason:reasonCode,details:evidenceDetails(details,photos.old?.at,photos.old?.clock),sig,related:'',swapId:'',fullProof:withFull?serverOld:'',photoAt:photos.old?.at,eventId:nativeDraft?.id});
+   updateDevice(tx,ref,d,action,after,{user,shift:shiftVal,reason:reasonCode,details:evidenceDetails(details,photos.old?.at,photos.old?.clock),sig,related:'',swapId:'',fullProof:hasArchive(serverOld)?serverOld:'',photoAt:photos.old?.at,eventId:nativeDraft?.id});
   });
  }
 
  };
- // Downgrade on Firestore photo-size or Rules rejections only. Keep every
- // receipt/device write atomic; do not hide network failures.
- const mayDowngradePhoto=e=>{
-  const code=String(e?.code||''),message=String(e?.message||'');
-  return code.includes('permission-denied')||code.includes('resource-exhausted')||
+ const originalOld=serverOld,originalNew=serverNew;
+ try{await writeRadioTransaction()}
+ catch(error){
+  const code=String(error?.code||''),message=String(error?.message||'');
+  const mayFitOlderRules=code.includes('permission-denied')||
    (code.includes('invalid-argument')&&/image|photo|too large|size|bytes|exceeds/i.test(message));
- };
- const writeCompactReceipt=async()=>{
-  try{await writeRadioTransaction(false)}
-  catch(legacyError){
-   if(!String(legacyError?.code||'').includes('permission-denied')||
-       !/^data:image\/jpeg;base64,/.test(sig))throw legacyError;
-   notify('Firebase chưa cho phép ảnh JPEG. Đang nén PNG nhỏ hơn để lưu ký nhận…');
-   await new Promise(resolve=>requestAnimationFrame(resolve));
-   sig=nativeDraft?await encodeNativeProof(44000,true,'png'):combineProof('old','png');usedLegacyPng=true;
-   if(mode==='SWAP_OUT')sigNew=combineProof('new','png');
-   await writeRadioTransaction(false);
-  }
- };
- if(mode==='RELEASE'){
-  await writeRadioTransaction(false);
- }else if(!hiOld){
-  // The full-colour image was too heavy or not encodable. The signed compact
-  // camera frame still has the real image, timestamp, and ink signature.
-  usedCompactOnly=true;
-  await writeCompactReceipt();
- }else{
-  try{await writeRadioTransaction(true)}
-  catch(error){
-   if(!mayDowngradePhoto(error))throw error;
-   // Older V2.2 server rules may accept only 235k full-colour proofs.
-   let canTryCompatible=!nativeDraft||hiOld.length>COMPAT_PROOF_LIMIT;
-   try{
-    if(nativeDraft&&canTryCompatible)serverOld=await encodeNativeProof(COMPAT_PROOF_LIMIT);
-    if(!nativeDraft)serverOld=combineFullProof('old',COMPAT_PROOF_LIMIT);
-    if(mode==='SWAP_OUT')serverNew=combineFullProof('new',COMPAT_PROOF_LIMIT);
-   }catch(compactFullError){
-    canTryCompatible=false;
-    console.info('Large full-colour proof exceeds compatibility cap',compactFullError?.message||compactFullError);
-   }
-   if(canTryCompatible){
-    try{await writeRadioTransaction(true);usedCompatibleProof=true}
-    catch(compatibleError){
-     if(!mayDowngradePhoto(compatibleError))throw compatibleError;
-    }
-   }
-   if(!usedCompatibleProof){usedCompactOnly=true;await writeCompactReceipt()}
-  }
- }
- let localBackupOk=!!hiOld;
- if((usedCompactOnly||usedCompatibleProof)&&hiOld){
-  try{
-   const tasks=[saveLocalFullProof(user.uid,code,mode,photos.old,hiOld)];
-   if(mode==='SWAP_OUT')tasks.push(saveLocalFullProof(user.uid,$('radioSwapTarget').value,'SWAP_IN',photos.new,hiNew));
-   localBackupOk=(await Promise.all(tasks)).every(Boolean);
-  }catch(error){localBackupOk=false;console.warn('Radio local photo backup failed',error?.message||error)}
+  if(!mayFitOlderRules||Math.max(serverOld.length,serverNew.length)<=COMPAT_PROOF_LIMIT)throw error;
+  if(serverOld.length>COMPAT_PROOF_LIMIT)
+   serverOld=nativeDraft?await encodeNativeProof(COMPAT_PROOF_LIMIT):combineFullProof('old',COMPAT_PROOF_LIMIT);
+  if(serverNew.length>COMPAT_PROOF_LIMIT)serverNew=combineFullProof('new',COMPAT_PROOF_LIMIT);
+  // A small full-quality image fits entirely in the signed receipt.
+  if(serverOld.length<=12000)sig=serverOld;
+  if(serverNew&&serverNew.length<=12000)sigNew=serverNew;
+  await writeRadioTransaction();
+  usedCompatibleProof=true;
+  // The official report uses the server copy. Keep the sharper copy for
+  // on-device review by the account that captured the photo.
+  const backups=[];
+  if(serverOld!==originalOld)backups.push(saveLocalFullProof(user.uid,choice.code,mode,photos.old,originalOld));
+  if(serverNew!==originalNew)backups.push(saveLocalFullProof(user.uid,$('radioSwapTarget').value,'SWAP_IN',photos.new,originalNew));
+  await Promise.allSettled(backups);
  }
  if(isAdmin(user))queueRosterAudit(150);
  if(nativeDraft)await removeNativeDraft(nativeDraft.uid,nativeDraft.id).catch(e=>console.warn('Radio draft cleanup',e));
-  cancel();notify(mode==='RELEASE'?'✓ Đã ghi nhận kết quả kiểm tra bộ đàm trên Firebase.':usedCompactOnly?
-  '✓ Đã ký nhận và lưu ảnh tự nén lên Firebase.'+
-  (hiOld?(localBackupOk?' Bản rõ hơn chỉ lưu trên điện thoại chụp; AD thiết bị khác xem ảnh nén.':' AD thiết bị khác chỉ xem được ảnh nén.')+
-   ' Cần cập nhật Firestore Rules để lưu ảnh rõ trên máy chủ.':
-   ' Ảnh quá lớn đã được thu nhỏ tự động để không cản trở nhận/trả bộ đàm.')+
-  (usedLegacyPng?' (Chế độ PNG tương thích).':''):
-  usedCompatibleProof?
-   'Đã ký nhận. Firebase chỉ nhận ảnh tương thích 235KB.'+
-   (localBackupOk?' Ảnh rõ hơn được giữ trên điện thoại chụp.':' Không thể giữ bản rõ hơn trên điện thoại.')+
-   ' Cần nâng Firestore Rules để AD xem ảnh rõ hơn.':
-   '✓ Đã lưu ảnh chất lượng cao, giữ màu trên Firebase cùng chữ ký và giờ máy chủ.');
+ const message=mode==='RELEASE'?'✓ Đã lưu kết quả kiểm tra trên Firebase.':
+  usedCompatibleProof?'✓ Đã lưu ảnh và chữ ký trên Firebase ở mức dung lượng tương thích.':
+  '✓ Đã lưu ảnh, chữ ký và giờ máy chủ trên Firebase.';
+ cancel();notify(message);
  }catch(e){notify(nativeDraft?
   errText(e)+' Bản nháp ảnh và chữ ký vẫn lưu trên máy. Mở lại để thử lưu khi kết nối ổn định.':
-  errText(e),true)}finally{setBusy(false)}
+  errText(e)+' Thông tin và ảnh vẫn còn trong phiên ký để thử lại.',true)}finally{setBusy(false)}
 }
 async function seed(){
  if(busy)return;
@@ -1296,12 +1253,12 @@ function proofImage(data){
   img.src=data;
  });
 }
-async function photoPdfPage(e,index,total,fullProof=''){
+async function photoPdfPage(e,index,total,proof){
  // On PC generate a denser raster so PDF zoom retains camera serial details.
  // Keep the original footprint on iOS to avoid Safari memory pressure.
  const factor=/iPhone|iPad|iPod/.test(navigator.userAgent||'')?1:1.6;
  const cv=document.createElement('canvas');cv.width=Math.round(900*factor);cv.height=Math.round(1273*factor);
- const x=cv.getContext('2d',{colorSpace:'srgb'}),audit=photoAudit(e),hasProof=!!e.signature;
+ const x=cv.getContext('2d',{colorSpace:'srgb'}),audit=photoAudit(e);
  if(factor!==1)x.scale(factor,factor);
  x.fillStyle='#fff';x.fillRect(0,0,900,1273);
  x.fillStyle='#082e45';x.fillRect(0,0,900,16);
@@ -1315,13 +1272,57 @@ async function photoPdfPage(e,index,total,fullProof=''){
  x.fillStyle=audit.delta>10?'#ad2626':'#235c65';x.font='bold 18px Arial';
  x.fillText(audit.status+(audit.delta!==null?' · chênh lệch khoảng '+audit.delta+' phút':''),35,284);
  x.fillStyle='#d2e1e8';x.fillRect(35,310,830,755);
- if(hasProof){
-  try{const img=await proofImage(fullProof||await highProofData(e));const ratio=Math.min(810/img.width,730/img.height);
-   const w=img.width*ratio,h=img.height*ratio,left=450-w/2,top=687-h/2;
-   if(audit.unverified&&img.src.startsWith('data:image/jpeg;base64,'))
-    cv.proofJpeg={data:img.src,width:img.width,height:img.height,x:left,y:top,w,h};
-   else x.drawImage(img,left,top,w,h);
-  }catch(_){x.fillStyle='#aa2727';x.font='bold 20px Arial';x.fillText('ẢNH LỖI / KHÔNG ĐỌC ĐƯỢC',70,690)}
+ if(proof.data){
+  try{
+   let img;
+   try{img=await proofImage(proof.data)}
+   catch(error){
+    if(proof.source!=='archive')throw error;
+    proof={source:'unverified',data:e.signature};
+    img=await proofImage(proof.data);
+   }
+   const width=img.naturalWidth||img.width,height=img.naturalHeight||img.height;
+   const maxScale=proof.source==='archive'?Infinity:1;
+   const ratio=Math.min(810/width,730/height,maxScale);
+   const w=width*ratio,h=height*ratio,left=450-w/2,top=687-h/2;
+   // Keep full-resolution evidence independent of PDF rasterization.
+   // The old code embedded an original JPEG only when audit UNVERIFIED;
+   // verified photos were re-rasterized and compressed as a page thumbnail.
+   if(img.src.startsWith('data:image/jpeg;base64,')){
+    cv.proofJpeg={data:img.src,width,height,x:left,y:top,w,h};
+   }else{
+    // PDF DCTDecode cannot embed Android WebP/PNG natively. Convert that
+    // image once at native pixel dimensions instead of flattening the page.
+    let hi=null;
+    try{
+     const maxEdge=Math.max(width,height);
+     const ratio=Math.min(1,3072/maxEdge);
+     hi=document.createElement('canvas');
+     hi.width=Math.max(1,Math.round(width*ratio));
+     hi.height=Math.max(1,Math.round(height*ratio));
+     const hctx=hi.getContext('2d',{alpha:false,colorSpace:'srgb'});
+     if(!hctx)throw Error('Cannot decode high-resolution proof');
+     hctx.fillStyle='#fff';hctx.fillRect(0,0,hi.width,hi.height);
+     hctx.imageSmoothingEnabled=true;hctx.imageSmoothingQuality='high';
+     hctx.drawImage(img,0,0,hi.width,hi.height);
+     const jpeg=hi.toDataURL('image/jpeg',.94);
+     if(!jpeg.startsWith('data:image/jpeg;base64,'))throw Error('JPEG export unavailable');
+     cv.proofJpeg={data:jpeg,width:hi.width,height:hi.height,x:left,y:top,w,h};
+    }catch(error){
+     // Keep a visible picture even on an unsupported browser.
+     x.drawImage(img,left,top,w,h);
+     proof={...proof,source:'page-raster'};
+    }finally{if(hi){hi.width=1;hi.height=1}}
+   }
+   const caption={
+    archive:'Ảnh lưu trữ từ Firebase',
+    receipt:'Ảnh trong biên nhận · độ chi tiết phụ thuộc ảnh đã lưu',
+    unverified:'Ảnh trong biên nhận · chưa đọc được ảnh lưu trữ từ Firebase',
+    'page-raster':'Ảnh chuyển sang định dạng trang PDF'
+   }[proof.source];
+   x.fillStyle=proof.source==='archive'?'#235c65':'#925226';x.font='bold 15px Arial';
+   x.fillText(caption+' · '+width+' × '+height+' px',35,1084,830);
+  }catch(_){proof={source:'unreadable'};x.fillStyle='#aa2727';x.font='bold 20px Arial';x.fillText('ẢNH LỖI / KHÔNG ĐỌC ĐƯỢC',70,690)}
  }else{x.fillStyle='#744f2a';x.font='bold 21px Arial';x.fillText('SỰ KIỆN KHÔNG CÓ ẢNH',70,690)}
  x.fillStyle='#24475b';x.font='16px Arial';x.fillText('ID bất biến: '+S(e.id||'—').slice(0,85),35,1104);
  x.font='15px Arial';pdfWrap(x,e.details||'Không có ghi chú',815).forEach((line,i)=>x.fillText(line,35,1140+22*i));
@@ -1329,6 +1330,7 @@ async function photoPdfPage(e,index,total,fullProof=''){
  x.fillText('Ảnh gồm hình camera và chữ ký. Giờ ảnh do thiết bị cung cấp, không phải đồng hồ máy chủ.',35,1202);
  x.fillText('Đối chiếu trực quan ảnh thực tế; không coi timestamp trên ảnh là bằng chứng độc lập.',35,1225);
  x.fillText('Trang '+index+'/'+total+' · chỉ những sự kiện đã tải theo bộ lọc',35,1248);
+ cv.proofSource=proof.source;
  return cv;
 }
 function pdfStoredPage(cv){
@@ -1347,7 +1349,7 @@ async function exportPhotoPdf(){
  if(a?.disabled||b?.disabled)return;
  if(/iPhone|iPad|iPod/.test(navigator.userAgent||'')&&rows.length>40)return notify('Báo cáo kèm quá 40 ảnh trên iPhone có thể khiến Safari tải lại. Chọn PDF không ảnh hoặc xuất kèm ảnh trên PC để đủ dữ liệu.',true);
  if(a)a.disabled=true;if(b)b.disabled=true;
- const proofCount=rows.filter(e=>/^data:image\/(webp|png|jpeg);base64,/.test(S(e.signature))).length;
+ const counts={archive:0,receipt:0,unverified:0,none:0,unreadable:0,'page-raster':0};
  notify('Đang tạo PDF có bảng tổng hợp và '+rows.length+' trang đối chiếu ảnh/chữ ký…');
  try{
   const scope=reportScope();
@@ -1358,15 +1360,20 @@ async function exportPhotoPdf(){
   // Limit concurrent Firebase image loads to four to control mobile memory.
   for(let i=0;i<rows.length;i+=4){
    await new Promise(done=>requestAnimationFrame(done));
-   const batch=rows.slice(i,i+4),full=await Promise.all(batch.map(e=>highProofData(e)));
-   for(let j=0;j<batch.length;j++)
-    stored.push(pdfStoredPage(await photoPdfPage(batch[j],summaryPages+i+j+1,allPages,full[j])));
+   const batch=rows.slice(i,i+4),proofs=await Promise.all(batch.map(readServerFullProof));
+   for(const [j,event] of batch.entries()){
+    const page=await photoPdfPage(event,summaryPages+i+j+1,allPages,proofs[j]);
+    counts[page.proofSource]++;
+    stored.push(pdfStoredPage(page));
+   }
   }
   if(!isAdmin(currentUser()))throw Error('Tài khoản không còn quyền AD');
   const blob=pdfBuild(stored),url=URL.createObjectURL(blob),link=document.createElement('a');
   link.href=url;link.download='SAGS-BO-DAM-'+reportDate+'-'+reportShift+'-KEM-ANH.pdf';
   document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
-  notify('Đã xuất PDF ca '+reportScope()+': '+rows.length+' sự kiện, '+proofCount+' có ảnh, '+(rows.length-proofCount)+' không có ảnh.');
+  notify('Đã xuất PDF ca '+reportScope()+' · '+counts.archive+' ảnh lưu trữ, '+counts.receipt+' ảnh biên nhận, '+
+   counts.unverified+' ảnh chưa tải được bản lưu trữ, '+(counts.none+counts.unreadable)+' mục không có ảnh đọc được'+
+   (counts['page-raster']?', '+counts['page-raster']+' ảnh chuyển theo trang':'')+'.');
  }catch(e){notify('Không xuất được PDF kèm ảnh: '+S(e?.message||e),true)}
  finally{if(a)a.disabled=false;if(b)b.disabled=false}
 }

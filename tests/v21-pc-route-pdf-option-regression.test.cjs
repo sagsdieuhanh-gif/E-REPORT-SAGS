@@ -26,7 +26,7 @@ assert(radio.includes('id="radioPdfIncludePhotos"'),'AD choice must appear in PD
 assert(radio.includes("if($('radioPdfIncludePhotos')?.checked&&isAdmin(currentUser()))return exportPhotoPdf()"),'checkbox should choose actual photo export');
 assert(!radio.includes('radioExportPhotos'),'hidden secondary photo button must be removed');
 assert(radio.includes('const summaryPages=Math.ceil(rows.length/19),allPages=summaryPages+rows.length'),'PDF with images must have both summary and evidence appendix');
-assert(radio.includes('stored.push(pdfStoredPage(await photoPdfPage('),'every event must receive a photo evidence page');
+assert(radio.includes('stored.push(pdfStoredPage(page))'),'every event must receive a photo evidence page');
 const begin2=radio.indexOf('function pdfStoredPage('),end2=radio.indexOf('async function exportPhotoPdf()',begin2);
 assert(begin2>=0&&end2>begin2);
 const jpeg='data:image/jpeg;base64,'+Buffer.from([255,216,255,217]).toString('base64');
