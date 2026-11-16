@@ -43,7 +43,9 @@ assert(wf.includes("vars.SAGS_STANDBY_REPLICATION_ACTIVE == 'true'"),'Schedule m
 assert(wf.includes("secrets.SAGS_STANDBY_SUPABASE_SERVICE_ROLE_KEY"),'Keys must be GitHub encrypted secrets');
 assert(wf.includes("secrets.SAGS_STANDBY_FIREBASE_SERVICE_ACCOUNT_JSON"),'Firebase machine credentials must be server-side');
 const test=cp.spawnSync(process.execPath,['firebase/functions/standby-replicate.cjs','--apply'],
- {encoding:'utf8',env:{PATH:process.env.PATH}});
+ {encoding:'utf8',env:{PATH:process.env.PATH,
+  SAGS_STANDBY_SUPABASE_URL:'https://wggirxzdcfnxyjgjvpgh.supabase.co',
+  SAGS_STANDBY_SUPABASE_SERVICE_ROLE_KEY:'synthetic-never-valid'}});
 assert.notEqual(test.status,0,'Missing secrets must refuse to write');
 assert.match(test.stderr,/STANDBY NOT READY/);
 assert.match(test.stderr,/server credentials are not configured/);
