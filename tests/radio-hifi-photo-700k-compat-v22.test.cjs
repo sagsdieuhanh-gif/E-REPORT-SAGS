@@ -14,7 +14,8 @@ assert(app.includes("serverOld=combineFullProof('old',COMPAT_PROOF_LIMIT)"));
 assert(app.includes('if((usedCompactOnly||usedCompatibleProof)&&hiOld)'),'Keep full original locally when server rejects large evidence');
 assert(app.includes("const local=allowLocal?await readLocalFullProof(e):'';"),'Only actor preview can prefer local full-resolution backup');
 assert(app.includes("if(local&&local.length>d.image.length)"),'Show higher-quality local original on recording iPhone');
-assert(app.includes("const img=await proofImage(fullProof||await highProofData(e))"),'Official AD PDF MUST use server evidence, not an unverified local photo');
+assert(app.includes("const actualProof=fullProof||await highProofData(e)"),'Official AD PDF MUST use server evidence, not unverified local photo');
+assert(app.includes("const img=await proofImage(actualProof)"),'Photo source passed to original-resolution PDF renderer');
 assert(app.includes("const factor=/iPhone|iPad|iPod/.test(navigator.userAgent||'')?1:1.6;"),'Desktop PDF appendix should be rendered at higher DPI');
 for(const body of [rules,snippet]){
  assert(body.includes("request.resource.data.image.size() <= 700000"),'Firestore authorizes quality up to 700k characters');
