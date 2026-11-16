@@ -108,7 +108,7 @@ function tpl(){
 
 function nativeMode(action=mode){
  return ['ISSUE','RETURN'].includes(action)&&
-  (/iPhone|iPad|iPod/.test(navigator.userAgent||'')||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1));
+  (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent||'')||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1));
 }
 function openNativeCamera(){
  if(busy||!choice||currentUser().uid!==signingUid)return;
@@ -151,7 +151,7 @@ async function decodeNativePhoto(file,clock,code){
   image.style.imageOrientation='from-image';
   await new Promise((resolve,reject)=>{
    image.onload=resolve;
-   image.onerror=()=>reject(Error('Safari không đọc được ảnh. Cập nhật iOS hoặc chọn Camera → Định dạng → Tương thích nhất (JPEG), rồi chụp lại.'));
+   image.onerror=()=>reject(Error('Không giải mã được ảnh từ camera. Hãy dùng camera mặc định và thử chụp lại ở định dạng JPEG (iPhone: Cài đặt → Camera → Định dạng → Tương thích nhất).'));
    image.src=preview;
   });
   image.onload=null;image.onerror=null;
