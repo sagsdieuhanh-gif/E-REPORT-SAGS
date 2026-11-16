@@ -12,7 +12,7 @@ assert(radio.includes("root.indexedDB.open('sags-radio-photo-local-v22',1)"),'Lo
 assert(radio.includes('localProofKey(uid,code,action,photo.at)'),'Backups must be identified by actor, device, action and capture timestamp');
 assert(radio.includes('if(!at||!user.uid||user.uid!==e.actorUid)return'), 'Never show another account’s local photo');
 assert(radio.includes('const data=await highProofData(e,true)'),'Viewer may show clear device-only picture');
-assert(radio.includes("const img=await proofImage(fullProof||await highProofData(e))"),'Official PDF remains server-verified; never use local photo backup in PDF');
+assert(radio.includes("const actualProof=fullProof||await highProofData(e)")&&radio.includes("const img=await proofImage(actualProof)"),'Official PDF remains server-verified; never use local photo backup in PDF');
 assert(!radio.includes('proofReadDenied=true'),'One old missing photo cannot permanently disable all high-quality evidence');
 assert(radio.includes('AD thiết bị khác xem ảnh nén'),'Failure to save high-res on Firebase must be disclosed');
 assert(!gate.includes("throw gateError('SAGS_RADIO_OVERDUE'"),'Prior-day radio should only trigger reminders, not a blocked report');
