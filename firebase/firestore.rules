@@ -1178,7 +1178,7 @@ service cloud.firestore {
         'lastEventId','updatedAt'])
         && d.keys().hasOnly(['schemaVersion','code','label','status','holderUid',
         'holderName','shift','faultCode','faultDetail','battery','version',
-        'lastEventId','updatedAt'])
+        'lastEventId','updatedAt','heldSince'])
         && d.schemaVersion == 1
         && d.code == code
         && code.matches('^[A-Z0-9]+') && code.size() >= 3 && code.size() <= 12
@@ -1194,6 +1194,9 @@ service cloud.firestore {
         && d.lastEventId is string && d.lastEventId.size() >= 1
         && d.lastEventId.size() <= 150
         && d.updatedAt == request.time
+        && (d.status == 'OUT'
+          ? d.get('heldSince', d.updatedAt) is timestamp
+          : d.get('heldSince', null) == null)
         && (d.status == 'OUT' ? d.holderUid.size() > 0 : d.holderUid == '')
         && (d.status != 'OUT' ? d.holderName == '' : d.holderName.size() > 0);
     }
@@ -1206,37 +1209,69 @@ service cloud.firestore {
         && getAfter(/databases/$(database)/documents/sags_radio_events_v1/$(d.lastEventId)).data.actorUid == request.auth.uid
         && getAfter(/databases/$(database)/documents/sags_radio_events_v1/$(d.lastEventId)).data.at == request.time;
     }
-    function radioTransition(old, next, action) {
+    function radioTransition(old, next, e) {
+      let action = e.action;
+      let oldHeldSince = old.get('heldSince', old.updatedAt);
       return
-        // Issue to the authenticated person only.
-        (action in ['ISSUE','SWAP_IN'] && old.status == 'READY'
+        // An existing fault/charging flag is informational. Allow receipt
+        // even when old clients have left legacy FAULT/CHARGING statuses.
+        (action in ['ISSUE','SWAP_IN'] && old.status in ['READY','FAULT','CHARGING']
+          && old.holderUid == '' && old.faultCode != 'LOST'
           && next.status == 'OUT' && next.holderUid == request.auth.uid
-          && next.battery in ['FULL','GOOD']
-          && next.holderName.size() > 0 && next.faultCode == '')
-        // Custodian or AD can return. Needs explicit battery state.
+          && next.get('heldSince', next.updatedAt) == request.time
+          && next.holderName.size() > 0
+          && next.battery in ['FULL','GOOD','LOW','EMPTY']
+          && next.faultCode == old.faultCode
+          && next.faultDetail == old.faultDetail)
+        // Returning a radio never isolates it, including with a low battery.
+        // Retain all existing fault details for monitoring.
         || (action == 'RETURN' && old.status == 'OUT'
           && (old.holderUid == request.auth.uid || isAdmin())
-          && next.status in ['READY','CHARGING']
-          && (next.status == 'READY' ? next.battery in ['FULL','GOOD'] : true)
-          && next.holderUid == ''
-          && (next.status == 'CHARGING'
-             ? next.battery in ['LOW','EMPTY'] && next.faultCode == 'BATTERY_WEAK'
-             : next.faultCode == ''))
-        // Atomic swap: old machine quarantined/charging.
+          && next.status == 'READY' && next.holderUid == ''
+          && next.holderName == '' && next.shift == ''
+          && next.battery in ['FULL','GOOD','LOW','EMPTY']
+          && ((next.faultCode == old.faultCode
+              && (next.battery in ['FULL','GOOD'] || old.faultCode != ''))
+            || (old.faultCode == '' && next.faultCode == 'BATTERY_WEAK'
+              && next.battery in ['LOW','EMPTY']))
+          && (next.faultDetail == old.faultDetail
+            || (old.faultDetail == '' && next.battery in ['LOW','EMPTY']
+              && next.faultCode == 'BATTERY_WEAK')))
+        // Atomic swap: returned set remains READY with an advisory fault
+        // while the new radio becomes held by the employee.
         || (action == 'SWAP_OUT' && old.status == 'OUT'
           && (old.holderUid == request.auth.uid || isAdmin())
-          && next.status in ['FAULT','CHARGING']
-          && next.faultCode != '' && next.holderUid == '')
-        // Report bad radio, immediately remove from circulation.
-        || (action == 'REPORT' && old.status in ['READY','OUT']
-          && (old.status == 'READY' || old.holderUid == request.auth.uid || isAdmin())
-          && next.status in ['FAULT','CHARGING','LOST']
-          && next.faultCode != '' && next.holderUid == '')
-        // Only AD can make fault/charging/lost radio available again.
+          && next.status == 'READY' && next.faultCode != ''
+          && next.faultCode != 'LOST' && next.faultCode == e.reasonCode
+          && next.holderUid == '' && next.holderName == ''
+          && next.shift == '')
+        // REPORT is an immutable fault log, not a custody transfer.
+        // A genuinely lost radio is separately marked LOST.
+        || (action == 'REPORT'
+          && old.status in ['READY','OUT','FAULT','CHARGING'] && old.faultCode != 'LOST'
+          && (old.status != 'OUT'
+            || old.holderUid == request.auth.uid || isAdmin())
+          && next.faultCode != '' && next.faultCode == e.reasonCode
+          && ((next.faultCode == 'LOST'
+              && next.status == 'LOST'
+              && next.holderUid == '' && next.holderName == '' && next.shift == '')
+            || (next.faultCode != 'LOST'
+              && next.status == old.status
+              && next.holderUid == old.holderUid
+              && next.holderName == old.holderName
+              && next.shift == old.shift
+              && (old.status != 'OUT' || next.get('heldSince', null) == oldHeldSince))))
+        // AD may clear a recorded warning without unlocking or changing
+        // the current custodian. LOST needs confirmation of recovery.
         || (action == 'RELEASE' && isAdmin()
-          && old.status in ['FAULT','CHARGING','LOST']
-          && next.status == 'READY' && next.holderUid == ''
-          && next.faultCode == '' && next.battery == 'GOOD');
+          && (old.faultCode != '' || old.status in ['FAULT','CHARGING','LOST'])
+          && next.status == (old.status == 'OUT' ? 'OUT' : 'READY')
+          && next.holderUid == (old.status == 'OUT' ? old.holderUid : '')
+          && next.holderName == (old.status == 'OUT' ? old.holderName : '')
+          && next.shift == (old.status == 'OUT' ? old.shift : '')
+          && next.faultCode == '' && next.faultDetail == ''
+          && next.battery == old.battery
+          && (old.status != 'OUT' || next.get('heldSince', null) == oldHeldSince));
     }
     function radioDeviceUpdate(code) {
       let old = resource.data;
@@ -1250,7 +1285,7 @@ service cloud.firestore {
         && d.lastEventId != old.lastEventId
         && radioEventLink(code, d, old.status)
         && radioEventShape(e)
-        && radioTransition(old, d, e.action);
+        && radioTransition(old, d, e);
     }
     match /sags_radio_devices_v1/{code} {
       allow read: if activeUser();
