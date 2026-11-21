@@ -50,7 +50,7 @@ function explicitDutyEnd(item){
 function evaluate(assignments,machines,uid,nowMs=Date.now()){
  const active=assignments.filter(isEligible),held=machines.filter(d=>d.status==='OUT'&&d.holderUid===uid);
  const primary=held[0]||null;
- const serverMs=d=>d.updatedAt?.toMillis?.()||d.updatedAt?.toDate?.()?.getTime?.()||0;
+ const serverMs=d=>{const t=d.heldSince||d.updatedAt;return t?.toMillis?.()||t?.toDate?.()?.getTime?.()||0;};
  if(primary){
   const overdue=held.some(d=>serverMs(d)>0&&shiftKeyVN(serverMs(d))!==shiftKeyVN(nowMs));
   const finished=active.length>0&&active.every(isDone);

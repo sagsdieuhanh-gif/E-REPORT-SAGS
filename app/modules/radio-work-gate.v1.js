@@ -50,7 +50,7 @@ const RADIOS='sags_radio_devices_v1';
   if(held.length!==1)throw gateError('SAGS_RADIO_MULTIPLE','Tài khoản đang ghi nhận giữ nhiều hơn một bộ đàm. Vui lòng liên hệ AD đối soát và trả máy thừa trước khi làm report.');
   // Only signed, server-confirmed custody gates flight access. Shift changes
   // and missing/odd radio timestamps are advisory; never block opening work.
-  const device=held[0],details=device.data(),receivedMs=radioTimestampMs(details?.updatedAt);
+  const device=held[0],details=device.data(),receivedMs=radioTimestampMs(details?.heldSince||details?.updatedAt);
   const now=Date.now(),current=radioShiftAt(now);
   const issued=Number.isFinite(receivedMs)&&receivedMs>0&&receivedMs<=now+5*60000
    ?radioShiftAt(receivedMs):null;

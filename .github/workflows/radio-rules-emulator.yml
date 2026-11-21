@@ -10,6 +10,12 @@ on:
       - 'firebase.radio-test.json'
       - 'tests/radio-firestore-emulator.mjs'
       - '.github/workflows/radio-rules-emulator.yml'
+  pull_request:
+    paths:
+      - 'firebase/firestore.rules'
+      - 'firebase/radio-custody.rules.snippet'
+      - 'tests/radio-firestore-emulator.mjs'
+      - '.github/workflows/radio-rules-emulator.yml'
   workflow_dispatch:
 permissions:
   contents: read

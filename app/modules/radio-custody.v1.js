@@ -26,9 +26,12 @@ const RETURN_REASONS=Object.freeze({
  STOP_USE:'Không tiếp tục sử dụng',
  OTHER:'Lý do khác'
 });
-// One radio custody shift is AM 08:00–18:15 or PM 18:16–07:59 next day (advisory only) (VN).
-const STATUSES={READY:'Sẵn sàng',OUT:'Đang sử dụng',CHARGING:'Đang sạc',FAULT:'Cần kiểm tra / khóa cấp',LOST:'Thất lạc'};
-const ACTS={INIT:'Khởi tạo',ISSUE:'Nhận máy',RETURN:'Trả máy',REPORT:'Báo sự cố',SWAP_OUT:'Đổi – trả máy cũ',SWAP_IN:'Đổi – nhận máy mới',RELEASE:'Mở lại / sạc xong'};
+// Advisory shift in Vietnam time: AM 08:00–18:15; PM 18:16–07:59 next day.
+const STATUSES={READY:'Sẵn sàng',OUT:'Đang sử dụng',CHARGING:'Đang sạc / có cảnh báo (vẫn được nhận)',FAULT:'Đã ghi nhận lỗi (vẫn được nhận)',LOST:'Thất lạc'};
+const radioIssueable=d=>!!d&&['READY','CHARGING','FAULT'].includes(d.status)&&!d.holderUid&&d.faultCode!=='LOST';
+const hasRadioWarning=d=>!!d.faultCode||['CHARGING','FAULT','LOST'].includes(d.status);
+const radioHeldSince=d=>d.heldSince||d.updatedAt;
+const ACTS={INIT:'Khởi tạo',ISSUE:'Nhận máy',RETURN:'Trả máy',REPORT:'Báo sự cố',SWAP_OUT:'Đổi – trả máy cũ',SWAP_IN:'Đổi – nhận máy mới',RELEASE:'Đã xử lý thông tin lỗi'};
 let unsubs=[],devices=[],events=[],busy=false,connected=false,choice=null,mode='ISSUE',canvasDirty=false,strokes=[],drawing=false,dateFilter='all';
 let cameraStream=null,cameraToken=0,cameraLeg='old',photos={old:null,new:null},historyStop=null,historyVerified=false;
 const radioScriptUrl=document.currentScript?.src;
@@ -707,7 +710,7 @@ async function start(action,code){
  if(!connected||!navigator.onLine)return notify('Chưa kết nối Firebase. Không thể ký nhận khi chưa đồng bộ trạng thái máy.',true);
  if(action==='ISSUE'&&heldBy(u.uid).length)return notify('Bạn đang giữ '+heldBy(u.uid).map(x=>label(x.code)).join(', ')+'. Phải ký trả máy đang giữ trước khi nhận máy khác.',true);
  if(action==='SWAP_OUT'&&heldBy(u.uid).some(x=>x.code!==code))return notify('Bạn đang giữ bộ đàm khác. Phải trả máy đó trước khi đổi máy.',true);
- if(action==='RELEASE'&&!isAdmin(u))return notify('Chỉ AD được đưa máy trở lại sử dụng.',true);
+ if(action==='RELEASE'&&!isAdmin(u))return notify('Chỉ AD được xác nhận đã xử lý thông tin lỗi.',true);
  if(['RETURN','SWAP_OUT'].includes(action)&&d.holderUid!==u.uid&&!isAdmin(u))return notify('Máy đang được người khác sử dụng; chỉ chủ máy hoặc AD được trả.',true);
  if(nativeMode(action)){
   setBusy(true);
@@ -725,8 +728,8 @@ function showSigningForm(action,d,u){
  const code=d.code;
  resetCamera();mode=action;choice=d;nativeDraft=null;signingUid=u.uid;clearSignature();
  $('radioActionCode').value=label(code);$('radioPerson').value=u.name+' · '+u.uid.slice(0,8);
- $('radioShift').value=shift();$('radioReason').value='BATTERY_EMPTY';$('radioReturnReason').value='END_SHIFT';$('radioBattery').value='UNKNOWN';$('radioSwapBattery').value='UNKNOWN';$('radioDetail').value='';
- $('radioActionTitle').textContent=(action==='RELEASE'?'AD kiểm tra và xác nhận mở cấp lại':ACTS[action]||'Báo cáo')+' · '+label(code);
+ $('radioShift').value=shift();$('radioReason').value='BATTERY_EMPTY';$('radioReason').querySelector('option[value=LOST]').disabled=action==='SWAP_OUT';$('radioReturnReason').value='END_SHIFT';$('radioBattery').value='UNKNOWN';$('radioSwapBattery').value='UNKNOWN';$('radioDetail').value='';
+ $('radioActionTitle').textContent=(action==='RELEASE'?'AD xác nhận đã xử lý thông tin lỗi':ACTS[action]||'Báo cáo')+' · '+label(code);
  $('radioDetail').placeholder=action==='RELEASE'?
   'Ghi kết quả kiểm tra: pin, sóng phát/thu, loa, mic/PTT; máy thất lạc phải xác nhận thu hồi.':
   'Ghi cụ thể hiện tượng, thời gian, vị trí…';
@@ -734,10 +737,10 @@ function showSigningForm(action,d,u){
  $('radioBatteryWrap').hidden=action==='RELEASE';
  $('radioSwapWrap').hidden=action!=='SWAP_OUT';$('radioSwapBatteryWrap').hidden=action!=='SWAP_OUT';
  $('radioSigWrap').hidden=action==='RELEASE'||needsPhoto(action);
- const available=devices.filter(x=>x.status==='READY'&&x.code!==code);
- $('radioSwapTarget').innerHTML=available.map(x=>'<option value="'+esc(x.code)+'">'+esc(label(x.code))+'</option>').join('');
+ const available=devices.filter(x=>radioIssueable(x)&&x.code!==code);
+ $('radioSwapTarget').innerHTML=available.map(x=>'<option value="'+esc(x.code)+'">'+esc(label(x.code)+(hasRadioWarning(x)?' · Có cảnh báo':''))+'</option>').join('');
  if(action==='SWAP_OUT'&&!available.length){
-  notify('Không có máy sẵn sàng để đổi. Báo lỗi và liên hệ AD.',true);
+  notify('Không còn bộ đàm khác có thể đổi. Kiểm tra máy chưa được giao và thử lại.',true);
   return false;
  }
  $('radioCameraVideo').hidden=nativeMode(action);
@@ -772,7 +775,7 @@ function reconcileRoster(items,users,machines,history,day,which,now=Date.now()){
   if(!uid)result.unmapped.push(name);
   else if(held.length){
    const summary=name+' · '+held.map(d=>label(d.code)).join(', ');
-   if(now>=end&&held.some(d=>d.updatedAt?.toMillis?.()&&radioShiftAt(d.updatedAt.toMillis()).key===day+'/'+which))result.unreturned.push(summary);else result.holding.push(summary);
+   if(now>=end&&held.some(d=>radioHeldSince(d)?.toMillis?.()&&radioShiftAt(radioHeldSince(d).toMillis()).key===day+'/'+which))result.unreturned.push(summary);else result.holding.push(summary);
   }else if(issued.has(uid))result.completed.push(name);
   else if(now<start)result.upcoming.push(name);
   else result.missing.push(name);
@@ -842,32 +845,32 @@ function renderAdminOverview(){
  const admin=isAdmin(currentUser());panel.hidden=!admin;
  if(!admin){target.replaceChildren();return}
  const now=Date.now(),holds=devices.filter(d=>d.status==='OUT'),
-  needs=devices.filter(d=>['CHARGING','FAULT','LOST'].includes(d.status)),
-  overdue=holds.filter(d=>d.updatedAt?.toMillis?.()&&radioShiftAt(d.updatedAt.toMillis()).key!==radioShiftAt(now).key);
- const hour=d=>d.updatedAt?.toDate?.()?fmt(d.updatedAt.toDate()):'Đang đồng bộ';
+  needs=devices.filter(hasRadioWarning),
+  overdue=holds.filter(d=>radioHeldSince(d)?.toMillis?.()&&radioShiftAt(radioHeldSince(d).toMillis()).key!==radioShiftAt(now).key);
+ const hour=d=>radioHeldSince(d)?.toDate?.()?fmt(radioHeldSince(d).toDate()):'Đang đồng bộ';
  const holdItems=holds.length?holds.map(d=>{
   const late=overdue.includes(d);
   return '<li><div><strong>'+esc(label(d.code))+'</strong><span>'+esc(d.holderName||d.holderUid||'Chưa rõ người giữ')+'</span><small>'+esc(d.shift==='AM'?'Ca sáng':d.shift==='PM'?'Ca tối':'Chưa rõ ca')+' · Nhận/đổi gần nhất: '+esc(hour(d))+'</small></div>'+(late?'<em class="radioAdminWarn">Chưa trả ca trước</em>':'<em class="radioAdminNormal">Đang giữ</em>')+'</li>'
  }).join(''):'<li class="radioAdminEmpty">Không có máy đang được ghi nhận sử dụng.</li>';
  const needItems=needs.length?needs.map(d=>'<li><div><strong>'+esc(label(d.code))+'</strong><span>'+esc(STATUSES[d.status]||d.status)+'</span><small>'+esc(REASON_TEXT[d.faultCode]||d.faultDetail||'Cần xác nhận tình trạng thực tế')+'</small></div><em class="radioAdminWarn">Theo dõi</em></li>').join(''):'<li class="radioAdminEmpty">Không có máy lỗi, mất hoặc đang sạc.</li>';
- target.innerHTML='<div class="radioAdminHighlights"><div><strong>'+holds.length+'</strong><span>Đang có người giữ</span></div><div><strong>'+overdue.length+'</strong><span>Chưa trả sau chuyển ca</span></div><div><strong>'+needs.length+'</strong><span>Đang sạc / lỗi / mất</span></div></div>'+
+ target.innerHTML='<div class="radioAdminHighlights"><div><strong>'+holds.length+'</strong><span>Đang có người giữ</span></div><div><strong>'+overdue.length+'</strong><span>Chưa trả sau chuyển ca</span></div><div><strong>'+needs.length+'</strong><span>Có thông tin cần theo dõi</span></div></div>'+
   '<div class="radioAdminColumns"><div class="radioAdminPanel"><h4>Người đang giữ máy <small>'+holds.length+' máy</small></h4><ul>'+holdItems+'</ul></div>'+
   '<div class="radioAdminPanel"><h4>Máy cần theo dõi <small>'+needs.length+' máy</small></h4><ul>'+needItems+'</ul></div></div>'+
-  '<p class="radioAdminFoot"><b>Máy cần kiểm tra:</b> máy lỗi (FAULT) cách ly, không cấp phát; máy pin yếu (CHARGING) sạc rồi thử lại; máy mất (LOST) phải xác minh thu hồi. Chỉ AD sau khi kiểm tra pin, sóng, loa, mic/PTT và ghi kết quả mới được chọn “Đã kiểm tra / mở lại”.</p>'+
- '<p class="radioAdminFoot">Nhắc nhở ký trả bộ đàm khi chuyển ca (không khóa nhận/mở chuyến): ca sáng kết thúc khoảng 18:15, ca tối kết thúc khoảng 07:59 hôm sau (giờ Việt Nam).</p>';
+  '<p class="radioAdminFoot"><b>Ghi nhận thông tin:</b> bộ đàm có báo lỗi vẫn được nhận, trả, đổi và sử dụng; lỗi chỉ phục vụ theo dõi, thống kê. Máy thất lạc (LOST) cần xác minh có máy thực tế trước khi bàn giao. AD xác nhận đã xử lý ghi nhận, không phải mở khóa cấp phát.</p>'+
+ '<p class="radioAdminFoot">Nhắc nhở ký trả bộ đàm khi chuyển ca (không khóa nhận/mở chuyến): ca sáng kết thúc 18:15, ca tối kết thúc 07:59 hôm sau (giờ Việt Nam).</p>';
 }
 function render(){
  if(!$('radioDeviceList'))return;
  const u=currentUser(),held=heldBy(u.uid);$('radioSeed').hidden=!connected||!isAdmin(u)||INIT.every(code=>devices.some(x=>x.code===code));
  const counts=Object.fromEntries(Object.keys(STATUSES).map(k=>[k,devices.filter(x=>x.status===k).length]));
- $('radioStats').innerHTML='<div><strong>'+devices.length+'</strong><small>Tổng thiết bị</small></div><div><strong>'+counts.READY+'</strong><small>Sẵn sàng</small></div><div><strong>'+counts.OUT+'</strong><small>Đang giữ</small></div><div><strong>'+counts.CHARGING+'</strong><small>Đang sạc</small></div><div><strong>'+counts.FAULT+counts.LOST+'</strong><small>Lỗi / mất</small></div>';
+ $('radioStats').innerHTML='<div><strong>'+devices.length+'</strong><small>Tổng thiết bị</small></div><div><strong>'+counts.READY+'</strong><small>Sẵn sàng</small></div><div><strong>'+counts.OUT+'</strong><small>Đang giữ</small></div><div><strong>'+counts.CHARGING+'</strong><small>Đang sạc</small></div><div><strong>'+devices.filter(hasRadioWarning).length+'</strong><small>Thông tin lỗi / mất</small></div>';
  renderAdminOverview();renderRosterAlert();
  $('radioDeviceList').innerHTML=devices.length?devices.map(d=>{
   const mine=d.holderUid===u.uid,admin=isAdmin(u),buttons=[];
-  if(connected&&d.status==='READY'){if(!held.length)buttons.push(['ISSUE','Ký nhận']);buttons.push(['REPORT','Báo lỗi'])}
+  if(connected&&radioIssueable(d)){if(!held.length)buttons.push(['ISSUE','Ký nhận']);buttons.push(['REPORT','Báo lỗi'])}
   if(connected&&d.status==='OUT'&&(mine||admin))buttons.push(['RETURN','Trả máy'],['SWAP_OUT','Đổi máy'],['REPORT','Báo lỗi']);
-  if(connected&&['FAULT','CHARGING','LOST'].includes(d.status)&&admin)buttons.push(['RELEASE','Đã kiểm tra / mở lại']);
-  const status=d.status==='OUT'?'Đang giữ: '+esc(d.holderName||d.holderUid.slice(0,8)):(d.faultCode?('Lý do: '+esc(REASON_TEXT[d.faultCode]||d.faultCode)):'');
+  if(connected&&admin&&hasRadioWarning(d))buttons.push(['RELEASE',d.status==='LOST'||d.faultCode==='LOST'?'Xác nhận đã tìm thấy':'Đã xử lý ghi nhận']);
+  const status=(d.status==='OUT'?'Đang giữ: '+esc(d.holderName||d.holderUid.slice(0,8)):'')+(d.faultCode?(' · Lỗi ghi nhận: '+esc(REASON_TEXT[d.faultCode]||d.faultCode)):'')+(d.faultDetail?(' · '+esc(d.faultDetail)):'');
   return '<article class="radioDevice"><div><strong>'+esc(label(d.code))+'</strong>'+badge(d.status)+'<small>'+status+'</small></div><div class="radioButtons">'+buttons.map(([a,n])=>'<button type="button" data-radio-act="'+a+'" data-radio-code="'+esc(d.code)+'">'+n+'</button>').join('')+'</div></article>'
  }).join(''):'<p class="radioEmpty">'+(connected?'Chưa có mã máy. AD hãy khởi tạo danh mục bộ đàm từ sổ giấy.':'Chưa xác nhận kết nối Firebase. Không thể ký nhận cho đến khi kích hoạt.')+'</p>';
  if(held.length&&!isAdmin(u))$('radioDeviceList').insertAdjacentHTML('afterbegin','<p class="radioHeldNotice">📻 Bạn đang giữ '+esc(held.map(x=>label(x.code)).join(', '))+'. Hãy ký trả trước khi nhận máy khác; thao tác Đổi máy được thực hiện đồng thời.</p>');
@@ -970,10 +973,10 @@ function renderSummary(){
    '</div>'+radioShiftDeviceMatrix(rows)+'<p class="radioHint">Tổng '+rows.length+' sự kiện theo bộ lọc. Số lượt không phải số máy hiện còn giữ; trạng thái hiện tại không dùng để suy ra lịch sử ca trước.</p>';
   return;
  }
- const n=events.filter(x=>['SWAP_OUT'].includes(x.action)).length,issues=events.filter(x=>['REPORT','SWAP_OUT'].includes(x.action)),pending=devices.filter(x=>['FAULT','CHARGING','LOST'].includes(x.status));
- const now=Date.now(),using=devices.filter(x=>x.status==='OUT'),overdue=using.filter(x=>x.updatedAt?.toMillis?.()&&radioShiftAt(x.updatedAt.toMillis()).key!==radioShiftAt(now).key);
+ const n=events.filter(x=>['SWAP_OUT'].includes(x.action)).length,issues=events.filter(x=>['REPORT','SWAP_OUT'].includes(x.action)||(x.action==='RETURN'&&x.reasonCode==='BATTERY_WEAK')),pending=devices.filter(hasRadioWarning);
+ const now=Date.now(),using=devices.filter(x=>x.status==='OUT'),overdue=using.filter(x=>radioHeldSince(x)?.toMillis?.()&&radioShiftAt(radioHeldSince(x).toMillis()).key!==radioShiftAt(now).key);
  const admin=isAdmin(currentUser()),holds=using.map(x=>'<p>'+esc(label(x.code))+' · '+esc(x.holderName||'Không rõ người nhận')+(overdue.includes(x)?' <strong class="radioOverdue">CHƯA TRẢ CA TRƯỚC</strong>':'')+'</p>').join('');
- $('radioSummary').innerHTML='<div class="radioReportGrid"><div><strong>'+n+'</strong><small>Lần đổi máy (lịch sử gần đây)</small></div><div><strong>'+issues.length+'</strong><small>Lần ghi nhận vấn đề</small></div><div><strong>'+pending.length+'</strong><small>Máy cần xử lý ngay</small></div>'+(admin?'<div><strong>'+overdue.length+'</strong><small>Chưa trả ca trước</small></div>':'')+'</div><h4>Cần kiểm tra</h4>'+(pending.length?pending.map(d=>'<p>'+esc(label(d.code))+' · '+esc(STATUSES[d.status])+' · '+esc(REASON_TEXT[d.faultCode]||'')+'</p>').join(''):'<p>Không có máy đang treo trạng thái lỗi/sạc.</p>')+(admin?'<h4>Đang sử dụng / đối soát người giữ</h4>'+(using.length?holds:'<p>Tất cả máy đã được trả hoặc chưa cấp.</p>'):'')+'<p class="radioHint">Mốc nhắc trả máy: ca sáng 18:15, ca tối 07:59 hôm sau; có thể tiếp tục làm việc và bàn giao sau mốc này. Không khóa mở chuyến do đổi ca. Giờ máy chủ Firebase là thời điểm ghi nhận.</p><p class="radioHint">Báo cáo này chỉ tổng hợp sự kiện đã tải. Báo cáo ngày/tuần chính thức được tính trên máy chủ, không dựa vào giới hạn 120 mục.</p>';
+ $('radioSummary').innerHTML='<div class="radioReportGrid"><div><strong>'+n+'</strong><small>Lần đổi máy (lịch sử gần đây)</small></div><div><strong>'+issues.length+'</strong><small>Lần ghi nhận vấn đề</small></div><div><strong>'+pending.length+'</strong><small>Máy cần theo dõi</small></div>'+(admin?'<div><strong>'+overdue.length+'</strong><small>Chưa trả ca trước</small></div>':'')+'</div><h4>Cần kiểm tra</h4>'+(pending.length?pending.map(d=>'<p>'+esc(label(d.code))+' · '+esc(STATUSES[d.status])+' · '+esc(REASON_TEXT[d.faultCode]||'')+'</p>').join(''):'<p>Không có cảnh báo đang theo dõi.</p>')+(admin?'<h4>Đang sử dụng / đối soát người giữ</h4>'+(using.length?holds:'<p>Tất cả máy đã được trả hoặc chưa cấp.</p>'):'')+'<p class="radioHint">Ca sáng hết 18:15, ca tối hết 07:59 hôm sau; có thể tiếp tục mở chuyến và bàn giao sau mốc chuyển ca. Giờ máy chủ Firebase là thời điểm ghi nhận.</p><p class="radioHint">Báo cáo này chỉ tổng hợp sự kiện đã tải. Báo cáo ngày/tuần chính thức được tính trên máy chủ, không dựa vào giới hạn 120 mục.</p>';
 }
 function evidenceDetails(details,captureMs,clock){
  if(!Number.isFinite(captureMs)||captureMs<=0)return details;
@@ -1007,7 +1010,8 @@ function updateDevice(tx,ref,device,action,after,options){
    deviceCode:device.code,action,capturedAtMs:options.photoAt,image:options.fullProof
   });
  }
- tx.update(ref,{...after,version:device.version+1,lastEventId:evRef.id,updatedAt:fv()});
+ const heldSince=after.status!=='OUT'?null:device.status==='OUT'?radioHeldSince(device):fv();
+ tx.update(ref,{...after,heldSince,version:device.version+1,lastEventId:evRef.id,updatedAt:fv()});
 }
 async function transactionInventory(tx,db,primary,secondary=''){
  // All currently registered devices are transactionally read before any write.
@@ -1027,15 +1031,16 @@ async function submit(){
  $('radioShift').value=shiftVal; // the authoritative shift is assigned at signing, not manually selected
  if(mode==='RETURN'&&returnReason==='OTHER'&&rawDetail.length<10)return notify('Lý do trả khác cần mô tả ít nhất 10 ký tự.',true);
  const details=mode==='RETURN'?('Lý do trả: '+(RETURN_REASONS[returnReason]||RETURN_REASONS.END_SHIFT)+(rawDetail?' · '+rawDetail:'')):rawDetail;
+ if(mode==='SWAP_OUT'&&reason==='LOST')return notify('Máy thất lạc cần được báo riêng, không thể đổi máy đang báo mất.',true);
  if(['REPORT','SWAP_OUT'].includes(mode)&&(reason==='OTHER'||reason==='LOST')&&details.length<10)return notify('Vui lòng mô tả lý do cụ thể (từ 10 ký tự).',true);
  if(mode==='RELEASE'){
   if(details.length<20)return notify('AD phải ghi kết quả kiểm tra ít nhất 20 ký tự: pin, sóng, loa, mic/PTT và tình trạng thực tế.',true);
-  if(!root.confirm('XÁC NHẬN ĐÃ KIỂM TRA TRỰC TIẾP '+label(code)+'?\n\nMáy chỉ được mở cấp lại sau khi pin, sóng phát/thu, loa và mic/PTT hoạt động tốt. Máy đã báo mất phải được thu hồi.\n\nKết quả đã ghi sẽ được lưu trên Firebase.'))return notify('Chưa xác nhận kiểm tra. Máy vẫn khóa cấp phát.',true);
+  if(!root.confirm('XÁC NHẬN ĐÃ XỬ LÝ THÔNG TIN LỖI CHO '+label(code)+'?\n\nChỉ cập nhật ghi nhận, KHÔNG phải mở khóa sử dụng. Máy báo mất phải xác minh đã tìm thấy thực tế.\n\nKết quả lưu trong lịch sử Firebase.'))return notify('Chưa xác nhận cập nhật thông tin lỗi.',true);
  }
  let sig='',sigNew='',hiOld='',hiNew='',serverOld='',serverNew='',usedLegacyPng=false,usedCompactOnly=false,usedCompatibleProof=false;try{if(mode!=='RELEASE'){signature();if(needsPhoto(mode)){if(!photosReady())throw Error('Phải chụp ảnh bằng camera trước khi ký.');if((!nativeDraft&&Date.now()-photos.old.at>600000)||(mode==='SWAP_OUT'&&Date.now()-photos.new.at>600000))throw Error('Ảnh quá 10 phút, vui lòng chụp lại.')}}}catch(e){return notify(e.message,true)}
  if(['ISSUE','RETURN'].includes(mode)&&bat==='UNKNOWN')return notify('Vui lòng kiểm tra mức pin trước khi nhận hoặc trả máy.',true);
- if(mode==='ISSUE'&&['LOW','EMPTY'].includes(bat))return notify('Máy pin yếu/hết pin không được cấp phát. Báo lỗi pin để đưa máy về trạng thái chờ sạc.',true);
- if(mode==='SWAP_OUT'&&!['FULL','GOOD'].includes(swapBattery))return notify('Vui lòng kiểm tra máy thay thế có pin Đầy hoặc Đủ dùng trước khi đổi.',true);
+ // Battery condition is an advisory record; preserve it without blocking issue.
+ if(mode==='SWAP_OUT'&&swapBattery==='UNKNOWN')return notify('Vui lòng ghi mức pin máy thay thế trước khi đổi.',true);
  if(nativeMode()&&(!nativeDraft||nativeDraft.uid!==user.uid))return notify('Phiên ký nhận đã thay đổi. Hãy mở lại bản nháp của tài khoản này.',true);
  if(!connected)return notify('Chưa xác nhận kết nối Firebase. Không thể ghi nhận.',true);
  if(!navigator.onLine)return notify('Đang ngoại tuyến: không cho phép nhận/trả vì có thể xảy ra nhận trùng máy.',true);
@@ -1083,10 +1088,10 @@ async function submit(){
    const inventory=await transactionInventory(tx,db,code,other),a=inventory.get(code),b=inventory.get(other);
     assertSingleHolder(inventory,user.uid,code);
    if(!a||a.status!=='OUT'||(!isAdmin(user)&&a.holderUid!==user.uid))throw Error('Máy cũ không còn hợp lệ để đổi.');
-   if(!b||b.status!=='READY')throw Error('Máy thay thế vừa có người nhận. Vui lòng chọn máy khác.');
-   const oldNew={status:['BATTERY_EMPTY','BATTERY_WEAK'].includes(reason)?'CHARGING':'FAULT',holderUid:'',holderName:'',shift:'',faultCode:reason,faultDetail:details,battery:bat};
+   if(!radioIssueable(b))throw Error('Máy thay thế đang được giữ hoặc báo mất. Vui lòng chọn máy khác.');
+   const oldNew={status:'READY',holderUid:'',holderName:'',shift:'',faultCode:reason,faultDetail:details,battery:bat};
    updateDevice(tx,ref,a,'SWAP_OUT',oldNew,{user,shift:shiftVal,reason,details:evidenceDetails(details,photos.old?.at),sig,related:other,swapId,fullProof:withFull?serverOld:'',photoAt:photos.old?.at});
-   const newNew={status:'OUT',holderUid:user.uid,holderName:user.name,shift:shiftVal,faultCode:'',faultDetail:'',battery:swapBattery};
+   const newNew={status:'OUT',holderUid:user.uid,holderName:user.name,shift:shiftVal,faultCode:b.faultCode||'',faultDetail:b.faultDetail||'',battery:swapBattery};
    updateDevice(tx,ref2,b,'SWAP_IN',newNew,{user,shift:shiftVal,reason,details:evidenceDetails(details,photos.new?.at),sig:sigNew,related:code,swapId,fullProof:withFull?serverNew:'',photoAt:photos.new?.at});
   });
  }else{
@@ -1097,15 +1102,18 @@ async function submit(){
     if(d.version!==nativeDraft.deviceVersion)throw Error('Thiết bị đã có giao dịch khác. Kiểm tra lịch sử trước khi tiếp tục.');
    }
    let after,action=mode,reasonCode=reason;
-   if(mode==='ISSUE'){assertSingleHolder(inventory,user.uid);if(d.status!=='READY')throw Error('Máy đã được nhận hoặc chưa sẵn sàng.');after={status:'OUT',holderUid:user.uid,holderName:user.name,shift:shiftVal,faultCode:'',faultDetail:'',battery:bat};reasonCode='';}
+   if(mode==='ISSUE'){assertSingleHolder(inventory,user.uid);if(!radioIssueable(d))throw Error('Máy đang được giữ hoặc báo mất.');after={status:'OUT',holderUid:user.uid,holderName:user.name,shift:shiftVal,faultCode:d.faultCode||'',faultDetail:d.faultDetail||'',battery:bat};reasonCode='';}
    else if(mode==='RETURN'){
     if(d.status!=='OUT'||(d.holderUid!==user.uid&&!isAdmin(user)))throw Error('Chỉ người đang giữ máy hoặc AD được trả.');
-    const f=bat==='EMPTY'||bat==='LOW';after={status:f?'CHARGING':'READY',holderUid:'',holderName:'',shift:'',faultCode:f?'BATTERY_WEAK':'',faultDetail:f?details:'',battery:bat};reasonCode=f?'BATTERY_WEAK':'';}
+    const low=bat==='EMPTY'||bat==='LOW',fault=d.faultCode||(low?'BATTERY_WEAK':'');
+    after={status:'READY',holderUid:'',holderName:'',shift:'',faultCode:fault,faultDetail:d.faultDetail||(low?'Pin yếu/hết pin lúc trả bộ đàm':''),battery:bat};reasonCode=low?'BATTERY_WEAK':'';}
    else if(mode==='REPORT'){
-    if(d.status!=='OUT'&&d.status!=='READY')throw Error('Không thể ghi sự cố trên trạng thái hiện tại.');
+    if(d.status==='LOST'||d.faultCode==='LOST')throw Error('Máy đang báo thất lạc, phải xác minh thu hồi trước khi ghi nhận tiếp.');
     if(d.status==='OUT'&&d.holderUid!==user.uid&&!isAdmin(user))throw Error('Chỉ người giữ hoặc AD được báo lỗi máy đang dùng.');
-    after={status:reason==='LOST'?'LOST':['BATTERY_EMPTY','BATTERY_WEAK'].includes(reason)?'CHARGING':'FAULT',holderUid:'',holderName:'',shift:'',faultCode:reason,faultDetail:details,battery:bat};}
-   else if(mode==='RELEASE'){if(!isAdmin(user)||!['FAULT','CHARGING','LOST'].includes(d.status))throw Error('Chỉ AD mới có thể xác nhận máy đủ điều kiện sử dụng.');after={status:'READY',holderUid:'',holderName:'',shift:'',faultCode:'',faultDetail:'',battery:'GOOD'};reasonCode='';}
+    after=reason==='LOST'?{status:'LOST',holderUid:'',holderName:'',shift:'',faultCode:reason,faultDetail:details,battery:bat}:
+     {status:d.status,holderUid:d.holderUid,holderName:d.holderName,shift:d.shift,faultCode:reason,faultDetail:details,battery:bat};}
+   else if(mode==='RELEASE'){if(!isAdmin(user)||!hasRadioWarning(d))throw Error('Không có thông tin lỗi cần xác nhận.');
+    after={status:d.status==='OUT'?'OUT':'READY',holderUid:d.status==='OUT'?d.holderUid:'',holderName:d.status==='OUT'?d.holderName:'',shift:d.status==='OUT'?d.shift:'',faultCode:'',faultDetail:'',battery:d.battery};reasonCode='';}
    else throw Error('Tác vụ không được hỗ trợ.');
    updateDevice(tx,ref,d,action,after,{user,shift:shiftVal,reason:reasonCode,details:evidenceDetails(details,photos.old?.at,photos.old?.clock),sig,related:'',swapId:'',fullProof:withFull?serverOld:'',photoAt:photos.old?.at,eventId:nativeDraft?.id});
   });
