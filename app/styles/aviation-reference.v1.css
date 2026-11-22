@@ -2025,3 +2025,82 @@ html.new-ui-v1 body :is(#sagsSettingsCenter,#fwcModal,#dailyRosterModal,#fleetMa
     grid-template-columns:228px minmax(0,1fr)!important;
   }
 }
+
+
+/* A/C LIMITS LIGHT SURFACE CONTRAST · V1.2 HOTFIX 2026-11-22 */
+/* The ACL editor is a light document surface even when the surrounding app is dark.
+   Scope to the actual dialog, not paper templates or other form widgets. */
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal .acls-panel{
+  background:#edf3f8!important;
+  color:#18334a!important;
+  -webkit-text-fill-color:#18334a!important;
+  color-scheme:light!important;
+}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal :is(.acls-step,.acls-type,.acls-help,.acls-role,.acls-item,.acls-day-body,.acls-manage-card){
+  background:#fff!important;
+  color:#18334a!important;
+  -webkit-text-fill-color:#18334a!important;
+  border-color:#cbd9e5!important;
+  color-scheme:light!important;
+}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal :is(.acls-step-title,.acls-type>label,.acls-grid>label,.acls-chip,.acls-roles .acls-role,.acls-help summary,.acls-item-head b,.acls-select,.acls-day-head label){
+  color:#17324d!important;
+  -webkit-text-fill-color:#17324d!important;
+  font-weight:800!important;
+  opacity:1!important;
+}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal :is(.acls-hint,.acls-sub,.acls-meta,.acls-state,.acls-day-head span,.acls-date-hint,.acls-filter-label,.acls-help li){
+  color:#40586d!important;
+  -webkit-text-fill-color:#40586d!important;
+  opacity:1!important;
+}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal :is(.acls-reg,.acls-date,.acls-filter,.acls-textarea,input[type="text"],input[type="date"],textarea,select){
+  background:#fff!important;
+  color:#17324d!important;
+  -webkit-text-fill-color:#17324d!important;
+  caret-color:#17324d!important;
+  border-color:#8aa8bc!important;
+  color-scheme:light!important;
+  opacity:1!important;
+}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal :is(.acls-reg,.acls-date,.acls-filter,.acls-textarea,input[type="text"],input[type="date"],textarea)::placeholder{
+  color:#576c7c!important;
+  -webkit-text-fill-color:#576c7c!important;
+  opacity:1!important;
+}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal input[type="date"]::-webkit-calendar-picker-indicator{
+  opacity:.85!important;
+  filter:none!important;
+}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal .acls-types.disabled .acls-type{
+  opacity:.86!important;
+}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal .acls-num{
+  background:#173e61!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal .acls-top{
+  background:#103657!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal .acls-top h3{
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal .acls-save{
+  background:#176a44!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal .acls-tab.active{
+  background:#285d9c!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+}
+html.new-ui-v1.new-ui-v1.new-ui-v1.new-ui-v1 body #aclSimpleModal#aclSimpleModal .acls-tab:not(.active){
+  background:#e8f0f7!important;
+  color:#17324d!important;
+  -webkit-text-fill-color:#17324d!important;
+}
