@@ -6,7 +6,7 @@ const fragment=fs.readFileSync('firebase/radio-custody.rules.snippet','utf8').tr
 const gate=fs.readFileSync('app/modules/radio-work-gate.v1.js','utf8');
 assert(rules.includes(fragment),'Complete, current radio security snippet must be deployed together');
 assert(app.includes("const radioIssueable=d=>!!d&&['READY','CHARGING','FAULT'].includes(d.status)"),'Previously blocked faulted/charging radio must be receivable');
-assert(app.includes("if(connected&&radioIssueable(d)){if(!held.length)buttons.push(['ISSUE','Ký nhận'])"),'Normal staff must see a receive button on defective devices');
+assert(app.includes("if(radioIssueable(d)&&!held.length)buttons.push(['ISSUE','Ký nhận máy'])"),'Filtered signing view retains issue action for unheld faulty/charging radios');
 assert(app.includes("const available=devices.filter(x=>radioIssueable(x)"),'Swap-in list must include defective but unheld devices');
 assert(app.includes("if(!radioIssueable(d))throw Error"),'Transaction should reject only held or actually lost devices');
 assert(app.includes("if(!radioIssueable(b))throw Error"),'Atomic swap must not prohibit a reported fault');
