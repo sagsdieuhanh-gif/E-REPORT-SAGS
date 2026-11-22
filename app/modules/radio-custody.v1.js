@@ -1290,6 +1290,7 @@ async function submit(){
    (localBackupOk?' Ảnh rõ hơn được giữ trên điện thoại chụp.':' Không thể giữ bản rõ hơn trên điện thoại.')+
    ' Cần nâng Firestore Rules để AD xem ảnh rõ hơn.':
    '✓ Đã lưu ảnh chất lượng cao, giữ màu trên Firebase cùng chữ ký và giờ máy chủ.');
+ }
  }catch(e){notify(nativeDraft?
   errText(e)+' Bản nháp ảnh và chữ ký vẫn lưu trên máy. Mở lại để thử lưu khi kết nối ổn định.':
   errText(e),true)}finally{setBusy(false)}
