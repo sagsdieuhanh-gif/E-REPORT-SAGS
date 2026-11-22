@@ -221,3 +221,127 @@
 #radioProofZoom{min-height:42px}
 #radioProofQuality{margin:8px 0;font-size:12px;line-height:1.45;color:#b6eae9}
 @media(max-width:680px){.radioProofViewer{padding:6px}.radioProofViewer>div{width:100%;max-height:95dvh;padding:8px}.radioProofScroll{max-height:65dvh}}
+
+
+/* V1.0 — task-focused radio signing. Override legacy compact V2 declarations
+   within this isolated dialog only; no changes to flight-form CSS. */
+.sagsRadioPanel .radioShell{min-width:0}
+.sagsRadioPanel .radioShell>footer{display:none}
+.sagsRadioPanel .radioTabs,
+.sagsRadioPanel .radioTools,
+.sagsRadioPanel .radioButtons,
+.sagsRadioPanel .radioAdminHeading,
+.sagsRadioPanel .radioProofViewer header{min-width:0}
+.sagsRadioPanel .radioTabs button{min-width:0;overflow-wrap:anywhere}
+.sagsRadioPanel .radioDeviceList{grid-template-columns:minmax(0,1fr)}
+.sagsRadioPanel .radioDeviceList.radioManageAll{grid-template-columns:repeat(2,minmax(0,1fr))}
+.sagsRadioPanel .radioDevice{min-width:0;overflow-wrap:anywhere}
+.sagsRadioPanel .radioDeviceMine{border-color:#71dcd2;background:#11384a}
+.sagsRadioPanel .radioButtons{align-items:stretch}
+.sagsRadioPanel .radioButtons button{min-width:0;white-space:normal;overflow-wrap:anywhere}
+.sagsRadioPanel .radioButtons button:first-child{background:#65ddd6;color:#082b3b;border-color:#86ede3;font-weight:850}
+.sagsRadioPanel .radioDeviceTools{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.sagsRadioPanel #radioDevicesTitle{min-width:0;overflow-wrap:anywhere;color:#edfbff}
+.sagsRadioPanel .radioDeviceToolActions{display:flex;flex-wrap:wrap;gap:9px;justify-content:flex-end;align-items:center}
+.sagsRadioPanel .radioDeviceToolActions button{min-height:42px}
+.sagsRadioPanel .radioStats{grid-template-columns:repeat(2,minmax(0,1fr));max-width:480px}
+.sagsRadioPanel .radioStats>div{min-width:0}
+.sagsRadioPanel .radioEmpty{border:1px dashed #426c7d;border-radius:12px;background:#102d40;line-height:1.55}
+.sagsRadioPanel .radioAdminDisclosure{margin:10px 0}
+.sagsRadioPanel .radioAdminDisclosure[hidden]{display:none!important}
+.sagsRadioPanel .radioAdminDisclosure>summary{cursor:pointer;list-style:none;border:1px solid #3f6a7e;border-radius:11px;background:#102d43;color:#ddf8fb;padding:13px 16px;font-weight:750}
+.sagsRadioPanel .radioAdminDisclosure>summary::-webkit-details-marker{display:none}
+.sagsRadioPanel .radioAdminDisclosure>summary:before{content:'▸';display:inline-block;margin-right:10px;transition:transform .14s ease}
+.sagsRadioPanel .radioAdminDisclosure[open]>summary:before{transform:rotate(90deg)}
+.sagsRadioPanel .radioAdminDisclosure:not([open]) .radioAdminOverview{display:none}
+.sagsRadioPanel .radioAdminOverview{min-width:0}
+.sagsRadioPanel .radioAdminColumns>*{min-width:0}
+.sagsRadioPanel .radioReportInputs>*{min-width:0}
+.sagsRadioPanel .radioHistoryFilters>*{min-width:0}
+.sagsRadioPanel .radioActions button{white-space:normal;overflow-wrap:anywhere}
+.sagsRadioPanel .radioProofViewer header{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:8px}
+.sagsRadioPanel .radioProofViewer header strong{min-width:0;overflow-wrap:anywhere}
+.sagsRadioPanel .radioProofScroll{max-width:100%}
+.sagsRadioPanel :is(input,select,textarea){max-width:100%;min-width:0;color-scheme:dark}
+@media(min-width:900px){
+ .sagsRadioPanel{font-size:17px;line-height:1.55}
+ .sagsRadioPanel .radioShell{max-width:1140px;padding:22px 26px 76px}
+ .sagsRadioPanel .radioHeader{padding:10px 0 14px}
+ .sagsRadioPanel .radioHeader h2{font-size:30px;line-height:1.28}
+ .sagsRadioPanel #radioMessage{font-size:16px;line-height:1.5;margin:12px 0}
+ .sagsRadioPanel .radioTabs button{font-size:17px;line-height:1.35;min-height:53px;padding:10px 15px}
+ .sagsRadioPanel #radioDevicesTitle{font-size:22px;line-height:1.35}
+ .sagsRadioPanel .radioDeviceToolActions button,
+ .sagsRadioPanel .radioTools button{font-size:15px;min-height:46px;padding:10px 14px}
+ .sagsRadioPanel .radioStats{gap:12px;margin:13px 0}
+ .sagsRadioPanel .radioStats>div{padding:15px 17px}
+ .sagsRadioPanel .radioStats strong{font-size:30px}
+ .sagsRadioPanel .radioStats small{font-size:14px}
+ .sagsRadioPanel .radioDeviceList{max-width:770px;gap:14px}
+ .sagsRadioPanel .radioDeviceList.radioManageAll{max-width:none}
+ .sagsRadioPanel .radioDevice{padding:18px 20px;gap:15px}
+ .sagsRadioPanel .radioDevice strong{font-size:25px;line-height:1.25}
+ .sagsRadioPanel .radioDevice small{font-size:15px;line-height:1.5}
+ .sagsRadioPanel .radioStatus{font-size:13px;line-height:1.5;padding:5px 11px}
+ .sagsRadioPanel .radioButtons{gap:10px}
+ .sagsRadioPanel .radioButtons button{font-size:16px;min-height:49px;padding:11px 16px}
+ .sagsRadioPanel .radioAdminDisclosure>summary{font-size:16px}
+ .sagsRadioPanel .radioAdminHeading h3{font-size:23px}
+ .sagsRadioPanel .radioAdminHeading p,.sagsRadioPanel .radioAdminPanel li span{font-size:15px}
+ .sagsRadioPanel .radioAdminPanel h4{font-size:17px}
+ .sagsRadioPanel .radioAdminPanel li strong{font-size:16px}
+ .sagsRadioPanel .radioAdminPanel li small,.sagsRadioPanel .radioAdminFoot{font-size:13px}
+ .sagsRadioPanel .radioRosterHeader>b{font-size:17px}
+ .sagsRadioPanel .radioRosterStats span,.sagsRadioPanel .radioRosterGroup p{font-size:14px}
+ .sagsRadioPanel .radioHistoryFilters label,.sagsRadioPanel .radioReportInputs label{font-size:15px}
+ .sagsRadioPanel .radioHistoryFilters input,
+ .sagsRadioPanel .radioHistoryFilters select,
+ .sagsRadioPanel .radioReportInputs input,
+ .sagsRadioPanel .radioReportInputs select{font-size:16px;min-height:49px}
+ .sagsRadioPanel .radioHistoryMeta,.sagsRadioPanel .radioReportState{font-size:15px}
+ .sagsRadioPanel .radioAuditRow b,.sagsRadioPanel .radioAuditRow strong{font-size:15px}
+ .sagsRadioPanel .radioDetailText,.sagsRadioPanel .radioAuditRow span{font-size:14px}
+ .sagsRadioPanel .radioAction h3{font-size:24px}
+ .sagsRadioPanel .radioFields label{font-size:16px;line-height:1.4}
+ .sagsRadioPanel .radioFields input,
+ .sagsRadioPanel .radioFields select,
+ .sagsRadioPanel .radioFields textarea{font-size:17px;min-height:51px;padding:13px}
+ .sagsRadioPanel .radioPhotoHeading strong{font-size:17px}
+ .sagsRadioPanel .radioPhotoHeading small{font-size:14px}
+ .sagsRadioPanel .radioPhotoActions button,
+ .sagsRadioPanel .radioActions button{font-size:16px;min-height:49px}
+ .sagsRadioPanel .radioShell :is(.radioHint,.radioActionMessage){font-size:14px}
+}
+@media(max-width:899px){
+ .sagsRadioPanel .radioDeviceList.radioManageAll{grid-template-columns:minmax(0,1fr)}
+ .sagsRadioPanel #radioDevicesTitle{font-size:17px}
+ .sagsRadioPanel .radioStats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));max-width:none;overflow:visible}
+ .sagsRadioPanel .radioStats>div{min-width:0}
+ .sagsRadioPanel .radioStats small{font-size:12px}
+ .sagsRadioPanel .radioDevice strong{font-size:20px}
+ .sagsRadioPanel .radioDevice small{font-size:13px}
+ .sagsRadioPanel .radioStatus{font-size:12px}
+ .sagsRadioPanel .radioButtons button{font-size:15px;min-height:46px}
+ .sagsRadioPanel .radioFields input,
+ .sagsRadioPanel .radioFields select,
+ .sagsRadioPanel .radioFields textarea{font-size:16px}
+ .sagsRadioPanel .radioAdminDisclosure>summary{font-size:14px}
+}
+@media(max-width:560px){
+ .sagsRadioPanel .radioShell{padding:12px 10px calc(82px + env(safe-area-inset-bottom,0px))}
+ .sagsRadioPanel .radioHeader h2{font-size:22px}
+ .sagsRadioPanel .radioDeviceTools{align-items:flex-start;flex-direction:column;gap:9px}
+ .sagsRadioPanel .radioDeviceToolActions{width:100%;justify-content:flex-start}
+ .sagsRadioPanel .radioTabs{gap:4px;padding:4px}
+ .sagsRadioPanel .radioTabs button{font-size:12px;line-height:1.25;padding:8px 4px;min-height:46px}
+ .sagsRadioPanel .radioButtons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+ .sagsRadioPanel .radioButtons button:first-child{grid-column:1/-1}
+ .sagsRadioPanel .radioActions{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr)}
+ .sagsRadioPanel .radioActions button{min-width:0;font-size:14px;min-height:49px;padding:10px}
+ .sagsRadioPanel .radioProofViewer header{grid-template-columns:minmax(0,1fr) auto;gap:7px}
+ .sagsRadioPanel #radioProofZoom{grid-column:1/-1;justify-self:stretch}
+ .sagsRadioPanel .radioProofScroll{max-height:63dvh}
+ .sagsRadioPanel .radioReportInputs{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .sagsRadioPanel .radioReportInputs button{grid-column:1/-1}
+ .sagsRadioPanel .radioRosterStats{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
