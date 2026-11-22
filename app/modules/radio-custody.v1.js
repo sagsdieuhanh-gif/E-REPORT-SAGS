@@ -30,6 +30,22 @@ const RETURN_REASONS=Object.freeze({
 const STATUSES={READY:'Sẵn sàng',OUT:'Đang sử dụng',CHARGING:'Đang sạc / có cảnh báo (vẫn được nhận)',FAULT:'Đã ghi nhận lỗi (vẫn được nhận)',LOST:'Thất lạc'};
 const radioIssueable=d=>!!d&&['READY','CHARGING','FAULT'].includes(d.status)&&!d.holderUid&&d.faultCode!=='LOST';
 const hasRadioWarning=d=>!!d.faultCode||['CHARGING','FAULT','LOST'].includes(d.status);
+// Battery is no longer collected at signing. Preserve the most recently
+// recorded value or the explicit fault code; UNKNOWN on never-checked legacy
+// devices is normalized to the schema-compatible GOOD on issue/return only.
+// This is a compatibility fallback, not a claim that staff measured the battery.
+function radioBatteryForWrite(device){
+ if(device?.faultCode==='BATTERY_EMPTY')return 'EMPTY';
+ if(device?.faultCode==='BATTERY_WEAK')return 'LOW';
+ const previous=S(device?.battery);
+ return ['FULL','GOOD','LOW','EMPTY'].includes(previous)?previous:'GOOD';
+}
+function radioBatteryForFaultReport(device,reason){
+ if(reason==='BATTERY_EMPTY')return 'EMPTY';
+ if(reason==='BATTERY_WEAK')return 'LOW';
+ return device?.battery||'UNKNOWN';
+}
+
 const radioHeldSince=d=>d.heldSince||d.updatedAt;
 const ACTS={INIT:'Khởi tạo',ISSUE:'Nhận máy',RETURN:'Trả máy',REPORT:'Báo sự cố',SWAP_OUT:'Đổi – trả máy cũ',SWAP_IN:'Đổi – nhận máy mới',RELEASE:'Đã xử lý thông tin lỗi'};
 let unsubs=[],devices=[],events=[],busy=false,connected=false,choice=null,mode='ISSUE',canvasDirty=false,strokes=[],drawing=false,dateFilter='all';
@@ -58,7 +74,7 @@ function loadRadioPhotoVault(){
 }
 
 const DRAFT_MAX_PHOTO_BYTES=24*1024*1024;
-const DRAFT_FIELDS=['radioBattery','radioReturnReason','radioDetail'];
+const DRAFT_FIELDS=['radioReturnReason','radioDetail'];
 const CAPTURE_EXIF_OPTIONS={ifd0:false,gps:false,exif:{pick:['DateTimeOriginal','OffsetTimeOriginal']},reviveValues:false};
 let nativeDraft=null,nativeDraftDb=null,signingUid='';
 let reportReady=false,reportLoading=false,reportEvents=[],reportDate='',reportShift='AM',reportToken=0,reportVerified=false;
@@ -88,7 +104,7 @@ function tpl(){
  '<section id="radioDevicesTab"><div class="radioTools radioDeviceTools"><strong id="radioDevicesTitle">Máy còn trống</strong><div class="radioDeviceToolActions"><button type="button" id="radioAdminAll" hidden aria-pressed="false">Quản lý tất cả (AD)</button><button type="button" id="radioSeed" hidden>+ Khởi tạo máy</button></div></div><div id="radioDraftControls" class="radioTools" hidden><span>Ảnh và chữ ký đang lưu trên máy, chờ xác nhận Firebase.</span><button type="button" id="radioResumeDraft">Tiếp tục ký nhận/trả</button><button type="button" id="radioDiscardDraft">Bỏ bản nháp</button></div><div id="radioDeviceList" class="radioDeviceList"></div></section>'+
  '<section id="radioHistoryTab" hidden><div class="radioTools"><span>Danh sách sự kiện của ca đã chọn (AD) hoặc lịch sử cá nhân</span><button type="button" id="radioExport" class="radioPrimary">📄 Xuất PDF ca</button></div><div class="radioHistoryFilters"><label>Mã máy<select id="radioHistoryDevice"><option value="">Tất cả máy</option></select></label><label>Thao tác<select id="radioHistoryAction"><option value="">Tất cả</option><option value="ISSUE">Nhận máy</option><option value="RETURN">Trả máy</option><option value="SWAP_OUT">Đổi máy</option><option value="REPORT">Báo lỗi</option></select></label><label>Tìm kiếm<input id="radioHistorySearch" type="search" placeholder="Tên, UID hoặc ghi chú" autocomplete="off"></label></div><div id="radioHistoryMeta" class="radioHistoryMeta"></div><div id="radioHistoryList"></div></section>'+
  '<section id="radioSummaryTab" hidden><div class="radioTools"><span>Tổng hợp ca trực · theo ngày đã chọn</span><button type="button" id="radioSummaryExport" class="radioPrimary">📄 Xuất PDF ca</button></div><div id="radioSummary"></div><p class="radioHint">Tổng hợp dữ liệu đã tải trên màn hình; không gửi email.</p></section>'+
- '<section id="radioAction" class="radioAction" hidden><div class="radioActionHeader"><h3 id="radioActionTitle">Ký nhận</h3><button type="button" id="radioActionCancel">✕</button></div><div class="radioFields"><label>Mã máy<input id="radioActionCode" readonly></label><label>Người thực hiện<input id="radioPerson" readonly></label><label>Ca làm việc<select id="radioShift"><option value="AM">Ca sáng</option><option value="PM">Ca tối</option></select></label><label id="radioBatteryWrap">Pin lúc nhận/trả<select id="radioBattery"><option value="UNKNOWN">Chưa xác định</option><option value="FULL">Đầy</option><option value="GOOD">Đủ dùng</option><option value="LOW">Yếu</option><option value="EMPTY">Hết pin</option></select></label><label id="radioReasonWrap">Lý do<select id="radioReason">'+REASONS.map(([v,n])=>'<option value="'+v+'">'+esc(n)+'</option>').join('')+'</select></label><label id="radioReturnReasonWrap" hidden>Lý do trả<select id="radioReturnReason"><option value="END_SHIFT">Hết ca</option><option value="HANDOVER">Bàn giao ca tiếp theo</option><option value="STOP_USE">Không tiếp tục sử dụng</option><option value="OTHER">Lý do khác (ghi cụ thể)</option></select></label><label id="radioSwapWrap">Máy thay thế<select id="radioSwapTarget"></select></label><label id="radioSwapBatteryWrap" hidden>Pin máy thay thế<select id="radioSwapBattery"><option value="UNKNOWN">Chọn pin máy thay thế</option><option value="FULL">Đầy</option><option value="GOOD">Đủ dùng</option><option value="LOW">Yếu</option><option value="EMPTY">Hết pin</option></select></label><label class="wide">Ghi chú hiện trạng<textarea id="radioDetail" rows="2" placeholder="Ghi cụ thể hiện tượng, thời gian, vị trí..."></textarea></label></div><section id="radioPhotoArea" class="radioPhotoArea" hidden><div class="radioPhotoHeading"><strong id="radioPhotoStep">1 · Ảnh bộ đàm thực tế</strong><small>Camera trực tiếp · không chọn thư viện</small></div><div class="radioCameraView"><input id="radioNativeCamera" type="file" accept="image/*" capture="environment" hidden><video id="radioCameraVideo" playsinline autoplay muted></video><img id="radioCameraPhoto" alt="Ảnh chụp mã máy và thời gian" hidden></div><div id="radioPhotoChips" class="radioPhotoChips"></div><div class="radioPhotoActions"><button id="radioTakePhoto" type="button" class="radioPrimary">📷 Chụp ảnh</button><button id="radioRetakePhoto" type="button" hidden>Chụp lại</button><button id="radioInspectPhoto" type="button" hidden>🔎 Phóng to kiểm tra ảnh</button><button id="radioRetryPhoto" type="button" hidden>Mở camera</button></div><small class="radioHint">Giờ trên ảnh là giờ của điện thoại; Firebase ghi riêng thời điểm xác nhận trên máy chủ.</small></section><div id="radioSigWrap"><p>Chữ ký xác nhận của tài khoản đang đăng nhập</p><canvas id="radioSignature" width="540" height="150" aria-label="Ký bằng ngón tay hoặc chuột"></canvas><button type="button" id="radioClearSignature">Xóa nét ký</button></div><p id="radioActionMessage" class="radioActionMessage" role="status" aria-live="polite"></p><div class="radioActions"><button type="button" id="radioCancel">Hủy</button><button class="radioPrimary" type="button" id="radioConfirm">Xác nhận và lưu lịch sử</button></div></section>'+
+ '<section id="radioAction" class="radioAction" hidden><div class="radioActionHeader"><h3 id="radioActionTitle">Ký nhận</h3><button type="button" id="radioActionCancel">✕</button></div><div class="radioFields"><label>Mã máy<input id="radioActionCode" readonly></label><label>Người thực hiện<input id="radioPerson" readonly></label><label>Ca làm việc<select id="radioShift"><option value="AM">Ca sáng</option><option value="PM">Ca tối</option></select></label><label id="radioReasonWrap">Lý do<select id="radioReason">'+REASONS.map(([v,n])=>'<option value="'+v+'">'+esc(n)+'</option>').join('')+'</select></label><label id="radioReturnReasonWrap" hidden>Lý do trả<select id="radioReturnReason"><option value="END_SHIFT">Hết ca</option><option value="HANDOVER">Bàn giao ca tiếp theo</option><option value="STOP_USE">Không tiếp tục sử dụng</option><option value="OTHER">Lý do khác (ghi cụ thể)</option></select></label><label id="radioSwapWrap">Máy thay thế<select id="radioSwapTarget"></select></label><label class="wide">Ghi chú hiện trạng<textarea id="radioDetail" rows="2" placeholder="Ghi cụ thể hiện tượng, thời gian, vị trí..."></textarea></label></div><section id="radioPhotoArea" class="radioPhotoArea" hidden><div class="radioPhotoHeading"><strong id="radioPhotoStep">1 · Ảnh bộ đàm thực tế</strong><small>Camera trực tiếp · không chọn thư viện</small></div><div class="radioCameraView"><input id="radioNativeCamera" type="file" accept="image/*" capture="environment" hidden><video id="radioCameraVideo" playsinline autoplay muted></video><img id="radioCameraPhoto" alt="Ảnh chụp mã máy và thời gian" hidden></div><div id="radioPhotoChips" class="radioPhotoChips"></div><div class="radioPhotoActions"><button id="radioTakePhoto" type="button" class="radioPrimary">📷 Chụp ảnh</button><button id="radioRetakePhoto" type="button" hidden>Chụp lại</button><button id="radioInspectPhoto" type="button" hidden>🔎 Phóng to kiểm tra ảnh</button><button id="radioRetryPhoto" type="button" hidden>Mở camera</button></div><small class="radioHint">Giờ trên ảnh là giờ của điện thoại; Firebase ghi riêng thời điểm xác nhận trên máy chủ.</small></section><div id="radioSigWrap"><p>Chữ ký xác nhận của tài khoản đang đăng nhập</p><canvas id="radioSignature" width="540" height="150" aria-label="Ký bằng ngón tay hoặc chuột"></canvas><button type="button" id="radioClearSignature">Xóa nét ký</button></div><p id="radioActionMessage" class="radioActionMessage" role="status" aria-live="polite"></p><div class="radioActions"><button type="button" id="radioCancel">Hủy</button><button class="radioPrimary" type="button" id="radioConfirm">Xác nhận và lưu lịch sử</button></div></section>'+
  '<div class="radioProofViewer" id="radioProofViewer" hidden><div><header><strong id="radioProofName">Ảnh và chữ ký</strong><button type="button" id="radioProofClose">✕</button><button id="radioProofZoom" type="button">🔎 Phóng to</button></header><div class="radioProofScroll"><img id="radioProofImage" alt="Bằng chứng ảnh có giờ và chữ ký"></div><p id="radioProofQuality"></p><p id="radioProofTimestamp"></p></div></div><footer>Giờ trên ảnh do thiết bị cung cấp; giờ xác nhận chính thức theo Firebase.</footer></div>';
  document.body.appendChild(p);
  $('radioClose').onclick=close;$('radioActionCancel').onclick=cancel;$('radioCancel').onclick=cancel;
@@ -808,14 +824,13 @@ function showSigningForm(action,d,u){
  const code=d.code;
  resetCamera();mode=action;choice=d;nativeDraft=null;signingUid=u.uid;clearSignature();
  $('radioActionCode').value=label(code);$('radioPerson').value=u.name+' · '+u.uid.slice(0,8);
- $('radioShift').value=shift();$('radioReason').value='BATTERY_EMPTY';$('radioReason').querySelector('option[value=LOST]').disabled=action==='SWAP_OUT';$('radioReturnReason').value='END_SHIFT';$('radioBattery').value='UNKNOWN';$('radioSwapBattery').value='UNKNOWN';$('radioDetail').value='';
+ $('radioShift').value=shift();$('radioReason').value='BATTERY_EMPTY';$('radioReason').querySelector('option[value=LOST]').disabled=action==='SWAP_OUT';$('radioReturnReason').value='END_SHIFT';$('radioDetail').value='';
  $('radioActionTitle').textContent=(action==='RELEASE'?'AD xác nhận đã xử lý thông tin lỗi':ACTS[action]||'Báo cáo')+' · '+label(code);
  $('radioDetail').placeholder=action==='RELEASE'?
   'Ghi kết quả kiểm tra: pin, sóng phát/thu, loa, mic/PTT; máy thất lạc phải xác nhận thu hồi.':
   'Ghi cụ thể hiện tượng, thời gian, vị trí…';
  $('radioReasonWrap').hidden=!['REPORT','SWAP_OUT'].includes(action);$('radioReturnReasonWrap').hidden=action!=='RETURN';
- $('radioBatteryWrap').hidden=action==='RELEASE';
- $('radioSwapWrap').hidden=action!=='SWAP_OUT';$('radioSwapBatteryWrap').hidden=action!=='SWAP_OUT';
+ $('radioSwapWrap').hidden=action!=='SWAP_OUT';
  $('radioSigWrap').hidden=action==='RELEASE'||needsPhoto(action);
  const available=devices.filter(x=>radioIssueable(x)&&x.code!==code);
  $('radioSwapTarget').innerHTML=available.map(x=>'<option value="'+esc(x.code)+'">'+esc(label(x.code)+(hasRadioWarning(x)?' · Có cảnh báo':''))+'</option>').join('');
@@ -1135,7 +1150,7 @@ function assertSingleHolder(inventory,uid,exclude=''){
 }
 async function submit(){
  if(busy||!choice)return;const user=currentUser();if(!user.uid)return notify('Phiên đăng nhập đã hết hạn.',true);
- const code=choice.code,reason=$('radioReason').value,rawDetail=S($('radioDetail').value),returnReason=$('radioReturnReason').value,shiftVal=nativeDraft?.shift||shift(),bat=$('radioBattery').value,swapBattery=$('radioSwapBattery').value;
+ const code=choice.code,reason=$('radioReason').value,rawDetail=S($('radioDetail').value),returnReason=$('radioReturnReason').value,shiftVal=nativeDraft?.shift||shift();
  $('radioShift').value=shiftVal; // the authoritative shift is assigned at signing, not manually selected
  if(mode==='RETURN'&&returnReason==='OTHER'&&rawDetail.length<10)return notify('Lý do trả khác cần mô tả ít nhất 10 ký tự.',true);
  const details=mode==='RETURN'?('Lý do trả: '+(RETURN_REASONS[returnReason]||RETURN_REASONS.END_SHIFT)+(rawDetail?' · '+rawDetail:'')):rawDetail;
@@ -1146,9 +1161,6 @@ async function submit(){
   if(!root.confirm('XÁC NHẬN ĐÃ XỬ LÝ THÔNG TIN LỖI CHO '+label(code)+'?\n\nChỉ cập nhật ghi nhận, KHÔNG phải mở khóa sử dụng. Máy báo mất phải xác minh đã tìm thấy thực tế.\n\nKết quả lưu trong lịch sử Firebase.'))return notify('Chưa xác nhận cập nhật thông tin lỗi.',true);
  }
  let sig='',sigNew='',hiOld='',hiNew='',serverOld='',serverNew='',usedLegacyPng=false,usedCompactOnly=false,usedCompatibleProof=false;try{if(mode!=='RELEASE'){signature();if(needsPhoto(mode)){if(!photosReady())throw Error('Phải chụp ảnh bằng camera trước khi ký.');if((!nativeDraft&&Date.now()-photos.old.at>600000)||(mode==='SWAP_OUT'&&Date.now()-photos.new.at>600000))throw Error('Ảnh quá 10 phút, vui lòng chụp lại.')}}}catch(e){return notify(e.message,true)}
- if(['ISSUE','RETURN'].includes(mode)&&bat==='UNKNOWN')return notify('Vui lòng kiểm tra mức pin trước khi nhận hoặc trả máy.',true);
- // Battery condition is an advisory record; preserve it without blocking issue.
- if(mode==='SWAP_OUT'&&swapBattery==='UNKNOWN')return notify('Vui lòng ghi mức pin máy thay thế trước khi đổi.',true);
  if(nativeMode()&&(!nativeDraft||nativeDraft.uid!==user.uid))return notify('Phiên ký nhận đã thay đổi. Hãy mở lại bản nháp của tài khoản này.',true);
  if(!connected)return notify('Chưa xác nhận kết nối Firebase. Không thể ghi nhận.',true);
  if(!navigator.onLine)return notify('Đang ngoại tuyến: không cho phép nhận/trả vì có thể xảy ra nhận trùng máy.',true);
@@ -1198,9 +1210,9 @@ async function submit(){
     assertSingleHolder(inventory,user.uid,code);
    if(!a||a.status!=='OUT'||(!isAdmin(user)&&a.holderUid!==user.uid))throw Error('Máy cũ không còn hợp lệ để đổi.');
    if(!radioIssueable(b))throw Error('Máy thay thế đang được giữ hoặc báo mất. Vui lòng chọn máy khác.');
-   const oldNew={status:'READY',holderUid:'',holderName:'',shift:'',faultCode:reason,faultDetail:details,battery:bat};
+   const oldNew={status:'READY',holderUid:'',holderName:'',shift:'',faultCode:reason,faultDetail:details,battery:radioBatteryForFaultReport(a,reason)};
    savedPhotoEventIds.old=updateDevice(tx,ref,a,'SWAP_OUT',oldNew,{user,shift:shiftVal,reason,details:evidenceDetails(details,photos.old?.at),sig,related:other,swapId,fullProof:withFull?serverOld:'',photoAt:photos.old?.at});
-   const newNew={status:'OUT',holderUid:user.uid,holderName:user.name,shift:shiftVal,faultCode:b.faultCode||'',faultDetail:b.faultDetail||'',battery:swapBattery};
+   const newNew={status:'OUT',holderUid:user.uid,holderName:user.name,shift:shiftVal,faultCode:b.faultCode||'',faultDetail:b.faultDetail||'',battery:radioBatteryForWrite(b)};
    savedPhotoEventIds.new=updateDevice(tx,ref2,b,'SWAP_IN',newNew,{user,shift:shiftVal,reason,details:evidenceDetails(details,photos.new?.at),sig:sigNew,related:code,swapId,fullProof:withFull?serverNew:'',photoAt:photos.new?.at});
   });
  }else{
@@ -1211,16 +1223,16 @@ async function submit(){
     if(d.version!==nativeDraft.deviceVersion)throw Error('Thiết bị đã có giao dịch khác. Kiểm tra lịch sử trước khi tiếp tục.');
    }
    let after,action=mode,reasonCode=reason;
-   if(mode==='ISSUE'){assertSingleHolder(inventory,user.uid);if(!radioIssueable(d))throw Error('Máy đang được giữ hoặc báo mất.');after={status:'OUT',holderUid:user.uid,holderName:user.name,shift:shiftVal,faultCode:d.faultCode||'',faultDetail:d.faultDetail||'',battery:bat};reasonCode='';}
+   if(mode==='ISSUE'){assertSingleHolder(inventory,user.uid);if(!radioIssueable(d))throw Error('Máy đang được giữ hoặc báo mất.');after={status:'OUT',holderUid:user.uid,holderName:user.name,shift:shiftVal,faultCode:d.faultCode||'',faultDetail:d.faultDetail||'',battery:radioBatteryForWrite(d)};reasonCode='';}
    else if(mode==='RETURN'){
     if(d.status!=='OUT'||(d.holderUid!==user.uid&&!isAdmin(user)))throw Error('Chỉ người đang giữ máy hoặc AD được trả.');
-    const low=bat==='EMPTY'||bat==='LOW',fault=d.faultCode||(low?'BATTERY_WEAK':'');
-    after={status:'READY',holderUid:'',holderName:'',shift:'',faultCode:fault,faultDetail:d.faultDetail||(low?'Pin yếu/hết pin lúc trả bộ đàm':''),battery:bat};reasonCode=low?'BATTERY_WEAK':'';}
+    const battery=radioBatteryForWrite(d),low=battery==='EMPTY'||battery==='LOW',fault=d.faultCode||(low?'BATTERY_WEAK':'');
+    after={status:'READY',holderUid:'',holderName:'',shift:'',faultCode:fault,faultDetail:d.faultDetail||(low?'Pin yếu/hết pin đã được ghi nhận trước đó':''),battery};reasonCode=low?'BATTERY_WEAK':'';}
    else if(mode==='REPORT'){
     if(d.status==='LOST'||d.faultCode==='LOST')throw Error('Máy đang báo thất lạc, phải xác minh thu hồi trước khi ghi nhận tiếp.');
     if(d.status==='OUT'&&d.holderUid!==user.uid&&!isAdmin(user))throw Error('Chỉ người giữ hoặc AD được báo lỗi máy đang dùng.');
-    after=reason==='LOST'?{status:'LOST',holderUid:'',holderName:'',shift:'',faultCode:reason,faultDetail:details,battery:bat}:
-     {status:d.status,holderUid:d.holderUid,holderName:d.holderName,shift:d.shift,faultCode:reason,faultDetail:details,battery:bat};}
+    after=reason==='LOST'?{status:'LOST',holderUid:'',holderName:'',shift:'',faultCode:reason,faultDetail:details,battery:radioBatteryForFaultReport(d,reason)}:
+     {status:d.status,holderUid:d.holderUid,holderName:d.holderName,shift:d.shift,faultCode:reason,faultDetail:details,battery:radioBatteryForFaultReport(d,reason)};}
    else if(mode==='RELEASE'){if(!isAdmin(user)||!hasRadioWarning(d))throw Error('Không có thông tin lỗi cần xác nhận.');
     after={status:d.status==='OUT'?'OUT':'READY',holderUid:d.status==='OUT'?d.holderUid:'',holderName:d.status==='OUT'?d.holderName:'',shift:d.status==='OUT'?d.shift:'',faultCode:'',faultDetail:'',battery:d.battery};reasonCode='';}
    else throw Error('Tác vụ không được hỗ trợ.');
