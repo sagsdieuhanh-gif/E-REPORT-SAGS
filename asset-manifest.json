@@ -297,6 +297,10 @@
       "sha256": "9b635e20bbae33c6858215d04094d6beb72bc8e3acee2315391127185c226dfb",
       "bytes": 120731
     },
+    "./app/modules/radio-photo-vault.v1.js": {
+      "sha256": "2a961f41b4f4e9be2ffecdb94288c84edef600e6c54672c7aa5f67c757a4fb09",
+      "bytes": 6691
+    },
     "./app/modules/radio-reminders.v21.js": {
       "sha256": "88ffeb127839aecba586083f0439201d719c4df9daeccf8421cc6aa064281bfe",
       "bytes": 10296
@@ -864,10 +868,6 @@
     "./version.json": {
       "sha256": "256fadc2eaa343a411e01e375acaf8494a3c25691d0f90a6458d2394c7207cb3",
       "bytes": 1542
-    },
-    "./app/modules/radio-photo-vault.v1.js": {
-      "sha256": "2a961f41b4f4e9be2ffecdb94288c84edef600e6c54672c7aa5f67c757a4fb09",
-      "bytes": 6691
     }
   },
   "mutableAssets": [
