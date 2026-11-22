@@ -44,8 +44,11 @@ function loadRadioPhotoVault(){
   const url=new URL('./radio-photo-vault.v1.js',radioScriptUrl||root.location.href);
   url.searchParams.set('v','20261122-ORIGINAL-32');
   script.src=url.toString();script.async=true;
-  script.onload=()=>root.SAGSRadioPhotoVaultV1?resolve(root.SAGSRadioPhotoVaultV1):reject(Error('Kho ảnh Supabase chưa được khởi tạo'));
-  script.onerror=()=>reject(Error('Không tải được mô-đun lưu ảnh rõ'));
+  // Never strand a successful Firebase custody transaction waiting forever
+  // for an optional Supabase script on weak iPhone connectivity.
+  const timer=setTimeout(()=>reject(Error('Kho ảnh rõ tải chậm; Firebase vẫn đã ký nhận')),8000);
+  script.onload=()=>{clearTimeout(timer);root.SAGSRadioPhotoVaultV1?resolve(root.SAGSRadioPhotoVaultV1):reject(Error('Kho ảnh Supabase chưa được khởi tạo'))};
+  script.onerror=()=>{clearTimeout(timer);reject(Error('Không tải được mô-đun lưu ảnh rõ'))};
   document.head.appendChild(script);
  }).catch(e=>{radioVaultLoading=null;throw e});
  return radioVaultLoading;
