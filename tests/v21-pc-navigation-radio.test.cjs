@@ -11,7 +11,9 @@ assert(index.includes(ver.build)&&sw.includes(ver.build),'hotfix must be cache-b
 assert(sw.includes('"./app/modules/radio-custody.v1.js"')&&sw.includes('"./app/styles/radio-custody.v1.css"'),'standalone radio menu must work from verified PWA cache');
 assert(shell.includes('e.stopPropagation();trigger(b.dataset.v6494Key)'),'PC quick actions cannot bubble into legacy My Flight route');
 assert(shell.includes("if(key!=='home'){"),'non-home routes must suppress fixed landing');
-assert(shell.includes('navTransitionUntil=Date.now()+2200'),'async module loads must not re-open landing shell');
+assert(shell.includes('navTransitionUntil=Date.now()+2200'),'async module route guard must remain bounded');
+assert(!shell.includes("home?.classList?.remove?.('show')"),'never reveal legacy landing while opening a new route');
+assert(shell.includes("function homeState(){const idle=$('roleHomeIdle')"),'home shell stays until a route actually becomes visible');
 assert(shell.includes("'sagsSettingsCenter','sagsHistoryOverlay'"),'settings and history must suppress fixed landing');
 assert(shell.includes("id==='sagsRadioPanel'"),'radio uses hidden property, not show/open');
 assert(shell.includes("root.SAGSAviationBeforeRoute=beforeRoute"),'legacy and new menus require shared route preflight');
