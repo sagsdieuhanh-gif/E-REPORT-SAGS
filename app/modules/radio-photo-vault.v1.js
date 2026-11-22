@@ -95,7 +95,7 @@
   })().finally(()=>{syncInFlight=null});
   return syncInFlight;
  }
- const viewed=new Map();
+ const viewed=new Map(),verifiedOriginals=new Set();
  async function read(eventId){
   if(!validId(eventId))return {status:'NO_ORIGINAL'};
   const user=authUser();if(!user||root.navigator?.onLine===false)return {status:'UNAVAILABLE'};
@@ -122,12 +122,13 @@
    reader.onerror=()=>reject(reader.error);reader.readAsDataURL(blob);
   });
   if(!data.startsWith('data:image/jpeg;base64,'))return {status:'UNAVAILABLE'};
-  viewed.set(cacheKey,data);
+  viewed.set(cacheKey,data);verifiedOriginals.add(cacheKey);
   if(viewed.size>4)viewed.delete(viewed.keys().next().value);
   return {status:'STORED',data};
  }
  root.SAGSRadioPhotoVaultV1={
   queue:putLocal,flush,read,isPurged:id=>purged.has(id),
+  isOriginal:id=>verifiedOriginals.has((authUser()?.uid||'')+'|'+id),
   purgedAt:id=>purged.get(id)?.purgedAt||null,
   pending:async()=>{const u=authUser();return u?(await listLocal(u.uid)).length:0}
  };
