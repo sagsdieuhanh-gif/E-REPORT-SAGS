@@ -12,7 +12,7 @@ assert.equal(manifest.build,version.build);
 assert.equal(sw.match(/const DISPLAY_VERSION='([^']+)'/)[1],version.version);
 assert.equal(sw.match(/const BUILD='([^']+)'/)[1],version.build);
 assert(index.includes('aviation-reference.v1.css?v='+version.build),'Aviation stylesheet cache-busted with current build');
-const start=css.indexOf('/* V1.1 home-screen readability adjustment, PC first.');
+const start=css.indexOf('/* V1.0 home-screen readability adjustment, PC first.');
 assert(start>0,'Dedicated readability layer missing');
 const layer=css.slice(start);
 assert.match(layer,/@media screen and \(min-width:901px\)/,'PC-only readability CSS');
