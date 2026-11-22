@@ -1,7 +1,7 @@
 {
   "schema": 2,
   "version": "V2.2",
-  "build": "V2.2-20261118-RADIO-FAULT-INFO-31",
+  "build": "V2.2-20261122-RADIO-ORIGINAL-QUOTA-32",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -294,8 +294,12 @@
       "bytes": 19587
     },
     "./app/modules/radio-custody.v1.js": {
-      "sha256": "f46199c6dd41459220bf21f4f2e9442e270329b6d407da622a09d35f19cf60d8",
-      "bytes": 113920
+      "sha256": "eb43c186cf9ca5951365c3bedd7e126a1d133ef3f4ca7ab09fc3804be17e752d",
+      "bytes": 121029
+    },
+    "./app/modules/radio-photo-vault.v1.js": {
+      "sha256": "2a961f41b4f4e9be2ffecdb94288c84edef600e6c54672c7aa5f67c757a4fb09",
+      "bytes": 6691
     },
     "./app/modules/radio-reminders.v21.js": {
       "sha256": "88ffeb127839aecba586083f0439201d719c4df9daeccf8421cc6aa064281bfe",
@@ -802,8 +806,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "5dd5d0a965c7f0b6869d43f27348860d9660f1e09181c728abb8108a4f13a40e",
-      "bytes": 106007
+      "sha256": "b6c9815c1664cafc7fdc79396365551619fb486aa7cc41e7ec7dafdff4ddfb4f",
+      "bytes": 106323
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -854,16 +858,16 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "83f0fc596bae83c6043f793cb053d2e3b2e300afa8a17b38512629732f702719",
-      "bytes": 22678
+      "sha256": "0bd819e034026f8c5e3dd0d9137c8823265536cd5c3abd0cdd491d891f3052ba",
+      "bytes": 22690
     },
     "./storage-recovery.html": {
       "sha256": "08817204a946fbdfa404e8c083dd0c2016e935fb8fe56ff8ef99f405978d3df6",
       "bytes": 26106
     },
     "./version.json": {
-      "sha256": "c91e7b1a52a5c4565b16488247eee5184793ad4a52c21404fdf8856c0ca5fe17",
-      "bytes": 1263
+      "sha256": "256fadc2eaa343a411e01e375acaf8494a3c25691d0f90a6458d2394c7207cb3",
+      "bytes": 1542
     }
   },
   "mutableAssets": [

@@ -6,12 +6,12 @@ assert(viewer.includes("return e.signature"),'Missing remote proof should remain
 const exportCode=s.slice(s.indexOf('async function exportPhotoPdf(){'),s.indexOf('async function exportPdf(){'));
 assert(exportCode.includes("const batch=rows.slice(i,i+4),full=await Promise.all(batch.map(e=>highProofData(e)))"),
  'Official admin PDF fetches Firebase data, not local unverified image');
-assert(exportCode.includes("if(full[j]===batch[j].signature)compactOnly.push"),
+assert(exportCode.includes("if(full[j]===batch[j].signature){compactOnly.push"),
  'Audit must distinguish compact evidence from separate server image');
 assert(exportCode.includes("if(!batch[j].signature)missingCount++"),'Never count a missing photo as high quality');
 assert(exportCode.includes("if(compactOnly.length)"),'No silent 44KB fallback in export');
 assert(exportCode.includes("if(!root.confirm(question))"),'Admin explicitly decides whether to include low-quality receipts');
-assert(exportCode.includes("originalCount+' ảnh riêng từ Firebase"),'Result must show actual evidence-source counts');
+assert(exportCode.includes("originalCount+' ảnh rõ"),'Result must show actual evidence-source counts');
 
 const start=s.indexOf('async function photoPdfPage('),end=s.indexOf('function pdfStoredPage(',start);
 assert(start>0&&end>start,'PDF photograph appendix renderer should be present');
@@ -30,7 +30,7 @@ const canvas=()=>{
  c.getContext=()=>ctx;
  return c;
 };
-const test={document:{createElement:()=>canvas()},navigator:{userAgent:'Windows'},
+const test={root:{SAGSRadioPhotoVaultV1:null},document:{createElement:()=>canvas()},navigator:{userAgent:'Windows'},
  Math,Date,Number,Error,S:v=>String(v??''),label:v=>v,
  ACTS:{ISSUE:'Nhận máy'},fmt:()=> '17/11/2026',
  pdfWrap:()=>[],photoAudit:()=>({status:'Đã xác minh',serverMs:Date.now(),deviceMs:Date.now(),delta:0}),
