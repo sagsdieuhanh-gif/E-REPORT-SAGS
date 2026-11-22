@@ -1,12 +1,12 @@
 {
-  "version": "V1.0",
-  "displayVersion": "V1.0",
-  "label": "V1.0 - RADIO FOCUSED SIGNING AND PC READABILITY",
-  "build": "V1.0-20261122-RADIO-FOCUSED-PC-01",
+  "version": "V1.1",
+  "displayVersion": "V1.1",
+  "label": "V1.1 - RADIO SIGNING WITHOUT BATTERY SELECTORS",
+  "build": "V1.1-20261122-RADIO-NO-BATTERY-02",
   "releasedAt": "2026-11-22",
-  "type": "radio-focused-ux-and-display-version-reset",
+  "type": "radio-no-pin-selectors",
   "base": "Giữ nguyên toàn bộ dữ liệu và chức năng đã ổn định từ E-REPORT-SAGS V2.2; chỉ đặt lại dãy số phiên bản hiển thị",
   "updatePolicy": "required",
-  "notes": "Đặt lại chuỗi phiên bản HIỂN THỊ của dự án E-REPORT-SAGS về V1.0; các lần cập nhật tiếp theo là V1.1, V1.2... Không rollback mã nguồn, không xóa Firebase hay Supabase. Ký nhận bộ đàm mặc định chỉ hiện máy còn trống, gồm máy có lỗi cảnh báo vẫn được phép dùng; nếu nhân viên đang giữ máy thì chỉ hiện máy đang giữ. Danh sách toàn bộ dành cho AD khi chọn chủ động; bảng giám sát AD thu gọn. Tăng kích cỡ chữ PC, tăng nút thao tác, chống chồng lấn ở PC/mobile. Giữ nguyên ảnh ký nhận, ảnh rõ Supabase, ký, giờ, PDF, lịch sử và các quy tắc giao/nhận.",
-  "message": "Giao diện bộ đàm gọn: máy trống để nhận, máy đang giữ để trả; PC chữ lớn, bố cục dễ nhìn. Số phiên bản bắt đầu lại V1.0."
+  "notes": "Xóa hai lựa chọn Pin lúc nhận/trả và Pin máy thay thế khỏi mọi thao tác ký nhận/trả/đổi; bản nháp iOS không còn trường pin. Hệ thống giữ giá trị pin đã ghi trước đó, hoặc lấy theo báo lỗi pin rõ ràng. Máy mới chưa từng xác minh pin và có giá trị UNKNOWN dùng GOOD làm giá trị tương thích tạm thời theo Firestore Rules hiện tại (không có nghĩa nhân viên đã đo hoặc xác nhận pin). Mọi lỗi pin vẫn ghi nhận qua Báo lỗi, không cách ly; máy LOST vẫn không được nhận, giữ một người một máy. Giữ nguyên giao diện máy trống/máy đang giữ ở V1.0, ảnh ký nhận Firebase và bản rõ Supabase, chữ ký, thời gian, PDF, lịch sử; không yêu cầu publish Rules mới.",
+  "message": "Ký nhận/trả/đổi bộ đàm không cần chọn mức pin; báo lỗi pin và lịch sử vẫn hoạt động. Tăng phiên bản V1.1."
 }
