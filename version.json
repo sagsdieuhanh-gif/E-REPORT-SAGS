@@ -1,12 +1,12 @@
 {
   "version": "V1.2",
   "displayVersion": "V1.2",
-  "label": "V1.2 - PC UI & A/C LIMITS READABILITY",
-  "build": "V1.2-20261122-ACL-CONTRAST-03",
+  "label": "V1.2 - PC UI & A/C LIMITS SOURCE CONTRAST FIX",
+  "build": "V1.2-20261122-ACL-SOURCE-FIX-04",
   "releasedAt": "2026-11-22",
-  "type": "acl-limit-contrast-hotfix",
+  "type": "acl-contrast-root-cause-hotfix",
   "base": "Giữ nguyên toàn bộ dữ liệu và chức năng đã ổn định từ E-REPORT-SAGS V2.2; chỉ đặt lại dãy số phiên bản hiển thị",
   "updatePolicy": "required",
-  "notes": "Giữ sửa lỗi điều hướng PC và các tính năng V1.2; sửa triệt để chữ/nhãn/ô nhập trên nền sáng trong A/C LIMITS khi dùng giao diện tối, gồm checkbox, REG, ngày hiệu lực, mô tả. Không thay đổi nghiệp vụ, dữ liệu, Firebase, PDF.",
-  "message": "Bản vá V1.2: cải thiện độ tương phản A/C LIMITS, đọc rõ nhãn và ngày tháng."
+  "notes": "Sửa lỗi A/C LIMITS chữ trắng trên nền trắng tại nguồn CSS: loại modal A/C LIMITS khỏi các quy tắc popup tối có độ ưu tiên cao, giữ bảng màu sáng riêng. Đã xác minh chênh lệch màu trên Chromium. Không thay đổi nghiệp vụ, biểu mẫu in, dữ liệu, phân quyền hay PDF.",
+  "message": "Sửa dứt điểm xung đột màu chữ A/C LIMITS giữa giao diện sáng và tối. Bản vá V1.2."
 }
