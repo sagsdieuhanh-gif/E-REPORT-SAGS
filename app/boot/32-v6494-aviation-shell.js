@@ -54,13 +54,13 @@ function role(){const s=session(),p=profile();return S(s.role||p.role||root.curr
 function isShown(el){if(!el)return false;try{const cs=getComputedStyle(el);return cs.display!=='none'&&cs.visibility!=='hidden'&&Number(cs.opacity||1)!==0}catch(_){return true}}
 function loginVisible(){return isShown($('roleLoginModal'))}
 function auth(){return document.body.classList.contains('v157-authenticated')&&!loginVisible()}
-const OVERLAY_IDS=['sagsRadioPanel','sagsSettingsCenter','sagsHistoryOverlay','csgModal','fwcModal','v174DataHub','v181AdminCenter','appUpdateModal','roleChangePasswordModal','quickTimeModal','fs09QuickModal','finalPaperModal','flightSessionModal','accountManagerModal','auditManagerModal','activityMonitorModal','fleetManagerModal','kh208ManagerModal','finalSheetManagerModal','fs09SheetManagerModal','sagsFlightNoticeModal','sagsFormEditHistoryOverlay'];
+const OVERLAY_IDS=['sagsRadioPanel','sagsSettingsCenter','sagsHistoryOverlay','csgModal','fwcModal','v174DataHub','v181AdminCenter','appUpdateModal','roleChangePasswordModal','quickTimeModal','fs09QuickModal','timeSkipModal','entry','finalPaperModal','flightSessionModal','accountManagerModal','auditManagerModal','activityMonitorModal','fleetManagerModal','kh208ManagerModal','finalSheetManagerModal','fs09SheetManagerModal','aclSimpleModal','v342Modal','sagsFlightNoticeModal','sagsFormEditHistoryOverlay'];
 function overlayVisible(){
 return OVERLAY_IDS.some(id=>{
-const e=$(id);return !!e&&!e.hidden&&isShown(e)&&(id==='sagsRadioPanel'||e.classList.contains('show')||e.classList.contains('open')||e.getAttribute('aria-hidden')==='false');
+const e=$(id);return !!e&&!e.hidden&&isShown(e)&&(id==='sagsRadioPanel'||e.classList.contains('show')||e.classList.contains('open')||e.getAttribute('aria-hidden')==='false'||/^(flex|block|grid)$/.test(e.style?.display||''));
 });
 }
-function homeState(){return auth()&&document.body.classList.contains('v157-home')&&!overlayVisible()&&Date.now()>=navTransitionUntil}
+function homeState(){const idle=$('roleHomeIdle');return auth()&&!overlayVisible()&&(document.body.classList.contains('v157-home')||(Date.now()<navTransitionUntil&&idle?.getAttribute('aria-hidden')==='false'))}
 function legacyButton(key){return document.querySelector('.v157MenuItem[data-v157-key="'+key+'"]')}
 function available(key){
 if(key==='final'&&String(role()).toUpperCase()==='CBTT')return false;
@@ -86,11 +86,11 @@ const guide=$('csgModal');
 if(key!=='guide'&&guide?.classList?.contains('open'))guide.classList.remove('open');
 if(key!=='home'){
 navTransitionUntil=Date.now()+2200;
-const home=$('v6494AviationHome');
-home?.classList?.remove?.('show');home?.setAttribute?.('aria-hidden','true');
-document.body?.classList?.remove?.('v6494-home-active');
+// Preserve the current shell until the destination is actually visible.
+// Early hiding leaks the legacy welcome/menu during asynchronous module loads.
+scheduleSync();
 setTimeout(()=>{observeStateTargets();scheduleSync()},2300);
-}else navTransitionUntil=0;
+}else{navTransitionUntil=0;scheduleSync();}
 return ticket;
 }
 function trigger(key){
@@ -236,7 +236,7 @@ function observeStateTargets(){
 try{stateObserver?.disconnect()}catch(_){}
 stateObserver=new MutationObserver(scheduleSync);
 const cfg={attributes:true,attributeFilter:['class','style','aria-hidden','hidden']};
-try{stateObserver.observe(document.body,{attributes:true,attributeFilter:['class']})}catch(_){}
+try{stateObserver.observe(document.body,{attributes:true,attributeFilter:['class'],childList:true})}catch(_){}
 const ids=['roleLoginModal',...OVERLAY_IDS];
 for(const id of ids){const el=$(id);if(el)try{stateObserver.observe(el,cfg)}catch(_){}}
 }

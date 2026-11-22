@@ -1,12 +1,12 @@
 {
   "version": "V1.2",
   "displayVersion": "V1.2",
-  "label": "V1.2 - PC READABILITY AND RESPONSIVE LAYOUT",
-  "build": "V1.2-20261122-PC-READABILITY-01",
+  "label": "V1.2 - PC READABILITY & SAFE NAVIGATION",
+  "build": "V1.2-20261122-PC-NAV-SHELL-02",
   "releasedAt": "2026-11-22",
-  "type": "pc-readability-layout",
+  "type": "pc-async-navigation-hotfix",
   "base": "Giữ nguyên toàn bộ dữ liệu và chức năng đã ổn định từ E-REPORT-SAGS V2.2; chỉ đặt lại dãy số phiên bản hiển thị",
   "updatePolicy": "required",
-  "notes": "Chuẩn hóa cỡ chữ, typography và bố cục trên PC: menu, dashboard, bảng chuyến, My Flight, Settings, màn hình quản trị. Chống chồng lấn tại các breakpoint laptop/desktop. Không thay đổi biểu mẫu in/PDF, nghiệp vụ, dữ liệu, chữ ký, iOS/Android.",
-  "message": "Giao diện PC rõ chữ hơn, bố cục rộng và tránh chồng lấn khi thay đổi độ phân giải. Cập nhật V1.2."
+  "notes": "Giữ các sửa đổi giao diện PC V1.2; sửa việc lộ màn hình chào cũ khi chuyển chức năng đang tải; mở đúng các modal A/C Limits, FINAL, Kết sổ, My Flight và Bộ đàm. Không chỉnh nghiệp vụ/PDF/dữ liệu.",
+  "message": "Sửa lỗi hiển thị giao diện cũ khi mở chức năng. Bản vá V1.2."
 }
