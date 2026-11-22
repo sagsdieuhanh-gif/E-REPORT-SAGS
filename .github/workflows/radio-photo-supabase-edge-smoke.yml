@@ -1,0 +1,40 @@
+name: Radio Supabase original-photo auth smoke (read-only)
+on:
+  pull_request:
+    paths:
+      - 'supabase/functions/sags-radio-photo-v1/**'
+      - 'app/modules/radio-photo-vault.v1.js'
+      - '.github/workflows/radio-photo-supabase-edge-smoke.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  edge-auth:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Verify real Edge Function rejects unauthenticated and wrong-origin access
+        run: |
+          set -euo pipefail
+          ENDPOINT='https://wggirxzdcfnxyjgjvpgh.supabase.co/functions/v1/sags-radio-photo-v1?eventId=syntheticOnly'
+          status=$(curl --retry 1 --connect-timeout 8 --max-time 20 -sS -o /tmp/denied.json -D /tmp/denied.headers \
+             -w '%{http_code}' -H 'Origin: https://sagsdieuhanh-gif.github.io' "$ENDPOINT")
+          if [ "$status" != '401' ] || ! grep -q 'AUTH_REQUIRED' /tmp/denied.json; then
+            echo "::error::Unauthenticated radio-photo API unexpectedly accessible or not deployed (status=$status)."
+            exit 1
+          fi
+          grep -qi 'access-control-allow-origin: https://sagsdieuhanh-gif.github.io' /tmp/denied.headers
+          status=$(curl --retry 1 --connect-timeout 8 --max-time 20 -sS -o /tmp/wrong-origin.json \
+             -w '%{http_code}' -H 'Origin: https://untrusted.example' "$ENDPOINT")
+          if [ "$status" != '403' ] || ! grep -q 'ORIGIN_DENIED' /tmp/wrong-origin.json; then
+            echo "::error::Wrong-origin rejection failed (status=$status)."
+            exit 1
+          fi
+          status=$(curl --retry 1 --connect-timeout 8 --max-time 20 -sS -o /tmp/forged.json \
+             -w '%{http_code}' -H 'Origin: https://sagsdieuhanh-gif.github.io' \
+             -H 'Authorization: Bearer invalid.fake.firebase' "$ENDPOINT")
+          if [ "$status" != '401' ] || ! grep -q 'AUTH_INVALID' /tmp/forged.json; then
+            echo "::error::Forged Firebase JWT rejection failed (status=$status)."
+            exit 1
+          fi
+          echo "Supabase Edge auth smoke PASS: missing/forged identity and wrong origin rejected, trusted UI CORS enabled."
