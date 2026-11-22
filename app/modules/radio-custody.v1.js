@@ -33,6 +33,9 @@ const hasRadioWarning=d=>!!d.faultCode||['CHARGING','FAULT','LOST'].includes(d.s
 const radioHeldSince=d=>d.heldSince||d.updatedAt;
 const ACTS={INIT:'Khởi tạo',ISSUE:'Nhận máy',RETURN:'Trả máy',REPORT:'Báo sự cố',SWAP_OUT:'Đổi – trả máy cũ',SWAP_IN:'Đổi – nhận máy mới',RELEASE:'Đã xử lý thông tin lỗi'};
 let unsubs=[],devices=[],events=[],busy=false,connected=false,choice=null,mode='ISSUE',canvasDirty=false,strokes=[],drawing=false,dateFilter='all';
+// Staff see only available radios, or exactly the devices they currently hold.
+// Full inventory remains an explicit admin-only view, never the default signing list.
+let adminAllDevices=false;
 let cameraStream=null,cameraToken=0,cameraLeg='old',photos={old:null,new:null},historyStop=null,historyVerified=false;
 const radioScriptUrl=document.currentScript?.src;
 // Supabase original-photo helper is lazy: no extra download on the main menu.
@@ -76,13 +79,13 @@ function setBusy(v){busy=!!v;for(const e of document.querySelectorAll('#sagsRadi
 function tpl(){
  if($('sagsRadioPanel'))return;
  const p=document.createElement('section');p.id='sagsRadioPanel';p.className='sagsRadioPanel';p.hidden=true;p.setAttribute('role','dialog');p.setAttribute('aria-modal','true');p.setAttribute('aria-label','Quản lý ký nhận bộ đàm');
- p.innerHTML='<div class="radioShell"><header class="radioHeader"><div><small>QUẢN LÝ THIẾT BỊ · SAGS</small><h2>📻 Ký nhận bộ đàm</h2><p>Nhận · trả · đổi máy · báo lỗi · lịch sử</p></div><button id="radioClose" aria-label="Đóng" type="button">✕</button></header>'+
+ p.innerHTML='<div class="radioShell"><header class="radioHeader"><div><h2>📻 Ký nhận bộ đàm</h2></div><button id="radioClose" aria-label="Đóng" type="button">✕</button></header>'+
  '<div id="radioMessage" role="status" aria-live="polite"></div>'+
  '<div class="radioStats" id="radioStats"></div>'+
- '<section id="radioAdminOverview" class="radioAdminOverview" hidden><div class="radioAdminHeading"><div><small>QUẢN TRỊ THIẾT BỊ · TRẠNG THÁI TRỰC TUYẾN</small><h3>Giám sát bàn giao bộ đàm</h3><p>Người giữ máy, máy cần xử lý và đối soát theo ca ở một nơi.</p></div><button type="button" data-radio-go="summary" class="radioPrimary">Báo cáo ngày / ca</button></div><div id="radioAdminDashboard" class="radioAdminDashboard"></div><div class="radioRosterMonitor"><div class="radioRosterHeader"><b>📋 Đối chiếu roster và ký nhận</b><div class="radioRosterFilters"><label>Ngày<input type="date" id="radioRosterDate"></label><label>Ca<select id="radioRosterShift"><option value="AM">Sáng</option><option value="PM">Tối</option></select></label><button id="radioRosterReload" type="button">↻ Kiểm tra</button></div></div><div id="radioRosterAlert" role="status" aria-live="polite"></div></div></section>'+
- '<div class="radioTabs"><button type="button" data-radio-tab="devices" class="selected">Danh sách máy</button><button type="button" data-radio-tab="history">Lịch sử ký nhận</button><button type="button" data-radio-tab="summary">Tổng hợp</button></div>'+
+ '<details id="radioAdminDisclosure" class="radioAdminDisclosure" hidden><summary>Quản trị bộ đàm · Giám sát & đối soát ca</summary><section id="radioAdminOverview" class="radioAdminOverview" hidden><div class="radioAdminHeading"><div><small>QUẢN TRỊ THIẾT BỊ · TRẠNG THÁI TRỰC TUYẾN</small><h3>Giám sát bàn giao bộ đàm</h3><p>Người giữ máy, máy cần xử lý và đối soát theo ca ở một nơi.</p></div><button type="button" data-radio-go="summary" class="radioPrimary">Báo cáo ngày / ca</button></div><div id="radioAdminDashboard" class="radioAdminDashboard"></div><div class="radioRosterMonitor"><div class="radioRosterHeader"><b>📋 Đối chiếu roster và ký nhận</b><div class="radioRosterFilters"><label>Ngày<input type="date" id="radioRosterDate"></label><label>Ca<select id="radioRosterShift"><option value="AM">Sáng</option><option value="PM">Tối</option></select></label><button id="radioRosterReload" type="button">↻ Kiểm tra</button></div></div><div id="radioRosterAlert" role="status" aria-live="polite"></div></div></section></details>'+
+ '<div class="radioTabs"><button type="button" data-radio-tab="devices" class="selected">Ký nhận / Trả máy</button><button type="button" data-radio-tab="history">Lịch sử ký nhận</button><button type="button" data-radio-tab="summary">Tổng hợp</button></div>'+
  '<section id="radioReportControl" class="radioReportControl" hidden><div class="radioReportTitle"><strong>📅 Báo cáo ký nhận theo ngày và ca</strong><small>1. Chọn ngày và ca → 2. Tải dữ liệu → 3. Chọn ảnh nếu cần → 4. Xuất PDF</small></div><div class="radioReportInputs"><label>Ngày cần báo cáo<input id="radioReportDate" type="date"></label><label>Ca trực<select id="radioReportShift"><option value="AM">Ca sáng (AM)</option><option value="PM">Ca tối (PM)</option></select></label><button type="button" id="radioReportLoad" class="radioPrimary">🔎 Tải báo cáo ca</button><button type="button" id="radioReportReset">Lịch sử gần đây</button></div><div id="radioPdfChoice" class="radioPdfChoice" hidden><label><input type="checkbox" id="radioPdfIncludePhotos"><span>Kèm ảnh chụp và chữ ký trong PDF</span></label><small>AD: Bật để xuất bảng tổng hợp kèm ảnh từng lần nhận/trả; tắt để xuất báo cáo gọn không có ảnh.</small></div><p id="radioReportState" class="radioReportState" role="status" aria-live="polite">Chọn ngày và ca để lấy đúng dữ liệu, không giới hạn ở lịch sử gần nhất.</p><small>Ca sáng 08:00–18:15; ca tối 18:16–07:59 hôm sau (giờ Việt Nam). Báo cáo phân ca bằng giờ Firebase, không phụ thuộc nhãn ca của bản ghi cũ.</small></section>'+ 
- '<section id="radioDevicesTab"><div class="radioTools"><span>Trạng thái từng máy cập nhật từ Firebase</span><button type="button" id="radioSeed" hidden>+ Khởi tạo danh mục từ giấy</button></div><div id="radioDraftControls" class="radioTools" hidden><span>Ảnh và chữ ký đang lưu trên máy, chờ xác nhận Firebase.</span><button type="button" id="radioResumeDraft">Tiếp tục ký nhận/trả</button><button type="button" id="radioDiscardDraft">Bỏ bản nháp</button></div><div id="radioDeviceList" class="radioDeviceList"></div></section>'+
+ '<section id="radioDevicesTab"><div class="radioTools radioDeviceTools"><strong id="radioDevicesTitle">Máy còn trống</strong><div class="radioDeviceToolActions"><button type="button" id="radioAdminAll" hidden aria-pressed="false">Quản lý tất cả (AD)</button><button type="button" id="radioSeed" hidden>+ Khởi tạo máy</button></div></div><div id="radioDraftControls" class="radioTools" hidden><span>Ảnh và chữ ký đang lưu trên máy, chờ xác nhận Firebase.</span><button type="button" id="radioResumeDraft">Tiếp tục ký nhận/trả</button><button type="button" id="radioDiscardDraft">Bỏ bản nháp</button></div><div id="radioDeviceList" class="radioDeviceList"></div></section>'+
  '<section id="radioHistoryTab" hidden><div class="radioTools"><span>Danh sách sự kiện của ca đã chọn (AD) hoặc lịch sử cá nhân</span><button type="button" id="radioExport" class="radioPrimary">📄 Xuất PDF ca</button></div><div class="radioHistoryFilters"><label>Mã máy<select id="radioHistoryDevice"><option value="">Tất cả máy</option></select></label><label>Thao tác<select id="radioHistoryAction"><option value="">Tất cả</option><option value="ISSUE">Nhận máy</option><option value="RETURN">Trả máy</option><option value="SWAP_OUT">Đổi máy</option><option value="REPORT">Báo lỗi</option></select></label><label>Tìm kiếm<input id="radioHistorySearch" type="search" placeholder="Tên, UID hoặc ghi chú" autocomplete="off"></label></div><div id="radioHistoryMeta" class="radioHistoryMeta"></div><div id="radioHistoryList"></div></section>'+
  '<section id="radioSummaryTab" hidden><div class="radioTools"><span>Tổng hợp ca trực · theo ngày đã chọn</span><button type="button" id="radioSummaryExport" class="radioPrimary">📄 Xuất PDF ca</button></div><div id="radioSummary"></div><p class="radioHint">Tổng hợp dữ liệu đã tải trên màn hình; không gửi email.</p></section>'+
  '<section id="radioAction" class="radioAction" hidden><div class="radioActionHeader"><h3 id="radioActionTitle">Ký nhận</h3><button type="button" id="radioActionCancel">✕</button></div><div class="radioFields"><label>Mã máy<input id="radioActionCode" readonly></label><label>Người thực hiện<input id="radioPerson" readonly></label><label>Ca làm việc<select id="radioShift"><option value="AM">Ca sáng</option><option value="PM">Ca tối</option></select></label><label id="radioBatteryWrap">Pin lúc nhận/trả<select id="radioBattery"><option value="UNKNOWN">Chưa xác định</option><option value="FULL">Đầy</option><option value="GOOD">Đủ dùng</option><option value="LOW">Yếu</option><option value="EMPTY">Hết pin</option></select></label><label id="radioReasonWrap">Lý do<select id="radioReason">'+REASONS.map(([v,n])=>'<option value="'+v+'">'+esc(n)+'</option>').join('')+'</select></label><label id="radioReturnReasonWrap" hidden>Lý do trả<select id="radioReturnReason"><option value="END_SHIFT">Hết ca</option><option value="HANDOVER">Bàn giao ca tiếp theo</option><option value="STOP_USE">Không tiếp tục sử dụng</option><option value="OTHER">Lý do khác (ghi cụ thể)</option></select></label><label id="radioSwapWrap">Máy thay thế<select id="radioSwapTarget"></select></label><label id="radioSwapBatteryWrap" hidden>Pin máy thay thế<select id="radioSwapBattery"><option value="UNKNOWN">Chọn pin máy thay thế</option><option value="FULL">Đầy</option><option value="GOOD">Đủ dùng</option><option value="LOW">Yếu</option><option value="EMPTY">Hết pin</option></select></label><label class="wide">Ghi chú hiện trạng<textarea id="radioDetail" rows="2" placeholder="Ghi cụ thể hiện tượng, thời gian, vị trí..."></textarea></label></div><section id="radioPhotoArea" class="radioPhotoArea" hidden><div class="radioPhotoHeading"><strong id="radioPhotoStep">1 · Ảnh bộ đàm thực tế</strong><small>Camera trực tiếp · không chọn thư viện</small></div><div class="radioCameraView"><input id="radioNativeCamera" type="file" accept="image/*" capture="environment" hidden><video id="radioCameraVideo" playsinline autoplay muted></video><img id="radioCameraPhoto" alt="Ảnh chụp mã máy và thời gian" hidden></div><div id="radioPhotoChips" class="radioPhotoChips"></div><div class="radioPhotoActions"><button id="radioTakePhoto" type="button" class="radioPrimary">📷 Chụp ảnh</button><button id="radioRetakePhoto" type="button" hidden>Chụp lại</button><button id="radioInspectPhoto" type="button" hidden>🔎 Phóng to kiểm tra ảnh</button><button id="radioRetryPhoto" type="button" hidden>Mở camera</button></div><small class="radioHint">Giờ trên ảnh là giờ của điện thoại; Firebase ghi riêng thời điểm xác nhận trên máy chủ.</small></section><div id="radioSigWrap"><p>Chữ ký xác nhận của tài khoản đang đăng nhập</p><canvas id="radioSignature" width="540" height="150" aria-label="Ký bằng ngón tay hoặc chuột"></canvas><button type="button" id="radioClearSignature">Xóa nét ký</button></div><p id="radioActionMessage" class="radioActionMessage" role="status" aria-live="polite"></p><div class="radioActions"><button type="button" id="radioCancel">Hủy</button><button class="radioPrimary" type="button" id="radioConfirm">Xác nhận và lưu lịch sử</button></div></section>'+
@@ -103,6 +106,10 @@ function tpl(){
  $('radioProofViewer').onclick=e=>{if(e.target.id==='radioProofViewer')closeProof()};
   $('radioProofZoom').onclick=()=>{const box=$('radioProofViewer');box.classList.toggle('radioProofZoomed');$('radioProofZoom').textContent=box.classList.contains('radioProofZoomed')?'↩ Thu vừa':'🔎 Phóng to'};
  $('radioSeed').onclick=()=>void seed();
+ $('radioAdminAll').onclick=()=>{
+  if(!isAdmin(currentUser()))return;
+  adminAllDevices=!adminAllDevices;render();
+ };
  $('radioReportDate').value=radioShiftAt(Date.now()).day;$('radioReportShift').value=shift();
   $('radioRosterDate').value=radioShiftAt(Date.now()).day;$('radioRosterShift').value=shift();
   $('radioRosterReload').onclick=()=>void refreshRosterAudit();
@@ -766,6 +773,13 @@ function shiftBounds(day,which){
 }
 function shift(){return radioShiftAt(Date.now()).shift}
 function heldBy(uid){return devices.filter(d=>d.status==='OUT'&&d.holderUid===uid)}
+// Visibility is intentionally separate from Firestore custody authorization.
+// READY, CHARGING and FAULT with no holder remain available, but LOST never does.
+function radioVisibleDevices(list,uid,admin=false,showAll=false){
+ if(admin&&showAll)return list;
+ const mine=list.filter(d=>d.status==='OUT'&&d.holderUid===uid&&!!uid);
+ return mine.length?mine:list.filter(radioIssueable);
+}
 async function start(action,code){
  if(busy)return;
  const u=currentUser(),d=devices.find(x=>x.code===code);
@@ -924,19 +938,46 @@ function renderAdminOverview(){
 }
 function render(){
  if(!$('radioDeviceList'))return;
- const u=currentUser(),held=heldBy(u.uid);$('radioSeed').hidden=!connected||!isAdmin(u)||INIT.every(code=>devices.some(x=>x.code===code));
- const counts=Object.fromEntries(Object.keys(STATUSES).map(k=>[k,devices.filter(x=>x.status===k).length]));
- $('radioStats').innerHTML='<div><strong>'+devices.length+'</strong><small>Tổng thiết bị</small></div><div><strong>'+counts.READY+'</strong><small>Sẵn sàng</small></div><div><strong>'+counts.OUT+'</strong><small>Đang giữ</small></div><div><strong>'+counts.CHARGING+'</strong><small>Đang sạc</small></div><div><strong>'+devices.filter(hasRadioWarning).length+'</strong><small>Thông tin lỗi / mất</small></div>';
+ const u=currentUser(),admin=isAdmin(u),held=heldBy(u.uid),
+  free=devices.filter(radioIssueable),allDevices=admin&&adminAllDevices,
+  visible=radioVisibleDevices(devices,u.uid,admin,adminAllDevices);
+ $('radioSeed').hidden=!connected||!admin||INIT.every(code=>devices.some(x=>x.code===code));
+ const adminToggle=$('radioAdminAll');adminToggle.hidden=!admin;
+ adminToggle.textContent=allDevices?'Ẩn danh mục đầy đủ':'Xem toàn bộ máy (AD)';
+ adminToggle.setAttribute('aria-pressed',String(allDevices));
+ const adminDisclosure=$('radioAdminDisclosure');if(adminDisclosure)adminDisclosure.hidden=!admin;
+ const title=$('radioDevicesTitle');
+ title.textContent=allDevices?'Danh mục quản lý · '+devices.length+' máy':
+  held.length?'Máy tôi đang sử dụng · '+held.length+' máy':
+  'Máy còn trống · '+free.length+' máy';
+ $('radioStats').innerHTML=
+  '<div><strong>'+free.length+'</strong><small>Máy còn trống</small></div>'+
+  '<div><strong>'+held.length+'</strong><small>Tôi đang giữ</small></div>';
  renderAdminOverview();renderRosterAlert();
- $('radioDeviceList').innerHTML=devices.length?devices.map(d=>{
-  const mine=d.holderUid===u.uid,admin=isAdmin(u),buttons=[];
-  if(connected&&radioIssueable(d)){if(!held.length)buttons.push(['ISSUE','Ký nhận']);buttons.push(['REPORT','Báo lỗi'])}
-  if(connected&&d.status==='OUT'&&(mine||admin))buttons.push(['RETURN','Trả máy'],['SWAP_OUT','Đổi máy'],['REPORT','Báo lỗi']);
-  if(connected&&admin&&hasRadioWarning(d))buttons.push(['RELEASE',d.status==='LOST'||d.faultCode==='LOST'?'Xác nhận đã tìm thấy':'Đã xử lý ghi nhận']);
-  const status=(d.status==='OUT'?'Đang giữ: '+esc(d.holderName||d.holderUid.slice(0,8)):'')+(d.faultCode?(' · Lỗi ghi nhận: '+esc(REASON_TEXT[d.faultCode]||d.faultCode)):'')+(d.faultDetail?(' · '+esc(d.faultDetail)):'');
-  return '<article class="radioDevice"><div><strong>'+esc(label(d.code))+'</strong>'+badge(d.status)+'<small>'+status+'</small></div><div class="radioButtons">'+buttons.map(([a,n])=>'<button type="button" data-radio-act="'+a+'" data-radio-code="'+esc(d.code)+'">'+n+'</button>').join('')+'</div></article>'
- }).join(''):'<p class="radioEmpty">'+(connected?'Chưa có mã máy. AD hãy khởi tạo danh mục bộ đàm từ sổ giấy.':'Chưa xác nhận kết nối Firebase. Không thể ký nhận cho đến khi kích hoạt.')+'</p>';
- if(held.length&&!isAdmin(u))$('radioDeviceList').insertAdjacentHTML('afterbegin','<p class="radioHeldNotice">📻 Bạn đang giữ '+esc(held.map(x=>label(x.code)).join(', '))+'. Hãy ký trả trước khi nhận máy khác; thao tác Đổi máy được thực hiện đồng thời.</p>');
+ const list=$('radioDeviceList');
+ list.classList.toggle('radioManageAll',!!allDevices);
+ list.innerHTML=!connected?
+  '<p class="radioEmpty">Đang xác nhận Firebase. Cần kết nối trực tuyến để ký nhận hoặc trả máy.</p>':
+  visible.length?visible.map(d=>{
+   const mine=d.status==='OUT'&&d.holderUid===u.uid,buttons=[];
+   if(radioIssueable(d)&&!held.length)buttons.push(['ISSUE','Ký nhận máy']);
+   if(radioIssueable(d)&&!held.length)buttons.push(['REPORT','Báo lỗi']);
+   if(d.status==='OUT'&&(mine||admin&&allDevices))
+    buttons.push(['RETURN','Ký trả máy'],['SWAP_OUT','Đổi máy'],['REPORT','Báo lỗi']);
+   if(admin&&allDevices&&hasRadioWarning(d))
+    buttons.push(['RELEASE',d.status==='LOST'||d.faultCode==='LOST'?'Xác nhận tìm thấy':'Xác nhận đã xử lý']);
+   const status=(d.status==='OUT'?'Đang giữ: '+esc(d.holderName||d.holderUid?.slice(0,8)||'—'):'')+
+    (d.faultCode?' · Lỗi ghi nhận: '+esc(REASON_TEXT[d.faultCode]||d.faultCode):'')+
+    (d.faultDetail?' · '+esc(d.faultDetail):'');
+   return '<article class="radioDevice'+(mine?' radioDeviceMine':'')+'"><div><strong>'+
+    esc(label(d.code))+'</strong>'+badge(d.status)+(status?'<small>'+status+'</small>':'')+
+    '</div><div class="radioButtons">'+buttons.map(([a,n])=>
+     '<button type="button" data-radio-act="'+a+'" data-radio-code="'+esc(d.code)+'">'+n+'</button>'
+    ).join('')+'</div></article>';
+  }).join(''):
+  '<p class="radioEmpty">'+(held.length?'Chưa tìm thấy bộ đàm đang giữ. Hãy tải lại trạng thái.':
+   allDevices?'Chưa có bộ đàm. AD hãy khởi tạo danh mục.':
+   devices.length?'Hiện không có bộ đàm nào còn trống để ký nhận.':'Chưa có danh mục máy; AD cần khởi tạo.')+'</p>';
  renderHistory();if(!$('radioSummaryTab')?.hidden)renderSummary();
 }
 function vnDateKey(date){
