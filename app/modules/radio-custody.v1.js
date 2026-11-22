@@ -1140,6 +1140,7 @@ async function submit(){
    }else sig=signature();
   }
   notify('Đang xác nhận với Firebase, vui lòng không bấm lại…');
+ const savedPhotoEventIds={};
  const writeRadioTransaction=async(withFull=true)=>{
  const db=fs(),ref=db.collection(COLLECTION).doc(code);
  if(mode==='SWAP_OUT'){
@@ -1150,9 +1151,9 @@ async function submit(){
    if(!a||a.status!=='OUT'||(!isAdmin(user)&&a.holderUid!==user.uid))throw Error('Máy cũ không còn hợp lệ để đổi.');
    if(!radioIssueable(b))throw Error('Máy thay thế đang được giữ hoặc báo mất. Vui lòng chọn máy khác.');
    const oldNew={status:'READY',holderUid:'',holderName:'',shift:'',faultCode:reason,faultDetail:details,battery:bat};
-   updateDevice(tx,ref,a,'SWAP_OUT',oldNew,{user,shift:shiftVal,reason,details:evidenceDetails(details,photos.old?.at),sig,related:other,swapId,fullProof:withFull?serverOld:'',photoAt:photos.old?.at});
+   savedPhotoEventIds.old=updateDevice(tx,ref,a,'SWAP_OUT',oldNew,{user,shift:shiftVal,reason,details:evidenceDetails(details,photos.old?.at),sig,related:other,swapId,fullProof:withFull?serverOld:'',photoAt:photos.old?.at});
    const newNew={status:'OUT',holderUid:user.uid,holderName:user.name,shift:shiftVal,faultCode:b.faultCode||'',faultDetail:b.faultDetail||'',battery:swapBattery};
-   updateDevice(tx,ref2,b,'SWAP_IN',newNew,{user,shift:shiftVal,reason,details:evidenceDetails(details,photos.new?.at),sig:sigNew,related:code,swapId,fullProof:withFull?serverNew:'',photoAt:photos.new?.at});
+   savedPhotoEventIds.new=updateDevice(tx,ref2,b,'SWAP_IN',newNew,{user,shift:shiftVal,reason,details:evidenceDetails(details,photos.new?.at),sig:sigNew,related:code,swapId,fullProof:withFull?serverNew:'',photoAt:photos.new?.at});
   });
  }else{
   await db.runTransaction(async tx=>{
@@ -1175,7 +1176,7 @@ async function submit(){
    else if(mode==='RELEASE'){if(!isAdmin(user)||!hasRadioWarning(d))throw Error('Không có thông tin lỗi cần xác nhận.');
     after={status:d.status==='OUT'?'OUT':'READY',holderUid:d.status==='OUT'?d.holderUid:'',holderName:d.status==='OUT'?d.holderName:'',shift:d.status==='OUT'?d.shift:'',faultCode:'',faultDetail:'',battery:d.battery};reasonCode='';}
    else throw Error('Tác vụ không được hỗ trợ.');
-   updateDevice(tx,ref,d,action,after,{user,shift:shiftVal,reason:reasonCode,details:evidenceDetails(details,photos.old?.at,photos.old?.clock),sig,related:'',swapId:'',fullProof:withFull?serverOld:'',photoAt:photos.old?.at,eventId:nativeDraft?.id});
+   savedPhotoEventIds.old=updateDevice(tx,ref,d,action,after,{user,shift:shiftVal,reason:reasonCode,details:evidenceDetails(details,photos.old?.at,photos.old?.clock),sig,related:'',swapId:'',fullProof:withFull?serverOld:'',photoAt:photos.old?.at,eventId:nativeDraft?.id});
   });
  }
 
@@ -1237,8 +1238,47 @@ async function submit(){
    localBackupOk=(await Promise.all(tasks)).every(Boolean);
   }catch(error){localBackupOk=false;console.warn('Radio local photo backup failed',error?.message||error)}
  }
+ // Firebase transaction is ALREADY committed. Store the real signed, high-res
+ // photo locally before starting optional Supabase upload. Failure to archive
+ // must never retroactively pretend a Firebase signed event was unsuccessful.
+ let originalQueued=0,originalQueueFailed=0;
+ if(mode!=='RELEASE'&&needsPhoto(mode)){
+  try{
+   const vault=await loadRadioPhotoVault();
+   const legs=mode==='SWAP_OUT'?['old','new']:['old'];
+   for(const leg of legs){
+    const eventId=savedPhotoEventIds[leg]||(leg==='old'?nativeDraft?.id:'');
+    if(!eventId){originalQueueFailed++;continue}
+    try{
+     const fullBlob=await originalRadioPhotoBlob(leg);
+     await vault.queue(eventId,user.uid,fullBlob);
+     originalQueued++;
+    }catch(archiveError){
+     originalQueueFailed++;
+     console.warn('Radio original cannot be queued:',String(archiveError?.message||archiveError).slice(0,150));
+    }
+   }
+   if(originalQueued){
+    void vault.flush(4).then(out=>{
+     if(out?.uploaded)notify('✓ Đã đồng bộ '+out.uploaded+' ảnh rõ lên Supabase, AD có thể xem và xuất PDF.');
+     else if(out?.failed)notify('Ảnh gốc đang chờ đồng bộ lại; ảnh ký nhận trên Firebase vẫn an toàn.');
+    }).catch(e=>console.warn('Radio original sync pending',String(e?.message||e).slice(0,100)));
+   }
+  }catch(archiveError){
+   originalQueueFailed++;
+   console.warn('Radio original vault not available:',String(archiveError?.message||archiveError).slice(0,150));
+  }
+ }
  if(isAdmin(user))queueRosterAudit(150);
  if(nativeDraft)await removeNativeDraft(nativeDraft.uid,nativeDraft.id).catch(e=>console.warn('Radio draft cleanup',e));
+ if(originalQueued){
+  cancel();notify('✓ Đã ký nhận, lưu ảnh và chữ ký trên Firebase. '+
+   'Ảnh gốc sắc nét đã lưu vào hàng chờ trên điện thoại và đang đồng bộ lên Supabase.'+
+   (originalQueueFailed?' Một ảnh gốc khác chưa được lưu hàng chờ; kiểm tra lại nguồn ảnh.':''));
+ }else if(originalQueueFailed){
+  cancel();notify('✓ Ký nhận Firebase thành công nhưng CHƯA lưu được ảnh gốc lên Supabase. '+
+   'Ảnh ký nhận Firebase vẫn còn; kiểm tra bộ nhớ thiết bị và mạng trước khi thử lại.',true);
+ }else{
   cancel();notify(mode==='RELEASE'?'✓ Đã ghi nhận kết quả kiểm tra bộ đàm trên Firebase.':usedCompactOnly?
   '✓ Đã ký nhận và lưu ảnh tự nén lên Firebase.'+
   (hiOld?(localBackupOk?' Bản rõ hơn chỉ lưu trên điện thoại chụp; AD thiết bị khác xem ảnh nén.':' AD thiết bị khác chỉ xem được ảnh nén.')+
