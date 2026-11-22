@@ -1,12 +1,12 @@
 {
   "version": "V1.2",
   "displayVersion": "V1.2",
-  "label": "V1.2 - PC READABILITY & SAFE NAVIGATION",
-  "build": "V1.2-20261122-PC-NAV-SHELL-02",
+  "label": "V1.2 - PC UI & A/C LIMITS READABILITY",
+  "build": "V1.2-20261122-ACL-CONTRAST-03",
   "releasedAt": "2026-11-22",
-  "type": "pc-async-navigation-hotfix",
+  "type": "acl-limit-contrast-hotfix",
   "base": "Giữ nguyên toàn bộ dữ liệu và chức năng đã ổn định từ E-REPORT-SAGS V2.2; chỉ đặt lại dãy số phiên bản hiển thị",
   "updatePolicy": "required",
-  "notes": "Giữ các sửa đổi giao diện PC V1.2; sửa việc lộ màn hình chào cũ khi chuyển chức năng đang tải; mở đúng các modal A/C Limits, FINAL, Kết sổ, My Flight và Bộ đàm. Không chỉnh nghiệp vụ/PDF/dữ liệu.",
-  "message": "Sửa lỗi hiển thị giao diện cũ khi mở chức năng. Bản vá V1.2."
+  "notes": "Giữ sửa lỗi điều hướng PC và các tính năng V1.2; sửa triệt để chữ/nhãn/ô nhập trên nền sáng trong A/C LIMITS khi dùng giao diện tối, gồm checkbox, REG, ngày hiệu lực, mô tả. Không thay đổi nghiệp vụ, dữ liệu, Firebase, PDF.",
+  "message": "Bản vá V1.2: cải thiện độ tương phản A/C LIMITS, đọc rõ nhãn và ngày tháng."
 }
