@@ -1,12 +1,12 @@
 {
   "version": "V2.2",
   "displayVersion": "V2.2",
-  "label": "V2.2 - RADIO DEFECTS INFORMATION ONLY",
-  "build": "V2.2-20261118-RADIO-FAULT-INFO-31",
-  "releasedAt": "2026-11-18",
-  "type": "radio-fault-information-not-quarantine",
+  "label": "V2.2 - RADIO ORIGINAL PHOTOS & QUOTA",
+  "build": "V2.2-20261122-RADIO-ORIGINAL-QUOTA-32",
+  "releasedAt": "2026-11-22",
+  "type": "radio-supabase-original-auto-evict-v32",
   "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
   "updatePolicy": "required",
-  "notes": "Báo lỗi bộ đàm không cách ly: REPORT giữ nguyên trạng thái và người đang giữ (trừ LOST), RETURN chuyển máy về READY và giữ thông tin lỗi; ISSUE/SWAP_IN chấp nhận READY/FAULT/CHARGING với máy không có người giữ, không xóa lỗi; RELEASE chỉ xóa cảnh báo khi AD ghi xác nhận. Ghi nhận pin yếu vẫn cho sử dụng. Giữ một bộ đàm mỗi người, chữ ký, ảnh, giờ thực tế, tính bất biến sự kiện và báo cáo ảnh chất lượng cao. Giờ ca AM 08:00–18:15, PM 18:16–07:59 chỉ nhắc nhở. BẮT BUỘC triển khai Firestore Rules tương ứng trước khi triển khai web; GitHub Pages không tự xuất bản Firebase Rules.",
-  "message": "Bộ đàm báo lỗi vẫn được nhận/trả/đổi bình thường; lỗi chỉ ghi nhận theo dõi, máy mất vẫn không được cấp phát."
+  "notes": "Firebase tiếp tục là nguồn ký nhận/chữ ký/giờ và ảnh chứng cứ nén, không ảnh hưởng các biểu mẫu/chuyến bay. Ảnh màu JPEG rõ được đưa vào IndexedDB chờ tải lên bucket riêng tư Supabase, có xác thực Firebase ID token và quyền đọc sự kiện Firestore; AD xem trên máy khác, PDF ưu tiên ảnh gốc nếu đã đồng bộ. Khi kho ảnh bộ đàm vượt ngưỡng 700 MiB hoặc tổng storage vượt ngưỡng an toàn 900 MiB, tự xóa lần lượt ngày cũ nhất chỉ trong bucket ảnh gốc; không xóa ngày hiện tại và ngày hôm trước, không xóa Firestore event/chữ ký/ảnh chứng cứ, không xóa kho sao lưu dự phòng. Nhật ký PURGED được giữ lại. Nếu chưa có ngày đủ cũ, ảnh gốc chờ đồng bộ thay vì âm thầm xóa ảnh mới. Không thay đổi quy tắc máy lỗi vẫn dùng được, một người một máy, ca làm và chất lượng ảnh nền đã có.",
+  "message": "Ảnh rõ bộ đàm lưu riêng trong Supabase sau ký nhận Firebase; tự dọn ngày cũ nhất khi kho đạt ngưỡng, giữ lịch sử Firebase."
 }
