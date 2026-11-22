@@ -30,7 +30,7 @@ assert.deepEqual(ids('staff-C',false,true),['DH01','DH03','DH04'],
  'A non-admin cannot force full inventory through a flag');
 assert.deepEqual(ids('',false,true),['DH01','DH03','DH04'],
  'Unknown holder must not see other users’ devices');
-assert(source.includes("const visible=radioVisibleDevices(devices,u.uid,admin,adminAllDevices);"));
+assert(source.includes("visible=radioVisibleDevices(devices,u.uid,admin,adminAllDevices);"));
 assert(source.includes("adminAllDevices=false;"));
 assert(source.includes("id=\"radioAdminAll\" hidden aria-pressed=\"false\""));
 assert(source.includes("id=\"radioAdminDisclosure\" class=\"radioAdminDisclosure\" hidden"));
