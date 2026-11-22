@@ -743,6 +743,9 @@ function signature(){if(!canvasDirty||!strokes.some(a=>a.length>=2))throw Error(
 function tab(t){for(const id of ['devices','history','summary']){$('radio'+id[0].toUpperCase()+id.slice(1)+'Tab').hidden=id!==t;const btn=document.querySelector('[data-radio-tab="'+id+'"]');btn?.classList.toggle('selected',t===id)}$('radioPdfChoice').hidden=!isAdmin(currentUser())||t==='devices';$('radioReportControl').hidden=!isAdmin(currentUser())||t==='devices';cancel();if(t==='history'||t==='summary')subscribeHistory();else stopHistory();if(t==='summary')renderSummary()}
 function close(){
  if(busy)return;
+ // Re-open on the employee-focused view even after AD inspected all devices.
+ adminAllDevices=false;
+ if($('radioAdminDisclosure'))$('radioAdminDisclosure').open=false;
  stopRosterWatch();
  try{closeProof()}catch(e){console.warn('Radio photo viewer close',e)}
  try{stopHistory()}catch(e){console.warn('Radio history close',e)}
