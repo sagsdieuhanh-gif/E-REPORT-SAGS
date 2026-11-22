@@ -1,12 +1,12 @@
 {
-  "version": "V2.2",
-  "displayVersion": "V2.2",
-  "label": "V2.2 - RADIO ORIGINAL PHOTOS & QUOTA",
-  "build": "V2.2-20261122-RADIO-ORIGINAL-QUOTA-32",
+  "version": "V1.0",
+  "displayVersion": "V1.0",
+  "label": "V1.0 - RADIO FOCUSED SIGNING AND PC READABILITY",
+  "build": "V1.0-20261122-RADIO-FOCUSED-PC-01",
   "releasedAt": "2026-11-22",
-  "type": "radio-supabase-original-auto-evict-v32",
-  "base": "E-REPORT-SAGS V2.5.47 (mốc lịch sử, không khôi phục mã cũ)",
+  "type": "radio-focused-ux-and-display-version-reset",
+  "base": "Giữ nguyên toàn bộ dữ liệu và chức năng đã ổn định từ E-REPORT-SAGS V2.2; chỉ đặt lại dãy số phiên bản hiển thị",
   "updatePolicy": "required",
-  "notes": "Firebase tiếp tục là nguồn ký nhận/chữ ký/giờ và ảnh chứng cứ nén, không ảnh hưởng các biểu mẫu/chuyến bay. Ảnh màu JPEG rõ được đưa vào IndexedDB chờ tải lên bucket riêng tư Supabase, có xác thực Firebase ID token và quyền đọc sự kiện Firestore; AD xem trên máy khác, PDF ưu tiên ảnh gốc nếu đã đồng bộ. Khi kho ảnh bộ đàm vượt ngưỡng 700 MiB hoặc tổng storage vượt ngưỡng an toàn 900 MiB, tự xóa lần lượt ngày cũ nhất chỉ trong bucket ảnh gốc; không xóa ngày hiện tại và ngày hôm trước, không xóa Firestore event/chữ ký/ảnh chứng cứ, không xóa kho sao lưu dự phòng. Nhật ký PURGED được giữ lại. Nếu chưa có ngày đủ cũ, ảnh gốc chờ đồng bộ thay vì âm thầm xóa ảnh mới. Không thay đổi quy tắc máy lỗi vẫn dùng được, một người một máy, ca làm và chất lượng ảnh nền đã có.",
-  "message": "Ảnh rõ bộ đàm lưu riêng trong Supabase sau ký nhận Firebase; tự dọn ngày cũ nhất khi kho đạt ngưỡng, giữ lịch sử Firebase."
+  "notes": "Đặt lại chuỗi phiên bản HIỂN THỊ của dự án E-REPORT-SAGS về V1.0; các lần cập nhật tiếp theo là V1.1, V1.2... Không rollback mã nguồn, không xóa Firebase hay Supabase. Ký nhận bộ đàm mặc định chỉ hiện máy còn trống, gồm máy có lỗi cảnh báo vẫn được phép dùng; nếu nhân viên đang giữ máy thì chỉ hiện máy đang giữ. Danh sách toàn bộ dành cho AD khi chọn chủ động; bảng giám sát AD thu gọn. Tăng kích cỡ chữ PC, tăng nút thao tác, chống chồng lấn ở PC/mobile. Giữ nguyên ảnh ký nhận, ảnh rõ Supabase, ký, giờ, PDF, lịch sử và các quy tắc giao/nhận.",
+  "message": "Giao diện bộ đàm gọn: máy trống để nhận, máy đang giữ để trả; PC chữ lớn, bố cục dễ nhìn. Số phiên bản bắt đầu lại V1.0."
 }
