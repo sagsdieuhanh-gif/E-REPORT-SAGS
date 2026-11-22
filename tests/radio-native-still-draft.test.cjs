@@ -114,7 +114,7 @@ function harness(navigator={userAgent:'iPhone'}){
   const saved=await afterReload.readNativeDraft('staff',true);
   assert.equal(saved.action,action);
   assert.equal(saved.clock.at,clock.at);
-  assert.equal(saved.fields.radioBattery,'GOOD');
+  assert.equal(saved.fields.radioBattery,undefined,'No battery field is collected in new iOS signing drafts');
   assert.equal(saved.fields.radioReturnReason,'HANDOVER');
   assert.deepEqual(Array.from(saved.strokes[0][1]),[32,50]);
   assert.equal(await saved.file.text(),'camera bytes');
