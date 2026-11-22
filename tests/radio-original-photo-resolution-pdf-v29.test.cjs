@@ -55,7 +55,7 @@ function makePdfCanvas(){
  created.push(canvas);
  return canvas;
 }
-const scope={navigator:{userAgent:'desktop'},document:{createElement:()=>makePdfCanvas()},
+const scope={root:{SAGSRadioPhotoVaultV1:null},navigator:{userAgent:'desktop'},document:{createElement:()=>makePdfCanvas()},
  Math,Date,Number,Error,
  S:x=>String(x??''),label:x=>x,ACTS:{ISSUE:'Nhận máy'},fmt:()=> '16/11/2026',
  pdfWrap:()=>[],photoAudit:()=>({serverMs:Date.now(),deviceMs:Date.now(),delta:0,
