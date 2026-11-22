@@ -13,7 +13,7 @@ for(const x of ['sags-radio-originals-v1','RADIO_CAP=700*MIB','PROJECT_CAP=900*M
  assert(edge.includes(x),'Edge/photo quota protection missing: '+x);
 for(const x of ['const savedPhotoEventIds={}','savedPhotoEventIds.old=updateDevice(',
  'savedPhotoEventIds.new=updateDevice(','await vault.queue(eventId,user.uid,fullBlob)',
- 'async function originalRadioPhotoBlob(leg)','await vault.flush','root.SAGSRadioPhotoVaultV1?.isOriginal(e.id)'])
+ 'async function originalRadioPhotoBlob(leg)','void vault.flush(4)','root.SAGSRadioPhotoVaultV1?.isOriginal(e.id)'])
  assert(app.includes(x),'Signed photo or export integration missing: '+x);
 assert(vault.includes("root.indexedDB.open(DB,1)"),'original JPEG retry must be durable');
 assert(vault.includes("user.uid!==record.uid"),'only the actor may retry original upload');
