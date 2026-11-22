@@ -1563,6 +1563,11 @@ async function open(){
  if(busy){$('sagsRadioPanel').hidden=false;return}
  tpl();const u=currentUser();$('radioPdfChoice').hidden=true;$('radioDraftControls').hidden=true;if(!u.uid){$('sagsRadioPanel').hidden=false;notify('Đang chờ xác thực Firebase. Kiểm tra đăng nhập hoặc mở lại sau khi kết nối.',true);return}
  $('sagsRadioPanel').hidden=false;notify('Đang tải danh mục thiết bị…');tab('devices');if(isAdmin(u)&&!rosterDate)watchRoster();
+ // Resume immutable high-res originals left in IndexedDB if Safari closed
+ // during upload. Firebase signed transactions are never replayed here.
+ void loadRadioPhotoVault().then(v=>v.flush(4)).then(out=>{
+  if(out?.uploaded)notify('✓ Đã đồng bộ '+out.uploaded+' ảnh rõ còn chờ từ thiết bị lên Supabase.');
+ }).catch(e=>console.info('Kho ảnh gốc chưa sẵn sàng',String(e?.message||e).slice(0,100)));
  if(unsubs.length)return;
  connected=false;devices=[];events=[];render();
  try{
