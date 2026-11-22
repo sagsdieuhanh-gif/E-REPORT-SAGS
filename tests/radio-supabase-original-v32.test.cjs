@@ -1,6 +1,6 @@
 'use strict';
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
-const crypto=require('node:crypto').webcrypto;
+const nodeCrypto=require('node:crypto'),crypto=nodeCrypto.webcrypto;
 const edge=fs.readFileSync('supabase/functions/sags-radio-photo-v1/index.ts','utf8');
 const app=fs.readFileSync('app/modules/radio-custody.v1.js','utf8');
 const vault=fs.readFileSync('app/modules/radio-photo-vault.v1.js','utf8');
@@ -91,6 +91,11 @@ async function exercise(){
    }
    radioUsed=500*1024*1024;return ok([{name:'removed'}]);
   }
+  const infoStart='/storage/v1/object/info/sags-radio-originals-v1/';
+  if(p.includes(infoStart)&&method==='GET'){
+   const path=p.split(infoStart)[1],existing=files.get(path);
+   return existing?ok({metadata:{size:existing.length}}):ok({error:'not found'},404);
+  }
   const start='/storage/v1/object/sags-radio-originals-v1/';
   if(p.includes(start)&&method==='POST'){
    const path=p.split(start)[1];
@@ -135,6 +140,24 @@ async function exercise(){
   headers:{...origin,Authorization:'Bearer '+token}}));
  assert.equal(response.status,200);
  assert.equal((await response.arrayBuffer()).byteLength,photo.byteLength);
+ // Interrupted ledger insertion is recoverable by reusing the immutable
+ // object key (full content SHA-256, not only the first 16 characters).
+ const orphanEvent='signedEventOrphan004';events.set(orphanEvent,fakeEvent);
+ const day=Object.fromEntries(new Intl.DateTimeFormat('en-US',{
+  timeZone:'Asia/Ho_Chi_Minh',year:'numeric',month:'2-digit',day:'2-digit'
+ }).formatToParts(new Date()).map(x=>[x.type,x.value]));
+ const dayKey=day.year+'-'+day.month+'-'+day.day;
+ const digest=nodeCrypto.createHash('sha256').update(photo).digest('hex');
+ const orphanPath=dayKey.replace(/-/g,'/')+'/'+orphanEvent+'-'+digest+'.jpg';
+ files.set(orphanPath,photo);radioUsed+=photo.length;
+ const orphanForm=new FormData();
+ orphanForm.append('eventId',orphanEvent);
+ orphanForm.append('image',new Blob([photo],{type:'image/jpeg'}),'orphan.jpg');
+ response=await handler(new Request(api,{method:'POST',
+  headers:{...origin,Authorization:'Bearer '+token},body:orphanForm}));
+ assert.equal(response.status,200,'Interrupted signed original can be recovered without overwriting bytes');
+ assert.equal(entries.get(orphanEvent).sha256,digest);
+ assert.equal(entries.get(orphanEvent).state,'LIVE');
  // Old-day cleanup: simulate the radio bucket nearing its project budget.
  const oldDay=new Date(Date.now()-5*86400000).toISOString().slice(0,10);
  const oldPath=oldDay.replace(/-/g,'/')+'/'+oldEvent+'-old.jpg';
