@@ -263,13 +263,24 @@ async function saveOriginal(req,identity){
   const reclaimed=await reclaimFor(blob.size);
   const time=new Date(ev.signedAt);
   const day=dateVN(time);
-  const filePath=day.replace(/-/g,"/")+"/"+eventId+"-"+digest.slice(0,16)+".jpg";
+  const filePath=day.replace(/-/g,"/")+"/"+eventId+"-"+digest+".jpg";
   const url="/storage/v1/object/"+BUCKET+"/"+filePath;
   const uploaded=await fetch(pathUrl(url),{method:"POST",
    headers:adminHeaders({"Content-Type":"image/jpeg","x-upsert":"false",
      "Cache-Control":"private, max-age=0"}),
    body:bytes});
-  if(!uploaded.ok)throw Error("private-photo-storage-upload-failed");
+  if(!uploaded.ok){
+   if(![400,409].includes(uploaded.status))throw Error("private-photo-storage-upload-failed");
+   // A previous upload might have succeeded but the ledger insert was
+   // interrupted. The deterministic FULL SHA-256 path lets a retry repair
+   // the ledger without overwriting or deleting an immutable original.
+   const info=await fetch(pathUrl("/storage/v1/object/info/"+BUCKET+"/"+filePath),
+     {headers:adminHeaders()});
+   if(!info.ok)throw Error("private-photo-collision-or-upload-failed");
+   const details=await info.json();
+   const storedSize=Number(details.metadata?.size??details.size);
+   if(storedSize!==bytes.length)throw Error("private-photo-existing-size-mismatch");
+  }
   // Store the signed Firebase timestamp (not local upload time) and an
   // immutable content checksum; tombstone remains after quota eviction.
   await adminCall("POST","/rest/v1/"+ledger,
