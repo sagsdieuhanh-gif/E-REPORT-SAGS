@@ -50,7 +50,7 @@ for(const item of [
  '.sagsRadioPanel .radioShell{padding:12px 10px calc(82px + env(safe-area-inset-bottom,0px))'
 ])assert(css.includes(item),'Desktop/mobile responsive guard missing: '+item);
 const version=JSON.parse(fs.readFileSync('version.json','utf8'));
-assert.equal(version.displayVersion,'V1.2');
-assert.equal(version.version,'V1.2');
-assert.match(version.build,/^V1\.2-\d{8}-/);
-console.log('Radio V1.2 focused signing: available-only / held-only / admin full opt-in, defect advisory eligibility, desktop legibility and mobile overflow checks PASS');
+assert.equal(version.displayVersion,'V1.3');
+assert.equal(version.version,'V1.3');
+assert.match(version.build,/^V1\.3-\d{8}-/);
+console.log('Radio V1.3 focused signing: available-only / held-only / admin full opt-in, defect advisory eligibility, desktop legibility and mobile overflow checks PASS');
