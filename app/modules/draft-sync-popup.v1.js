@@ -58,7 +58,7 @@
       action:'ĐÃ HIỂU'
     }
   };
-  let lastPhase='',lastScope='',lastShown=0,closeTimer=0;
+  let lastPhase='',lastScope='',lastShown=0,closeTimer=0,deferred=null;
   function ensure(){
     let modal=$(ID);if(modal)return modal;
     if(!document.body)return null;
@@ -127,9 +127,15 @@
     return true;
   }
   root.addEventListener?.('sags:draft-sync-notice',e=>{
-    if(document.hidden)return;
     const detail=e?.detail||{};
+    if(document.hidden){deferred=detail;return}
+    deferred=null;
     show(String(detail.phase||''),detail);
   });
+  document.addEventListener('visibilitychange',()=>{
+    if(document.hidden||!deferred)return;
+    const detail=deferred;deferred=null;
+    show(String(detail.phase||''),detail);
+  },{passive:true});
   root.SAGSDraftSyncPopup={show,close};
 })(typeof window!=='undefined'?window:globalThis);
