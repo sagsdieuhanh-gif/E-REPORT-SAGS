@@ -1,12 +1,12 @@
 {
-  "version": "V1.3",
-  "displayVersion": "V1.3",
-  "label": "V1.3 - RADIO RETURN COMPATIBILITY",
-  "build": "V1.3-20261123-RADIO-RETURN-COMPAT-02",
+  "version": "V1.4",
+  "displayVersion": "V1.4",
+  "label": "V1.4 - OPERATIONAL CONSISTENCY AND SAFETY",
+  "build": "V1.4-20261123-CONSISTENCY-01",
   "releasedAt": "2026-11-23",
-  "type": "radio-return-legacy-fault-compatibility",
+  "type": "operational-consistency-phase1-2",
   "base": "Giữ nguyên toàn bộ dữ liệu và chức năng đã ổn định từ E-REPORT-SAGS V2.2; chỉ đặt lại dãy số phiên bản hiển thị",
   "updatePolicy": "required",
-  "notes": "Sửa trường hợp trả bộ đàm báo permission-denied khi bản ghi máy đang giữ lỗi kỹ thuật cũ, pin yếu và mô tả lỗi trống; giữ nguyên faultDetail hiện hữu theo Firestore Rules, không thay đổi quyền hoặc lịch sử ký nhận. Cải thiện thông báo phân biệt lỗi riêng máy. Chưa xác minh bản ghi DH10 production.",
-  "message": "Bản vá V1.3: tăng tương thích dữ liệu lỗi cũ khi ký trả bộ đàm."
+  "notes": "Chuẩn hóa ca bộ đàm 08:30–19:00 và 19:01–08:29; thống nhất đăng nhập PVHK/FSAGS09/AD; mật khẩu tài khoản mới ngẫu nhiên 24 ký tự; thanh lưu nháp không còn báo 3 lớp khi chưa xác nhận Firebase; thống nhất mã TW. Các tác vụ backend retention, standby, reset cần cấu hình riêng trên Firebase/GitHub Actions; không thay đổi dữ liệu, lịch sử, ảnh hoặc PDF.",
+  "message": "Cập nhật V1.4: đồng bộ nghiệp vụ và bảo vệ dữ liệu, không thay đổi chức năng in/PDF hay quyền Firestore production."
 }
