@@ -12,6 +12,7 @@ const el=()=>({hidden:false,textContent:'',dataset:{},listeners:{},setAttribute(
 const doc={
  hidden:false,body:{appendChild(x){ids[x.id]=x}},head:{appendChild(x){ids[x.id]=x}},
  getElementById:id=>ids[id]||null,
+ addEventListener(){},
  createElement:()=>el()
 };
 for(const id of ['sdsIcon','sdsTitle','sdsLead','sdsDetail','sdsClose'])ids[id]=el();
