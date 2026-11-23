@@ -70,10 +70,21 @@ jobs:
       - name: Run guarded 24h cleanup
         if: steps.connection.outputs.ready == 'true'
         env:
-          DRY_RUN: ${{ github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.dry_run) }}
+          EVENT_NAME: ${{ github.event_name }}
+          MANUAL_DRY_RUN: ${{ inputs.dry_run }}
+          SAGS_RETENTION_DELETE_ENABLED: ${{ vars.SAGS_RETENTION_DELETE_ENABLED }}
         run: |
-          if [ "$DRY_RUN" = 'true' ]; then
+          set -euo pipefail
+          # Default is READ-ONLY, including scheduled runs after credentials are connected.
+          # Never interpret a successful credential check as permission to delete.
+          if [ "$EVENT_NAME" = 'workflow_dispatch' ] && [ "$MANUAL_DRY_RUN" != 'true' ] && [ "$SAGS_RETENTION_DELETE_ENABLED" != 'true' ]; then
+            echo '::error::Apply locked: enable SAGS_RETENTION_DELETE_ENABLED only after backup, restore-test and dry-run review.'
+            exit 1
+          fi
+          if [ "$SAGS_RETENTION_DELETE_ENABLED" != 'true' ] || [ "$EVENT_NAME" = 'push' ] || { [ "$EVENT_NAME" = 'workflow_dispatch' ] && [ "$MANUAL_DRY_RUN" = 'true' ]; }; then
+            echo 'Retention mode: DRY-RUN (no writes/deletes)'
             node firebase/functions/actions-worker.js --dry-run
           else
+            echo 'Retention mode: APPLY (explicitly enabled and audited)'
             node firebase/functions/actions-worker.js --apply
           fi
