@@ -123,6 +123,27 @@ async function main(){
  }));
  assert.equal((await getDoc(doc(getDb('admin'),proofDb,returnId))).data().image.length,jpegWithin(235000).length);
  assert.equal((await getDoc(d('DH09'))).data().lastEventId,returnId);
+ // Legacy DH10 scenario: old non-battery fault + low battery + blank fault details.
+ // The old client added a new battery description on RETURN while keeping MIC,
+ // which Firestore correctly rejects as a mismatched historical fault update.
+ await assertSucceeds(createRadio('admin','DH10'));
+ await env.withSecurityRulesDisabled(c=>updateDoc(doc(c.firestore(),root,'DH10'),{
+  faultCode:'MIC',faultDetail:'',battery:'LOW'
+ }));
+ await assertSucceeds(transition('alice','DH10','ISSUE',{
+  status:'OUT',holderUid:'alice',holderName:names.alice,shift:'AM',
+  faultCode:'MIC',faultDetail:'',battery:'LOW'
+ }));
+ await assertFails(transition('alice','DH10','RETURN',{
+  status:'READY',holderUid:'',holderName:'',shift:'',
+  faultCode:'MIC',faultDetail:'Pin yếu/hết pin đã được ghi nhận trước đó',battery:'LOW'
+ }));
+ assert.equal((await getDoc(d('DH10'))).data().status,'OUT','Rejected return must keep DH10 in custody');
+ await assertSucceeds(transition('alice','DH10','RETURN',{
+  status:'READY',holderUid:'',holderName:'',shift:'',
+  faultCode:'MIC',faultDetail:'',battery:'LOW'
+ }));
+ assert.equal((await getDoc(d('DH10'))).data().status,'READY');
  await assertSucceeds(getDoc(doc(getDb('alice'),root,'DH01')));
  await assertSucceeds(transition('alice','DH01','ISSUE',{
   status:'OUT',holderUid:'alice',holderName:names.alice,shift:'AM',

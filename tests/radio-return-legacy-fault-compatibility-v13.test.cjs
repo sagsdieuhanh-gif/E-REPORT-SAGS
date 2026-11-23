@@ -1,0 +1,15 @@
+'use strict';
+const fs=require('node:fs'),assert=require('node:assert/strict');
+const radio=fs.readFileSync('app/modules/radio-custody.v1.js','utf8');
+const rules=fs.readFileSync('firebase/firestore.rules','utf8');
+const a=radio.indexOf("else if(mode==='RETURN')");
+const b=radio.indexOf("else if(mode==='REPORT')",a);
+assert(a>=0&&b>a,'RETURN branch must exist');
+const ret=radio.slice(a,b);
+assert(ret.includes("const faultDetail=d.faultDetail||(low&&fault==='BATTERY_WEAK'"),'Preserve blank legacy non-battery fault details on return');
+assert(!ret.includes("faultDetail:d.faultDetail||(low?"),'No incompatible synthesized fault detail for MIC/OTHER legacy faults');
+assert(ret.includes("faultCode:fault,faultDetail,battery"),'Receipt must preserve actual fault code and detail');
+assert(rules.includes("next.faultDetail == old.faultDetail"),'The server requires original fault detail preservation');
+assert(rules.includes("next.faultCode == 'BATTERY_WEAK'"),'Only battery weakness may synthesize a missing detail');
+assert(radio.includes('FIREBASE TỪ CHỐI GIAO DỊCH'),'Do not label one device denial as global Firebase activation failure');
+console.log('Radio return legacy fault and low-battery compatibility PASS');

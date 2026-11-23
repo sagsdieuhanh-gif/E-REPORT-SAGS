@@ -1,12 +1,12 @@
 {
   "version": "V1.3",
   "displayVersion": "V1.3",
-  "label": "V1.3 - AUTOMATIC DRAFT SYNC STATUS POPUPS",
-  "build": "V1.3-20261123-DRAFT-SYNC-POPUPS-01",
+  "label": "V1.3 - RADIO RETURN COMPATIBILITY",
+  "build": "V1.3-20261123-RADIO-RETURN-COMPAT-02",
   "releasedAt": "2026-11-23",
-  "type": "draft-sync-large-alerts",
+  "type": "radio-return-legacy-fault-compatibility",
   "base": "Giữ nguyên toàn bộ dữ liệu và chức năng đã ổn định từ E-REPORT-SAGS V2.2; chỉ đặt lại dãy số phiên bản hiển thị",
   "updatePolicy": "required",
-  "notes": "Popup lớn trên PC/iOS/Android báo mất mạng, nháp đã bảo vệ cục bộ, kết nối lại, đang tự đồng bộ, thành công và thất bại. Thành công chỉ khi hàng đợi IndexedDB đã được xác minh trống sau giao dịch Firebase; không hiển thị liên tục khi nhập từng ô. Giữ nguyên dữ liệu, biểu mẫu và nghiệp vụ.",
-  "message": "Thông báo lớn khi mất mạng và tự đồng bộ nháp Firebase; xác nhận kết quả thực tế, không báo thành công giả."
+  "notes": "Sửa trường hợp trả bộ đàm báo permission-denied khi bản ghi máy đang giữ lỗi kỹ thuật cũ, pin yếu và mô tả lỗi trống; giữ nguyên faultDetail hiện hữu theo Firestore Rules, không thay đổi quyền hoặc lịch sử ký nhận. Cải thiện thông báo phân biệt lỗi riêng máy. Chưa xác minh bản ghi DH10 production.",
+  "message": "Bản vá V1.3: tăng tương thích dữ liệu lỗi cũ khi ký trả bộ đàm."
 }
