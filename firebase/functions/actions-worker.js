@@ -73,7 +73,14 @@ async function main(){
   const databaseURL=process.env.FIREBASE_DATABASE_URL;
   if(databaseURL!=='https://e-report-sags-default-rtdb.asia-southeast1.firebasedatabase.app')throw Error('Unexpected Firebase database');
   initializeApp({projectId,databaseURL});
-  const dryRun=process.argv.includes('--dry-run')||!process.argv.includes('--apply');
+  // Both the CLI flag AND a separate GitHub variable are required for deletion.
+  // Merely connecting service-account credentials must never enable --apply.
+  const wantsApply=process.argv.includes('--apply');
+  if(wantsApply && (process.argv.includes('--dry-run') ||
+      process.env.SAGS_RETENTION_DELETE_ENABLED !== 'true')) {
+    throw Error('Retention apply is locked. Set SAGS_RETENTION_DELETE_ENABLED=true after backup and dry-run verification.');
+  }
+  const dryRun=!wantsApply;
   const out=await runWorker(getFirestore(),getDatabase(),{dryRun});
   console.log(JSON.stringify(out)); // Counts only: no flight, person or credential data in public logs.
   if(process.env.GITHUB_STEP_SUMMARY)require('fs').appendFileSync(process.env.GITHUB_STEP_SUMMARY,'## Flight retention\n\n'+Object.entries(out).map(([k,v])=>'- '+k+': '+v).join('\n')+'\n');
