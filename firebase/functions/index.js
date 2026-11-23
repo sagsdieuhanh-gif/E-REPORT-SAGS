@@ -2,6 +2,9 @@
 const {initializeApp}=require('firebase-admin/app');
 const {getFirestore}=require('firebase-admin/firestore');
 const {getDatabase}=require('firebase-admin/database');
+const {getAuth}=require('firebase-admin/auth');
+const {onCall,HttpsError}=require('firebase-functions/v2/https');
+const {createAdminResetAuthPassword}=require('./admin-account');
 const {onDocumentWritten}=require('firebase-functions/v2/firestore');
 const {onSchedule}=require('firebase-functions/v2/scheduler');
 const {defineBoolean}=require('firebase-functions/params');
@@ -26,3 +29,8 @@ exports.cleanupCompletedFlights48h=onSchedule({...options,schedule:'every 15 min
   console.info('24h retention',out);
   if(out.failed)throw Error('Some completed flights could not be cleaned; retry scheduled');
 });
+
+// Firebase HTTPS callable: source-only until a separate authenticated Functions deploy.
+// A GitHub Pages release does NOT deploy this server endpoint.
+exports.adminResetAuthPassword=onCall({region:'asia-southeast1',maxInstances:2,memory:'256MiB',timeoutSeconds:30},
+  request=>createAdminResetAuthPassword({firestore:getFirestore(),identity:getAuth(),HttpsError})(request));
