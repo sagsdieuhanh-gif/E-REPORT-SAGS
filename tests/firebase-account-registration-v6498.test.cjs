@@ -8,7 +8,7 @@ const s=hierarchy.indexOf('adminCreatePersonalAccount=async function(){');
 const e=hierarchy.indexOf('window.adminCreatePersonalAccount=adminCreatePersonalAccount',s);
 assert.ok(s>=0&&e>s,'canonical account create function must exist');
 const create=hierarchy.slice(s,e);
-assert.match(create,/createUserWithEmailAndPassword\(email,"123456"\)/,'new account must create Firebase Authentication user');
+assert.match(create,/createUserWithEmailAndPassword\(email,initialPassword\)/,'new account must create Firebase Authentication user');
 assert.match(create,/collection\("users"\)/,'new account must use Firestore users collection');
 assert.match(create,/users\.doc\(uid\)\.set/,'new account profile must be keyed by Firebase UID');
 assert.match(create,/firebaseUid:uid/,'new account profile must preserve Firebase UID');

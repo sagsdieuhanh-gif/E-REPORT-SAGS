@@ -9,5 +9,6 @@ assert.match(loader,/load\(idb,\(\)=>load\(cloud,\(\)=>load\(popup\)\)\)/,'cloud
 assert.match(quick,/sagsV61Draft\?\.read\?\.\(f\.key,"quickTime"\)/,'quick-time draft recovery read missing');
 assert.match(quick,/sagsV61Draft\?\.record\?\.\(el\.dataset\.key,v,"quickTime"\)/,'quick-time input must enter draft pipeline immediately');
 assert.match(quick,/sagsV61Draft\?\.forget\?\.\(c\.key,"quickTime"\)/,'saved quick-time draft must be cleared');
-assert.match(core,/Nháp đã bảo vệ 3 lớp/,'operator status must expose three-layer protection');
+assert.doesNotMatch(core,/Nháp đã bảo vệ 3 lớp/,'operator badge must not claim unverified cloud receipt');
+assert.match(core,/Nháp đang lưu trên thiết bị/,'operator badge must report local protection separately');
 console.log('V2.0 draft protection passed: localStorage -> IndexedDB -> conflict-safe roster RTDB backup.');
