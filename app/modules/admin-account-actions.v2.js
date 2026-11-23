@@ -5,7 +5,18 @@
  */
 (function(root){
 'use strict';
-const BUILD='V2.5-20261006-WEB-DELETE-RECREATE-10-ADMIN-LIFECYCLE',TMP_PASS='123456';
+const BUILD='V1.4-20261123-STRONG-ACCOUNT-CREDENTIALS',LEGACY_PASS='123456';
+function secureInitialPassword(){
+ const crypt=root.crypto;
+ if(!crypt||typeof crypt.getRandomValues!=='function')throw Error('Không thể tạo mật khẩu an toàn. Không tạo/reset tài khoản.');
+ const sets=['ABCDEFGHJKLMNPQRSTUVWXYZ','abcdefghjkmnpqrstuvwxyz','23456789','!@#$%*-_'],alphabet=sets.join(''),random=new Uint8Array(48);
+ crypt.getRandomValues(random);
+ const chars=sets.map((set,i)=>set[random[i]%set.length]);
+ for(let i=4;i<24;i++)chars.push(alphabet[random[i]%alphabet.length]);
+ for(let i=chars.length-1,k=24;i>0;i--,k++){const j=random[k%random.length]%(i+1);[chars[j],chars[i]]=[chars[i],chars[j]];}
+ return chars.join('');
+}
+
 const S=v=>String(v??'').trim();
 function session(){try{return typeof root.__sagsGetSession==='function'?root.__sagsGetSession():null}catch(_){return null}}
 function role(){const s=session();let r=S(s?.role||s?.profile?.role).toUpperCase();if(!r){try{r=S(currentRole).toUpperCase()}catch(_){}}return r}
@@ -38,7 +49,7 @@ function createInput(){
 }
 async function createAccount(){
  if(!isAdmin())return alert('Chỉ AD được tạo tài khoản.');
- let sec=null,cred=null,createdNew=false,recoveredOrphan=false,profileWritten=false;
+ let sec=null,cred=null,createdNew=false,recoveredOrphan=false,profileWritten=false,initialPassword='';
  try{
   const ctx=await adminContext(),d=createInput();
   if(!d.employeeCode||!d.name||!d.username||!d.departmentCode||!d.groupCode||!d.roleCode||!d.jobTitle||!d.unit)return status('Cần nhập/chọn đủ thông tin tài khoản.',true);
@@ -55,7 +66,7 @@ async function createAccount(){
   if(liveEmail)throw Error('Email '+email+' đã có hồ sơ E-REPORT.');
   sec=secondary('sags-create-v4');try{await sec.auth.setPersistence(root.firebase.auth.Auth.Persistence.NONE)}catch(_){}
   let reuseDeletedUid='';
-  try{cred=await sec.auth.createUserWithEmailAndPassword(email,TMP_PASS);createdNew=true}
+  try{initialPassword=secureInitialPassword();cred=await sec.auth.createUserWithEmailAndPassword(email,initialPassword);createdNew=true}
   catch(e){
    if(!code(e).includes('email-already-in-use'))throw e;
    if(tomb){
@@ -63,7 +74,7 @@ async function createAccount(){
     status('Firebase Auth cũ còn tồn tại · đang tạo lại hồ sơ web trên đúng UID cũ…');
    }else{
     status('Auth đã tồn tại · đang kiểm tra khả năng phục hồi hồ sơ mồ côi…');
-    try{cred=await sec.auth.signInWithEmailAndPassword(email,TMP_PASS)}catch(signErr){throw Error('Firebase Auth '+email+' đã tồn tại nhưng không có hồ sơ đã xóa để phục hồi. ['+code(signErr)+']')}
+    try{cred=await sec.auth.signInWithEmailAndPassword(email,LEGACY_PASS)}catch(signErr){throw Error('Firebase Auth '+email+' đã tồn tại nhưng không có hồ sơ đã xóa để phục hồi. ['+code(signErr)+']')}
     const orphanUid=S(cred?.user?.uid);if(!orphanUid)throw Error('Không xác định được UID Auth đang tồn tại.');
     const old=await users.doc(orphanUid).get();if(old.exists&&(old.data()||{}).deleted!==true)throw Error('Firebase Auth '+email+' đã có users/{UID}. Hãy tải lại danh sách tài khoản thay vì tạo mới.');
     recoveredOrphan=true;
@@ -80,7 +91,7 @@ async function createAccount(){
   ['admEmployeeCode','admFullName','admUsername','admJobTitle'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''});
   try{root.v18SyncAccountHierarchy?.('adm')}catch(_){}
   status('✓ '+(reuseDeletedUid?'Đã tạo lại hồ sơ web':'Đã tạo')+' '+d.username+' · UID '+uid+'.');
-  alert(reuseDeletedUid?'✓ ĐÃ TẠO LẠI HỒ SƠ E-REPORT\n\nUsername: '+d.username+'\nFirebase Auth cũ được giữ nguyên nên mật khẩu Firebase KHÔNG thay đổi.':'✓ ĐÃ TẠO TÀI KHOẢN\n\nUsername: '+d.username+'\nFirebase: '+email+'\nMật khẩu: 123456');
+  alert(reuseDeletedUid?'✓ ĐÃ TẠO LẠI HỒ SƠ E-REPORT\n\nUsername: '+d.username+'\nFirebase Auth cũ được giữ nguyên nên mật khẩu Firebase KHÔNG thay đổi.':'✓ ĐÃ TẠO TÀI KHOẢN\n\nUsername: '+d.username+'\nFirebase: '+email+'\nMật khẩu một lần: '+initialPassword+'\nYêu cầu đổi mật khẩu ngay sau đăng nhập.');
   await refresh();
  }catch(e){
   if(createdNew&&cred?.user&&!profileWritten){try{await cred.user.delete()}catch(_){}}
@@ -88,8 +99,8 @@ async function createAccount(){
   alert('KHÔNG TẠO ĐƯỢC TÀI KHOẢN\n\n'+message(e));
  }finally{await closeSecondary(sec)}
 }
-async function callReset(t){
- const email=loginEmail(t.data),u=normUser(t.data?.username),payload={uid:t.uid,targetUid:t.uid,userId:t.uid,email,username:u,password:TMP_PASS,newPassword:TMP_PASS,mustChangePassword:true};
+async function callReset(t,password){
+ const email=loginEmail(t.data),u=normUser(t.data?.username),payload={uid:t.uid,targetUid:t.uid,userId:t.uid,email,username:u,password,newPassword:password,mustChangePassword:true};
  const regions=['asia-southeast1',null,'us-central1'];let last=null,seen=new Set();
  for(const region of regions){try{const fx=region?root.firebase.app().functions(region):root.firebase.functions(),key=String(region||'default');if(seen.has(key))continue;seen.add(key);const res=await fx.httpsCallable('adminResetAuthPassword')(payload);if(res?.data?.ok===false)throw Error(S(res.data.error||res.data.message||'Cloud Function từ chối reset.'));return res?.data||{ok:true}}catch(e){last=e;console.warn('adminResetAuthPassword',region||'default',code(e),message(e));if(code(e).includes('permission-denied')||code(e).includes('unauthenticated'))break}}
  throw Error('RESET AUTH thất bại'+(code(last)?' ['+code(last)+']':'')+': '+message(last));
@@ -101,14 +112,14 @@ async function callDeleteServer(t){
 }
 async function deleteWithDefault(email,uid){
  let sec=null;try{sec=secondary('sags-delete-default');try{await sec.auth.setPersistence(root.firebase.auth.Auth.Persistence.NONE)}catch(_){}
-  let cred;try{cred=await sec.auth.signInWithEmailAndPassword(email,TMP_PASS)}catch(e){const c=code(e);if(c.includes('user-not-found'))return {ok:true,missing:true};if(c.includes('invalid-credential')||c.includes('wrong-password')||c.includes('invalid-login-credentials'))return {ok:false,changedPassword:true,error:e};throw e}
+  let cred;try{cred=await sec.auth.signInWithEmailAndPassword(email,LEGACY_PASS)}catch(e){const c=code(e);if(c.includes('user-not-found'))return {ok:true,missing:true};if(c.includes('invalid-credential')||c.includes('wrong-password')||c.includes('invalid-login-credentials'))return {ok:false,changedPassword:true,error:e};throw e}
   if(!cred?.user?.uid||S(cred.user.uid)!==S(uid))throw Error('UID Auth xác minh không khớp hồ sơ cần xóa.');
   await cred.user.delete();return {ok:true,missing:false};
  }finally{await closeSecondary(sec)}
 }
 async function resetPassword(id){
  if(!isAdmin())return alert('Chỉ AD được reset mật khẩu.');
- try{const ctx=await adminContext(),t=await target(id,ctx),label=normUser(t.data?.username)||S(t.data?.email)||t.uid;if(!confirm('RESET mật khẩu của '+label+' về 123456?'))return;status('Đang reset Firebase Authentication cho '+label+'…');await callReset(t);await t.ref.set({mustChangePassword:true,passwordResetAtMs:Date.now(),updatedAtMs:Date.now()},{merge:true});status('✓ Đã reset '+label+' về 123456.');alert('✓ RESET THÀNH CÔNG\n\n'+label+' · mật khẩu 123456');await refresh()}catch(e){status('Không reset được: '+message(e),true);alert('KHÔNG RESET ĐƯỢC AUTH\n\n'+message(e))}
+ try{const ctx=await adminContext(),t=await target(id,ctx),label=normUser(t.data?.username)||S(t.data?.email)||t.uid;if(!confirm('RESET mật khẩu của '+label+' sang mật khẩu ngẫu nhiên một lần?'))return;const password=secureInitialPassword();status('Đang reset Firebase Authentication cho '+label+'…');await callReset(t,password);await t.ref.set({mustChangePassword:true,passwordResetAtMs:Date.now(),updatedAtMs:Date.now()},{merge:true});status('✓ Đã reset '+label+' bằng mật khẩu ngẫu nhiên một lần.');alert('✓ RESET THÀNH CÔNG\n\n'+label+'\nMật khẩu một lần: '+password+'\nYêu cầu đổi ngay sau đăng nhập.');await refresh()}catch(e){status('Không reset được: '+message(e),true);alert('KHÔNG RESET ĐƯỢC AUTH\n\n'+message(e))}
 }
 async function deleteAccount(id){
  if(!isAdmin())return alert('Chỉ AD được xóa tài khoản.');
