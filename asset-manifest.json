@@ -217,6 +217,10 @@
       "sha256": "d6472c227e7cdc79afe6169b3e22e3875128c7628434129bc04873383a442ba3",
       "bytes": 89275
     },
+    "./app/modules/draft-sync-popup.v1.js": {
+      "sha256": "3ccaf6a06b55f0c244385c6ce0e73ba9c457fa562c64924d126ecbfffa6d42b3",
+      "bytes": 10431
+    },
     "./app/modules/feature-loader.v1.js": {
       "sha256": "dc738a8d7df5134fe41f208fa0a19f6624438dc3d82fc30a921e05541fbc91c9",
       "bytes": 1778
@@ -868,10 +872,6 @@
     "./version.json": {
       "sha256": "981c618acd96eb4887ae39755034b66fed8c27ae8949388d87d6e17fb8052641",
       "bytes": 969
-    },
-    "./app/modules/draft-sync-popup.v1.js": {
-      "sha256": "3ccaf6a06b55f0c244385c6ce0e73ba9c457fa562c64924d126ecbfffa6d42b3",
-      "bytes": 10431
     }
   },
   "mutableAssets": [
