@@ -1,12 +1,12 @@
 {
-  "version": "V1.2",
-  "displayVersion": "V1.2",
-  "label": "V1.2 - PC UI & A/C LIMITS SOURCE CONTRAST FIX",
-  "build": "V1.2-20261122-ACL-SOURCE-FIX-04",
-  "releasedAt": "2026-11-22",
-  "type": "acl-contrast-root-cause-hotfix",
+  "version": "V1.3",
+  "displayVersion": "V1.3",
+  "label": "V1.3 - AUTOMATIC DRAFT SYNC STATUS POPUPS",
+  "build": "V1.3-20261123-DRAFT-SYNC-POPUPS-01",
+  "releasedAt": "2026-11-23",
+  "type": "draft-sync-large-alerts",
   "base": "Giữ nguyên toàn bộ dữ liệu và chức năng đã ổn định từ E-REPORT-SAGS V2.2; chỉ đặt lại dãy số phiên bản hiển thị",
   "updatePolicy": "required",
-  "notes": "Sửa lỗi A/C LIMITS chữ trắng trên nền trắng tại nguồn CSS: loại modal A/C LIMITS khỏi các quy tắc popup tối có độ ưu tiên cao, giữ bảng màu sáng riêng. Đã xác minh chênh lệch màu trên Chromium. Không thay đổi nghiệp vụ, biểu mẫu in, dữ liệu, phân quyền hay PDF.",
-  "message": "Sửa dứt điểm xung đột màu chữ A/C LIMITS giữa giao diện sáng và tối. Bản vá V1.2."
+  "notes": "Popup lớn trên PC/iOS/Android báo mất mạng, nháp đã bảo vệ cục bộ, kết nối lại, đang tự đồng bộ, thành công và thất bại. Thành công chỉ khi hàng đợi IndexedDB đã được xác minh trống sau giao dịch Firebase; không hiển thị liên tục khi nhập từng ô. Giữ nguyên dữ liệu, biểu mẫu và nghiệp vụ.",
+  "message": "Thông báo lớn khi mất mạng và tự đồng bộ nháp Firebase; xác nhận kết quả thực tế, không báo thành công giả."
 }
