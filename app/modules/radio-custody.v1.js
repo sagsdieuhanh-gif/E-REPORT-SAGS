@@ -85,7 +85,7 @@ function currentUser(){const u=root.firebase?.auth?.().currentUser,s=session(),p
 function isAdmin(u){return ['ADMIN','AD'].includes(u?.role)}
 function fs(){if(!root.firebase?.apps?.length||!root.firebase?.firestore)throw Error('Chưa khởi tạo kết nối Firebase.');return root.firebase.firestore()}
 function fv(){return root.firebase.firestore.FieldValue.serverTimestamp()}
-function errText(e){if(String(e?.code||'').includes('permission-denied'))return 'CHƯA KÍCH HOẠT KÝ NHẬN: Firebase chưa cấp quyền truy cập bộ đàm. AD cần kiểm tra Firestore Rules và quyền tài khoản.';if(!navigator.onLine)return 'Mất kết nối. Không ghi nhận nhận/trả khi ngoại tuyến.';return S(e?.message||e||'Có lỗi, thử lại.')}
+function errText(e){if(String(e?.code||'').includes('permission-denied'))return 'FIREBASE TỪ CHỐI GIAO DỊCH'+(choice?.code?' '+label(choice.code):' BỘ ĐÀM')+': có thể do dữ liệu hoặc quyền ghi của máy này chưa đáp ứng quy tắc. Kiểm tra trạng thái máy, UID người giữ, pin và thông tin lỗi. Ảnh và chữ ký nháp trên thiết bị không bị tự xóa.';if(!navigator.onLine)return 'Mất kết nối. Không ghi nhận nhận/trả khi ngoại tuyến.';return S(e?.message||e||'Có lỗi, thử lại.')}
 function notify(s,fail=false){
  for(const id of ['radioMessage','radioActionMessage']){
   const e=$(id);if(e){e.textContent=s;e.dataset.error=fail?'1':'0'}
@@ -1227,7 +1227,11 @@ async function submit(){
    else if(mode==='RETURN'){
     if(d.status!=='OUT'||(d.holderUid!==user.uid&&!isAdmin(user)))throw Error('Chỉ người đang giữ máy hoặc AD được trả.');
     const battery=radioBatteryForWrite(d),low=battery==='EMPTY'||battery==='LOW',fault=d.faultCode||(low?'BATTERY_WEAK':'');
-    after={status:'READY',holderUid:'',holderName:'',shift:'',faultCode:fault,faultDetail:d.faultDetail||(low?'Pin yếu/hết pin đã được ghi nhận trước đó':''),battery};reasonCode=low?'BATTERY_WEAK':'';}
+    /* Preserve existing fault evidence. Firestore RETURN rules only permit an auto-added
+     battery note if the resulting fault is BATTERY_WEAK; for any other legacy fault,
+     changing empty faultDetail is a permission-denied write (e.g. one DH10 record). */
+    const faultDetail=d.faultDetail||(low&&fault==='BATTERY_WEAK'?'Pin yếu/hết pin đã được ghi nhận trước đó':'');
+    after={status:'READY',holderUid:'',holderName:'',shift:'',faultCode:fault,faultDetail,battery};reasonCode=low?'BATTERY_WEAK':'';}
    else if(mode==='REPORT'){
     if(d.status==='LOST'||d.faultCode==='LOST')throw Error('Máy đang báo thất lạc, phải xác minh thu hồi trước khi ghi nhận tiếp.');
     if(d.status==='OUT'&&d.holderUid!==user.uid&&!isAdmin(user))throw Error('Chỉ người giữ hoặc AD được báo lỗi máy đang dùng.');
