@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V1.2",
-  "build": "V1.2-20261122-ACL-SOURCE-FIX-04",
+  "version": "V1.3",
+  "build": "V1.3-20261123-DRAFT-SYNC-POPUPS-01",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -206,8 +206,8 @@
       "bytes": 52027
     },
     "./app/modules/cloud-draft-sync.v2.js": {
-      "sha256": "fd8365746dd5363210d847cb607343339df20be495e3838d1664b3cc0706bf04",
-      "bytes": 16645
+      "sha256": "e2eaeb5bb3d0872b9eb352f075ce7d3fa5058a51b1078e31c41478095b3dc9fe",
+      "bytes": 19087
     },
     "./app/modules/cross-browser-entry.v1.js": {
       "sha256": "b5c2f7d1911196d7242265aa0335f716dfad70b01cec9a1857f5b3c9540214cb",
@@ -216,6 +216,10 @@
     "./app/modules/daily-roster.v502.js": {
       "sha256": "d6472c227e7cdc79afe6169b3e22e3875128c7628434129bc04873383a442ba3",
       "bytes": 89275
+    },
+    "./app/modules/draft-sync-popup.v1.js": {
+      "sha256": "3ccaf6a06b55f0c244385c6ce0e73ba9c457fa562c64924d126ecbfffa6d42b3",
+      "bytes": 10431
     },
     "./app/modules/feature-loader.v1.js": {
       "sha256": "dc738a8d7df5134fe41f208fa0a19f6624438dc3d82fc30a921e05541fbc91c9",
@@ -330,8 +334,8 @@
       "bytes": 21948
     },
     "./app/modules/stability.v6.js": {
-      "sha256": "32918a7615634cc05b9cafabd92d2e92f48bc2e0bdb5b56aa96c1b7d35acff9b",
-      "bytes": 1645
+      "sha256": "198ec95d3f783be1cbbeec9f2ec06f1a1331e876ba90bbd436615c2670ea9133",
+      "bytes": 1790
     },
     "./app/modules/storage-capacity.v1.js": {
       "sha256": "ff932d10500d6abb3b7b4b02889822a1921067f18a267c069d7fc820270a8d26",
@@ -806,8 +810,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "6a1aadeeb7fbaa9ab0a4e9da2f24642df89d8b538582d7beee1999b794d744da",
-      "bytes": 105849
+      "sha256": "96e4b4b3649b44311d5e64963864a79b41dcd991179ec0d8919ab817b9bfa2d3",
+      "bytes": 106086
     },
     "./manifest.webmanifest": {
       "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
@@ -858,16 +862,16 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "b5797f7028b9a34e04545f169e3a7c5473bbc3ecb1027718c84e7ae6b3f3c4ac",
-      "bytes": 22672
+      "sha256": "40e211710facfea15017374564133cc5843a9e1aea678cc5c413c3fa1cc0d858",
+      "bytes": 22720
     },
     "./storage-recovery.html": {
       "sha256": "08817204a946fbdfa404e8c083dd0c2016e935fb8fe56ff8ef99f405978d3df6",
       "bytes": 26106
     },
     "./version.json": {
-      "sha256": "e20ff542e991b689fd527625503aef7b08b5b6942720726f1dc3c168f4b8bbb9",
-      "bytes": 891
+      "sha256": "981c618acd96eb4887ae39755034b66fed8c27ae8949388d87d6e17fb8052641",
+      "bytes": 969
     }
   },
   "mutableAssets": [

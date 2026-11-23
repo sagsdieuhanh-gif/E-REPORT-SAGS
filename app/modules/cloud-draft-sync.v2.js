@@ -18,6 +18,20 @@
   const wrapState={originalRecord:null,originalForget:null};
   const fallback=new Map();
   let lastLocalBackupError="",localBackupWrites=0;
+  let lastOfflineNoticeScope='',lastCloudFailureNoticeAt=0,lastLocalFailureNoticeAt=0;
+  function notifyDraftState(phase,details={}){
+    const i=identity();if(!i.account||!i.flightSessionId)return;
+    try{root.dispatchEvent?.(new CustomEvent('sags:draft-sync-notice',{detail:{
+      phase,scope:scopeOf(i),atMs:Date.now(),...details
+    }}))}catch(_){}
+  }
+  function notifyOfflineOnce(){
+    if(navigator.onLine!==false)return;
+    const i=identity(),scope=scopeOf(i);
+    if(!i.account||!i.flightSessionId||lastOfflineNoticeScope===scope)return;
+    lastOfflineNoticeScope=scope;
+    notifyDraftState('offline');
+  }
   function account(){
     try{if(typeof root.firebase?.auth==='function')return safe(root.firebase.auth().currentUser?.uid||'')}catch(_){}
     const p=root.__sagsGetSession?.()?.profile||root.currentUserProfile||{};
@@ -53,12 +67,26 @@
     try{const db=await openDb();return await new Promise((res,rej)=>{const tx=db.transaction(STORE,'readwrite'),store=tx.objectStore(STORE),q=store.get(entry.key);let written=false;q.onsuccess=()=>{const old=q.result;if(syncedOnly){if(!old||compare(old,entry)!==0)return;store.put({...old,pendingSync:false,syncedAtMs:Date.now()});written=true}else if(!old||compare(entry,old)>=0){store.put(entry);written=true}};tx.oncomplete=()=>{if(written)idbWrites++;res(written)};tx.onerror=()=>rej(tx.error);tx.onabort=()=>rej(tx.error||Error('Draft transaction aborted'))})}catch(e){lastCloudError=S(e?.message||e);console.warn('Draft IndexedDB write',lastCloudError);return false}
   }
   async function idbGet(key){try{const db=await openDb();return await new Promise((res,rej)=>{const q=db.transaction(STORE,'readonly').objectStore(STORE).get(key);q.onsuccess=()=>res(q.result||null);q.onerror=()=>rej(q.error)})}catch(_){return null}}
-  async function pendingFor(user){try{const db=await openDb();return await new Promise((res,rej)=>{const q=db.transaction(STORE,'readonly').objectStore(STORE).getAll();q.onsuccess=()=>res((q.result||[]).filter(e=>e.account===user&&e.pendingSync&&valid(e)));q.onerror=()=>rej(q.error)})}catch(_){return[]}}
+  async function pendingFor(user,strict=false){
+    try{const db=await openDb();return await new Promise((res,rej)=>{
+      const q=db.transaction(STORE,'readonly').objectStore(STORE).getAll();
+      q.onsuccess=()=>res((q.result||[]).filter(e=>e.account===user&&e.pendingSync&&valid(e)));
+      q.onerror=()=>rej(q.error);
+    })}catch(e){if(strict)throw e;return[]}
+  }
   // A localStorage quota failure must not disable the independent IDB/cloud layers.
   async function protect(entry){
     const saved=await idbPut(entry);
-    if(saved){localBackupWrites++;lastLocalBackupError='';}
-    else lastLocalBackupError='IndexedDB chưa xác nhận bản nháp';
+    if(saved){
+      localBackupWrites++;lastLocalBackupError='';
+      if(navigator.onLine===false)notifyDraftState('local-saved');
+    }else{
+      lastLocalBackupError='IndexedDB chưa xác nhận bản nháp';
+      if(Date.now()-lastLocalFailureNoticeAt>60000){
+        lastLocalFailureNoticeAt=Date.now();
+        notifyDraftState('local-failed');
+      }
+    }
     scheduleCloud(entry);
     return saved;
   }
@@ -124,14 +152,26 @@
       },undefined,false);
       if(account()!==entry.account)return false;
       const remote=result.snapshot?.val?.();
-      if(result.committed){cloudWrites++;lastCloudSyncAtMs=Date.now();lastCloudError='';await idbPut(entry,true);return true}
+      if(result.committed){
+        cloudWrites++;lastCloudSyncAtMs=Date.now();lastCloudError='';
+        await idbPut(entry,true);return true;
+      }
       if(remote&&(!matches(remote,entry)||remote.field!==entry.field||remote.part!==entry.part)){lastCloudError="Cloud draft identity mismatch; local draft remains pending";return false}
       if(remote&&compare(remote,entry)>=0){
         if(active(i)&&matches(entry,i))await mergeRemote(remote,i);
         if(account()===entry.account)await idbPut(entry,true);
       }
       return false;
-    }catch(e){lastCloudError=S(e?.message||e);console.info('Draft cloud pending',lastCloudError);return false}
+    }catch(e){
+      lastCloudError=S(e?.message||e);
+      console.info('Draft cloud pending',lastCloudError);
+      if(navigator.onLine===false)notifyOfflineOnce();
+      else if(Date.now()-lastCloudFailureNoticeAt>60000){
+        lastCloudFailureNoticeAt=Date.now();
+        notifyDraftState('failed');
+      }
+      return false;
+    }
   }
   function enqueue(entry){
     const previous=chains.get(entry.key)||Promise.resolve();
@@ -142,9 +182,9 @@
     if(!valid(entry))return;
     clearTimeout(timers.get(entry.key));timers.set(entry.key,setTimeout(()=>{timers.delete(entry.key);void enqueue(entry)},Math.max(0,delay)));
   }
-  async function flushPending(){
+  async function flushPending(strict=false){
     const user=account();if(!user)return false;
-    const rows=await pendingFor(user);if(account()!==user)return false;
+    const rows=await pendingFor(user,strict);if(account()!==user)return false;
     await Promise.all(rows.map(e=>{observe(e.key,e);return enqueue(e)}));return true;
   }
   function pullCloud(){
@@ -174,10 +214,45 @@
       const entry=makeEntry(i,field,'',part,before,true);fallback.delete(entry.key);void idbPut(entry).then(()=>scheduleCloud(entry,40));return out;
     };forget.__sagsV2=true;api.record=record;api.forget=forget;wrapped=true;return true;
   }
-  function wake(delay=0){setTimeout(()=>{installWrap();void restoreLocal().then(()=>{void pullCloud();void flushPending()})},delay)}
+  function wake(delay=0,reconnected=false){
+    setTimeout(async()=>{
+      installWrap();
+      const context=capture();
+      await restoreLocal();
+      if(!active(context))return;
+      if(navigator.onLine===false){notifyOfflineOnce();return}
+      void pullCloud();
+      if(!reconnected){void flushPending();return}
+      try{
+        // IDB reads are strict for user-visible results: an unreadable queue
+        // must never be reported as a successful Firebase synchronization.
+        const queued=await pendingFor(context.account,true);
+        if(!active(context))return;
+        if(!queued.length){notifyDraftState('connected');return}
+        notifyDraftState('syncing',{queued:queued.length});
+        await flushPending(true);
+        if(!active(context)||navigator.onLine===false)return;
+        const remaining=await pendingFor(context.account,true);
+        if(!active(context))return;
+        notifyDraftState(remaining.length?'failed':'synced',{queued:queued.length,pending:remaining.length});
+      }catch(e){
+        lastCloudError=S(e?.message||e);
+        if(active(context))notifyDraftState('failed');
+      }
+    },delay);
+  }
   function start(){
     installWrap();wake(700);
-    root.addEventListener?.('online',()=>wake(40),{passive:true});root.addEventListener?.('pageshow',()=>wake(180),{passive:true});
+    root.addEventListener?.('offline',()=>{
+      lastOfflineNoticeScope='';
+      notifyOfflineOnce();
+    },{passive:true});
+    root.addEventListener?.('online',()=>{
+      lastOfflineNoticeScope='';
+      notifyDraftState('reconnecting');
+      wake(40,true);
+    },{passive:true});
+    root.addEventListener?.('pageshow',()=>wake(180),{passive:true});
     ['sags:login','sags:logout','sags:rolechange','sags:profilechange','sags:personal-roster-updated','sags:flightchange'].forEach(name=>root.addEventListener?.(name,()=>{epoch++;wake(250)}));
     document.addEventListener('visibilitychange',()=>{if(!document.hidden)wake(80)},{passive:true});
     document.addEventListener('click',e=>{if(e.target?.closest?.('.v1199TaskBtn,[data-task-aid],#roleBtnQuickTime,#roleBtnFlights,#roleBtnRosterFlights,.v157MenuItem[data-v157-key="myflight"]')){epoch++;wake(650)}},true);

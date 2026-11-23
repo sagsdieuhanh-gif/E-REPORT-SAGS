@@ -5,7 +5,7 @@ const cloud=read('app/modules/cloud-draft-sync.v2.js');
 const quick=read('app/boot/18-v173-quick-time.js');
 const core=read('app/modules/stability.v6-core.js');
 assert(loader.includes("'cloud-draft-sync.v2.js?v='+encodeURIComponent(releaseBuild)"),'Cloud draft module must use current release key so updated code is not stale');
-assert.match(loader,/load\(idb,\(\)=>load\(cloud\)\)/,'cloud layer must load after IndexedDB');
+assert.match(loader,/load\(idb,\(\)=>load\(cloud,\(\)=>load\(popup\)\)\)/,'cloud layer must load after IndexedDB and trigger the large sync popup module');
 assert.match(quick,/sagsV61Draft\?\.read\?\.\(f\.key,"quickTime"\)/,'quick-time draft recovery read missing');
 assert.match(quick,/sagsV61Draft\?\.record\?\.\(el\.dataset\.key,v,"quickTime"\)/,'quick-time input must enter draft pipeline immediately');
 assert.match(quick,/sagsV61Draft\?\.forget\?\.\(c\.key,"quickTime"\)/,'saved quick-time draft must be cleared');
