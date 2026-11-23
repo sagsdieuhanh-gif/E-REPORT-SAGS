@@ -1,7 +1,7 @@
 /* E-REPORT V2.5.21 - read-only form change history.
- * Record only verified SAVED differences, never keystrokes or sensitive payloads.
- * Local history is recoverable; remote history depends on existing RTDB permissions.
- * This is operational evidence, NOT a server-enforced immutable audit log. */
+* Record only verified SAVED differences, never keystrokes or sensitive payloads.
+* Local history is recoverable; remote history depends on existing RTDB permissions.
+* This is operational evidence, NOT a server-enforced immutable audit log. */
 (function(root){
 'use strict';
 if(root.SAGSFormEditHistoryV1)return;
@@ -18,297 +18,297 @@ let registryLabelsPromise=null,renderRequest=0,refreshToken=0;
 const isAdmin=()=>['AD','ADMIN'].includes(user().role);
 const dayISO=()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
 const FIELD_TITLES={
- h24Start:'Bắt đầu đẩy lùi tàu bay (PUSHBACK START)',
- f421_h24Start:'Bắt đầu đẩy lùi tàu bay (PUSHBACK START)',
- h5Start:'Thời điểm CHOCK ON (chèn bánh)',
- f421_h5Start:'Thời điểm CHOCK ON (chèn bánh)',
- h14Start:'Bắt đầu gọi hành khách lên tàu (BOARDING CALL)',
- f421_h14Start:'Bắt đầu gọi hành khách lên tàu (BOARDING CALL)'
+h24Start:'Bắt đầu đẩy lùi tàu bay (PUSHBACK START)',
+f421_h24Start:'Bắt đầu đẩy lùi tàu bay (PUSHBACK START)',
+h5Start:'Thời điểm CHOCK ON (chèn bánh)',
+f421_h5Start:'Thời điểm CHOCK ON (chèn bánh)',
+h14Start:'Bắt đầu gọi hành khách lên tàu (BOARDING CALL)',
+f421_h14Start:'Bắt đầu gọi hành khách lên tàu (BOARDING CALL)'
 };
 function readableKey(key){
- const k=S(key);return k.replace(/^(?:f421_|f551_|f09_|vz_)/,'').replace(/([a-z0-9])([A-Z])/g,'$1 $2').replace(/_/g,' ').replace(/\s+/g,' ').trim().toUpperCase();
+const k=S(key);return k.replace(/^(?:f421_|f551_|f09_|vz_)/,'').replace(/([a-z0-9])([A-Z])/g,'$1 $2').replace(/_/g,' ').replace(/\s+/g,' ').trim().toUpperCase();
 }
 async function fieldLabels(){
- if(!registryLabelsPromise)registryLabelsPromise=fetch('./forms/forms.registry.json',{cache:'force-cache'})
-  .then(r=>{if(!r.ok)throw Error('Không tải được tên trường biểu mẫu');return r.json()})
-  .then(data=>{const map=new Map();for(const form of data.forms||[])for(const fld of form.fields||[]){
-    const key=S(fld.bind||fld.key),label=S(fld.label);
-    if(key&&label&&!/^(START|END|START \d+|END \d+)$/i.test(label))map.set(S(form.id)+'|'+key,label);
-  }return map}).catch(()=>new Map());
- return registryLabelsPromise;
+if(!registryLabelsPromise)registryLabelsPromise=fetch('./forms/forms.registry.json',{cache:'force-cache'})
+.then(r=>{if(!r.ok)throw Error('Không tải được tên trường biểu mẫu');return r.json()})
+.then(data=>{const map=new Map();for(const form of data.forms||[])for(const fld of form.fields||[]){
+const key=S(fld.bind||fld.key),label=S(fld.label);
+if(key&&label&&!/^(START|END|START \d+|END \d+)$/i.test(label))map.set(S(form.id)+'|'+key,label);
+}return map}).catch(()=>new Map());
+return registryLabelsPromise;
 }
 function fieldTitle(key,form,labels){
- const k=S(key);return FIELD_TITLES[k]||labels.get(S(form)+'|'+k)||
-  labels.get('fsags423|'+k)||labels.get('fsags421|'+k)||readableKey(k);
+const k=S(key);return FIELD_TITLES[k]||labels.get(S(form)+'|'+k)||
+labels.get('fsags423|'+k)||labels.get('fsags421|'+k)||readableKey(k);
 }
 function user(){
- const sess=root.__sagsGetSession?.()||{},p=sess.profile||root.currentUserProfile||{};
- let uid='';try{uid=S(root.firebase?.auth?.()?.currentUser?.uid)}catch(_){}
- return {username:U(p.username||p.userName||root.currentUserProfile?.username||sess.username),name:S(p.fullName||p.name||p.displayName||p.username),role:U(sess.role||p.role||root.currentRole),uid:uid};
+const sess=root.__sagsGetSession?.()||{},p=sess.profile||root.currentUserProfile||{};
+let uid='';try{uid=S(root.firebase?.auth?.()?.currentUser?.uid)}catch(_){}
+return {username:U(p.username||p.userName||root.currentUserProfile?.username||sess.username),name:S(p.fullName||p.name||p.displayName||p.username),role:U(sess.role||p.role||root.currentRole),uid:uid};
 }
 function meta(){try{return root.currentFlightSessionMeta?.()||null}catch(_){return null}}
 function scopeFor(m){const actor=user();return actor.username&&S(m?.id)?safe(actor.uid||actor.username)+'|'+safe(m.id):''}
 function envelope(m){try{return root.readFlightSessionEnvelope?.(m.id)||null}catch(_){return null}}
 function primitive(v){
- if(v===null||v===undefined)return '';
- if(typeof v==='boolean')return v?'Có':'Không';
- if(typeof v==='string'||typeof v==='number')return String(v);
- return LONG;
+if(v===null||v===undefined)return '';
+if(typeof v==='boolean')return v?'Có':'Không';
+if(typeof v==='string'||typeof v==='number')return String(v);
+return LONG;
 }
 function scrub(k,v){
- if(EXCLUDE.test(k))return '[Dữ liệu nhạy cảm – đã ẩn]';
- const x=primitive(v);
- if(x.length>MAX_VALUE||x.startsWith('data:')||x.includes('base64,')||/@[a-z0-9.-]+\.[a-z]{2,}/i.test(x))return LONG;
- return x;
+if(EXCLUDE.test(k))return '[Dữ liệu nhạy cảm – đã ẩn]';
+const x=primitive(v);
+if(x.length>MAX_VALUE||x.startsWith('data:')||x.includes('base64,')||/@[a-z0-9.-]+\.[a-z]{2,}/i.test(x))return LONG;
+return x;
 }
 function changesOf(a,b){
- const before=a&&typeof a==='object'?a:{},after=b&&typeof b==='object'?b:{},out=[];
- for(const k of new Set([...Object.keys(before),...Object.keys(after)])){
-  if(!k||k.length>100||INTERNAL.test(k)||EXCLUDE.test(k))continue;
-  const old=before[k],next=after[k];
-  if(typeof old==='object'&&old!==null||typeof next==='object'&&next!==null)continue;
-  if(primitive(old)===primitive(next))continue;
-  out.push({field:k,before:scrub(k,old),after:scrub(k,next)});
-  if(out.length===MAX_CHANGES)break;
- }
- return out;
+const before=a&&typeof a==='object'?a:{},after=b&&typeof b==='object'?b:{},out=[];
+for(const k of new Set([...Object.keys(before),...Object.keys(after)])){
+if(!k||k.length>100||INTERNAL.test(k)||EXCLUDE.test(k))continue;
+const old=before[k],next=after[k];
+if(typeof old==='object'&&old!==null||typeof next==='object'&&next!==null)continue;
+if(primitive(old)===primitive(next))continue;
+out.push({field:k,before:scrub(k,old),after:scrub(k,next)});
+if(out.length===MAX_CHANGES)break;
+}
+return out;
 }
 function keyOf(){return 'sagsFormHistoryV1';}
 function openDB(){
- if(dbPromise)return dbPromise;
- dbPromise=new Promise((resolve,reject)=>{
-  if(!root.indexedDB)return reject(Error('IndexedDB không được hỗ trợ'));
-  const q=indexedDB.open('sags-form-history-v1',1);
-  q.onupgradeneeded=()=>{const d=q.result;if(!d.objectStoreNames.contains('events'))d.createObjectStore('events',{keyPath:'id'})};
-  q.onsuccess=()=>{q.result.onversionchange=()=>{q.result.close();dbPromise=null};resolve(q.result)};
-  q.onerror=()=>reject(q.error||Error('Không mở được IndexedDB'));
- }).catch(e=>{dbPromise=null;throw e});
- return dbPromise;
+if(dbPromise)return dbPromise;
+dbPromise=new Promise((resolve,reject)=>{
+if(!root.indexedDB)return reject(Error('IndexedDB không được hỗ trợ'));
+const q=indexedDB.open('sags-form-history-v1',1);
+q.onupgradeneeded=()=>{const d=q.result;if(!d.objectStoreNames.contains('events'))d.createObjectStore('events',{keyPath:'id'})};
+q.onsuccess=()=>{q.result.onversionchange=()=>{q.result.close();dbPromise=null};resolve(q.result)};
+q.onerror=()=>reject(q.error||Error('Không mở được IndexedDB'));
+}).catch(e=>{dbPromise=null;throw e});
+return dbPromise;
 }
 async function idbPut(item){
- const db=await openDB();
- return new Promise((resolve,reject)=>{
-  const tx=db.transaction('events','readwrite');tx.objectStore('events').put(item);
-  tx.oncomplete=()=>resolve(true);tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error);
- });
+const db=await openDB();
+return new Promise((resolve,reject)=>{
+const tx=db.transaction('events','readwrite');tx.objectStore('events').put(item);
+tx.oncomplete=()=>resolve(true);tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error);
+});
 }
 async function idbList(){
- const db=await openDB();
- return new Promise((resolve,reject)=>{
-  const tx=db.transaction('events','readonly'),q=tx.objectStore('events').getAll();
-  q.onsuccess=()=>resolve((q.result||[]).sort((a,b)=>Number(b.atMs)-Number(a.atMs)));
-  q.onerror=()=>reject(q.error);
- });
+const db=await openDB();
+return new Promise((resolve,reject)=>{
+const tx=db.transaction('events','readonly'),q=tx.objectStore('events').getAll();
+q.onsuccess=()=>resolve((q.result||[]).sort((a,b)=>Number(b.atMs)-Number(a.atMs)));
+q.onerror=()=>reject(q.error);
+});
 }
 function fallbackRead(){try{return JSON.parse(localStorage.getItem(keyOf())||'[]')||[]}catch(_){return[]}}
 function fallbackWrite(item){
- const list=fallbackRead().filter(e=>e?.id!==item.id);
- list.push(item);list.sort((a,b)=>b.atMs-a.atMs);
- try{localStorage.setItem(keyOf(),JSON.stringify(list.slice(0,80)));return true}catch(e){lastError='Bộ nhớ lưu lịch sử đã đầy';return false}
+const list=fallbackRead().filter(e=>e?.id!==item.id);
+list.push(item);list.sort((a,b)=>b.atMs-a.atMs);
+try{localStorage.setItem(keyOf(),JSON.stringify(list.slice(0,80)));return true}catch(e){lastError='Bộ nhớ lưu lịch sử đã đầy';return false}
 }
 async function saveLocal(item){try{await idbPut(item);return true}catch(_){return fallbackWrite(item)}}
 async function localList(){let result=[];try{result=await idbList()}catch(_){}return [...new Map([...result,...fallbackRead()].map(e=>[e.id,e])).values()].sort((a,b)=>b.atMs-a.atMs)}
 function cloudRef(aid,id){return root.sagsV470Ref?.('roster_sessions/'+safe(aid)+'/edit_audit_v1'+(id?'/'+safe(id):''))}
 async function send(item){
- if(item.synced||!item.assignmentId||!navigator.onLine||!root.sagsV470Ref)return false;
- try{
-  const ref=cloudRef(item.assignmentId,item.id);if(!ref?.set)throw Error('Chưa có quyền lưu nhật ký');
-  await ref.set({schema:1,id:item.id,atMs:item.atMs,serverAt:root.firebase?.database?.ServerValue?.TIMESTAMP||item.atMs,actor:item.actor,sessionId:item.sessionId,assignmentId:item.assignmentId,flightLabel:item.flightLabel,formGroup:item.formGroup,changes:item.changes});
-  item.synced=true;item.syncedAtMs=Date.now();await saveLocal(item);
-  return true;
- }catch(e){lastError=S(e?.message||e);return false}
+if(item.synced||!item.assignmentId||!navigator.onLine||!root.sagsV470Ref)return false;
+try{
+const ref=cloudRef(item.assignmentId,item.id);if(!ref?.set)throw Error('Chưa có quyền lưu nhật ký');
+await ref.set({schema:1,id:item.id,atMs:item.atMs,serverAt:root.firebase?.database?.ServerValue?.TIMESTAMP||item.atMs,actor:item.actor,sessionId:item.sessionId,assignmentId:item.assignmentId,flightLabel:item.flightLabel,formGroup:item.formGroup,changes:item.changes});
+item.synced=true;item.syncedAtMs=Date.now();await saveLocal(item);
+return true;
+}catch(e){lastError=S(e?.message||e);return false}
 }
 
 async function flushBatch(scope){
- const batch=batches.get(scope);if(!batch)return;
- clearTimeout(batch.timer);batches.delete(scope);
- try{
-  await batch.written;
-  if(batch.dirty)await saveLocal(batch.event);
-  await send(batch.event);
- }catch(e){lastError=S(e?.message||e)}
+const batch=batches.get(scope);if(!batch)return;
+clearTimeout(batch.timer);batches.delete(scope);
+try{
+await batch.written;
+if(batch.dirty)await saveLocal(batch.event);
+await send(batch.event);
+}catch(e){lastError=S(e?.message||e)}
 }
 function capture(m,prev,next,reason){
- if(!m?.id||!scopeFor(m))return;
- const diff=changesOf(prev?.state,next?.state);
- if(!diff.length)return;
- const at=Date.now(),human=lastTrustedFormEditAt>0&&at-lastTrustedFormEditAt<15000;
- const actor=human?user():{username:'HỆ THỐNG',name:'Tự động cập nhật',role:'SYSTEM',uid:''},sid=S(m.id),aid=S(m.rosterAssignmentId||next?.rosterAssignmentId),scope=scopeFor(m);
- let batch=batches.get(scope);
- if(batch&&(at-batch.lastAt>1800||batch.event.sessionId!==sid||batch.event.actor.username!==actor.username)){void flushBatch(scope);batch=null}
- if(batch){
-  const map=new Map(batch.event.changes.map(c=>[c.field,{...c}]));
-  for(const c of diff){const old=map.get(c.field);if(old){old.after=c.after;if(old.before===old.after)map.delete(c.field)}else map.set(c.field,c)}
-  batch.event.changes=[...map.values()].slice(0,MAX_CHANGES);
-  batch.event.atMs=at;batch.lastAt=at;batch.dirty=true;
- }else{
-  const id='h'+at.toString(36)+'_'+Math.random().toString(36).slice(2,13);
-  const event={schema:1,id,scope,sessionId:sid,assignmentId:aid,flightLabel:S(m.name||m.flightName||m.flightRaw||sid).slice(0,100),formGroup:S(m.initialGroup||next?.mainForm||next?.activeFormGroup).slice(0,40),atMs:at,reason:human?'Thao tác nhập/sửa dữ liệu':'Phần mềm tự cập nhật',actor:{username:actor.username,name:actor.name.slice(0,90),role:actor.role,uid:actor.uid},changes:diff,synced:false};
-  batch={event,lastAt:at,timer:null,written:null,dirty:false};batch.written=saveLocal(event);batches.set(scope,batch);
- }
- const curr=batch;
- clearTimeout(curr.timer);
- curr.timer=setTimeout(()=>{void flushBatch(scope)},900);
+if(!m?.id||!scopeFor(m))return;
+const diff=changesOf(prev?.state,next?.state);
+if(!diff.length)return;
+const at=Date.now(),human=lastTrustedFormEditAt>0&&at-lastTrustedFormEditAt<15000;
+const actor=human?user():{username:'HỆ THỐNG',name:'Tự động cập nhật',role:'SYSTEM',uid:''},sid=S(m.id),aid=S(m.rosterAssignmentId||next?.rosterAssignmentId),scope=scopeFor(m);
+let batch=batches.get(scope);
+if(batch&&(at-batch.lastAt>1800||batch.event.sessionId!==sid||batch.event.actor.username!==actor.username)){void flushBatch(scope);batch=null}
+if(batch){
+const map=new Map(batch.event.changes.map(c=>[c.field,{...c}]));
+for(const c of diff){const old=map.get(c.field);if(old){old.after=c.after;if(old.before===old.after)map.delete(c.field)}else map.set(c.field,c)}
+batch.event.changes=[...map.values()].slice(0,MAX_CHANGES);
+batch.event.atMs=at;batch.lastAt=at;batch.dirty=true;
+}else{
+const id='h'+at.toString(36)+'_'+Math.random().toString(36).slice(2,13);
+const event={schema:1,id,scope,sessionId:sid,assignmentId:aid,flightLabel:S(m.name||m.flightName||m.flightRaw||sid).slice(0,100),formGroup:S(m.initialGroup||next?.mainForm||next?.activeFormGroup).slice(0,40),atMs:at,reason:human?'Thao tác nhập/sửa dữ liệu':'Phần mềm tự cập nhật',actor:{username:actor.username,name:actor.name.slice(0,90),role:actor.role,uid:actor.uid},changes:diff,synced:false};
+batch={event,lastAt:at,timer:null,written:null,dirty:false};batch.written=saveLocal(event);batches.set(scope,batch);
+}
+const curr=batch;
+clearTimeout(curr.timer);
+curr.timer=setTimeout(()=>{void flushBatch(scope)},900);
 }
 function wrap(name){
- const fn=root[name];if(typeof fn!=='function'||fn.__sagsHistoryWrapped)return false;
- const wrapped=function(){
-  const m=meta(),before=m?envelope(m):null;
-  const r=fn.apply(this,arguments);
-  if(r===false||!m?.id)return r;
-  const after=envelope(m);
-  if(after&&before&&S(m.id)===S(meta()?.id))capture(m,before,after,name==='sagsV22SaveNow'?'Lưu biểu mẫu':'Lưu dữ liệu');
-  return r;
- };
- wrapped.__sagsHistoryWrapped=true;wrapped.__sagsHistoryBase=fn;
- root[name]=wrapped;
- if(name==='persist')try{persist=wrapped}catch(_){}
- return true;
+const fn=root[name];if(typeof fn!=='function'||fn.__sagsHistoryWrapped)return false;
+const wrapped=function(){
+const m=meta(),before=m?envelope(m):null;
+const r=fn.apply(this,arguments);
+if(r===false||!m?.id)return r;
+const after=envelope(m);
+if(after&&before&&S(m.id)===S(meta()?.id))capture(m,before,after,name==='sagsV22SaveNow'?'Lưu biểu mẫu':'Lưu dữ liệu');
+return r;
+};
+wrapped.__sagsHistoryWrapped=true;wrapped.__sagsHistoryBase=fn;
+root[name]=wrapped;
+if(name==='persist')try{persist=wrapped}catch(_){}
+return true;
 }
 function install(){if(patching)return;patching=true;try{wrap('persist');wrap('sagsV22SaveNow');installButtons()}finally{patching=false}}
 async function remoteList(aid,strict=false){
- if(!aid||!root.sagsV470Ref)return [];
- try{
-  const ref=cloudRef(aid);const q=ref?.limitToLast?.(MAX_ROWS)||ref;
-  if(!q?.once)return [];
-  const snap=await q.once('value'),v=snap.val()||{};
-  return Object.values(v).filter(x=>x&&x.schema===1&&x.id&&Array.isArray(x.changes)).map(x=>({...x,synced:true}));
- }catch(e){lastError=S(e?.message||e);if(strict)throw e;return []}
+if(!aid||!root.sagsV470Ref)return [];
+try{
+const ref=cloudRef(aid);const q=ref?.limitToLast?.(MAX_ROWS)||ref;
+if(!q?.once)return [];
+const snap=await q.once('value'),v=snap.val()||{};
+return Object.values(v).filter(x=>x&&x.schema===1&&x.id&&Array.isArray(x.changes)).map(x=>({...x,synced:true}));
+}catch(e){lastError=S(e?.message||e);if(strict)throw e;return []}
 }
 async function entriesFor(m){
- const adminRemote=isAdmin()&&m?.adminRemote===true;
- const scope=scopeFor(m),local=adminRemote?[]:(await localList()).filter(x=>x.scope===scope).slice(0,MAX_ROWS);
- const remote=await remoteList(m?.rosterAssignmentId,adminRemote);
- const merged=new Map();
- // Within that assigned flight, show the edits of all participating roles, not only the current author.
- for(const e of remote){
-  const assignedSessionMatch=S(e.sessionId)===S(m.id)&&S(e.assignmentId)===S(m.rosterAssignmentId);
-  const adminAssignmentMatch=adminRemote&&S(e.assignmentId)===S(m.rosterAssignmentId);
-  if(assignedSessionMatch||adminAssignmentMatch)merged.set(e.id,{...e,synced:true});
- }
- for(const e of local){const old=merged.get(e.id);merged.set(e.id,old||e)}
- return [...merged.values()].sort((a,b)=>b.atMs-a.atMs).slice(0,MAX_ROWS);
+const adminRemote=isAdmin()&&m?.adminRemote===true;
+const scope=scopeFor(m),local=adminRemote?[]:(await localList()).filter(x=>x.scope===scope).slice(0,MAX_ROWS);
+const remote=await remoteList(m?.rosterAssignmentId,adminRemote);
+const merged=new Map();
+// Within that assigned flight, show the edits of all participating roles, not only the current author.
+for(const e of remote){
+const assignedSessionMatch=S(e.sessionId)===S(m.id)&&S(e.assignmentId)===S(m.rosterAssignmentId);
+const adminAssignmentMatch=adminRemote&&S(e.assignmentId)===S(m.rosterAssignmentId);
+if(assignedSessionMatch||adminAssignmentMatch)merged.set(e.id,{...e,synced:true});
+}
+for(const e of local){const old=merged.get(e.id);merged.set(e.id,old||e)}
+return [...merged.values()].sort((a,b)=>b.atMs-a.atMs).slice(0,MAX_ROWS);
 }
 function paintStyle(){
- if($('sagsHistoryStyle'))return;
- const t=document.createElement('style');t.id='sagsHistoryStyle';
- t.textContent='#sagsHistoryOverlay{position:fixed;inset:0;z-index:29999;background:#091827cc;display:none;align-items:center;justify-content:center;padding:12px;box-sizing:border-box;font-family:system-ui,Arial,sans-serif}#sagsHistoryOverlay.open{display:flex}#sagsHistoryPanel{width:min(100%,780px);max-height:92dvh;overflow:auto;background:#fff;color:#17324d;border-radius:16px;padding:17px;box-shadow:0 12px 42px #0006}#sagsHistoryPanel h3{margin:0;color:#17324d;font-size:18px}#sagsHistoryPanel label,#sagsHistoryPanel small{color:#4b6073;font-size:12px}#sagsHistoryPanel select{width:100%;padding:10px;background:#fff;border:1px solid #9bb1c0;border-radius:8px;color:#17324d;margin:6px 0}#sagsHistoryPanel .hHead{display:flex;justify-content:space-between;gap:10px;align-items:center}#sagsHistoryPanel button{border:1px solid #93b2ca;background:#e9f2fa;color:#17324d;border-radius:9px;font-weight:800;min-height:38px;padding:8px 12px;cursor:pointer}#sagsHistoryPanel .hActions{display:flex;gap:8px;align-items:center;margin:7px 0}#sagsHistoryRows{max-height:58dvh;overflow:auto}#sagsHistoryRows .hEvent{background:#f7fafc;border:1px solid #d4e2eb;border-radius:10px;margin-top:9px;padding:11px}#sagsHistoryRows .hMeta{font-size:12px;color:#40576c;margin-bottom:6px}#sagsHistoryRows .hDiff{display:grid;grid-template-columns:minmax(92px,1fr) minmax(0,1fr) minmax(0,1fr);gap:5px;border-top:1px solid #e1e8ef;padding-top:7px;margin-top:7px;font-size:12px;overflow-wrap:anywhere}#sagsHistoryRows .hOld{color:#903c1e}#sagsHistoryRows .hNew{color:#155c3a}#sagsHistoryPanel .hNote{margin-top:10px;font-size:12px;color:#485e70;line-height:1.5}#v157Drawer .v157DrawerHead #sagsHistoryShortcut{display:flex!important;align-items:center;justify-content:center;gap:8px;width:calc(100% - 28px)!important;margin:12px 14px 15px!important;min-height:42px!important;box-sizing:border-box!important;flex-shrink:0;background:#e6f4ff!important;color:#153d59!important;-webkit-text-fill-color:#153d59!important;border:1px solid #9ac6e5!important;border-radius:11px!important;font:800 13px system-ui,Arial,sans-serif!important;box-shadow:0 2px 6px #06182618!important}#fwcModal .fwcHead{flex-wrap:wrap}#fwcModal .fwcHead #sagsHistoryDossierShortcut{min-height:38px;background:#e6f4ff!important;color:#153d59!important;border:1px solid #83b5d8!important}#sagsHistoryShortcut,#sagsHistoryDossierShortcut,#sagsHistoryFormShortcut{border:1px solid #77a7c6;background:#e5f2ff;color:#153c5e;border-radius:9px;padding:9px;font:800 12px Arial;cursor:pointer;white-space:nowrap}#sagsHistoryShortcut:focus-visible,#sagsHistoryDossierShortcut:focus-visible,#sagsHistoryFormShortcut:focus-visible{outline:2px solid #126b9c}@media(max-width:640px){#sagsHistoryPanel{padding:12px}#sagsHistoryRows .hDiff{grid-template-columns:1fr}#sagsHistoryRows .hDiff>*{display:block}}';
- document.head.appendChild(t);
+if($('sagsHistoryStyle'))return;
+const t=document.createElement('style');t.id='sagsHistoryStyle';
+t.textContent='#sagsHistoryOverlay{position:fixed;inset:0;z-index:29999;background:#091827cc;display:none;align-items:center;justify-content:center;padding:12px;box-sizing:border-box;font-family:system-ui,Arial,sans-serif}#sagsHistoryOverlay.open{display:flex}#sagsHistoryPanel{width:min(100%,780px);max-height:92dvh;overflow:auto;background:#fff;color:#17324d;border-radius:16px;padding:17px;box-shadow:0 12px 42px #0006}#sagsHistoryPanel h3{margin:0;color:#17324d;font-size:18px}#sagsHistoryPanel label,#sagsHistoryPanel small{color:#4b6073;font-size:12px}#sagsHistoryPanel select{width:100%;padding:10px;background:#fff;border:1px solid #9bb1c0;border-radius:8px;color:#17324d;margin:6px 0}#sagsHistoryPanel .hHead{display:flex;justify-content:space-between;gap:10px;align-items:center}#sagsHistoryPanel button{border:1px solid #93b2ca;background:#e9f2fa;color:#17324d;border-radius:9px;font-weight:800;min-height:38px;padding:8px 12px;cursor:pointer}#sagsHistoryPanel .hActions{display:flex;gap:8px;align-items:center;margin:7px 0}#sagsHistoryRows{max-height:58dvh;overflow:auto}#sagsHistoryRows .hEvent{background:#f7fafc;border:1px solid #d4e2eb;border-radius:10px;margin-top:9px;padding:11px}#sagsHistoryRows .hMeta{font-size:12px;color:#40576c;margin-bottom:6px}#sagsHistoryRows .hDiff{display:grid;grid-template-columns:minmax(92px,1fr) minmax(0,1fr) minmax(0,1fr);gap:5px;border-top:1px solid #e1e8ef;padding-top:7px;margin-top:7px;font-size:12px;overflow-wrap:anywhere}#sagsHistoryRows .hOld{color:#903c1e}#sagsHistoryRows .hNew{color:#155c3a}#sagsHistoryPanel .hNote{margin-top:10px;font-size:12px;color:#485e70;line-height:1.5}#v157Drawer .v157DrawerHead #sagsHistoryShortcut{display:flex!important;align-items:center;justify-content:center;gap:8px;width:calc(100% - 28px)!important;margin:12px 14px 15px!important;min-height:42px!important;box-sizing:border-box!important;flex-shrink:0;background:#e6f4ff!important;color:#153d59!important;-webkit-text-fill-color:#153d59!important;border:1px solid #9ac6e5!important;border-radius:11px!important;font:800 13px system-ui,Arial,sans-serif!important;box-shadow:0 2px 6px #06182618!important}#fwcModal .fwcHead{flex-wrap:wrap}#fwcModal .fwcHead #sagsHistoryDossierShortcut{min-height:38px;background:#e6f4ff!important;color:#153d59!important;border:1px solid #83b5d8!important}#sagsHistoryShortcut,#sagsHistoryDossierShortcut,#sagsHistoryFormShortcut{border:1px solid #77a7c6;background:#e5f2ff;color:#153c5e;border-radius:9px;padding:9px;font:800 12px Arial;cursor:pointer;white-space:nowrap}#sagsHistoryShortcut:focus-visible,#sagsHistoryDossierShortcut:focus-visible,#sagsHistoryFormShortcut:focus-visible{outline:2px solid #126b9c}@media(max-width:640px){#sagsHistoryPanel{padding:12px}#sagsHistoryRows .hDiff{grid-template-columns:1fr}#sagsHistoryRows .hDiff>*{display:block}}';
+document.head.appendChild(t);
 }
 function panel(){
- paintStyle();let div=$('sagsHistoryOverlay');if(div)return div;
- div=document.createElement('div');div.id='sagsHistoryOverlay';div.setAttribute('role','dialog');div.setAttribute('aria-modal','true');div.setAttribute('aria-label','Lịch sử chỉnh sửa biểu mẫu');
- div.innerHTML='<div id="sagsHistoryPanel"><div class="hHead"><h3>🕘 LỊCH SỬ THAY ĐỔI BIỂU MẪU</h3><button id="sagsHistoryClose" type="button">ĐÓNG</button></div><div id="sagsHistoryAdminDayWrap" hidden><label for="sagsHistoryDay">Ngày khai thác (Admin · toàn bộ tài khoản)</label><input type="date" id="sagsHistoryDay" style="width:100%;min-height:40px;margin:6px 0 9px;border:1px solid #9bb1c0;border-radius:8px;padding:8px;background:white;color:#17324d"></div><label id="sagsHistoryPickerLabel" for="sagsHistorySession">Chọn chuyến / biểu mẫu</label><select id="sagsHistorySession"></select><div class="hActions"><button id="sagsHistoryReload" type="button">↻ TẢI LẠI</button><small id="sagsHistoryCount"></small></div><div id="sagsHistoryRows" aria-live="polite"></div><div class="hNote">Chỉ ghi các trường thay đổi sau khi lưu. Chữ ký, hình ảnh và dữ liệu nhạy cảm không được lưu vào lịch sử. <b>Trên máy</b> nghĩa là chưa xác nhận đã đồng bộ Firebase; nhật ký hiện tại chưa thay thế audit bất biến được phê duyệt.</div></div>';
- document.body.appendChild(div);
- $('sagsHistoryClose').onclick=()=>{div.classList.remove('open');uiOpen=false};
- div.addEventListener('click',e=>{if(e.target===div)$('sagsHistoryClose').click()});
- $('sagsHistorySession').onchange=()=>void refresh();
- $('sagsHistoryDay').onchange=()=>{void loadAdminDay()};
- $('sagsHistoryReload').onclick=()=>void refresh(true);
- return div;
+paintStyle();let div=$('sagsHistoryOverlay');if(div)return div;
+div=document.createElement('div');div.id='sagsHistoryOverlay';div.setAttribute('role','dialog');div.setAttribute('aria-modal','true');div.setAttribute('aria-label','Lịch sử chỉnh sửa biểu mẫu');
+div.innerHTML='<div id="sagsHistoryPanel"><div class="hHead"><h3>🕘 LỊCH SỬ THAY ĐỔI BIỂU MẪU</h3><button id="sagsHistoryClose" type="button">ĐÓNG</button></div><div id="sagsHistoryAdminDayWrap" hidden><label for="sagsHistoryDay">Ngày khai thác (Admin · toàn bộ tài khoản)</label><input type="date" id="sagsHistoryDay" style="width:100%;min-height:40px;margin:6px 0 9px;border:1px solid #9bb1c0;border-radius:8px;padding:8px;background:white;color:#17324d"></div><label id="sagsHistoryPickerLabel" for="sagsHistorySession">Chọn chuyến / biểu mẫu</label><select id="sagsHistorySession"></select><div class="hActions"><button id="sagsHistoryReload" type="button">↻ TẢI LẠI</button><small id="sagsHistoryCount"></small></div><div id="sagsHistoryRows" aria-live="polite"></div><div class="hNote">Chỉ ghi các trường thay đổi sau khi lưu. Chữ ký, hình ảnh và dữ liệu nhạy cảm không được lưu vào lịch sử. <b>Trên máy</b> nghĩa là chưa xác nhận đã đồng bộ Firebase; nhật ký hiện tại chưa thay thế audit bất biến được phê duyệt.</div></div>';
+document.body.appendChild(div);
+$('sagsHistoryClose').onclick=()=>{div.classList.remove('open');uiOpen=false};
+div.addEventListener('click',e=>{if(e.target===div)$('sagsHistoryClose').click()});
+$('sagsHistorySession').onchange=()=>void refresh();
+$('sagsHistoryDay').onchange=()=>{void loadAdminDay()};
+$('sagsHistoryReload').onclick=()=>void refresh(true);
+return div;
 }
 async function loadAdminDay(){
- if(!isAdmin()||!uiOpen)return;
- const day=S($('sagsHistoryDay')?.value)||dayISO(),sel=$('sagsHistorySession'),box=$('sagsHistoryRows');
- if(!/^\d{4}-\d{2}-\d{2}$/.test(day))return;
- const token=++renderRequest;adminOptions.clear();box.textContent='Đang lấy danh sách phân công theo ngày từ Firebase...';
- try{
-  if(typeof root.sagsV470Ref!=='function')throw Error('Firebase chưa sẵn sàng');
-  const snap=await root.sagsV470Ref('roster_manifests/'+safe(day)+'/items').once('value');
-  if(token!==renderRequest||!uiOpen)return;
-  const values=Object.values(snap.val()||{}).filter(x=>x&&x.assignmentId);
-  for(const item of values){
-   const aid=S(item.assignmentId),k='admin:'+aid;
-   if(!adminOptions.has(k))adminOptions.set(k,{
-     id:k,rosterAssignmentId:aid,adminRemote:true,
-     name:S(item.flightName||item.flightRaw||item.flightId||'Chuyến'),
-     initialGroup:S(item.formGroup),targetUser:U(item.user||item.targetUser),
-     updatedAt:Number(item.updatedAtMs||0)
-   });
-  }
-  const rows=[...adminOptions.values()].sort((a,b)=>(a.name||'').localeCompare(b.name||'')||(a.targetUser||'').localeCompare(b.targetUser||''));
-  sel.innerHTML=rows.map(m=>'<option value="'+esc(m.id)+'">'+esc(m.name)+' · '+esc(m.initialGroup)+' · '+esc(m.targetUser)+'</option>').join('');
-  box.textContent=rows.length?'Chọn biểu mẫu hoặc nhấn TẢI LẠI để xem lịch sử.':'Ngày này chưa có phân công roster.';
-  $('sagsHistoryCount').textContent=rows.length+' phân công';
-  if(rows.length)await refresh();
- }catch(e){if(token===renderRequest){lastError=S(e?.message||e);box.textContent='Không đọc được danh sách lịch sử của toàn bộ nhân viên: '+lastError+'. Kiểm tra quyền đọc Firebase của tài khoản admin.'}}
+if(!isAdmin()||!uiOpen)return;
+const day=S($('sagsHistoryDay')?.value)||dayISO(),sel=$('sagsHistorySession'),box=$('sagsHistoryRows');
+if(!/^\d{4}-\d{2}-\d{2}$/.test(day))return;
+const token=++renderRequest;adminOptions.clear();box.textContent='Đang lấy danh sách phân công theo ngày từ Firebase...';
+try{
+if(typeof root.sagsV470Ref!=='function')throw Error('Firebase chưa sẵn sàng');
+const snap=await root.sagsV470Ref('roster_manifests/'+safe(day)+'/items').once('value');
+if(token!==renderRequest||!uiOpen)return;
+const values=Object.values(snap.val()||{}).filter(x=>x&&x.assignmentId);
+for(const item of values){
+const aid=S(item.assignmentId),k='admin:'+aid;
+if(!adminOptions.has(k))adminOptions.set(k,{
+id:k,rosterAssignmentId:aid,adminRemote:true,
+name:S(item.flightName||item.flightRaw||item.flightId||'Chuyến'),
+initialGroup:S(item.formGroup),targetUser:U(item.user||item.targetUser),
+updatedAt:Number(item.updatedAtMs||0)
+});
+}
+const rows=[...adminOptions.values()].sort((a,b)=>(a.name||'').localeCompare(b.name||'')||(a.targetUser||'').localeCompare(b.targetUser||''));
+sel.innerHTML=rows.map(m=>'<option value="'+esc(m.id)+'">'+esc(m.name)+' · '+esc(m.initialGroup)+' · '+esc(m.targetUser)+'</option>').join('');
+box.textContent=rows.length?'Chọn biểu mẫu hoặc nhấn TẢI LẠI để xem lịch sử.':'Ngày này chưa có phân công roster.';
+$('sagsHistoryCount').textContent=rows.length+' phân công';
+if(rows.length)await refresh();
+}catch(e){if(token===renderRequest){lastError=S(e?.message||e);box.textContent='Không đọc được danh sách lịch sử của toàn bộ nhân viên: '+lastError+'. Kiểm tra quyền đọc Firebase của tài khoản admin.'}}
 }
 function available(){
- let list=[];try{list=root.readFlightSessionList?.()||[]}catch(_){}
- const m=meta();if(m?.id&&!list.some(x=>x.id===m.id))list.unshift(m);
- return list.filter(x=>x&&x.id).sort((a,b)=>Number(b.updatedAt||0)-Number(a.updatedAt||0)).slice(0,100);
+let list=[];try{list=root.readFlightSessionList?.()||[]}catch(_){}
+const m=meta();if(m?.id&&!list.some(x=>x.id===m.id))list.unshift(m);
+return list.filter(x=>x&&x.id).sort((a,b)=>Number(b.updatedAt||0)-Number(a.updatedAt||0)).slice(0,100);
 }
 async function refresh(retry=false){
- const sel=$('sagsHistorySession'),box=$('sagsHistoryRows'),label=$('sagsHistoryCount');if(!sel||!box)return;
- const m=adminOptions.get(sel.value)||available().find(x=>S(x.id)===sel.value);if(!m){box.textContent='Chưa có biểu mẫu để xem.';return}
- box.textContent='Đang tải lịch sử...';
- const token=renderRequest,request=++refreshToken;
- let rows;try{rows=await entriesFor(m)}catch(e){
-   if(uiOpen&&token===renderRequest&&request===refreshToken)
-     box.textContent='Firebase không cho đọc lịch sử của phân công này: '+S(e?.message||e)+'. Cần kiểm tra quyền admin trong RTDB.';
-   return;
- }
- if(token!==renderRequest||request!==refreshToken||!uiOpen)return;
- const labels=await fieldLabels();
- if(retry){for(const e of rows.filter(x=>!x.synced&&x.assignmentId).slice(0,12))await send(e);rows=await entriesFor(m)}
- if(!uiOpen||token!==renderRequest||request!==refreshToken)return;
- label.textContent=rows.length+' bản ghi';
- if(!rows.length){box.textContent='Chưa ghi nhận lần chỉnh sửa nào sau khi cập nhật chức năng này.';return}
- box.innerHTML=rows.map(e=>{
-  const date=new Date(Number(e.atMs)||Date.now()).toLocaleString('vi-VN');
-  const who=esc(e.actor?.name||e.actor?.username||'Chưa xác định');
-  const status=e.synced?'ĐÃ LƯU FIREBASE':'CHỈ TRÊN MÁY';
-  const form=esc(e.formGroup||m.initialGroup||'');
-  const flight=esc(e.flightLabel||m.name||'');
-  return '<div class="hEvent"><div class="hMeta"><b>'+esc(date)+'</b> · '+who+' ('+esc(e.actor?.username||'')+') · '+esc(e.actor?.role||'')+' · '+status+'</div><small>'+flight+' · '+form+' · '+esc(e.reason||'Đã lưu thay đổi')+'</small>'+(e.changes||[]).map(c=>'<div class="hDiff"><b title="'+esc(c.field)+'">'+esc(fieldTitle(c.field,e.formGroup||m.initialGroup,labels))+'</b><span class="hOld">Trước: '+esc(c.before||'—')+'</span><span class="hNew">Sau: '+esc(c.after||'—')+'</span></div>').join('')+'</div>';
- }).join('');
+const sel=$('sagsHistorySession'),box=$('sagsHistoryRows'),label=$('sagsHistoryCount');if(!sel||!box)return;
+const m=adminOptions.get(sel.value)||available().find(x=>S(x.id)===sel.value);if(!m){box.textContent='Chưa có biểu mẫu để xem.';return}
+box.textContent='Đang tải lịch sử...';
+const token=renderRequest,request=++refreshToken;
+let rows;try{rows=await entriesFor(m)}catch(e){
+if(uiOpen&&token===renderRequest&&request===refreshToken)
+box.textContent='Firebase không cho đọc lịch sử của phân công này: '+S(e?.message||e)+'. Cần kiểm tra quyền admin trong RTDB.';
+return;
+}
+if(token!==renderRequest||request!==refreshToken||!uiOpen)return;
+const labels=await fieldLabels();
+if(retry){for(const e of rows.filter(x=>!x.synced&&x.assignmentId).slice(0,12))await send(e);rows=await entriesFor(m)}
+if(!uiOpen||token!==renderRequest||request!==refreshToken)return;
+label.textContent=rows.length+' bản ghi';
+if(!rows.length){box.textContent='Chưa ghi nhận lần chỉnh sửa nào sau khi cập nhật chức năng này.';return}
+box.innerHTML=rows.map(e=>{
+const date=new Date(Number(e.atMs)||Date.now()).toLocaleString('vi-VN');
+const who=esc(e.actor?.name||e.actor?.username||'Chưa xác định');
+const status=e.synced?'ĐÃ LƯU FIREBASE':'CHỈ TRÊN MÁY';
+const form=esc(e.formGroup||m.initialGroup||'');
+const flight=esc(e.flightLabel||m.name||'');
+return '<div class="hEvent"><div class="hMeta"><b>'+esc(date)+'</b> · '+who+' ('+esc(e.actor?.username||'')+') · '+esc(e.actor?.role||'')+' · '+status+'</div><small>'+flight+' · '+form+' · '+esc(e.reason||'Đã lưu thay đổi')+'</small>'+(e.changes||[]).map(c=>'<div class="hDiff"><b title="'+esc(c.field)+'">'+esc(fieldTitle(c.field,e.formGroup||m.initialGroup,labels))+'</b><span class="hOld">Trước: '+esc(c.before||'—')+'</span><span class="hNew">Sau: '+esc(c.after||'—')+'</span></div>').join('')+'</div>';
+}).join('');
 }
 function open(sessionId){
- const u=user();if(!u.username)return alert('Vui lòng đăng nhập để xem lịch sử.');
- const el=panel();const select=$('sagsHistorySession'),list=available();
- adminOptions.clear();renderRequest++;
- const admin=isAdmin();$('sagsHistoryAdminDayWrap').hidden=!admin;
- $('sagsHistoryPickerLabel').textContent=admin?'Chọn chuyến / biểu mẫu / nhân viên':'Chọn chuyến / biểu mẫu của tôi';
- if(admin){$('sagsHistoryDay').value=dayISO();el.classList.add('open');uiOpen=true;void loadAdminDay();return;}
- const sid=S(sessionId||meta()?.id||list[0]?.id);
- select.innerHTML=list.map(m=>'<option value="'+esc(m.id)+'">'+esc(S(m.name||m.flightName||m.id))+' · '+esc(S(m.initialGroup||''))+'</option>').join('');
- if(sid&&list.some(m=>S(m.id)===sid))select.value=sid;
- el.classList.add('open');uiOpen=true;void refresh();
+const u=user();if(!u.username)return alert('Vui lòng đăng nhập để xem lịch sử.');
+const el=panel();const select=$('sagsHistorySession'),list=available();
+adminOptions.clear();renderRequest++;
+const admin=isAdmin();$('sagsHistoryAdminDayWrap').hidden=!admin;
+$('sagsHistoryPickerLabel').textContent=admin?'Chọn chuyến / biểu mẫu / nhân viên':'Chọn chuyến / biểu mẫu của tôi';
+if(admin){$('sagsHistoryDay').value=dayISO();el.classList.add('open');uiOpen=true;void loadAdminDay();return;}
+const sid=S(sessionId||meta()?.id||list[0]?.id);
+select.innerHTML=list.map(m=>'<option value="'+esc(m.id)+'">'+esc(S(m.name||m.flightName||m.id))+' · '+esc(S(m.initialGroup||''))+'</option>').join('');
+if(sid&&list.some(m=>S(m.id)===sid))select.value=sid;
+el.classList.add('open');uiOpen=true;void refresh();
 }
 
 function actionButton(id,title){
- let b=$(id);
- if(!b){b=document.createElement('button');b.type='button';b.id=id;b.textContent=title;}
- if(!b.dataset.sagsHistoryBound){
-  b.dataset.sagsHistoryBound='1';
-  b.addEventListener('click',e=>{
-   e.preventDefault();e.stopPropagation();
-   document.body?.classList?.remove('v157-drawer-open');
-   open();
-  });
- }
- return b;
+let b=$(id);
+if(!b){b=document.createElement('button');b.type='button';b.id=id;b.textContent=title;}
+if(!b.dataset.sagsHistoryBound){
+b.dataset.sagsHistoryBound='1';
+b.addEventListener('click',e=>{
+e.preventDefault();e.stopPropagation();
+document.body?.classList?.remove('v157-drawer-open');
+open();
+});
+}
+return b;
 }
 function installButtons(){
- const account=user();if(!account.username)return;
- const workspace=document.querySelector('#fwcModal .fwcHead');
- if(workspace){
-  const b=actionButton('sagsHistoryDossierShortcut','🕘 LỊCH SỬ');
-  const close=workspace.querySelector('button[onclick*="flightWorkspaceClose"],#v477Close');
-  if(b.parentElement!==workspace)workspace.insertBefore(b,close||null);
- }
- const formActions=$('v324FormActions');
- if(formActions){
-  const b=actionButton('sagsHistoryFormShortcut','🕘 LỊCH SỬ');
-  if(b.parentElement!==formActions)formActions.appendChild(b);
- }
+const account=user();if(!account.username)return;
+const workspace=document.querySelector('#fwcModal .fwcHead');
+if(workspace){
+const b=actionButton('sagsHistoryDossierShortcut','🕘 LỊCH SỬ');
+const close=workspace.querySelector('button[onclick*="flightWorkspaceClose"],#v477Close');
+if(b.parentElement!==workspace)workspace.insertBefore(b,close||null);
+}
+const formActions=$('v324FormActions');
+if(formActions){
+const b=actionButton('sagsHistoryFormShortcut','🕘 LỊCH SỬ');
+if(b.parentElement!==formActions)formActions.appendChild(b);
+}
 }
 function trustedInput(e){
- if(!e?.isTrusted||!document.body?.classList?.contains('v157-authenticated'))return;
- const t=e.target;if(!t||!['INPUT','SELECT','TEXTAREA'].includes(t.tagName))return;
- if(/^(?:password|file|hidden)$/i.test(S(t.type)))return;
- if(t.closest?.('#roleLoginModal,#sagsSettingsCenter,#sagsHistoryOverlay,#v157Drawer,#accountManagerModal,#accountProfileEditModal'))return;
- lastTrustedFormEditAt=Date.now();
+if(!e?.isTrusted||!document.body?.classList?.contains('v157-authenticated'))return;
+const t=e.target;if(!t||!['INPUT','SELECT','TEXTAREA'].includes(t.tagName))return;
+if(/^(?:password|file|hidden)$/i.test(S(t.type)))return;
+if(t.closest?.('#roleLoginModal,#sagsSettingsCenter,#sagsHistoryOverlay,#v157Drawer,#accountManagerModal,#accountProfileEditModal'))return;
+lastTrustedFormEditAt=Date.now();
 }
 document.addEventListener('input',trustedInput,true);document.addEventListener('change',trustedInput,true);
 root.SAGSFormEditHistoryV1={changesOf,scrub,open,refresh,install,capture,flushBatch,entriesFor,fieldTitle,readableKey};

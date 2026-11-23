@@ -137,10 +137,10 @@
     // during focused typing adds contention without improving durability.
     // Once the editor closes, pending() runs again and prunes committed drafts.
     const p=manual||quick||quickTimeTyping?[]:pending();
-    const cloud=root.sagsDraftV2Status?.()||{},cloudReady=cloud.cloudCapable===true;
-    set('textContent',p.length||manual||quick||quickTimeTyping?(cloudReady?'📝 Nháp đang được bảo vệ':'📝 Nháp đang lưu trên máy'):(cloudReady?'✓ Nháp đã bảo vệ 3 lớp':'✓ Nháp chuyến trên máy này'));
+    const cloud=root.sagsDraftV2Status?.()||{},cloudReady=cloud.cloudCapable===true,cloudVerified=cloud.cloudWrites>0&&cloud.lastCloudSyncAtMs>0&&!cloud.lastCloudError;
+    set('textContent',p.length||manual||quick||quickTimeTyping?'📝 Nháp đang lưu trên thiết bị':'✓ Nháp lưu trên thiết bị');
     level(p.length||manual||quick||quickTimeTyping?'pending':'local');
-    set('title',cloudReady?'localStorage + IndexedDB trên máy; khi có mạng đồng bộ bản nháp roster lên server để có thể phục hồi trên thiết bị khác.':'Bản nháp đang được bảo vệ trên thiết bị này; đồng bộ server sẽ bật khi có assignment roster và Firebase sẵn sàng.');
+    set('title',cloudVerified?'Bản nháp được lưu trên thiết bị. Firebase đã xác nhận một lần đồng bộ trước đó ('+new Date(cloud.lastCloudSyncAtMs).toLocaleTimeString('vi-VN')+'); dữ liệu mới có thể vẫn đang chờ.':cloudReady?'Nháp đang được bảo vệ trên thiết bị; Firebase sẽ tự đồng bộ khi có kết nối và phân công hợp lệ. Chưa xác nhận đã lưu trên máy chủ.':'Bản nháp đang được lưu trên thiết bị này. Chưa xác nhận lưu lên Firebase.');
   }
   function showPending(){
     const p=pending();alert(p.length

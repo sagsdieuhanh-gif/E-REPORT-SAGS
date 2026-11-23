@@ -44,12 +44,12 @@ function harness(){
  assert.equal(a.state.opens,1);assert.deepEqual(a.state.requestedSource,['server','server']);
  // Advisory window changes must NEVER deny report access to a verified holder.
  const night=harness();
- night.state.now=Date.parse('2026-11-12T00:59:59Z'); // 07:59:59 Nov 12 VN
+ night.state.now=Date.parse('2026-11-12T01:29:59Z'); // 08:29:59 Nov 12 VN
  night.state.receivedAt=Date.parse('2026-11-11T14:30:00Z'); // 21:30 Nov 11 VN
  night.sign();
  assert.equal(await night.c.v324ReceiveOrOpen('VJ-NIGHT'),'OPENED','Night shift 07:59:59 permits opening');
- night.state.now=Date.parse('2026-11-12T01:00:00Z'); // 08:00 Nov 12 VN
- assert.equal(await night.c.v324ReceiveOrOpen('VJ-AM-CHANGE'),'OPENED','08:00 rollover is reminder-only, never blocks');
+ night.state.now=Date.parse('2026-11-12T01:30:00Z'); // 08:30 Nov 12 VN
+ assert.equal(await night.c.v324ReceiveOrOpen('VJ-AM-CHANGE'),'OPENED','08:30 rollover is reminder-only, never blocks');
  assert.equal(night.state.opens,2);
  assert.equal(night.state.alerts.length,0,'No modal for overnight radio rollover');
  const advisory=await night.c.SAGSRadioWorkGate.requireRadio();
@@ -57,12 +57,12 @@ function harness(){
  assert.equal(advisory.issuedShift,'2026-11-11/PM');
  assert.equal(advisory.currentShift,'2026-11-12/AM');
  const morning=harness();
- morning.state.now=Date.parse('2026-11-11T11:15:59Z'); // 18:15:59 Nov 11 VN
- morning.state.receivedAt=Date.parse('2026-11-11T01:00:00Z'); // 08:00 Nov 11 VN
+ morning.state.now=Date.parse('2026-11-11T12:00:59Z'); // 19:00:59 Nov 11 VN
+ morning.state.receivedAt=Date.parse('2026-11-11T01:30:00Z'); // 08:30 Nov 11 VN
  morning.sign();
- assert.equal(await morning.c.v324ReceiveOrOpen('VJ-AM-END'),'OPENED','AM shift through 18:15:59 permits work');
- morning.state.now=Date.parse('2026-11-11T11:16:00Z'); // 18:16 Nov 11 VN
- assert.equal(await morning.c.v324ReceiveOrOpen('VJ-PM-CHANGE'),'OPENED','18:16 PM boundary is not a hard cutoff');
+ assert.equal(await morning.c.v324ReceiveOrOpen('VJ-AM-END'),'OPENED','AM shift through 19:00:59 permits work');
+ morning.state.now=Date.parse('2026-11-11T12:01:00Z'); // 19:01 Nov 11 VN
+ assert.equal(await morning.c.v324ReceiveOrOpen('VJ-PM-CHANGE'),'OPENED','19:01 PM boundary is not a hard cutoff');
  assert.equal(morning.state.opens,2);
  assert.equal(morning.state.alerts.length,0);
  // 04:00 is no longer a shift boundary.

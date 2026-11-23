@@ -21,8 +21,8 @@ function shiftKeyVN(at){
  const clock=new Intl.DateTimeFormat('en-GB',{timeZone:VN,hour:'2-digit',minute:'2-digit',hourCycle:'h23'})
   .formatToParts(new Date(at));
  const values=Object.fromEntries(clock.map(x=>[x.type,x.value]));
- const minute=Number(values.hour)*60+Number(values.minute),am=minute>=480&&minute<=1095;
- const calendar=dateVN(new Date(at)),day=minute<480?
+ const minute=Number(values.hour)*60+Number(values.minute),am=minute>=510&&minute<=1140;
+ const calendar=dateVN(new Date(at)),day=minute<510?
   new Date(Date.parse(calendar+'T00:00:00Z')-86400000).toISOString().slice(0,10):calendar;
  return day+'/'+(am?'AM':'PM');
 }
@@ -58,7 +58,7 @@ function evaluate(assignments,machines,uid,nowMs=Date.now()){
   if(!needsReturn)return null;
   const allCodes=held.map(x=>S(x.code)).filter(Boolean);
   const suffix=overdue?' (đã qua mốc nhắc trả)':'';
-  return {kind:'RETURN',code:primary.code,text:'Bạn đang giữ '+allCodes.join(', ')+suffix+'. '+(overdue?'Đã qua mốc nhắc trả (ca sáng 18:15 / ca tối 07:59 hôm sau). Vui lòng ký trả khi hoàn tất bàn giao; vẫn có thể tiếp tục công việc.':finished?'Các phân công My Flight đã hoàn thành. Nếu đã hết ca, vui lòng ký trả máy.':'Hôm nay không có phân công My Flight đang hiệu lực. Hãy kiểm tra và trả máy nếu đã hết ca.')};
+  return {kind:'RETURN',code:primary.code,text:'Bạn đang giữ '+allCodes.join(', ')+suffix+'. '+(overdue?'Đã qua mốc nhắc trả (ca sáng 19:00 / ca tối 08:29 hôm sau). Vui lòng ký trả khi hoàn tất bàn giao; vẫn có thể tiếp tục công việc.':finished?'Các phân công My Flight đã hoàn thành. Nếu đã hết ca, vui lòng ký trả máy.':'Hôm nay không có phân công My Flight đang hiệu lực. Hãy kiểm tra và trả máy nếu đã hết ca.')};
  }
  if(!active.some(x=>!isDone(x)))return null;
  const starts=active.map(x=>hhmm(x.dutyStart||x.shiftStart||x.startShift));
@@ -124,7 +124,7 @@ function subscribeDevices(uid){
 async function refreshRoster(){
  if(requestInFlight||!currentUid)return;
  const user=signedIn();if(user.uid!==currentUid)return detach();
- const d=shiftKeyVN(Date.now()).split('/')[0]; // PM roster stays on the shift-start date until 07:59 next morning
+ const d=shiftKeyVN(Date.now()).split('/')[0]; // PM roster stays on the shift-start date until 08:29 next morning
  if(lastRosterDate!==d){lastRosterDate=d;roster=[];haveRoster=false;render()}
  if(typeof root.sagsV478ManifestForWorker!=='function')return;
  requestInFlight=true;

@@ -28,7 +28,7 @@ for(let i=0;i<80;i++)rows.set('sagsV61Uncommitted:OP:F:k'+i+':manual',
 const api=context.sagsV61Draft;
 api.status();
 assert.equal(enumerations,0,'No full localStorage scan while a quick-input keyboard is focused');
-assert.match(badge.textContent,/Nháp đang lưu trên máy/);
+assert.match(badge.textContent,/Nháp đang lưu trên thiết bị/);
 context.document.activeElement=null;api.status();
 assert.equal(enumerations,80,'Idle status still discovers and verifies pending recovery drafts');
 assert.equal(envelopes,1,'One committed envelope read for all 80 pending drafts');

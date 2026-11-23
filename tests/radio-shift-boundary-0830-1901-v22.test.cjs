@@ -19,14 +19,14 @@ const d=custody.indexOf('function vnDateKey('),e=custody.indexOf('function repor
 const r={Intl,Date,Number,Math,VN:'Asia/Ho_Chi_Minh'};
 vm.createContext(r);vm.runInContext(custody.slice(d,e)+'\n'+custody.slice(a,b)+'\nthis.shiftAt=radioShiftAt;this.bounds=shiftBounds;this.shift=shift;',r);
 const moments=[
- ['2026-11-11T00:59:59Z','2026-11-10/PM'], // 07:59:59 VN
- ['2026-11-11T01:00:00Z','2026-11-11/AM'], // 08:00 VN
- ['2026-11-11T11:15:59Z','2026-11-11/AM'], // 18:15:59 VN
- ['2026-11-11T11:16:00Z','2026-11-11/PM'], // 18:16 VN
+ ['2026-11-11T01:29:59Z','2026-11-10/PM'], // 08:29:59 VN
+ ['2026-11-11T01:30:00Z','2026-11-11/AM'], // 08:30 VN
+ ['2026-11-11T12:00:59Z','2026-11-11/AM'], // 19:00:59 VN
+ ['2026-11-11T12:01:00Z','2026-11-11/PM'], // 19:01 VN
  ['2026-11-11T17:00:00Z','2026-11-11/PM'], // midnight VN
  ['2026-11-11T21:00:00Z','2026-11-11/PM'], // 04:00 VN
- ['2026-11-12T00:59:59Z','2026-11-11/PM'], // 07:59:59 next day
- ['2026-11-12T01:00:00Z','2026-11-12/AM'] // 08:00 next day
+ ['2026-11-12T01:29:59Z','2026-11-11/PM'], // 08:29:59 next day
+ ['2026-11-12T01:30:00Z','2026-11-12/AM'] // 08:30 next day
 ];
 for(const [stamp,expected] of moments){
  const ms=Date.parse(stamp);
@@ -34,8 +34,8 @@ for(const [stamp,expected] of moments){
  assert.equal(r.shiftAt(ms).key,expected,'Radio custody '+stamp);
 }
 for(const [day,which,start,end] of [
- ['2026-11-11','AM','2026-11-11T01:00:00.000Z','2026-11-11T11:16:00.000Z'],
- ['2026-11-11','PM','2026-11-11T11:16:00.000Z','2026-11-12T01:00:00.000Z']
+ ['2026-11-11','AM','2026-11-11T01:30:00.000Z','2026-11-11T12:01:00.000Z'],
+ ['2026-11-11','PM','2026-11-11T12:01:00.000Z','2026-11-12T01:30:00.000Z']
 ]){
  const bounds=r.bounds(day,which);
  assert.equal(bounds.start.toISOString(),start);
@@ -43,4 +43,4 @@ for(const [day,which,start,end] of [
 }
 assert(!gate.includes("throw gateError('SAGS_RADIO_OVERDUE'"),'Prior shift must never block flight opening');
 assert(custody.includes('không khóa nhận/mở chuyến'),'Dashboard must communicate advisory-only nature');
-console.log('Advisory shift boundaries 08:00–18:15 AM / 18:16–07:59 PM, report rollovers and no custody time lock PASS');
+console.log('Advisory shift boundaries 08:30–19:00 AM / 19:01–08:29 PM, report rollovers and no custody time lock PASS');

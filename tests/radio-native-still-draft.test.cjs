@@ -65,7 +65,7 @@ function harness(navigator={userAgent:'iPhone'}){
  assert.equal(clock.offset,'+07:00');
  assert.equal(api.radioShiftAt(clock.at).key,'2026-11-12/PM');
  assert.equal(api.radioShiftAt(Date.parse('2026-11-13T00:59:00Z')).key,'2026-11-12/PM');
- assert.equal(api.radioShiftAt(Date.parse('2026-11-13T01:00:00Z')).key,'2026-11-13/AM');
+ assert.equal(api.radioShiftAt(Date.parse('2026-11-13T01:30:00Z')).key,'2026-11-13/AM');
  const receiptTime=clock.at+12*60000;
  const details=api.evidenceDetails('a'.repeat(500),clock.at,clock);
  assert.equal(details.length,500);
