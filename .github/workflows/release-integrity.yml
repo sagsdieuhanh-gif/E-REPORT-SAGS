@@ -13,5 +13,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run release
+      - name: Firebase Functions policy and callable unit tests
+        run: npm test --prefix firebase/functions
       - name: Generated release must be committed
         run: git diff --exit-code
