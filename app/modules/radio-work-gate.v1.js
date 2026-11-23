@@ -5,7 +5,7 @@ if(root.SAGSRadioWorkGate)return;
 const RADIOS='sags_radio_devices_v1';
  const VN_ZONE='Asia/Ho_Chi_Minh';
  // Duty shift boundaries, Vietnam time, are exact to the minute:
- // AM: 08:00 - 18:15; PM: 18:16 - 07:59 the following calendar day.
+ // AM: 08:30 - 19:00; PM: 19:01 - 08:29 the following calendar day.
  // The window is advisory for return reminders, never a permission cutoff.
  // Use the PM START date as the shift date across midnight.
  function radioShiftAt(ms){
@@ -18,9 +18,9 @@ const RADIOS='sags_radio_devices_v1';
   const year=part('year'),month=part('month'),day=part('day'),hour=part('hour'),minute=part('minute');
   if(!year||!month||!day||!Number.isFinite(hour)||!Number.isFinite(minute))
    throw gateError('SAGS_RADIO_UNVERIFIED','Không xác định được giờ ca làm việc Việt Nam.');
-  const clock=hour*60+minute,am=clock>=8*60&&clock<=18*60+15;
+  const clock=hour*60+minute,am=clock>=8*60+30&&clock<=19*60;
   const shift=am?'AM':'PM';
-  const shiftDay=new Date(Date.UTC(year,month-1,day-(clock<8*60?1:0))).toISOString().slice(0,10);
+  const shiftDay=new Date(Date.UTC(year,month-1,day-(clock<8*60+30?1:0))).toISOString().slice(0,10);
   return {key:shiftDay+'/'+shift,shift,shiftDay};
  }
  function radioTimestampMs(v){
