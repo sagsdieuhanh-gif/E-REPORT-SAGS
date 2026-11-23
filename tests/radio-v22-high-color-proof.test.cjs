@@ -2,7 +2,7 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
 const radio=fs.readFileSync('app/modules/radio-custody.v1.js','utf8'),rules=fs.readFileSync('firebase/firestore.rules','utf8'),css=fs.readFileSync('app/styles/radio-custody.v1.css','utf8');
 const version=JSON.parse(fs.readFileSync('version.json','utf8'));
-assert.equal(version.version,'V1.3','release must truly be V1.3');
+assert.equal(version.version,'V1.4','release must truly be V1.4');
 assert(radio.includes("PROOFS='sags_radio_proofs_v22'"));
 assert(radio.includes('HIGH_PROOF_LIMIT=700000'));
 assert(radio.includes("width:{ideal:2560},height:{ideal:1440}"),'request higher resolution camera sensor');
@@ -56,4 +56,4 @@ assert(original.length<=700000);
 assert(calls.widths.some(x=>x>=1024),'output should be >=1024px when data budget allows');
 assert.equal(calls.pixels,0,'do not quantize or recolour full evidence image');
 assert(calls.signs===0||calls.images>=2,'draw both camera image and ink');
-console.log('V1.3 radio full-colour capture, JPEG proof, private same-transaction records, lazy viewing/PDF and colour-safe encoding PASS');
+console.log('V1.4 radio full-colour capture, JPEG proof, private same-transaction records, lazy viewing/PDF and colour-safe encoding PASS');
