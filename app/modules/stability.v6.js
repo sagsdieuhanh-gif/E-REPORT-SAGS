@@ -15,6 +15,7 @@
   const addon=new URL('mobile-draft-recovery.v1.js?v='+encodeURIComponent(releaseBuild),base).href;
   const idb=new URL('indexeddb-flight-store.v1.js?v='+encodeURIComponent(releaseBuild),base).href;
   const cloud=new URL('cloud-draft-sync.v2.js?v='+encodeURIComponent(releaseBuild),base).href;
+  const popup=new URL('draft-sync-popup.v1.js?v='+encodeURIComponent(releaseBuild),base).href;
   function load(url,done){
     const el=document.createElement('script');el.src=url;el.async=false;
     if(done)el.onload=done;
@@ -22,8 +23,8 @@
     document.head.appendChild(el);
   }
   if(document.readyState==='loading'&&script&&!script.async&&!script.defer){
-    document.write('<script src="'+core+'"><\/script><script src="'+addon+'"><\/script><script src="'+idb+'"><\/script><script src="'+cloud+'"><\/script>');
+    document.write('<script src="'+core+'"><\/script><script src="'+addon+'"><\/script><script src="'+idb+'"><\/script><script src="'+cloud+'"><\/script><script src="'+popup+'"><\/script>');
   }else{
-    load(core,()=>load(addon,()=>load(idb,()=>load(cloud))));
+    load(core,()=>load(addon,()=>load(idb,()=>load(cloud,()=>load(popup)))));
   }
 })(window);
