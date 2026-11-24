@@ -56,6 +56,11 @@ assert.equal(c.preselect(when('2026-11-24T10:00:00+07:00')),'','Morning must als
 assert.equal(c.preselect(when('2026-11-24T20:00:00+07:00')),'','Night must also be an explicit selection');
 assert.equal(c.duty(when('2026-11-25T07:59:00+07:00'),'PM').key,'2026-11-24/PM');
 assert.equal(c.duty(when('2026-11-25T07:30:00+07:00'),'AM').key,'2026-11-25/AM','Early morning duty can be selected');
+assert.equal(c.duty(when('2026-11-25T08:10:00+07:00'),'PM','RETURN').key,'2026-11-24/PM',
+ 'An 08:10 return still belongs to the preceding night duty ending 08:29');
+assert.equal(c.duty(when('2026-11-25T08:10:00+07:00'),'PM','ISSUE').key,'2026-11-25/PM',
+ 'Receiving window starts AM at 08:00; explicit PM pickup is not silently re-dated');
+assert.equal(c.duty(when('2026-11-25T08:10:00+07:00'),'AM','ISSUE').key,'2026-11-25/AM');
 const device=(code,shift)=>({code,status:'OUT',holderUid:code,holderName:code,shift,heldSince:{toMillis:()=>early}});
 const inventory=[device('DH01','AM'),device('DH02','PM')];
 const alert=c.live(inventory,when('2026-11-24T19:00:00+07:00'));
