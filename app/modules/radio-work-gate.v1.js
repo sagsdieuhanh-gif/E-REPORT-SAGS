@@ -29,11 +29,10 @@ const RADIOS='sags_radio_devices_v1';
   return NaN;
  }
  function radioAssignedDuty(ms,explicitShift){
-  const clock=radioShiftAt(ms),shift=['AM','PM'].includes(explicitShift)?explicitShift:clock.shift;
-  if(shift===clock.shift)return clock;
   const p=Object.fromEntries(new Intl.DateTimeFormat('en-GB',{timeZone:VN_ZONE,year:'numeric',month:'2-digit',day:'2-digit',
    hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date(ms)).map(e=>[e.type,e.value]));
   const minute=Number(p.hour)*60+Number(p.minute);
+  const shift=['AM','PM'].includes(explicitShift)?explicitShift:(minute>=480&&minute<=1110?'AM':'PM');
   const day=new Date(Date.UTC(Number(p.year),Number(p.month)-1,Number(p.day)-(shift==='PM'&&minute<480?1:0)))
    .toISOString().slice(0,10);
   return {key:day+'/'+shift,shift,shiftDay:day};
