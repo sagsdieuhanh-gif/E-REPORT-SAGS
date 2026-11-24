@@ -898,9 +898,15 @@ function rosterDutyShift(x){
  const direct=S(x.dutyShift||x.workShift||x.rosterShift||x.shiftCode||x.shift).toUpperCase();
  if(['AM','SANG','SÁNG','MORNING'].includes(direct))return 'AM';
  if(['PM','TOI','TỐI','EVENING','CHIEU','CHIỀU'].includes(direct))return 'PM';
- for(const key of ['dutyStart','shiftStart','startShift','sta','std']){
+ // A flight STA/STD is not a staff-duty shift. Ambiguous 16:00–19:00
+ // handover starts cannot be inferred without an explicit roster shift.
+ for(const key of ['dutyStart','shiftStart','startShift']){
   const m=S(x[key]).match(/^([01]?\d|2[0-3]):?([0-5]\d)(?:\+\d+)?$/);
-  if(m){const minute=Number(m[1])*60+Number(m[2]);return minute>=510&&minute<=1140?'AM':'PM'}
+  if(m){
+   const minute=Number(m[1])*60+Number(m[2]);
+   if(minute>=16*60&&minute<=19*60)return '';
+   return minute>=510&&minute<=1140?'AM':'PM';
+  }
  }
  return '';
 }
