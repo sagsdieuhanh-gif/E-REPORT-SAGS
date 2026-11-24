@@ -93,7 +93,7 @@ function notify(s,fail=false){
   const e=$(id);if(e){e.textContent=s;e.dataset.error=fail?'1':'0'}
  }
 }
-function setBusy(v){busy=!!v;for(const e of document.querySelectorAll('#sagsRadioPanel button,#sagsRadioPanel select,#sagsRadioPanel input,#sagsRadioPanel textarea'))e.disabled=busy||e.id==='radioShift';if($('radioPhotoArea'))updatePhotoUI()}
+function setBusy(v){busy=!!v;for(const e of document.querySelectorAll('#sagsRadioPanel button,#sagsRadioPanel select,#sagsRadioPanel input,#sagsRadioPanel textarea'))e.disabled=busy||(e.id==='radioShift'&&mode!=='ISSUE');if($('radioPhotoArea'))updatePhotoUI()}
 function tpl(){
  if($('sagsRadioPanel'))return;
  const p=document.createElement('section');p.id='sagsRadioPanel';p.className='sagsRadioPanel';p.hidden=true;p.setAttribute('role','dialog');p.setAttribute('aria-modal','true');p.setAttribute('aria-label','Quản lý ký nhận bộ đàm');
@@ -107,7 +107,7 @@ function tpl(){
  '<section id="radioDevicesTab"><div class="radioTools radioDeviceTools"><strong id="radioDevicesTitle">Máy còn trống</strong><div class="radioDeviceToolActions"><button type="button" id="radioOnlyUnreturned" hidden aria-pressed="false">🚩 Chỉ xem chưa trả</button><button type="button" id="radioAdminAll" hidden aria-pressed="false">Quản lý tất cả (AD)</button><button type="button" id="radioSeed" hidden>+ Khởi tạo máy</button></div></div><div id="radioDraftControls" class="radioTools" hidden><span>Ảnh và chữ ký đang lưu trên máy, chờ xác nhận Firebase.</span><button type="button" id="radioResumeDraft">Tiếp tục ký nhận/trả</button><button type="button" id="radioDiscardDraft">Bỏ bản nháp</button></div><div id="radioDeviceList" class="radioDeviceList"></div></section>'+
  '<section id="radioHistoryTab" hidden><div class="radioTools"><span>Danh sách sự kiện của ca đã chọn (AD) hoặc lịch sử cá nhân</span><button type="button" id="radioExport" class="radioPrimary">📄 Xuất PDF ca</button></div><div class="radioHistoryFilters"><label>Mã máy<select id="radioHistoryDevice"><option value="">Tất cả máy</option></select></label><label>Thao tác<select id="radioHistoryAction"><option value="">Tất cả</option><option value="ISSUE">Nhận máy</option><option value="RETURN">Trả máy</option><option value="SWAP_OUT">Đổi máy</option><option value="REPORT">Báo lỗi</option></select></label><label>Tìm kiếm<input id="radioHistorySearch" type="search" placeholder="Tên, UID hoặc ghi chú" autocomplete="off"></label></div><div id="radioHistoryMeta" class="radioHistoryMeta"></div><div id="radioHistoryList"></div></section>'+
  '<section id="radioSummaryTab" hidden><div class="radioTools"><span>Tổng hợp ca trực · theo ngày đã chọn</span><button type="button" id="radioSummaryExport" class="radioPrimary">📄 Xuất PDF ca</button></div><div id="radioSummary"></div><p class="radioHint">Tổng hợp dữ liệu đã tải trên màn hình; không gửi email.</p></section>'+
- '<section id="radioAction" class="radioAction" hidden><div class="radioActionHeader"><h3 id="radioActionTitle">Ký nhận</h3><button type="button" id="radioActionCancel">✕</button></div><div class="radioFields"><label>Mã máy<input id="radioActionCode" readonly></label><label>Người thực hiện<input id="radioPerson" readonly></label><label>Ca làm việc<select id="radioShift"><option value="AM">Ca sáng</option><option value="PM">Ca tối</option></select></label><label id="radioReasonWrap">Lý do<select id="radioReason">'+REASONS.map(([v,n])=>'<option value="'+v+'">'+esc(n)+'</option>').join('')+'</select></label><label id="radioReturnReasonWrap" hidden>Lý do trả<select id="radioReturnReason"><option value="END_SHIFT">Hết ca</option><option value="HANDOVER">Bàn giao ca tiếp theo</option><option value="STOP_USE">Không tiếp tục sử dụng</option><option value="OTHER">Lý do khác (ghi cụ thể)</option></select></label><label id="radioSwapWrap">Máy thay thế<select id="radioSwapTarget"></select></label><label class="wide">Ghi chú hiện trạng<textarea id="radioDetail" rows="2" placeholder="Ghi cụ thể hiện tượng, thời gian, vị trí..."></textarea></label></div><section id="radioPhotoArea" class="radioPhotoArea" hidden><div class="radioPhotoHeading"><strong id="radioPhotoStep">1 · Ảnh bộ đàm thực tế</strong><small>Camera trực tiếp · không chọn thư viện</small></div><div class="radioCameraView"><input id="radioNativeCamera" type="file" accept="image/*" capture="environment" hidden><video id="radioCameraVideo" playsinline autoplay muted></video><img id="radioCameraPhoto" alt="Ảnh chụp mã máy và thời gian" hidden></div><div id="radioPhotoChips" class="radioPhotoChips"></div><div class="radioPhotoActions"><button id="radioTakePhoto" type="button" class="radioPrimary">📷 Chụp ảnh</button><button id="radioRetakePhoto" type="button" hidden>Chụp lại</button><button id="radioInspectPhoto" type="button" hidden>🔎 Phóng to kiểm tra ảnh</button><button id="radioRetryPhoto" type="button" hidden>Mở camera</button></div><small class="radioHint">Giờ trên ảnh là giờ của điện thoại; Firebase ghi riêng thời điểm xác nhận trên máy chủ.</small></section><div id="radioSigWrap"><p>Chữ ký xác nhận của tài khoản đang đăng nhập</p><canvas id="radioSignature" width="540" height="150" aria-label="Ký bằng ngón tay hoặc chuột"></canvas><button type="button" id="radioClearSignature">Xóa nét ký</button></div><p id="radioActionMessage" class="radioActionMessage" role="status" aria-live="polite"></p><div class="radioActions"><button type="button" id="radioCancel">Hủy</button><button class="radioPrimary" type="button" id="radioConfirm">Xác nhận và lưu lịch sử</button></div></section>'+
+ '<section id="radioAction" class="radioAction" hidden><div class="radioActionHeader"><h3 id="radioActionTitle">Ký nhận</h3><button type="button" id="radioActionCancel">✕</button></div><div class="radioFields"><label>Mã máy<input id="radioActionCode" readonly></label><label>Người thực hiện<input id="radioPerson" readonly></label><label>Ca trực nhận máy<select id="radioShift"><option value="">— Chọn ca sử dụng —</option><option value="AM">Ca sáng · 08:30–19:00</option><option value="PM">Ca tối · 19:01–08:29 hôm sau</option></select><small id="radioShiftHint">Xác nhận ca sẽ sử dụng máy; giờ ký nhận thực tế vẫn lấy từ Firebase. Có thể nhận trước giờ vào ca.</small></label><label id="radioReasonWrap">Lý do<select id="radioReason">'+REASONS.map(([v,n])=>'<option value="'+v+'">'+esc(n)+'</option>').join('')+'</select></label><label id="radioReturnReasonWrap" hidden>Lý do trả<select id="radioReturnReason"><option value="END_SHIFT">Hết ca</option><option value="HANDOVER">Bàn giao ca tiếp theo</option><option value="STOP_USE">Không tiếp tục sử dụng</option><option value="OTHER">Lý do khác (ghi cụ thể)</option></select></label><label id="radioSwapWrap">Máy thay thế<select id="radioSwapTarget"></select></label><label class="wide">Ghi chú hiện trạng<textarea id="radioDetail" rows="2" placeholder="Ghi cụ thể hiện tượng, thời gian, vị trí..."></textarea></label></div><section id="radioPhotoArea" class="radioPhotoArea" hidden><div class="radioPhotoHeading"><strong id="radioPhotoStep">1 · Ảnh bộ đàm thực tế</strong><small>Camera trực tiếp · không chọn thư viện</small></div><div class="radioCameraView"><input id="radioNativeCamera" type="file" accept="image/*" capture="environment" hidden><video id="radioCameraVideo" playsinline autoplay muted></video><img id="radioCameraPhoto" alt="Ảnh chụp mã máy và thời gian" hidden></div><div id="radioPhotoChips" class="radioPhotoChips"></div><div class="radioPhotoActions"><button id="radioTakePhoto" type="button" class="radioPrimary">📷 Chụp ảnh</button><button id="radioRetakePhoto" type="button" hidden>Chụp lại</button><button id="radioInspectPhoto" type="button" hidden>🔎 Phóng to kiểm tra ảnh</button><button id="radioRetryPhoto" type="button" hidden>Mở camera</button></div><small class="radioHint">Giờ trên ảnh là giờ của điện thoại; Firebase ghi riêng thời điểm xác nhận trên máy chủ.</small></section><div id="radioSigWrap"><p>Chữ ký xác nhận của tài khoản đang đăng nhập</p><canvas id="radioSignature" width="540" height="150" aria-label="Ký bằng ngón tay hoặc chuột"></canvas><button type="button" id="radioClearSignature">Xóa nét ký</button></div><p id="radioActionMessage" class="radioActionMessage" role="status" aria-live="polite"></p><div class="radioActions"><button type="button" id="radioCancel">Hủy</button><button class="radioPrimary" type="button" id="radioConfirm">Xác nhận và lưu lịch sử</button></div></section>'+
  '<div class="radioProofViewer" id="radioProofViewer" hidden><div><header><strong id="radioProofName">Ảnh và chữ ký</strong><button type="button" id="radioProofClose">✕</button><button id="radioProofZoom" type="button">🔎 Phóng to</button></header><div class="radioProofScroll"><img id="radioProofImage" alt="Bằng chứng ảnh có giờ và chữ ký"></div><p id="radioProofQuality"></p><p id="radioProofTimestamp"></p></div></div><footer>Giờ trên ảnh do thiết bị cung cấp; giờ xác nhận chính thức theo Firebase.</footer></div>';
  document.body.appendChild(p);
  $('radioClose').onclick=close;$('radioActionCancel').onclick=cancel;$('radioCancel').onclick=cancel;
@@ -381,6 +381,7 @@ async function resumeNativeDraft(){
   const {file,...draft}=saved;
   const d=devices.find(x=>x.code===draft.code)||{code:draft.code,version:draft.deviceVersion};
   showSigningForm(draft.action,d,user);nativeDraft=draft;
+  if(['AM','PM'].includes(S(draft.shift)))$('radioShift').value=draft.shift;
   $('radioDraftControls').hidden=true;
   for(const id of DRAFT_FIELDS)$(id).value=draft.fields[id];
   const c=$('radioSignature');
@@ -811,6 +812,31 @@ function shiftBounds(day,which){
  return {start,end,startMs:start.getTime(),endMs:end.getTime()};
 }
 function shift(){return radioShiftAt(Date.now()).shift}
+// The physical receipt timestamp never determines which duty the radio is for.
+// Early evening receipts may belong to either shift. Keep the historical official
+// shift boundaries separate from the user-confirmed custody shift.
+function radioCustodyDuty(ms,selected){
+ const clock=radioShiftAt(ms),which=['AM','PM'].includes(S(selected))?S(selected):clock.shift;
+ if(which===clock.shift)return clock;
+ const day=vnDateKey(new Date(ms)),minute=Number(new Intl.DateTimeFormat('en-GB',{timeZone:VN,hour:'2-digit',minute:'2-digit',hourCycle:'h23'})
+  .formatToParts(new Date(ms)).find(p=>p.type==='hour')?.value||0)*60+
+  Number(new Intl.DateTimeFormat('en-GB',{timeZone:VN,minute:'2-digit'}).formatToParts(new Date(ms)).find(p=>p.type==='minute')?.value||0);
+ const dutyDay=which==='PM'&&minute<510?radioDayAdd(day,-1):day;
+ return {day:dutyDay,shift:which,key:dutyDay+'/'+which};
+}
+function radioCustodyDue(ms,selected){
+ if(!ms)return 0;
+ const duty=radioCustodyDuty(ms,selected);
+ return shiftBounds(duty.day,duty.shift).endMs;
+}
+function radioPreselectShift(ms=Date.now()){
+ const part=new Intl.DateTimeFormat('en-GB',{timeZone:VN,hour:'2-digit',minute:'2-digit',hourCycle:'h23'})
+  .formatToParts(new Date(ms));
+ const hm=Object.fromEntries(part.map(p=>[p.type,p.value]));
+ const minute=Number(hm.hour)*60+Number(hm.minute);
+ // The handover period is intentionally not a hard cutoff: user selects.
+ return minute>=16*60&&minute<=19*60?'':radioShiftAt(ms).shift;
+}
 function heldBy(uid){return devices.filter(d=>d.status==='OUT'&&d.holderUid===uid)}
 // Visibility is intentionally separate from Firestore custody authorization.
 // READY, CHARGING and FAULT with no holder remain available, but LOST never does.
@@ -844,7 +870,10 @@ function showSigningForm(action,d,u){
  const code=d.code;
  resetCamera();mode=action;choice=d;nativeDraft=null;signingUid=u.uid;clearSignature();
  $('radioActionCode').value=label(code);$('radioPerson').value=u.name+' · '+u.uid.slice(0,8);
- $('radioShift').value=shift();$('radioReason').value='BATTERY_EMPTY';$('radioReason').querySelector('option[value=LOST]').disabled=action==='SWAP_OUT';$('radioReturnReason').value='END_SHIFT';$('radioDetail').value='';
+ $('radioShift').value=action==='ISSUE'?radioPreselectShift():['AM','PM'].includes(S(d.shift))?S(d.shift):shift();
+ $('radioShift').disabled=action!=='ISSUE';
+ $('radioShiftHint').textContent=action==='ISSUE'?'Chọn ca thực sự sử dụng máy. Nhận trước giờ vào ca vẫn thuộc ca đã chọn; giờ ký ghi từ Firebase.':'Ca của lượt nhận ban đầu được giữ nguyên khi trả hoặc đổi máy.';
+ $('radioReason').value='BATTERY_EMPTY';$('radioReason').querySelector('option[value=LOST]').disabled=action==='SWAP_OUT';$('radioReturnReason').value='END_SHIFT';$('radioDetail').value='';
  $('radioActionTitle').textContent=(action==='RELEASE'?'AD xác nhận đã xử lý thông tin lỗi':ACTS[action]||'Báo cáo')+' · '+label(code);
  $('radioDetail').placeholder=action==='RELEASE'?
   'Ghi kết quả kiểm tra: pin, sóng phát/thu, loa, mic/PTT; máy thất lạc phải xác nhận thu hồi.':
@@ -883,14 +912,14 @@ function reconcileRoster(items,users,machines,history,day,which,now=Date.now()){
   const names=S(x.user||x.targetUser).split(/[\/;,]+/).map(rosterLogin).filter(Boolean),sh=rosterDutyShift(x);
   for(const n of names){if(sh===which)roster.add(n);else if(!sh)undated.add(n)}
  }
- for(const x of history){const ms=x.at?.toMillis?.();if(ms>=start&&ms<end&&['ISSUE','SWAP_IN'].includes(x.action))issued.add(S(x.personUid));}
+ for(const x of history){const ms=x.at?.toMillis?.();if(['ISSUE','SWAP_IN'].includes(x.action)&&radioCustodyDuty(ms,x.shift).key===day+'/'+which)issued.add(S(x.personUid));}
  const result={total:roster.size,missing:[],unreturned:[],holding:[],completed:[],unmapped:[],upcoming:[],undated:[...undated].filter(x=>!roster.has(x))};
  for(const name of roster){
   const uid=users.get(name),held=uid?machines.filter(d=>d.status==='OUT'&&d.holderUid===uid):[];
   if(!uid)result.unmapped.push(name);
   else if(held.length){
    const summary=name+' · '+held.map(d=>label(d.code)).join(', ');
-   if(now>=end&&held.some(d=>radioHeldSince(d)?.toMillis?.()&&radioShiftAt(radioHeldSince(d).toMillis()).key===day+'/'+which))result.unreturned.push(summary);else result.holding.push(summary);
+   if(now>=end&&held.some(d=>radioHeldSince(d)?.toMillis?.()&&radioCustodyDuty(radioHeldSince(d).toMillis(),d.shift).key===day+'/'+which))result.unreturned.push(summary);else result.holding.push(summary);
   }else if(issued.has(uid))result.completed.push(name);
   else if(now<start)result.upcoming.push(name);
   else result.missing.push(name);
@@ -1215,7 +1244,7 @@ function radioRangeDailyMatrix(rows){
   for(const shift of ['AM','PM'])byShift.set(day+'/'+shift,{day,shift,issue:0,returned:0,swap:0,fault:0});
  for(const e of rows){
   const at=e.at?.toMillis?.()||0;if(!at)continue;
-  const {day,shift,key}=radioShiftAt(at),v=byShift.get(key);
+  const {day,shift,key}=radioCustodyDuty(at,e.shift),v=byShift.get(key);
   if(!v)continue;
   if(e.action==='ISSUE')v.issue++;
   if(e.action==='RETURN')v.returned++;
@@ -1241,7 +1270,7 @@ function radioReconcileCustody(rows,cutoffMs){
   if(action==='ISSUE'||action==='SWAP_IN'){
    const previous=openByDevice.get(code);
    if(previous)handoverGaps.push(previous);
-   const duty=radioShiftAt(time),due=shiftBounds(duty.day,duty.shift).endMs;
+   const duty=radioCustodyDuty(time,e.shift),due=radioCustodyDue(time,e.shift);
    openByDevice.set(code,{id:e.id||'',deviceCode:code,personUid:S(e.personUid||e.actorUid),
     personName:S(e.personName||e.actorName||e.personUid||e.actorUid)||'Chưa rõ người nhận',
     receivedAtMs:time,dueMs:due,shiftDay:duty.day,shift:duty.shift,action});
@@ -1270,7 +1299,7 @@ function radioDelayText(ms){const minutes=Math.max(0,Math.floor(ms/60000));retur
 function radioLiveCustody(list,nowMs=Date.now()){
  return list.filter(d=>d.status==='OUT').map(d=>{
   const heldAtMs=radioHeldSince(d)?.toMillis?.()||0;
-  const dueMs=heldAtMs?(()=>{const duty=radioShiftAt(heldAtMs);return shiftBounds(duty.day,duty.shift).endMs})():0;
+  const dueMs=heldAtMs?(()=>{return radioCustodyDue(heldAtMs,d.shift)})():0;
   return {deviceCode:S(d.code),personName:S(d.holderName||d.holderUid||'Chưa rõ người giữ'),
    personUid:S(d.holderUid),receivedAtMs:heldAtMs,dueMs,overdue:!!dueMs&&nowMs>=dueMs};
  }).sort((a,b)=>Number(b.overdue)-Number(a.overdue)||a.receivedAtMs-b.receivedAtMs);
@@ -1291,10 +1320,10 @@ function radioStaffStatistics(rows,cutoffMs){
  for(const e of sorted){
   const code=S(e.deviceCode),action=S(e.action),at=e.at.toMillis();
   if(action==='ISSUE'||action==='SWAP_IN'){
-   const staff=member(e),duty=radioShiftAt(at);
+   const staff=member(e);
    staff.received++;if(action==='SWAP_IN')staff.swappedIn++;
    if(open.has(code)){duplicateReceipts++;continue}
-   open.set(code,{staff,at,dueMs:shiftBounds(duty.day,duty.shift).endMs});
+   open.set(code,{staff,at,dueMs:radioCustodyDue(at,e.shift)});
   }else if(action==='RETURN'||action==='SWAP_OUT'){
    const prev=open.get(code);
    if(!prev){unmatchedReturns++;continue}
@@ -1431,8 +1460,10 @@ function assertSingleHolder(inventory,uid,exclude=''){
 }
 async function submit(){
  if(busy||!choice)return;const user=currentUser();if(!user.uid)return notify('Phiên đăng nhập đã hết hạn.',true);
- const code=choice.code,reason=$('radioReason').value,rawDetail=S($('radioDetail').value),returnReason=$('radioReturnReason').value,shiftVal=nativeDraft?.shift||shift();
- $('radioShift').value=shiftVal; // the authoritative shift is assigned at signing, not manually selected
+ const code=choice.code,reason=$('radioReason').value,rawDetail=S($('radioDetail').value),returnReason=$('radioReturnReason').value,
+  shiftVal=mode==='ISSUE'?S($('radioShift').value):['AM','PM'].includes(S(choice.shift))?S(choice.shift):shift();
+ if(!['AM','PM'].includes(shiftVal))return notify('Vui lòng chọn CA SÁNG hoặc CA TỐI trước khi ký nhận máy.',true);
+ $('radioShift').value=shiftVal; // custody duty explicitly selected on ISSUE, inherited from device on RETURN/SWAP_OUT
  if(mode==='RETURN'&&returnReason==='OTHER'&&rawDetail.length<10)return notify('Lý do trả khác cần mô tả ít nhất 10 ký tự.',true);
  const details=mode==='RETURN'?('Lý do trả: '+(RETURN_REASONS[returnReason]||RETURN_REASONS.END_SHIFT)+(rawDetail?' · '+rawDetail:'')):rawDetail;
  if(mode==='SWAP_OUT'&&reason==='LOST')return notify('Máy thất lạc cần được báo riêng, không thể đổi máy đang báo mất.',true);
