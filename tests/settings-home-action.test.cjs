@@ -4,7 +4,7 @@ const start=source.indexOf('function legacyButton('),end=source.indexOf('functio
 let opened=0,themes=0,legacy=0;
 const root={sagsOpenSettings:()=>opened++,sagsSetUiTheme:()=>themes++};
 let button={disabled:false,click(){legacy++;root.sagsOpenSettings()}};
-const context={root,console,$:()=>({click(){themes++}}),document:{querySelector:()=>button},sync(){},scheduleSync(){},setTimeout(){}};
+const context={root,console,role:()=> 'AD',$:()=>({click(){themes++}}),document:{querySelector:()=>button},sync(){},scheduleSync(){},setTimeout(){}};
 vm.createContext(context);vm.runInContext(source.slice(start,end),context);
 assert(context.available('settings'));
 context.trigger('settings');assert.equal(opened,1);assert.equal(legacy,0);assert.equal(themes,0);
