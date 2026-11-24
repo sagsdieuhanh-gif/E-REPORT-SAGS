@@ -971,7 +971,7 @@ async function refreshRosterAudit(){
  if(rosterBusy){queueRosterAudit(1700);return}
  const day=rosterDate,gen=rosterGen;rosterBusy=true;rosterReady=false;renderRosterAlert();
  try{
-  const {start,end}=shiftBounds(day,S($('radioRosterShift').value));
+  const {start,end}=radioReportFetchBounds(day,S($('radioRosterShift').value));
   const [u,e]=await Promise.all([
    fs().collection('users').get({source:'server'}),
    fs().collection(EVENTS).where('at','>=',start).where('at','<',end).orderBy('at','asc').limit(REPORT_LIMIT).get({source:'server'})
@@ -979,7 +979,8 @@ async function refreshRosterAudit(){
   if(gen!==rosterGen||!isAdmin(currentUser()))return;
   if(e.docs.length>=REPORT_LIMIT)throw Error('Trên 300 sự kiện: không đối chiếu với dữ liệu thiếu.');
   rosterAccounts=new Map(u.docs.filter(d=>d.data().active!==false).map(d=>[rosterLogin(d.data().username),d.id]));
-  rosterAudit=e.docs.map(d=>d.data());rosterReady=true;
+  const selectedShift=S($('radioRosterShift').value);
+  rosterAudit=e.docs.map(d=>d.data()).filter(x=>radioReportEventDuty(x).key===day+'/'+selectedShift);rosterReady=true;
  }catch(e){if(gen!==rosterGen)return;rosterReady=false;notify('Không đối chiếu được roster: '+errText(e),true)}
  finally{if(gen===rosterGen){rosterBusy=false;renderRosterAlert()}}
 }
@@ -992,7 +993,7 @@ function renderAdminOverview(){
  if(!admin){target.replaceChildren();return}
  const now=Date.now(),holds=devices.filter(d=>d.status==='OUT'),
   needs=devices.filter(hasRadioWarning),
-  overdue=holds.filter(d=>radioHeldSince(d)?.toMillis?.()&&radioShiftAt(radioHeldSince(d).toMillis()).key!==radioShiftAt(now).key);
+  overdue=holds.filter(d=>{const at=radioHeldSince(d)?.toMillis?.()||0;return !!at&&now>=radioCustodyDue(at,d.shift)});
  const hour=d=>radioHeldSince(d)?.toDate?.()?fmt(radioHeldSince(d).toDate()):'Đang đồng bộ';
  const holdItems=holds.length?holds.map(d=>{
   const late=overdue.includes(d);
@@ -1096,6 +1097,18 @@ function applyRadioRangePreset(preset){
  $('radioRangeTo').value=today;
  $('radioRangeFrom').value=preset==='month'?today.slice(0,8)+'01':radioDayAdd(today,preset==='30'?-29:-6);
 }
+// Query a broad civil-date window; then classify every receipt by the explicitly
+// confirmed duty rather than discarding night-duty receipts signed before 19:01.
+// Keep shiftBounds() unchanged: 08:30/19:01 remain the official duty boundaries.
+function radioReportFetchBounds(day,which){
+ const start=new Date(day+'T00:00:00+07:00');
+ const end=new Date(radioDayAdd(day,1)+'T'+(which==='PM'?'08:30:00':'00:00:00')+'+07:00');
+ return {start,end,startMs:start.getTime(),endMs:end.getTime()};
+}
+function radioReportEventDuty(e){
+ const at=e?.at?.toMillis?.()||0;
+ return at?radioCustodyDuty(at,e.shift):{key:''};
+}
 function reportScope(){
  return reportMode==='RANGE'
   ?reportFrom+' – '+reportTo+' · cả ca sáng/tối (giờ VN)'
@@ -1116,15 +1129,16 @@ async function loadShiftReport(){
  const token=++reportToken;reportLoading=true;reportReady=false;reportVerified=false;reportEvents=[];
  $('radioReportLoad').disabled=true;$('radioReportState').textContent='Đang lấy dữ liệu ngày '+day+' từ Firebase. Không sử dụng dữ liệu cache…';
  try{
-  const {start,end}=shiftBounds(day,shift),db=fs();
+  const {start,end}=radioReportFetchBounds(day,shift),db=fs();
   const rows=await db.collection(EVENTS).where('at','>=',start).where('at','<',end).orderBy('at','asc').limit(REPORT_LIMIT).get({source:'server'});
   if(token!==reportToken||!canMonitor(currentUser()))return;
   if(rows.docs.length>=REPORT_LIMIT)throw Error('Ca có trên 300 sự kiện. Không xuất báo cáo thiếu dữ liệu; cần chia nhỏ hoặc xuất từ máy chủ.');
-  reportEvents=rows.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.at?.toMillis?.()||0)-(a.at?.toMillis?.()||0));
+  reportEvents=rows.docs.map(d=>({id:d.id,...d.data()})).filter(e=>radioReportEventDuty(e).key===day+'/'+shift)
+   .sort((a,b)=>(b.at?.toMillis?.()||0)-(a.at?.toMillis?.()||0));
   reportDate=day;reportShift=shift;reportMode='SHIFT';reportFrom='';reportTo='';reportAsOfMs=Date.now();reportReady=true;reportVerified=true;
   $('radioHistoryDevice').value='';$('radioHistoryAction').value='';$('radioHistorySearch').value='';
-  const count=reportEvents.length; // server-confirmed actual time, including legacy records labelled with the wrong shift
-  $('radioReportState').textContent='✓ '+reportScope()+': '+count+' sự kiện đã kiểm tra trực tuyến trong đúng khoảng giờ ca.';
+  const count=reportEvents.length; // server-verified timestamp + explicitly confirmed duty
+  $('radioReportState').textContent='✓ '+reportScope()+': '+count+' sự kiện thuộc ca đã đăng ký (bao gồm nhận máy sớm).';
   notify('Đã tải đủ '+count+' sự kiện của '+reportScope()+'. Chọn kèm ảnh (AD) nếu cần đối chiếu.',false);
  }catch(e){
   if(token!==reportToken)return;
@@ -1194,7 +1208,10 @@ function filteredHistory(){
  const date=d=>new Intl.DateTimeFormat('en-CA',{timeZone:VN,year:'numeric',month:'2-digit',day:'2-digit'}).format(d);
  return (reportReady?reportEvents:events).filter(e=>{
   const at=e.at?.toMillis?.()||0;
-  if(reportReady){const {startMs,endMs}=reportMode==='RANGE'?radioRangeBounds(reportFrom,reportTo):shiftBounds(reportDate,reportShift);if(!at||at<startMs||at>=endMs)return false;}
+  if(reportReady){
+   if(reportMode==='RANGE'){const {startMs,endMs}=radioRangeBounds(reportFrom,reportTo);if(!at||at<startMs||at>=endMs)return false}
+   else if(!at||radioReportEventDuty(e).key!==reportDate+'/'+reportShift)return false;
+  }
   if(!reportReady&&dateFilter==='today'&&(!at||date(new Date(at))!==date(new Date(now))))return false;
   if(!reportReady&&dateFilter==='week'&&(!at||at<now-7*86400000))return false;
   if(device&&e.deviceCode!==device)return false;
