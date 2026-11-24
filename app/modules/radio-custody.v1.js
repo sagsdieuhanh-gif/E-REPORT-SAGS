@@ -1069,7 +1069,7 @@ function render(){
    const nowMs=Date.now(),heldAtMs=radioHeldSince(d)?.toMillis?.()||0;
    const {dueMs=0}=liveHolds.find(x=>x.deviceCode===d.code)||{};
    const overText=active&&heldAtMs?(dueMs&&nowMs>=dueMs?' · <strong class="radioOverdue">QUÁ CA '+esc(radioDelayText(nowMs-dueMs))+'</strong>':' · Đang trong ca')+( ' · Nhận: '+esc(fmt(new Date(heldAtMs)))):'';
-   const status=(d.status==='OUT'?'Đang giữ: '+esc(d.holderName||d.holderUid?.slice(0,8)||'—')+overText:'')+
+   const status=(d.status==='OUT'?'Đang giữ: '+esc(d.holderName||d.holderUid?.slice(0,8)||'—')+(d.shift==='PM'?' · Ca tối':d.shift==='AM'?' · Ca sáng':' · Chưa xác nhận ca')+overText:'')+
     (d.faultCode?' · Lỗi ghi nhận: '+esc(REASON_TEXT[d.faultCode]||d.faultCode):'')+
     (d.faultDetail?' · '+esc(d.faultDetail):'');
    return '<article class="radioDevice'+(mine?' radioDeviceMine':'')+'"><div><strong>'+
@@ -1237,7 +1237,7 @@ function renderHistory(){
  rows.slice(0,160).map(e=>{
   const kind=['REPORT','SWAP_OUT'].includes(e.action)?'warning':['ISSUE','SWAP_IN'].includes(e.action)?'issued':e.action==='RETURN'?'returned':'neutral';
   const note=[e.beforeStatus&&e.afterStatus?(STATUSES[e.beforeStatus]||e.beforeStatus)+' → '+(STATUSES[e.afterStatus]||e.afterStatus):'',REASON_TEXT[e.reasonCode]||'',e.details||''].filter(Boolean).join(' · ');
-  return '<article class="radioAuditRow"><div><small>THỜI GIAN</small><b>'+esc(e.at?.toDate?.()?fmt(e.at.toDate()):'Đang đồng bộ')+'</b></div><div><small>THIẾT BỊ</small><strong>'+esc(label(e.deviceCode))+'</strong><span class="radioActionBadge radioActionBadge-'+kind+'">'+esc(ACTS[e.action]||e.action)+'</span></div><div><small>NGƯỜI KÝ</small><b>'+esc(e.actorName||e.actorUid||'—')+'</b><span class="radioDetailText">'+esc(e.shift||'—')+'</span></div><div><small>TRẠNG THÁI / GHI CHÚ</small><span class="radioDetailText">'+esc(note||'Không có ghi chú')+'</span></div><div><small>BẰNG CHỨNG</small>'+((e.signature||e.hasSignature)?'<button type="button" class="radioViewProof" data-radio-proof="'+esc(e.id)+'">📷 Xem ảnh / chữ ký</button>':'<span class="radioDetailText">Không có ảnh</span>')+'</div></article>';
+  return '<article class="radioAuditRow"><div><small>THỜI GIAN</small><b>'+esc(e.at?.toDate?.()?fmt(e.at.toDate()):'Đang đồng bộ')+'</b></div><div><small>THIẾT BỊ</small><strong>'+esc(label(e.deviceCode))+'</strong><span class="radioActionBadge radioActionBadge-'+kind+'">'+esc(ACTS[e.action]||e.action)+'</span></div><div><small>NGƯỜI KÝ</small><b>'+esc(e.actorName||e.actorUid||'—')+'</b><span class="radioDetailText">'+esc(e.shift==='PM'?'Ca tối':e.shift==='AM'?'Ca sáng':'Chưa rõ ca')+'</span></div><div><small>TRẠNG THÁI / GHI CHÚ</small><span class="radioDetailText">'+esc(note||'Không có ghi chú')+'</span></div><div><small>BẰNG CHỨNG</small>'+((e.signature||e.hasSignature)?'<button type="button" class="radioViewProof" data-radio-proof="'+esc(e.id)+'">📷 Xem ảnh / chữ ký</button>':'<span class="radioDetailText">Không có ảnh</span>')+'</div></article>';
  }).join('')+'</div>';
 }
 function radioShiftDeviceMatrix(rows){
@@ -1749,7 +1749,7 @@ function pdfPage(rows,index,total,scope,withPhotos=false,totals=null){
  rows.forEach((e,i)=>{
   x.fillStyle=i%2?'#fff':'#eef5f8';x.fillRect(46,y,1100,66);
   x.strokeStyle='#d5e4e9';x.beginPath();x.moveTo(46,y+66);x.lineTo(1146,y+66);x.stroke();
-  const values=[e.at?.toDate?.()?fmt(e.at.toDate()):'Chưa đồng bộ',label(e.deviceCode),ACTS[e.action]||e.action,e.actorName||e.actorUid||'',(STATUSES[e.beforeStatus]||'')+' → '+(STATUSES[e.afterStatus]||''),[REASON_TEXT[e.reasonCode]||'',e.details||'',e.signature?'Có ảnh/chữ ký':''].filter(Boolean).join(' · ')];
+  const values=[e.at?.toDate?.()?fmt(e.at.toDate()):'Chưa đồng bộ',label(e.deviceCode),(ACTS[e.action]||e.action)+' · '+(e.shift==='PM'?'Ca tối':e.shift==='AM'?'Ca sáng':'Chưa rõ ca'),e.actorName||e.actorUid||'',(STATUSES[e.beforeStatus]||'')+' → '+(STATUSES[e.afterStatus]||''),[REASON_TEXT[e.reasonCode]||'',e.details||'',e.signature?'Có ảnh/chữ ký':''].filter(Boolean).join(' · ')];
   let left=46;x.fillStyle='#17394b';x.font='17px Arial';
   values.forEach((v,j)=>{pdfWrap(x,v,widths[j]-18).forEach((line,k)=>x.fillText(line,left+8,y+26+22*k));left+=widths[j]});y+=66;
  });
