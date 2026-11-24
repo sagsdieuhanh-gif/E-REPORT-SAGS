@@ -52,6 +52,7 @@ if(!isAdmin())return alert('Chỉ AD được tạo tài khoản.');
 let sec=null,cred=null,createdNew=false,recoveredOrphan=false,profileWritten=false,initialPassword='';
 try{
 const ctx=await adminContext(),d=createInput();
+if(d.roleCode==='RADIO_MANAGER')return status('Quản lý bộ đàm chưa kích hoạt: cần xác nhận Firestore và RTDB Rules production.',true);
 if(!d.employeeCode||!d.name||!d.username||!d.departmentCode||!d.groupCode||!d.roleCode||!d.jobTitle||!d.unit)return status('Cần nhập/chọn đủ thông tin tài khoản.',true);
 if(new Set(['AD','ĐH','DH','CBTT','PVHK','LNF','LOSTFOUND','KH','VIEWER','PĐH','ADMIN','RADIO_MANAGER']).has(d.username))return status('Không dùng tên tài khoản '+d.username+' vì trùng mã hệ thống.',true);
 const email=loginEmail({username:d.username});if(!email)throw Error('Không tạo được email Firebase từ username '+d.username+'.');
