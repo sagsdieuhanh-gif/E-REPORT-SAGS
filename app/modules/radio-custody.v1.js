@@ -898,13 +898,13 @@ function stopRosterWatch(){
  rosterRef=null;rosterCb=null;rosterDate='';rosterReady=false;rosterBusy=false;
 }
 function queueRosterAudit(ms=1000){
- if(!rosterDate||!canMonitor(currentUser()))return;
+ if(!rosterDate||!isAdmin(currentUser()))return;
  if(rosterTimer)clearTimeout(rosterTimer);
  rosterTimer=setTimeout(()=>{rosterTimer=null;void refreshRosterAudit()},ms);
 }
 function watchRoster(){
  stopRosterWatch();
- if(!canMonitor(currentUser())||$('sagsRadioPanel')?.hidden)return;
+ if(!isAdmin(currentUser())||$('sagsRadioPanel')?.hidden)return;
  const day=S($('radioRosterDate')?.value);
  if(!/^\d{4}-\d\d-\d\d$/.test(day)||!['AM','PM'].includes(S($('radioRosterShift')?.value))||typeof root.sagsV470Ref!=='function')return renderRosterAlert();
  try{
@@ -919,7 +919,7 @@ function watchRoster(){
  }catch(_){rosterReady=false;renderRosterAlert()}
 }
 async function refreshRosterAudit(){
- if(!canMonitor(currentUser())||!rosterDate||!connected||!navigator.onLine)return renderRosterAlert();
+ if(!isAdmin(currentUser())||!rosterDate||!connected||!navigator.onLine)return renderRosterAlert();
  if(rosterBusy){queueRosterAudit(1700);return}
  const day=rosterDate,gen=rosterGen;rosterBusy=true;rosterReady=false;renderRosterAlert();
  try{
@@ -928,7 +928,7 @@ async function refreshRosterAudit(){
    fs().collection('users').get({source:'server'}),
    fs().collection(EVENTS).where('at','>=',start).where('at','<',end).orderBy('at','asc').limit(REPORT_LIMIT).get({source:'server'})
   ]);
-  if(gen!==rosterGen||!canMonitor(currentUser()))return;
+  if(gen!==rosterGen||!isAdmin(currentUser()))return;
   if(e.docs.length>=REPORT_LIMIT)throw Error('Trên 300 sự kiện: không đối chiếu với dữ liệu thiếu.');
   rosterAccounts=new Map(u.docs.filter(d=>d.data().active!==false).map(d=>[rosterLogin(d.data().username),d.id]));
   rosterAudit=e.docs.map(d=>d.data());rosterReady=true;
@@ -939,6 +939,8 @@ function renderAdminOverview(){
  const panel=$('radioAdminOverview'),target=$('radioAdminDashboard');
  if(!panel||!target)return;
  const admin=canMonitor(currentUser());panel.hidden=!admin;
+ const roster=panel.querySelector('.radioRosterMonitor');
+ if(roster){roster.hidden=!isAdmin(currentUser());roster.style.display=isAdmin(currentUser())?'':'none';}
  if(!admin){target.replaceChildren();return}
  const now=Date.now(),holds=devices.filter(d=>d.status==='OUT'),
   needs=devices.filter(hasRadioWarning),
