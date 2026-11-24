@@ -1230,6 +1230,7 @@ function radioReportCutoffMs(){
  const endMs=reportMode==='RANGE'?radioRangeBounds(reportFrom,reportTo).endMs:shiftBounds(reportDate,reportShift).endMs;
  return Math.min(endMs,reportAsOfMs||Date.now());
 }
+function radioDelayText(ms){const minutes=Math.max(0,Math.floor(ms/60000));return minutes>=60?Math.floor(minutes/60)+' giờ '+String(minutes%60).padStart(2,'0')+' phút':minutes+' phút'}
 function radioLiveCustody(list,nowMs=Date.now()){
  return list.filter(d=>d.status==='OUT').map(d=>{
   const heldAtMs=radioHeldSince(d)?.toMillis?.()||0;
@@ -1258,14 +1259,14 @@ function radioOutstandingSummaryHtml(rows){
    'Không còn lượt nhận nào chưa được ghi trả tại mốc chốt của phạm vi đã tải.',
    x=>'<tr class="'+(x.overdue?'radioOutstandingAlert':'')+'"><td>'+esc(x.personName)+'</td><td>'+esc(label(x.deviceCode))+
     '</td><td>'+esc(when(x.receivedAtMs))+'</td><td>'+esc(when(x.dueMs))+'</td><td>'+
-    (x.overdue?'CẦN KIỂM TRA · quá ca':'Đang trong ca')+'</td></tr>')+
+    (x.overdue?'CẦN KIỂM TRA · quá '+radioDelayText(cutoffMs-x.dueMs):'Đang trong ca')+'</td></tr>')+
   '<p class="radioHint">Chỉ đối chiếu lượt nhận phát sinh trong phạm vi đã chọn. Người nhận trước ngày bắt đầu không được tự suy đoán; một lượt trả sau mốc chốt có thể xuất hiện trong báo cáo kỳ tiếp theo.</p>'+
   '<h4>2 · Người đang giữ máy theo trạng thái Firebase mới nhất</h4>'+
   table(['Người giữ','Máy','Giữ từ','Tình trạng'],live,
    'Hiện chưa có máy nào ở trạng thái đang sử dụng.',
    x=>'<tr class="'+(x.overdue?'radioOutstandingAlert':'')+'"><td>'+esc(x.personName)+'</td><td>'+
     esc(label(x.deviceCode))+'</td><td>'+esc(when(x.receivedAtMs))+'</td><td>'+
-    (x.overdue?'QUÁ CA':x.dueMs?'Đang trong ca':'Chưa đủ giờ để đối chiếu')+'</td></tr>')+
+    (x.overdue?'QUÁ CA '+radioDelayText(Date.now()-x.dueMs):x.dueMs?'Đang trong ca':'Chưa đủ giờ để đối chiếu')+'</td></tr>')+
   '<p class="radioHint">Đây là trạng thái hiện tại, độc lập với mốc chốt báo cáo lịch sử; có thể thay đổi khi nhân viên ký trả.</p>'+
   '<h4>3 · Lượt trả muộn đã ghi nhận trong kỳ</h4>'+
   table(['Người nhận','Máy','Đến hạn','Đã trả'],result.late.slice(0,25),
@@ -1653,8 +1654,8 @@ function radioPdfOverviewPages(rows,scope,inventory,cutoffMs,detailPages=0,photo
   x.fillText(item.personName||'Chưa rõ người nhận',57,y+28,310);
   x.font='18px Arial';x.fillText(label(item.deviceCode),390,y+28,135);
   x.fillText(item.receivedAtMs?fmt(new Date(item.receivedAtMs)):'Chưa xác minh',540,y+28,240);
-  const status=kind==='late'?'Đã trả '+fmt(new Date(item.returnedAtMs)):
-   item.overdue?'QUÁ CA · CẦN ĐỐI SOÁT':item.dueMs?'Chưa hết ca':'Chưa rõ hạn';
+  const status=kind==='late'?'Đã trả muộn '+radioDelayText(item.returnedAtMs-item.dueMs):
+   item.overdue?'QUÁ CA '+radioDelayText((kind==='live'?Date.now():cutoffMs)-item.dueMs):item.dueMs?'Chưa hết ca':'Chưa rõ hạn';
   x.fillStyle=alert?'#a12724':'#315365';x.font=alert?'bold 17px Arial':'17px Arial';
   x.fillText(status,795,y+28,340);
  };
@@ -1694,6 +1695,7 @@ function radioPdfOverviewPages(rows,scope,inventory,cutoffMs,detailPages=0,photo
  x.fillText('Chưa trả = lượt nhận trong kỳ chưa thấy RETURN / SWAP_OUT trước mốc chốt; không mặc định là mất máy.',47,1497,1095);
  x.fillText('Trạng thái đang giữ lấy từ danh mục Firebase mới nhất, không phải ảnh chụp lịch sử.',47,1528,1095);
  x.fillText('Các lượt nhận trước kỳ không được suy đoán; trả sau mốc chốt thuộc kỳ sau.',47,1558,1095);
+ if(audit.orphanReturns.length){x.fillText('Lượt trả có lượt nhận trước kỳ hoặc thiếu dữ liệu nhận: '+audit.orphanReturns.length,47,1584,1095)}
  if(audit.handoverGaps.length){
   x.fillStyle='#a12724';x.font='bold 17px Arial';
   x.fillText('CẦN KIỂM TRA: '+audit.handoverGaps.length+' chuỗi giao nhận chưa khớp dữ liệu.',47,1591,1095);
