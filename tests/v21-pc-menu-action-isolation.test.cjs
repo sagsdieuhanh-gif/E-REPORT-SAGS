@@ -15,7 +15,7 @@ const doc={getElementById:id=>all[id]||null,querySelector:q=>{
  return null},
  createElement(tag){const x={tag,style:{},classList:{remove(){}},remove(){}};if(tag==='script')script=x;return x},
  head:{appendChild(){}},body:{appendChild(){},classList:{remove(){}}}};
-const cx={document:doc,root,console,encodeURIComponent,sync(){},scheduleSync(){},observeStateTargets(){},setTimeout(f){pending.push(f)},$:id=>all[id]};
+const cx={document:doc,root,role:()=> 'AD',console,encodeURIComponent,sync(){},scheduleSync(){},observeStateTargets(){},setTimeout(f){pending.push(f)},$:id=>all[id]};
 vm.createContext(cx);
 vm.runInContext(source.slice(from,end),cx);
 assert.equal(cx.available('history'),true);
