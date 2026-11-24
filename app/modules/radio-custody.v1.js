@@ -1275,6 +1275,55 @@ function radioLiveCustody(list,nowMs=Date.now()){
    personUid:S(d.holderUid),receivedAtMs:heldAtMs,dueMs,overdue:!!dueMs&&nowMs>=dueMs};
  }).sort((a,b)=>Number(b.overdue)-Number(a.overdue)||a.receivedAtMs-b.receivedAtMs);
 }
+
+function radioStaffStatistics(rows,cutoffMs){
+ const sorted=[...rows].filter(e=>e?.at?.toMillis?.()&&S(e.deviceCode)&&e.at.toMillis()<=cutoffMs)
+  .sort((a,b)=>a.at.toMillis()-b.at.toMillis()||Number(a.deviceVersion||0)-Number(b.deviceVersion||0)||S(a.id).localeCompare(S(b.id)));
+ const byPerson=new Map(),open=new Map();let unmatchedReturns=0,duplicateReceipts=0;
+ const member=e=>{
+  const uid=S(e.personUid||e.actorUid),name=S(e.personName||e.actorName)||uid||'Chưa xác định';
+  const key=uid||'name:'+name.toLocaleLowerCase('vi-VN');
+  if(!byPerson.has(key))byPerson.set(key,{uid,name,received:0,returnedOnTime:0,returnedLate:0,unreturned:0,overdue:0,swappedIn:0});
+  const m=byPerson.get(key);
+  if(name&&m.name==='Chưa xác định')m.name=name;
+  return m;
+ };
+ for(const e of sorted){
+  const code=S(e.deviceCode),action=S(e.action),at=e.at.toMillis();
+  if(action==='ISSUE'||action==='SWAP_IN'){
+   const staff=member(e),duty=radioShiftAt(at);
+   staff.received++;if(action==='SWAP_IN')staff.swappedIn++;
+   if(open.has(code)){duplicateReceipts++;continue}
+   open.set(code,{staff,at,dueMs:shiftBounds(duty.day,duty.shift).endMs});
+  }else if(action==='RETURN'||action==='SWAP_OUT'){
+   const prev=open.get(code);
+   if(!prev){unmatchedReturns++;continue}
+   if(at<prev.dueMs)prev.staff.returnedOnTime++;
+   else prev.staff.returnedLate++;
+   open.delete(code);
+  }
+ }
+ for(const o of open.values()){
+  o.staff.unreturned++;
+  if(cutoffMs>=o.dueMs)o.staff.overdue++;
+ }
+ return {staff:[...byPerson.values()].sort((a,b)=>b.overdue-a.overdue||b.unreturned-a.unreturned||
+  b.returnedLate-a.returnedLate||b.received-a.received||a.name.localeCompare(b.name,'vi')),
+  unmatchedReturns,duplicateReceipts};
+}
+function radioStaffStatisticsHtml(rows){
+ const {staff,unmatchedReturns,duplicateReceipts}=radioStaffStatistics(rows,radioReportCutoffMs());
+ const out=staff.length?'<div class="radioAdminMatrixScroll"><table><thead><tr>'+
+  ['Nhân viên','Lượt nhận','Trả đúng ca','Trả muộn','Chưa trả tại mốc chốt','Quá ca'].map(x=>'<th>'+x+'</th>').join('')+
+  '</tr></thead><tbody>'+staff.map(x=>'<tr'+(x.overdue?' class="radioOutstandingAlert"':'')+'><td>'+esc(x.name)+'</td>'+
+   [x.received,x.returnedOnTime,x.returnedLate,x.unreturned,x.overdue].map(n=>'<td>'+n+'</td>').join('')+'</tr>').join('')+
+  '</tbody></table></div>':'<p class="radioHint">Không phát sinh lượt nhận trong phạm vi đã tải.</p>';
+ return '<section class="radioStaffReport"><h4>👥 Thống kê theo nhân viên · '+staff.length+' người</h4>'+out+
+  '<p class="radioHint">Lượt nhận tính cả nhận sau đổi máy; trả đúng/muộn được ghép theo mã máy và tính cho người đã nhận, kể cả AD ký trả hộ. Chưa trả chỉ tính các lượt nhận trong kỳ. Không suy đoán người nhận từ kỳ trước.</p>'+
+  ((unmatchedReturns||duplicateReceipts)?'<p class="radioOutstandingWarn">Cần đối soát thêm: '+unmatchedReturns+
+   ' lượt trả không có lượt nhận trong kỳ, '+duplicateReceipts+' lượt nhận trùng máy.</p>':'')+'</section>';
+}
+
 function radioOutstandingSummaryHtml(rows){
  const cutoffMs=radioReportCutoffMs(),result=radioReconcileCustody(rows,cutoffMs);
  const live=radioLiveCustody(devices),table=(headers,items,empty,render)=>{
@@ -1324,7 +1373,7 @@ function renderSummary(){
    swaps=rows.filter(x=>x.action==='SWAP_OUT').length,errors=rows.filter(x=>x.action==='REPORT').length;
   $('radioSummary').innerHTML='<h4>Đối soát '+esc(reportScope())+'</h4><div class="radioReportGrid">'+
    [['Nhận máy',n],['Trả máy',r],['Đổi máy',swaps],['Báo lỗi',errors]].map(x=>'<div><strong>'+x[1]+'</strong><small>'+x[0]+'</small></div>').join('')+
-   '</div>'+radioOutstandingSummaryHtml(rows)+(reportMode==='RANGE'?radioRangeDailyMatrix(rows):'')+radioShiftDeviceMatrix(rows,reportMode==='RANGE')+'<p class="radioHint">Tổng '+rows.length+' sự kiện theo bộ lọc. Số lượt không phải số máy hiện còn giữ; trạng thái hiện tại không dùng để suy ra lịch sử ca trước.</p>';
+   '</div>'+radioOutstandingSummaryHtml(rows)+radioStaffStatisticsHtml(rows)+(reportMode==='RANGE'?radioRangeDailyMatrix(rows):'')+radioShiftDeviceMatrix(rows,reportMode==='RANGE')+'<p class="radioHint">Tổng '+rows.length+' sự kiện theo bộ lọc. Số lượt không phải số máy hiện còn giữ; trạng thái hiện tại không dùng để suy ra lịch sử ca trước.</p>';
   return;
  }
  const n=events.filter(x=>['SWAP_OUT'].includes(x.action)).length,issues=events.filter(x=>['REPORT','SWAP_OUT'].includes(x.action)||(x.action==='RETURN'&&x.reasonCode==='BATTERY_WEAK')),pending=devices.filter(hasRadioWarning);
@@ -1656,6 +1705,39 @@ function pdfPage(rows,index,total,scope,withPhotos=false,totals=null){
  return cv;
 }
 
+
+function radioPdfStaffPageCount(rows,cutoffMs){return Math.ceil(radioStaffStatistics(rows,cutoffMs).staff.length/23)}
+function radioPdfStaffPages(rows,scope,cutoffMs,firstPage,totalPages){
+ const stats=radioStaffStatistics(rows,cutoffMs),pages=[];
+ for(let i=0;i<stats.staff.length;i+=23){
+  const cv=document.createElement('canvas');cv.width=1200;cv.height=1698;
+  const x=cv.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,1200,1698);
+  x.fillStyle='#0b354d';x.fillRect(0,0,1200,20);x.fillStyle='#00818d';x.fillRect(0,20,1200,5);
+  x.fillStyle='#0b354d';x.font='bold 27px Arial';x.fillText('SAGS  |  E-REPORT',47,75);
+  x.font='bold 34px Arial';x.fillText('THỐNG KÊ NHẬN / TRẢ THEO NHÂN VIÊN',47,139,1090);
+  x.fillStyle='#446173';x.font='19px Arial';
+  x.fillText('Phạm vi: '+scope,47,180,1090);
+  x.fillText('Mốc chốt lịch sử: '+fmt(new Date(cutoffMs)),47,209,1090);
+  const widths=[335,132,150,142,170,165],head=['NHÂN VIÊN','NHẬN','ĐÚNG CA','TRẢ MUỘN','CHƯA TRẢ','QUÁ CA'];
+  let y=250,left=46;x.fillStyle='#133e55';x.fillRect(46,y,1094,53);x.fillStyle='#fff';x.font='bold 18px Arial';
+  head.forEach((v,j)=>{x.fillText(v,left+8,y+34,widths[j]-15);left+=widths[j]});y+=53;
+  stats.staff.slice(i,i+23).forEach((r,j)=>{
+   x.fillStyle=r.overdue?'#fff0ec':j%2?'#fff':'#eef5f8';x.fillRect(46,y,1094,53);
+   x.fillStyle=r.overdue?'#a12724':'#17394b';x.font='bold 18px Arial';
+   let px=46;
+   [r.name,r.received,r.returnedOnTime,r.returnedLate,r.unreturned,r.overdue].forEach((value,k)=>{
+    x.fillText(String(value),px+8,y+33,widths[k]-15);px+=widths[k];
+   });y+=53;
+  });
+  x.fillStyle='#446173';x.font='17px Arial';
+  x.fillText('Nhận bao gồm SWAP_IN. Trả theo người nhận, kể cả AD ký trả hộ.',46,1575,1095);
+  x.fillText('Không ghép lượt trả với người nhận nằm ngoài kỳ báo cáo.',46,1605,1095);
+  x.textAlign='right';x.fillText('Trang '+(firstPage+pages.length)+'/'+totalPages,1150,1648);
+  pages.push(cv);
+ }
+ return pages;
+}
+
 function radioPdfOverviewPages(rows,scope,inventory,cutoffMs,detailPages=0,photoPages=0){
  const audit=radioReconcileCustody(rows,cutoffMs),live=radioLiveCustody(inventory);
  const sections=[
@@ -1882,8 +1964,10 @@ async function exportPhotoPdf(){
  notify('Đang tạo PDF có bảng tổng hợp và '+rows.length+' trang đối chiếu ảnh/chữ ký…');
  try{
   const scope=reportScope();
-  const summaryPages=Math.ceil(rows.length/19),overview=radioPdfOverviewPages(rows,scope,devices,radioReportCutoffMs(),summaryPages,rows.length),
-   allPages=overview.count+summaryPages+rows.length,stored=overview.pages.map(pdfStoredPage),totals=radioReportCounts(rows);
+  const summaryPages=Math.ceil(rows.length/19),cutoffMs=radioReportCutoffMs(),staffPages=radioPdfStaffPageCount(rows,cutoffMs),
+   overview=radioPdfOverviewPages(rows,scope,devices,cutoffMs,staffPages+summaryPages,rows.length),
+   allPages=overview.count+staffPages+summaryPages+rows.length,stored=overview.pages.map(pdfStoredPage),totals=radioReportCounts(rows);
+  for(const page of radioPdfStaffPages(rows,scope,cutoffMs,overview.count+1,allPages))stored.push(pdfStoredPage(page));
   const compactOnly=[];let originalCount=0,missingCount=0,supabaseCount=0,purgedCount=0;
   for(let i=0;i<rows.length;i+=19){
    stored.push(pdfStoredPage(pdfPage(rows.slice(i,i+19),stored.length+1,allPages,scope,true,totals)));
@@ -1900,7 +1984,7 @@ async function exportPhotoPdf(){
     if(!batch[j].signature)missingCount++;
     else if(full[j]===batch[j].signature){compactOnly.push(label(batch[j].deviceCode)+' · '+(ACTS[batch[j].action]||batch[j].action));if(root.SAGSRadioPhotoVaultV1?.isPurged(batch[j].id))purgedCount++}
     else {originalCount++;if(root.SAGSRadioPhotoVaultV1?.isOriginal(batch[j].id))supabaseCount++}
-    stored.push(pdfStoredPage(await photoPdfPage(batch[j],overview.count+summaryPages+i+j+1,allPages,full[j])));
+    stored.push(pdfStoredPage(await photoPdfPage(batch[j],overview.count+staffPages+summaryPages+i+j+1,allPages,full[j])));
    }
   }
   if(!canMonitor(currentUser()))throw Error('Tài khoản không còn quyền quản lý báo cáo bộ đàm');
@@ -1932,10 +2016,12 @@ async function exportPdf(){
   await new Promise(done=>requestAnimationFrame(done));
   const scope=canMonitor(currentUser())?reportScope():'Lịch sử cá nhân đã tải',pages=[];
   for(let i=0;i<rows.length;i+=19)pages.push(rows.slice(i,i+19));
-  const totals=radioReportCounts(rows),overview=canMonitor(currentUser())?
-   radioPdfOverviewPages(rows,scope,devices,radioReportCutoffMs(),pages.length,0):null,
-   stored=overview?overview.pages.map(pdfStoredPage):[],totalPages=stored.length+pages.length;
-  for(let i=0;i<pages.length;i++){stored.push(pdfStoredPage(pdfPage(pages[i],i+(overview?.count||0)+1,totalPages,scope,false,totals)));if(i%12===11)await new Promise(done=>requestAnimationFrame(done));}
+  const totals=radioReportCounts(rows),monitor=canMonitor(currentUser()),cutoffMs=monitor?radioReportCutoffMs():0,
+   staffPages=monitor?radioPdfStaffPageCount(rows,cutoffMs):0,overview=monitor?
+   radioPdfOverviewPages(rows,scope,devices,cutoffMs,staffPages+pages.length,0):null,
+   stored=overview?overview.pages.map(pdfStoredPage):[],totalPages=stored.length+staffPages+pages.length;
+  if(monitor)for(const page of radioPdfStaffPages(rows,scope,cutoffMs,overview.count+1,totalPages))stored.push(pdfStoredPage(page));
+  for(let i=0;i<pages.length;i++){stored.push(pdfStoredPage(pdfPage(pages[i],i+(overview?.count||0)+staffPages+1,totalPages,scope,false,totals)));if(i%12===11)await new Promise(done=>requestAnimationFrame(done));}
   const blob=pdfBuild(stored),href=URL.createObjectURL(blob),link=document.createElement('a');
   link.href=href;link.download='SAGS-BO-DAM-'+(reportReady?reportFileToken():new Date().toISOString().slice(0,10))+'-BAO-CAO.pdf';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(href),60000);
   notify('Đã xuất PDF '+rows.length+' sự kiện theo '+scope+'.');
