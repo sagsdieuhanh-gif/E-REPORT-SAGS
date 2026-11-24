@@ -39,7 +39,7 @@ const c={
  connected,REPORT_LIMIT:301,events,reportReady:false,reportLoading:false,reportEvents:[],
  reportDate:'',reportShift:'AM',reportToken:0,reportVerified:false,dateFilter:'all',
  $:id=>boxes[id]||null,S:v=>String(v??'').trim(),VN:'Asia/Ho_Chi_Minh',
- currentUser:()=>({uid:'admin',role:user}),isAdmin:u=>['AD','ADMIN'].includes(u.role),
+ currentUser:()=>({uid:'admin',role:user}),isAdmin:u=>['AD','ADMIN'].includes(u.role),canMonitor:u=>['AD','ADMIN','RADIO_MANAGER'].includes(u.role),
  fs:()=>({collection:()=>query}),EVENTS:'sags_radio_events_v1',
  renderHistory(){},renderSummary(){},notify(msg,fail){actions.push(['notify',msg,fail])},
  errText:e=>String(e.message),ACTS:{ISSUE:'Nhận máy'},REASON_TEXT:{}
