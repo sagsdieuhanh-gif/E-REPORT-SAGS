@@ -468,7 +468,7 @@ async function originalRadioPhotoBlob(leg){
   const source=photo.image||photo.canvas;
   if(!source)throw Error('Không tìm thấy ảnh camera để lưu bản rõ');
   const longest=Math.max(photo.captureWidth||source.width,photo.captureHeight||source.height);
-  for(const [edge,quality] of [[Math.min(2560,longest),.92],[Math.min(2048,longest),.88],[Math.min(1600,longest),.85]]){
+  for(const [edge,quality] of [[Math.min(2560,longest),.89],[Math.min(2048,longest),.86],[Math.min(1600,longest),.83]]){
    if(photo.image){drawNativeProof(canvas,photo,edge,false)}
    else{
     const ratio=Math.min(1,edge/Math.max(source.width,source.height));
@@ -1599,18 +1599,18 @@ async function photoPdfPage(e,index,total,fullProof=''){
    const img=await proofImage(actualProof),ratio=Math.min(810/img.width,730/img.height);
    photoSource=(root.SAGSRadioPhotoVaultV1?.isOriginal(e.id)?'Ảnh gốc Supabase (đã xác minh Firebase)':originalAvailable?(Math.max(img.width,img.height)>=1280?'Ảnh lưu riêng trên Firebase':'Ảnh Firebase độ phân giải thấp'):root.SAGSRadioPhotoVaultV1?.isPurged(e.id)?'Ảnh gốc đã tự dọn · còn ảnh nén Firebase':'CHỈ CÓ ẢNH KÝ NHẬN NÉN')+' · '+img.width+'×'+img.height+' px';
    const w=img.width*ratio,h=img.height*ratio,left=450-w/2,top=687-h/2;
-   // Keep full-resolution evidence independent of PDF rasterization.
-   // The old code embedded an original JPEG only when audit UNVERIFIED;
-   // verified photos were re-rasterized and compressed as a page thumbnail.
-   if(img.src.startsWith('data:image/jpeg;base64,')){
+   // Preserve smaller JPEG proofs byte-for-byte. For large photos, only the
+   // PDF attachment is resized/re-encoded: Firebase/Supabase originals stay
+   // untouched and remain available in the full-resolution evidence viewer.
+   const directJpeg=img.src.startsWith('data:image/jpeg;base64,');
+   const reencode=!directJpeg||img.src.length>700000;
+   if(!reencode){
     cv.proofJpeg={data:img.src,width:img.width,height:img.height,x:left,y:top,w,h};
    }else{
-    // PDF DCTDecode cannot embed Android WebP/PNG natively. Convert that
-    // image once at native pixel dimensions instead of flattening the page.
     let hi=null;
     try{
      const maxEdge=Math.max(img.naturalWidth||img.width,img.naturalHeight||img.height);
-     const ratio=Math.min(1,3072/maxEdge);
+     const ratio=Math.min(1,1800/maxEdge);
      hi=document.createElement('canvas');
      hi.width=Math.max(1,Math.round(img.width*ratio));
      hi.height=Math.max(1,Math.round(img.height*ratio));
@@ -1619,12 +1619,14 @@ async function photoPdfPage(e,index,total,fullProof=''){
      hctx.fillStyle='#fff';hctx.fillRect(0,0,hi.width,hi.height);
      hctx.imageSmoothingEnabled=true;hctx.imageSmoothingQuality='high';
      hctx.drawImage(img,0,0,hi.width,hi.height);
-     const jpeg=hi.toDataURL('image/jpeg',.94);
-     if(!jpeg.startsWith('data:image/jpeg;base64,'))throw Error('JPEG export unavailable');
+     const jpeg=hi.toDataURL('image/jpeg',.84);
+     if(!jpeg.startsWith('data:image/jpeg;base64,')||jpeg.length<120)throw Error('JPEG export unavailable');
+     // Do not substitute a larger or invalid PDF image for the original JPEG.
+     if(directJpeg&&jpeg.length>=img.src.length)throw Error('PDF version did not shrink');
      cv.proofJpeg={data:jpeg,width:hi.width,height:hi.height,x:left,y:top,w,h};
     }catch(error){
-     // Keep a visible picture even on an unsupported browser.
-     x.drawImage(img,left,top,w,h);
+     if(directJpeg)cv.proofJpeg={data:img.src,width:img.width,height:img.height,x:left,y:top,w,h};
+     else x.drawImage(img,left,top,w,h);
     }finally{if(hi){hi.width=1;hi.height=1}}
    }
   }catch(_){x.fillStyle='#aa2727';x.font='bold 20px Arial';x.fillText('ẢNH LỖI / KHÔNG ĐỌC ĐƯỢC',70,690)}
@@ -1637,7 +1639,7 @@ async function photoPdfPage(e,index,total,fullProof=''){
  x.font='15px Arial';pdfWrap(x,e.details||'Không có ghi chú',815).forEach((line,i)=>x.fillText(line,35,1140+22*i));
  x.fillStyle='#667b87';x.font='13px Arial';
  x.fillText('Ảnh gồm hình camera và chữ ký. Giờ ảnh do thiết bị cung cấp, không phải đồng hồ máy chủ.',35,1202);
- x.fillText('Đối chiếu trực quan ảnh thực tế; không coi timestamp trên ảnh là bằng chứng độc lập.',35,1225);
+ x.fillText('Ảnh PDF tối ưu dung lượng; ảnh gốc rõ nét giữ riêng trên máy chủ khi khả dụng.',35,1225);
  x.fillText('Trang '+index+'/'+total+' · chỉ những sự kiện đã tải theo bộ lọc',35,1248);
  return cv;
 }
