@@ -23,7 +23,7 @@ assert.equal(cx.menuInteractedSinceAuth,true);
 assert.equal(cx.workMenuLandingOpened,true);
 assert.deepEqual(seen,['before:history','active:history','closed','history']);
 assert(radio.includes('id="radioPdfIncludePhotos"'),'AD choice must appear in PDF UI');
-assert(radio.includes("if($('radioPdfIncludePhotos')?.checked&&isAdmin(currentUser()))return exportPhotoPdf()"),'checkbox should choose actual photo export');
+assert(radio.includes("if($('radioPdfIncludePhotos')?.checked&&canMonitor(currentUser())return exportPhotoPdf()"),'checkbox should choose actual photo export');
 assert(!radio.includes('radioExportPhotos'),'hidden secondary photo button must be removed');
 assert(radio.includes('const summaryPages=Math.ceil(rows.length/19),allPages=summaryPages+rows.length'),'PDF with images must have both summary and evidence appendix');
 assert(radio.includes('stored.push(pdfStoredPage(await photoPdfPage('),'every event must receive a photo evidence page');
