@@ -74,7 +74,7 @@ function loadRadioPhotoVault(){
 }
 
 const DRAFT_MAX_PHOTO_BYTES=24*1024*1024;
-const DRAFT_FIELDS=['radioReturnReason','radioDetail'];
+const DRAFT_FIELDS=['radioReturnReason','radioDetail','radioShift'];
 const CAPTURE_EXIF_OPTIONS={ifd0:false,gps:false,exif:{pick:['DateTimeOriginal','OffsetTimeOriginal']},reviveValues:false};
 let nativeDraft=null,nativeDraftDb=null,signingUid='';
 let reportReady=false,reportLoading=false,reportEvents=[],reportDate='',reportShift='AM',reportToken=0,reportVerified=false;
@@ -93,7 +93,7 @@ function notify(s,fail=false){
   const e=$(id);if(e){e.textContent=s;e.dataset.error=fail?'1':'0'}
  }
 }
-function setBusy(v){busy=!!v;for(const e of document.querySelectorAll('#sagsRadioPanel button,#sagsRadioPanel select,#sagsRadioPanel input,#sagsRadioPanel textarea'))e.disabled=busy||e.id==='radioShift';if($('radioPhotoArea'))updatePhotoUI()}
+function setBusy(v){busy=!!v;for(const e of document.querySelectorAll('#sagsRadioPanel button,#sagsRadioPanel select,#sagsRadioPanel input,#sagsRadioPanel textarea'))e.disabled=busy||(e.id==='radioShift'&&mode!=='ISSUE');if($('radioPhotoArea'))updatePhotoUI()}
 function tpl(){
  if($('sagsRadioPanel'))return;
  const p=document.createElement('section');p.id='sagsRadioPanel';p.className='sagsRadioPanel';p.hidden=true;p.setAttribute('role','dialog');p.setAttribute('aria-modal','true');p.setAttribute('aria-label','Quản lý ký nhận bộ đàm');
@@ -103,11 +103,11 @@ function tpl(){
  '<section id="radioOverdueAlert" class="radioOverdueAlert" role="status" aria-live="polite" hidden></section>'+
  '<details id="radioAdminDisclosure" class="radioAdminDisclosure" hidden><summary>Quản trị bộ đàm · Giám sát & đối soát ca</summary><section id="radioAdminOverview" class="radioAdminOverview" hidden><div class="radioAdminHeading"><div><small>QUẢN TRỊ THIẾT BỊ · TRẠNG THÁI TRỰC TUYẾN</small><h3>Giám sát bàn giao bộ đàm</h3><p>Người giữ máy, máy cần xử lý và đối soát theo ca ở một nơi.</p></div><button type="button" data-radio-go="summary" class="radioPrimary">Báo cáo ngày / ca</button></div><div id="radioAdminDashboard" class="radioAdminDashboard"></div><div id="radioRosterMonitor" class="radioRosterMonitor"><div class="radioRosterHeader"><b>📋 Đối chiếu roster và ký nhận</b><div class="radioRosterFilters"><label>Ngày<input type="date" id="radioRosterDate"></label><label>Ca<select id="radioRosterShift"><option value="AM">Sáng</option><option value="PM">Tối</option></select></label><button id="radioRosterReload" type="button">↻ Kiểm tra</button></div></div><div id="radioRosterAlert" role="status" aria-live="polite"></div></div></section></details>'+
  '<div class="radioTabs"><button type="button" data-radio-tab="devices" class="selected">Ký nhận / Trả máy</button><button type="button" data-radio-tab="history">Lịch sử ký nhận</button><button type="button" data-radio-tab="summary">Tổng hợp</button></div>'+
- '<section id="radioReportControl" class="radioReportControl" hidden><div class="radioReportTitle"><strong>📅 Báo cáo ký nhận bộ đàm</strong><small>Chọn phạm vi → Tải dữ liệu Firebase → Xuất PDF có hoặc không kèm ảnh</small></div><label class="radioReportModeWrap" id="radioReportModeWrap" hidden>Phạm vi báo cáo (AD)<select id="radioReportMode"><option value="SHIFT">Một ngày / một ca</option><option value="RANGE">Khoảng ngày / cả ca sáng và tối</option></select></label><div class="radioReportInputs" id="radioShiftInputs"><label>Ngày cần báo cáo<input id="radioReportDate" type="date"></label><label>Ca trực<select id="radioReportShift"><option value="AM">Ca sáng (AM)</option><option value="PM">Ca tối (PM)</option></select></label><button type="button" id="radioReportLoad" class="radioPrimary">🔎 Tải báo cáo ca</button><button type="button" id="radioReportReset">Lịch sử gần đây</button></div><div class="radioReportInputs radioRangeInputs" id="radioRangeInputs" hidden><div class="radioRangePresets"><button type="button" data-radio-range-preset="7">7 ngày qua</button><button type="button" data-radio-range-preset="30">30 ngày qua</button><button type="button" data-radio-range-preset="month">Tháng này</button></div><label>Từ ngày<input id="radioRangeFrom" type="date"></label><label>Đến ngày<input id="radioRangeTo" type="date"></label><button type="button" id="radioRangeLoad" class="radioPrimary">🔎 Tải toàn bộ ca trong khoảng</button><button type="button" id="radioRangeReset">Lịch sử gần đây</button><small class="radioRangeNote">Tính cả 2 ca mỗi ngày; ca tối kết thúc 08:29 hôm sau. Tối đa 31 ngày mỗi lần.</small></div><div id="radioPdfChoice" class="radioPdfChoice" hidden><label><input type="checkbox" id="radioPdfIncludePhotos"><span>Kèm ảnh chụp và chữ ký trong PDF</span></label><small>AD / Quản lý bộ đàm: Bật để xuất báo cáo kèm ảnh từng lần nhận/trả.</small></div><p id="radioReportState" class="radioReportState" role="status" aria-live="polite">Chọn ngày và ca để lấy đúng dữ liệu, không giới hạn ở lịch sử gần nhất.</p><small>Ca sáng 08:30–19:00; ca tối 19:01–08:29 hôm sau (giờ Việt Nam). Báo cáo phân ca bằng giờ Firebase, không phụ thuộc nhãn ca của bản ghi cũ.</small></section>'+ 
+ '<section id="radioReportControl" class="radioReportControl" hidden><div class="radioReportTitle"><strong>📅 Báo cáo ký nhận bộ đàm</strong><small>Chọn phạm vi → Tải dữ liệu Firebase → Xuất PDF có hoặc không kèm ảnh</small></div><label class="radioReportModeWrap" id="radioReportModeWrap" hidden>Phạm vi báo cáo (AD)<select id="radioReportMode"><option value="SHIFT">Một ngày / một ca</option><option value="RANGE">Khoảng ngày / cả ca sáng và tối</option></select></label><div class="radioReportInputs" id="radioShiftInputs"><label>Ngày cần báo cáo<input id="radioReportDate" type="date"></label><label>Ca trực<select id="radioReportShift"><option value="AM">Ca sáng (AM)</option><option value="PM">Ca tối (PM)</option></select></label><button type="button" id="radioReportLoad" class="radioPrimary">🔎 Tải báo cáo ca</button><button type="button" id="radioReportReset">Lịch sử gần đây</button></div><div class="radioReportInputs radioRangeInputs" id="radioRangeInputs" hidden><div class="radioRangePresets"><button type="button" data-radio-range-preset="7">7 ngày qua</button><button type="button" data-radio-range-preset="30">30 ngày qua</button><button type="button" data-radio-range-preset="month">Tháng này</button></div><label>Từ ngày<input id="radioRangeFrom" type="date"></label><label>Đến ngày<input id="radioRangeTo" type="date"></label><button type="button" id="radioRangeLoad" class="radioPrimary">🔎 Tải toàn bộ ca trong khoảng</button><button type="button" id="radioRangeReset">Lịch sử gần đây</button><small class="radioRangeNote">Tính cả 2 ca mỗi ngày; ca tối kết thúc 08:29 hôm sau. Tối đa 31 ngày mỗi lần.</small></div><div id="radioPdfChoice" class="radioPdfChoice" hidden><label><input type="checkbox" id="radioPdfIncludePhotos"><span>Kèm ảnh chụp và chữ ký trong PDF</span></label><small>AD / Quản lý bộ đàm: Bật để xuất báo cáo kèm ảnh từng lần nhận/trả.</small></div><p id="radioReportState" class="radioReportState" role="status" aria-live="polite">Chọn ngày và ca để lấy đúng dữ liệu, không giới hạn ở lịch sử gần nhất.</p><small>Mốc nhận máy: sáng 08:00–18:30, tối 18:31–07:59 hôm sau. Phải tự chọn ca khi ký. Hạn kết thúc ca giữ 19:00 và 08:29; báo cáo theo ca đã xác nhận, giờ Firebase giữ nguyên.</small></section>'+ 
  '<section id="radioDevicesTab"><div class="radioTools radioDeviceTools"><strong id="radioDevicesTitle">Máy còn trống</strong><div class="radioDeviceToolActions"><button type="button" id="radioOnlyUnreturned" hidden aria-pressed="false">🚩 Chỉ xem chưa trả</button><button type="button" id="radioAdminAll" hidden aria-pressed="false">Quản lý tất cả (AD)</button><button type="button" id="radioSeed" hidden>+ Khởi tạo máy</button></div></div><div id="radioDraftControls" class="radioTools" hidden><span>Ảnh và chữ ký đang lưu trên máy, chờ xác nhận Firebase.</span><button type="button" id="radioResumeDraft">Tiếp tục ký nhận/trả</button><button type="button" id="radioDiscardDraft">Bỏ bản nháp</button></div><div id="radioDeviceList" class="radioDeviceList"></div></section>'+
  '<section id="radioHistoryTab" hidden><div class="radioTools"><span>Danh sách sự kiện của ca đã chọn (AD) hoặc lịch sử cá nhân</span><button type="button" id="radioExport" class="radioPrimary">📄 Xuất PDF ca</button></div><div class="radioHistoryFilters"><label>Mã máy<select id="radioHistoryDevice"><option value="">Tất cả máy</option></select></label><label>Thao tác<select id="radioHistoryAction"><option value="">Tất cả</option><option value="ISSUE">Nhận máy</option><option value="RETURN">Trả máy</option><option value="SWAP_OUT">Đổi máy</option><option value="REPORT">Báo lỗi</option></select></label><label>Tìm kiếm<input id="radioHistorySearch" type="search" placeholder="Tên, UID hoặc ghi chú" autocomplete="off"></label></div><div id="radioHistoryMeta" class="radioHistoryMeta"></div><div id="radioHistoryList"></div></section>'+
  '<section id="radioSummaryTab" hidden><div class="radioTools"><span>Tổng hợp ca trực · theo ngày đã chọn</span><button type="button" id="radioSummaryExport" class="radioPrimary">📄 Xuất PDF ca</button></div><div id="radioSummary"></div><p class="radioHint">Tổng hợp dữ liệu đã tải trên màn hình; không gửi email.</p></section>'+
- '<section id="radioAction" class="radioAction" hidden><div class="radioActionHeader"><h3 id="radioActionTitle">Ký nhận</h3><button type="button" id="radioActionCancel">✕</button></div><div class="radioFields"><label>Mã máy<input id="radioActionCode" readonly></label><label>Người thực hiện<input id="radioPerson" readonly></label><label>Ca làm việc<select id="radioShift"><option value="AM">Ca sáng</option><option value="PM">Ca tối</option></select></label><label id="radioReasonWrap">Lý do<select id="radioReason">'+REASONS.map(([v,n])=>'<option value="'+v+'">'+esc(n)+'</option>').join('')+'</select></label><label id="radioReturnReasonWrap" hidden>Lý do trả<select id="radioReturnReason"><option value="END_SHIFT">Hết ca</option><option value="HANDOVER">Bàn giao ca tiếp theo</option><option value="STOP_USE">Không tiếp tục sử dụng</option><option value="OTHER">Lý do khác (ghi cụ thể)</option></select></label><label id="radioSwapWrap">Máy thay thế<select id="radioSwapTarget"></select></label><label class="wide">Ghi chú hiện trạng<textarea id="radioDetail" rows="2" placeholder="Ghi cụ thể hiện tượng, thời gian, vị trí..."></textarea></label></div><section id="radioPhotoArea" class="radioPhotoArea" hidden><div class="radioPhotoHeading"><strong id="radioPhotoStep">1 · Ảnh bộ đàm thực tế</strong><small>Camera trực tiếp · không chọn thư viện</small></div><div class="radioCameraView"><input id="radioNativeCamera" type="file" accept="image/*" capture="environment" hidden><video id="radioCameraVideo" playsinline autoplay muted></video><img id="radioCameraPhoto" alt="Ảnh chụp mã máy và thời gian" hidden></div><div id="radioPhotoChips" class="radioPhotoChips"></div><div class="radioPhotoActions"><button id="radioTakePhoto" type="button" class="radioPrimary">📷 Chụp ảnh</button><button id="radioRetakePhoto" type="button" hidden>Chụp lại</button><button id="radioInspectPhoto" type="button" hidden>🔎 Phóng to kiểm tra ảnh</button><button id="radioRetryPhoto" type="button" hidden>Mở camera</button></div><small class="radioHint">Giờ trên ảnh là giờ của điện thoại; Firebase ghi riêng thời điểm xác nhận trên máy chủ.</small></section><div id="radioSigWrap"><p>Chữ ký xác nhận của tài khoản đang đăng nhập</p><canvas id="radioSignature" width="540" height="150" aria-label="Ký bằng ngón tay hoặc chuột"></canvas><button type="button" id="radioClearSignature">Xóa nét ký</button></div><p id="radioActionMessage" class="radioActionMessage" role="status" aria-live="polite"></p><div class="radioActions"><button type="button" id="radioCancel">Hủy</button><button class="radioPrimary" type="button" id="radioConfirm">Xác nhận và lưu lịch sử</button></div></section>'+
+ '<section id="radioAction" class="radioAction" hidden><div class="radioActionHeader"><h3 id="radioActionTitle">Ký nhận</h3><button type="button" id="radioActionCancel">✕</button></div><div class="radioFields"><label>Mã máy<input id="radioActionCode" readonly></label><label>Người thực hiện<input id="radioPerson" readonly></label><label>Ca nhận bộ đàm (bắt buộc)<select id="radioShift" required><option value="">— Bắt buộc chọn ca —</option><option value="AM">Ca sáng · mốc nhận 08:00–18:30</option><option value="PM">Ca tối · mốc nhận 18:31–07:59 hôm sau</option></select><small id="radioShiftHint">Mốc nhận: sáng 08:00–18:30; tối 18:31–07:59 hôm sau. Bắt buộc chọn ca; giờ ký thực tế vẫn được Firebase ghi độc lập.</small></label><label id="radioReasonWrap">Lý do<select id="radioReason">'+REASONS.map(([v,n])=>'<option value="'+v+'">'+esc(n)+'</option>').join('')+'</select></label><label id="radioReturnReasonWrap" hidden>Lý do trả<select id="radioReturnReason"><option value="END_SHIFT">Hết ca</option><option value="HANDOVER">Bàn giao ca tiếp theo</option><option value="STOP_USE">Không tiếp tục sử dụng</option><option value="OTHER">Lý do khác (ghi cụ thể)</option></select></label><label id="radioSwapWrap">Máy thay thế<select id="radioSwapTarget"></select></label><label class="wide">Ghi chú hiện trạng<textarea id="radioDetail" rows="2" placeholder="Ghi cụ thể hiện tượng, thời gian, vị trí..."></textarea></label></div><section id="radioPhotoArea" class="radioPhotoArea" hidden><div class="radioPhotoHeading"><strong id="radioPhotoStep">1 · Ảnh bộ đàm thực tế</strong><small>Camera trực tiếp · không chọn thư viện</small></div><div class="radioCameraView"><input id="radioNativeCamera" type="file" accept="image/*" capture="environment" hidden><video id="radioCameraVideo" playsinline autoplay muted></video><img id="radioCameraPhoto" alt="Ảnh chụp mã máy và thời gian" hidden></div><div id="radioPhotoChips" class="radioPhotoChips"></div><div class="radioPhotoActions"><button id="radioTakePhoto" type="button" class="radioPrimary">📷 Chụp ảnh</button><button id="radioRetakePhoto" type="button" hidden>Chụp lại</button><button id="radioInspectPhoto" type="button" hidden>🔎 Phóng to kiểm tra ảnh</button><button id="radioRetryPhoto" type="button" hidden>Mở camera</button></div><small class="radioHint">Giờ trên ảnh là giờ của điện thoại; Firebase ghi riêng thời điểm xác nhận trên máy chủ.</small></section><div id="radioSigWrap"><p>Chữ ký xác nhận của tài khoản đang đăng nhập</p><canvas id="radioSignature" width="540" height="150" aria-label="Ký bằng ngón tay hoặc chuột"></canvas><button type="button" id="radioClearSignature">Xóa nét ký</button></div><p id="radioActionMessage" class="radioActionMessage" role="status" aria-live="polite"></p><div class="radioActions"><button type="button" id="radioCancel">Hủy</button><button class="radioPrimary" type="button" id="radioConfirm">Xác nhận và lưu lịch sử</button></div></section>'+
  '<div class="radioProofViewer" id="radioProofViewer" hidden><div><header><strong id="radioProofName">Ảnh và chữ ký</strong><button type="button" id="radioProofClose">✕</button><button id="radioProofZoom" type="button">🔎 Phóng to</button></header><div class="radioProofScroll"><img id="radioProofImage" alt="Bằng chứng ảnh có giờ và chữ ký"></div><p id="radioProofQuality"></p><p id="radioProofTimestamp"></p></div></div><footer>Giờ trên ảnh do thiết bị cung cấp; giờ xác nhận chính thức theo Firebase.</footer></div>';
  document.body.appendChild(p);
  $('radioClose').onclick=close;$('radioActionCancel').onclick=cancel;$('radioCancel').onclick=cancel;
@@ -119,7 +119,7 @@ function tpl(){
   const file=e.target.files?.[0];e.target.value='';
   if(file)void acceptNativePhoto(file);
  };
- for(const id of DRAFT_FIELDS)$(id).addEventListener('input',queueDraftSave);
+ for(const id of DRAFT_FIELDS){$(id).addEventListener('input',queueDraftSave);if(id==='radioShift')$(id).addEventListener('change',queueDraftSave)}
  document.addEventListener('visibilitychange',()=>{if(document.hidden)queueDraftSave()});
  $('radioTakePhoto').onclick=()=>nativeMode()?openNativeCamera():takePhoto();$('radioRetakePhoto').onclick=()=>void retakePhoto();$('radioInspectPhoto').onclick=inspectCapturedPhoto;$('radioRetryPhoto').onclick=()=>void startCamera(cameraLeg);$('radioProofClose').onclick=closeProof;
  $('radioProofViewer').onclick=e=>{if(e.target.id==='radioProofViewer')closeProof()};
@@ -381,8 +381,9 @@ async function resumeNativeDraft(){
   const {file,...draft}=saved;
   const d=devices.find(x=>x.code===draft.code)||{code:draft.code,version:draft.deviceVersion};
   showSigningForm(draft.action,d,user);nativeDraft=draft;
+  if(['AM','PM'].includes(S(draft.shift)))$('radioShift').value=draft.shift;
   $('radioDraftControls').hidden=true;
-  for(const id of DRAFT_FIELDS)$(id).value=draft.fields[id];
+  for(const id of DRAFT_FIELDS)if(typeof draft.fields?.[id]==='string')$(id).value=draft.fields[id];
   const c=$('radioSignature');
   for(const points of draft.strokes){
    const line=[];strokes.push(line);
@@ -811,6 +812,38 @@ function shiftBounds(day,which){
  return {start,end,startMs:start.getTime(),endMs:end.getTime()};
 }
 function shift(){return radioShiftAt(Date.now()).shift}
+// Two independent business clocks:
+// 1) receive window: morning 08:00–18:30, evening 18:31–07:59 next day;
+// 2) end-of-duty deadlines: morning 19:01, evening 08:30 next day.
+// The ISSUE form never auto-selects a shift; the signed, stored 'shift' wins.
+function radioReceiveWindow(ms){
+ const date=new Date(ms),parts=Object.fromEntries(
+  new Intl.DateTimeFormat('en-GB',{timeZone:VN,hour:'2-digit',minute:'2-digit',hourCycle:'h23'})
+   .formatToParts(date).map(p=>[p.type,p.value]));
+ const minute=Number(parts.hour)*60+Number(parts.minute);
+ const morning=minute>=480&&minute<=1110;
+ const day=vnDateKey(date);
+ const dutyDay=!morning&&minute<480?radioDayAdd(day,-1):day;
+ return {day:dutyDay,shift:morning?'AM':'PM',key:dutyDay+'/'+(morning?'AM':'PM')};
+}
+function radioCustodyDuty(ms,selected,action='ISSUE'){
+ const chosen=S(selected);
+ if(!['AM','PM'].includes(chosen))return radioReceiveWindow(ms); // legacy fallback only
+ const p=Object.fromEntries(new Intl.DateTimeFormat('en-GB',{timeZone:VN,hour:'2-digit',minute:'2-digit',hourCycle:'h23'})
+   .formatToParts(new Date(ms)).map(x=>[x.type,x.value]));
+ const minute=Number(p.hour)*60+Number(p.minute),date=vnDateKey(new Date(ms));
+ // Returns from the preceding PM shift can continue through 08:29 even though
+ // the next morning's receive window starts at 08:00.
+ const returnLeg=['RETURN','SWAP_OUT','REPORT'].includes(S(action));
+ const day=chosen==='PM'&&minute<(returnLeg?510:480)?radioDayAdd(date,-1):date;
+ return {day,shift:chosen,key:day+'/'+chosen};
+}
+function radioCustodyDue(ms,selected){
+ if(!ms)return 0;
+ const duty=radioCustodyDuty(ms,selected);
+ return shiftBounds(duty.day,duty.shift).endMs;
+}
+function radioPreselectShift(){return ''} // always require an explicit human choice on ISSUE
 function heldBy(uid){return devices.filter(d=>d.status==='OUT'&&d.holderUid===uid)}
 // Visibility is intentionally separate from Firestore custody authorization.
 // READY, CHARGING and FAULT with no holder remain available, but LOST never does.
@@ -844,7 +877,10 @@ function showSigningForm(action,d,u){
  const code=d.code;
  resetCamera();mode=action;choice=d;nativeDraft=null;signingUid=u.uid;clearSignature();
  $('radioActionCode').value=label(code);$('radioPerson').value=u.name+' · '+u.uid.slice(0,8);
- $('radioShift').value=shift();$('radioReason').value='BATTERY_EMPTY';$('radioReason').querySelector('option[value=LOST]').disabled=action==='SWAP_OUT';$('radioReturnReason').value='END_SHIFT';$('radioDetail').value='';
+ $('radioShift').value=action==='ISSUE'?'':['AM','PM'].includes(S(d.shift))?S(d.shift):radioReceiveWindow(Date.now()).shift;
+ $('radioShift').disabled=action!=='ISSUE';
+ $('radioShiftHint').textContent=action==='ISSUE'?'BẮT BUỘC chọn ca nhận bộ đàm. Mốc nhận sáng 08:00–18:30, tối 18:31–07:59. Chọn đúng ca thực tế; hệ thống lưu giờ ký Firebase riêng.':'Ca của lượt nhận ban đầu được giữ nguyên khi trả hoặc đổi máy.';
+ $('radioReason').value='BATTERY_EMPTY';$('radioReason').querySelector('option[value=LOST]').disabled=action==='SWAP_OUT';$('radioReturnReason').value='END_SHIFT';$('radioDetail').value='';
  $('radioActionTitle').textContent=(action==='RELEASE'?'AD xác nhận đã xử lý thông tin lỗi':ACTS[action]||'Báo cáo')+' · '+label(code);
  $('radioDetail').placeholder=action==='RELEASE'?
   'Ghi kết quả kiểm tra: pin, sóng phát/thu, loa, mic/PTT; máy thất lạc phải xác nhận thu hồi.':
@@ -869,9 +905,15 @@ function rosterDutyShift(x){
  const direct=S(x.dutyShift||x.workShift||x.rosterShift||x.shiftCode||x.shift).toUpperCase();
  if(['AM','SANG','SÁNG','MORNING'].includes(direct))return 'AM';
  if(['PM','TOI','TỐI','EVENING','CHIEU','CHIỀU'].includes(direct))return 'PM';
- for(const key of ['dutyStart','shiftStart','startShift','sta','std']){
+ // A flight STA/STD is not a staff-duty shift. Ambiguous 16:00–19:00
+ // handover starts cannot be inferred without an explicit roster shift.
+ for(const key of ['dutyStart','shiftStart','startShift']){
   const m=S(x[key]).match(/^([01]?\d|2[0-3]):?([0-5]\d)(?:\+\d+)?$/);
-  if(m){const minute=Number(m[1])*60+Number(m[2]);return minute>=510&&minute<=1140?'AM':'PM'}
+  if(m){
+   const minute=Number(m[1])*60+Number(m[2]);
+   if(minute>=16*60&&minute<=19*60)return '';
+   return minute>=510&&minute<=1140?'AM':'PM';
+  }
  }
  return '';
 }
@@ -883,14 +925,14 @@ function reconcileRoster(items,users,machines,history,day,which,now=Date.now()){
   const names=S(x.user||x.targetUser).split(/[\/;,]+/).map(rosterLogin).filter(Boolean),sh=rosterDutyShift(x);
   for(const n of names){if(sh===which)roster.add(n);else if(!sh)undated.add(n)}
  }
- for(const x of history){const ms=x.at?.toMillis?.();if(ms>=start&&ms<end&&['ISSUE','SWAP_IN'].includes(x.action))issued.add(S(x.personUid));}
+ for(const x of history){const ms=x.at?.toMillis?.();if(ms&&['ISSUE','SWAP_IN'].includes(x.action)&&radioCustodyDuty(ms,x.shift).key===day+'/'+which)issued.add(S(x.personUid));}
  const result={total:roster.size,missing:[],unreturned:[],holding:[],completed:[],unmapped:[],upcoming:[],undated:[...undated].filter(x=>!roster.has(x))};
  for(const name of roster){
   const uid=users.get(name),held=uid?machines.filter(d=>d.status==='OUT'&&d.holderUid===uid):[];
   if(!uid)result.unmapped.push(name);
   else if(held.length){
    const summary=name+' · '+held.map(d=>label(d.code)).join(', ');
-   if(now>=end&&held.some(d=>radioHeldSince(d)?.toMillis?.()&&radioShiftAt(radioHeldSince(d).toMillis()).key===day+'/'+which))result.unreturned.push(summary);else result.holding.push(summary);
+   if(now>=end&&held.some(d=>radioHeldSince(d)?.toMillis?.()&&radioCustodyDuty(radioHeldSince(d).toMillis(),d.shift).key===day+'/'+which))result.unreturned.push(summary);else result.holding.push(summary);
   }else if(issued.has(uid))result.completed.push(name);
   else if(now<start)result.upcoming.push(name);
   else result.missing.push(name);
@@ -942,7 +984,7 @@ async function refreshRosterAudit(){
  if(rosterBusy){queueRosterAudit(1700);return}
  const day=rosterDate,gen=rosterGen;rosterBusy=true;rosterReady=false;renderRosterAlert();
  try{
-  const {start,end}=shiftBounds(day,S($('radioRosterShift').value));
+  const {start,end}=radioReportFetchBounds(day,S($('radioRosterShift').value));
   const [u,e]=await Promise.all([
    fs().collection('users').get({source:'server'}),
    fs().collection(EVENTS).where('at','>=',start).where('at','<',end).orderBy('at','asc').limit(REPORT_LIMIT).get({source:'server'})
@@ -950,7 +992,8 @@ async function refreshRosterAudit(){
   if(gen!==rosterGen||!isAdmin(currentUser()))return;
   if(e.docs.length>=REPORT_LIMIT)throw Error('Trên 300 sự kiện: không đối chiếu với dữ liệu thiếu.');
   rosterAccounts=new Map(u.docs.filter(d=>d.data().active!==false).map(d=>[rosterLogin(d.data().username),d.id]));
-  rosterAudit=e.docs.map(d=>d.data());rosterReady=true;
+  const selectedShift=S($('radioRosterShift').value);
+  rosterAudit=e.docs.map(d=>d.data()).filter(x=>radioReportEventDuty(x).key===day+'/'+selectedShift);rosterReady=true;
  }catch(e){if(gen!==rosterGen)return;rosterReady=false;notify('Không đối chiếu được roster: '+errText(e),true)}
  finally{if(gen===rosterGen){rosterBusy=false;renderRosterAlert()}}
 }
@@ -963,7 +1006,7 @@ function renderAdminOverview(){
  if(!admin){target.replaceChildren();return}
  const now=Date.now(),holds=devices.filter(d=>d.status==='OUT'),
   needs=devices.filter(hasRadioWarning),
-  overdue=holds.filter(d=>radioHeldSince(d)?.toMillis?.()&&radioShiftAt(radioHeldSince(d).toMillis()).key!==radioShiftAt(now).key);
+  overdue=holds.filter(d=>{const at=radioHeldSince(d)?.toMillis?.()||0;return !!at&&now>=radioCustodyDue(at,d.shift)});
  const hour=d=>radioHeldSince(d)?.toDate?.()?fmt(radioHeldSince(d).toDate()):'Đang đồng bộ';
  const holdItems=holds.length?holds.map(d=>{
   const late=overdue.includes(d);
@@ -1033,7 +1076,7 @@ function render(){
    const nowMs=Date.now(),heldAtMs=radioHeldSince(d)?.toMillis?.()||0;
    const {dueMs=0}=liveHolds.find(x=>x.deviceCode===d.code)||{};
    const overText=active&&heldAtMs?(dueMs&&nowMs>=dueMs?' · <strong class="radioOverdue">QUÁ CA '+esc(radioDelayText(nowMs-dueMs))+'</strong>':' · Đang trong ca')+( ' · Nhận: '+esc(fmt(new Date(heldAtMs)))):'';
-   const status=(d.status==='OUT'?'Đang giữ: '+esc(d.holderName||d.holderUid?.slice(0,8)||'—')+overText:'')+
+   const status=(d.status==='OUT'?'Đang giữ: '+esc(d.holderName||d.holderUid?.slice(0,8)||'—')+(d.shift==='PM'?' · Ca tối':d.shift==='AM'?' · Ca sáng':' · Chưa xác nhận ca')+overText:'')+
     (d.faultCode?' · Lỗi ghi nhận: '+esc(REASON_TEXT[d.faultCode]||d.faultCode):'')+
     (d.faultDetail?' · '+esc(d.faultDetail):'');
    return '<article class="radioDevice'+(mine?' radioDeviceMine':'')+'"><div><strong>'+
@@ -1067,6 +1110,25 @@ function applyRadioRangePreset(preset){
  $('radioRangeTo').value=today;
  $('radioRangeFrom').value=preset==='month'?today.slice(0,8)+'01':radioDayAdd(today,preset==='30'?-29:-6);
 }
+// Query a broad civil-date window; then classify every receipt by the explicitly
+// confirmed duty rather than discarding night-duty receipts signed before 19:01.
+// Keep shiftBounds() unchanged: 08:30/19:01 remain the official duty boundaries.
+function radioRangeFetchBounds(from,to){
+ // Query by a super-set of actual timestamps; only the confirmed AM/PM
+ // duty associated with the event decides which date belongs in the range.
+ const start=new Date(from+'T00:00:00+07:00');
+ const end=new Date(radioDayAdd(to,1)+'T08:30:00+07:00');
+ return {start,end,startMs:start.getTime(),endMs:end.getTime()};
+}
+function radioReportFetchBounds(day,which){
+ const start=new Date(day+'T00:00:00+07:00');
+ const end=new Date(radioDayAdd(day,1)+'T'+(which==='PM'?'08:30:00':'00:00:00')+'+07:00');
+ return {start,end,startMs:start.getTime(),endMs:end.getTime()};
+}
+function radioReportEventDuty(e){
+ const at=e?.at?.toMillis?.()||0;
+ return at?radioCustodyDuty(at,e.shift,e.action):{key:''};
+}
 function reportScope(){
  return reportMode==='RANGE'
   ?reportFrom+' – '+reportTo+' · cả ca sáng/tối (giờ VN)'
@@ -1087,15 +1149,16 @@ async function loadShiftReport(){
  const token=++reportToken;reportLoading=true;reportReady=false;reportVerified=false;reportEvents=[];
  $('radioReportLoad').disabled=true;$('radioReportState').textContent='Đang lấy dữ liệu ngày '+day+' từ Firebase. Không sử dụng dữ liệu cache…';
  try{
-  const {start,end}=shiftBounds(day,shift),db=fs();
+  const {start,end}=radioReportFetchBounds(day,shift),db=fs();
   const rows=await db.collection(EVENTS).where('at','>=',start).where('at','<',end).orderBy('at','asc').limit(REPORT_LIMIT).get({source:'server'});
   if(token!==reportToken||!canMonitor(currentUser()))return;
   if(rows.docs.length>=REPORT_LIMIT)throw Error('Ca có trên 300 sự kiện. Không xuất báo cáo thiếu dữ liệu; cần chia nhỏ hoặc xuất từ máy chủ.');
-  reportEvents=rows.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.at?.toMillis?.()||0)-(a.at?.toMillis?.()||0));
+  reportEvents=rows.docs.map(d=>({id:d.id,...d.data()})).filter(e=>radioReportEventDuty(e).key===day+'/'+shift)
+   .sort((a,b)=>(b.at?.toMillis?.()||0)-(a.at?.toMillis?.()||0));
   reportDate=day;reportShift=shift;reportMode='SHIFT';reportFrom='';reportTo='';reportAsOfMs=Date.now();reportReady=true;reportVerified=true;
   $('radioHistoryDevice').value='';$('radioHistoryAction').value='';$('radioHistorySearch').value='';
-  const count=reportEvents.length; // server-confirmed actual time, including legacy records labelled with the wrong shift
-  $('radioReportState').textContent='✓ '+reportScope()+': '+count+' sự kiện đã kiểm tra trực tuyến trong đúng khoảng giờ ca.';
+  const count=reportEvents.length; // server-verified timestamp + explicitly confirmed duty
+  $('radioReportState').textContent='✓ '+reportScope()+': '+count+' sự kiện thuộc ca đã đăng ký (bao gồm nhận máy sớm).';
   notify('Đã tải đủ '+count+' sự kiện của '+reportScope()+'. Chọn kèm ảnh (AD) nếu cần đối chiếu.',false);
  }catch(e){
   if(token!==reportToken)return;
@@ -1118,7 +1181,7 @@ async function loadRangeReport(){
  const token=++reportToken;reportLoading=true;reportReady=false;reportVerified=false;reportEvents=[];
  $('radioRangeLoad').disabled=true;$('radioReportState').textContent='Đang tải '+days+' ngày / '+(days*2)+' ca từ Firebase…';
  try{
-  const {start,end,startMs,endMs}=radioRangeBounds(from,to),db=fs(),all=[];
+  const {start,end,startMs,endMs}=radioRangeFetchBounds(from,to),db=fs(),all=[];
   let cursor=null;
   while(true){
    let query=db.collection(EVENTS).where('at','>=',start).where('at','<',end).orderBy('at','asc').limit(RANGE_BATCH_SIZE);
@@ -1129,6 +1192,9 @@ async function loadRangeReport(){
    for(const doc of page.docs){
     const data=doc.data(),at=data.at?.toMillis?.()||0;
     if(!at||at<startMs||at>=endMs)throw Error('Phát hiện sự kiện thiếu giờ xác nhận Firebase.');
+    // Never treat a previous-night return after midnight as the new day's event.
+    const duty=radioReportEventDuty(data);
+    if(duty.day<from||duty.day>to)continue;
     // Keep compact history in memory: fetch photo evidence only when requested.
     all.push({id:doc.id,...data,hasSignature:!!data.signature,signature:''});
    }
@@ -1165,7 +1231,10 @@ function filteredHistory(){
  const date=d=>new Intl.DateTimeFormat('en-CA',{timeZone:VN,year:'numeric',month:'2-digit',day:'2-digit'}).format(d);
  return (reportReady?reportEvents:events).filter(e=>{
   const at=e.at?.toMillis?.()||0;
-  if(reportReady){const {startMs,endMs}=reportMode==='RANGE'?radioRangeBounds(reportFrom,reportTo):shiftBounds(reportDate,reportShift);if(!at||at<startMs||at>=endMs)return false;}
+  if(reportReady){
+   if(reportMode==='RANGE'){const duty=radioReportEventDuty(e);if(!at||duty.day<reportFrom||duty.day>reportTo)return false}
+   else if(!at||radioReportEventDuty(e).key!==reportDate+'/'+reportShift)return false;
+  }
   if(!reportReady&&dateFilter==='today'&&(!at||date(new Date(at))!==date(new Date(now))))return false;
   if(!reportReady&&dateFilter==='week'&&(!at||at<now-7*86400000))return false;
   if(device&&e.deviceCode!==device)return false;
@@ -1185,7 +1254,7 @@ function renderHistory(){
  rows.slice(0,160).map(e=>{
   const kind=['REPORT','SWAP_OUT'].includes(e.action)?'warning':['ISSUE','SWAP_IN'].includes(e.action)?'issued':e.action==='RETURN'?'returned':'neutral';
   const note=[e.beforeStatus&&e.afterStatus?(STATUSES[e.beforeStatus]||e.beforeStatus)+' → '+(STATUSES[e.afterStatus]||e.afterStatus):'',REASON_TEXT[e.reasonCode]||'',e.details||''].filter(Boolean).join(' · ');
-  return '<article class="radioAuditRow"><div><small>THỜI GIAN</small><b>'+esc(e.at?.toDate?.()?fmt(e.at.toDate()):'Đang đồng bộ')+'</b></div><div><small>THIẾT BỊ</small><strong>'+esc(label(e.deviceCode))+'</strong><span class="radioActionBadge radioActionBadge-'+kind+'">'+esc(ACTS[e.action]||e.action)+'</span></div><div><small>NGƯỜI KÝ</small><b>'+esc(e.actorName||e.actorUid||'—')+'</b><span class="radioDetailText">'+esc(e.shift||'—')+'</span></div><div><small>TRẠNG THÁI / GHI CHÚ</small><span class="radioDetailText">'+esc(note||'Không có ghi chú')+'</span></div><div><small>BẰNG CHỨNG</small>'+((e.signature||e.hasSignature)?'<button type="button" class="radioViewProof" data-radio-proof="'+esc(e.id)+'">📷 Xem ảnh / chữ ký</button>':'<span class="radioDetailText">Không có ảnh</span>')+'</div></article>';
+  return '<article class="radioAuditRow"><div><small>THỜI GIAN</small><b>'+esc(e.at?.toDate?.()?fmt(e.at.toDate()):'Đang đồng bộ')+'</b></div><div><small>THIẾT BỊ</small><strong>'+esc(label(e.deviceCode))+'</strong><span class="radioActionBadge radioActionBadge-'+kind+'">'+esc(ACTS[e.action]||e.action)+'</span></div><div><small>NGƯỜI KÝ</small><b>'+esc(e.actorName||e.actorUid||'—')+'</b><span class="radioDetailText">'+esc(e.shift==='PM'?'Ca tối':e.shift==='AM'?'Ca sáng':'Chưa rõ ca')+'</span></div><div><small>TRẠNG THÁI / GHI CHÚ</small><span class="radioDetailText">'+esc(note||'Không có ghi chú')+'</span></div><div><small>BẰNG CHỨNG</small>'+((e.signature||e.hasSignature)?'<button type="button" class="radioViewProof" data-radio-proof="'+esc(e.id)+'">📷 Xem ảnh / chữ ký</button>':'<span class="radioDetailText">Không có ảnh</span>')+'</div></article>';
  }).join('')+'</div>';
 }
 function radioShiftDeviceMatrix(rows){
@@ -1215,7 +1284,7 @@ function radioRangeDailyMatrix(rows){
   for(const shift of ['AM','PM'])byShift.set(day+'/'+shift,{day,shift,issue:0,returned:0,swap:0,fault:0});
  for(const e of rows){
   const at=e.at?.toMillis?.()||0;if(!at)continue;
-  const {day,shift,key}=radioShiftAt(at),v=byShift.get(key);
+  const {day,shift,key}=radioCustodyDuty(at,e.shift,e.action),v=byShift.get(key);
   if(!v)continue;
   if(e.action==='ISSUE')v.issue++;
   if(e.action==='RETURN')v.returned++;
@@ -1241,7 +1310,7 @@ function radioReconcileCustody(rows,cutoffMs){
   if(action==='ISSUE'||action==='SWAP_IN'){
    const previous=openByDevice.get(code);
    if(previous)handoverGaps.push(previous);
-   const duty=radioShiftAt(time),due=shiftBounds(duty.day,duty.shift).endMs;
+   const duty=radioCustodyDuty(time,e.shift),due=radioCustodyDue(time,e.shift);
    openByDevice.set(code,{id:e.id||'',deviceCode:code,personUid:S(e.personUid||e.actorUid),
     personName:S(e.personName||e.actorName||e.personUid||e.actorUid)||'Chưa rõ người nhận',
     receivedAtMs:time,dueMs:due,shiftDay:duty.day,shift:duty.shift,action});
@@ -1270,7 +1339,7 @@ function radioDelayText(ms){const minutes=Math.max(0,Math.floor(ms/60000));retur
 function radioLiveCustody(list,nowMs=Date.now()){
  return list.filter(d=>d.status==='OUT').map(d=>{
   const heldAtMs=radioHeldSince(d)?.toMillis?.()||0;
-  const dueMs=heldAtMs?(()=>{const duty=radioShiftAt(heldAtMs);return shiftBounds(duty.day,duty.shift).endMs})():0;
+  const dueMs=heldAtMs?(()=>{return radioCustodyDue(heldAtMs,d.shift)})():0;
   return {deviceCode:S(d.code),personName:S(d.holderName||d.holderUid||'Chưa rõ người giữ'),
    personUid:S(d.holderUid),receivedAtMs:heldAtMs,dueMs,overdue:!!dueMs&&nowMs>=dueMs};
  }).sort((a,b)=>Number(b.overdue)-Number(a.overdue)||a.receivedAtMs-b.receivedAtMs);
@@ -1291,10 +1360,10 @@ function radioStaffStatistics(rows,cutoffMs){
  for(const e of sorted){
   const code=S(e.deviceCode),action=S(e.action),at=e.at.toMillis();
   if(action==='ISSUE'||action==='SWAP_IN'){
-   const staff=member(e),duty=radioShiftAt(at);
+   const staff=member(e);
    staff.received++;if(action==='SWAP_IN')staff.swappedIn++;
    if(open.has(code)){duplicateReceipts++;continue}
-   open.set(code,{staff,at,dueMs:shiftBounds(duty.day,duty.shift).endMs});
+   open.set(code,{staff,at,dueMs:radioCustodyDue(at,e.shift)});
   }else if(action==='RETURN'||action==='SWAP_OUT'){
    const prev=open.get(code);
    if(!prev){unmatchedReturns++;continue}
@@ -1377,7 +1446,7 @@ function renderSummary(){
   return;
  }
  const n=events.filter(x=>['SWAP_OUT'].includes(x.action)).length,issues=events.filter(x=>['REPORT','SWAP_OUT'].includes(x.action)||(x.action==='RETURN'&&x.reasonCode==='BATTERY_WEAK')),pending=devices.filter(hasRadioWarning);
- const now=Date.now(),using=devices.filter(x=>x.status==='OUT'),overdue=using.filter(x=>radioHeldSince(x)?.toMillis?.()&&radioShiftAt(radioHeldSince(x).toMillis()).key!==radioShiftAt(now).key);
+ const now=Date.now(),using=devices.filter(x=>x.status==='OUT'),overdue=using.filter(x=>{const ms=radioHeldSince(x)?.toMillis?.()||0;return !!ms&&now>=radioCustodyDue(ms,x.shift)});
  const admin=canMonitor(currentUser()),holds=using.map(x=>'<p>'+esc(label(x.code))+' · '+esc(x.holderName||'Không rõ người nhận')+(overdue.includes(x)?' <strong class="radioOverdue">CHƯA TRẢ CA TRƯỚC</strong>':'')+'</p>').join('');
  $('radioSummary').innerHTML='<div class="radioReportGrid"><div><strong>'+n+'</strong><small>Lần đổi máy (lịch sử gần đây)</small></div><div><strong>'+issues.length+'</strong><small>Lần ghi nhận vấn đề</small></div><div><strong>'+pending.length+'</strong><small>Máy cần theo dõi</small></div>'+(admin?'<div><strong>'+overdue.length+'</strong><small>Chưa trả ca trước</small></div>':'')+'</div><h4>Cần kiểm tra</h4>'+(pending.length?pending.map(d=>'<p>'+esc(label(d.code))+' · '+esc(STATUSES[d.status])+' · '+esc(REASON_TEXT[d.faultCode]||'')+'</p>').join(''):'<p>Không có cảnh báo đang theo dõi.</p>')+(admin?'<h4>Đang sử dụng / đối soát người giữ</h4>'+(using.length?holds:'<p>Tất cả máy đã được trả hoặc chưa cấp.</p>'):'')+'<p class="radioHint">Ca sáng hết 19:00, ca tối hết 08:29 hôm sau; có thể tiếp tục mở chuyến và bàn giao sau mốc chuyển ca. Giờ máy chủ Firebase là thời điểm ghi nhận.</p><p class="radioHint">Báo cáo này chỉ tổng hợp sự kiện đã tải. Báo cáo ngày/tuần chính thức được tính trên máy chủ, không dựa vào giới hạn 120 mục.</p>';
 }
@@ -1431,8 +1500,10 @@ function assertSingleHolder(inventory,uid,exclude=''){
 }
 async function submit(){
  if(busy||!choice)return;const user=currentUser();if(!user.uid)return notify('Phiên đăng nhập đã hết hạn.',true);
- const code=choice.code,reason=$('radioReason').value,rawDetail=S($('radioDetail').value),returnReason=$('radioReturnReason').value,shiftVal=nativeDraft?.shift||shift();
- $('radioShift').value=shiftVal; // the authoritative shift is assigned at signing, not manually selected
+ const code=choice.code,reason=$('radioReason').value,rawDetail=S($('radioDetail').value),returnReason=$('radioReturnReason').value,
+  shiftVal=mode==='ISSUE'?S($('radioShift').value):['AM','PM'].includes(S(choice.shift))?S(choice.shift):shift();
+ if(!['AM','PM'].includes(shiftVal))return notify('Vui lòng chọn CA SÁNG hoặc CA TỐI trước khi ký nhận máy.',true);
+ $('radioShift').value=shiftVal; // custody duty explicitly selected on ISSUE, inherited from device on RETURN/SWAP_OUT
  if(mode==='RETURN'&&returnReason==='OTHER'&&rawDetail.length<10)return notify('Lý do trả khác cần mô tả ít nhất 10 ký tự.',true);
  const details=mode==='RETURN'?('Lý do trả: '+(RETURN_REASONS[returnReason]||RETURN_REASONS.END_SHIFT)+(rawDetail?' · '+rawDetail:'')):rawDetail;
  if(mode==='SWAP_OUT'&&reason==='LOST')return notify('Máy thất lạc cần được báo riêng, không thể đổi máy đang báo mất.',true);
@@ -1695,7 +1766,7 @@ function pdfPage(rows,index,total,scope,withPhotos=false,totals=null){
  rows.forEach((e,i)=>{
   x.fillStyle=i%2?'#fff':'#eef5f8';x.fillRect(46,y,1100,66);
   x.strokeStyle='#d5e4e9';x.beginPath();x.moveTo(46,y+66);x.lineTo(1146,y+66);x.stroke();
-  const values=[e.at?.toDate?.()?fmt(e.at.toDate()):'Chưa đồng bộ',label(e.deviceCode),ACTS[e.action]||e.action,e.actorName||e.actorUid||'',(STATUSES[e.beforeStatus]||'')+' → '+(STATUSES[e.afterStatus]||''),[REASON_TEXT[e.reasonCode]||'',e.details||'',e.signature?'Có ảnh/chữ ký':''].filter(Boolean).join(' · ')];
+  const values=[e.at?.toDate?.()?fmt(e.at.toDate()):'Chưa đồng bộ',label(e.deviceCode),(ACTS[e.action]||e.action)+' · '+(e.shift==='PM'?'Ca tối':e.shift==='AM'?'Ca sáng':'Chưa rõ ca'),e.actorName||e.actorUid||'',(STATUSES[e.beforeStatus]||'')+' → '+(STATUSES[e.afterStatus]||''),[REASON_TEXT[e.reasonCode]||'',e.details||'',e.signature?'Có ảnh/chữ ký':''].filter(Boolean).join(' · ')];
   let left=46;x.fillStyle='#17394b';x.font='17px Arial';
   values.forEach((v,j)=>{pdfWrap(x,v,widths[j]-18).forEach((line,k)=>x.fillText(line,left+8,y+26+22*k));left+=widths[j]});y+=66;
  });

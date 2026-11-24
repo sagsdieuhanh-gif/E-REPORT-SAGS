@@ -11,7 +11,7 @@ assert(radio.includes("limit(REPORT_LIMIT)"),'bounded full-day server query');
 assert(radio.includes("if(rows.docs.length>=REPORT_LIMIT)throw Error"),'never silently truncate large shift reports');
 assert(radio.includes('reportReady?reportEvents:events'),'report must not be replaced by 120 most-recent records');
 assert(radio.includes('!reportReady||!reportVerified'),'block export until verified report loaded');
-assert(radio.includes('if(!at||at<startMs||at>=endMs)return false'),'filter by Firebase timestamps, not potentially incorrect old shift labels');
+assert(radio.includes("if(!at||radioReportEventDuty(e).key!==reportDate+'/'+reportShift)return false"),'filter reports by confirmed duty and Firebase time, including early PM');
 assert(radio.includes("which==='AM'?'08:30:00':'19:01:00'"),'correct Vietnam shift boundaries');
 assert(radio.includes("reportReady?reportEvents:events).find("),'photo preview must use selected report events');
 assert(css.includes('.radioReportControl'),'date and shift must be visible in UI');
@@ -25,8 +25,9 @@ const boxes={
 };
 let user='AD',online=true,connected=true,fromServer=false,events=[],actions=[],error=null;
 const mockDoc=(id,shift,at)=>({id,data:()=>({id,shift,action:'ISSUE',deviceCode:'DH01',actorName:'A',at:{toMillis:()=>Date.parse(at)}})});
-// Intentionally wrong historical shift labels: report must trust Firebase timestamp.
-let docs=[mockDoc('morning','PM','2026-11-05T01:30:00Z'),mockDoc('night','AM','2026-11-05T12:01:00Z')];
+// An evening shift holder may sign at 17:30 while still in the clock's AM window.
+let docs=[mockDoc('morning','AM','2026-11-05T01:30:00Z'),
+ mockDoc('early-night','PM','2026-11-05T10:30:00Z'),mockDoc('night','PM','2026-11-05T12:01:00Z')];
 const query={where(field,op,value){actions.push(['where',field,op,value.toISOString()]);return this},
  orderBy(field,direction){actions.push(['orderBy',field,direction]);return this},
  limit(n){actions.push(['limit',n]);return this},
@@ -52,14 +53,15 @@ vm.runInContext(radio.slice(a,b)+'\nthis.load=loadShiftReport;this.filter=filter
  assert.equal(c.reportReady,true);assert.equal(c.reportVerified,true);
  assert.equal(c.filter().length,1);assert.equal(c.filter()[0].id,'morning');
  assert.deepEqual(actions.filter(x=>x[0]==='where').map(x=>[x[1],x[2],x[3]]),[
-  ['at','>=','2026-11-05T01:30:00.000Z'],['at','<','2026-11-05T12:01:00.000Z']
+  ['at','>=','2026-11-04T17:00:00.000Z'],['at','<','2026-11-05T17:00:00.000Z']
  ]);
  assert(actions.some(x=>x[0]==='limit'&&x[1]===301));
  assert.match(boxes.radioReportState.textContent,/Ca sáng.*1 sự kiện/);
  c.clearReport();boxes.radioReportShift.value='PM';await c.load();
- assert.equal(c.filter()[0].id,'night','Night shift is selected by real time, ignoring old AM label');
+ assert.equal(c.filter().length,2,'Night-duty 17:30 PM and 19:01 PM must both be in night report');
+ assert(c.filter().some(e=>e.id==='early-night'),'Early PM checkout must not disappear from official PM report');
  assert.deepEqual(actions.filter(x=>x[0]==='where').slice(-2).map(x=>[x[1],x[2],x[3]]),[
-  ['at','>=','2026-11-05T12:01:00.000Z'],['at','<','2026-11-06T01:30:00.000Z']
+  ['at','>=','2026-11-04T17:00:00.000Z'],['at','<','2026-11-06T01:30:00.000Z']
  ]);
  c.clearReport();docs=Array.from({length:301},(_,i)=>mockDoc('r'+i,'PM','2026-11-05T12:30:00Z'));await c.load();
  assert.equal(c.reportReady,false,'300+ events must not create truncated report');

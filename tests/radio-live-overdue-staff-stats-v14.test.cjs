@@ -19,6 +19,7 @@ for(const needle of [
 assert(css.includes('.radioLiveOverdueList')&&css.includes('.radioStaffReport')&&css.includes('#radioOnlyUnreturned[aria-pressed="true"]'));
 const time=s.slice(s.indexOf('function radioShiftAt('),s.indexOf('function shift(){'));
 const range=s.slice(s.indexOf('function radioDayAdd('),s.indexOf('function syncRadioReportMode(){'));
+const duty=s.slice(s.indexOf('function shift(){'),s.indexOf('function heldBy(uid){'));
 const algorithm=s.slice(s.indexOf('function radioReconcileCustody('),s.indexOf('function radioOutstandingSummaryHtml('));
 const liveUI=s.slice(s.indexOf('function renderOverdueAlert('),s.indexOf('function render(){'));
 const staffPDF=s.slice(s.indexOf('function radioPdfStaffPageCount('),s.indexOf('function radioPdfOverviewPages('));
@@ -43,7 +44,7 @@ const ctx={
  $:id=>status[id]||(status[id]={hidden:false,innerHTML:'',replaceChildren(){this.innerHTML=''}})
 };
 vm.createContext(ctx);
-vm.runInContext(time+range+algorithm+liveUI+staffPDF+'\nthis.staffStats=radioStaffStatistics;this.staffHTML=radioStaffStatisticsHtml;this.pdfStaff=radioPdfStaffPages;this.pageCount=radioPdfStaffPageCount;this.liveList=radioLiveCustody;this.overdueUI=renderOverdueAlert;',ctx);
+vm.runInContext(time+range+duty+algorithm+liveUI+staffPDF+'\nthis.staffStats=radioStaffStatistics;this.staffHTML=radioStaffStatisticsHtml;this.pdfStaff=radioPdfStaffPages;this.pageCount=radioPdfStaffPageCount;this.liveList=radioLiveCustody;this.overdueUI=renderOverdueAlert;',ctx);
 const at=str=>Date.parse(str);
 const e=(id,action,device,dt,holder,extra={})=>({id,action,deviceCode:device,
  actorUid:holder,actorName:holder,personUid:holder,personName:holder,

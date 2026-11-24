@@ -26,6 +26,19 @@ function shiftKeyVN(at){
   new Date(Date.parse(calendar+'T00:00:00Z')-86400000).toISOString().slice(0,10):calendar;
  return day+'/'+(am?'AM':'PM');
 }
+function custodyDueMs(receivedMs,selected){
+ if(!Number.isFinite(receivedMs)||receivedMs<=0)return 0;
+ const day=dateVN(new Date(receivedMs)),parts=Object.fromEntries(
+  new Intl.DateTimeFormat('en-GB',{timeZone:VN,hour:'2-digit',minute:'2-digit',hourCycle:'h23'})
+   .formatToParts(new Date(receivedMs)).map(x=>[x.type,x.value]));
+ const minute=Number(parts.hour)*60+Number(parts.minute);
+ const explicit=S(selected).toUpperCase(),shift=['AM','PM'].includes(explicit)?explicit:(minute>=480&&minute<=1110?'AM':'PM');
+ const dutyDay=shift==='PM'&&minute<480?
+  new Date(Date.parse(day+'T00:00:00Z')-86400000).toISOString().slice(0,10):day;
+ // Morning closes at 19:00:59; evening closes at 08:29:59 the following day.
+ return Date.parse(dutyDay+'T'+(shift==='AM'?'08:30:00':'19:01:00')+'+07:00')+
+  (shift==='AM'?631:809)*60000;
+}
 function hhmm(raw){
  const match=S(raw).match(/^([01]\d|2[0-3]):([0-5]\d)$/);return match?Number(match[1])*60+Number(match[2]):null;
 }
@@ -52,9 +65,9 @@ function evaluate(assignments,machines,uid,nowMs=Date.now()){
  const primary=held[0]||null;
  const serverMs=d=>{const t=d.heldSince||d.updatedAt;return t?.toMillis?.()||t?.toDate?.()?.getTime?.()||0;};
  if(primary){
-  const overdue=held.some(d=>serverMs(d)>0&&shiftKeyVN(serverMs(d))!==shiftKeyVN(nowMs));
+  const overdue=held.some(d=>{const since=serverMs(d),due=custodyDueMs(since,d.shift);return due>0&&nowMs>=due});
   const finished=active.length>0&&active.every(isDone);
-  const needsReturn=overdue||finished||active.length===0;
+  const needsReturn=overdue||finished; // No flight roster yet is not evidence that an early PM receipt should be returned.
   if(!needsReturn)return null;
   const allCodes=held.map(x=>S(x.code)).filter(Boolean);
   const suffix=overdue?' (đã qua mốc nhắc trả)':'';

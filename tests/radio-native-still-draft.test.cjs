@@ -17,7 +17,7 @@ const original={};
 const ink={width:540,height:150};
 const attempts=[],draws=[],captions=[];
 let sizes=[],account='staff';
-const ui={radioSignature:ink,radioBattery:{value:'GOOD'},radioReturnReason:{value:'HANDOVER'},radioDetail:{value:'Kiểm tra tem'}};
+const ui={radioSignature:ink,radioBattery:{value:'GOOD'},radioReturnReason:{value:'HANDOVER'},radioDetail:{value:'Kiểm tra tem'},radioShift:{value:'PM'}};
 function harness(navigator={userAgent:'iPhone'}){
  const canvas={
   getContext(type,options){

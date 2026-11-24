@@ -10,8 +10,8 @@ for(const absent of ['id="radioBattery"','id="radioSwapBattery"',
  'Vui lòng ghi mức pin máy thay thế trước khi đổi.',
  'Pin máy thay thế','Pin lúc nhận/trả'])
  assert(!src.includes(absent),'Battery selection must be fully removed from signing UI: '+absent);
-assert(src.includes("const DRAFT_FIELDS=['radioReturnReason','radioDetail']"),
- 'Saved iOS drafts must no longer read nonexistent battery fields');
+assert(src.includes("const DRAFT_FIELDS=['radioReturnReason','radioDetail','radioShift']"),
+ 'Saved iOS drafts must preserve chosen duty shift while never reading nonexistent battery fields');
 assert(src.includes('battery:radioBatteryForWrite(b)'),
  'Atomic SWAP_IN uses previously recorded battery instead of removed select');
 assert(src.includes('battery:radioBatteryForWrite(d)'),
