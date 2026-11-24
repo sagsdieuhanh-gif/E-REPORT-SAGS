@@ -148,7 +148,7 @@
       let old = resource.data;
       let d = request.resource.data;
       let e = getAfter(/databases/$(database)/documents/sags_radio_events_v1/$(d.lastEventId)).data;
-      return activeUser()
+      return radioMember()
         && radioAssetShape(code, d)
         && d.label == old.label
         && d.schemaVersion == old.schemaVersion
@@ -159,7 +159,7 @@
         && radioTransition(old, d, e);
     }
     match /sags_radio_devices_v1/{code} {
-      allow read: if activeUser();
+      allow read: if radioMember();
       allow create: if isAdmin()
         && radioAssetShape(code, request.resource.data)
         && request.resource.data.version == 0
@@ -172,8 +172,8 @@
     }
     match /sags_radio_events_v1/{eventId} {
       // Hand-drawn signatures are private: staff see only their own events, AD sees all.
-      allow read: if activeUser() && (isAdmin() || resource.data.actorUid == request.auth.uid);
-      allow create: if activeUser()
+      allow read: if radioMember() && (radioMonitor() || resource.data.actorUid == request.auth.uid);
+      allow create: if radioMember()
         && radioEventShape(request.resource.data)
         && existsAfter(/databases/$(database)/documents/sags_radio_devices_v1/$(request.resource.data.deviceCode))
         && getAfter(/databases/$(database)/documents/sags_radio_devices_v1/$(request.resource.data.deviceCode)).data.lastEventId == eventId
@@ -186,9 +186,9 @@
     // V2.2 full-colour radio proof: one immutable photo for a newly
     // created signed custody event. No public access or retroactive forgery.
     match /sags_radio_proofs_v22/{eventId} {
-      allow get: if activeUser() && (isAdmin() || resource.data.actorUid == request.auth.uid);
+      allow get: if radioMember() && (radioMonitor() || resource.data.actorUid == request.auth.uid);
       allow list: if false;
-      allow create: if activeUser()
+      allow create: if radioMember()
         && request.resource.data.keys().hasOnly([
           'schemaVersion','eventId','actorUid','deviceCode','action','capturedAtMs','image'
         ])
@@ -217,6 +217,6 @@
     }
 
     match /sags_radio_mail_runs_v1/{mailKey} {
-      allow read: if isAdmin();
+      allow read: if radioMonitor();
       allow create, update, delete: if false;
     }
