@@ -76,11 +76,11 @@ function beforeRoute(key){
 const ticket=++navigationEpoch;
 const radioPanel=$('sagsRadioPanel');
 if(key!=='radio'&&radioPanel&&!radioPanel.hidden){
- try{root.SAGSRadioCustodyV1?.close?.()}catch(e){console.warn('Radio close failed',e);radioPanel.hidden=true}
+ try{root.SAGSRadioCustodyV1?.close?.()}catch(e){console.warn(e);radioPanel.hidden=true}
 }
 const history=$('sagsHistoryOverlay');
 if(key!=='history'&&history?.classList?.contains('open')){
- try{$('sagsHistoryClose')?.click?.()}catch(e){console.warn('History close',e)}
+ try{$('sagsHistoryClose')?.click?.()}catch(e){console.warn(e)}
  history.classList.remove('open');
 }
 const guide=$('csgModal');
@@ -102,7 +102,7 @@ if(key!=='home'&&key!=='radio'){
  if(key==='settings'&&typeof root.sagsOpenSettings==='function'){
   beforeRoute(key);root.sagsV157MarkMenuInteraction?.();root.sagsOpenSettings();return
  }
- console.warn('Menu unavailable',key);return
+ console.warn(key);return
 }
 root.sagsV157MarkMenuInteraction?.();
 const ticket=beforeRoute(key);
@@ -248,7 +248,7 @@ root.__sagsRadioRemindersLoadV21=true;
 const build=document.querySelector('meta[name="sags-release-build"]')?.content||'current';
 const node=document.createElement('script');node.id='sags-radio-reminders-v21';
 node.src='./app/modules/radio-reminders.v21.js?v='+encodeURIComponent(build);
-node.onerror=()=>console.warn('Không tải được nhắc bộ đàm.');
+node.onerror=()=>console.warn('Radio reminder');
 document.body.appendChild(node);
 }
 function boot(){
