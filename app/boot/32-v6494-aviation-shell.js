@@ -63,6 +63,8 @@ const e=$(id);return !!e&&!e.hidden&&isShown(e)&&(id==='sagsRadioPanel'||e.class
 function homeState(){const idle=$('roleHomeIdle');return auth()&&!overlayVisible()&&(document.body.classList.contains('v157-home')||(Date.now()<navTransitionUntil&&idle?.getAttribute('aria-hidden')==='false'))}
 function legacyButton(key){return document.querySelector('.v157MenuItem[data-v157-key="'+key+'"]')}
 function available(key){
+// No access to flight, account, roster or general admin routes for this role.
+if(role()==='RADIO_MANAGER')return key==='home'||key==='radio';
 if(key==='final'&&String(role()).toUpperCase()==='CBTT')return false;
 if(key==='home')return true;
 if(key==='radio')return true;
@@ -94,6 +96,7 @@ setTimeout(()=>{observeStateTargets();scheduleSync()},2300);
 return ticket;
 }
 function trigger(key){
+if(role()==='RADIO_MANAGER'&&key!=='home'&&key!=='radio')return;
 if(key!=='home'&&key!=='radio'){
  if(root.sagsV157NavigateMenu?.(key)){scheduleSync();return}
  if(key==='history'&&typeof root.SAGSFormEditHistoryV1?.open==='function'){
@@ -196,7 +199,7 @@ if(mobile.innerHTML!==mobileHtml)mobile.innerHTML=mobileHtml;
 }
 let cachedAvatarPhoto=null,cachedAvatarBackground='';
 function syncIdentity(){
-const p=profile(),r=role()||'—';let pref={};try{pref=typeof root.sagsGetSettings==='function'?root.sagsGetSettings()||{}:{}}catch(_){}
+const p=profile(),r=role()==='RADIO_MANAGER'?'Quản lý bộ đàm':role()||'—';let pref={};try{pref=typeof root.sagsGetSettings==='function'?root.sagsGetSettings()||{}:{}}catch(_){}
 const name=S(pref.displayName||p.name||p.fullName||p.displayName||p.username||p.userName||r||'Người dùng'),photo=S(pref.avatarData);
 const initial=(name.match(/[A-ZÀ-Ỹ0-9]/iu)?.[0]||'U').toUpperCase(),put=(id,v)=>{const e=$(id);if(e&&e.textContent!==v)e.textContent=v};
 const has=!!photo,avatarText=has?'':initial;
@@ -219,11 +222,13 @@ put('v6494Date',todayText());
 function sync(){
 if(syncing)return;syncing=true;
 try{
-const el=ensure();renderMenus();syncIdentity();
+const el=ensure();const radioOnly=role()==='RADIO_MANAGER';
+document.body.classList.toggle('sags-radio-manager',radioOnly);
+renderMenus();syncIdentity();
 const show=homeState(),wasShown=el.classList.contains('show');
 el.classList.toggle('show',show);const hidden=show?'false':'true';if(el.getAttribute('aria-hidden')!==hidden)el.setAttribute('aria-hidden',hidden);
 document.body.classList.toggle('v6494-home-active',show);
-if(auth())loadRadioReminders();
+if(auth()&&!radioOnly)loadRadioReminders();
 if(show)document.body.classList.remove('v157-drawer-open');
 if(show&&!wasShown)root.dispatchEvent(new Event('sags:home-shown'));
 }finally{syncing=false}
@@ -250,6 +255,11 @@ node.onerror=()=>console.warn('Không tải được nhắc ký nhận bộ đà
 document.body.appendChild(node);
 }
 function boot(){
+if(!$('sagsRadioManagerMenuStyle')){
+ const style=document.createElement('style');style.id='sagsRadioManagerMenuStyle';
+ style.textContent='body.sags-radio-manager #v6494AviationHome .v6494Search,body.sags-radio-manager #v6494AviationHome .v6494Notice,body.sags-radio-manager #v6494AviationHome [data-v6494-key="myflight"],body.sags-radio-manager #v6494AviationHome [data-v6494-key="notice"]{display:none!important}';
+ document.head.appendChild(style);
+}
 ensure();sync();observeStateTargets();
 window.addEventListener('pageshow',()=>{observeStateTargets();scheduleSync()},{passive:true});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){observeStateTargets();scheduleSync()}},{passive:true});
