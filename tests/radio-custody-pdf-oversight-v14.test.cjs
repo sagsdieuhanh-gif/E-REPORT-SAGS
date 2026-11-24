@@ -51,7 +51,7 @@ const ev=(id,action,device,date,uid='U1',extra={})=>({
  at:{toMillis:()=>at(date),toDate:()=>new Date(at(date))},...extra
 });
 const cases=[
- ev('a1','ISSUE','DH01','2026-11-21T18:55:00+07:00','A'),
+ ev('a1','ISSUE','DH01','2026-11-21T18:55:00+07:00','A',{shift:'AM'}),
  ev('a2','RETURN','DH01','2026-11-21T19:15:00+07:00','ADMIN',{personUid:'A',personName:'A'}),
  ev('b1','ISSUE','DH02','2026-11-22T09:20:00+07:00','B'),
  ev('c1','ISSUE','DH03','2026-11-23T19:03:00+07:00','C'),
