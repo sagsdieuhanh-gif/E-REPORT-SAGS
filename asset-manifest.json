@@ -1,7 +1,7 @@
 {
   "schema": 2,
   "version": "V1.4",
-  "build": "V1.4-20261124-OFFICIAL-URL-08",
+  "build": "V1.4-20261124-FLEX-SHIFT-09",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -298,20 +298,20 @@
       "bytes": 19587
     },
     "./app/modules/radio-custody.v1.js": {
-      "sha256": "7e51778afa684286bc807fb400a66832c4be10ce1e97c74b9c6c881151e9bb18",
-      "bytes": 154602
+      "sha256": "2ec03d600d4713b1b1df8eabb080010d4511c29e7ea0b8ede98ea2332ee4a6a2",
+      "bytes": 159413
     },
     "./app/modules/radio-photo-vault.v1.js": {
       "sha256": "2a961f41b4f4e9be2ffecdb94288c84edef600e6c54672c7aa5f67c757a4fb09",
       "bytes": 6691
     },
     "./app/modules/radio-reminders.v21.js": {
-      "sha256": "f561d468d8b7f82dc212e49c92d58d08b1b811fa5dc46bd7e800ce39115146bf",
-      "bytes": 10296
+      "sha256": "082e1244d1801e317beecba20b35c9912103b9824b4bf0c50a5bfa4006c907b7",
+      "bytes": 11216
     },
     "./app/modules/radio-work-gate.v1.js": {
-      "sha256": "13755b0dc79d49b1ad3258e2f8bae3a0a3d8e9f295598f9d096dd9e491f9ac8a",
-      "bytes": 7559
+      "sha256": "d87ca6eac61f511171785d949210bc3dd35527d7dcc91a535348b25dbba98db1",
+      "bytes": 9084
     },
     "./app/modules/roster-lite.v5.js": {
       "sha256": "36ed4962af16d6365220fefb5319e2c81dbd05e11e32ca7ff3154443f54d06cc",
@@ -810,8 +810,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "2f077d485c1cee0163cb752c8c19a86a2174f5235f80bc1e3e9edf225e4e930c",
-      "bytes": 107428
+      "sha256": "f9dbbf3322f4dd5b740a8c703b554f62e3d6f7038af669bf9c68fc938b1b7faa",
+      "bytes": 107270
     },
     "./manifest.webmanifest": {
       "sha256": "37bed2c9d467c863170a40049ca253d38862ef43a67b4d3d6a939d93302ba721",
@@ -862,16 +862,16 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "d4f6cb33e0fbfad44f0950a7fc267baf9e7f89b9c7c21ab70e307f3e69414b5e",
-      "bytes": 22705
+      "sha256": "efb59cd071be2e97a2f67b0060414525d2024c020f151b9811851374e8cde21e",
+      "bytes": 22699
     },
     "./storage-recovery.html": {
       "sha256": "08817204a946fbdfa404e8c083dd0c2016e935fb8fe56ff8ef99f405978d3df6",
       "bytes": 26106
     },
     "./version.json": {
-      "sha256": "945cd79d8c211a74d713bb1deb479553e56573a6ef4ecb42ea4f2f8841948e7d",
-      "bytes": 3022
+      "sha256": "f7ede210d347b62e7c51e5be8e11a8f0ad475ec77ba5cfd0cb3a2dcebe37edd4",
+      "bytes": 3822
     }
   },
   "mutableAssets": [
