@@ -2,11 +2,11 @@
   "version": "V1.4",
   "displayVersion": "V1.4",
   "label": "V1.4 - OPERATIONAL CONSISTENCY AND SAFETY",
-  "build": "V1.4-20261124-RADIO-MANAGER-02",
+  "build": "V1.4-20261124-RADIO-SCOPE-03",
   "releasedAt": "2026-11-24",
   "type": "operational-consistency-phase1-2",
   "base": "Giữ nguyên toàn bộ dữ liệu và chức năng đã ổn định từ E-REPORT-SAGS V2.2; chỉ đặt lại dãy số phiên bản hiển thị",
   "updatePolicy": "required",
-  "notes": "Chuẩn hóa ca bộ đàm 08:30–19:00 và 19:01–08:29; thống nhất đăng nhập PVHK/FSAGS09/AD; mật khẩu tài khoản mới ngẫu nhiên 24 ký tự; thanh lưu nháp không còn báo 3 lớp khi chưa xác nhận Firebase; thống nhất mã TW. Các tác vụ backend retention, standby, reset cần cấu hình riêng trên Firebase/GitHub Actions; không thay đổi dữ liệu, lịch sử, ảnh hoặc PDF. Đã chuẩn bị chức danh Quản lý bộ đàm (RADIO_MANAGER); tạm khóa đăng nhập và tạo tài khoản chờ kiểm tra, triển khai Firestore/Realtime Database Rules production.",
-  "message": "Cập nhật V1.4: chuẩn bị quyền Quản lý bộ đàm, bảo vệ bằng khoá an toàn cho đến khi Firebase backend xác nhận."
+  "notes": "Chuẩn hóa ca bộ đàm 08:30–19:00 và 19:01–08:29; thống nhất đăng nhập PVHK/FSAGS09/AD; mật khẩu tài khoản mới ngẫu nhiên 24 ký tự; thanh lưu nháp không còn báo 3 lớp khi chưa xác nhận Firebase; thống nhất mã TW. Các tác vụ backend retention, standby, reset cần cấu hình riêng trên Firebase/GitHub Actions; không thay đổi dữ liệu, lịch sử, ảnh hoặc PDF. Đã chuẩn bị chức danh Quản lý bộ đàm (RADIO_MANAGER); tạm khóa đăng nhập và tạo tài khoản chờ kiểm tra, triển khai Firestore/Realtime Database Rules production. Rà soát và tách đối chiếu roster AD khỏi tài khoản Quản lý bộ đàm; không thay đổi Firebase production.",
+  "message": "Cập nhật V1.4: phạm vi giám sát bộ đàm tách khỏi dữ liệu roster và tài khoản; vai trò mới vẫn khóa chờ Firebase production."
 }
