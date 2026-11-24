@@ -28,6 +28,17 @@ const RADIOS='sags_radio_devices_v1';
   if(v&&Number.isFinite(v.seconds))return v.seconds*1000;
   return NaN;
  }
+ function radioCustodyDueMs(ms,explicitShift){
+  if(!Number.isFinite(ms)||ms<=0)return 0;
+  const formatted=new Intl.DateTimeFormat('en-GB',{timeZone:VN_ZONE,year:'numeric',month:'2-digit',day:'2-digit',
+   hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date(ms));
+  const p=Object.fromEntries(formatted.map(e=>[e.type,e.value])),minutes=Number(p.hour)*60+Number(p.minute);
+  const shift=['AM','PM'].includes(explicitShift)?explicitShift:radioShiftAt(ms).shift;
+  const day=new Date(Date.UTC(Number(p.year),Number(p.month)-1,Number(p.day)-(shift==='PM'&&minutes<510?1:0)))
+   .toISOString().slice(0,10);
+  return Date.parse(day+'T'+(shift==='AM'?'08:30:00':'19:01:00')+'+07:00')+
+   (shift==='AM'?631:809)*60000;
+ }
  function gateError(code,message,cause){
   const e=new Error(message);e.code=code;if(cause)e.cause=cause;return e;
  }
@@ -51,12 +62,13 @@ const RADIOS='sags_radio_devices_v1';
   // Only signed, server-confirmed custody gates flight access. Shift changes
   // and missing/odd radio timestamps are advisory; never block opening work.
   const device=held[0],details=device.data(),receivedMs=radioTimestampMs(details?.heldSince||details?.updatedAt);
-  const now=Date.now(),current=radioShiftAt(now);
+  const now=Date.now(),current=radioShiftAt(now),selected=String(details?.shift||'').toUpperCase();
   const issued=Number.isFinite(receivedMs)&&receivedMs>0&&receivedMs<=now+5*60000
    ?radioShiftAt(receivedMs):null;
-  const shiftReminder=issued&&issued.key!==current.key
-   ?'Nhắc trả bộ đàm '+device.id+': đã qua mốc ca '+(issued.shift==='AM'?'sáng':'tối')+
-    ' ('+issued.shiftDay+'). Có thể tiếp tục làm việc; ký trả khi hoàn tất bàn giao.'
+  const due=issued?radioCustodyDueMs(receivedMs,selected):0;
+  const shiftReminder=due&&now>=due
+   ?'Nhắc trả bộ đàm '+device.id+': đã qua giờ kết thúc ca '+(selected==='PM'?'tối':selected==='AM'?'sáng':issued.shift==='AM'?'sáng':'tối')+
+    '. Có thể tiếp tục làm việc; ký trả khi hoàn tất bàn giao.'
    :(!issued?'Không xác định được giờ nhận máy; vui lòng đối soát lịch sử khi có điều kiện.':'');
   return {uid,deviceCode:device.id,issuedShift:issued?.key||'',currentShift:current.key,shiftReminder};
  }
