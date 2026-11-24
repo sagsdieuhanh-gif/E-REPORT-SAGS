@@ -2,7 +2,7 @@
   "name": "PĐH SAGS-CXR",
   "short_name": "PĐH SAGS-CXR",
   "description": "Ứng dụng Phiếu điều hành SAGS-CXR",
-  "start_url": "./index.html",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "background_color": "#04111F",
