@@ -5,9 +5,10 @@ assert(source.includes("['ISSUE','RETURN'].includes(action)"),'Only signed hando
 assert(source.includes('/iPhone|iPad|iPod|Android/i'),'iOS and Android must capture full-resolution still photos');
 assert(source.includes('[2048,1920,1800,1600,1440,1280'),'Hi-fi encoder starts above 1280px');
 assert(source.includes('[[Math.min(longest,2560),.94],[2240,.88],[2048,.84],[1920,.82]'),'iOS fallback retains sharpness beyond 1600px');
-assert(source.includes("if(img.src.startsWith('data:image/jpeg;base64,'))"),'PDF must embed the original JPEG for verified AND unverified events');
+assert(source.includes("const directJpeg=img.src.startsWith('data:image/jpeg;base64,')"),'Verified and unverified JPEG sources use the same PDF optimization path');
+assert(source.includes("if(!reencode){"),'Small verified JPEGs must remain embedded without recompression');
 assert(!source.includes("if(audit.unverified&&img.src.startsWith('data:image/jpeg;base64,'))"),'Do not flatten verified proof in the PDF');
-assert(source.includes("const jpeg=hi.toDataURL('image/jpeg',.94)"),'WebP full-proof should convert only once at its own resolution');
+assert(source.includes("const jpeg=hi.toDataURL('image/jpeg',.84)"),'WebP full-proof must be converted once to readable, size-optimized PDF JPEG');
 
 const begin=source.indexOf('function encodeProof('),finish=source.indexOf('// Optional device-only backup',begin);
 assert(begin>0&&finish>begin);
@@ -39,11 +40,12 @@ assert(legacy.length<=235000,'Older Firebase limits must still allow fallback');
 const receipt=ctx.receipt('old');
 assert(receipt.length<=44000,'Compact audit signature must remain small');
 
-// Actual PDF composition: a verified original JPEG must survive byte-for-byte
-// rather than being recompressed with the entire 900x1273 page canvas.
+// Actual PDF composition: small verified original JPEGs remain byte-for-byte;
+// large proofs are optimized only for embedding in the PDF, never in cloud storage.
 const pageStart=source.indexOf('async function photoPdfPage('),pageEnd=source.indexOf('function pdfStoredPage(',pageStart);
 assert(pageStart>0&&pageEnd>pageStart);
 const jpeg='data:image/jpeg;base64,'+Buffer.from([255,216,4,8,15,16,255,217]).toString('base64');
+const pdfJpeg='data:image/jpeg;base64,'+'A'.repeat(200);
 const webp='data:image/webp;base64,'+Buffer.from([8,9,10]).toString('base64');
 const created=[],drawn=[];
 let actualProof=jpeg;
@@ -51,7 +53,7 @@ function makePdfCanvas(){
  const canvas={width:0,height:0,proofJpeg:null};
  const context={scale(){},fillRect(){},fillText(){},drawImage(){drawn.push('page-resampled')},set imageSmoothingEnabled(_){},set imageSmoothingQuality(_){}};
  canvas.getContext=()=>context;
- canvas.toDataURL=(mime,q)=>jpeg;
+ canvas.toDataURL=(mime,q)=>pdfJpeg;
  created.push(canvas);
  return canvas;
 }
@@ -74,9 +76,9 @@ const event={deviceCode:'DH01',actorName:'Staff',actorUid:'uid',shift:'AM',
  assert.equal(drawn.length,0,'No page-thumbnail resampling of a genuine JPEG');
  actualProof=webp;
  page=await scope.page(event,1,1);
- assert.equal(page.proofJpeg.data,jpeg,'WebP should get a single native-size JPEG conversion for PDF');
- assert.equal(page.proofJpeg.width,2000);
- assert.equal(page.proofJpeg.height,1500);
- assert.equal(drawn.length,1,'WebP should be converted at source dimensions, not page dimensions');
- console.log('Radio photo fidelity PASS: Android still camera, 2048px originals, 700k/235k archive, 44k receipt, raw JPEG in verified PDF');
+ assert.equal(page.proofJpeg.data,pdfJpeg,'WebP should get a single moderately compressed JPEG for PDF');
+ assert.equal(page.proofJpeg.width,1800);
+ assert.equal(page.proofJpeg.height,1350);
+ assert.equal(drawn.length,1,'WebP should convert at the PDF optimized dimensions, not page-thumbnail dimensions');
+ console.log('Radio photo fidelity PASS: 2048px signed originals, 700k/235k archive, 44k receipt, raw small JPEG and readable WebP PDF conversion');
 })().catch(e=>{console.error(e);process.exitCode=1});
