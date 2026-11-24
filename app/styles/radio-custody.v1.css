@@ -353,3 +353,26 @@
  .sagsRadioPanel .radioReportInputs button{grid-column:1/-1}
  .sagsRadioPanel .radioRosterStats{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+
+/* E-REPORT radio custody: high-visibility exceptions ahead of long PDF history. */
+.radioOutstandingBox{margin:14px 0 18px;padding:15px;border:1px solid #64899a;border-radius:14px;background:#0b2a3d;color:#effbff}
+.radioOutstandingHeading{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.radioOutstandingHeading h4{font-size:17px;margin:0 0 8px;color:#f4fcff}
+.radioOutstandingHeading small{font-size:12px;color:#bad8e6}
+.radioOutstandingCards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:13px 0 20px}
+.radioOutstandingCards>div{min-width:0;background:#143d53;border:1px solid #527b8e;border-radius:10px;padding:10px}
+.radioOutstandingCards strong{display:block;font-size:24px;line-height:1.2;color:#f7fdff;font-variant-numeric:tabular-nums}
+.radioOutstandingCards small{display:block;color:#d6e8ee;font-size:11px;line-height:1.45;margin-top:5px}
+.radioOutstandingCards>div:first-child,.radioOutstandingCards>div:nth-child(2){border-color:#b16e68;background:#562f35}
+.radioOutstandingBox>h4{font-size:14px;margin:20px 0 9px;color:#e4fbff}
+.radioOutstandingBox .radioAdminMatrixScroll{margin:7px 0;overflow-x:auto}
+.radioOutstandingBox .radioAdminMatrixScroll table{min-width:620px}
+.radioOutstandingBox .radioAdminMatrixScroll td,.radioOutstandingBox .radioAdminMatrixScroll th{font-size:12px;white-space:normal;overflow-wrap:anywhere}
+.radioOutstandingBox tr.radioOutstandingAlert td{color:#ffe4da;background:rgba(179,59,58,.23);font-weight:750}
+.radioOutstandingWarn{color:#ffd5bf;font-weight:750;font-size:12px;line-height:1.5;margin-top:12px}
+@media(max-width:680px){
+ .radioOutstandingBox{padding:10px}
+ .radioOutstandingCards{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+ .radioOutstandingCards strong{font-size:21px}
+ .radioOutstandingBox .radioAdminMatrixScroll{margin-left:-2px;margin-right:-2px}
+}

@@ -78,7 +78,7 @@ const DRAFT_FIELDS=['radioReturnReason','radioDetail'];
 const CAPTURE_EXIF_OPTIONS={ifd0:false,gps:false,exif:{pick:['DateTimeOriginal','OffsetTimeOriginal']},reviveValues:false};
 let nativeDraft=null,nativeDraftDb=null,signingUid='';
 let reportReady=false,reportLoading=false,reportEvents=[],reportDate='',reportShift='AM',reportToken=0,reportVerified=false;
-let reportMode='SHIFT',reportFrom='',reportTo='';
+let reportMode='SHIFT',reportFrom='',reportTo='',reportAsOfMs=0;
 const REPORT_LIMIT=301,RANGE_BATCH_SIZE=200,RANGE_MAX_EVENTS=2400,RANGE_MAX_DAYS=31;
 let rosterRef=null,rosterCb=null,rosterRows=[],rosterAccounts=new Map(),rosterAudit=[],rosterReady=false,rosterBusy=false,rosterDate='',rosterTime=0,rosterGen=0,rosterTimer=null;
 function session(){try{return root.__sagsGetSession?.()||{}}catch(_){return{}}}
@@ -1038,7 +1038,7 @@ function reportScope(){
 }
 function reportFileToken(){return reportMode==='RANGE'?reportFrom+'-DEN-'+reportTo:reportDate+'-'+reportShift}
 function clearShiftReport(){
- reportToken++;reportReady=false;reportLoading=false;reportVerified=false;reportEvents=[];reportDate='';reportShift='AM';reportMode='SHIFT';reportFrom='';reportTo='';
+ reportToken++;reportReady=false;reportLoading=false;reportVerified=false;reportEvents=[];reportDate='';reportShift='AM';reportMode='SHIFT';reportFrom='';reportTo='';reportAsOfMs=0;
  const x=$('radioReportState');if(x)x.textContent='Chọn phạm vi rồi tải báo cáo từ Firebase để xác minh đủ dữ liệu.';
  for(const id of ['radioReportLoad','radioRangeLoad']){const b=$(id);if(b)b.disabled=false;}
 }
@@ -1056,14 +1056,14 @@ async function loadShiftReport(){
   if(token!==reportToken||!canMonitor(currentUser()))return;
   if(rows.docs.length>=REPORT_LIMIT)throw Error('Ca có trên 300 sự kiện. Không xuất báo cáo thiếu dữ liệu; cần chia nhỏ hoặc xuất từ máy chủ.');
   reportEvents=rows.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.at?.toMillis?.()||0)-(a.at?.toMillis?.()||0));
-  reportDate=day;reportShift=shift;reportMode='SHIFT';reportFrom='';reportTo='';reportReady=true;reportVerified=true;
+  reportDate=day;reportShift=shift;reportMode='SHIFT';reportFrom='';reportTo='';reportAsOfMs=Date.now();reportReady=true;reportVerified=true;
   $('radioHistoryDevice').value='';$('radioHistoryAction').value='';$('radioHistorySearch').value='';
   const count=reportEvents.length; // server-confirmed actual time, including legacy records labelled with the wrong shift
   $('radioReportState').textContent='✓ '+reportScope()+': '+count+' sự kiện đã kiểm tra trực tuyến trong đúng khoảng giờ ca.';
   notify('Đã tải đủ '+count+' sự kiện của '+reportScope()+'. Chọn kèm ảnh (AD) nếu cần đối chiếu.',false);
  }catch(e){
   if(token!==reportToken)return;
-  reportEvents=[];reportReady=false;reportVerified=false;reportDate='';
+  reportEvents=[];reportReady=false;reportVerified=false;reportDate='';reportAsOfMs=0;
   $('radioReportState').textContent='⚠ Không lấy được báo cáo: '+S(e?.message||e);
   notify('Chưa thể xuất báo cáo ca: '+errText(e),true);
  }finally{
@@ -1102,13 +1102,13 @@ async function loadRangeReport(){
    cursor=page.docs[page.docs.length-1];
   }
   if(token!==reportToken||!isAdmin(currentUser()))return;
-  reportEvents=all.reverse();reportMode='RANGE';reportFrom=from;reportTo=to;reportDate='';reportReady=true;reportVerified=true;
+  reportEvents=all.reverse();reportMode='RANGE';reportFrom=from;reportTo=to;reportDate='';reportAsOfMs=Date.now();reportReady=true;reportVerified=true;
   $('radioHistoryDevice').value='';$('radioHistoryAction').value='';$('radioHistorySearch').value='';
   $('radioReportState').textContent='✓ Đã tải đủ '+all.length+' sự kiện từ '+from+' đến '+to+' ('+(days*2)+' ca, Firebase trực tuyến).';
   notify('Đã xác minh '+all.length+' sự kiện trong '+days+' ngày. Có thể xuất PDF không ảnh hoặc kèm ảnh.',false);
  }catch(e){
   if(token!==reportToken)return;
-  reportEvents=[];reportReady=false;reportVerified=false;reportMode='SHIFT';reportFrom='';reportTo='';
+  reportEvents=[];reportReady=false;reportVerified=false;reportMode='SHIFT';reportFrom='';reportTo='';reportAsOfMs=0;
   $('radioReportState').textContent='⚠ Không thể tải đủ khoảng ngày: '+S(e?.message||e);
   notify('Không xuất báo cáo thiếu dữ liệu: '+errText(e),true);
  }finally{
@@ -1190,16 +1190,105 @@ function radioRangeDailyMatrix(rows){
   [...byShift.values()].map(v=>'<tr><td>'+v.day+'</td><td>'+(v.shift==='AM'?'Sáng':'Tối')+'</td><td>'+v.issue+'</td><td>'+v.returned+'</td><td>'+v.swap+'</td><td>'+v.fault+'</td></tr>').join('')+
   '</tbody></table></div></div>';
 }
+
+// Reconcile immutable custody events by device, not by subtracting total ISSUE and RETURN:
+// an AD may sign a RETURN on behalf of the original holder and SWAP_OUT closes a device.
+// The result is an historical snapshot at cutoff, never a claim that a past holder
+// is still holding the device today. Missing prior-period ISSUE must remain explicit.
+function radioReconcileCustody(rows,cutoffMs){
+ const items=[...rows].filter(e=>e&&e.at?.toMillis?.()&&S(e.deviceCode)).sort((a,b)=>
+  a.at.toMillis()-b.at.toMillis()||Number(a.deviceVersion||0)-Number(b.deviceVersion||0)||S(a.id).localeCompare(S(b.id)));
+ const openByDevice=new Map(),late=[],orphanReturns=[],handoverGaps=[];
+ for(const e of items){
+  const code=S(e.deviceCode),time=e.at.toMillis(),action=S(e.action);
+  if(time>cutoffMs)continue;
+  if(action==='ISSUE'||action==='SWAP_IN'){
+   const previous=openByDevice.get(code);
+   if(previous)handoverGaps.push(previous);
+   const duty=radioShiftAt(time),due=shiftBounds(duty.day,duty.shift).endMs;
+   openByDevice.set(code,{id:e.id||'',deviceCode:code,personUid:S(e.personUid||e.actorUid),
+    personName:S(e.personName||e.actorName||e.personUid||e.actorUid)||'Chưa rõ người nhận',
+    receivedAtMs:time,dueMs:due,shiftDay:duty.day,shift:duty.shift,action});
+  }else if(action==='RETURN'||action==='SWAP_OUT'){
+   const prev=openByDevice.get(code);
+   if(!prev){orphanReturns.push(e);continue}
+   const receiver=S(e.personUid),consistent=!receiver||!prev.personUid||receiver===prev.personUid;
+   if(!consistent)handoverGaps.push({...prev,reason:'Người trả không khớp người giữ theo sự kiện'});
+   if(time>=prev.dueMs)late.push({...prev,returnedAtMs:time,returnedBy:S(e.actorName||e.actorUid||''),
+    returnAction:action,matchedHolder:consistent});
+   openByDevice.delete(code);
+  }
+ }
+ const outstanding=[...openByDevice.values()].map(e=>({...e,overdue:cutoffMs>=e.dueMs,
+  ageMinutes:Math.max(0,Math.floor((cutoffMs-e.receivedAtMs)/60000))}))
+  .sort((a,b)=>Number(b.overdue)-Number(a.overdue)||a.receivedAtMs-b.receivedAtMs);
+ late.sort((a,b)=>b.returnedAtMs-a.returnedAtMs);
+ return {outstanding,late,orphanReturns,handoverGaps,cutoffMs};
+}
+function radioReportCutoffMs(){
+ if(!reportReady)return 0;
+ const endMs=reportMode==='RANGE'?radioRangeBounds(reportFrom,reportTo).endMs:shiftBounds(reportDate,reportShift).endMs;
+ return Math.min(endMs,reportAsOfMs||Date.now());
+}
+function radioDelayText(ms){const minutes=Math.max(0,Math.floor(ms/60000));return minutes>=60?Math.floor(minutes/60)+' giờ '+String(minutes%60).padStart(2,'0')+' phút':minutes+' phút'}
+function radioLiveCustody(list,nowMs=Date.now()){
+ return list.filter(d=>d.status==='OUT').map(d=>{
+  const heldAtMs=radioHeldSince(d)?.toMillis?.()||0;
+  const dueMs=heldAtMs?(()=>{const duty=radioShiftAt(heldAtMs);return shiftBounds(duty.day,duty.shift).endMs})():0;
+  return {deviceCode:S(d.code),personName:S(d.holderName||d.holderUid||'Chưa rõ người giữ'),
+   personUid:S(d.holderUid),receivedAtMs:heldAtMs,dueMs,overdue:!!dueMs&&nowMs>=dueMs};
+ }).sort((a,b)=>Number(b.overdue)-Number(a.overdue)||a.receivedAtMs-b.receivedAtMs);
+}
+function radioOutstandingSummaryHtml(rows){
+ const cutoffMs=radioReportCutoffMs(),result=radioReconcileCustody(rows,cutoffMs);
+ const live=radioLiveCustody(devices),table=(headers,items,empty,render)=>{
+  if(!items.length)return '<p class="radioHint">'+empty+'</p>';
+  return '<div class="radioAdminMatrixScroll"><table><thead><tr>'+headers.map(h=>'<th>'+h+'</th>').join('')+
+   '</tr></thead><tbody>'+items.map(render).join('')+'</tbody></table></div>';
+ };
+ const when=ms=>ms?fmt(new Date(ms)):'Không rõ giờ';
+ const overdue=result.outstanding.filter(x=>x.overdue);
+ return '<section class="radioOutstandingBox"><div class="radioOutstandingHeading"><h4>🚩 Đối soát chưa trả · toàn bộ kỳ</h4>'+
+  '<small>Chốt theo giờ Firebase: '+esc(when(cutoffMs))+' · Không căn cứ vào bộ lọc tìm kiếm lịch sử</small></div>'+
+  '<div class="radioOutstandingCards">'+
+  [['Chưa có lượt trả tại mốc chốt',result.outstanding.length],['Quá giờ kết thúc ca',overdue.length],
+   ['Đã trả muộn trong kỳ',result.late.length],['Hiện đang giữ (mới nhất)',live.length]].map(([name,count])=>
+   '<div><strong>'+count+'</strong><small>'+esc(name)+'</small></div>').join('')+'</div>'+
+  '<h4>1 · Lượt nhận chưa thấy trả tại mốc chốt</h4>'+
+  table(['Người nhận','Máy','Thời điểm nhận','Hạn kết thúc ca','Đối soát'],result.outstanding,
+   'Không còn lượt nhận nào chưa được ghi trả tại mốc chốt của phạm vi đã tải.',
+   x=>'<tr class="'+(x.overdue?'radioOutstandingAlert':'')+'"><td>'+esc(x.personName)+'</td><td>'+esc(label(x.deviceCode))+
+    '</td><td>'+esc(when(x.receivedAtMs))+'</td><td>'+esc(when(x.dueMs))+'</td><td>'+
+    (x.overdue?'CẦN KIỂM TRA · quá '+radioDelayText(cutoffMs-x.dueMs):'Đang trong ca')+'</td></tr>')+
+  '<p class="radioHint">Chỉ đối chiếu lượt nhận phát sinh trong phạm vi đã chọn. Người nhận trước ngày bắt đầu không được tự suy đoán; một lượt trả sau mốc chốt có thể xuất hiện trong báo cáo kỳ tiếp theo.</p>'+
+  '<h4>2 · Người đang giữ máy theo trạng thái Firebase mới nhất</h4>'+
+  table(['Người giữ','Máy','Giữ từ','Tình trạng'],live,
+   'Hiện chưa có máy nào ở trạng thái đang sử dụng.',
+   x=>'<tr class="'+(x.overdue?'radioOutstandingAlert':'')+'"><td>'+esc(x.personName)+'</td><td>'+
+    esc(label(x.deviceCode))+'</td><td>'+esc(when(x.receivedAtMs))+'</td><td>'+
+    (x.overdue?'QUÁ CA '+radioDelayText(Date.now()-x.dueMs):x.dueMs?'Đang trong ca':'Chưa đủ giờ để đối chiếu')+'</td></tr>')+
+  '<p class="radioHint">Đây là trạng thái hiện tại, độc lập với mốc chốt báo cáo lịch sử; có thể thay đổi khi nhân viên ký trả.</p>'+
+  '<h4>3 · Lượt trả muộn đã ghi nhận trong kỳ</h4>'+
+  table(['Người nhận','Máy','Đến hạn','Đã trả'],result.late.slice(0,25),
+   'Không phát sinh lượt trả muộn trong dữ liệu đã tải.',
+   x=>'<tr><td>'+esc(x.personName)+'</td><td>'+esc(label(x.deviceCode))+'</td><td>'+
+    esc(when(x.dueMs))+'</td><td>'+esc(when(x.returnedAtMs))+'</td></tr>')+
+  (result.late.length>25?'<p class="radioHint">Hiển thị 25/'+result.late.length+' lượt trả muộn mới nhất; tổng đã tính đủ.</p>':'')+
+  (result.handoverGaps.length?'<p class="radioOutstandingWarn">⚠ '+result.handoverGaps.length+
+   ' chuỗi bàn giao có sự kiện tiếp theo chưa khớp; cần kiểm tra lịch sử.</p>':'')+
+  '</section>';
+}
+
 function renderSummary(){
  if(canMonitor(currentUser())&&!reportReady){
   $('radioSummary').innerHTML='<p class="radioEmpty">Để xem báo cáo chính xác: chọn ngày/ca hoặc khoảng ngày (AD), rồi bấm TẢI BÁO CÁO. Không dùng lịch sử gần đây để suy ra ca cũ.</p>';return;
  }
  if(reportReady){
-  const rows=filteredHistory(),n=rows.filter(x=>x.action==='ISSUE').length,r=rows.filter(x=>x.action==='RETURN').length,
+  const rows=reportEvents,n=rows.filter(x=>x.action==='ISSUE').length,r=rows.filter(x=>x.action==='RETURN').length,
    swaps=rows.filter(x=>x.action==='SWAP_OUT').length,errors=rows.filter(x=>x.action==='REPORT').length;
   $('radioSummary').innerHTML='<h4>Đối soát '+esc(reportScope())+'</h4><div class="radioReportGrid">'+
    [['Nhận máy',n],['Trả máy',r],['Đổi máy',swaps],['Báo lỗi',errors]].map(x=>'<div><strong>'+x[1]+'</strong><small>'+x[0]+'</small></div>').join('')+
-   '</div>'+(reportMode==='RANGE'?radioRangeDailyMatrix(rows):'')+radioShiftDeviceMatrix(rows,reportMode==='RANGE')+'<p class="radioHint">Tổng '+rows.length+' sự kiện theo bộ lọc. Số lượt không phải số máy hiện còn giữ; trạng thái hiện tại không dùng để suy ra lịch sử ca trước.</p>';
+   '</div>'+radioOutstandingSummaryHtml(rows)+(reportMode==='RANGE'?radioRangeDailyMatrix(rows):'')+radioShiftDeviceMatrix(rows,reportMode==='RANGE')+'<p class="radioHint">Tổng '+rows.length+' sự kiện theo bộ lọc. Số lượt không phải số máy hiện còn giữ; trạng thái hiện tại không dùng để suy ra lịch sử ca trước.</p>';
   return;
  }
  const n=events.filter(x=>['SWAP_OUT'].includes(x.action)).length,issues=events.filter(x=>['REPORT','SWAP_OUT'].includes(x.action)||(x.action==='RETURN'&&x.reasonCode==='BATTERY_WEAK')),pending=devices.filter(hasRadioWarning);
@@ -1530,6 +1619,99 @@ function pdfPage(rows,index,total,scope,withPhotos=false,totals=null){
  x.textAlign='right';x.fillText('Trang '+index+'/'+total,1150,1642);
  return cv;
 }
+
+function radioPdfOverviewPages(rows,scope,inventory,cutoffMs,detailPages=0,photoPages=0){
+ const audit=radioReconcileCustody(rows,cutoffMs),live=radioLiveCustody(inventory);
+ const sections=[
+  {title:'CHƯA CÓ LƯỢT TRẢ TẠI MỐC CHỐT',rows:audit.outstanding,short:8},
+  {title:'NGƯỜI HIỆN ĐANG GIỮ MÁY',rows:live,short:6},
+  {title:'ĐÃ GHI NHẬN TRẢ MUỘN',rows:audit.late,short:3}
+ ];
+ const extra=[];
+ for(const section of sections){
+  const remaining=section.rows.slice(section.short);
+  for(let i=0;i<remaining.length;i+=24)extra.push({title:section.title,rows:remaining.slice(i,i+24)});
+ }
+ const total=1+extra.length+detailPages+photoPages;
+ const base=()=>{
+  const cv=document.createElement('canvas');cv.width=1200;cv.height=1698;
+  const x=cv.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,1200,1698);
+  x.fillStyle='#0b354d';x.fillRect(0,0,1200,20);x.fillStyle='#00818d';x.fillRect(0,20,1200,5);
+  return {cv,x};
+ };
+ const heading=(x,title,index)=>{
+  x.fillStyle='#0b354d';x.font='bold 27px Arial';x.fillText('SAGS  |  E-REPORT',47,75);
+  x.font='bold 34px Arial';x.fillText(title,47,139,1090);
+  x.fillStyle='#446173';x.font='18px Arial';
+  x.fillText('Phạm vi: '+scope,47,178,1090);
+  x.fillText('Mốc chốt lịch sử: '+fmt(new Date(cutoffMs))+'  |  Người xuất: '+currentUser().name,47,209,1090);
+  x.textAlign='right';x.fillText('Trang '+index+'/'+total,1150,1649);x.textAlign='left';
+ };
+ const row=(x,y,item,kind,index)=>{
+  const alert=(kind!=='late'&&item.overdue);
+  x.fillStyle=alert?'#fff0ec':index%2?'#fff':'#eff5f8';x.fillRect(46,y,1100,43);
+  x.fillStyle=alert?'#a12724':'#17394b';x.font='bold 18px Arial';
+  x.fillText(item.personName||'Chưa rõ người nhận',57,y+28,310);
+  x.font='18px Arial';x.fillText(label(item.deviceCode),390,y+28,135);
+  x.fillText(item.receivedAtMs?fmt(new Date(item.receivedAtMs)):'Chưa xác minh',540,y+28,240);
+  const status=kind==='late'?'Đã trả muộn '+radioDelayText(item.returnedAtMs-item.dueMs):
+   item.overdue?'QUÁ CA '+radioDelayText((kind==='live'?Date.now():cutoffMs)-item.dueMs):item.dueMs?'Chưa hết ca':'Chưa rõ hạn';
+  x.fillStyle=alert?'#a12724':'#315365';x.font=alert?'bold 17px Arial':'17px Arial';
+  x.fillText(status,795,y+28,340);
+ };
+ const tableHeader=(x,title,y)=>{
+  x.fillStyle='#0b354d';x.font='bold 22px Arial';x.fillText(title,47,y,1100);
+  x.fillStyle='#133e55';x.fillRect(46,y+11,1100,38);x.fillStyle='#fff';x.font='bold 15px Arial';
+  for(const [t,left] of [['NGƯỜI NHẬN / GIỮ',57],['MÃ MÁY',390],['THỜI ĐIỂM NHẬN',540],['TRẠNG THÁI ĐỐI SOÁT',795]])x.fillText(t,left,y+37);
+  return y+49;
+ };
+ const {cv,x}=base();heading(x,'ĐỐI SOÁT BỘ ĐÀM · NHẬN / TRẢ',1);
+ const cards=[
+  ['CHƯA TRẢ TẠI MỐC CHỐT',audit.outstanding.length],
+  ['QUÁ CA TẠI MỐC CHỐT',audit.outstanding.filter(e=>e.overdue).length],
+  ['ĐÃ TRẢ MUỘN',audit.late.length],['HIỆN ĐANG GIỮ',live.length]
+ ];
+ cards.forEach(([name,count],i)=>{
+  const left=46+i*279;
+  x.fillStyle=count&&i<2?'#fce9e6':'#ebf5f8';x.fillRect(left,235,266,97);
+  x.fillStyle=count&&i<2?'#a12724':'#0b4860';x.font='bold 40px Arial';x.fillText(String(count),left+15,283);
+  x.font='bold 14px Arial';x.fillText(name,left+14,311,244);
+ });
+ let y=367;
+ for(let sectionIndex=0;sectionIndex<sections.length;sectionIndex++){
+  const section=sections[sectionIndex];
+  y=tableHeader(x,String(sectionIndex+1)+' · '+section.title,y);
+  const subset=section.rows.slice(0,section.short);
+  if(!subset.length){x.fillStyle='#456175';x.font='italic 16px Arial';x.fillText('Không phát sinh trong phạm vi đối soát.',58,y+29);y+=43}
+  else{for(let i=0;i<subset.length;i++){row(x,y,subset[i],sectionIndex===2?'late':sectionIndex===1?'live':'open',i);y+=43}}
+  if(section.rows.length>subset.length){
+   x.fillStyle='#9b3d25';x.font='bold 15px Arial';
+   x.fillText('Còn '+(section.rows.length-subset.length)+' trường hợp · xem các trang phụ đối soát.',58,y+22);
+   y+=29;
+  }
+  y+=39;
+ }
+ x.fillStyle='#456175';x.font='16px Arial';
+ x.fillText('Chưa trả = lượt nhận trong kỳ chưa thấy RETURN / SWAP_OUT trước mốc chốt; không mặc định là mất máy.',47,1497,1095);
+ x.fillText('Trạng thái đang giữ lấy từ danh mục Firebase mới nhất, không phải ảnh chụp lịch sử.',47,1528,1095);
+ x.fillText('Các lượt nhận trước kỳ không được suy đoán; trả sau mốc chốt thuộc kỳ sau.',47,1558,1095);
+ if(audit.orphanReturns.length){x.fillText('Lượt trả có lượt nhận trước kỳ hoặc thiếu dữ liệu nhận: '+audit.orphanReturns.length,47,1584,1095)}
+ if(audit.handoverGaps.length){
+  x.fillStyle='#a12724';x.font='bold 17px Arial';
+  x.fillText('CẦN KIỂM TRA: '+audit.handoverGaps.length+' chuỗi giao nhận chưa khớp dữ liệu.',47,1617,1095);
+ }
+ const pages=[cv];
+ extra.forEach((part,i)=>{
+  const {cv:next,x:ctx}=base();heading(ctx,'PHỤ LỤC · '+part.title,i+2);
+  let py=tableHeader(ctx,part.title,261);
+  part.rows.forEach((item,j)=>{row(ctx,py,item,part.title.startsWith('ĐÃ GHI')?'late':'open',j);py+=49});
+  ctx.fillStyle='#456175';ctx.font='16px Arial';
+  ctx.fillText('Danh sách tiếp nối trang đầu · mọi trường hợp đều được liệt kê, không cắt bỏ dữ liệu.',46,1606,1100);
+  pages.push(next);
+ });
+ return {pages,count:pages.length,audit,live};
+}
+
 function pdfBuild(canvases){
  const photoStart=3+canvases.length*3,max=photoStart-1+canvases.filter(c=>c.proofJpeg).length;
  const ofs=Array(max+1).fill(0),chunks=[];let pos=0,nextPhoto=photoStart;
@@ -1652,8 +1834,8 @@ function pdfStoredPage(cv){
 async function exportPhotoPdf(){
  if(!canMonitor(currentUser()))return notify('Chỉ AD và Quản lý bộ đàm được xuất lịch sử kèm ảnh.',true);
  if(!connected||!navigator.onLine||!canMonitor(currentUser())||!reportReady||!reportVerified)return notify('Cần chọn ngày, ca và bấm Tải báo cáo ca từ Firebase trước khi xuất ảnh.',true);
- const rows=filteredHistory();
- if(!rows.length)return notify('Không có lịch sử phù hợp bộ lọc.',true);
+ const rows=reportEvents;
+ // PDF is always the complete verified scope; history search/device/action controls only affect on-screen rows.
  if(rows.some(e=>!e.at?.toMillis?.()))return notify('Lịch sử có sự kiện chưa xác minh giờ Firebase. Hãy đồng bộ lại.',true);
  const a=$('radioExport'),b=$('radioSummaryExport');
  if(a?.disabled||b?.disabled)return;
@@ -1664,7 +1846,8 @@ async function exportPhotoPdf(){
  notify('Đang tạo PDF có bảng tổng hợp và '+rows.length+' trang đối chiếu ảnh/chữ ký…');
  try{
   const scope=reportScope();
-  const summaryPages=Math.ceil(rows.length/19),allPages=summaryPages+rows.length,stored=[],totals=radioReportCounts(rows);
+  const summaryPages=Math.ceil(rows.length/19),overview=radioPdfOverviewPages(rows,scope,devices,radioReportCutoffMs(),summaryPages,rows.length),
+   allPages=overview.count+summaryPages+rows.length,stored=overview.pages.map(pdfStoredPage),totals=radioReportCounts(rows);
   const compactOnly=[];let originalCount=0,missingCount=0,supabaseCount=0,purgedCount=0;
   for(let i=0;i<rows.length;i+=19){
    stored.push(pdfStoredPage(pdfPage(rows.slice(i,i+19),stored.length+1,allPages,scope,true,totals)));
@@ -1681,7 +1864,7 @@ async function exportPhotoPdf(){
     if(!batch[j].signature)missingCount++;
     else if(full[j]===batch[j].signature){compactOnly.push(label(batch[j].deviceCode)+' · '+(ACTS[batch[j].action]||batch[j].action));if(root.SAGSRadioPhotoVaultV1?.isPurged(batch[j].id))purgedCount++}
     else {originalCount++;if(root.SAGSRadioPhotoVaultV1?.isOriginal(batch[j].id))supabaseCount++}
-    stored.push(pdfStoredPage(await photoPdfPage(batch[j],summaryPages+i+j+1,allPages,full[j])));
+    stored.push(pdfStoredPage(await photoPdfPage(batch[j],overview.count+summaryPages+i+j+1,allPages,full[j])));
    }
   }
   if(!canMonitor(currentUser()))throw Error('Tài khoản không còn quyền quản lý báo cáo bộ đàm');
@@ -1705,15 +1888,18 @@ async function exportPhotoPdf(){
 async function exportPdf(){
  if(canMonitor(currentUser())&&(!reportReady||!reportVerified))return notify('Chọn ngày/ca hoặc khoảng ngày → Tải báo cáo Firebase → Xuất PDF. Không xuất từ lịch sử gần đây.',true);
  if($('radioPdfIncludePhotos')?.checked&&canMonitor(currentUser()))return exportPhotoPdf();
- const rows=filteredHistory();if(!rows.length)return notify('Không có sự kiện để xuất PDF.',true);
+ const rows=canMonitor(currentUser())?reportEvents:filteredHistory();
+ if(!rows.length&&!canMonitor(currentUser()))return notify('Không có sự kiện để xuất PDF.',true);
  const a=$('radioExport'),b=$('radioSummaryExport');if(a?.disabled||b?.disabled)return;
  if(a)a.disabled=true;if(b)b.disabled=true;notify('Đang tạo báo cáo PDF...');
  try{
   await new Promise(done=>requestAnimationFrame(done));
   const scope=canMonitor(currentUser())?reportScope():'Lịch sử cá nhân đã tải',pages=[];
   for(let i=0;i<rows.length;i+=19)pages.push(rows.slice(i,i+19));
-  const totals=radioReportCounts(rows),stored=[];
-  for(let i=0;i<pages.length;i++){stored.push(pdfStoredPage(pdfPage(pages[i],i+1,pages.length,scope,false,totals)));if(i%12===11)await new Promise(done=>requestAnimationFrame(done));}
+  const totals=radioReportCounts(rows),overview=canMonitor(currentUser())?
+   radioPdfOverviewPages(rows,scope,devices,radioReportCutoffMs(),pages.length,0):null,
+   stored=overview?overview.pages.map(pdfStoredPage):[],totalPages=stored.length+pages.length;
+  for(let i=0;i<pages.length;i++){stored.push(pdfStoredPage(pdfPage(pages[i],i+(overview?.count||0)+1,totalPages,scope,false,totals)));if(i%12===11)await new Promise(done=>requestAnimationFrame(done));}
   const blob=pdfBuild(stored),href=URL.createObjectURL(blob),link=document.createElement('a');
   link.href=href;link.download='SAGS-BO-DAM-'+(reportReady?reportFileToken():new Date().toISOString().slice(0,10))+'-BAO-CAO.pdf';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(href),60000);
   notify('Đã xuất PDF '+rows.length+' sự kiện theo '+scope+'.');
