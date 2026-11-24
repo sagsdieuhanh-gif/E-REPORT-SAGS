@@ -1,27 +1,40 @@
-# Radio custody: explicit intended shift / early handover (2026-11-24)
+# E-REPORT-SAGS: bắt buộc chọn ca khi nhận bộ đàm (24/11/2026)
 
-## Why the old calculation was incorrect
-A member of the incoming night shift can receive a radio at 17:30–18:45 while the nominal morning shift continues to 19:00. The old implementation silently assigned the event to the shift of the sign-in timestamp and disabled the `radioShift` selector. It then used `heldSince` time to decide whether the device was overdue. Consequently, a valid early-PM receipt was misclassified as AM and reported as overdue at 19:01.
+## 1. Mốc giờ nhận máy đã chốt
 
-## Business rules
-- **Scheduled duty shift:** AM 08:30–19:00; PM 19:01–08:29 following day (Vietnam local).
-- **Actual signed receipt time:** immutable Firebase server timestamp; never modified to match the scheduled start.
-- **Intended duty:** new ISSUE has a real AM/PM selector; within ambiguous handover window 16:00–19:00, the employee must choose rather than silently infer. Outside that window the clock shift is only a suggested default and can be changed for legitimate early receipt.
-- A new **18:15 PM** receipt belongs to the **same calendar day's PM duty**, due for return **08:30 the following day**, not 19:01 that evening.
-- A new **18:15 AM** receipt belongs to the AM duty, due **19:01 the same day**.
-- RETURN and SWAP_OUT carry the duty of the held radio; they must not derive duty again from the return timestamp. SWAP_IN follows the same duty while exchanging devices.
-- Firestore already stores `shift` (AM/PM) on the device and immutable event and allows those values in current Rules; this patch requires no new Firestore fields or Rules deployment.
-- Time-based warning remains advisory only: custody/flight operations are not blocked solely by prior-shift overdue.
-- Every live alert, PDF due computation, My Flight advisory and personal return reminder respects the selected duty. Shift-specific historical reports fetch a wider server interval, then classify by recorded duty while preserving the original timestamp.
+- **Ca sáng (mốc giờ nhận): 08:00–18:30**, bao gồm đúng 08:00 và 18:30.
+- **Ca tối (mốc giờ nhận): 18:31–07:59 ngày hôm sau**, bao gồm đúng 18:31 và 07:59.
+- Mốc **giờ nhận** không thay đổi quy định **thời gian làm việc / giờ kết thúc ca** đã chốt trước: sáng 08:30–19:00 (quá hạn từ 19:01), tối 19:01–08:29 ngày sau (quá hạn từ 08:30).
+- Khi bắt đầu **ISSUE (Nhận máy)** ô “Ca nhận bộ đàm (bắt buộc)” luôn **trống**, không có giá trị được gợi ý hay tự chọn. Phải chọn AM hoặc PM mới được ký/lưu. Ứng dụng không tự ép phân loại theo đồng hồ: ca tối nhận máy sớm lúc 17:30/18:15 vẫn có thể được chọn PM.
+- Giờ ký nhận thực tế và ảnh là chứng cứ nguyên bản; Firestore dùng `serverTimestamp()` và không điều chỉnh theo ca.
+- Thông tin phân ca được ghi vào trường `shift` sẵn có trong `sags_radio_events_v1` và `sags_radio_devices_v1` (các Rules hiện tại đã chấp nhận AM/PM).
+- Khi RETURN hoặc SWAP_OUT, giữ `shift` của máy đang giữ; khi SWAP_IN (đổi máy), máy mới kế thừa ca đã xác nhận.
+- Ảnh và bản nháp iOS/Android lưu/khôi phục đúng ca đã chọn.
 
-## Existing history
-Old signed events were written with a clock-derived AM/PM label, including possible misclassified 17:30–19:00 receipts. The original evidence and timestamp are immutable. The software must not silently rewrite historical data or claim to infer a past employee's intended duty. AD should compare roster/photographs when investigating older sessions; any retroactive correction needs an explicit audited correction workflow and matching production Rules.
+## 2. Cảnh báo chưa trả / quá hạn
 
-## Manual validation
-- 18:15 signed **PM**, check Firebase device.shift=PM and event.shift=PM and actual event.at=18:15.
-- At 19:00/19:01, the live overdue banner, My Flight and reminders must **not** mark it overdue.
-- 18:15 signed **AM**, at 19:01 it can be marked overdue if still OUT.
-- At 08:30 the following morning, the PM holder may be flagged overdue if not returned.
-- PM shift PDF must include the 18:15 signed PM event; AM report must exclude it. Weekly/monthly breakdown should put it under PM.
-- RETURN and SWAP_OUT retain the original machine's shift; validate iOS/Android native photo draft resume retains the employee's choice.
-- During 16:00–19:00 ambiguous handover, saving ISSUE without choosing AM or PM is blocked. At other hours, user may override the proposed duty.
+**18:15 PM** → hạn trả theo ca tối lúc **08:30 hôm sau**. Không báo quá ca sáng lúc 19:00 hoặc 19:01.
+
+**18:15 AM** → hạn trả theo ca sáng lúc **19:01 cùng ngày**. Tại 19:00 vẫn trong hạn, sau 19:01 có thể cảnh báo.
+
+Tính hạn theo ca đã được xác nhận, không tính theo thời điểm ký. Điều chỉnh ở bảng giám sát AD, phần Tổng hợp, MY FLIGHT, nhắc trả trên giao diện và PDF. Cảnh báo chỉ để đối soát, không tự khóa chức năng nhận chuyến hay cách ly máy báo lỗi.
+
+## 3. Báo cáo
+
+- Báo cáo một ca truy vấn đủ khoảng giờ ký thực tế rồi **lọc theo ca đã xác nhận**; ca tối ký lúc 17:30 vẫn vào báo cáo ca tối.
+- Báo cáo từ 7 ngày đến 31 ngày truy vấn bao cả trước 08:30 ngày đầu, và phân loại theo **ngày ca đã xác nhận**; không gom nhầm lượt trả ca tối sau nửa đêm vào ca sáng.
+- Giữ nguyên bằng chứng ký và thời gian máy chủ; không sửa dữ liệu lịch sử.
+
+## 4. Dữ liệu cũ
+
+Các bản ghi trước lần sửa có thể đã mang AM/PM được gán theo đồng hồ, kể cả nhân viên tối nhận lúc 17:30. **Không được âm thầm đổi dữ liệu cũ** vì không thể chứng minh ca thực tế từ giờ ký. Khi điều tra, AD so sánh roster và ảnh ký; nếu phải sửa lịch sử sẽ cần cơ chế điều chỉnh có nhật ký và quyền phù hợp, không ghi đè bản gốc.
+
+## 5. Kiểm thử
+
+Trên PC và iOS/Android:
+- 08:00 → mốc nhận sáng; 18:30 → sáng; 18:31 → tối; 07:59 → tối hôm trước; 08:00 ngày mới → sáng.
+- Mở ký nhận lúc **10:00**, **17:30** và **20:00** đều để trống ca, chưa chọn thì không cho ký.
+- 17:30 chọn **PM** → không có cảnh báo sáng, báo cáo PM và PDF ghi đúng ca.
+- 18:15 chọn **AM** → cảnh báo sau 19:01 nếu chưa trả.
+- Trả máy/đổi máy giữ đúng ca đã nhận; tải lại bản nháp iOS không mất lựa chọn.
+- Mất mạng không báo giao dịch thành công; không đụng Firestore Security Rules production.
