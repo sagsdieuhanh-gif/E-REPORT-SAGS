@@ -28,6 +28,16 @@ const RADIOS='sags_radio_devices_v1';
   if(v&&Number.isFinite(v.seconds))return v.seconds*1000;
   return NaN;
  }
+ function radioAssignedDuty(ms,explicitShift){
+  const clock=radioShiftAt(ms),shift=['AM','PM'].includes(explicitShift)?explicitShift:clock.shift;
+  if(shift===clock.shift)return clock;
+  const p=Object.fromEntries(new Intl.DateTimeFormat('en-GB',{timeZone:VN_ZONE,year:'numeric',month:'2-digit',day:'2-digit',
+   hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date(ms)).map(e=>[e.type,e.value]));
+  const minute=Number(p.hour)*60+Number(p.minute);
+  const day=new Date(Date.UTC(Number(p.year),Number(p.month)-1,Number(p.day)-(shift==='PM'&&minute<510?1:0)))
+   .toISOString().slice(0,10);
+  return {key:day+'/'+shift,shift,shiftDay:day};
+ }
  function radioCustodyDueMs(ms,explicitShift){
   if(!Number.isFinite(ms)||ms<=0)return 0;
   const formatted=new Intl.DateTimeFormat('en-GB',{timeZone:VN_ZONE,year:'numeric',month:'2-digit',day:'2-digit',
@@ -64,7 +74,7 @@ const RADIOS='sags_radio_devices_v1';
   const device=held[0],details=device.data(),receivedMs=radioTimestampMs(details?.heldSince||details?.updatedAt);
   const now=Date.now(),current=radioShiftAt(now),selected=String(details?.shift||'').toUpperCase();
   const issued=Number.isFinite(receivedMs)&&receivedMs>0&&receivedMs<=now+5*60000
-   ?radioShiftAt(receivedMs):null;
+   ?radioAssignedDuty(receivedMs,selected):null;
   const due=issued?radioCustodyDueMs(receivedMs,selected):0;
   const shiftReminder=due&&now>=due
    ?'Nhắc trả bộ đàm '+device.id+': đã qua giờ kết thúc ca '+(selected==='PM'?'tối':selected==='AM'?'sáng':issued.shift==='AM'?'sáng':'tối')+
