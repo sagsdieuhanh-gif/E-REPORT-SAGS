@@ -13,7 +13,7 @@ for(const marker of [
  'const rows=reportEvents;',
  'const rows=canMonitor(currentUser())?reportEvents:filteredHistory();',
  'overview.pages.map(pdfStoredPage)',
- "overview.count+summaryPages+i+j+1"
+ "overview.count+staffPages+summaryPages+i+j+1"
 ])assert(code.includes(marker),'Missing reconciliation/PDF overview contract: '+marker);
 assert(css.includes('.radioOutstandingBox')&&css.includes('.radioOutstandingCards'),'Mobile/PC exception section styles required');
 
