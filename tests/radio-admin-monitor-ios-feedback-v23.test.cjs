@@ -41,7 +41,7 @@ const ctx={Date,Number,Map,Math,devices:[
  {code:'DH02',status:'READY',faultCode:'AUDIO'},
  {code:'DH03',status:'READY'}
 ],currentUser:()=>({role:'AD'}),isAdmin:u=>u.role==='AD',canMonitor:u=>u.role==='AD'||u.role==='RADIO_MANAGER',$:id=>boxes[id],OVERDUE_MS:12*3600000,
- fmt:()=> '09:00',label:x=>x,esc:safe,radioShiftAt:ms=>({key:ms>=t-60000?'current':'previous'}),STATUSES:{FAULT:'Ngừng cấp / lỗi'},REASON_TEXT:{MIC:'Micro không phát tiếng',AUDIO:'Loa rè'}};
+ fmt:()=> '09:00',label:x=>x,esc:safe,radioShiftAt:ms=>({key:ms>=t-60000?'current':'previous'}),radioCustodyDue:()=>t-1,STATUSES:{FAULT:'Ngừng cấp / lỗi'},REASON_TEXT:{MIC:'Micro không phát tiếng',AUDIO:'Loa rè'}};
 vm.createContext(ctx);
 const monitorHelpers=radio.match(/^const (hasRadioWarning|radioHeldSince)=.*$/gm).join('\n');
 vm.runInContext(monitorHelpers+'\n'+radio.slice(x,y)+'\nthis.renderMonitor=renderAdminOverview;',ctx);
