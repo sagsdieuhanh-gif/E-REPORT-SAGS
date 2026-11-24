@@ -1698,7 +1698,7 @@ function radioPdfOverviewPages(rows,scope,inventory,cutoffMs,detailPages=0,photo
  if(audit.orphanReturns.length){x.fillText('Lượt trả có lượt nhận trước kỳ hoặc thiếu dữ liệu nhận: '+audit.orphanReturns.length,47,1584,1095)}
  if(audit.handoverGaps.length){
   x.fillStyle='#a12724';x.font='bold 17px Arial';
-  x.fillText('CẦN KIỂM TRA: '+audit.handoverGaps.length+' chuỗi giao nhận chưa khớp dữ liệu.',47,1591,1095);
+  x.fillText('CẦN KIỂM TRA: '+audit.handoverGaps.length+' chuỗi giao nhận chưa khớp dữ liệu.',47,1617,1095);
  }
  const pages=[cv];
  extra.forEach((part,i)=>{
