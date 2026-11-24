@@ -1110,6 +1110,13 @@ function applyRadioRangePreset(preset){
 // Query a broad civil-date window; then classify every receipt by the explicitly
 // confirmed duty rather than discarding night-duty receipts signed before 19:01.
 // Keep shiftBounds() unchanged: 08:30/19:01 remain the official duty boundaries.
+function radioRangeFetchBounds(from,to){
+ // Query by a super-set of actual timestamps; only the confirmed AM/PM
+ // duty associated with the event decides which date belongs in the range.
+ const start=new Date(from+'T00:00:00+07:00');
+ const end=new Date(radioDayAdd(to,1)+'T08:30:00+07:00');
+ return {start,end,startMs:start.getTime(),endMs:end.getTime()};
+}
 function radioReportFetchBounds(day,which){
  const start=new Date(day+'T00:00:00+07:00');
  const end=new Date(radioDayAdd(day,1)+'T'+(which==='PM'?'08:30:00':'00:00:00')+'+07:00');
@@ -1171,7 +1178,7 @@ async function loadRangeReport(){
  const token=++reportToken;reportLoading=true;reportReady=false;reportVerified=false;reportEvents=[];
  $('radioRangeLoad').disabled=true;$('radioReportState').textContent='Đang tải '+days+' ngày / '+(days*2)+' ca từ Firebase…';
  try{
-  const {start,end,startMs,endMs}=radioRangeBounds(from,to),db=fs(),all=[];
+  const {start,end,startMs,endMs}=radioRangeFetchBounds(from,to),db=fs(),all=[];
   let cursor=null;
   while(true){
    let query=db.collection(EVENTS).where('at','>=',start).where('at','<',end).orderBy('at','asc').limit(RANGE_BATCH_SIZE);
@@ -1182,6 +1189,9 @@ async function loadRangeReport(){
    for(const doc of page.docs){
     const data=doc.data(),at=data.at?.toMillis?.()||0;
     if(!at||at<startMs||at>=endMs)throw Error('Phát hiện sự kiện thiếu giờ xác nhận Firebase.');
+    // Never treat a previous-night return after midnight as the new day's event.
+    const duty=radioReportEventDuty(data);
+    if(duty.day<from||duty.day>to)continue;
     // Keep compact history in memory: fetch photo evidence only when requested.
     all.push({id:doc.id,...data,hasSignature:!!data.signature,signature:''});
    }
@@ -1219,7 +1229,7 @@ function filteredHistory(){
  return (reportReady?reportEvents:events).filter(e=>{
   const at=e.at?.toMillis?.()||0;
   if(reportReady){
-   if(reportMode==='RANGE'){const {startMs,endMs}=radioRangeBounds(reportFrom,reportTo);if(!at||at<startMs||at>=endMs)return false}
+   if(reportMode==='RANGE'){const duty=radioReportEventDuty(e);if(!at||duty.day<reportFrom||duty.day>reportTo)return false}
    else if(!at||radioReportEventDuty(e).key!==reportDate+'/'+reportShift)return false;
   }
   if(!reportReady&&dateFilter==='today'&&(!at||date(new Date(at))!==date(new Date(now))))return false;
