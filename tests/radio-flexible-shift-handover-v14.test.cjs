@@ -32,6 +32,18 @@ const early=when('2026-11-24T18:15:00+07:00');
 const early1730=when('2026-11-24T17:30:00+07:00');
 const eveningDue=when('2026-11-25T08:30:00+07:00');
 const morningDue=when('2026-11-24T19:01:00+07:00');
+for(const [clock,expected] of [
+ ['2026-11-24T07:59:00+07:00','2026-11-23/PM'],
+ ['2026-11-24T08:00:00+07:00','2026-11-24/AM'],
+ ['2026-11-24T18:30:00+07:00','2026-11-24/AM'],
+ ['2026-11-24T18:31:00+07:00','2026-11-24/PM'],
+ ['2026-11-25T07:59:00+07:00','2026-11-24/PM'],
+ ['2026-11-25T08:00:00+07:00','2026-11-25/AM']
+]){
+ assert.equal(c.receiveWindow(when(clock)).key,expected,'Exact received-window cutoff '+clock);
+}
+assert(source.includes("action==='ISSUE'?'':"),'Even 08:00 and 20:00 must not silently preselect an employee shift');
+assert(source.includes("if(!['AM','PM'].includes(shiftVal))return notify"),'Empty choice must block receipt');
 for(const ms of [early,early1730]){
  assert.equal(c.clock(ms).key,'2026-11-24/AM','Nominal clock shift remains AM');
  assert.equal(c.duty(ms,'PM').key,'2026-11-24/PM','Selected PM should own early evening receipt');
