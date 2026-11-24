@@ -17,6 +17,7 @@ assert(css.includes('.radioReportInputs[hidden]')&&css.includes('.radioRangeInpu
 assert(code.includes("if(canMonitor(currentUser())&&(!reportReady||!reportVerified))"),'PDF cannot use unverified history');
 assert(code.includes("if(rows.length>photoMax)return notify"),'Photo PDF must fail rather than truncate');
 const shift=code.slice(code.indexOf('function shiftBounds(day,which){'),code.indexOf('function shift(){'));
+const dutyHelpers=code.slice(code.indexOf('function radioShiftAt(ms){'),code.indexOf('function heldBy(uid){'));
 const functions=code.slice(code.indexOf('function radioDayAdd('),code.indexOf('function filteredHistory(){'));
 const filter=code.slice(code.indexOf('function filteredHistory(){'),code.indexOf('function renderHistory(){'));
 assert(shift.startsWith('function shiftBounds')&&functions.includes('async function loadRangeReport()')&&filter.startsWith('function filteredHistory'));
@@ -59,7 +60,7 @@ const ctx={Date,Number,Math,Promise,Map,Set,Intl,navigator:{onLine:true},VN:'Asi
  renderHistory:()=>{},renderSummary:()=>{},dateFilter:'all',events:[]
 };
 vm.createContext(ctx);
-vm.runInContext(shift+functions+filter+
+vm.runInContext(shift+dutyHelpers+functions+filter+
  ';this.loadRangeReport=loadRangeReport;this.radioRangeBounds=radioRangeBounds;this.radioValidDay=radioValidDay;this.applyRadioRangePreset=applyRadioRangePreset;this.filteredHistory=filteredHistory;this.reportScope=reportScope;this.reportFileToken=reportFileToken;this.reportState=()=>({reportReady,reportVerified,reportMode,reportFrom,reportTo,reportEvents});',ctx);
 assert.equal(new Date(ctx.radioRangeBounds('2026-11-18','2026-11-24').startMs).toISOString(),'2026-11-18T01:30:00.000Z');
 assert.equal(new Date(ctx.radioRangeBounds('2026-11-18','2026-11-24').endMs).toISOString(),'2026-11-25T01:30:00.000Z');
