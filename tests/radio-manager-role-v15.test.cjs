@@ -22,6 +22,11 @@ assert(perms.includes('if(r==="RADIO_MANAGER")return v485Blank()'), 'No granted 
 assert(menu.includes("if(role()==='RADIO_MANAGER')return key==='home'||key==='radio'"), 'Radio-only menu contract');
 assert(menu.includes("if(role()==='RADIO_MANAGER'&&key!=='home'&&key!=='radio')return;"), 'Prevent forbidden direct menu routing');
 assert(radio.includes("function canMonitor(u){return isAdmin(u)||u?.role==='RADIO_MANAGER'}"));
+assert(radio.includes("if(!rosterDate||!isAdmin(currentUser()))return;"),'Roster audit must remain AD only');
+assert(radio.includes("if(!isAdmin(currentUser())||$('sagsRadioPanel')?.hidden)return;"),'Manager must not subscribe to RTDB roster');
+assert(radio.includes("if(!isAdmin(currentUser())||!rosterDate||!connected||!navigator.onLine)return renderRosterAlert();"),'Manager must not list users for roster reconciliation');
+assert(radio.includes("roster.hidden=!isAdmin(currentUser())"),'Radio manager must not see AD-only roster reconciliation');
+
 for(const guard of [
  "if(action==='RELEASE'&&!isAdmin(u))",
  "if(['RETURN','SWAP_OUT'].includes(action)&&d.holderUid!==u.uid&&!isAdmin(u))",
