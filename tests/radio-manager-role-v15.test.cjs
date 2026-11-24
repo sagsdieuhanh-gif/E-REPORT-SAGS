@@ -1,6 +1,7 @@
 'use strict';
 const fs=require('node:fs'),assert=require('node:assert/strict'),vm=require('node:vm');
 const role=fs.readFileSync('app/boot/14-v18CanonicalAccountHierarchy.js','utf8');
+const auth=fs.readFileSync('app/boot/06-legacy.js','utf8');
 const labels=fs.readFileSync('app/boot/12-v484SystemDepartmentRoles.js','utf8');
 const titles=fs.readFileSync('app/boot/09-v454AccountProfileOverrides.js','utf8');
 const perms=fs.readFileSync('app/boot/13-v485FeaturePermissions.js','utf8');
@@ -10,6 +11,8 @@ const rules=fs.readFileSync('firebase/firestore.rules','utf8');
 const snippet=fs.readFileSync('firebase/radio-custody.rules.snippet','utf8');
 const account=fs.readFileSync('app/modules/admin-account-actions.v2.js','utf8');
 assert(role.includes('RADIO_MANAGER:{label:"Quản lý bộ đàm",role:"RADIO_MANAGER",roleCode:"QLBD"'), 'Role must be selectable by AD');
+assert(auth.includes('"VIEWER","RADIO_MANAGER"].includes(normalizeFirebaseOperationalRole(r))'), 'Firebase login must accept the new role');
+assert(auth.includes('RADIO_MANAGER:{label:"Quản lý bộ đàm"}'), 'Role label must render in authenticated shell');
 assert(role.includes('"Quản lý bộ đàm":"QUAN_LY_BO_DAM"'));
 assert(labels.includes('RADIO_MANAGER:"Quản lý bộ đàm"'));
 assert(titles.includes('"Nhân viên","Quản lý bộ đàm"'));
