@@ -1,7 +1,7 @@
 {
   "schema": 2,
   "version": "V1.4",
-  "build": "V1.4-20261124-RADIO-SCOPE-03",
+  "build": "V1.4-20261124-RADIO-RANGE-04",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -298,8 +298,8 @@
       "bytes": 19587
     },
     "./app/modules/radio-custody.v1.js": {
-      "sha256": "6cc2f44fb7b1090222f5c6bc3c48b7d8a130f595ed4bc33ab9f82275c5a20968",
-      "bytes": 123153
+      "sha256": "1ce0140c0244be0a58e61ad1301c62d316dcd5951e6c84908534666c188f5ba7",
+      "bytes": 132394
     },
     "./app/modules/radio-photo-vault.v1.js": {
       "sha256": "2a961f41b4f4e9be2ffecdb94288c84edef600e6c54672c7aa5f67c757a4fb09",
@@ -518,8 +518,8 @@
       "bytes": 376878
     },
     "./app/styles/radio-custody.v1.css": {
-      "sha256": "c6f9a6ab8ae86aacc10be32b1ddabbaea64d90a29a463ce4939a998e3ab132c3",
-      "bytes": 28584
+      "sha256": "8e3e1222a5354d694ce7aefc02776160ddc034b9ea4bb0038d09d794c0ce90f0",
+      "bytes": 29663
     },
     "./app/vendor/exifr-lite-7.1.3.js": {
       "sha256": "76f0aab5495ff175271d1c5280c1397efd60aecb17a41c54206c8151576699e6",
@@ -810,7 +810,7 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "d1308d1fd5847ad98a796fd54177aee4289c8c5c641e67287ca8071e762f69fc",
+      "sha256": "799237dbb9dbfd895ab0f7aaf3b9cec20d7cbba547a80ded67830026120a7b66",
       "bytes": 105612
     },
     "./manifest.webmanifest": {
@@ -862,7 +862,7 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "5aaaeb8becaee9af1604cd1040c235875bf836536ccde240e3c6e5e5693ba6ae",
+      "sha256": "f227e541b7f9ec4a3e4fc51af6b1667072bc83d3143461aecc29ab756371719a",
       "bytes": 22702
     },
     "./storage-recovery.html": {
@@ -870,8 +870,8 @@
       "bytes": 26106
     },
     "./version.json": {
-      "sha256": "671a08826fba13a93e9d0b934b39c3bd1f7b8b1e1c47d686409632fba874c4a9",
-      "bytes": 1360
+      "sha256": "00483ccad12ec5457d611a3b509bc9031020e826a3500059dce0a8110e61490b",
+      "bytes": 1640
     }
   },
   "mutableAssets": [
