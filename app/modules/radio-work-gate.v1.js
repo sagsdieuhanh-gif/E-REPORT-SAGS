@@ -34,7 +34,7 @@ const RADIOS='sags_radio_devices_v1';
   const p=Object.fromEntries(new Intl.DateTimeFormat('en-GB',{timeZone:VN_ZONE,year:'numeric',month:'2-digit',day:'2-digit',
    hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date(ms)).map(e=>[e.type,e.value]));
   const minute=Number(p.hour)*60+Number(p.minute);
-  const day=new Date(Date.UTC(Number(p.year),Number(p.month)-1,Number(p.day)-(shift==='PM'&&minute<510?1:0)))
+  const day=new Date(Date.UTC(Number(p.year),Number(p.month)-1,Number(p.day)-(shift==='PM'&&minute<480?1:0)))
    .toISOString().slice(0,10);
   return {key:day+'/'+shift,shift,shiftDay:day};
  }
@@ -43,8 +43,8 @@ const RADIOS='sags_radio_devices_v1';
   const formatted=new Intl.DateTimeFormat('en-GB',{timeZone:VN_ZONE,year:'numeric',month:'2-digit',day:'2-digit',
    hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date(ms));
   const p=Object.fromEntries(formatted.map(e=>[e.type,e.value])),minutes=Number(p.hour)*60+Number(p.minute);
-  const shift=['AM','PM'].includes(explicitShift)?explicitShift:radioShiftAt(ms).shift;
-  const day=new Date(Date.UTC(Number(p.year),Number(p.month)-1,Number(p.day)-(shift==='PM'&&minutes<510?1:0)))
+  const shift=['AM','PM'].includes(explicitShift)?explicitShift:(minutes>=480&&minutes<=1110?'AM':'PM');
+  const day=new Date(Date.UTC(Number(p.year),Number(p.month)-1,Number(p.day)-(shift==='PM'&&minutes<480?1:0)))
    .toISOString().slice(0,10);
   return Date.parse(day+'T'+(shift==='AM'?'08:30:00':'19:01:00')+'+07:00')+
    (shift==='AM'?631:809)*60000;
