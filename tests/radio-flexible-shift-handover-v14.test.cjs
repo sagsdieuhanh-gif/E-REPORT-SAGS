@@ -5,10 +5,10 @@ const reminder=fs.readFileSync('app/modules/radio-reminders.v21.js','utf8');
 const gate=fs.readFileSync('app/modules/radio-work-gate.v1.js','utf8');
 const rule=fs.readFileSync('firebase/firestore.rules','utf8');
 for(const marker of [
- 'id="radioShift"','value="">— Chọn ca sử dụng',
+ 'id="radioShift"','value="">— Bắt buộc chọn ca —',
  "e.id==='radioShift'&&mode!=='ISSUE'",
  "shiftVal=mode==='ISSUE'?S($('radioShift').value)",
- "Ca trực nhận máy","Ca của lượt nhận ban đầu được giữ nguyên khi trả hoặc đổi máy.",
+ "Ca nhận bộ đàm (bắt buộc)","Ca của lượt nhận ban đầu được giữ nguyên khi trả hoặc đổi máy.",
  "const DRAFT_FIELDS=['radioReturnReason','radioDetail','radioShift']",
  "if(typeof draft.fields?.[id]==='string')",
  "radioReportEventDuty(e).key===day+'/'+shift",
@@ -26,7 +26,7 @@ const c={Intl,Date,Math,Number,Map,Set,Array,Promise,
  VN:'Asia/Ho_Chi_Minh',S:x=>String(x??'').trim(),radioHeldSince:d=>d.heldSince||d.updatedAt};
 vm.createContext(c);
 vm.runInContext(basic+dayHelpers+reportHelpers+reconciliation+
- '\nthis.duty=radioCustodyDuty;this.due=radioCustodyDue;this.clock=radioShiftAt;this.preselect=radioPreselectShift;this.reportBounds=radioReportFetchBounds;this.eventDuty=radioReportEventDuty;this.reconcile=radioReconcileCustody;this.live=radioLiveCustody;this.staffStats=radioStaffStatistics;',c);
+ '\nthis.receiveWindow=radioReceiveWindow;this.duty=radioCustodyDuty;this.due=radioCustodyDue;this.clock=radioShiftAt;this.preselect=radioPreselectShift;this.reportBounds=radioReportFetchBounds;this.eventDuty=radioReportEventDuty;this.reconcile=radioReconcileCustody;this.live=radioLiveCustody;this.staffStats=radioStaffStatistics;',c);
 const when=x=>Date.parse(x);
 const early=when('2026-11-24T18:15:00+07:00');
 const early1730=when('2026-11-24T17:30:00+07:00');
@@ -40,9 +40,9 @@ for(const ms of [early,early1730]){
  assert.equal(c.due(ms,'AM'),morningDue,'Morning receipt remains due at 19:01');
 }
 assert.equal(c.preselect(early),'','At handover overlap employee must explicitly select shift');
-assert.equal(c.preselect(when('2026-11-24T10:00:00+07:00')),'AM');
-assert.equal(c.preselect(when('2026-11-24T20:00:00+07:00')),'PM');
-assert.equal(c.duty(when('2026-11-25T08:29:00+07:00'),'PM').key,'2026-11-24/PM');
+assert.equal(c.preselect(when('2026-11-24T10:00:00+07:00')),'','Morning must also be an explicit selection');
+assert.equal(c.preselect(when('2026-11-24T20:00:00+07:00')),'','Night must also be an explicit selection');
+assert.equal(c.duty(when('2026-11-25T07:59:00+07:00'),'PM').key,'2026-11-24/PM');
 assert.equal(c.duty(when('2026-11-25T07:30:00+07:00'),'AM').key,'2026-11-25/AM','Early morning duty can be selected');
 const device=(code,shift)=>({code,status:'OUT',holderUid:code,holderName:code,shift,heldSince:{toMillis:()=>early}});
 const inventory=[device('DH01','AM'),device('DH02','PM')];
