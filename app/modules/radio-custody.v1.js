@@ -83,6 +83,7 @@ let rosterRef=null,rosterCb=null,rosterRows=[],rosterAccounts=new Map(),rosterAu
 function session(){try{return root.__sagsGetSession?.()||{}}catch(_){return{}}}
 function currentUser(){const u=root.firebase?.auth?.().currentUser,s=session(),p=s.profile||root.currentUserProfile||{};return {uid:u?.uid||'',name:S(p.fullName||p.name||p.displayName||p.username||u?.displayName||u?.email||'Nhân viên'),role:S(s.role||p.role||root.currentRole).toUpperCase()}}
 function isAdmin(u){return ['ADMIN','AD'].includes(u?.role)}
+function canMonitor(u){return isAdmin(u)||u?.role==='RADIO_MANAGER'}
 function fs(){if(!root.firebase?.apps?.length||!root.firebase?.firestore)throw Error('Chưa khởi tạo kết nối Firebase.');return root.firebase.firestore()}
 function fv(){return root.firebase.firestore.FieldValue.serverTimestamp()}
 function errText(e){if(String(e?.code||'').includes('permission-denied'))return 'FIREBASE TỪ CHỐI GIAO DỊCH'+(choice?.code?' '+label(choice.code):' BỘ ĐÀM')+': có thể do dữ liệu hoặc quyền ghi của máy này chưa đáp ứng quy tắc. Kiểm tra trạng thái máy, UID người giữ, pin và thông tin lỗi. Ảnh và chữ ký nháp trên thiết bị không bị tự xóa.';if(!navigator.onLine)return 'Mất kết nối. Không ghi nhận nhận/trả khi ngoại tuyến.';return S(e?.message||e||'Có lỗi, thử lại.')}
@@ -100,7 +101,7 @@ function tpl(){
  '<div class="radioStats" id="radioStats"></div>'+
  '<details id="radioAdminDisclosure" class="radioAdminDisclosure" hidden><summary>Quản trị bộ đàm · Giám sát & đối soát ca</summary><section id="radioAdminOverview" class="radioAdminOverview" hidden><div class="radioAdminHeading"><div><small>QUẢN TRỊ THIẾT BỊ · TRẠNG THÁI TRỰC TUYẾN</small><h3>Giám sát bàn giao bộ đàm</h3><p>Người giữ máy, máy cần xử lý và đối soát theo ca ở một nơi.</p></div><button type="button" data-radio-go="summary" class="radioPrimary">Báo cáo ngày / ca</button></div><div id="radioAdminDashboard" class="radioAdminDashboard"></div><div class="radioRosterMonitor"><div class="radioRosterHeader"><b>📋 Đối chiếu roster và ký nhận</b><div class="radioRosterFilters"><label>Ngày<input type="date" id="radioRosterDate"></label><label>Ca<select id="radioRosterShift"><option value="AM">Sáng</option><option value="PM">Tối</option></select></label><button id="radioRosterReload" type="button">↻ Kiểm tra</button></div></div><div id="radioRosterAlert" role="status" aria-live="polite"></div></div></section></details>'+
  '<div class="radioTabs"><button type="button" data-radio-tab="devices" class="selected">Ký nhận / Trả máy</button><button type="button" data-radio-tab="history">Lịch sử ký nhận</button><button type="button" data-radio-tab="summary">Tổng hợp</button></div>'+
- '<section id="radioReportControl" class="radioReportControl" hidden><div class="radioReportTitle"><strong>📅 Báo cáo ký nhận theo ngày và ca</strong><small>1. Chọn ngày và ca → 2. Tải dữ liệu → 3. Chọn ảnh nếu cần → 4. Xuất PDF</small></div><div class="radioReportInputs"><label>Ngày cần báo cáo<input id="radioReportDate" type="date"></label><label>Ca trực<select id="radioReportShift"><option value="AM">Ca sáng (AM)</option><option value="PM">Ca tối (PM)</option></select></label><button type="button" id="radioReportLoad" class="radioPrimary">🔎 Tải báo cáo ca</button><button type="button" id="radioReportReset">Lịch sử gần đây</button></div><div id="radioPdfChoice" class="radioPdfChoice" hidden><label><input type="checkbox" id="radioPdfIncludePhotos"><span>Kèm ảnh chụp và chữ ký trong PDF</span></label><small>AD: Bật để xuất bảng tổng hợp kèm ảnh từng lần nhận/trả; tắt để xuất báo cáo gọn không có ảnh.</small></div><p id="radioReportState" class="radioReportState" role="status" aria-live="polite">Chọn ngày và ca để lấy đúng dữ liệu, không giới hạn ở lịch sử gần nhất.</p><small>Ca sáng 08:30–19:00; ca tối 19:01–08:29 hôm sau (giờ Việt Nam). Báo cáo phân ca bằng giờ Firebase, không phụ thuộc nhãn ca của bản ghi cũ.</small></section>'+ 
+ '<section id="radioReportControl" class="radioReportControl" hidden><div class="radioReportTitle"><strong>📅 Báo cáo ký nhận theo ngày và ca</strong><small>1. Chọn ngày và ca → 2. Tải dữ liệu → 3. Chọn ảnh nếu cần → 4. Xuất PDF</small></div><div class="radioReportInputs"><label>Ngày cần báo cáo<input id="radioReportDate" type="date"></label><label>Ca trực<select id="radioReportShift"><option value="AM">Ca sáng (AM)</option><option value="PM">Ca tối (PM)</option></select></label><button type="button" id="radioReportLoad" class="radioPrimary">🔎 Tải báo cáo ca</button><button type="button" id="radioReportReset">Lịch sử gần đây</button></div><div id="radioPdfChoice" class="radioPdfChoice" hidden><label><input type="checkbox" id="radioPdfIncludePhotos"><span>Kèm ảnh chụp và chữ ký trong PDF</span></label><small>AD / Quản lý bộ đàm: Bật để xuất báo cáo kèm ảnh từng lần nhận/trả.</small></div><p id="radioReportState" class="radioReportState" role="status" aria-live="polite">Chọn ngày và ca để lấy đúng dữ liệu, không giới hạn ở lịch sử gần nhất.</p><small>Ca sáng 08:30–19:00; ca tối 19:01–08:29 hôm sau (giờ Việt Nam). Báo cáo phân ca bằng giờ Firebase, không phụ thuộc nhãn ca của bản ghi cũ.</small></section>'+ 
  '<section id="radioDevicesTab"><div class="radioTools radioDeviceTools"><strong id="radioDevicesTitle">Máy còn trống</strong><div class="radioDeviceToolActions"><button type="button" id="radioAdminAll" hidden aria-pressed="false">Quản lý tất cả (AD)</button><button type="button" id="radioSeed" hidden>+ Khởi tạo máy</button></div></div><div id="radioDraftControls" class="radioTools" hidden><span>Ảnh và chữ ký đang lưu trên máy, chờ xác nhận Firebase.</span><button type="button" id="radioResumeDraft">Tiếp tục ký nhận/trả</button><button type="button" id="radioDiscardDraft">Bỏ bản nháp</button></div><div id="radioDeviceList" class="radioDeviceList"></div></section>'+
  '<section id="radioHistoryTab" hidden><div class="radioTools"><span>Danh sách sự kiện của ca đã chọn (AD) hoặc lịch sử cá nhân</span><button type="button" id="radioExport" class="radioPrimary">📄 Xuất PDF ca</button></div><div class="radioHistoryFilters"><label>Mã máy<select id="radioHistoryDevice"><option value="">Tất cả máy</option></select></label><label>Thao tác<select id="radioHistoryAction"><option value="">Tất cả</option><option value="ISSUE">Nhận máy</option><option value="RETURN">Trả máy</option><option value="SWAP_OUT">Đổi máy</option><option value="REPORT">Báo lỗi</option></select></label><label>Tìm kiếm<input id="radioHistorySearch" type="search" placeholder="Tên, UID hoặc ghi chú" autocomplete="off"></label></div><div id="radioHistoryMeta" class="radioHistoryMeta"></div><div id="radioHistoryList"></div></section>'+
  '<section id="radioSummaryTab" hidden><div class="radioTools"><span>Tổng hợp ca trực · theo ngày đã chọn</span><button type="button" id="radioSummaryExport" class="radioPrimary">📄 Xuất PDF ca</button></div><div id="radioSummary"></div><p class="radioHint">Tổng hợp dữ liệu đã tải trên màn hình; không gửi email.</p></section>'+
@@ -123,7 +124,7 @@ function tpl(){
   $('radioProofZoom').onclick=()=>{const box=$('radioProofViewer');box.classList.toggle('radioProofZoomed');$('radioProofZoom').textContent=box.classList.contains('radioProofZoomed')?'↩ Thu vừa':'🔎 Phóng to'};
  $('radioSeed').onclick=()=>void seed();
  $('radioAdminAll').onclick=()=>{
-  if(!isAdmin(currentUser()))return;
+  if(!canMonitor(currentUser()))return;
   adminAllDevices=!adminAllDevices;render();
  };
  $('radioReportDate').value=radioShiftAt(Date.now()).day;$('radioReportShift').value=shift();
@@ -756,7 +757,7 @@ function mark(e){const c=$('radioSignature'),r=c.getBoundingClientRect(),x=Math.
 function paintSignature(c,points,x,y){const ctx=c.getContext('2d');ctx.strokeStyle='#123f66';ctx.lineWidth=2.8;ctx.lineCap='round';if(points.length===1){ctx.fillStyle='#123f66';ctx.beginPath();ctx.arc(x,y,1.4,0,Math.PI*2);ctx.fill()}else{const prev=points[points.length-2];ctx.beginPath();ctx.moveTo(prev[0],prev[1]);ctx.lineTo(x,y);ctx.stroke()}}
 function clearSignature(){strokes=[];canvasDirty=false;const c=$('radioSignature');if(c)c.getContext('2d').clearRect(0,0,c.width,c.height)}
 function signature(){if(!canvasDirty||!strokes.some(a=>a.length>=2))throw Error('Vui lòng ký xác nhận trực tiếp trên màn hình.');const c=$('radioSignature');let v=c.toDataURL('image/webp',0.45);if(!v.startsWith('data:image/webp;base64,')){v=c.toDataURL('image/png')}if(v.length>45000)throw Error('Chữ ký quá lớn. Xóa và ký lại nét ngắn gọn.');return v}
-function tab(t){for(const id of ['devices','history','summary']){$('radio'+id[0].toUpperCase()+id.slice(1)+'Tab').hidden=id!==t;const btn=document.querySelector('[data-radio-tab="'+id+'"]');btn?.classList.toggle('selected',t===id)}$('radioPdfChoice').hidden=!isAdmin(currentUser())||t==='devices';$('radioReportControl').hidden=!isAdmin(currentUser())||t==='devices';cancel();if(t==='history'||t==='summary')subscribeHistory();else stopHistory();if(t==='summary')renderSummary()}
+function tab(t){for(const id of ['devices','history','summary']){$('radio'+id[0].toUpperCase()+id.slice(1)+'Tab').hidden=id!==t;const btn=document.querySelector('[data-radio-tab="'+id+'"]');btn?.classList.toggle('selected',t===id)}$('radioPdfChoice').hidden=!canMonitor(currentUser())||t==='devices';$('radioReportControl').hidden=!isAdmin(currentUser())||t==='devices';cancel();if(t==='history'||t==='summary')subscribeHistory();else stopHistory();if(t==='summary')renderSummary()}
 function close(){
  if(busy)return;
  // Re-open on the employee-focused view even after AD inspected all devices.
@@ -878,7 +879,7 @@ function reconcileRoster(items,users,machines,history,day,which,now=Date.now()){
  return result;
 }
 function renderRosterAlert(){
- const el=$('radioRosterAlert');if(!el||!isAdmin(currentUser()))return;
+ const el=$('radioRosterAlert');if(!el||!canMonitor(currentUser()))return;
  if(rosterBusy){el.textContent='Đang đối chiếu dữ liệu máy chủ…';return}
  if(!rosterReady){el.textContent='Chưa xác minh roster, tài khoản và lịch sử. Không báo thiếu khi chưa đủ dữ liệu.';return}
  const day=S($('radioRosterDate').value),which=S($('radioRosterShift').value),
@@ -897,13 +898,13 @@ function stopRosterWatch(){
  rosterRef=null;rosterCb=null;rosterDate='';rosterReady=false;rosterBusy=false;
 }
 function queueRosterAudit(ms=1000){
- if(!rosterDate||!isAdmin(currentUser()))return;
+ if(!rosterDate||!canMonitor(currentUser()))return;
  if(rosterTimer)clearTimeout(rosterTimer);
  rosterTimer=setTimeout(()=>{rosterTimer=null;void refreshRosterAudit()},ms);
 }
 function watchRoster(){
  stopRosterWatch();
- if(!isAdmin(currentUser())||$('sagsRadioPanel')?.hidden)return;
+ if(!canMonitor(currentUser())||$('sagsRadioPanel')?.hidden)return;
  const day=S($('radioRosterDate')?.value);
  if(!/^\d{4}-\d\d-\d\d$/.test(day)||!['AM','PM'].includes(S($('radioRosterShift')?.value))||typeof root.sagsV470Ref!=='function')return renderRosterAlert();
  try{
@@ -918,7 +919,7 @@ function watchRoster(){
  }catch(_){rosterReady=false;renderRosterAlert()}
 }
 async function refreshRosterAudit(){
- if(!isAdmin(currentUser())||!rosterDate||!connected||!navigator.onLine)return renderRosterAlert();
+ if(!canMonitor(currentUser())||!rosterDate||!connected||!navigator.onLine)return renderRosterAlert();
  if(rosterBusy){queueRosterAudit(1700);return}
  const day=rosterDate,gen=rosterGen;rosterBusy=true;rosterReady=false;renderRosterAlert();
  try{
@@ -927,7 +928,7 @@ async function refreshRosterAudit(){
    fs().collection('users').get({source:'server'}),
    fs().collection(EVENTS).where('at','>=',start).where('at','<',end).orderBy('at','asc').limit(REPORT_LIMIT).get({source:'server'})
   ]);
-  if(gen!==rosterGen||!isAdmin(currentUser()))return;
+  if(gen!==rosterGen||!canMonitor(currentUser()))return;
   if(e.docs.length>=REPORT_LIMIT)throw Error('Trên 300 sự kiện: không đối chiếu với dữ liệu thiếu.');
   rosterAccounts=new Map(u.docs.filter(d=>d.data().active!==false).map(d=>[rosterLogin(d.data().username),d.id]));
   rosterAudit=e.docs.map(d=>d.data());rosterReady=true;
@@ -937,7 +938,7 @@ async function refreshRosterAudit(){
 function renderAdminOverview(){
  const panel=$('radioAdminOverview'),target=$('radioAdminDashboard');
  if(!panel||!target)return;
- const admin=isAdmin(currentUser());panel.hidden=!admin;
+ const admin=canMonitor(currentUser());panel.hidden=!admin;
  if(!admin){target.replaceChildren();return}
  const now=Date.now(),holds=devices.filter(d=>d.status==='OUT'),
   needs=devices.filter(hasRadioWarning),
@@ -956,12 +957,12 @@ function renderAdminOverview(){
 }
 function render(){
  if(!$('radioDeviceList'))return;
- const u=currentUser(),admin=isAdmin(u),held=heldBy(u.uid),
+ const u=currentUser(),admin=canMonitor(u),administrator=isAdmin(u),held=heldBy(u.uid),
   free=devices.filter(radioIssueable),allDevices=admin&&adminAllDevices,
   visible=radioVisibleDevices(devices,u.uid,admin,adminAllDevices);
- $('radioSeed').hidden=!connected||!admin||INIT.every(code=>devices.some(x=>x.code===code));
+ $('radioSeed').hidden=!connected||!administrator||INIT.every(code=>devices.some(x=>x.code===code));
  const adminToggle=$('radioAdminAll');adminToggle.hidden=!admin;
- adminToggle.textContent=allDevices?'Ẩn danh mục đầy đủ':'Xem toàn bộ máy (AD)';
+ adminToggle.textContent=allDevices?'Ẩn danh mục đầy đủ':'Xem toàn bộ máy';
  adminToggle.setAttribute('aria-pressed',String(allDevices));
  const adminDisclosure=$('radioAdminDisclosure');if(adminDisclosure)adminDisclosure.hidden=!admin;
  const title=$('radioDevicesTitle');
@@ -980,9 +981,9 @@ function render(){
    const mine=d.status==='OUT'&&d.holderUid===u.uid,buttons=[];
    if(radioIssueable(d)&&!held.length)buttons.push(['ISSUE','Ký nhận máy']);
    if(radioIssueable(d)&&!held.length)buttons.push(['REPORT','Báo lỗi']);
-   if(d.status==='OUT'&&(mine||admin&&allDevices))
+   if(d.status==='OUT'&&(mine||administrator&&allDevices))
     buttons.push(['RETURN','Ký trả máy'],['SWAP_OUT','Đổi máy'],['REPORT','Báo lỗi']);
-   if(admin&&allDevices&&hasRadioWarning(d))
+   if(administrator&&allDevices&&hasRadioWarning(d))
     buttons.push(['RELEASE',d.status==='LOST'||d.faultCode==='LOST'?'Xác nhận tìm thấy':'Xác nhận đã xử lý']);
    const status=(d.status==='OUT'?'Đang giữ: '+esc(d.holderName||d.holderUid?.slice(0,8)||'—'):'')+
     (d.faultCode?' · Lỗi ghi nhận: '+esc(REASON_TEXT[d.faultCode]||d.faultCode):'')+
@@ -1009,7 +1010,7 @@ function clearShiftReport(){
  const b=$('radioReportLoad');if(b)b.disabled=false;
 }
 async function loadShiftReport(){
- if(!isAdmin(currentUser()))return notify('Báo cáo đầy đủ theo ngày/ca dành cho tài khoản AD.',true);
+ if(!canMonitor(currentUser()))return notify('Chỉ AD và Quản lý bộ đàm được tải báo cáo toàn bộ ca.',true);
  if(reportLoading||!connected||!navigator.onLine)return notify('Cần mạng và Firebase trực tuyến để tải báo cáo theo ca.',true);
  const day=S($('radioReportDate')?.value),shift=S($('radioReportShift')?.value);
  if(!/^\d{4}-\d{2}-\d{2}$/.test(day)||!['AM','PM'].includes(shift)||new Date(day+'T00:00:00+07:00').toString()==='Invalid Date')return notify('Chọn đúng ngày và ca để tải.',true);
@@ -1019,7 +1020,7 @@ async function loadShiftReport(){
  try{
   const {start,end}=shiftBounds(day,shift),db=fs();
   const rows=await db.collection(EVENTS).where('at','>=',start).where('at','<',end).orderBy('at','asc').limit(REPORT_LIMIT).get({source:'server'});
-  if(token!==reportToken||!isAdmin(currentUser()))return;
+  if(token!==reportToken||!canMonitor(currentUser()))return;
   if(rows.docs.length>=REPORT_LIMIT)throw Error('Ca có trên 300 sự kiện. Không xuất báo cáo thiếu dữ liệu; cần chia nhỏ hoặc xuất từ máy chủ.');
   reportEvents=rows.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.at?.toMillis?.()||0)-(a.at?.toMillis?.()||0));
   reportDate=day;reportShift=shift;reportReady=true;reportVerified=true;
@@ -1084,7 +1085,7 @@ function radioShiftDeviceMatrix(rows){
  items.map(d=>'<tr><th>'+esc(label(d.code))+'</th><td>'+d.received+'</td><td>'+d.returned+'</td><td>'+d.swap+' / '+d.fault+'</td><td>'+esc(d.last)+' · '+esc(d.who||'—')+'</td></tr>').join('')+'</tbody></table></div></div>';
 }
 function renderSummary(){
- if(isAdmin(currentUser())&&!reportReady){
+ if(canMonitor(currentUser())&&!reportReady){
   $('radioSummary').innerHTML='<p class="radioEmpty">Để xem báo cáo ca chính xác: chọn NGÀY và CA ở phía trên, rồi bấm TẢI BÁO CÁO CA. Không dùng dữ liệu gần đây để suy ra lịch sử ca trước.</p>';return;
  }
  if(reportReady){
@@ -1097,8 +1098,8 @@ function renderSummary(){
  }
  const n=events.filter(x=>['SWAP_OUT'].includes(x.action)).length,issues=events.filter(x=>['REPORT','SWAP_OUT'].includes(x.action)||(x.action==='RETURN'&&x.reasonCode==='BATTERY_WEAK')),pending=devices.filter(hasRadioWarning);
  const now=Date.now(),using=devices.filter(x=>x.status==='OUT'),overdue=using.filter(x=>radioHeldSince(x)?.toMillis?.()&&radioShiftAt(radioHeldSince(x).toMillis()).key!==radioShiftAt(now).key);
- const admin=isAdmin(currentUser()),holds=using.map(x=>'<p>'+esc(label(x.code))+' · '+esc(x.holderName||'Không rõ người nhận')+(overdue.includes(x)?' <strong class="radioOverdue">CHƯA TRẢ CA TRƯỚC</strong>':'')+'</p>').join('');
- $('radioSummary').innerHTML='<div class="radioReportGrid"><div><strong>'+n+'</strong><small>Lần đổi máy (lịch sử gần đây)</small></div><div><strong>'+issues.length+'</strong><small>Lần ghi nhận vấn đề</small></div><div><strong>'+pending.length+'</strong><small>Máy cần theo dõi</small></div>'+(admin?'<div><strong>'+overdue.length+'</strong><small>Chưa trả ca trước</small></div>':'')+'</div><h4>Cần kiểm tra</h4>'+(pending.length?pending.map(d=>'<p>'+esc(label(d.code))+' · '+esc(STATUSES[d.status])+' · '+esc(REASON_TEXT[d.faultCode]||'')+'</p>').join(''):'<p>Không có cảnh báo đang theo dõi.</p>')+(admin?'<h4>Đang sử dụng / đối soát người giữ</h4>'+(using.length?holds:'<p>Tất cả máy đã được trả hoặc chưa cấp.</p>'):'')+'<p class="radioHint">Ca sáng hết 18:15, ca tối hết 07:59 hôm sau; có thể tiếp tục mở chuyến và bàn giao sau mốc chuyển ca. Giờ máy chủ Firebase là thời điểm ghi nhận.</p><p class="radioHint">Báo cáo này chỉ tổng hợp sự kiện đã tải. Báo cáo ngày/tuần chính thức được tính trên máy chủ, không dựa vào giới hạn 120 mục.</p>';
+ const admin=canMonitor(currentUser()),holds=using.map(x=>'<p>'+esc(label(x.code))+' · '+esc(x.holderName||'Không rõ người nhận')+(overdue.includes(x)?' <strong class="radioOverdue">CHƯA TRẢ CA TRƯỚC</strong>':'')+'</p>').join('');
+ $('radioSummary').innerHTML='<div class="radioReportGrid"><div><strong>'+n+'</strong><small>Lần đổi máy (lịch sử gần đây)</small></div><div><strong>'+issues.length+'</strong><small>Lần ghi nhận vấn đề</small></div><div><strong>'+pending.length+'</strong><small>Máy cần theo dõi</small></div>'+(admin?'<div><strong>'+overdue.length+'</strong><small>Chưa trả ca trước</small></div>':'')+'</div><h4>Cần kiểm tra</h4>'+(pending.length?pending.map(d=>'<p>'+esc(label(d.code))+' · '+esc(STATUSES[d.status])+' · '+esc(REASON_TEXT[d.faultCode]||'')+'</p>').join(''):'<p>Không có cảnh báo đang theo dõi.</p>')+(admin?'<h4>Đang sử dụng / đối soát người giữ</h4>'+(using.length?holds:'<p>Tất cả máy đã được trả hoặc chưa cấp.</p>'):'')+'<p class="radioHint">Ca sáng hết 19:00, ca tối hết 08:29 hôm sau; có thể tiếp tục mở chuyến và bàn giao sau mốc chuyển ca. Giờ máy chủ Firebase là thời điểm ghi nhận.</p><p class="radioHint">Báo cáo này chỉ tổng hợp sự kiện đã tải. Báo cáo ngày/tuần chính thức được tính trên máy chủ, không dựa vào giới hạn 120 mục.</p>';
 }
 function evidenceDetails(details,captureMs,clock){
  if(!Number.isFinite(captureMs)||captureMs<=0)return details;
@@ -1333,7 +1334,7 @@ async function submit(){
    console.warn('Radio original vault not available:',String(archiveError?.message||archiveError).slice(0,150));
   }
  }
- if(isAdmin(user))queueRosterAudit(150);
+ if(canMonitor(user))queueRosterAudit(150);
  if(nativeDraft)await removeNativeDraft(nativeDraft.uid,nativeDraft.id).catch(e=>console.warn('Radio draft cleanup',e));
  if(originalQueued){
   cancel();notify('✓ Đã ký nhận, lưu ảnh và chữ ký trên Firebase. '+
@@ -1541,8 +1542,8 @@ function pdfStoredPage(cv){
  return {width,height,proofJpeg,toDataURL:()=>jpeg};
 }
 async function exportPhotoPdf(){
- if(!isAdmin(currentUser()))return notify('Chỉ tài khoản AD được xuất lịch sử kèm ảnh.',true);
- if(!connected||!navigator.onLine||!isAdmin(currentUser())||!reportReady||!reportVerified)return notify('AD cần chọn ngày, ca và bấm Tải báo cáo ca từ Firebase trước khi xuất ảnh.',true);
+ if(!canMonitor(currentUser()))return notify('Chỉ AD và Quản lý bộ đàm được xuất lịch sử kèm ảnh.',true);
+ if(!connected||!navigator.onLine||!canMonitor(currentUser())||!reportReady||!reportVerified)return notify('Cần chọn ngày, ca và bấm Tải báo cáo ca từ Firebase trước khi xuất ảnh.',true);
  const rows=filteredHistory();
  if(!rows.length)return notify('Không có lịch sử phù hợp bộ lọc.',true);
  if(rows.some(e=>!e.at?.toMillis?.()))return notify('Lịch sử có sự kiện chưa xác minh giờ Firebase. Hãy đồng bộ lại.',true);
@@ -1570,7 +1571,7 @@ async function exportPhotoPdf(){
     stored.push(pdfStoredPage(await photoPdfPage(batch[j],summaryPages+i+j+1,allPages,full[j])));
    }
   }
-  if(!isAdmin(currentUser()))throw Error('Tài khoản không còn quyền AD');
+  if(!canMonitor(currentUser()))throw Error('Tài khoản không còn quyền quản lý báo cáo bộ đàm');
   if(compactOnly.length){
    const examples=compactOnly.slice(0,5).join('; ');
    const question='CẢNH BÁO CHẤT LƯỢNG ẢNH BỘ ĐÀM\n\n'+
@@ -1589,14 +1590,14 @@ async function exportPhotoPdf(){
  finally{if(a)a.disabled=false;if(b)b.disabled=false}
 }
 async function exportPdf(){
- if(isAdmin(currentUser())&&(!reportReady||!reportVerified))return notify('Chọn ngày và ca → Tải báo cáo ca → Xuất PDF. Không xuất từ lịch sử gần đây.',true);
- if($('radioPdfIncludePhotos')?.checked&&isAdmin(currentUser()))return exportPhotoPdf();
+ if(canMonitor(currentUser())&&(!reportReady||!reportVerified))return notify('Chọn ngày và ca → Tải báo cáo ca → Xuất PDF. Không xuất từ lịch sử gần đây.',true);
+ if($('radioPdfIncludePhotos')?.checked&&canMonitor(currentUser()))return exportPhotoPdf();
  const rows=filteredHistory();if(!rows.length)return notify('Không có sự kiện để xuất PDF.',true);
  const a=$('radioExport'),b=$('radioSummaryExport');if(a?.disabled||b?.disabled)return;
  if(a)a.disabled=true;if(b)b.disabled=true;notify('Đang tạo báo cáo PDF...');
  try{
   await new Promise(done=>requestAnimationFrame(done));
-  const scope=isAdmin(currentUser())?reportScope():'Lịch sử cá nhân đã tải',pages=[];
+  const scope=canMonitor(currentUser())?reportScope():'Lịch sử cá nhân đã tải',pages=[];
   for(let i=0;i<rows.length;i+=19)pages.push(rows.slice(i,i+19));
   const totals=radioReportCounts(rows),blob=pdfBuild(pages.map((v,i)=>pdfPage(v,i+1,pages.length,scope,false,totals))),href=URL.createObjectURL(blob),link=document.createElement('a');
   link.href=href;link.download='SAGS-BO-DAM-'+(reportReady?reportDate+'-'+reportShift:new Date().toISOString().slice(0,10))+'-BAO-CAO.pdf';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(href),60000);
@@ -1615,7 +1616,7 @@ function subscribeHistory(){
  // Avoid downloading up to 120 compressed photographs at every application launch.
  // Fetch only when the user explicitly opens history or summary.
  const historyLimit=/iPad|iPhone|iPod/.test(navigator.userAgent||'')?45:120;
- const query=isAdmin(u)?db.collection(EVENTS).orderBy('at','desc').limit(historyLimit):db.collection(EVENTS).where('actorUid','==',u.uid).limit(historyLimit);
+ const query=canMonitor(u)?db.collection(EVENTS).orderBy('at','desc').limit(historyLimit):db.collection(EVENTS).where('actorUid','==',u.uid).limit(historyLimit);
  historyStop=query.onSnapshot(s=>{
   historyVerified=!s.metadata.fromCache&&navigator.onLine;
   events=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.at?.toMillis?.()||0)-(a.at?.toMillis?.()||0));
@@ -1625,7 +1626,7 @@ function subscribeHistory(){
 async function open(){
  if(busy){$('sagsRadioPanel').hidden=false;return}
  tpl();const u=currentUser();$('radioPdfChoice').hidden=true;$('radioDraftControls').hidden=true;if(!u.uid){$('sagsRadioPanel').hidden=false;notify('Đang chờ xác thực Firebase. Kiểm tra đăng nhập hoặc mở lại sau khi kết nối.',true);return}
- $('sagsRadioPanel').hidden=false;notify('Đang tải danh mục thiết bị…');tab('devices');if(isAdmin(u)&&!rosterDate)watchRoster();
+ $('sagsRadioPanel').hidden=false;notify('Đang tải danh mục thiết bị…');tab('devices');if(canMonitor(u)&&!rosterDate)watchRoster();
  // Resume immutable high-res originals left in IndexedDB if Safari closed
  // during upload. Firebase signed transactions are never replayed here.
  void loadRadioPhotoVault().then(v=>v.flush(4)).then(out=>{

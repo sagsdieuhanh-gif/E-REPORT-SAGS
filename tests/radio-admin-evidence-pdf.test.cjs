@@ -3,9 +3,9 @@ const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/st
 const c=fs.readFileSync('app/modules/radio-custody.v1.js','utf8');
 const rules=fs.readFileSync('firebase/radio-custody.rules.snippet','utf8');
 assert(c.includes('id="radioPdfIncludePhotos"'),'Include-photo choice missing');
-assert(c.includes("$('radioPdfChoice').hidden=!isAdmin(currentUser())||t==='devices'"),'Only AD should see photo option');
-assert(c.includes("if($('radioPdfIncludePhotos')?.checked&&isAdmin(currentUser()))return exportPhotoPdf()"),'PDF checkbox must control export');
-assert(c.includes("if(!isAdmin(currentUser()))return notify('Chỉ tài khoản AD"),'PDF operation must check permissions again');
+assert(c.includes("$('radioPdfChoice').hidden=!canMonitor(currentUser())||t==='devices'"),'Only AD and radio manager may see photo option');
+assert(c.includes("if($('radioPdfIncludePhotos')?.checked&&canMonitor(currentUser()))return exportPhotoPdf()"),'PDF checkbox must control export');
+assert(c.includes("if(!canMonitor(currentUser()))return notify('Chỉ AD và Quản lý bộ đàm"),'PDF operation must check permissions again');
 assert(c.includes('historyVerified=!s.metadata.fromCache&&navigator.onLine'),'photos require server-verified history');
 assert(!c.includes("if(rows.length>16)"),'do not silently omit evidence');
 assert(c.includes('stored.push(pdfStoredPage(await photoPdfPage('),'every filtered event must produce image appendix page');

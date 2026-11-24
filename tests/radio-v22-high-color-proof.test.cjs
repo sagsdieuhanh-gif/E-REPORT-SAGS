@@ -24,7 +24,7 @@ const ruleEnd=rules.indexOf('match /sags_radio_mail_runs_v1/',ruleStart);
 assert(ruleStart>0&&ruleEnd>ruleStart);
 const proofRule=rules.slice(ruleStart,ruleEnd);
 for(const check of [
-  'allow get: if activeUser() && (isAdmin() || resource.data.actorUid == request.auth.uid)',
+  'allow get: if radioMember() && (radioMonitor() || resource.data.actorUid == request.auth.uid)',
   'allow list: if false','allow update, delete: if false',
   "request.resource.data.actorUid == request.auth.uid",
   'request.resource.data.image.size() <= 700000',

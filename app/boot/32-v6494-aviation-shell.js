@@ -63,6 +63,7 @@ const e=$(id);return !!e&&!e.hidden&&isShown(e)&&(id==='sagsRadioPanel'||e.class
 function homeState(){const idle=$('roleHomeIdle');return auth()&&!overlayVisible()&&(document.body.classList.contains('v157-home')||(Date.now()<navTransitionUntil&&idle?.getAttribute('aria-hidden')==='false'))}
 function legacyButton(key){return document.querySelector('.v157MenuItem[data-v157-key="'+key+'"]')}
 function available(key){
+if(role()==='RADIO_MANAGER')return key==='home'||key==='radio';
 if(key==='final'&&String(role()).toUpperCase()==='CBTT')return false;
 if(key==='home')return true;
 if(key==='radio')return true;
@@ -75,25 +76,24 @@ function beforeRoute(key){
 const ticket=++navigationEpoch;
 const radioPanel=$('sagsRadioPanel');
 if(key!=='radio'&&radioPanel&&!radioPanel.hidden){
- try{root.SAGSRadioCustodyV1?.close?.()}catch(e){console.warn('Radio close failed',e);radioPanel.hidden=true}
+ try{root.SAGSRadioCustodyV1?.close?.()}catch(e){console.warn(e);radioPanel.hidden=true}
 }
 const history=$('sagsHistoryOverlay');
 if(key!=='history'&&history?.classList?.contains('open')){
- try{$('sagsHistoryClose')?.click?.()}catch(e){console.warn('History close failed',e)}
+ try{$('sagsHistoryClose')?.click?.()}catch(e){console.warn(e)}
  history.classList.remove('open');
 }
 const guide=$('csgModal');
 if(key!=='guide'&&guide?.classList?.contains('open'))guide.classList.remove('open');
 if(key!=='home'){
 navTransitionUntil=Date.now()+2200;
-// Preserve the current shell until the destination is actually visible.
-// Early hiding leaks the legacy welcome/menu during asynchronous module loads.
 scheduleSync();
 setTimeout(()=>{observeStateTargets();scheduleSync()},2300);
 }else{navTransitionUntil=0;scheduleSync();}
 return ticket;
 }
 function trigger(key){
+if(role()==='RADIO_MANAGER'&&key!=='home'&&key!=='radio')return;
 if(key!=='home'&&key!=='radio'){
  if(root.sagsV157NavigateMenu?.(key)){scheduleSync();return}
  if(key==='history'&&typeof root.SAGSFormEditHistoryV1?.open==='function'){
@@ -102,7 +102,7 @@ if(key!=='home'&&key!=='radio'){
  if(key==='settings'&&typeof root.sagsOpenSettings==='function'){
   beforeRoute(key);root.sagsV157MarkMenuInteraction?.();root.sagsOpenSettings();return
  }
- console.warn('PC menu route unavailable',key);return
+ console.warn(key);return
 }
 root.sagsV157MarkMenuInteraction?.();
 const ticket=beforeRoute(key);
@@ -196,7 +196,7 @@ if(mobile.innerHTML!==mobileHtml)mobile.innerHTML=mobileHtml;
 }
 let cachedAvatarPhoto=null,cachedAvatarBackground='';
 function syncIdentity(){
-const p=profile(),r=role()||'—';let pref={};try{pref=typeof root.sagsGetSettings==='function'?root.sagsGetSettings()||{}:{}}catch(_){}
+const p=profile(),r=role()==='RADIO_MANAGER'?'Quản lý bộ đàm':role()||'—';let pref={};try{pref=typeof root.sagsGetSettings==='function'?root.sagsGetSettings()||{}:{}}catch(_){}
 const name=S(pref.displayName||p.name||p.fullName||p.displayName||p.username||p.userName||r||'Người dùng'),photo=S(pref.avatarData);
 const initial=(name.match(/[A-ZÀ-Ỹ0-9]/iu)?.[0]||'U').toUpperCase(),put=(id,v)=>{const e=$(id);if(e&&e.textContent!==v)e.textContent=v};
 const has=!!photo,avatarText=has?'':initial;
@@ -219,11 +219,13 @@ put('v6494Date',todayText());
 function sync(){
 if(syncing)return;syncing=true;
 try{
-const el=ensure();renderMenus();syncIdentity();
+const el=ensure();const radioOnly=role()==='RADIO_MANAGER';
+document.body.classList.toggle('sags-radio-manager',radioOnly);
+renderMenus();syncIdentity();
 const show=homeState(),wasShown=el.classList.contains('show');
 el.classList.toggle('show',show);const hidden=show?'false':'true';if(el.getAttribute('aria-hidden')!==hidden)el.setAttribute('aria-hidden',hidden);
 document.body.classList.toggle('v6494-home-active',show);
-if(auth())loadRadioReminders();
+if(auth()&&!radioOnly)loadRadioReminders();
 if(show)document.body.classList.remove('v157-drawer-open');
 if(show&&!wasShown)root.dispatchEvent(new Event('sags:home-shown'));
 }finally{syncing=false}
@@ -246,7 +248,7 @@ root.__sagsRadioRemindersLoadV21=true;
 const build=document.querySelector('meta[name="sags-release-build"]')?.content||'current';
 const node=document.createElement('script');node.id='sags-radio-reminders-v21';
 node.src='./app/modules/radio-reminders.v21.js?v='+encodeURIComponent(build);
-node.onerror=()=>console.warn('Không tải được nhắc ký nhận bộ đàm trong ứng dụng.');
+node.onerror=()=>console.warn('Radio reminder');
 document.body.appendChild(node);
 }
 function boot(){

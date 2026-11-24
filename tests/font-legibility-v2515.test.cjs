@@ -2,7 +2,9 @@ const fs=require('node:fs'),crypto=require('node:crypto'),assert=require('node:a
 const css=fs.readFileSync(__dirname+'/../app/styles/boot-36-v6494-aviation-final.css','utf8');
 const html=fs.readFileSync(__dirname+'/../index.html','utf8');
 const normalize=s=>s.replace(/(?<=[{;])(\s*)(color|font-size|font-weight|letter-spacing)\s*:\s*([^;}]+)/g,'$1$2:__TEXT__');
-const structuralHash=crypto.createHash('sha256').update(normalize(css)).digest('hex');
+const baselineCss=css.split('/* RADIO_MANAGER:')[0].trimEnd()+'\n';
+const structuralHash=crypto.createHash('sha256').update(normalize(baselineCss)).digest('hex');
+assert.match(css,/body\.sags-radio-manager #v6494AviationHome \[data-v6494-key="myflight"\]/,'Radio-only role must hide My Flight');
 assert.equal(structuralHash,'389b3b8388550efde748667496b04e488107b724fd6e891583c70acc2e0582d6','Typography update changed CSS properties other than existing color/font-size/font-weight/letter-spacing');
 assert.match(css,/\.v6494Nav button span small\{[^}]*font-size:9px/);
 assert.match(css,/\.v6494MobileBrand small\{[^}]*font-size:8px/);

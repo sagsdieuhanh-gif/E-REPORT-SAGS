@@ -116,3 +116,9 @@ html.new-ui-v1 body :is(.v174DataHubPanel,.v181AdminPanel,.sagsAdminPanel,.drPan
 .v6494Nav button[data-v6494-key="radio"] i{background:#125069;color:#8df5e2}
 #v157Drawer .v157MenuItem[data-sags-radio-shortcut]{border:1px solid #4c8497!important;background:#12364b!important;color:#e7fbff!important}
 @media(min-width:768px) and (max-width:1150px){.v6494QuickGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* RADIO_MANAGER: hide flight shortcuts and search, keeping only the radio workspace. */
+body.sags-radio-manager #v6494AviationHome .v6494Search,
+body.sags-radio-manager #v6494AviationHome .v6494Notice,
+body.sags-radio-manager #v6494AviationHome [data-v6494-key="myflight"],
+body.sags-radio-manager #v6494AviationHome [data-v6494-key="notice"]{display:none!important}
