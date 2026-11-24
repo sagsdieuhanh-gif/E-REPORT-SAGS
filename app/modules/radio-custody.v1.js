@@ -1180,8 +1180,8 @@ function radioRangeDailyMatrix(rows){
   const at=e.at?.toMillis?.()||0;if(!at)continue;
   const {day,shift,key}=radioShiftAt(at),v=byShift.get(key);
   if(!v)continue;
-  if(e.action==='ISSUE'||e.action==='SWAP_IN')v.issue++;
-  if(e.action==='RETURN'||e.action==='SWAP_OUT')v.returned++;
+  if(e.action==='ISSUE')v.issue++;
+  if(e.action==='RETURN')v.returned++;
   if(e.action==='SWAP_OUT')v.swap++;
   if(e.action==='REPORT')v.fault++;
  }
