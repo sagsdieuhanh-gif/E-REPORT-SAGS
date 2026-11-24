@@ -1152,7 +1152,8 @@ function renderHistory(){
   return '<article class="radioAuditRow"><div><small>THỜI GIAN</small><b>'+esc(e.at?.toDate?.()?fmt(e.at.toDate()):'Đang đồng bộ')+'</b></div><div><small>THIẾT BỊ</small><strong>'+esc(label(e.deviceCode))+'</strong><span class="radioActionBadge radioActionBadge-'+kind+'">'+esc(ACTS[e.action]||e.action)+'</span></div><div><small>NGƯỜI KÝ</small><b>'+esc(e.actorName||e.actorUid||'—')+'</b><span class="radioDetailText">'+esc(e.shift||'—')+'</span></div><div><small>TRẠNG THÁI / GHI CHÚ</small><span class="radioDetailText">'+esc(note||'Không có ghi chú')+'</span></div><div><small>BẰNG CHỨNG</small>'+((e.signature||e.hasSignature)?'<button type="button" class="radioViewProof" data-radio-proof="'+esc(e.id)+'">📷 Xem ảnh / chữ ký</button>':'<span class="radioDetailText">Không có ảnh</span>')+'</div></article>';
  }).join('')+'</div>';
 }
-function radioShiftDeviceMatrix(rows,period=false){
+function radioShiftDeviceMatrix(rows){
+ const period=typeof reportMode!=='undefined'&&reportMode==='RANGE';
  const byCode=new Map();
  for(const e of [...rows].reverse()){
   const code=S(e.deviceCode);if(!code)continue;
@@ -1669,8 +1670,11 @@ async function exportPhotoPdf(){
   // Limit concurrent Firebase image loads to four to control mobile memory.
   for(let i=0;i<rows.length;i+=4){
    await new Promise(done=>requestAnimationFrame(done));
-   const batch=await Promise.all(rows.slice(i,i+4).map(e=>hydrateRangeEvidence(e)));
-   const full=await Promise.all(batch.map(e=>highProofData(e)));
+   if(reportMode==='RANGE'){
+    const hydrated=await Promise.all(rows.slice(i,i+4).map(e=>hydrateRangeEvidence(e)));
+    for(let j=0;j<hydrated.length;j++)rows[i+j]=hydrated[j];
+   }
+   const batch=rows.slice(i,i+4),full=await Promise.all(batch.map(e=>highProofData(e)));
    for(let j=0;j<batch.length;j++){
     if(!batch[j].signature)missingCount++;
     else if(full[j]===batch[j].signature){compactOnly.push(label(batch[j].deviceCode)+' · '+(ACTS[batch[j].action]||batch[j].action));if(root.SAGSRadioPhotoVaultV1?.isPurged(batch[j].id))purgedCount++}
