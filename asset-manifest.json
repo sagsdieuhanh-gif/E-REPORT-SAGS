@@ -1,7 +1,7 @@
 {
   "schema": 2,
   "version": "V1.4",
-  "build": "V1.4-20261124-RADIO-LIVE-STAFF-07",
+  "build": "V1.4-20261124-OFFICIAL-URL-08",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -810,12 +810,12 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "3bfcd704b1c3ea66f11e543f0c2acf9907254cd64f220748ca8648465c52cc29",
-      "bytes": 106007
+      "sha256": "2f077d485c1cee0163cb752c8c19a86a2174f5235f80bc1e3e9edf225e4e930c",
+      "bytes": 107428
     },
     "./manifest.webmanifest": {
-      "sha256": "a3ad18732ee6ed607968487c478b7c68fb03b2001dded1816b01cdb11d031c9c",
-      "bytes": 565
+      "sha256": "37bed2c9d467c863170a40049ca253d38862ef43a67b4d3d6a939d93302ba721",
+      "bytes": 555
     },
     "./pdf-bg/bbbt/page-01.jpg": {
       "sha256": "cf50e0d022c213d3979ffe21f539102415bb2272a28bdd8e26c6005a451e5e9c",
@@ -862,16 +862,16 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "e5d58b0a95f5d6e2ddd9261b9ec5ba8e78ff3756a6aa5e91255b18d38d4e58fe",
-      "bytes": 22717
+      "sha256": "d4f6cb33e0fbfad44f0950a7fc267baf9e7f89b9c7c21ab70e307f3e69414b5e",
+      "bytes": 22705
     },
     "./storage-recovery.html": {
       "sha256": "08817204a946fbdfa404e8c083dd0c2016e935fb8fe56ff8ef99f405978d3df6",
       "bytes": 26106
     },
     "./version.json": {
-      "sha256": "5295b3dcb9c62e70f3d3b882547aa4677e8b86450719432fc2637ae9720aebec",
-      "bytes": 2672
+      "sha256": "945cd79d8c211a74d713bb1deb479553e56573a6ef4ecb42ea4f2f8841948e7d",
+      "bytes": 3022
     }
   },
   "mutableAssets": [
