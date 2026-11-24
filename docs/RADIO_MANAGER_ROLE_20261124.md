@@ -1,6 +1,6 @@
 # Quản lý bộ đàm (RADIO_MANAGER) — phân quyền tách biệt AD
 
-**Ngày chuẩn bị:** 24/11/2026. **Trạng thái:** mã nguồn thử nghiệm, chưa kích hoạt cho nhân viên trong production.
+**Ngày cập nhật:** 24/11/2026. **Trạng thái:** bản web có thể phát hành; vai trò mới **chưa được phép tạo/đăng nhập** trước khi Firestore/Realtime Database Rules production được kiểm chứng và triển khai.
 
 ## Nhận diện và lựa chọn trong AD
 
@@ -32,3 +32,7 @@ Mã `firebase/firestore.rules` chặn `RADIO_MANAGER` khỏi `activeUser()` dùn
 6. Kiểm thử âm tính thao tác trực tiếp bằng Firebase SDK với vai trò bị hạn chế. Không cấp ADMIN cho tài khoản này dưới bất kỳ hình thức nào.
 
 **Triển khai GitHub Pages không tự deploy Firebase Rules.** Không công bố hoàn tất sản phẩm khi thiếu thao tác này. Giữ `main` V1.4 nếu phần backend chưa sẵn sàng.
+
+## Phát hành website có chốt an toàn
+
+Build website: `V1.4-20261124-RADIO-MANAGER-02`. Trang và vai trò mới sẵn trong mã, nhưng danh sách vai trò Firebase được phép đăng nhập chưa có `RADIO_MANAGER`, và luồng tạo tài khoản chính chặn vai trò này. Người quản trị **không nên** tự tạo hồ sơ vai trò đó bên ngoài ứng dụng trước khi Firebase production đã kiểm chứng. Giới hạn này sẽ được gỡ bằng phát hành tiếp theo sau khi triển khai rule production.
