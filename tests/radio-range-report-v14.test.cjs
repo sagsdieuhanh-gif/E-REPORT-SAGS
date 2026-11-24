@@ -50,7 +50,7 @@ function queryBuilder(){
  };
 }
 const ctx={Date,Number,Math,Promise,Map,Set,Intl,navigator:{onLine:true},VN:'Asia/Ho_Chi_Minh',
- S:x=>String(x??'').trim(),connected:true,reportReady:false,reportLoading:false,reportVerified:false,
+ S:x=>String(x??'').trim(),EVENTS:'sags_radio_events_v1',connected:true,reportReady:false,reportLoading:false,reportVerified:false,
  reportEvents:[],reportMode:'SHIFT',reportFrom:'',reportTo:'',reportDate:'',reportShift:'AM',reportToken:0,
  RANGE_BATCH_SIZE:200,RANGE_MAX_EVENTS:2400,RANGE_MAX_DAYS:31,REPORT_LIMIT:301,
  currentUser:()=>({role:'AD'}),isAdmin:u=>u.role==='AD',canMonitor:u=>u.role==='AD',
