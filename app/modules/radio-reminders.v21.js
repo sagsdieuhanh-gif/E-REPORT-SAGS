@@ -32,8 +32,8 @@ function custodyDueMs(receivedMs,selected){
   new Intl.DateTimeFormat('en-GB',{timeZone:VN,hour:'2-digit',minute:'2-digit',hourCycle:'h23'})
    .formatToParts(new Date(receivedMs)).map(x=>[x.type,x.value]));
  const minute=Number(parts.hour)*60+Number(parts.minute);
- const explicit=S(selected).toUpperCase(),shift=['AM','PM'].includes(explicit)?explicit:shiftKeyVN(receivedMs).slice(-2);
- const dutyDay=shift==='PM'&&minute<510?
+ const explicit=S(selected).toUpperCase(),shift=['AM','PM'].includes(explicit)?explicit:(minute>=480&&minute<=1110?'AM':'PM');
+ const dutyDay=shift==='PM'&&minute<480?
   new Date(Date.parse(day+'T00:00:00Z')-86400000).toISOString().slice(0,10):day;
  // Morning closes at 19:00:59; evening closes at 08:29:59 the following day.
  return Date.parse(dutyDay+'T'+(shift==='AM'?'08:30:00':'19:01:00')+'+07:00')+
