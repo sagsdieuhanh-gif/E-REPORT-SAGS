@@ -9,7 +9,6 @@ const V18_POSITION_CODES=Object.freeze({"Trưởng phòng":"TRUONG_PHONG","Phó 
  const def=v18GroupDef(dep,group),role=String(def?.role||"").toUpperCase(),
  roleCode=String(def?.roleCode||v18RoleLabel(role)),unit=String(def?.unit||""),
  positionCode=V18_POSITION_CODES[jobTitle]||"";
- if(role==="RADIO_MANAGER")return setAccountManagerStatus("Quản lý bộ đàm chưa kích hoạt: phải xác minh Firebase Rules production.",true);
  if(!employeeCode||!name||!username||!def||!role||!positionCode)
  return setAccountManagerStatus("Cần nhập/chọn đủ Mã nhân viên, Họ tên, Tài khoản, Phòng, Nhóm/chức năng và Chức danh.",true);
  const reserved=new Set(["AD","ĐH","DH","CBTT","PVHK","LNF","LOSTFOUND","KH","VIEWER","PĐH","ADMIN"]);
@@ -96,7 +95,6 @@ window.adminCreatePersonalAccount=adminCreatePersonalAccount;adminOpenProfileEdi
  st=document.getElementById("editAccountProfileStatus"),def=v18GroupDef(dep,group),
  role=String(def?.role||"").toUpperCase(),roleCode=String(def?.roleCode||v18RoleLabel(role)),
  positionCode=V18_POSITION_CODES[jobTitle]||"",unit=String(def?.unit||"");
- if(role==="RADIO_MANAGER"){if(st)st.textContent="Quản lý bộ đàm chưa kích hoạt: phải xác minh Firebase Rules production.";return}
  if(!id||!name||!def||!role||!positionCode){if(st)st.textContent="Nhập/chọn đủ Họ tên, Phòng, Nhóm/chức năng, Vai trò và Chức danh.";return}
  try{
  const ref=firebase.firestore().collection("users").doc(id),snap=await ref.get();
