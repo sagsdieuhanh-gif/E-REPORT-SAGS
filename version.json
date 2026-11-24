@@ -2,11 +2,11 @@
   "version": "V1.4",
   "displayVersion": "V1.4",
   "label": "V1.4 - OPERATIONAL CONSISTENCY AND SAFETY",
-  "build": "V1.4-20261124-RADIO-RANGE-04",
+  "build": "V1.4-20261124-RADIO-RANGE-PHOTO-05",
   "releasedAt": "2026-11-24",
   "type": "operational-consistency-phase1-2",
   "base": "Giữ nguyên toàn bộ dữ liệu và chức năng đã ổn định từ E-REPORT-SAGS V2.2; chỉ đặt lại dãy số phiên bản hiển thị",
   "updatePolicy": "required",
-  "notes": "Chuẩn hóa ca bộ đàm 08:30–19:00 và 19:01–08:29; thống nhất đăng nhập PVHK/FSAGS09/AD; mật khẩu tài khoản mới ngẫu nhiên 24 ký tự; thanh lưu nháp không còn báo 3 lớp khi chưa xác nhận Firebase; thống nhất mã TW. Các tác vụ backend retention, standby, reset cần cấu hình riêng trên Firebase/GitHub Actions; không thay đổi dữ liệu, lịch sử, ảnh hoặc PDF. Đã chuẩn bị chức danh Quản lý bộ đàm (RADIO_MANAGER); tạm khóa đăng nhập và tạo tài khoản chờ kiểm tra, triển khai Firestore/Realtime Database Rules production. Rà soát và tách đối chiếu roster AD khỏi tài khoản Quản lý bộ đàm; không thay đổi Firebase production. AD có thể xuất báo cáo bộ đàm theo một ca, 7 ngày, 30 ngày, tháng này hoặc khoảng tối đa 31 ngày (cả 2 ca). Dữ liệu Firebase đọc phân trang, không xuất báo cáo thiếu và bảo vệ PDF trên di động; giữ nguyên quyền Quản lý bộ đàm hiện tại.",
-  "message": "V1.4: AD xuất báo cáo bộ đàm theo ngày, ca, tuần, tháng hoặc khoảng tự chọn, PDF kèm hoặc không kèm ảnh."
+  "notes": "Chuẩn hóa ca bộ đàm 08:30–19:00 và 19:01–08:29; thống nhất đăng nhập PVHK/FSAGS09/AD; mật khẩu tài khoản mới ngẫu nhiên 24 ký tự; thanh lưu nháp không còn báo 3 lớp khi chưa xác nhận Firebase; thống nhất mã TW. Các tác vụ backend retention, standby, reset cần cấu hình riêng trên Firebase/GitHub Actions; không thay đổi dữ liệu, lịch sử, ảnh hoặc PDF. Đã chuẩn bị chức danh Quản lý bộ đàm (RADIO_MANAGER); tạm khóa đăng nhập và tạo tài khoản chờ kiểm tra, triển khai Firestore/Realtime Database Rules production. Rà soát và tách đối chiếu roster AD khỏi tài khoản Quản lý bộ đàm; không thay đổi Firebase production. AD có thể xuất báo cáo bộ đàm theo một ca, 7 ngày, 30 ngày, tháng này hoặc khoảng tối đa 31 ngày (cả 2 ca). Dữ liệu Firebase đọc phân trang, không xuất báo cáo thiếu và bảo vệ PDF trên di động; giữ nguyên quyền Quản lý bộ đàm hiện tại. Ảnh bộ đàm mới giảm nhẹ độ nén JPEG gốc từ 0,92 xuống 0,89; báo cáo PDF chỉ nén lại ảnh lớn trong file xuất (tối đa 1800px, JPEG 0,84), không sửa ảnh gốc lưu máy chủ; ảnh nhỏ giữ nguyên.",
+  "message": "V1.4: AD xuất báo cáo bộ đàm theo tuần/tháng và giảm dung lượng ảnh PDF, vẫn giữ ảnh gốc để kiểm tra."
 }
