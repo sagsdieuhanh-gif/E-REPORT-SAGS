@@ -19,6 +19,7 @@ assert(css.includes('.radioOutstandingBox')&&css.includes('.radioOutstandingCard
 
 const snip=code.slice(code.indexOf('function radioShiftAt('),code.indexOf('function shift(){'));
 const range=code.slice(code.indexOf('function radioDayAdd('),code.indexOf('function syncRadioReportMode(){'));
+const duty=code.slice(code.indexOf('function shift(){'),code.indexOf('function heldBy(uid){'));
 const alg=code.slice(code.indexOf('// Reconcile immutable custody events'),code.indexOf('function renderSummary(){'));
 const pdf=code.slice(code.indexOf('function radioPdfOverviewPages('),code.indexOf('function pdfBuild('));
 assert(snip.includes('function shiftBounds')&&alg.includes('function radioReconcileCustody')&&pdf.includes('function radioPdfOverviewPages'));
@@ -42,7 +43,7 @@ const ctx={
   fillRect(){},fillText(txt){calls.push(String(txt))},measureText:t=>({width:String(t).length*10})})})}
 };
 vm.createContext(ctx);
-vm.runInContext(snip+range+alg+pdf+'\nthis.reconcile=radioReconcileCustody;this.live=radioLiveCustody;this.scopeCutoff=radioReportCutoffMs;this.overview=radioPdfOverviewPages;this.summaryHtml=radioOutstandingSummaryHtml;',ctx);
+vm.runInContext(snip+range+duty+alg+pdf+'\nthis.reconcile=radioReconcileCustody;this.live=radioLiveCustody;this.scopeCutoff=radioReportCutoffMs;this.overview=radioPdfOverviewPages;this.summaryHtml=radioOutstandingSummaryHtml;',ctx);
 const at=(date)=>Date.parse(date);
 const ev=(id,action,device,date,uid='U1',extra={})=>({
  id,action,deviceCode:device,actorUid:uid,actorName:uid,personUid:uid,personName:uid,
