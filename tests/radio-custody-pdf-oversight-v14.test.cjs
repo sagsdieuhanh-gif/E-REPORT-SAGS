@@ -13,7 +13,7 @@ for(const marker of [
  'const rows=reportEvents;',
  'const rows=canMonitor(currentUser())?reportEvents:filteredHistory();',
  'overview.pages.map(pdfStoredPage)',
- "overview.count+summaryPages+i+j+1"
+ "overview.count+staffPages+summaryPages+i+j+1"
 ])assert(code.includes(marker),'Missing reconciliation/PDF overview contract: '+marker);
 assert(css.includes('.radioOutstandingBox')&&css.includes('.radioOutstandingCards'),'Mobile/PC exception section styles required');
 
@@ -97,5 +97,6 @@ assert(calls.some(x=>x.includes('Trang 1/')),'PDF cover needs page numbering');
 const manager=code.slice(code.indexOf('async function exportPhotoPdf(){'),code.indexOf('function stopHistory(){'));
 assert(manager.includes('const rows=reportEvents'),'Photo PDF must reconcile full server range not filtered history');
 assert(manager.includes('const rows=canMonitor(currentUser())?reportEvents:filteredHistory()'),'Non-photo monitored PDF must use full verified range');
-assert(manager.includes('radioPdfOverviewPages(rows,scope,devices,radioReportCutoffMs()'),'First page required for both PDF modes');
+assert(manager.includes('radioPdfOverviewPages(rows,scope,devices,cutoffMs'),'First-page oversight must remain in both PDF modes');
+assert(manager.includes('staffPages+summaryPages+rows.length')&&manager.includes('staffPages+pages.length'),'Staff metrics must be counted in PDF page numbering');
 console.log('Radio custody oversight PASS: AD return, swap across midnight, overdue boundaries, orphan return, live holders, full-period PDF, overflow pages');

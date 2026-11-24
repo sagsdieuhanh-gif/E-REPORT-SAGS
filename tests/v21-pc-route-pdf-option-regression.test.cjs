@@ -25,7 +25,7 @@ assert.deepEqual(seen,['before:history','active:history','closed','history']);
 assert(radio.includes('id="radioPdfIncludePhotos"'),'AD choice must appear in PDF UI');
 assert(radio.includes("if($('radioPdfIncludePhotos')?.checked&&canMonitor(currentUser()))return exportPhotoPdf()"),'checkbox should choose actual photo export');
 assert(!radio.includes('radioExportPhotos'),'hidden secondary photo button must be removed');
-assert(radio.includes('const summaryPages=Math.ceil(rows.length/19),overview=radioPdfOverviewPages(')&&radio.includes('allPages=overview.count+summaryPages+rows.length'),'PDF with images must include first-page oversight, all summary pages and all evidence appendices');
+assert(radio.includes('const summaryPages=Math.ceil(rows.length/19),cutoffMs=radioReportCutoffMs(),staffPages=radioPdfStaffPageCount(')&&radio.includes('allPages=overview.count+staffPages+summaryPages+rows.length'),'PDF with images must include oversight, staff statistics, all summary pages and evidence appendices');
 assert(radio.includes('stored.push(pdfStoredPage(await photoPdfPage('),'every event must receive a photo evidence page');
 const begin2=radio.indexOf('function pdfStoredPage('),end2=radio.indexOf('async function exportPhotoPdf()',begin2);
 assert(begin2>=0&&end2>begin2);

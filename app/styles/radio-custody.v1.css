@@ -376,3 +376,29 @@
  .radioOutstandingCards strong{font-size:21px}
  .radioOutstandingBox .radioAdminMatrixScroll{margin-left:-2px;margin-right:-2px}
 }
+
+/* AD-only live overdue monitoring; no blocking of radio custody operations. */
+.radioOverdueAlert{margin:12px 0 16px;border:1px solid #537c8c;border-radius:12px;background:#0c3044;color:#effbff;padding:12px 15px}
+.radioOverdueAlert[hidden]{display:none!important}
+.radioLiveTop{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.radioLiveTop>div{display:flex;flex-direction:column;gap:4px}
+.radioLiveTop strong{color:#f4fcff;font-size:15px}
+.radioLiveTop small,.radioLiveNotice{color:#bad5e3;font-size:12px;line-height:1.5}
+.radioLiveTop button,#radioOnlyUnreturned{border:1px solid #92aebc;border-radius:9px;padding:9px 13px;background:#143e53;color:#fff;font-weight:750;min-height:39px;cursor:pointer}
+#radioOnlyUnreturned[aria-pressed="true"]{background:#7a3333;border-color:#e09b8c;color:#fff}
+.radioLiveOverdueList{margin:11px 0 0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.radioLiveOverdueList li{min-width:0;background:rgba(158,58,53,.26);border:1px solid rgba(225,125,110,.45);padding:8px 10px;border-radius:8px;font-size:12px;overflow-wrap:anywhere}
+.radioLiveOverdueList li strong{color:#fff0ed}
+.radioLiveOverdueList li small{color:#d9e8ee;display:inline}
+.radioStaffReport{margin-top:18px;border-radius:12px;background:#0d2c3d;border:1px solid #527d90;padding:14px;color:#ecfbff}
+.radioStaffReport h4{margin:0 0 12px;font-size:16px;color:#f2faff}
+.radioStaffReport .radioAdminMatrixScroll{overflow-x:auto}
+.radioStaffReport table{min-width:660px}
+.radioStaffReport td,.radioStaffReport th{font-size:12px;overflow-wrap:anywhere}
+.radioStaffReport .radioOutstandingAlert td{background:rgba(181,62,55,.24);color:#ffe9e0;font-weight:750}
+@media(max-width:680px){
+ .radioOverdueAlert{padding:10px}
+ .radioLiveOverdueList{grid-template-columns:1fr}
+ .radioLiveTop button{width:100%}
+ .radioStaffReport{padding:10px}
+}

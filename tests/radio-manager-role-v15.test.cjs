@@ -34,7 +34,8 @@ for(const guard of [
  "if(!isAdmin(user))return notify('Chỉ AD được khởi tạo."
 ])assert(radio.includes(guard),'Must preserve AD-only radio mutations: '+guard);
 assert(radio.includes("if(administrator&&allDevices&&hasRadioWarning(d))"),'Manager cannot see release action');
-assert(radio.includes("if(d.status==='OUT'&&(mine||administrator&&allDevices))"),'Manager cannot sign for someone else');
+assert(radio.includes("if(d.status==='OUT'&&(mine||administrator&&(allDevices||active)))"),'Manager cannot sign for someone else; filtered view is AD-only');
+assert(radio.includes("active=administrator&&radioOnlyUnreturned"),'Unreturned filter must be admin-only');
 assert(radio.includes("const query=canMonitor(u)?db.collection(EVENTS)"),'Manager must have global immutable audit access');
 assert(radio.includes("if(!canMonitor(currentUser()))return notify('Chỉ AD và Quản lý bộ đàm"),'Manager PDF permission');
 assert(radio.includes("Ca sáng hết 19:00, ca tối hết 08:29"),'Radio shift boundary must remain accurate');
