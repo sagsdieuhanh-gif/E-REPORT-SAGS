@@ -1618,6 +1618,98 @@ function pdfPage(rows,index,total,scope,withPhotos=false,totals=null){
  x.textAlign='right';x.fillText('Trang '+index+'/'+total,1150,1642);
  return cv;
 }
+
+function radioPdfOverviewPages(rows,scope,inventory,cutoffMs,detailPages=0,photoPages=0){
+ const audit=radioReconcileCustody(rows,cutoffMs),live=radioLiveCustody(inventory);
+ const sections=[
+  {title:'CHƯA CÓ LƯỢT TRẢ TẠI MỐC CHỐT',rows:audit.outstanding,short:8},
+  {title:'NGƯỜI HIỆN ĐANG GIỮ MÁY',rows:live,short:6},
+  {title:'ĐÃ GHI NHẬN TRẢ MUỘN',rows:audit.late,short:3}
+ ];
+ const extra=[];
+ for(const section of sections){
+  const remaining=section.rows.slice(section.short);
+  for(let i=0;i<remaining.length;i+=24)extra.push({title:section.title,rows:remaining.slice(i,i+24)});
+ }
+ const total=1+extra.length+detailPages+photoPages;
+ const base=()=>{
+  const cv=document.createElement('canvas');cv.width=1200;cv.height=1698;
+  const x=cv.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,1200,1698);
+  x.fillStyle='#0b354d';x.fillRect(0,0,1200,20);x.fillStyle='#00818d';x.fillRect(0,20,1200,5);
+  return {cv,x};
+ };
+ const heading=(x,title,index)=>{
+  x.fillStyle='#0b354d';x.font='bold 27px Arial';x.fillText('SAGS  |  E-REPORT',47,75);
+  x.font='bold 34px Arial';x.fillText(title,47,139,1090);
+  x.fillStyle='#446173';x.font='18px Arial';
+  x.fillText('Phạm vi: '+scope,47,178,1090);
+  x.fillText('Mốc chốt lịch sử: '+fmt(new Date(cutoffMs))+'  |  Người xuất: '+currentUser().name,47,209,1090);
+  x.textAlign='right';x.fillText('Trang '+index+'/'+total,1150,1649);x.textAlign='left';
+ };
+ const row=(x,y,item,kind,index)=>{
+  const alert=(kind!=='late'&&item.overdue);
+  x.fillStyle=alert?'#fff0ec':index%2?'#fff':'#eff5f8';x.fillRect(46,y,1100,43);
+  x.fillStyle=alert?'#a12724':'#17394b';x.font='bold 18px Arial';
+  x.fillText(item.personName||'Chưa rõ người nhận',57,y+28,310);
+  x.font='18px Arial';x.fillText(label(item.deviceCode),390,y+28,135);
+  x.fillText(item.receivedAtMs?fmt(new Date(item.receivedAtMs)):'Chưa xác minh',540,y+28,240);
+  const status=kind==='late'?'Đã trả '+fmt(new Date(item.returnedAtMs)):
+   item.overdue?'QUÁ CA · CẦN ĐỐI SOÁT':item.dueMs?'Chưa hết ca':'Chưa rõ hạn';
+  x.fillStyle=alert?'#a12724':'#315365';x.font=alert?'bold 17px Arial':'17px Arial';
+  x.fillText(status,795,y+28,340);
+ };
+ const tableHeader=(x,title,y)=>{
+  x.fillStyle='#0b354d';x.font='bold 22px Arial';x.fillText(title,47,y,1100);
+  x.fillStyle='#133e55';x.fillRect(46,y+11,1100,38);x.fillStyle='#fff';x.font='bold 15px Arial';
+  for(const [t,left] of [['NGƯỜI NHẬN / GIỮ',57],['MÃ MÁY',390],['THỜI ĐIỂM NHẬN',540],['TRẠNG THÁI ĐỐI SOÁT',795]])x.fillText(t,left,y+37);
+  return y+49;
+ };
+ const {cv,x}=base();heading(x,'ĐỐI SOÁT BỘ ĐÀM · NHẬN / TRẢ',1);
+ const cards=[
+  ['CHƯA TRẢ TẠI MỐC CHỐT',audit.outstanding.length],
+  ['QUÁ CA TẠI MỐC CHỐT',audit.outstanding.filter(e=>e.overdue).length],
+  ['ĐÃ TRẢ MUỘN',audit.late.length],['HIỆN ĐANG GIỮ',live.length]
+ ];
+ cards.forEach(([name,count],i)=>{
+  const left=46+i*279;
+  x.fillStyle=count&&i<2?'#fce9e6':'#ebf5f8';x.fillRect(left,235,266,97);
+  x.fillStyle=count&&i<2?'#a12724':'#0b4860';x.font='bold 40px Arial';x.fillText(String(count),left+15,283);
+  x.font='bold 14px Arial';x.fillText(name,left+14,311,244);
+ });
+ let y=367;
+ for(let sectionIndex=0;sectionIndex<sections.length;sectionIndex++){
+  const section=sections[sectionIndex];
+  y=tableHeader(x,String(sectionIndex+1)+' · '+section.title,y);
+  const subset=section.rows.slice(0,section.short);
+  if(!subset.length){x.fillStyle='#456175';x.font='italic 16px Arial';x.fillText('Không phát sinh trong phạm vi đối soát.',58,y+29);y+=43}
+  else{for(let i=0;i<subset.length;i++){row(x,y,subset[i],sectionIndex===2?'late':sectionIndex===1?'live':'open',i);y+=43}}
+  if(section.rows.length>subset.length){
+   x.fillStyle='#9b3d25';x.font='bold 15px Arial';
+   x.fillText('Còn '+(section.rows.length-subset.length)+' trường hợp · xem các trang phụ đối soát.',58,y+22);
+   y+=29;
+  }
+  y+=39;
+ }
+ x.fillStyle='#456175';x.font='16px Arial';
+ x.fillText('Chưa trả = lượt nhận trong kỳ chưa thấy RETURN / SWAP_OUT trước mốc chốt; không mặc định là mất máy.',47,1497,1095);
+ x.fillText('Trạng thái đang giữ lấy từ danh mục Firebase mới nhất, không phải ảnh chụp lịch sử.',47,1528,1095);
+ x.fillText('Các lượt nhận trước kỳ không được suy đoán; trả sau mốc chốt thuộc kỳ sau.',47,1558,1095);
+ if(audit.handoverGaps.length){
+  x.fillStyle='#a12724';x.font='bold 17px Arial';
+  x.fillText('CẦN KIỂM TRA: '+audit.handoverGaps.length+' chuỗi giao nhận chưa khớp dữ liệu.',47,1591,1095);
+ }
+ const pages=[cv];
+ extra.forEach((part,i)=>{
+  const {cv:next,x:ctx}=base();heading(ctx,'PHỤ LỤC · '+part.title,i+2);
+  let py=tableHeader(ctx,part.title,261);
+  part.rows.forEach((item,j)=>{row(ctx,py,item,part.title.startsWith('ĐÃ GHI')?'late':'open',j);py+=49});
+  ctx.fillStyle='#456175';ctx.font='16px Arial';
+  ctx.fillText('Danh sách tiếp nối trang đầu · mọi trường hợp đều được liệt kê, không cắt bỏ dữ liệu.',46,1606,1100);
+  pages.push(next);
+ });
+ return {pages,count:pages.length,audit,live};
+}
+
 function pdfBuild(canvases){
  const photoStart=3+canvases.length*3,max=photoStart-1+canvases.filter(c=>c.proofJpeg).length;
  const ofs=Array(max+1).fill(0),chunks=[];let pos=0,nextPhoto=photoStart;
@@ -1740,8 +1832,8 @@ function pdfStoredPage(cv){
 async function exportPhotoPdf(){
  if(!canMonitor(currentUser()))return notify('Chỉ AD và Quản lý bộ đàm được xuất lịch sử kèm ảnh.',true);
  if(!connected||!navigator.onLine||!canMonitor(currentUser())||!reportReady||!reportVerified)return notify('Cần chọn ngày, ca và bấm Tải báo cáo ca từ Firebase trước khi xuất ảnh.',true);
- const rows=filteredHistory();
- if(!rows.length)return notify('Không có lịch sử phù hợp bộ lọc.',true);
+ const rows=reportEvents;
+ // PDF is always the complete verified scope; history search/device/action controls only affect on-screen rows.
  if(rows.some(e=>!e.at?.toMillis?.()))return notify('Lịch sử có sự kiện chưa xác minh giờ Firebase. Hãy đồng bộ lại.',true);
  const a=$('radioExport'),b=$('radioSummaryExport');
  if(a?.disabled||b?.disabled)return;
@@ -1752,7 +1844,8 @@ async function exportPhotoPdf(){
  notify('Đang tạo PDF có bảng tổng hợp và '+rows.length+' trang đối chiếu ảnh/chữ ký…');
  try{
   const scope=reportScope();
-  const summaryPages=Math.ceil(rows.length/19),allPages=summaryPages+rows.length,stored=[],totals=radioReportCounts(rows);
+  const summaryPages=Math.ceil(rows.length/19),overview=radioPdfOverviewPages(rows,scope,devices,radioReportCutoffMs(),summaryPages,rows.length),
+   allPages=overview.count+summaryPages+rows.length,stored=overview.pages.map(pdfStoredPage),totals=radioReportCounts(rows);
   const compactOnly=[];let originalCount=0,missingCount=0,supabaseCount=0,purgedCount=0;
   for(let i=0;i<rows.length;i+=19){
    stored.push(pdfStoredPage(pdfPage(rows.slice(i,i+19),stored.length+1,allPages,scope,true,totals)));
@@ -1769,7 +1862,7 @@ async function exportPhotoPdf(){
     if(!batch[j].signature)missingCount++;
     else if(full[j]===batch[j].signature){compactOnly.push(label(batch[j].deviceCode)+' · '+(ACTS[batch[j].action]||batch[j].action));if(root.SAGSRadioPhotoVaultV1?.isPurged(batch[j].id))purgedCount++}
     else {originalCount++;if(root.SAGSRadioPhotoVaultV1?.isOriginal(batch[j].id))supabaseCount++}
-    stored.push(pdfStoredPage(await photoPdfPage(batch[j],summaryPages+i+j+1,allPages,full[j])));
+    stored.push(pdfStoredPage(await photoPdfPage(batch[j],overview.count+summaryPages+i+j+1,allPages,full[j])));
    }
   }
   if(!canMonitor(currentUser()))throw Error('Tài khoản không còn quyền quản lý báo cáo bộ đàm');
@@ -1793,15 +1886,18 @@ async function exportPhotoPdf(){
 async function exportPdf(){
  if(canMonitor(currentUser())&&(!reportReady||!reportVerified))return notify('Chọn ngày/ca hoặc khoảng ngày → Tải báo cáo Firebase → Xuất PDF. Không xuất từ lịch sử gần đây.',true);
  if($('radioPdfIncludePhotos')?.checked&&canMonitor(currentUser()))return exportPhotoPdf();
- const rows=filteredHistory();if(!rows.length)return notify('Không có sự kiện để xuất PDF.',true);
+ const rows=canMonitor(currentUser())?reportEvents:filteredHistory();
+ if(!rows.length&&!canMonitor(currentUser()))return notify('Không có sự kiện để xuất PDF.',true);
  const a=$('radioExport'),b=$('radioSummaryExport');if(a?.disabled||b?.disabled)return;
  if(a)a.disabled=true;if(b)b.disabled=true;notify('Đang tạo báo cáo PDF...');
  try{
   await new Promise(done=>requestAnimationFrame(done));
   const scope=canMonitor(currentUser())?reportScope():'Lịch sử cá nhân đã tải',pages=[];
   for(let i=0;i<rows.length;i+=19)pages.push(rows.slice(i,i+19));
-  const totals=radioReportCounts(rows),stored=[];
-  for(let i=0;i<pages.length;i++){stored.push(pdfStoredPage(pdfPage(pages[i],i+1,pages.length,scope,false,totals)));if(i%12===11)await new Promise(done=>requestAnimationFrame(done));}
+  const totals=radioReportCounts(rows),overview=canMonitor(currentUser())?
+   radioPdfOverviewPages(rows,scope,devices,radioReportCutoffMs(),pages.length,0):null,
+   stored=overview?overview.pages.map(pdfStoredPage):[],totalPages=stored.length+pages.length;
+  for(let i=0;i<pages.length;i++){stored.push(pdfStoredPage(pdfPage(pages[i],i+(overview?.count||0)+1,totalPages,scope,false,totals)));if(i%12===11)await new Promise(done=>requestAnimationFrame(done));}
   const blob=pdfBuild(stored),href=URL.createObjectURL(blob),link=document.createElement('a');
   link.href=href;link.download='SAGS-BO-DAM-'+(reportReady?reportFileToken():new Date().toISOString().slice(0,10))+'-BAO-CAO.pdf';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(href),60000);
   notify('Đã xuất PDF '+rows.length+' sự kiện theo '+scope+'.');
