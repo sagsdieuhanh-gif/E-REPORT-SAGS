@@ -9,7 +9,7 @@ for(const marker of [
  "limit(RANGE_BATCH_SIZE)","query=query.startAfter(cursor)","get({source:'server'})",
  "if(all.length>RANGE_MAX_EVENTS)throw Error",
  "page.metadata?.fromCache","radioRangeDailyMatrix(rows)",
- "hydrateRangeEvidence(e)","reportMode==='RANGE'?reportFileToken()",
+ "hydrateRangeEvidence(e)","reportMode==='RANGE'?reportFrom",
  "reportFileToken()+'-KEM-ANH.pdf'",
  "pdfStoredPage(pdfPage(pages[i]"
 ])assert(code.includes(marker),'Missing complete range report requirement: '+marker);
@@ -63,6 +63,9 @@ vm.runInContext(shift+functions+filter+
  ';this.loadRangeReport=loadRangeReport;this.radioRangeBounds=radioRangeBounds;this.radioValidDay=radioValidDay;this.applyRadioRangePreset=applyRadioRangePreset;this.filteredHistory=filteredHistory;this.reportScope=reportScope;this.reportFileToken=reportFileToken;this.reportState=()=>({reportReady,reportVerified,reportMode,reportFrom,reportTo,reportEvents});',ctx);
 assert.equal(new Date(ctx.radioRangeBounds('2026-11-18','2026-11-24').startMs).toISOString(),'2026-11-18T01:30:00.000Z');
 assert.equal(new Date(ctx.radioRangeBounds('2026-11-18','2026-11-24').endMs).toISOString(),'2026-11-25T01:30:00.000Z');
+assert(Date.parse('2026-11-25T08:29:59+07:00')<ctx.radioRangeBounds('2026-11-18','2026-11-24').endMs,'Last minute of final night shift must be included');
+assert(Date.parse('2026-11-25T08:30:00+07:00')===ctx.radioRangeBounds('2026-11-18','2026-11-24').endMs,'Next morning shift must be excluded');
+
 assert.equal(ctx.radioValidDay('2026-02-30'),false,'Invalid calendar day must not be accepted');
 ctx.applyRadioRangePreset('month');assert.equal(elements.radioRangeFrom.value,'2026-11-01');
 ctx.applyRadioRangePreset('7');assert.equal(elements.radioRangeFrom.value,'2026-11-18');
