@@ -1,6 +1,37 @@
 <!DOCTYPE html>
 <html lang="vi" class="new-ui-v1">
 <head><!-- The application runs directly on GitHub Pages. -->
+<!-- Canonical entry guard: run BEFORE any Firebase SDK, authentication or application script.
+     Defense in depth only. Cloud database access still requires Firebase Rules + App Check. -->
+<script id="sags-official-entry-guard">
+(function(root){
+ 'use strict';
+ var OFFICIAL='https://sagsdieuhanh-gif.github.io/E-REPORT-SAGS/';
+ var pathname=root.location.pathname;
+ var authorized=root.location.protocol==='https:' &&
+  root.location.host==='sagsdieuhanh-gif.github.io' &&
+  (pathname==='/E-REPORT-SAGS/' || pathname==='/E-REPORT-SAGS/index.html') &&
+  root.top===root.self;
+ if(authorized){
+  // Home-screen PWA installations started through index.html resolve to the same official URL.
+  if(pathname==='/E-REPORT-SAGS/index.html'){
+   root.location.replace(OFFICIAL+root.location.search+root.location.hash);
+  }
+  return;
+ }
+ root.__SAGS_OFFICIAL_ORIGIN_BLOCKED=true;
+ try{root.stop()}catch(_){}
+ try{
+  root.document.documentElement.innerHTML='<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Địa chỉ E-REPORT không hợp lệ</title></head>'+
+   '<body style="background:#071a2e;color:#eef8ff;font:16px/1.6 system-ui,Arial,sans-serif;min-height:80vh;display:grid;place-items:center;margin:0;padding:20px;box-sizing:border-box">'+
+   '<main style="max-width:540px;text-align:center"><h1 style="font-size:22px">Địa chỉ E-REPORT không hợp lệ</h1>'+
+   '<p>Chỉ sử dụng địa chỉ chính thức của E-REPORT SAGS.</p>'+
+   '<p><a style="color:#80d7ff" href="'+OFFICIAL+'">'+OFFICIAL+'</a></p>'+
+   '<p>Đang chuyển về địa chỉ chính thức…</p></main></body>';
+ }catch(_){}
+ try{root.location.replace(OFFICIAL)}catch(_){}
+})(window);
+</script>
 <meta charset="utf-8"/>
 <script id="sags-storage-capacity-bootstrap">
 // Copyright (c) 2013 Pieroxy <pieroxy@pieroxy.net>
