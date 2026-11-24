@@ -826,13 +826,16 @@ function radioReceiveWindow(ms){
  const dutyDay=!morning&&minute<480?radioDayAdd(day,-1):day;
  return {day:dutyDay,shift:morning?'AM':'PM',key:dutyDay+'/'+(morning?'AM':'PM')};
 }
-function radioCustodyDuty(ms,selected){
+function radioCustodyDuty(ms,selected,action='ISSUE'){
  const chosen=S(selected);
  if(!['AM','PM'].includes(chosen))return radioReceiveWindow(ms); // legacy fallback only
  const p=Object.fromEntries(new Intl.DateTimeFormat('en-GB',{timeZone:VN,hour:'2-digit',minute:'2-digit',hourCycle:'h23'})
    .formatToParts(new Date(ms)).map(x=>[x.type,x.value]));
  const minute=Number(p.hour)*60+Number(p.minute),date=vnDateKey(new Date(ms));
- const day=chosen==='PM'&&minute<480?radioDayAdd(date,-1):date;
+ // Returns from the preceding PM shift can continue through 08:29 even though
+ // the next morning's receive window starts at 08:00.
+ const returnLeg=['RETURN','SWAP_OUT','REPORT'].includes(S(action));
+ const day=chosen==='PM'&&minute<(returnLeg?510:480)?radioDayAdd(date,-1):date;
  return {day,shift:chosen,key:day+'/'+chosen};
 }
 function radioCustodyDue(ms,selected){
@@ -1124,7 +1127,7 @@ function radioReportFetchBounds(day,which){
 }
 function radioReportEventDuty(e){
  const at=e?.at?.toMillis?.()||0;
- return at?radioCustodyDuty(at,e.shift):{key:''};
+ return at?radioCustodyDuty(at,e.shift,e.action):{key:''};
 }
 function reportScope(){
  return reportMode==='RANGE'
@@ -1281,7 +1284,7 @@ function radioRangeDailyMatrix(rows){
   for(const shift of ['AM','PM'])byShift.set(day+'/'+shift,{day,shift,issue:0,returned:0,swap:0,fault:0});
  for(const e of rows){
   const at=e.at?.toMillis?.()||0;if(!at)continue;
-  const {day,shift,key}=radioCustodyDuty(at,e.shift),v=byShift.get(key);
+  const {day,shift,key}=radioCustodyDuty(at,e.shift,e.action),v=byShift.get(key);
   if(!v)continue;
   if(e.action==='ISSUE')v.issue++;
   if(e.action==='RETURN')v.returned++;
