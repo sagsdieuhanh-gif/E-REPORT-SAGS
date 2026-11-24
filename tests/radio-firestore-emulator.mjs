@@ -14,7 +14,7 @@ const jpegWithin=limit=>{
  const prefix='data:image/jpeg;base64,';
  return prefix+'A'.repeat(4*Math.floor((limit-prefix.length)/4));
 };
-const names={admin:'Quản trị',alice:'Nhân viên A',bob:'Nhân viên B'};
+const names={admin:'Quản trị',alice:'Nhân viên A',bob:'Nhân viên B',radioManager:'Quản lý bộ đàm'};
 const baseDevice=(code,eventId)=>({
  schemaVersion:1,code,label:code,status:'READY',holderUid:'',holderName:'',shift:'',faultCode:'',faultDetail:'',battery:'UNKNOWN',
  version:0,lastEventId:eventId,updatedAt:serverTimestamp()
@@ -28,7 +28,7 @@ function actor(uid){return getDb(uid)}
 async function seedUsers(){
  await env.withSecurityRulesDisabled(async c=>{
   const db=c.firestore();
-  for(const [uid,role,active] of [['admin','ADMIN',true],['alice','DH',true],['bob','DH',true],['inactive','DH',false]]){
+  for(const [uid,role,active] of [['admin','ADMIN',true],['alice','DH',true],['bob','DH',true],['radioManager','RADIO_MANAGER',true],['radioInactive','RADIO_MANAGER',false],['inactive','DH',false]]){
    await setDoc(doc(db,'users',uid),{role,active,username:uid,email:uid+'@example.test'});
   }
  });
@@ -94,6 +94,28 @@ async function main(){
  await assertFails(getDoc(doc(getDb('inactive'),root,'DH01')));
  await assertFails(createRadio('alice','DH02')); // staff must not initialize asset master
  await assertSucceeds(createRadio('admin','DH01'));
+ // RADIO_MANAGER can monitor radios but cannot read operational/business data.
+ await assertSucceeds(getDoc(doc(getDb('radioManager'),root,'DH01')));
+ await assertSucceeds(getDoc(doc(getDb('radioManager'),'users','radioManager')));
+ await assertFails(getDoc(doc(getDb('radioManager'),'users','admin')));
+ await assertFails(getDoc(doc(getDb('radioManager'),'sags_handovers','FLIGHT_TEST')));
+ await assertFails(setDoc(doc(getDb('radioManager'),'sags_handovers','FLIGHT_TEST'),{kind:'airline_final_form'}));
+ await assertFails(getDoc(doc(getDb('radioInactive'),root,'DH01')));
+ await assertFails(createRadio('radioManager','DH20'));
+ await assertFails(deleteDoc(doc(getDb('radioManager'),root,'DH01')));
+ await assertSucceeds(createRadio('admin','DH07'));
+ // Self-signing remains available, but no ability to impersonate another holder.
+ await assertSucceeds(transition('radioManager','DH07','ISSUE',{
+  status:'OUT',holderUid:'radioManager',holderName:names.radioManager,shift:'AM',
+  faultCode:'',faultDetail:'',battery:'GOOD'
+ }));
+ await assertFails(transition('alice','DH07','RETURN',{
+  status:'READY',holderUid:'',holderName:'',shift:'',faultCode:'',faultDetail:'',battery:'GOOD'
+ }));
+ await assertSucceeds(transition('radioManager','DH07','RETURN',{
+  status:'READY',holderUid:'',holderName:'',shift:'',faultCode:'',faultDetail:'',battery:'GOOD'
+ }));
+ await assertSucceeds(getDocs(collection(getDb('radioManager'),audit)));
  // V2.2 high-quality photo is an immutable, private atomic companion to
  // the existing receipt; old readers continue reading event.signature.
  await assertSucceeds(createRadio('admin','DH09'));
@@ -103,6 +125,9 @@ async function main(){
  },{fullProof:jpegWithin(700000),signature:jpegWithin(44000)}));
  const proofDb='sags_radio_proofs_v22';
  await assertSucceeds(getDoc(doc(getDb('admin'),proofDb,proofId)));
+ await assertSucceeds(getDoc(doc(getDb('radioManager'),proofDb,proofId)));
+ await assertFails(getDoc(doc(getDb('radioInactive'),proofDb,proofId)));
+ await assertFails(getDocs(collection(getDb('radioManager'),proofDb)));
  await assertSucceeds(getDoc(doc(getDb('alice'),proofDb,proofId)));
  await assertFails(getDoc(doc(getDb('bob'),proofDb,proofId)));
  await assertFails(getDoc(doc(getDb(),proofDb,proofId)));
@@ -112,6 +137,9 @@ async function main(){
  await assertFails(setDoc(doc(getDb('alice'),proofDb,'FAKE_EVENT'),{
   schemaVersion:2,eventId:'FAKE_EVENT',actorUid:'alice',deviceCode:'DH09',
   action:'ISSUE',capturedAtMs:Date.now(),image:'data:image/jpeg;base64,'+'A'.repeat(18000)
+ }));
+ await assertFails(transition('radioManager','DH09','RETURN',{
+  status:'READY',holderUid:'',holderName:'',shift:'',faultCode:'',faultDetail:'',battery:'GOOD'
  }));
  const returnDevice={status:'READY',holderUid:'',holderName:'',shift:'',faultCode:'',faultDetail:'',battery:'GOOD'};
  await assertFails(transition('alice','DH09','RETURN',returnDevice,{
