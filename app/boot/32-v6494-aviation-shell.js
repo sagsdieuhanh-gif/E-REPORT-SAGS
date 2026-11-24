@@ -63,7 +63,6 @@ const e=$(id);return !!e&&!e.hidden&&isShown(e)&&(id==='sagsRadioPanel'||e.class
 function homeState(){const idle=$('roleHomeIdle');return auth()&&!overlayVisible()&&(document.body.classList.contains('v157-home')||(Date.now()<navTransitionUntil&&idle?.getAttribute('aria-hidden')==='false'))}
 function legacyButton(key){return document.querySelector('.v157MenuItem[data-v157-key="'+key+'"]')}
 function available(key){
-// No access to flight, account, roster or general admin routes for this role.
 if(role()==='RADIO_MANAGER')return key==='home'||key==='radio';
 if(key==='final'&&String(role()).toUpperCase()==='CBTT')return false;
 if(key==='home')return true;
@@ -81,15 +80,13 @@ if(key!=='radio'&&radioPanel&&!radioPanel.hidden){
 }
 const history=$('sagsHistoryOverlay');
 if(key!=='history'&&history?.classList?.contains('open')){
- try{$('sagsHistoryClose')?.click?.()}catch(e){console.warn('History close failed',e)}
+ try{$('sagsHistoryClose')?.click?.()}catch(e){console.warn('History close',e)}
  history.classList.remove('open');
 }
 const guide=$('csgModal');
 if(key!=='guide'&&guide?.classList?.contains('open'))guide.classList.remove('open');
 if(key!=='home'){
 navTransitionUntil=Date.now()+2200;
-// Preserve the current shell until the destination is actually visible.
-// Early hiding leaks the legacy welcome/menu during asynchronous module loads.
 scheduleSync();
 setTimeout(()=>{observeStateTargets();scheduleSync()},2300);
 }else{navTransitionUntil=0;scheduleSync();}
@@ -105,7 +102,7 @@ if(key!=='home'&&key!=='radio'){
  if(key==='settings'&&typeof root.sagsOpenSettings==='function'){
   beforeRoute(key);root.sagsV157MarkMenuInteraction?.();root.sagsOpenSettings();return
  }
- console.warn('PC menu route unavailable',key);return
+ console.warn('Menu unavailable',key);return
 }
 root.sagsV157MarkMenuInteraction?.();
 const ticket=beforeRoute(key);
@@ -251,15 +248,10 @@ root.__sagsRadioRemindersLoadV21=true;
 const build=document.querySelector('meta[name="sags-release-build"]')?.content||'current';
 const node=document.createElement('script');node.id='sags-radio-reminders-v21';
 node.src='./app/modules/radio-reminders.v21.js?v='+encodeURIComponent(build);
-node.onerror=()=>console.warn('Không tải được nhắc ký nhận bộ đàm trong ứng dụng.');
+node.onerror=()=>console.warn('Không tải được nhắc bộ đàm.');
 document.body.appendChild(node);
 }
 function boot(){
-if(!$('sagsRadioManagerMenuStyle')){
- const style=document.createElement('style');style.id='sagsRadioManagerMenuStyle';
- style.textContent='body.sags-radio-manager #v6494AviationHome .v6494Search,body.sags-radio-manager #v6494AviationHome .v6494Notice,body.sags-radio-manager #v6494AviationHome [data-v6494-key="myflight"],body.sags-radio-manager #v6494AviationHome [data-v6494-key="notice"]{display:none!important}';
- document.head.appendChild(style);
-}
 ensure();sync();observeStateTargets();
 window.addEventListener('pageshow',()=>{observeStateTargets();scheduleSync()},{passive:true});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){observeStateTargets();scheduleSync()}},{passive:true});
