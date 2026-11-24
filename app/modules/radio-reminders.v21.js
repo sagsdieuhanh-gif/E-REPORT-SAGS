@@ -67,7 +67,7 @@ function evaluate(assignments,machines,uid,nowMs=Date.now()){
  if(primary){
   const overdue=held.some(d=>{const since=serverMs(d),due=custodyDueMs(since,d.shift);return due>0&&nowMs>=due});
   const finished=active.length>0&&active.every(isDone);
-  const needsReturn=overdue||finished||active.length===0;
+  const needsReturn=overdue||finished; // No flight roster yet is not evidence that an early PM receipt should be returned.
   if(!needsReturn)return null;
   const allCodes=held.map(x=>S(x.code)).filter(Boolean);
   const suffix=overdue?' (đã qua mốc nhắc trả)':'';
