@@ -23,7 +23,7 @@ const dayHelpers=source.slice(source.indexOf('function vnDateKey('),source.index
 const reportHelpers=source.slice(source.indexOf('function radioReportFetchBounds('),source.indexOf('function reportScope(){'));
 const reconciliation=source.slice(source.indexOf('function radioReconcileCustody('),source.indexOf('function radioOutstandingSummaryHtml('));
 const c={Intl,Date,Math,Number,Map,Set,Array,Promise,
- VN:'Asia/Ho_Chi_Minh',S:x=>String(x??'').trim()};
+ VN:'Asia/Ho_Chi_Minh',S:x=>String(x??'').trim(),radioHeldSince:d=>d.heldSince||d.updatedAt};
 vm.createContext(c);
 vm.runInContext(basic+dayHelpers+reportHelpers+reconciliation+
  '\nthis.duty=radioCustodyDuty;this.due=radioCustodyDue;this.clock=radioShiftAt;this.preselect=radioPreselectShift;this.reportBounds=radioReportFetchBounds;this.eventDuty=radioReportEventDuty;this.reconcile=radioReconcileCustody;this.live=radioLiveCustody;this.staffStats=radioStaffStatistics;',c);
