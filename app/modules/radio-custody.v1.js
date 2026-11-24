@@ -78,7 +78,7 @@ const DRAFT_FIELDS=['radioReturnReason','radioDetail'];
 const CAPTURE_EXIF_OPTIONS={ifd0:false,gps:false,exif:{pick:['DateTimeOriginal','OffsetTimeOriginal']},reviveValues:false};
 let nativeDraft=null,nativeDraftDb=null,signingUid='';
 let reportReady=false,reportLoading=false,reportEvents=[],reportDate='',reportShift='AM',reportToken=0,reportVerified=false;
-let reportMode='SHIFT',reportFrom='',reportTo='';
+let reportMode='SHIFT',reportFrom='',reportTo='',reportAsOfMs=0;
 const REPORT_LIMIT=301,RANGE_BATCH_SIZE=200,RANGE_MAX_EVENTS=2400,RANGE_MAX_DAYS=31;
 let rosterRef=null,rosterCb=null,rosterRows=[],rosterAccounts=new Map(),rosterAudit=[],rosterReady=false,rosterBusy=false,rosterDate='',rosterTime=0,rosterGen=0,rosterTimer=null;
 function session(){try{return root.__sagsGetSession?.()||{}}catch(_){return{}}}
@@ -1038,7 +1038,7 @@ function reportScope(){
 }
 function reportFileToken(){return reportMode==='RANGE'?reportFrom+'-DEN-'+reportTo:reportDate+'-'+reportShift}
 function clearShiftReport(){
- reportToken++;reportReady=false;reportLoading=false;reportVerified=false;reportEvents=[];reportDate='';reportShift='AM';reportMode='SHIFT';reportFrom='';reportTo='';
+ reportToken++;reportReady=false;reportLoading=false;reportVerified=false;reportEvents=[];reportDate='';reportShift='AM';reportMode='SHIFT';reportFrom='';reportTo='';reportAsOfMs=0;
  const x=$('radioReportState');if(x)x.textContent='Chọn phạm vi rồi tải báo cáo từ Firebase để xác minh đủ dữ liệu.';
  for(const id of ['radioReportLoad','radioRangeLoad']){const b=$(id);if(b)b.disabled=false;}
 }
@@ -1056,14 +1056,14 @@ async function loadShiftReport(){
   if(token!==reportToken||!canMonitor(currentUser()))return;
   if(rows.docs.length>=REPORT_LIMIT)throw Error('Ca có trên 300 sự kiện. Không xuất báo cáo thiếu dữ liệu; cần chia nhỏ hoặc xuất từ máy chủ.');
   reportEvents=rows.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.at?.toMillis?.()||0)-(a.at?.toMillis?.()||0));
-  reportDate=day;reportShift=shift;reportMode='SHIFT';reportFrom='';reportTo='';reportReady=true;reportVerified=true;
+  reportDate=day;reportShift=shift;reportMode='SHIFT';reportFrom='';reportTo='';reportAsOfMs=Date.now();reportReady=true;reportVerified=true;
   $('radioHistoryDevice').value='';$('radioHistoryAction').value='';$('radioHistorySearch').value='';
   const count=reportEvents.length; // server-confirmed actual time, including legacy records labelled with the wrong shift
   $('radioReportState').textContent='✓ '+reportScope()+': '+count+' sự kiện đã kiểm tra trực tuyến trong đúng khoảng giờ ca.';
   notify('Đã tải đủ '+count+' sự kiện của '+reportScope()+'. Chọn kèm ảnh (AD) nếu cần đối chiếu.',false);
  }catch(e){
   if(token!==reportToken)return;
-  reportEvents=[];reportReady=false;reportVerified=false;reportDate='';
+  reportEvents=[];reportReady=false;reportVerified=false;reportDate='';reportAsOfMs=0;
   $('radioReportState').textContent='⚠ Không lấy được báo cáo: '+S(e?.message||e);
   notify('Chưa thể xuất báo cáo ca: '+errText(e),true);
  }finally{
@@ -1102,13 +1102,13 @@ async function loadRangeReport(){
    cursor=page.docs[page.docs.length-1];
   }
   if(token!==reportToken||!isAdmin(currentUser()))return;
-  reportEvents=all.reverse();reportMode='RANGE';reportFrom=from;reportTo=to;reportDate='';reportReady=true;reportVerified=true;
+  reportEvents=all.reverse();reportMode='RANGE';reportFrom=from;reportTo=to;reportDate='';reportAsOfMs=Date.now();reportReady=true;reportVerified=true;
   $('radioHistoryDevice').value='';$('radioHistoryAction').value='';$('radioHistorySearch').value='';
   $('radioReportState').textContent='✓ Đã tải đủ '+all.length+' sự kiện từ '+from+' đến '+to+' ('+(days*2)+' ca, Firebase trực tuyến).';
   notify('Đã xác minh '+all.length+' sự kiện trong '+days+' ngày. Có thể xuất PDF không ảnh hoặc kèm ảnh.',false);
  }catch(e){
   if(token!==reportToken)return;
-  reportEvents=[];reportReady=false;reportVerified=false;reportMode='SHIFT';reportFrom='';reportTo='';
+  reportEvents=[];reportReady=false;reportVerified=false;reportMode='SHIFT';reportFrom='';reportTo='';reportAsOfMs=0;
   $('radioReportState').textContent='⚠ Không thể tải đủ khoảng ngày: '+S(e?.message||e);
   notify('Không xuất báo cáo thiếu dữ liệu: '+errText(e),true);
  }finally{
@@ -1190,16 +1190,104 @@ function radioRangeDailyMatrix(rows){
   [...byShift.values()].map(v=>'<tr><td>'+v.day+'</td><td>'+(v.shift==='AM'?'Sáng':'Tối')+'</td><td>'+v.issue+'</td><td>'+v.returned+'</td><td>'+v.swap+'</td><td>'+v.fault+'</td></tr>').join('')+
   '</tbody></table></div></div>';
 }
+
+// Reconcile immutable custody events by device, not by subtracting total ISSUE and RETURN:
+// an AD may sign a RETURN on behalf of the original holder and SWAP_OUT closes a device.
+// The result is an historical snapshot at cutoff, never a claim that a past holder
+// is still holding the device today. Missing prior-period ISSUE must remain explicit.
+function radioReconcileCustody(rows,cutoffMs){
+ const items=[...rows].filter(e=>e&&e.at?.toMillis?.()&&S(e.deviceCode)).sort((a,b)=>
+  a.at.toMillis()-b.at.toMillis()||Number(a.deviceVersion||0)-Number(b.deviceVersion||0)||S(a.id).localeCompare(S(b.id)));
+ const openByDevice=new Map(),late=[],orphanReturns=[],handoverGaps=[];
+ for(const e of items){
+  const code=S(e.deviceCode),time=e.at.toMillis(),action=S(e.action);
+  if(time>cutoffMs)continue;
+  if(action==='ISSUE'||action==='SWAP_IN'){
+   const previous=openByDevice.get(code);
+   if(previous)handoverGaps.push(previous);
+   const duty=radioShiftAt(time),due=shiftBounds(duty.day,duty.shift).endMs;
+   openByDevice.set(code,{id:e.id||'',deviceCode:code,personUid:S(e.personUid||e.actorUid),
+    personName:S(e.personName||e.actorName||e.personUid||e.actorUid)||'Chưa rõ người nhận',
+    receivedAtMs:time,dueMs:due,shiftDay:duty.day,shift:duty.shift,action});
+  }else if(action==='RETURN'||action==='SWAP_OUT'){
+   const prev=openByDevice.get(code);
+   if(!prev){orphanReturns.push(e);continue}
+   const receiver=S(e.personUid),consistent=!receiver||!prev.personUid||receiver===prev.personUid;
+   if(!consistent)handoverGaps.push({...prev,reason:'Người trả không khớp người giữ theo sự kiện'});
+   if(time>=prev.dueMs)late.push({...prev,returnedAtMs:time,returnedBy:S(e.actorName||e.actorUid||''),
+    returnAction:action,matchedHolder:consistent});
+   openByDevice.delete(code);
+  }
+ }
+ const outstanding=[...openByDevice.values()].map(e=>({...e,overdue:cutoffMs>=e.dueMs,
+  ageMinutes:Math.max(0,Math.floor((cutoffMs-e.receivedAtMs)/60000))}))
+  .sort((a,b)=>Number(b.overdue)-Number(a.overdue)||a.receivedAtMs-b.receivedAtMs);
+ late.sort((a,b)=>b.returnedAtMs-a.returnedAtMs);
+ return {outstanding,late,orphanReturns,handoverGaps,cutoffMs};
+}
+function radioReportCutoffMs(){
+ if(!reportReady)return 0;
+ const endMs=reportMode==='RANGE'?radioRangeBounds(reportFrom,reportTo).endMs:shiftBounds(reportDate,reportShift).endMs;
+ return Math.min(endMs,reportAsOfMs||Date.now());
+}
+function radioLiveCustody(list,nowMs=Date.now()){
+ return list.filter(d=>d.status==='OUT').map(d=>{
+  const heldAtMs=radioHeldSince(d)?.toMillis?.()||0;
+  const dueMs=heldAtMs?(()=>{const duty=radioShiftAt(heldAtMs);return shiftBounds(duty.day,duty.shift).endMs})():0;
+  return {deviceCode:S(d.code),personName:S(d.holderName||d.holderUid||'Chưa rõ người giữ'),
+   personUid:S(d.holderUid),receivedAtMs:heldAtMs,dueMs,overdue:!!dueMs&&nowMs>=dueMs};
+ }).sort((a,b)=>Number(b.overdue)-Number(a.overdue)||a.receivedAtMs-b.receivedAtMs);
+}
+function radioOutstandingSummaryHtml(rows){
+ const cutoffMs=radioReportCutoffMs(),result=radioReconcileCustody(rows,cutoffMs);
+ const live=radioLiveCustody(devices),table=(headers,items,empty,render)=>{
+  if(!items.length)return '<p class="radioHint">'+empty+'</p>';
+  return '<div class="radioAdminMatrixScroll"><table><thead><tr>'+headers.map(h=>'<th>'+h+'</th>').join('')+
+   '</tr></thead><tbody>'+items.map(render).join('')+'</tbody></table></div>';
+ };
+ const when=ms=>ms?fmt(new Date(ms)):'Không rõ giờ';
+ const overdue=result.outstanding.filter(x=>x.overdue);
+ return '<section class="radioOutstandingBox"><div class="radioOutstandingHeading"><h4>🚩 Đối soát chưa trả · toàn bộ kỳ</h4>'+
+  '<small>Chốt theo giờ Firebase: '+esc(when(cutoffMs))+' · Không căn cứ vào bộ lọc tìm kiếm lịch sử</small></div>'+
+  '<div class="radioOutstandingCards">'+
+  [['Chưa có lượt trả tại mốc chốt',result.outstanding.length],['Quá giờ kết thúc ca',overdue.length],
+   ['Đã trả muộn trong kỳ',result.late.length],['Hiện đang giữ (mới nhất)',live.length]].map(([name,count])=>
+   '<div><strong>'+count+'</strong><small>'+esc(name)+'</small></div>').join('')+'</div>'+
+  '<h4>1 · Lượt nhận chưa thấy trả tại mốc chốt</h4>'+
+  table(['Người nhận','Máy','Thời điểm nhận','Hạn kết thúc ca','Đối soát'],result.outstanding,
+   'Không còn lượt nhận nào chưa được ghi trả tại mốc chốt của phạm vi đã tải.',
+   x=>'<tr class="'+(x.overdue?'radioOutstandingAlert':'')+'"><td>'+esc(x.personName)+'</td><td>'+esc(label(x.deviceCode))+
+    '</td><td>'+esc(when(x.receivedAtMs))+'</td><td>'+esc(when(x.dueMs))+'</td><td>'+
+    (x.overdue?'CẦN KIỂM TRA · quá ca':'Đang trong ca')+'</td></tr>')+
+  '<p class="radioHint">Chỉ đối chiếu lượt nhận phát sinh trong phạm vi đã chọn. Người nhận trước ngày bắt đầu không được tự suy đoán; một lượt trả sau mốc chốt có thể xuất hiện trong báo cáo kỳ tiếp theo.</p>'+
+  '<h4>2 · Người đang giữ máy theo trạng thái Firebase mới nhất</h4>'+
+  table(['Người giữ','Máy','Giữ từ','Tình trạng'],live,
+   'Hiện chưa có máy nào ở trạng thái đang sử dụng.',
+   x=>'<tr class="'+(x.overdue?'radioOutstandingAlert':'')+'"><td>'+esc(x.personName)+'</td><td>'+
+    esc(label(x.deviceCode))+'</td><td>'+esc(when(x.receivedAtMs))+'</td><td>'+
+    (x.overdue?'QUÁ CA':x.dueMs?'Đang trong ca':'Chưa đủ giờ để đối chiếu')+'</td></tr>')+
+  '<p class="radioHint">Đây là trạng thái hiện tại, độc lập với mốc chốt báo cáo lịch sử; có thể thay đổi khi nhân viên ký trả.</p>'+
+  '<h4>3 · Lượt trả muộn đã ghi nhận trong kỳ</h4>'+
+  table(['Người nhận','Máy','Đến hạn','Đã trả'],result.late.slice(0,25),
+   'Không phát sinh lượt trả muộn trong dữ liệu đã tải.',
+   x=>'<tr><td>'+esc(x.personName)+'</td><td>'+esc(label(x.deviceCode))+'</td><td>'+
+    esc(when(x.dueMs))+'</td><td>'+esc(when(x.returnedAtMs))+'</td></tr>')+
+  (result.late.length>25?'<p class="radioHint">Hiển thị 25/'+result.late.length+' lượt trả muộn mới nhất; tổng đã tính đủ.</p>':'')+
+  (result.handoverGaps.length?'<p class="radioOutstandingWarn">⚠ '+result.handoverGaps.length+
+   ' chuỗi bàn giao có sự kiện tiếp theo chưa khớp; cần kiểm tra lịch sử.</p>':'')+
+  '</section>';
+}
+
 function renderSummary(){
  if(canMonitor(currentUser())&&!reportReady){
   $('radioSummary').innerHTML='<p class="radioEmpty">Để xem báo cáo chính xác: chọn ngày/ca hoặc khoảng ngày (AD), rồi bấm TẢI BÁO CÁO. Không dùng lịch sử gần đây để suy ra ca cũ.</p>';return;
  }
  if(reportReady){
-  const rows=filteredHistory(),n=rows.filter(x=>x.action==='ISSUE').length,r=rows.filter(x=>x.action==='RETURN').length,
+  const rows=reportEvents,n=rows.filter(x=>x.action==='ISSUE').length,r=rows.filter(x=>x.action==='RETURN').length,
    swaps=rows.filter(x=>x.action==='SWAP_OUT').length,errors=rows.filter(x=>x.action==='REPORT').length;
   $('radioSummary').innerHTML='<h4>Đối soát '+esc(reportScope())+'</h4><div class="radioReportGrid">'+
    [['Nhận máy',n],['Trả máy',r],['Đổi máy',swaps],['Báo lỗi',errors]].map(x=>'<div><strong>'+x[1]+'</strong><small>'+x[0]+'</small></div>').join('')+
-   '</div>'+(reportMode==='RANGE'?radioRangeDailyMatrix(rows):'')+radioShiftDeviceMatrix(rows,reportMode==='RANGE')+'<p class="radioHint">Tổng '+rows.length+' sự kiện theo bộ lọc. Số lượt không phải số máy hiện còn giữ; trạng thái hiện tại không dùng để suy ra lịch sử ca trước.</p>';
+   '</div>'+radioOutstandingSummaryHtml(rows)+(reportMode==='RANGE'?radioRangeDailyMatrix(rows):'')+radioShiftDeviceMatrix(rows,reportMode==='RANGE')+'<p class="radioHint">Tổng '+rows.length+' sự kiện theo bộ lọc. Số lượt không phải số máy hiện còn giữ; trạng thái hiện tại không dùng để suy ra lịch sử ca trước.</p>';
   return;
  }
  const n=events.filter(x=>['SWAP_OUT'].includes(x.action)).length,issues=events.filter(x=>['REPORT','SWAP_OUT'].includes(x.action)||(x.action==='RETURN'&&x.reasonCode==='BATTERY_WEAK')),pending=devices.filter(hasRadioWarning);
