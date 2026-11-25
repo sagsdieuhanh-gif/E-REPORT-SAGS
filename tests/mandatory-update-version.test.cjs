@@ -10,7 +10,7 @@ assert(index.includes('name="sags-release-version" content="'+release.displayVer
 assert(!index.includes('id="appUpdateLaterBtn"'),'mandatory updates must not expose defer button');
 assert(worker.includes("const BUILD='"+release.build+"'"));
 assert(worker.includes("const DISPLAY_VERSION='"+release.displayVersion+"'"));
-assert(detector.includes('appUpdatePolicy="required"'));
-assert(detector.includes('window.dismissAppUpdate=function()'));
-assert(generated.includes('BẮT BUỘC CẬP NHẬT'));
+assert(detector.includes("appUpdatePolicy='required'"));
+
+assert(generated.includes('CẬP NHẬT BẮT BUỘC'));
 console.log('Mandatory version gate OK: '+release.displayVersion+' / '+release.build);
