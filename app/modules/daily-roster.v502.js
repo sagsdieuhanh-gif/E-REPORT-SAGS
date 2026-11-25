@@ -558,6 +558,8 @@ async function openTask(aid,fid,completed,cardDate='',exact=false,button=null){
     }
     if(!completed){await root.sagsAirlineFormPolicy?.ready();if(root.sagsAirlineFormPolicy?.allowed(item,item.formGroup)===false)throw new Error("Biểu mẫu này chưa được AD bật cho hãng hoặc loại tàu của chuyến.");}
     const realFid=S(item.flightId||fid);
+    if(typeof root.SAGSRequiredReleaseGate?.assertCurrentForNewWork!=='function')throw new Error('Bắt buộc tải bản E-REPORT mới trước khi nhận chuyến.');
+    await root.SAGSRequiredReleaseGate.assertCurrentForNewWork();
     if(typeof root.SAGSFlightCompletionGateV12?.assertCanOpen!=='function')throw new Error('Bộ kiểm tra HOÀN TẤT chuyến trước chưa sẵn sàng. Bấm UPDATE rồi thử lại.');
     await root.SAGSFlightCompletionGateV12.assertCanOpen(realFid,date,item);
     // Mandatory preflight before any claim reset, handover or reopening write.
