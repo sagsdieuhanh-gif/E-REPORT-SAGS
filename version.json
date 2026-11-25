@@ -1,13 +1,13 @@
 {
-  "version": "V1.1",
-  "displayVersion": "V1.1",
-  "label": "V1.1 - MY FLIGHT FORM OVERVIEW",
-  "build": "V1.1-20261126-MYFLIGHT-FORM-OVERVIEW-01",
+  "version": "V1.2",
+  "displayVersion": "V1.2",
+  "label": "V1.2 - BẮT BUỘC HOÀN TẤT TRƯỚC KHI NHẬN CHUYẾN KHÁC",
+  "build": "V1.2-20261126-FINISH-BEFORE-NEXT-FLIGHT-01",
   "releasedAt": "2026-11-26",
-  "type": "myflight-form-overview-fix",
+  "type": "mandatory-flight-completion-gate",
   "base": "Giữ nguyên toàn bộ dữ liệu và chức năng đã ổn định từ E-REPORT-SAGS V2.2; chỉ đặt lại dãy số phiên bản hiển thị",
   "updatePolicy": "required",
-  "notes": "Sửa tổng hợp biểu mẫu My Flight khi DAILY ROSTER và Flight Hub có flightId khác nhau nhưng cùng cặp số chuyến, ngày và tàu bay, chỉ ghép khi nhận diện duy nhất; kiểm tra chính sách hãng với thông tin hồ sơ chuyến nếu phân công thiếu trường; hiển thị lỗi phân công thay vì im lặng ẩn biểu mẫu. Giữ nguyên dữ liệu Firebase, phân quyền và thao tác nhận/hoàn tất. Cập nhật V1.1 bắt buộc.",
-  "message": "V1.1: sửa thiếu biểu mẫu trên My Flight; cập nhật bắt buộc.",
-  "previousBuild": "V1.0-20261126-MANDATORY-UPDATE-01"
+  "notes": "Bắt buộc nhân viên bấm ✓ HOÀN TẤT và được Firebase xác nhận trước khi nhận/mở chuyến khác. Kiểm tra từ roster_mail của chính tài khoản và roster_sessions; giữ nguyên công việc cùng chuyến, không ảnh hưởng người khác cùng nhóm. Bảo vệ các đường nhận thông thường, mở lại, nhận thay, biểu mẫu MH và mở assignment trực tiếp. Không xóa dữ liệu đang nhập; cập nhật V1.2 bắt buộc.",
+  "message": "V1.2: bắt buộc hoàn tất chuyến đang làm trước khi nhận hoặc mở chuyến khác.",
+  "previousBuild": "V1.1-20261126-MYFLIGHT-FORM-OVERVIEW-01"
 }
