@@ -111,9 +111,18 @@ async function contract(){
   throw new Error('Máy chủ đang đồng bộ bản mới');
  return{current:false,build:b};
 }
-function repair(target){
+async function repair(target){
  if(!target||target===BUILD)return;
- if(currentWork()){render('stale',target);return}
+ if(currentWork()){
+  try{
+   if(typeof root.readOfflineQueue==='function'&&root.readOfflineQueue().length){render('stale',target);return}
+   if(typeof root.sagsQuickEntryStatus==='function'&&root.sagsQuickEntryStatus()){render('stale',target);return}
+   if(typeof root.sagsUpdateIncompleteWorkGuard!=='function'){render('stale',target);return}
+   var work=await root.sagsUpdateIncompleteWorkGuard();
+   if(!work||work.blocked){render('stale',target);return}
+   if(typeof root.sagsSaveBeforeAppUpdate==='function'&&!(await root.sagsSaveBeforeAppUpdate())){render('stale',target);return}
+  }catch(_){render('stale',target);return}
+ }
  try{root.sessionStorage&&root.sessionStorage.removeItem('pdh-update-dismissed')}catch(_){}
  try{root.localStorage&&root.localStorage.setItem('sags-v6-deferred-build',target)}catch(_){}
  var u=new URL('./repair.html',root.location.href);
@@ -135,7 +144,7 @@ async function verify(force){
   try{
    var c=await contract();lastCheckAt=Date.now();ready=true;
    if(c.current){render('current',c.build);return'current'}
-   render('stale',c.build);repair(c.build);return'stale'
+   render('stale',c.build);await repair(c.build);return'stale'
   }catch(e){ready=true;render('unverified');return'unverified'}
  })();
  try{return await checking}finally{checking=null}
