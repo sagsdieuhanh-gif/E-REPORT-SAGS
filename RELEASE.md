@@ -9,3 +9,6 @@ Never edit app/generated directly. `node tools/build-runtime.cjs --check` verifi
 The PR/workflow-dispatch CI gate also checks that rebuilding leaves no tracked diff. No deploy, promotion, cache reset or Firebase production mutation is part of these commands. Run the release gate before requesting approval to merge/deploy.
 
 Remaining production prerequisites: Firebase transaction/read rules under roster_sessions, old read/set clients during rollout, real-browser/phone workflow and update QA. Node simulations cannot certify those.
+
+## Mandatory release numbering (from 2026-11-26)
+The next published baseline is V1.0; every later published update advances exactly one minor step (V1.1, V1.2, ...). Never roll back stored data to reset a display version. `version.json.updatePolicy` must remain `required`. Remove the Update Later UI, but let unfinished work and pending offline writes save and synchronize safely before the forced update is applied. Verify the release contract and tests before merge to main.
