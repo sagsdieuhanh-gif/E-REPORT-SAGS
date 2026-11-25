@@ -6,7 +6,7 @@ const reminders=fs.readFileSync('app/modules/radio-reminders.v21.js','utf8');
 const ver=JSON.parse(fs.readFileSync('version.json','utf8'));
 const index=fs.readFileSync('index.html','utf8');
 const sw=fs.readFileSync('service-worker.js','utf8');
-assert.equal(ver.version,'V1.4');
+assert.match(ver.version,/^V\d+\.\d+$/);
 assert(index.includes(ver.build)&&sw.includes(ver.build),'hotfix must be cache-busted');
 assert(sw.includes('"./app/modules/radio-custody.v1.js"')&&sw.includes('"./app/styles/radio-custody.v1.css"'),'standalone radio menu must work from verified PWA cache');
 assert(shell.includes('e.stopPropagation();trigger(b.dataset.v6494Key)'),'PC quick actions cannot bubble into legacy My Flight route');

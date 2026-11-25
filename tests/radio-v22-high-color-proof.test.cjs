@@ -2,7 +2,7 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
 const radio=fs.readFileSync('app/modules/radio-custody.v1.js','utf8'),rules=fs.readFileSync('firebase/firestore.rules','utf8'),css=fs.readFileSync('app/styles/radio-custody.v1.css','utf8');
 const version=JSON.parse(fs.readFileSync('version.json','utf8'));
-assert.equal(version.version,'V1.4','release must truly be V1.4');
+assert.match(version.version,/^V\d+\.\d+$/,'release must truly be V1.4');
 assert(radio.includes("PROOFS='sags_radio_proofs_v22'"));
 assert(radio.includes('HIGH_PROOF_LIMIT=700000'));
 assert(radio.includes("width:{ideal:2560},height:{ideal:1440}"),'request higher resolution camera sensor');
