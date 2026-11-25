@@ -27,7 +27,7 @@ assert.equal(control,read('app/generated/core-control.js'));
 assert(sw.includes("const BUILD='"+version.build+"'"));
 assert(sw.includes('stale-shell-navigation'),'pinned SW must use network version check on navigation');
 assert(sw.includes("if(m?.build===target&&m?.version==="),'never launch an incomplete release');
-const gate=script[1],start=gate.indexOf('async function contract()'),end=gate.indexOf('function repair(',start);
+const gate=script[1],start=gate.indexOf('async function contract()'),end=gate.indexOf('async function repair(',start);
 assert(start>0&&end>start,'contract helper');
 const code=gate.slice(start,end)+'\nthis.checkReleaseContract=contract;';
 const current='V1.3-20261126-STRICT-CURRENT-RELEASE-GATE-01',next='V1.4-20261201-TEST';
