@@ -3,7 +3,7 @@ const fs=require('node:fs'),assert=require('node:assert/strict');
 const read=p=>fs.readFileSync(p,'utf8');
 const v=JSON.parse(read('version.json')),manifest=JSON.parse(read('asset-manifest.json'));
 const sw=read('service-worker.js'),html=read('index.html');
-assert.equal(v.displayVersion,'V1.4','visible release numbering restarts at V1.4 without restoring old code or data');
+assert.match(v.displayVersion,/^V\d+\.\d+$/,'visible release numbering restarts at V1.4 without restoring old code or data');
 assert.equal(v.version,v.displayVersion);
 assert.equal(manifest.build,v.build);
 assert.equal(manifest.version,v.displayVersion);

@@ -1,12 +1,13 @@
 {
-  "version": "V1.4",
-  "displayVersion": "V1.4",
-  "label": "V1.4 - OPERATIONAL CONSISTENCY AND SAFETY",
-  "build": "V1.4-20261124-FLEX-SHIFT-09",
-  "releasedAt": "2026-11-24",
-  "type": "operational-consistency-phase1-2",
+  "version": "V1.0",
+  "displayVersion": "V1.0",
+  "label": "V1.0 - MANDATORY UPDATE BASELINE",
+  "build": "V1.0-20261126-MANDATORY-UPDATE-01",
+  "releasedAt": "2026-11-26",
+  "type": "mandatory-update-baseline",
   "base": "Giữ nguyên toàn bộ dữ liệu và chức năng đã ổn định từ E-REPORT-SAGS V2.2; chỉ đặt lại dãy số phiên bản hiển thị",
   "updatePolicy": "required",
-  "notes": "Chuẩn hóa ca bộ đàm 08:30–19:00 và 19:01–08:29; thống nhất đăng nhập PVHK/FSAGS09/AD; mật khẩu tài khoản mới ngẫu nhiên 24 ký tự; thanh lưu nháp không còn báo 3 lớp khi chưa xác nhận Firebase; thống nhất mã TW. Các tác vụ backend retention, standby, reset cần cấu hình riêng trên Firebase/GitHub Actions; không thay đổi dữ liệu, lịch sử, ảnh hoặc PDF. Đã chuẩn bị chức danh Quản lý bộ đàm (RADIO_MANAGER); tạm khóa đăng nhập và tạo tài khoản chờ kiểm tra, triển khai Firestore/Realtime Database Rules production. Rà soát và tách đối chiếu roster AD khỏi tài khoản Quản lý bộ đàm; không thay đổi Firebase production. AD có thể xuất báo cáo bộ đàm theo một ca, 7 ngày, 30 ngày, tháng này hoặc khoảng tối đa 31 ngày (cả 2 ca). Dữ liệu Firebase đọc phân trang, không xuất báo cáo thiếu và bảo vệ PDF trên di động; giữ nguyên quyền Quản lý bộ đàm hiện tại. Ảnh bộ đàm mới giảm nhẹ độ nén JPEG gốc từ 0,92 xuống 0,89; báo cáo PDF chỉ nén lại ảnh lớn trong file xuất (tối đa 1800px, JPEG 0,84), không sửa ảnh gốc lưu máy chủ; ảnh nhỏ giữ nguyên. Báo cáo PDF bộ đàm bổ sung trang đầu đối soát lượt nhận chưa trả đến mốc chốt, quá ca, trả muộn, người đang giữ hiện tại; không suy đoán trả từ trước kỳ và không cắt danh sách khi dài. Thời gian quá ca tính theo 08:30–19:00 và 19:01–08:29; dữ liệu đầy đủ từ Firebase. AD được lọc một chạm thiết bị đang được giữ; cảnh báo quá ca lấy từ snapshot Firebase và cập nhật đồng hồ 60 giây khi mở bảng. Báo cáo theo nhân viên ghi lượt nhận, trả đúng ca, trả muộn, chưa trả và quá ca; có trang PDF riêng nếu nhiều người. Không suy đoán lượt nhận ngoài khoảng và không khóa máy lỗi. Giới hạn điểm mở ứng dụng: tự điều hướng về https://sagsdieuhanh-gif.github.io/E-REPORT-SAGS/ khi mở từ URL/miền không hợp lệ, trước khi tải Firebase; PWA tự mở URL chính thức. Khóa dữ liệu khỏi bản sao cần bổ sung App Check và thực thi Firebase production sau kiểm chứng, chưa được kích hoạt trong bản này. Tách ca sử dụng máy khỏi thời điểm ký nhận thực tế: người nhận chọn ca sáng/tối, tất cả thời điểm phải chọn AM/PM; Firestore timestamp không thay đổi. Giữ ca khi trả hoặc đổi máy; cảnh báo quá ca, MY FLIGHT và nhắc trả dùng ca đã ghi. Báo cáo ngày/ca cũng bao gồm lượt nhận sớm của ca tối, không tự đổi nhãn ca bản ghi lịch sử cũ. Mốc ca danh nghĩa vẫn 08:30–19:00 và 19:01–08:29. Không sửa Firestore Rules production. Mốc phân loại giờ nhận chính xác sáng 08:00–18:30 và tối 18:31–07:59 ngày sau; không phải mốc hạn trả. Đối chiếu lịch sử theo ca đã chọn; iOS/Android không tự chọn ca theo giờ. Không sửa ca trong bản ghi cũ.",
-  "message": "V1.4: bắt buộc chọn ca sáng/tối khi nhận bộ đàm; mốc nhận sáng 08:00–18:30, tối 18:31–07:59; hết ca giữ nguyên."
+  "notes": "Mốc đánh số mới V1.0 từ 26/11/2026 (không rollback dữ liệu/mã nguồn). Mọi tài khoản phải nhận bản phát hành mới; không cho hoãn cập nhật. Chỉ chuyển phiên bản khi đã lưu dữ liệu và hoàn tất đồng bộ an toàn. Các nghiệp vụ và dữ liệu được kế thừa từ bản trước.",
+  "message": "V1.0: cập nhật bắt buộc cho toàn bộ tài khoản; không hoãn phiên bản; giữ an toàn nháp và dữ liệu đồng bộ.",
+  "previousBuild": "V1.4-20261124-FLEX-SHIFT-09"
 }

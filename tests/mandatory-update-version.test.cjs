@@ -1,0 +1,16 @@
+const fs=require('fs'),path=require('path'),assert=require('assert');
+const root=path.resolve(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p),'utf8');
+const release=JSON.parse(read('version.json')),index=read('index.html'),worker=read('service-worker.js'),detector=read('app/boot/25-v1154-update-detector-r2.js'),generated=read('app/generated/boot-group-4.js');
+assert.match(release.displayVersion,/^V\d+\.\d+$/);
+assert.strictEqual(release.version,release.displayVersion);
+assert.strictEqual(release.updatePolicy,'required');
+assert(release.build.startsWith(release.displayVersion+'-'));
+assert(index.includes('name="sags-release-build" content="'+release.build+'"'));
+assert(index.includes('name="sags-release-version" content="'+release.displayVersion+'"'));
+assert(!index.includes('id="appUpdateLaterBtn"'),'mandatory updates must not expose defer button');
+assert(worker.includes("const BUILD='"+release.build+"'"));
+assert(worker.includes("const DISPLAY_VERSION='"+release.displayVersion+"'"));
+assert(detector.includes("appUpdatePolicy='required'"));
+
+assert(generated.includes('CẬP NHẬT BẮT BUỘC'));
+console.log('Mandatory version gate OK: '+release.displayVersion+' / '+release.build);

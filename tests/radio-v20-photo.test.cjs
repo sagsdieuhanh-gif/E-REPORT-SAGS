@@ -4,7 +4,7 @@ const radio=fs.readFileSync('app/modules/radio-custody.v1.js','utf8');
 const menu=fs.readFileSync('app/boot/32-v6494-aviation-shell.js','utf8');
 const css=fs.readFileSync('app/styles/radio-custody.v1.css','utf8');
 const index=fs.readFileSync('index.html','utf8'),ver=JSON.parse(fs.readFileSync('version.json','utf8'));
-assert.equal(ver.version,'V1.4');
+assert.match(ver.version,/^V\d+\.\d+$/);
 const i=menu.indexOf("key:'myflight'"),j=menu.indexOf("key:'radio'"),k=menu.indexOf("key:'history'");
 assert(i>=0&&j>i&&k>j,'Radio menu must appear immediately below My Flight');
 assert.equal((menu.match(/key:'radio',label:/g)||[]).length,1,'Radio menu must not duplicate');
