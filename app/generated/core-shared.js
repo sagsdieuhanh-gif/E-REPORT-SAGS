@@ -138,7 +138,7 @@ function completionGateBlockerV12(entries,states,target,date,username){
   if(st.skippedNoEform===true||st.autoSkippedByNextUser===true)continue;
   const cs=U(st.claimStatus),ts=U(st.taskStatusV333||st.taskStatus||st.workPartStatus);
   const done=['PART_COMPLETED','COMPLETED','HANDED_OVER','SKIPPED'].includes(cs)||
-    ['COMPLETED','PART_COMPLETED','HANDED_OVER','SKIPPED','NOT_APPLICABLE'].includes(ts);
+    (Number(st.completedAtMs||0)>0&&norm(st.completedBy)===u);
   if(done||!(cs==='CLAIMED'||['IN_PROGRESS','CLAIMED','ACTIVE','WORKING'].includes(ts)))continue;
   const op=S(item.opDate||item.date||item.flightDate);
   if(sameFlightForCompletionGateV12(item,target,op,date))continue;
