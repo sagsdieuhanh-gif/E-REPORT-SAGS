@@ -19,7 +19,7 @@ const core=read('app/core/phases/core-shared.js'),generated=read('app/generated/
 assert.equal(core,generated,'deployed shared core must match source');
 assert(core.includes('root.SAGSRequiredReleaseGate.assertCurrentForNewWork()'),'central roster claim and receive must check release');
 assert(core.includes('async function markClaim(d,fid,item,man){if(typeof root.SAGSRequiredReleaseGate'),'claim writer gate');
-assert(core.includes('root.v324TakeoverWaiting=async function(fid){if(!(fid=S(fid)))return;if(typeof root.SAGSRequiredReleaseGate'),'takeover gate');
+assert(core.includes('root.v324TakeoverWaiting=async function(fid){if(!(fid=S(fid)))return;const d=opDate();try{if(typeof root.SAGSRequiredReleaseGate'),'takeover gate');
 const daily=read('app/modules/daily-roster.v502.js'),control=read('app/core/phases/core-control.js');
 assert(daily.includes('root.SAGSRequiredReleaseGate.assertCurrentForNewWork()'),'My Flight including MH open gate');
 assert(control.includes('root.SAGSRequiredReleaseGate.assertCurrentForNewWork()'),'direct assignment gate');
