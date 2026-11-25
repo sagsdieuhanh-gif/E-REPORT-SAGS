@@ -84,8 +84,10 @@ function render(status,target){
  if(!x)return;
  x.cover.hidden=true;x.banner.hidden=true;
  if(status==='current')return;
- if(status==='stale'&&currentWork()){
-  x.banner.textContent='CẬP NHẬT BẮT BUỘC · Hoàn tất công việc đang mở và đồng bộ dữ liệu, sau đó ứng dụng sẽ chuyển lên phiên bản mới. Không thể nhận chuyến mới.';
+ if((status==='stale'||status==='unverified')&&currentWork()){
+  x.banner.textContent=status==='stale'
+   ?'CẬP NHẬT BẮT BUỘC · Hoàn tất công việc đang mở và đồng bộ dữ liệu, sau đó ứng dụng sẽ chuyển lên phiên bản mới. Không thể nhận chuyến mới.'
+   :'CHƯA XÁC MINH PHIÊN BẢN · Chỉ tiếp tục lưu/hoàn tất chuyến đang mở. Kết nối mạng để cập nhật trước khi nhận chuyến khác.';
   return;
  }
  html.classList.add('sags-rel-locked');x.cover.hidden=false;
