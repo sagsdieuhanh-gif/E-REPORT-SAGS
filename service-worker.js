@@ -277,6 +277,29 @@ self.addEventListener('fetch',event=>{
   // page. repair.html unregisters stale workers/caches and re-opens only after
   // version + manifest + index agree on one build.
   event.respondWith((async()=>{
+   // A future release must replace the pinned shell on the next online navigation.
+   // Check the complete release contract before redirecting; never load mixed assets.
+   try{
+    const stamp=Date.now(),opt={cache:'no-store'},vr=await fetch(scopeUrl('./version.json')+'?__sags_strict=1&t='+stamp,opt);
+    if(vr.ok){
+     const v=await vr.json(),target=String(v?.build||'').trim();
+     if(target&&target!==BUILD&&v?.updatePolicy==='required'){
+      const [mr,ir]=await Promise.all([
+       fetch(scopeUrl(ASSET_MANIFEST_URL)+'?__sags_strict=1&t='+stamp,opt),
+       fetch(scopeUrl('./index.html')+'?__sags_contract=1&t='+stamp,opt)
+      ]);
+      if(mr.ok&&ir.ok){
+       const m=await mr.json(),h=await ir.text();
+       if(m?.build===target&&m?.version===(v.displayVersion||v.version)&&h.includes('name="sags-release-build" content="'+target+'"')){
+        const u=new URL('./repair.html',self.registration.scope);
+        u.searchParams.set('stage','1');u.searchParams.set('auto','1');u.searchParams.set('target',target);
+        u.searchParams.set('from','stale-shell-navigation');
+        return Response.redirect(u.href,302);
+       }
+      }
+     }
+    }
+   }catch(e){console.info('Navigation release check unavailable',e?.message||e)}
    const c=await caches.open(CACHE_NAME),r=await c.match(HOME);if(r)return r;
    const m=await readManifest();
    const old=m?.build===BUILD?await sagsPriorAsset('./index.html',m.assets?.['./index.html']):null;
