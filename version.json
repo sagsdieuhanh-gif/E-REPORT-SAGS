@@ -1,13 +1,13 @@
 {
-  "version": "V1.0",
-  "displayVersion": "V1.0",
-  "label": "V1.0 - MANDATORY UPDATE BASELINE",
-  "build": "V1.0-20261126-MANDATORY-UPDATE-01",
+  "version": "V1.1",
+  "displayVersion": "V1.1",
+  "label": "V1.1 - MY FLIGHT FORM OVERVIEW",
+  "build": "V1.1-20261126-MYFLIGHT-FORM-OVERVIEW-01",
   "releasedAt": "2026-11-26",
-  "type": "mandatory-update-baseline",
+  "type": "myflight-form-overview-fix",
   "base": "Giữ nguyên toàn bộ dữ liệu và chức năng đã ổn định từ E-REPORT-SAGS V2.2; chỉ đặt lại dãy số phiên bản hiển thị",
   "updatePolicy": "required",
-  "notes": "Mốc đánh số mới V1.0 từ 26/11/2026 (không rollback dữ liệu/mã nguồn). Mọi tài khoản phải nhận bản phát hành mới; không cho hoãn cập nhật. Chỉ chuyển phiên bản khi đã lưu dữ liệu và hoàn tất đồng bộ an toàn. Các nghiệp vụ và dữ liệu được kế thừa từ bản trước.",
-  "message": "V1.0: cập nhật bắt buộc cho toàn bộ tài khoản; không hoãn phiên bản; giữ an toàn nháp và dữ liệu đồng bộ.",
-  "previousBuild": "V1.4-20261124-FLEX-SHIFT-09"
+  "notes": "Sửa tổng hợp biểu mẫu My Flight khi DAILY ROSTER và Flight Hub có flightId khác nhau nhưng cùng cặp số chuyến, ngày và tàu bay, chỉ ghép khi nhận diện duy nhất; kiểm tra chính sách hãng với thông tin hồ sơ chuyến nếu phân công thiếu trường; hiển thị lỗi phân công thay vì im lặng ẩn biểu mẫu. Giữ nguyên dữ liệu Firebase, phân quyền và thao tác nhận/hoàn tất. Cập nhật V1.1 bắt buộc.",
+  "message": "V1.1: sửa thiếu biểu mẫu trên My Flight; cập nhật bắt buộc.",
+  "previousBuild": "V1.0-20261126-MANDATORY-UPDATE-01"
 }

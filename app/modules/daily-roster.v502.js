@@ -474,7 +474,7 @@ function flightOverviewForms(g){
   const source=(Array.isArray(g?.flightAssignments)&&g.flightAssignments.length?g.flightAssignments:g?.items)||[],own=new Map(visibleFormTasks(g).map(x=>[canonicalForm(x.item),x])),buckets=new Map();
   for(const item of source){
     if(!item||item.active===false)continue;
-    try{if(root.sagsAirlineFormPolicy?.allowed?.(item,item.formGroup)===false)continue}catch(_){}
+    try{const policyItem={...item,arrFlight:S(item.arrFlight||g?.primary?.arrFlight),depFlight:S(item.depFlight||g?.primary?.depFlight),acType:S(item.acType||g?.primary?.acType)};if(root.sagsAirlineFormPolicy?.allowed?.(policyItem,item.formGroup)===false)continue}catch(_){}
     const form=canonicalForm(item)||U(item.formGroup),key=form||S(item.assignmentId);
     if(!buckets.has(key))buckets.set(key,{form,item,owners:new Set()});
     const who=assignmentPerson(item);if(who)buckets.get(key).owners.add(who);
@@ -504,7 +504,7 @@ async function personalGroups(date,fid=''){
  states=await Promise.all(displayItems.map(x=>readState(x.assignmentId)));
  if(me()!==owner)throw new Error('Đã đổi tài khoản; mở lại My Flight.');
  const groups=groupTasks(displayItems.map((item,i)=>({item,st:states[i]})).filter(x=>itemCompleted(x.item,x.st)||root.sagsAirlineFormPolicy?.allowed(x.item,x.item.formGroup)!==false));
- for(const g of groups){const fid0=S(g?.primary?.flightId);g.flightAssignments=manifestItems.filter(x=>(fid0?S(x.flightId)===fid0:flightKey(x)===g.key)&&!(U(x.roleKey)==='CBTT'&&canonicalForm(x)==='FINAL'))}
+ for(const g of groups){const fid0=S(g?.primary?.flightId);g.flightAssignments=manifestItems.filter(x=>{if(U(x.roleKey)==='CBTT'&&canonicalForm(x)==='FINAL')return false;if(fid0&&S(x.flightId)===fid0)return true;return g.key.includes('|')&&flightKey(x)===g.key&&(!S(x.acReg)||!S(g.primary.acReg)||U(x.acReg)===U(g.primary.acReg))})}
  await attachDossierDocs(date,groups);return {dd,groups};
 }
 function bindDossierTasks(host){
