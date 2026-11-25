@@ -107,7 +107,7 @@ async function contract(){
  if(!pair[0].ok||!pair[1].ok)throw new Error('Bản phát hành chưa đồng bộ');
  var manifest=await pair[0].json(),markup=await pair[1].text();
  if(manifest.build!==b||manifest.version!==(v.displayVersion||v.version)||
-    markup.indexOf('name="sags-release-build" content="'+b+'"')<0)
+    markup.indexOf('name="'+'sags-release-build'+'" content="'+b+'"')<0)
   throw new Error('Máy chủ đang đồng bộ bản mới');
  return{current:false,build:b};
 }
