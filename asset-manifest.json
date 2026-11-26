@@ -190,8 +190,8 @@
       "bytes": 28001
     },
     "./app/modules/aviation-reference.v1.js": {
-      "sha256": "2b0bec766c8b6186c459b72ca4459aea8e0e455e0e8e5abaf76278d6c590be8a",
-      "bytes": 19519
+      "sha256": "7bb766d8e88b2ba25ff5f54c0066ffcddf829bab469eb7514aaf8674ef63deaa",
+      "bytes": 19583
     },
     "./app/modules/business-text.v1.js": {
       "sha256": "81a12f87e3969fb4bbb331ccd03535ccb096192a57b701ca8222f24aa15a0d38",
