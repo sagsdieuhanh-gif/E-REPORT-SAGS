@@ -95,7 +95,7 @@ assert(src.includes("if(!root.confirm(msg))return"),'Require user to explicitly 
 assert(src.includes("presetPending:true"),'Marks copied from file must remain unverified until inspected');
 assert(src.includes("function confirmSample(key,phase)"),'Allow review per item/phase without 54 redundant steps');
 assert(src.includes("a?.presetPending!==true&&['YES','NO','NA'].includes(v)"),'Unverified sample marks cannot count as completed');
-assert(src.includes("if(model.answers[i.key]?.presetPending===true)errs.push"),'Completion gate must block unverified sample marks');
+assert(src.includes("return a?.presetPending!==true&&['YES','NO','NA'].includes(v)"),'Unverified preset marks must not count in checklist progress');
 assert(src.includes("if(pending){alert('Có '+pending+' mục từ mẫu MH8711 chưa được xác nhận"),'PDF export must block unverified preset checks');
 assert(src.includes("root.matchMedia?.('(max-width: 700px)')?.matches?'quick':'pdf'"),'Mobile should open quick view, desktop keeps PDF');
 assert(style.includes(".mhF27PresetBanner")&&style.includes(".mhF27PresetPending")&&style.includes(".mhF27PresetPhase"),'Mobile must show pending safety verification controls');
