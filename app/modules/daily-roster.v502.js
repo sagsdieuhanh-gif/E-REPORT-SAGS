@@ -269,7 +269,8 @@ install();setTimeout(install,350);setTimeout(install,1100);setTimeout(install,26
 
 
 /* ---------- V1.1.99 PERSONAL DAILY ROSTER QUEUE ----------
- * Displays all assigned active flights without manual finish/closeout buckets.
+ * Replaces the worker-facing MY FLIGHT list with exactly two buckets:
+ * ĐANG LÀM / CHUYẾN ĐÃ HOÀN TẤT.
  * Only active assignments owned by the signed-in username are rendered.
  * Duplicate roster tickets are collapsed by canonical work-slot before display.
  * AD publishing also marks true duplicate manifest/mailbox assignments inactive.

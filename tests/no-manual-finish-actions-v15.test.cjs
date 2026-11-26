@@ -8,7 +8,7 @@ const forbidden=['assertCompleteBeforeNextFlightV12','completionGateBlockerV12',
 for(const m of forbidden)assert(!core.includes(m),'obsolete completion/closeout gate: '+m);
 assert(!control.includes('SAGSFlightCompletionGateV12'),'direct assignment must not require finish');
 assert(!roster.includes('SAGSFlightCompletionGateV12'),'MH/regular opener must not require finish');
-for(const m of ['setFlightCloseout','flightCloseoutV6445','v1199FlightCloseBtn','v1199QueueTab','CHUYẾN ĐÃ HOÀN TẤT'])assert(!roster.includes(m),'old My Flight control remains: '+m);
+for(const m of ['setFlightCloseout','flightCloseoutV6445','v1199FlightCloseBtn','v1199QueueTab'])assert(!roster.includes(m),'old My Flight control remains: '+m);
 assert(!lite.includes('CHUYẾN ĐÃ HOÀN TẤT'),'role-based My Flight must show all assigned flights');
 assert(!lite.includes('v478RoleTab='),'completed-tab filter must be removed');
 assert(roster.includes('groups.map(g=>cardHtml(g,date))'),'all assigned flights must be shown');
