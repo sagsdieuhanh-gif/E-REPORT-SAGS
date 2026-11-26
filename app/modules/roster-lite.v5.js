@@ -132,8 +132,7 @@ function applyFlightSearch(){
   const input=document.getElementById('sagsFlightSearch'),list=document.getElementById('fwcList');if(!input||!list)return;
   const q=normalizeFlightSearch(input.value),canonical=list.classList.contains('v478CanonicalQueue');
   if(canonical){
-    const tabs=list.querySelector(':scope > .v478RoleTabs'),owner=list.querySelector(':scope > .v478RoleOwner');
-    if(tabs)tabs.hidden=!!q;if(owner)owner.hidden=!!q;
+    const owner=list.querySelector(':scope > .v478RoleOwner');if(owner)owner.hidden=!!q;
     if(!q){v478ApplyRoleFilter();return}
   }
   const visible=filterFlightCards();
@@ -165,13 +164,11 @@ function drawShell(d){
   try{sessionStorage.setItem('sagsV36FwcDate',d)}catch(_){}
   return true;
 }
-let v478RoleTab='pending';
 function ensureCanonicalRoleViewStyle(){
   if(document.getElementById('v478CanonicalRoleViewStyle'))return;
   const st=document.createElement('style');st.id='v478CanonicalRoleViewStyle';
   st.textContent=`
 #fwcList.v478CanonicalQueue{display:block!important}
-#fwcList.v478CanonicalQueue>.v1199Tabs{display:grid!important;grid-template-columns:1fr 1fr!important;gap:7px!important;margin:8px 0 9px!important}
 #fwcList.v478CanonicalQueue>.v1199OwnerNote{margin:0 2px 8px!important}
 #fwcList.v478CanonicalQueue>.v1199FlightGrid.v478RoleGrid{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))!important;gap:12px!important}
 #fwcList.v478CanonicalQueue .v478CanonicalRoleCard[hidden]{display:none!important}\n#fwcList.v478CanonicalQueue .v478CanonicalRoleCard{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:0!important;min-width:0!important;border:1px solid #d4dee8!important;border-radius:12px!important;background:#fff!important;padding:11px!important;margin:0!important;box-shadow:0 2px 7px rgba(0,0,0,.04)!important}
@@ -197,37 +194,18 @@ function ensureCanonicalRoleViewStyle(){
 }
 `;document.head.appendChild(st);
 }
-function v478CardState(card){
-  const states=Array.from(card.querySelectorAll('.fwcDeptStatus'));
-  return states.length&&states.every(x=>x.classList.contains('done')||x.classList.contains('na'))?'completed':'pending';
-}
 function v478ApplyRoleFilter(){
-  const list=document.getElementById('fwcList');if(!list?.classList.contains('v478CanonicalQueue'))return;
-  let pending=0,completed=0;
-  const cards=Array.from(list.querySelectorAll('.v478CanonicalRoleCard'));
-  for(const card of cards){
-    const state=card.dataset.v478State||v478CardState(card);card.dataset.v478State=state;
-    state==='completed'?completed++:pending++;
-    card.hidden=v478RoleTab==='completed'?state!=='completed':state==='completed';
-  }
-  list.querySelectorAll('[data-v478-tab]').forEach(btn=>{
-    const active=btn.dataset.v478Tab===v478RoleTab;btn.classList.toggle('active',active);
-    btn.setAttribute('aria-pressed',active?'true':'false');
-    const count=btn.querySelector('.v1199Count');if(count)count.textContent=btn.dataset.v478Tab==='completed'?completed:pending;
-  });
-  const empty=list.querySelector('.v478RoleEmpty');
-  if(empty){empty.hidden=cards.some(card=>!card.hidden);if(!empty.hidden)empty.textContent='Không có chuyến trong trạng thái này.'}
-}function v478EnsureTabs(list){
-  let tabs=list.querySelector(':scope > .v478RoleTabs');
-  if(!tabs){
-    tabs=document.createElement('div');tabs.className='v1199Tabs v478RoleTabs';
-    tabs.innerHTML='<button type="button" class="v1199Tab" data-v478-tab="pending">ĐANG LÀM <span class="v1199Count">0</span></button><button type="button" class="v1199Tab" data-v478-tab="completed">CHUYẾN ĐÃ HOÀN TẤT <span class="v1199Count">0</span></button>';
-    tabs.querySelectorAll('[data-v478-tab]').forEach(btn=>btn.onclick=()=>{v478RoleTab=btn.dataset.v478Tab==='completed'?'completed':'pending';v478ApplyRoleFilter()});
-    list.prepend(tabs);
-  }
-  let note=list.querySelector(':scope > .v478RoleOwner');
-  if(!note){note=document.createElement('div');note.className='v1199OwnerNote v478RoleOwner';tabs.after(note)}
-  return note;
+ const list=document.getElementById('fwcList');
+ if(!list?.classList.contains('v478CanonicalQueue'))return;
+ list.querySelectorAll('.v478CanonicalRoleCard').forEach(card=>{card.hidden=false});
+ const empty=list.querySelector('.v478RoleEmpty');
+ if(empty)empty.hidden=!!list.querySelector('.v478CanonicalRoleCard');
+}
+function v478EnsureTabs(list){
+ list.querySelector(':scope > .v478RoleTabs')?.remove();
+ let note=list.querySelector(':scope > .v478RoleOwner');
+ if(!note){note=document.createElement('div');note.className='v1199OwnerNote v478RoleOwner';list.prepend(note)}
+ return note;
 }
 function canonicalizeRoleView(d){
   const modal=ensureModal();ensureHomeButton(modal);ensureCanonicalRoleViewStyle();
@@ -255,7 +233,7 @@ function canonicalizeRoleView(d){
   for(const card of cards){
     if(card.parentElement!==grid)grid.appendChild(card);
     card.classList.add('v1199Card','v478CanonicalRoleCard');
-    card.dataset.v478State=v478CardState(card);
+    
     const title=card.querySelector('.fwcFlightTitle');if(title)title.classList.add('v1199Title');
     const metas=card.querySelectorAll('.fwcMeta');metas.forEach(x=>x.classList.add('v1199Meta'));if(metas[1])metas[1].classList.add('v478TechMeta');
     const badges=card.querySelector('.fwcBadges');
@@ -269,7 +247,7 @@ function canonicalizeRoleView(d){
   list.querySelectorAll('.fwcEmpty').forEach(x=>x.classList.add('v1199Empty'));
   let empty=list.querySelector(':scope > .v478RoleEmpty');
   if(!empty){empty=list.querySelector(':scope > .fwcEmpty');if(empty)empty.classList.add('v478RoleEmpty');else{empty=document.createElement('div');empty.className='v1199Empty v478RoleEmpty';list.appendChild(empty)}}
-  if(!empty.textContent)empty.textContent='Không có chuyến trong trạng thái này.';
+  if(!empty.textContent)empty.textContent='Không có chuyến được phân.';
   const note=v478EnsureTabs(list);note.textContent=`${me()||role()} · ${existingDate} · ${cards.length} chuyến`;
   applyFlightSearch();root.sagsOverlayLayout?.refresh();
   return true;
