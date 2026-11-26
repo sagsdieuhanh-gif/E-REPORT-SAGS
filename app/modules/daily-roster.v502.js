@@ -462,7 +462,7 @@ function cardHtml(g,date){
  const x=g.primary,route=S(x?.route),ac=S(x?.acReg)||'—',sta=S(x?.sta)||'—',std=S(x?.std)||'—';
  const forms=flightOverviewHtml(g);
  const docCount=Array.isArray(g.dossierDocs)?g.dossierDocs.length:0,docSummary=dossierDocsHtml(g,date),policySummary=policyAuxHtml(g),dossierText='📁 HỒ SƠ CHUYẾN'+(docCount?' · '+docCount+' TÀI LIỆU':'');
- return '<article class="v1199Card" data-fkey="'+esc(g.key)+'"><div class="v1199Title">'+esc(flightLabel(x))+'</div><div class="v1199Meta">'+esc(route)+(route?' · ':'')+'A/C '+esc(ac)+' · STA '+esc(sta)+' · STD '+esc(std)+'</div>'<div class="v1199Tasks">'+forms+'</div>'+policySummary+docSummary+'<div class="v1199FlightActions"><button type="button" class="v1199Action v1199DossierBtn" data-dossier-fid="'+esc(x.flightId)+'" data-dossier-date="'+esc(date)+'">'+dossierText+'</button>'</div></article>';
+ return '<article class="v1199Card" data-fkey="'+esc(g.key)+'"><div class="v1199Title">'+esc(flightLabel(x))+'</div><div class="v1199Meta">'+esc(route)+(route?' · ':'')+'A/C '+esc(ac)+' · STA '+esc(sta)+' · STD '+esc(std)+'</div><div class="v1199Tasks">'+forms+'</div>'+policySummary+docSummary+'<div class="v1199FlightActions"><button type="button" class="v1199Action v1199DossierBtn" data-dossier-fid="'+esc(x.flightId)+'" data-dossier-date="'+esc(date)+'">'+dossierText+'</button></div></article>';
 }
 async function personalGroups(date,fid=''){
  await root.sagsAirlineFormPolicy?.ready();const owner=me(),man=await readManifest(date),manifestItems=Object.values(man?.items||{}).filter(x=>x&&x.active!==false),
