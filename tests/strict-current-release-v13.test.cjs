@@ -2,7 +2,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
 const read=p=>fs.readFileSync(path.resolve(__dirname,'..',p),'utf8');
 const html=read('index.html'),sw=read('service-worker.js'),version=JSON.parse(read('version.json'));
-assert.equal(version.version,'V1.3');assert.equal(version.updatePolicy,'required');
+assert.match(version.version,/^V\d+\.\d+$/);assert.equal(version.updatePolicy,'required');
 assert.match(html,/id="sags-hard-release-entry"/);
 const script=html.match(/<script id="sags-hard-release-entry">([\s\S]*?)<\/script>/);
 assert(script,'latest release gate must load inline before external scripts');
@@ -30,13 +30,13 @@ assert(sw.includes("if(m?.build===target&&m?.version==="),'never launch an incom
 const gate=script[1],start=gate.indexOf('async function contract()'),end=gate.indexOf('async function repair(',start);
 assert(start>0&&end>start,'contract helper');
 const code=gate.slice(start,end)+'\nthis.checkReleaseContract=contract;';
-const current='V1.3-20261126-STRICT-CURRENT-RELEASE-GATE-01',next='V1.4-20261201-TEST';
+const current=version.build,next='V1.5-20261201-TEST';
 (async()=>{
  let mode='current';
  const sandbox={BUILD:current,Date,fetch:async function(url){
   if(mode==='offline')throw Error('offline');
-  if(url.startsWith('./version.json'))return{ok:true,json:async()=>({build:mode==='current'?current:next,updatePolicy:'required',displayVersion:mode==='current'?'V1.3':'V1.4'})};
-  if(url.startsWith('./asset-manifest.json'))return{ok:true,json:async()=>({build:next,version:'V1.4'})};
+  if(url.startsWith('./version.json'))return{ok:true,json:async()=>({build:mode==='current'?current:next,updatePolicy:'required',displayVersion:mode==='current'?version.version:'V1.5'})};
+  if(url.startsWith('./asset-manifest.json'))return{ok:true,json:async()=>({build:next,version:'V1.5'})};
   if(url.startsWith('./index.html'))return{ok:true,text:async()=>'name="sags-release-build" content="'+next+'"'};
   throw Error('unexpected fetch '+url);
  }};

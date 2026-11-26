@@ -382,7 +382,7 @@ async function setFlightCloseout(date,fkey,closed,button=null){
     const {groups}=await personalGroups(date),g=groups.find(x=>x.key===S(fkey));if(!g)throw new Error('Chuyến không còn trong danh sách được phân của bạn.');
     const openCount=g.items.reduce((n,x,i)=>n+(itemCompleted(x,g.states[i])?0:1),0),label=flightLabel(g.primary);
     if(closed){
-      const warn=openCount?'KẾT THÚC CHUYẾN BAY\n\n'+label+'\n\nCòn '+openCount+' công việc/biểu mẫu chưa ở trạng thái hoàn tất nhập. Kết thúc chuyến chỉ ẩn chuyến khỏi danh sách đang làm, KHÔNG thay đổi dữ liệu biểu mẫu.\n\nBạn vẫn muốn kết thúc chuyến?':'KẾT THÚC CHUYẾN BAY\n\n'+label+'\n\nThao tác này khác với Hoàn tất nhập biểu mẫu. Chuyến sẽ được chuyển sang mục CHUYẾN ĐÃ HOÀN TẤT và ẩn khỏi danh sách ĐANG LÀM.';
+      const warn=openCount?'KẾT THÚC CHUYẾN BAY\n\n'+label+'\n\nCòn '+openCount+' công việc/biểu mẫu chưa ở trạng thái hoàn tất nhập. Kết thúc chuyến cho phép làm chuyến khác, nhưng KHÔNG đánh dấu các biểu mẫu chưa hoàn tất là đã hoàn tất và KHÔNG thay đổi dữ liệu biểu mẫu.\n\nBạn vẫn muốn kết thúc chuyến?':'KẾT THÚC CHUYẾN BAY\n\n'+label+'\n\nThao tác này được tính là đã kết thúc công việc trên chuyến để bạn làm chuyến khác. Trạng thái Hoàn Tất của từng biểu mẫu vẫn giữ nguyên.';
       if(!confirm(warn))return false;
     }else if(!confirm('MỞ LẠI CHUYẾN BAY\n\n'+label+'\n\nChuyến sẽ quay lại danh sách ĐANG LÀM. Dữ liệu biểu mẫu không bị thay đổi.'))return false;
     const t=Date.now(),patch={},unit=closeoutUnit(),seen=new Set();
@@ -398,7 +398,7 @@ async function setFlightCloseout(date,fkey,closed,button=null){
     if(!seen.size)throw new Error('Không tìm thấy assignment hợp lệ để cập nhật.');
     await db('').update(patch);queueStatusCache.clear();
     await renderPersonal(date);
-    alert(closed?'✓ '+label+' đã chuyển sang CHUYẾN ĐÃ HOÀN TẤT.':'↻ '+label+' đã quay lại danh sách ĐANG LÀM.');
+    alert(closed?'✓ '+label+' đã KẾT THÚC CHUYẾN. Bạn có thể làm chuyến khác; các biểu mẫu vẫn giữ nguyên dữ liệu/trạng thái.':'↻ '+label+' đã quay lại danh sách ĐANG LÀM.');
     return true;
   }finally{if(button?.isConnected)button.disabled=false}
 }
