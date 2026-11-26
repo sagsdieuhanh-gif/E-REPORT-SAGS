@@ -119,8 +119,8 @@ async function repair(target){
   try{
    if(typeof root.readOfflineQueue==='function'&&root.readOfflineQueue().length){render('stale',target);return}
    if(typeof root.sagsQuickEntryStatus==='function'&&root.sagsQuickEntryStatus()){render('stale',target);return}
-   if(typeof root.sagsUpdateIncompleteWorkGuard!=='function'){render('stale',target);return}
-   var work=await root.sagsUpdateIncompleteWorkGuard();
+   if(typeof root.sagsUpdateUnsyncedWorkGuard!=='function'){render('stale',target);return}
+   var work=await root.sagsUpdateUnsyncedWorkGuard();
    if(!work||work.blocked){render('stale',target);return}
    if(typeof root.sagsSaveBeforeAppUpdate==='function'&&!(await root.sagsSaveBeforeAppUpdate())){render('stale',target);return}
   }catch(_){render('stale',target);return}

@@ -136,7 +136,7 @@ function shell(){
  '<header class="mhF27Head"><div class="mhF27Title"><small>MH · MALAYSIA AIRLINES</small><strong>360° SAFETY WALKABOUT</strong><span>AS/RM/F27 · Issue 1 Revision 4 · 30/04/2026</span></div><button type="button" data-mh-act="close" aria-label="Đóng biểu mẫu">×</button></header>'+
  '<div class="mhF27Toolbar"><div class="mhF27Modes" role="group" aria-label="Chế độ nhập liệu"><button type="button" data-mh-act="mode" data-mode="pdf">▤ Trên PDF</button><button type="button" data-mh-act="mode" data-mode="quick">⚡ Nhập nhanh</button></div><div class="mhF27Progress"><strong id="mhF27Progress">0/54</strong><span id="mhF27Status">Đang tải biểu mẫu…</span></div></div>'+
  '<nav class="mhF27Nav" id="mhF27Nav" aria-label="Điều hướng biểu mẫu"></nav><main class="mhF27Body" id="mhF27Body"></main>'+
- '<footer class="mhF27Footer"><button type="button" data-mh-act="save">Lưu nháp</button><button type="button" data-mh-act="pdf">Xuất PDF gốc</button><button type="button" data-mh-act="complete" class="mhF27Primary">Hoàn tất</button></footer>'+
+ '<footer class="mhF27Footer"><button type="button" data-mh-act="save">Lưu nháp</button><button type="button" data-mh-act="pdf">Xuất PDF gốc</button></footer>'+
  '</div><div class="mhF27Editor" id="mhF27Editor" hidden><div class="mhF27EditorBackdrop" data-mh-act="edit-close"></div><section class="mhF27EditorPanel" role="dialog" aria-modal="true" aria-labelledby="mhF27EditTitle"><header><strong id="mhF27EditTitle"></strong><button type="button" data-mh-act="edit-close" aria-label="Đóng bảng nhập">×</button></header><div class="mhF27EditorContent" id="mhF27EditContent"></div><footer><span>Tự lưu khi nhập</span><button type="button" data-mh-act="edit-close" class="mhF27Primary">Xong</button></footer></section></div>'+
  '<div class="mhF27SignOverlay" id="mhF27SignOverlay" hidden><div class="mhF27SignDialog"><strong id="mhF27SignTitle">Ký xác nhận</strong><p>Vui lòng ký trực tiếp trên màn hình.</p><canvas width="560" height="180" id="mhF27SignCanvas"></canvas><div><button type="button" data-mh-act="clear-sign">Xóa nét ký</button><button type="button" data-mh-act="cancel-sign">Hủy</button><button type="button" data-mh-act="save-sign" class="mhF27Primary">Lưu chữ ký</button></div></div></div>';
  document.body.appendChild(p);
@@ -158,7 +158,6 @@ function shell(){
   const act=btn.dataset.mhAct;
   if(act==='close'){void close();return}
   if(act==='save'){void saveServer(true);return}
-  if(act==='complete'){void complete();return}
   if(act==='pdf'){void exportPdf();return}
   if(act==='preset-apply'){applyMarkingPreset();return}
   if(act==='confirm-row'){confirmSample(btn.dataset.key,'');return}
@@ -508,24 +507,6 @@ function finishSign(){
  model.signers[signKey]={...info,image,atMs:Date.now(),signedBy:username(),uid:authUid()};
  saveLocal();hideSign();if(editKind==='signers')renderEditorContent();refreshProgress();void paintPdfOverlay();
 }
-function issues(){
- const errs=[];
- for(const i of spec.items){const v=model.answers[i.key]?.value;
-  if(model.answers[i.key]?.presetPending===true)errs.push(i.key+' chưa xác nhận kiểm tra thực tế sau khi áp dụng mẫu');
-  if(!['YES','NO','NA'].includes(v))errs.push(i.key+' chưa đánh dấu');
-  else if(['NO','NA'].includes(v)&&S(model.answers[i.key]?.remarks).length<5)errs.push(i.key+' thiếu Remarks');
- }
- for(const s of spec.signers){const a=model.signers[s.key];if(!a?.image||!S(a.name)||!S(a.designation))errs.push('Chưa ký '+s.title)}
- return errs;
-}
-async function complete(){
- const errors=issues();if(errors.length){alert('Biểu mẫu MH chưa đủ điều kiện hoàn tất:\n'+errors.slice(0,12).join('\n')+(errors.length>12?'\n...và '+(errors.length-12)+' mục nữa':''));return}
- if(!root.confirm('Xác nhận hoàn tất MH AS/RM/F27 sau khi đã đối chiếu toàn bộ nội dung và hai chữ ký?'))return;
- const old=model.completedAtMs;model.completedAtMs=Date.now();saveLocal();
- const ok=await saveServer(true);
- if(ok){alert('Đã hoàn tất và đồng bộ MH AS/RM/F27 lên Firebase.');root.dispatchEvent(new Event('sags:personal-roster-updated'))}
- else{model.completedAtMs=old||0;saveLocal();alert('Chưa xác nhận được hoàn tất trên Firebase. Bản nháp vẫn còn trên thiết bị.')}
-}
 async function close(){
  clearTimeout(saveTimer);
  if(dirty&&navigator.onLine)await saveServer(true);
@@ -782,5 +763,5 @@ async function exportPdf(){
   pdfExporting=false;if(button)button.disabled=false;
  }
 }
-root.SAGSMHF27=Object.freeze({open,close,formId:ID,pdfSourcePath:MH_F27_PDF_SOURCE,pdfRows:MH_F27_ROWS,views:['pdf','quick'],samplePresetId:'mh8711-ferry-sample-2026-11-15'});
+root.SAGSMHF27=Object.freeze({open,close,isOpen:()=>!!current,flushDraft:async()=>{if(!current||!model)return true;if(!dirty&&!syncing)return true;if(offline())return false;while(syncing)await new Promise(r=>setTimeout(r,80));if(!dirty)return true;return !!(await saveServer(true))&&!dirty;},formId:ID,pdfSourcePath:MH_F27_PDF_SOURCE,pdfRows:MH_F27_ROWS,views:['pdf','quick'],samplePresetId:'mh8711-ferry-sample-2026-11-15'});
 })(window);
