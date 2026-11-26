@@ -214,8 +214,8 @@
       "bytes": 23630
     },
     "./app/modules/daily-roster.v502.js": {
-      "sha256": "b71043c8c3bee8af1902b650c0fdf683812fd500d84c82198125b3a09849ac93",
-      "bytes": 84631
+      "sha256": "178c9f1792965bdc59542760cad0650d6e9cf79539894a21037e8539d59d7ff7",
+      "bytes": 84629
     },
     "./app/modules/draft-sync-popup.v1.js": {
       "sha256": "3ccaf6a06b55f0c244385c6ce0e73ba9c457fa562c64924d126ecbfffa6d42b3",
