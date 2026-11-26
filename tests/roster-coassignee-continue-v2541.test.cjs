@@ -18,7 +18,7 @@ let patches=[],transactions=0,confirms=0;
 const peer={assignmentId:'PARR',user:'PHUONGDD',coAssigneeGroupId:'CG',flightId:'F',sourceColumn:'Grnd_Cor',formGroup:'fsags421',roleKey:'COR'};
 const mine={...peer,assignmentId:'KARR',user:'KIENNT'};
 const db=path=>({once:async()=>({val:()=>lock}),transaction:async fn=>{transactions++;const optimistic=fn(null);if(!optimistic)return{committed:false,snapshot:{val:()=>lock}};const updated=fn(lock);if(!updated)return{committed:false,snapshot:{val:()=>lock}};lock=updated;return{committed:true,snapshot:{val:()=>lock}}},update:async p=>patches.push(p)});
-const vars={root:{},db,S,safe:S,U,norm:U,me:()=> 'KIENNT',coGroupId:x=>x.coAssigneeGroupId,
+const vars={db,S,safe:S,U,norm:U,me:()=> 'KIENNT',coGroupId:x=>x.coAssigneeGroupId,
 lane:()=>[peer,mine],laneKey:x=>[x.flightId,x.formGroup,x.sourceColumn,x.roleKey].join('|'),
 sessionState:async aid=>aid==='PARR'?previous:next,workPartFinished:()=>false,
 sanitizeEnvelope:x=>JSON.parse(JSON.stringify(x)),envelopeHasData:x=>Object.keys(x?.state||{}).length>0,
