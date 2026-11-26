@@ -9,7 +9,7 @@ assert.match(home,/opsAirlineCell'\+tableLogoHtml|opsAirlineCell">'\+tableLogoHt
 assert.doesNotMatch(home,/opsAirlineCell'\+logoHtml\(alias,'opsTableLogo'\)/,'flight table must not wrap logos in the generic logo card');
 
 assert.match(home,/metricCardHtml\('working','Chuyến đang làm'/);
-assert.match(home,/metricCardHtml\('total','Tổng chuyến trong ngày'/);
+assert.match(home,/metricCardHtml\('complete','Đã hoàn thành hôm nay'/);
 assert.match(home,/metricCardHtml\('pending','Chờ xử lý'/);
 assert.match(home,/class="opsMetricCta"/);
 

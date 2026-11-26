@@ -1,13 +1,13 @@
 {
-  "version": "V1.5",
-  "displayVersion": "V1.5",
-  "label": "V1.5 - BỎ CHỐT CHUYẾN, GIỮ TỰ LƯU",
-  "build": "V1.5-20261126-NO-FINISH-ACTIONS-01",
+  "version": "V1.1",
+  "displayVersion": "V1.1",
+  "label": "V1.1 - MY FLIGHT FORM OVERVIEW",
+  "build": "V1.1-20261126-MYFLIGHT-FORM-OVERVIEW-01",
   "releasedAt": "2026-11-26",
-  "type": "remove-manual-flight-finish-controls",
+  "type": "myflight-form-overview-fix",
   "base": "Giữ nguyên toàn bộ dữ liệu và chức năng đã ổn định từ E-REPORT-SAGS V2.2; chỉ đặt lại dãy số phiên bản hiển thị",
   "updatePolicy": "required",
-  "notes": "Bỏ nút Hoàn Tất, Kết Thúc Chuyến, Mở Lại Chuyến và các tab phân trạng thái chốt chuyến khỏi My Flight; xóa bộ chặn chuyển chuyến theo chốt cũ và tác vụ ghi closeout mới. Cho nhận/mở chuyến khác trực tiếp theo quyền roster khi phiên bản hợp lệ và bộ đàm được xác minh. Không thay đổi dữ liệu lịch sử, quyền bàn giao, báo cáo và bảo vệ nháp. MH F27 giữ Lưu nháp/Xuất PDF; FSAGS208 giữ Gửi hồ sơ (không có nút Hoàn Tất). Cập nhật app không phụ thuộc thao tác chốt biểu mẫu nữa, nhưng vẫn chặn khi dữ liệu chưa lưu an toàn.",
-  "message": "V1.5: bỏ chốt chuyến và Hoàn Tất thủ công, giữ dữ liệu tự lưu và mở chuyến trực tiếp.",
-  "previousBuild": "V1.4-20261126-COMPLETE-OR-CLOSE-FLIGHT-01"
+  "notes": "Sửa tổng hợp biểu mẫu My Flight khi DAILY ROSTER và Flight Hub có flightId khác nhau nhưng cùng cặp số chuyến, ngày và tàu bay, chỉ ghép khi nhận diện duy nhất; kiểm tra chính sách hãng với thông tin hồ sơ chuyến nếu phân công thiếu trường; hiển thị lỗi phân công thay vì im lặng ẩn biểu mẫu. Giữ nguyên dữ liệu Firebase, phân quyền và thao tác nhận/hoàn tất. Cập nhật V1.1 bắt buộc.",
+  "message": "V1.1: sửa thiếu biểu mẫu trên My Flight; cập nhật bắt buộc.",
+  "previousBuild": "V1.0-20261126-MANDATORY-UPDATE-01"
 }
