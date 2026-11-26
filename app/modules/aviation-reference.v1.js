@@ -154,7 +154,7 @@ lastFlightRenderKey=renderKey;
 host.innerHTML = '<div class="opsFlightTableWrap"><table><thead><tr><th>Giờ</th><th>Hãng</th><th>Chuyến bay</th><th>Chặng bay</th><th>Đăng bạ</th><th>Trạng thái</th><th>Biểu mẫu</th><th aria-label="Thao tác"></th></tr></thead><tbody>' + rows.map(g => {
 const flight=g.primary||{}, forms=api.visibleFormTasks(g), label=api.flightLabel(flight)||'—',alias=airlineAlias(label,carriers);
 const workingFn=flightView.allFlights?(api.itemWorkingAny||api.itemWorking):api.itemWorking;
-const status=g.flightClosed?'Hoàn tất':g.items.some((x,i)=>workingFn(x,g.states[i]))?'Đang làm':'Chờ xử lý';
+const status=g.items.some((x,i)=>workingFn(x,g.states[i]))?'Đang làm':'Chờ xử lý';
 return '<tr><td class="opsTime">'+safe(flightTime(flight)||'—')+'</td><td class="opsAirlineCell">'+tableLogoHtml(alias)+'</td><td class="opsFlightNo"><b>'+safe(label)+'</b></td><td>'+safe(flight.route||'—')+'</td><td>'+safe(flight.acReg||'—')+'</td><td><span class="opsStatus opsStatus-'+statusClass(status)+'">'+safe(status)+'</span></td><td class="opsForms">'+forms.map(x=>safe(api.formLabel(x.item))).join(' · ')+'</td><td class="opsOpenCell"><button type="button" data-ops-route="myflight">Mở</button></td></tr>';
 }).join('')+'</tbody></table></div>';
 }
