@@ -51,8 +51,9 @@ assert(src.includes("const extra=await pdfContinuationPage"),'Long notes must ne
 assert(src.includes("if(n===6)await checkSignatures"),'Place saved signatures on original page six');
 assert(src.includes("const MH_F27_SOURCE_BYTES=547484"),'Reject mismatched source file');
 assert(!src.includes("function pageCanvas("),'Do not redraw/copy branding and appendices into substitute pages');
-assert(src.includes("if(!['YES','NO','NA'].includes(v))"),'Completion must validate every checkbox');
-assert(src.includes("['NO','NA'].includes(v)"),'No/N/A remarks required');
+assert(src.includes("function validAnswer(key)"),'MH answer validation remains available for checklist progress');
+assert(src.includes("['NO','NA'].includes(a.value)" )||src.includes("['NO','NA'].includes(v)" )||src.includes("S(a.remarks).length>=5"),'No/N/A remarks required');
+assert(!src.includes('data-mh-act="complete"'),'retired MH completion button must stay removed');
 assert(src.includes("if(dirty&&navigator.onLine)"),'Never imply an offline save completed server sync');
 assert(style.includes('env(safe-area-inset-bottom)'),'iPhone navigation must remain usable');
 assert(src.includes("viewMode='pdf'")&&src.includes("viewMode=btn.dataset.mode==='quick'"),'Full PDF must be default and both modes switchable');

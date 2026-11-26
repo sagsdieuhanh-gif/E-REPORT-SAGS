@@ -8,10 +8,12 @@ assert.equal(v.version,JSON.parse(fs.readFileSync(__dirname+'/../asset-manifest.
 assert.equal(v.displayVersion,JSON.parse(fs.readFileSync(__dirname+'/../asset-manifest.json','utf8')).version);
 assert.equal(v.build,JSON.parse(fs.readFileSync(__dirname+'/../asset-manifest.json','utf8')).build);
 assert.doesNotMatch(css,/V2\.5 BUILD 21|V2\.5 BUILD 22|V2\.5 TEST · MOBILE FORM DOCK/);
-assert.match(css,/#v324HandoverBtn\{[\s\S]*?grid-column:1\/2!important;grid-row:2\/3!important/);
-assert.match(css,/#v163SignBtn\{[\s\S]*?grid-column:2\/3!important;grid-row:2\/3!important/);
-assert.match(js,/buttonLayout\(document\.getElementById\("v324HandoverBtn"\),"1 \/ 2","2 \/ 3"\)/);
-assert.match(js,/buttonLayout\(document\.getElementById\("v163SignBtn"\),"2 \/ 3","2 \/ 3"\)/);
+assert.doesNotMatch(css,/#v324HandoverBtn/);
+assert.doesNotMatch(js,/v324HandoverBtn/);
+assert.match(css,/#kh208SendBtn\{[\s\S]*?grid-column:1\/2!important;grid-row:2\/3!important/);
+assert.match(css,/#v163SignBtn\{[\s\S]*?grid-column:1\/3!important;grid-row:2\/3!important/);
+assert.match(js,/buttonLayout\(send,"1 \/ 2","2 \/ 3"\)/);
+assert.match(js,/sendVisible\?"2 \/ 3":"1 \/ 3"/);
 assert.match(js,/setProperty\(prop,value,"important"\)/);
 assert.match(index,/sags-mobile-form-dock-v2/);
 assert.doesNotMatch(index,/sags-mobile-form-dock-v1/);
