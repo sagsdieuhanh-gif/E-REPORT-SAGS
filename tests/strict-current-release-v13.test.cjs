@@ -14,7 +14,7 @@ for(const marker of ['assertCurrentForNewWork','visibilitychange','pageshow','fo
 }
 assert(script[1].includes('root.location.replace(u.toString())'),'stale client must open safe repair');
 assert(script[1].includes('readOfflineQueue'),'queued writes must be preserved');
-assert(script[1].includes('activeFlightSessionId'),'active flight must be saved before safe update');
+assert(script[1].includes('activeFlightSessionId'),'active flight must be preserved for completion');
 const core=read('app/core/phases/core-shared.js'),generated=read('app/generated/core-shared.js');
 assert.equal(core,generated,'deployed shared core must match source');
 assert(core.includes('root.SAGSRequiredReleaseGate.assertCurrentForNewWork()'),'central roster claim and receive must check release');
@@ -30,13 +30,13 @@ assert(sw.includes("if(m?.build===target&&m?.version==="),'never launch an incom
 const gate=script[1],start=gate.indexOf('async function contract()'),end=gate.indexOf('async function repair(',start);
 assert(start>0&&end>start,'contract helper');
 const code=gate.slice(start,end)+'\nthis.checkReleaseContract=contract;';
-const current=version.build,next='V1.6-20261201-TEST';
+const current=version.build,next='V1.5-20261201-TEST';
 (async()=>{
  let mode='current';
  const sandbox={BUILD:current,Date,fetch:async function(url){
   if(mode==='offline')throw Error('offline');
-  if(url.startsWith('./version.json'))return{ok:true,json:async()=>({build:mode==='current'?current:next,updatePolicy:'required',displayVersion:mode==='current'?version.version:'V1.6'})};
-  if(url.startsWith('./asset-manifest.json'))return{ok:true,json:async()=>({build:next,version:'V1.6'})};
+  if(url.startsWith('./version.json'))return{ok:true,json:async()=>({build:mode==='current'?current:next,updatePolicy:'required',displayVersion:mode==='current'?version.version:'V1.5'})};
+  if(url.startsWith('./asset-manifest.json'))return{ok:true,json:async()=>({build:next,version:'V1.5'})};
   if(url.startsWith('./index.html'))return{ok:true,text:async()=>'name="sags-release-build" content="'+next+'"'};
   throw Error('unexpected fetch '+url);
  }};

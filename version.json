@@ -1,13 +1,13 @@
 {
-  "version": "V1.5",
-  "displayVersion": "V1.5",
-  "label": "V1.5 - BỎ CHỐT CHUYẾN, GIỮ TỰ LƯU",
-  "build": "V1.5-20261126-NO-FINISH-ACTIONS-01",
+  "version": "V1.4",
+  "displayVersion": "V1.4",
+  "label": "V1.4 - HOÀN TẤT HOẶC KẾT THÚC CHUYẾN",
+  "build": "V1.4-20261126-COMPLETE-OR-CLOSE-FLIGHT-01",
   "releasedAt": "2026-11-26",
-  "type": "remove-manual-flight-finish-controls",
+  "type": "complete-or-close-flight-gate",
   "base": "Giữ nguyên toàn bộ dữ liệu và chức năng đã ổn định từ E-REPORT-SAGS V2.2; chỉ đặt lại dãy số phiên bản hiển thị",
   "updatePolicy": "required",
-  "notes": "Bỏ nút Hoàn Tất, Kết Thúc Chuyến, Mở Lại Chuyến và các tab phân trạng thái chốt chuyến khỏi My Flight; xóa bộ chặn chuyển chuyến theo chốt cũ và tác vụ ghi closeout mới. Cho nhận/mở chuyến khác trực tiếp theo quyền roster khi phiên bản hợp lệ và bộ đàm được xác minh. Không thay đổi dữ liệu lịch sử, quyền bàn giao, báo cáo và bảo vệ nháp. MH F27 giữ Lưu nháp/Xuất PDF; FSAGS208 giữ Gửi hồ sơ (không có nút Hoàn Tất). Cập nhật app không phụ thuộc thao tác chốt biểu mẫu nữa, nhưng vẫn chặn khi dữ liệu chưa lưu an toàn.",
-  "message": "V1.5: bỏ chốt chuyến và Hoàn Tất thủ công, giữ dữ liệu tự lưu và mở chuyến trực tiếp.",
-  "previousBuild": "V1.4-20261126-COMPLETE-OR-CLOSE-FLIGHT-01"
+  "notes": "Cho phép nhận/mở chuyến khác khi đã bấm ✓ HOÀN TẤT hoặc ✓ KẾT THÚC CHUYẾN và Firebase đã xác nhận. Xác thực kết thúc chuyến theo từng assignment, đúng người và thời điểm; MỞ LẠI CHUYẾN sẽ xóa cờ kết thúc. Không biến biểu mẫu chưa hoàn tất thành Hoàn Tất, không xóa dữ liệu hoặc thay đổi phân công. Tiếp tục cập nhật bắt buộc.",
+  "message": "V1.4: Hoàn Tất hoặc Kết Thúc Chuyến đều cho phép làm chuyến khác sau khi Firebase xác nhận.",
+  "previousBuild": "V1.3-20261126-STRICT-CURRENT-RELEASE-GATE-01"
 }

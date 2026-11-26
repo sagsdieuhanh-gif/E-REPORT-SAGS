@@ -184,13 +184,16 @@ root.sags208OpenView=openView;
 let syncTimer=0,draftBusy=false;const draftSignatures=new Map();
 async function syncActiveDraft(force=false){const b=bindingFor();if(!b||readOnlyFlag()||draftBusy)return false;const date=S(b.opDate),fid=S(b.flightId);if(!date||!fid)return false;const st={},src=activeState();for(const[k,v]of Object.entries(src||{}))if(k.startsWith('f208_'))st[k]=clone(v);const signature=JSON.stringify(st),key=date+'|'+fid;if(!force&&draftSignatures.get(key)===signature)return true;draftBusy=true;try{const ref=db(FLIGHTS+'/'+safe(date)+'/'+safe(fid)+'/modules/'+MODULE),who=actor();const tx=await ref.transaction(mod=>{if(!mod||norm(mod.currentHandler?.username)!==who.username)return;if(JSON.stringify(mod.state||{})===signature)return;return{...preservePublished(mod),state:st,lastEditedAtMs:Date.now(),lastEditedBy:who,updatedAtMs:Date.now(),status:mod.status==='SENT'?'IN_PROGRESS':(mod.status||'IN_PROGRESS')}});if(tx?.committed!==false)draftSignatures.set(key,signature);return tx?.committed!==false}finally{draftBusy=false}}
 function scheduleSync(){clearTimeout(syncTimer);syncTimer=setTimeout(()=>syncActiveDraft().catch(e=>console.info('FSAGS208 workspace draft',e?.message||e)),650)}
+async function completeDraft(){return await sendWorkspace();}
+root.sags208CompleteDraft=completeDraft;
 root.sags208SyncFormActions=function(row){
  const send=document.getElementById('kh208SendBtn'),sign=document.getElementById('v163SignBtn');
  let group='';try{group=typeof activeFormGroup!=='undefined'?activeFormGroup:root.activeFormGroup||''}catch(_){}
  if(group!==FORM){if(send)send.style.display='none';if(sign&&sign.__sags208PreviousDisplay!==undefined){if(sign.style.display==='none')sign.style.display=sign.__sags208PreviousDisplay;delete sign.__sags208PreviousDisplay;}return false;}
- const editable=isHandlerRole()&&!readOnlyFlag()&&!!bindingFor();
- if(send){if(send.parentElement!==row)row.appendChild(send);send.classList.add('v324FormAction');send.style.display=editable?'inline-flex':'none';send.textContent='↥ GỬI HỒ SƠ';send.title='Gửi bản chính thức FSAGS 208 vào HỒ SƠ CHUYẾN';send.onclick=sendWorkspace;}
+ const editable=isHandlerRole()&&!readOnlyFlag()&&!!bindingFor(),done=document.getElementById('v324HandoverBtn');
+ if(send){if(send.parentElement!==row)row.appendChild(send);send.classList.add('v324FormAction');send.style.display='none';send.onclick=sendWorkspace;}
  if(sign){if(readOnlyFlag()){if(sign.__sags208PreviousDisplay===undefined)sign.__sags208PreviousDisplay=sign.style.display||'';sign.style.display='none';}else if(sign.__sags208PreviousDisplay!==undefined){if(sign.style.display==='none')sign.style.display=sign.__sags208PreviousDisplay;delete sign.__sags208PreviousDisplay;}}
+ if(done){done.style.display=editable?'inline-flex':'none';done.textContent='✓ HOÀN TẤT & GỬI HỒ SƠ';done.title='Hoàn tất FSAGS 208 và đưa ngay bản chính thức vào HỒ SƠ CHUYẾN';done.onclick=sendWorkspace;}
  row.classList.remove('show','one','two','three');row.classList.add('show',editable?'two':'one');return true;
 };
 const legacySave=root.saveKH208Local||(typeof saveKH208Local==='function'?saveKH208Local:null);
@@ -207,9 +210,9 @@ async function sendWorkspace(){
    if(tx?.committed===false||!revision)throw new Error('Quyền xử lý đã thay đổi trước khi gửi.');
    clearTimeout(syncTimer);draftSignatures.set(date+'|'+fid,JSON.stringify(st));const list=readList(),row=list.find(x=>x.id===activeId());if(row){row.sentAtMs=now;row.revisionNo=revision;row.updatedAt=now;writeList(list)}
    const pub={state:clone(st),revisionNo:revision,sentAtMs:now,sentBy:clone(who)};await syncPublishedSummary(date,fid,rec,{...mod,state:st,status:'SENT',revisionNo:revision,lastSentAtMs:now,lastSentBy:who,published:pub},pub);
-   try{root.writeUserActivity?.('ĐÃ GỬI FSAGS 208',flightName(rec)+' · '+date+' · R'+revision)}catch(_){}
+   try{root.writeUserActivity?.('ĐÃ HOÀN TẤT FSAGS 208',flightName(rec)+' · '+date+' · R'+revision)}catch(_){}
    try{root.dispatchEvent(new CustomEvent('sags:flight-document-published',{detail:{opDate:date,flightId:fid,code:'FSAGS208',revisionNo:revision}}))}catch(_){}
-   alert('✓ FSAGS 208 đã GỬI vào HỒ SƠ CHUYẾN · R'+revision+'.');setTimeout(()=>injectWorkspace(date,fid),80);return true;
+   alert('✓ FSAGS 208 đã HOÀN TẤT và được đưa vào HỒ SƠ CHUYẾN · R'+revision+'.');setTimeout(()=>injectWorkspace(date,fid),80);return true;
  }catch(e){alert('Không gửi được FSAGS 208: '+S(e?.message||e));return false}
 }
 root.sendKH208Sheet=sendWorkspace;try{sendKH208Sheet=sendWorkspace}catch(_){}

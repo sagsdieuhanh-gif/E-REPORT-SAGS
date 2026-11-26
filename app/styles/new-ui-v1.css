@@ -495,6 +495,10 @@ html.new-ui-v1 body.v163-operational #v324FormActions .v324FormAction{
   border:1px solid #cfe4eb!important;background:#eaf5f9!important;color:#165b73!important;
   box-shadow:none!important;font:750 clamp(10px,2.4vw,12px)/1.15 system-ui,-apple-system,'Segoe UI',sans-serif!important;
 }
+html.new-ui-v1 body.v163-operational #v324FormActions #v324HandoverBtn{
+  background:#fff1db!important;border-color:#edd6aa!important;color:#805b18!important;
+}
+
 /* Unified workspace surfaces, reports, user management and live operational dialogs.
    Do not modify their visibility, positioning, scroll logic or any form canvas. */
 html.new-ui-v1 body :is(.sagsAdminModal,#dailyRosterModal,#aclAdminModal,#aclSimpleModal,#aclAiModal,#fleetManagerModal,#fwcMultitaskModal,#finalFormsModal,#cxCleanModal,#finalPaperSourceModal,#formMenuModal,#fs09QuickModal,#fs09PreviewModal,#exportModal,#finalSheetManagerModal,#v174DataHub,#v181AdminCenter){
@@ -2365,6 +2369,10 @@ html.new-ui-v1 body.v163-operational #v324FormActions .v324FormAction{
   min-height:40px!important;border:1px solid #c8dcf4!important;border-radius:7px!important;
   background:var(--fo-blue-soft)!important;color:var(--fo-blue-strong)!important;
 }
+html.new-ui-v1 body.v163-operational #v324FormActions #v324HandoverBtn{
+  background:#fff4e4!important;border-color:#efd4a9!important;color:#855713!important;
+}
+
 /* LIVE DIALOGS / ADMIN / DATA HUB — visual tokens only. */
 html.new-ui-v1 body :is(
   .rsPanel,.sagsAdminPanel,.drPanel,.aclPanel,.acls-panel,.fleetManagerPanel,
@@ -3355,6 +3363,10 @@ html.new-ui-v1 body.v157-authenticated:not(.v157-home) #v324ExportBtn{
 
 /* Safety net for stale cached DOM from older builds. */
 #v324ExportBtn{display:none!important;visibility:hidden!important;pointer-events:none!important}
+#v324FormActions:not(:has(#v1134QuickTimeBtn[style*="inline-flex"])):not(:has(#v324HandoverBtn[style*="block"])):not(:has(#v324HandoverBtn[style*="inline"])) {
+  /* JS controls visibility; this selector only prevents stale export-only rows. */
+}
+
 /* Form contextual actions are compact and only appear when a real action exists. */
 html.new-ui-v1 body.v157-authenticated:not(.v157-home) #v324FormActions.show{
   left:auto!important;
@@ -5430,6 +5442,9 @@ html.new-ui-v1 body.v163-operational #sagsMobileFormDock{
 html.new-ui-v1 body.v163-operational #sagsMobileFormDock :is(.v324FormAction,#v163SignBtn,#v163OperationNav button){
   border:1px solid rgba(70,152,186,.30)!important;border-radius:9px!important;background:#0b2a3e!important;color:#eaf6fa!important;box-shadow:none!important;
 }
+html.new-ui-v1 body.v163-operational #sagsMobileFormDock #v324HandoverBtn{
+  border-color:rgba(33,212,232,.52)!important;background:#168fb8!important;color:#fff!important;
+}
 html.new-ui-v1 body.v163-operational #sagsMobileFormDock #v324PdfBtn{
   border-color:rgba(36,199,122,.38)!important;background:#0a3b31!important;color:#c8f2dd!important;
 }
@@ -6356,6 +6371,7 @@ html.new-ui-v1 body :is(#quickTimeModal .quickTimeSave,#fs09QuickModal .fs09qSav
 html.new-ui-v1 body .opsAlertCardCompose{background:#a94f00!important;color:#fff!important}
 html.new-ui-v1 body #fwcModal .v1199Count{background:#0b6f8a!important;color:#f7fdff!important}
 html.new-ui-v1 body :is(.p2Step,.p2Empty){color:#536578!important}
+html.new-ui-v1 body.v163-operational #sagsMobileFormDock #v324HandoverBtn{background:#0b6788!important;color:#fff!important}
 html.new-ui-v1 #v157HomeDashboard .v157Metric.warn .v157MetricIco{color:#7a4a11!important}
 html.new-ui-v1 body.v157-authenticated.v157-home #v157BottomBar{color:#4d6978!important}
 
@@ -6722,14 +6738,11 @@ html.new-ui-v1 body :is(.sheet,.rsOfficialTemplatePage,.page-bg,.pdf-page,.pdfCa
   html.new-ui-v1 body.v163-operational #sagsMobileFormDock #v324FormActions.show > #v324PdfBtn{
     grid-column:2/3!important;grid-row:1/2!important;
   }
-  html.new-ui-v1 body.v163-operational #sagsMobileFormDock #v163OperationNav > #v163SignBtn{
-    grid-column:1/3!important;grid-row:2/3!important;
-  }
-  html.new-ui-v1 body.v163-operational #sagsMobileFormDock #v324FormActions.show > #kh208SendBtn{
+  html.new-ui-v1 body.v163-operational #sagsMobileFormDock #v324FormActions.show > #v324HandoverBtn{
     grid-column:1/2!important;grid-row:2/3!important;
   }
-  html.new-ui-v1 body.v163-operational #sagsMobileFormDock:has(#kh208SendBtn[style*="inline-flex"]) #v163OperationNav > #v163SignBtn{
-    grid-column:2/3!important;
+  html.new-ui-v1 body.v163-operational #sagsMobileFormDock #v163OperationNav > #v163SignBtn{
+    grid-column:2/3!important;grid-row:2/3!important;
   }
 
   /* Navigation lives in the top header on mobile. Only KÝ belongs in the form dock. */
@@ -6737,7 +6750,7 @@ html.new-ui-v1 body :is(.sheet,.rsOfficialTemplatePage,.page-bg,.pdf-page,.pdfCa
     display:none!important;
   }
 
-  html.new-ui-v1 body.v163-operational #sagsMobileFormDock :is(#v1134QuickTimeBtn,#v324PdfBtn,#kh208SendBtn,#v163SignBtn){
+  html.new-ui-v1 body.v163-operational #sagsMobileFormDock :is(#v1134QuickTimeBtn,#v324PdfBtn,#v324HandoverBtn,#v163SignBtn){
     position:static!important;
     inset:auto!important;
     order:0!important;
@@ -6766,7 +6779,7 @@ html.new-ui-v1 body :is(.sheet,.rsOfficialTemplatePage,.page-bg,.pdf-page,.pdfCa
   }
 }
 @media(max-width:360px){
-  html.new-ui-v1 body.v163-operational #sagsMobileFormDock :is(#v1134QuickTimeBtn,#v324PdfBtn,#kh208SendBtn,#v163SignBtn){
+  html.new-ui-v1 body.v163-operational #sagsMobileFormDock :is(#v1134QuickTimeBtn,#v324PdfBtn,#v324HandoverBtn,#v163SignBtn){
     font-size:10.8px!important;
     padding-left:3px!important;
     padding-right:3px!important;
@@ -6776,7 +6789,7 @@ html.new-ui-v1 body :is(.sheet,.rsOfficialTemplatePage,.page-bg,.pdf-page,.pdfCa
 
 /* ==========================================================================
    V2.6 BUILD 02 · FORM DOCK VISIBILITY GATE
-   Form actions appear only while an actual form workspace is open.
+   The four action buttons exist only while an actual form workspace is open.
    ========================================================================== */
 html.new-ui-v1 body:not(.sags-form-view-active) #sagsMobileFormDock{
   display:none!important;

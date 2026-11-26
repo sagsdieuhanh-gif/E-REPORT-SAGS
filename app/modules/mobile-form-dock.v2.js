@@ -125,10 +125,8 @@ function apply(){
 
   buttonLayout(document.getElementById("v1134QuickTimeBtn"),"1 / 2","1 / 2");
   buttonLayout(document.getElementById("v324PdfBtn"),"2 / 3","1 / 2");
-  const send=document.getElementById("kh208SendBtn");
-  buttonLayout(send,"1 / 2","2 / 3");
-  const sendVisible=!!send&&send.style.display!=="none"&&!send.hidden;
-  buttonLayout(document.getElementById("v163SignBtn"),sendVisible?"2 / 3":"1 / 3","2 / 3");
+  buttonLayout(document.getElementById("v324HandoverBtn"),"1 / 2","2 / 3");
+  buttonLayout(document.getElementById("v163SignBtn"),"2 / 3","2 / 3");
 
   for(const b of operation.querySelectorAll(":scope > button:not(#v163SignBtn)")){
     force(b,"display","none");
