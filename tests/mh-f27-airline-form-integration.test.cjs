@@ -51,8 +51,9 @@ assert(src.includes("const extra=await pdfContinuationPage"),'Long notes must ne
 assert(src.includes("if(n===6)await checkSignatures"),'Place saved signatures on original page six');
 assert(src.includes("const MH_F27_SOURCE_BYTES=547484"),'Reject mismatched source file');
 assert(!src.includes("function pageCanvas("),'Do not redraw/copy branding and appendices into substitute pages');
-assert(src.includes("if(!['YES','NO','NA'].includes(v))"),'Completion must validate every checkbox');
-assert(src.includes("['NO','NA'].includes(v)"),'No/N/A remarks required');
+assert(src.includes("function validAnswer(key)"),'MH answer validation remains available for checklist progress');
+assert(src.includes("['NO','NA'].includes(a.value)" )||src.includes("['NO','NA'].includes(v)" )||src.includes("S(a.remarks).length>=5"),'No/N/A remarks required');
+assert(!src.includes('data-mh-act="complete"'),'retired MH completion button must stay removed');
 assert(src.includes("if(dirty&&navigator.onLine)"),'Never imply an offline save completed server sync');
 assert(style.includes('env(safe-area-inset-bottom)'),'iPhone navigation must remain usable');
 assert(src.includes("viewMode='pdf'")&&src.includes("viewMode=btn.dataset.mode==='quick'"),'Full PDF must be default and both modes switchable');
@@ -94,7 +95,7 @@ assert(src.includes("if(!root.confirm(msg))return"),'Require user to explicitly 
 assert(src.includes("presetPending:true"),'Marks copied from file must remain unverified until inspected');
 assert(src.includes("function confirmSample(key,phase)"),'Allow review per item/phase without 54 redundant steps');
 assert(src.includes("a?.presetPending!==true&&['YES','NO','NA'].includes(v)"),'Unverified sample marks cannot count as completed');
-assert(src.includes("if(model.answers[i.key]?.presetPending===true)errs.push"),'Completion gate must block unverified sample marks');
+assert(src.includes("return a?.presetPending!==true&&['YES','NO','NA'].includes(v)"),'Unverified preset marks must not count in checklist progress');
 assert(src.includes("if(pending){alert('Có '+pending+' mục từ mẫu MH8711 chưa được xác nhận"),'PDF export must block unverified preset checks');
 assert(src.includes("root.matchMedia?.('(max-width: 700px)')?.matches?'quick':'pdf'"),'Mobile should open quick view, desktop keeps PDF');
 assert(style.includes(".mhF27PresetBanner")&&style.includes(".mhF27PresetPending")&&style.includes(".mhF27PresetPhase"),'Mobile must show pending safety verification controls');

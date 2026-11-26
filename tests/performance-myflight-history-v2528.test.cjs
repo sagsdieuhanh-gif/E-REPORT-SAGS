@@ -10,7 +10,7 @@ assert.match(myFlight,/function scheduleCanonicalCheck\(delay=80\)/,'debounce me
 assert.doesNotMatch(myFlight,/\[0,120,500,1400\]\.forEach\(ms=>setTimeout\(assertCanonical/,'no four redundant render passes after every role update');
 assert.match(roster,/Date\.now\(\)-cached\.at<1500/,'snapshot reuse short enough not to hide real updates');
 assert.match(roster,/cached\.owner===owner&&cached\.date===date/,'queue snapshot must be account and date isolated');
-assert.match(roster,/root\.v1199QueueTab=function\(tab\)\{[^}]*renderPersonal\(queueDate\(currentQueueDate\),true\)/,'tab click reuses the recent snapshot');
+assert.doesNotMatch(roster,/root\.v1199QueueTab=/,'obsolete completed tab must be removed');
 assert.match(roster,/const result=useCache\?cached\.result:await personalGroups\(date\)/,'real actions must still fetch data');
 const events=new Map(),cloud=new Map();let writes=0;
 const fake={__sagsGetSession:()=>({role:'DH',profile:{username:'TESTUSER',fullName:'User'}}),currentFlightSessionMeta:()=>({id:'F1',rosterAssignmentId:'A1',name:'Flight 1',initialGroup:'fsags'}),firebase:{auth:()=>({currentUser:{uid:'testUID'}}),database:{ServerValue:{TIMESTAMP:{'.sv':'timestamp'}}}},sagsV470Ref:p=>({set:async data=>{cloud.set(p,data)}}),addEventListener(){},readFlightSessionEnvelope:()=>null};
@@ -32,6 +32,6 @@ async function check(){
  assert.equal(rows[0].changes[0].after,'14:25');
  assert.ok(writes<=3,'batch should produce at most 3 localStorage fallback writes; got '+writes);
  assert.equal(cloud.size,1,'single cloud sync per typing burst');
- console.log('Performance regression PASS: 25 edits -> '+writes+' fallback writes / 1 audit event; no role UI fanout; scoped MY FLIGHT snapshot');
+ console.log('Performance regression PASS: 25 edits -> '+writes+' fallback writes / 1 audit event; no role UI fanout; scoped MY FLIGHT snapshot without retired status tabs');
 }
 check().catch(e=>{console.error(e);process.exitCode=1});

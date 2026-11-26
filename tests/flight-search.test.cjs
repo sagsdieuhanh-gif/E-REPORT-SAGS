@@ -44,18 +44,18 @@ const source=fs.readFileSync(__dirname+'/../app/modules/roster-lite.v5.js','utf8
   c.applyFlightSearch();
   assert.equal(pendingCard.hidden,true,'AD search must hide non-matching flight');
   assert.equal(completedCard.hidden,false,'AD search must show matching flight only, regardless of status tab');
-  assert.equal(tabsBox.hidden,true,'AD status tabs must hide while searching');
+  assert.equal(tabsBox.hidden,false,'obsolete status tabs are no longer toggled');
   assert.equal(owner.hidden,true,'AD owner/status note must hide while searching');
   input.value='';
   c.applyFlightSearch();
-  assert.equal(tabsBox.hidden,false,'clearing search restores status tabs');
+  assert.equal(tabsBox.hidden,false,'no status tab should be controlled by search');
   assert.equal(owner.hidden,false,'clearing search restores status note');
   assert.equal(pendingCard.hidden,false,'clearing search restores pending tab');
-  assert.equal(completedCard.hidden,true,'clearing search restores normal tab filtering');
+  assert.equal(completedCard.hidden,false,'all assigned flights remain visible without a completed tab');
 }
 
 assert.match(source,/document\.addEventListener\('search',e=>\{if\(e\.target\?\.id==='sagsFlightSearch'\)applyFlightSearch\(\)\}/);
 assert.doesNotMatch(source,/scrollIntoView\(/);
-console.log('Flight search passed: all roles use one filter-only behavior; AD search hides tabs and shows matching cards only.');
+console.log('Flight search passed: role filtering preserves every assigned flight; search matches by flight number.');
 
 assert.match(source, /v478CanonicalRoleCard\[hidden\]\{display:none!important\}/,'hidden AD cards must beat display:flex!important');
