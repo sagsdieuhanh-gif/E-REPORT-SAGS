@@ -130,6 +130,12 @@ function sameFlightForCompletionGateV12(a,b,d1,d2){
   return arr&&dep?arr+'|'+dep:''};
  const aa=pair(a),bb=pair(b);return!!aa&&aa===bb&&(!S(a?.acReg)||!S(b?.acReg)||U(a.acReg)===U(b.acReg));
 }
+// KẾT THÚC CHUYẾN is a Firebase-verified flight closeout, not a form completion.
+function flightCloseoutAcceptedForNextFlightV14(item,st,username){
+ const u=norm(username),date=S(item?.opDate||item?.date||item?.flightDate),closeDate=S(st?.flightCloseoutDate);
+ return !!u&&st?.flightCloseoutV6445===true&&Number(st?.flightCloseoutAtMs||0)>0&&
+        norm(st?.flightCloseoutBy)===u&&(!date||!closeDate||date===closeDate);
+}
 function completionGateBlockerV12(entries,states,target,date,username){
  const u=norm(username);
  for(let i=0;i<entries.length;i++){
@@ -139,7 +145,7 @@ function completionGateBlockerV12(entries,states,target,date,username){
   const cs=U(st.claimStatus),ts=U(st.taskStatusV333||st.taskStatus||st.workPartStatus);
   const done=['PART_COMPLETED','COMPLETED','HANDED_OVER','SKIPPED'].includes(cs)||
     (Number(st.completedAtMs||0)>0&&norm(st.completedBy)===u);
-  if(done||!(cs==='CLAIMED'||['IN_PROGRESS','CLAIMED','ACTIVE','WORKING'].includes(ts)))continue;
+  if(done||flightCloseoutAcceptedForNextFlightV14(item,st,u)||!(cs==='CLAIMED'||['IN_PROGRESS','CLAIMED','ACTIVE','WORKING'].includes(ts)))continue;
   const op=S(item.opDate||item.date||item.flightDate);
   if(sameFlightForCompletionGateV12(item,target,op,date))continue;
   return {item,flightId:S(item.flightId),date:op,assignmentId:S(item.assignmentId)};
@@ -172,9 +178,9 @@ async function assertCompleteBeforeNextFlightV12(targetFid,date=opDate(),targetI
   catch(_){throw new Error('Không xác minh được HOÀN TẤT của phân công '+S(x.assignmentId)+'. Kết nối mạng rồi thử lại.')}
  }));
  const blocker=completionGateBlockerV12(rows,states,target,d,u);
- if(blocker)throw new Error('BẠN CHƯA BẤM HOÀN TẤT CHUYẾN '+rosterLabel(blocker.item)+
+ if(blocker)throw new Error('BẠN CHƯA BẤM HOÀN TẤT HOẶC KẾT THÚC CHUYẾN '+rosterLabel(blocker.item)+
   (blocker.date?' ('+blocker.date+')':'')+
-  '. Hãy quay lại chuyến đang làm, bấm ✓ HOÀN TẤT và chờ Firebase xác nhận trước khi nhận hoặc mở chuyến khác.');
+  '. Hãy quay lại chuyến đang làm, bấm ✓ HOÀN TẤT hoặc ✓ KẾT THÚC CHUYẾN và chờ Firebase xác nhận trước khi nhận hoặc mở chuyến khác.');
  return true;
 }
 root.SAGSFlightCompletionGateV12={assertCanOpen:assertCompleteBeforeNextFlightV12};

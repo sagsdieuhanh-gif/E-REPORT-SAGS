@@ -1,13 +1,13 @@
 {
-  "version": "V1.3",
-  "displayVersion": "V1.3",
-  "label": "V1.3 - BẮT BUỘC DÙNG PHIÊN BẢN MỚI",
-  "build": "V1.3-20261126-STRICT-CURRENT-RELEASE-GATE-01",
+  "version": "V1.4",
+  "displayVersion": "V1.4",
+  "label": "V1.4 - HOÀN TẤT HOẶC KẾT THÚC CHUYẾN",
+  "build": "V1.4-20261126-COMPLETE-OR-CLOSE-FLIGHT-01",
   "releasedAt": "2026-11-26",
-  "type": "strict-current-release-gate",
+  "type": "complete-or-close-flight-gate",
   "base": "Giữ nguyên toàn bộ dữ liệu và chức năng đã ổn định từ E-REPORT-SAGS V2.2; chỉ đặt lại dãy số phiên bản hiển thị",
   "updatePolicy": "required",
-  "notes": "Kiểm tra chính sách phiên bản ngay khi mở website và trước khi mở công việc. Mọi lần mở ứng dụng cần xác minh bản hiện hành; khi phát hiện bản cũ, tự mở trang cập nhật an toàn, không cho hoãn. Nếu đang nhập biểu mẫu hoặc còn dữ liệu chờ đồng bộ, bảo toàn công việc hiện tại để Hoàn tất và đồng bộ trước khi chuyển. Trên bản đã hỗ trợ quy tắc, không cho mở công việc mới khi phiên bản cũ hoặc không thể kiểm tra máy chủ. Thiết bị chưa kết nối hoặc đang giữ tab ứng dụng đời cũ chưa thể bị khóa tuyệt đối nếu không có chặn ghi máy chủ.",
-  "message": "V1.3: bắt buộc phiên bản mới và tự chuyển cập nhật; bảo toàn bản nháp.",
-  "previousBuild": "V1.2-20261126-FINISH-BEFORE-NEXT-FLIGHT-01"
+  "notes": "Cho phép nhận/mở chuyến khác khi đã bấm ✓ HOÀN TẤT hoặc ✓ KẾT THÚC CHUYẾN và Firebase đã xác nhận. Xác thực kết thúc chuyến theo từng assignment, đúng người và thời điểm; MỞ LẠI CHUYẾN sẽ xóa cờ kết thúc. Không biến biểu mẫu chưa hoàn tất thành Hoàn Tất, không xóa dữ liệu hoặc thay đổi phân công. Tiếp tục cập nhật bắt buộc.",
+  "message": "V1.4: Hoàn Tất hoặc Kết Thúc Chuyến đều cho phép làm chuyến khác sau khi Firebase xác nhận.",
+  "previousBuild": "V1.3-20261126-STRICT-CURRENT-RELEASE-GATE-01"
 }
