@@ -2,8 +2,8 @@
    Base: V4.8.10B Layered PDF + HF1–HF4. Never mix navigation HTML with a different runtime.
 */
 'use strict';
-const BUILD='V1.3-20261127-PREMIUM-CHRISTMAS-UNIFIED-01';
-const DISPLAY_VERSION='V1.3';
+const BUILD='V1.4-20261127-CHRISTMAS-NEWYEAR-PREMIUM-01';
+const DISPLAY_VERSION='V1.4';
 const CACHE_NAME='sags-app-shell-v1.3-20261127-premium-christmas-unified-01';
 const META_CACHE_NAME='sags-app-meta-v1.3-20261127-premium-christmas-unified-01';
 const ASSET_MANIFEST_URL='./asset-manifest.json';

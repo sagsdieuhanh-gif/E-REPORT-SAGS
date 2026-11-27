@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V1.3",
-  "build": "V1.3-20261127-PREMIUM-CHRISTMAS-UNIFIED-01",
+  "version": "V1.4",
+  "build": "V1.4-20261127-CHRISTMAS-NEWYEAR-PREMIUM-01",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -826,7 +826,7 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "8d9b20ce3de8b668e0a878c4394e4074a9752d7e7a44c9d6821bf6d2cefcc922",
+      "sha256": "442109c6a1a06b528eb29696454ca88c655c78fa272a2e88e912d39e01335b5c",
       "bytes": 139464
     },
     "./manifest.webmanifest": {
@@ -878,7 +878,7 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "e61ec0a58783005fcd644ecef73b3282a4f5579bfceb5499d00be302043b4af6",
+      "sha256": "5e512f6d7f0fd233868eb552c70c8a53c94ac079c52817fd16b21ce351654142",
       "bytes": 22744
     },
     "./storage-recovery.html": {
@@ -886,8 +886,8 @@
       "bytes": 26106
     },
     "./version.json": {
-      "sha256": "10b44f5918fa686f8e94006006bd16a646efc9b977df6f58cab96be1d0918be2",
-      "bytes": 1059
+      "sha256": "b0e62ed68e527e7d5321fc0d0f022c1df17315c0fc7103b8440d5c89233c0bf3",
+      "bytes": 690
     }
   },
   "mutableAssets": [
