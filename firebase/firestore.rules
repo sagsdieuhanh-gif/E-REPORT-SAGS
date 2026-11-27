@@ -1147,7 +1147,7 @@ service cloud.firestore {
     // E-REPORT radio asset custody v1: immutable events + authenticated transitions.
     // Deploy with Firebase CLI before exposing the feature in production.
     function radioActionAllowed(a) {
-      return a in ['INIT','ISSUE','RETURN','REPORT','SWAP_OUT','SWAP_IN','RELEASE'];
+      return a in ['INIT','ISSUE','RETURN','REPORT','SWAP_OUT','SWAP_IN','RELEASE','STORE','DEPLOY'];
     }
     function radioReasonAllowed(r) {
       return r in ['', 'BATTERY_EMPTY','BATTERY_WEAK','WEAK_SIGNAL','INTERMITTENT',
@@ -1174,7 +1174,7 @@ service cloud.firestore {
         && d.shift in ['', 'AM','PM']
         && d.details is string && d.details.size() <= 500
         && d.signature is string && d.signature.size() <= 45000
-        && (d.action in ['INIT','RELEASE']
+        && (d.action in ['INIT','RELEASE','STORE','DEPLOY']
           ? d.signature == ''
           : (d.signature.matches('^data:image/webp;base64,[A-Za-z0-9+/=]+')
             || d.signature.matches('^data:image/png;base64,[A-Za-z0-9+/=]+')
@@ -1186,7 +1186,7 @@ service cloud.firestore {
         && d.relatedDeviceCode is string && d.relatedDeviceCode.size() <= 12
         && d.swapId is string && d.swapId.size() <= 150
         && d.at == request.time
-        && (d.reasonCode in ['OTHER','LOST'] || d.action == 'RELEASE'
+        && (d.reasonCode in ['OTHER','LOST'] || d.action in ['RELEASE','STORE','DEPLOY']
           ? d.details.size() >= 10 : true);
     }
     function radioAssetShape(code, d) {
@@ -1195,12 +1195,13 @@ service cloud.firestore {
         'lastEventId','updatedAt'])
         && d.keys().hasOnly(['schemaVersion','code','label','status','holderUid',
         'holderName','shift','faultCode','faultDetail','battery','version',
-        'lastEventId','updatedAt','heldSince'])
+        'lastEventId','updatedAt','heldSince','stockStatus'])
         && d.schemaVersion == 1
         && d.code == code
         && code.matches('^[A-Z0-9]+') && code.size() >= 3 && code.size() <= 12
         && d.label is string && d.label.size() <= 32
         && d.status in ['READY','OUT','CHARGING','FAULT','LOST']
+        && d.get('stockStatus','IN_SERVICE') in ['IN_SERVICE','IN_STORE']
         && d.holderUid is string && d.holderUid.size() <= 150
         && d.holderName is string && d.holderName.size() <= 110
         && d.shift in ['', 'AM','PM']
@@ -1234,6 +1235,7 @@ service cloud.firestore {
         // even when old clients have left legacy FAULT/CHARGING statuses.
         (action in ['ISSUE','SWAP_IN'] && old.status in ['READY','FAULT','CHARGING']
           && old.holderUid == '' && old.faultCode != 'LOST'
+          && old.get('stockStatus','IN_SERVICE') == 'IN_SERVICE'
           && next.status == 'OUT' && next.holderUid == request.auth.uid
           && next.get('heldSince', next.updatedAt) == request.time
           && next.holderName.size() > 0
@@ -1288,7 +1290,22 @@ service cloud.firestore {
           && next.shift == (old.status == 'OUT' ? old.shift : '')
           && next.faultCode == '' && next.faultDetail == ''
           && next.battery == old.battery
-          && (old.status != 'OUT' || next.get('heldSince', null) == oldHeldSince));
+          && (old.status != 'OUT' || next.get('heldSince', null) == oldHeldSince))
+        // Stock is a separate location from operational and defect status.
+        || (action in ['STORE','DEPLOY'] && radioMonitor()
+          && old.status in ['READY','FAULT','CHARGING']
+          && old.holderUid == '' && old.holderName == '' && old.faultCode != 'LOST'
+          && next.status == old.status && next.holderUid == old.holderUid
+          && next.holderName == old.holderName && next.shift == old.shift
+          && next.faultCode == old.faultCode && next.faultDetail == old.faultDetail
+          && next.battery == old.battery && next.get('heldSince',null) == null
+          && e.personUid == '' && e.personName == '' && e.shift == ''
+          && e.reasonCode == '' && e.signature == ''
+          && (action == 'STORE'
+            ? old.get('stockStatus','IN_SERVICE') == 'IN_SERVICE'
+              && next.get('stockStatus','IN_SERVICE') == 'IN_STORE'
+            : old.get('stockStatus','IN_SERVICE') == 'IN_STORE'
+              && next.get('stockStatus','IN_SERVICE') == 'IN_SERVICE'));
     }
     function radioDeviceUpdate(code) {
       let old = resource.data;
@@ -1302,6 +1319,8 @@ service cloud.firestore {
         && d.lastEventId != old.lastEventId
         && radioEventLink(code, d, old.status)
         && radioEventShape(e)
+        && (e.action in ['STORE','DEPLOY'] ||
+          d.get('stockStatus','IN_SERVICE') == old.get('stockStatus','IN_SERVICE'))
         && radioTransition(old, d, e);
     }
     match /sags_radio_devices_v1/{code} {
@@ -1326,6 +1345,7 @@ service cloud.firestore {
         && getAfter(/databases/$(database)/documents/sags_radio_devices_v1/$(request.resource.data.deviceCode)).data.version == request.resource.data.deviceVersion
         && getAfter(/databases/$(database)/documents/sags_radio_devices_v1/$(request.resource.data.deviceCode)).data.status == request.resource.data.afterStatus
         && (request.resource.data.action in ['INIT','RELEASE'] ? isAdmin() : true)
+        && (request.resource.data.action in ['STORE','DEPLOY'] ? radioMonitor() : true)
         && (request.resource.data.action == 'INIT' ? request.resource.data.beforeStatus == '' : true);
       allow update, delete: if false;
     }
@@ -1352,7 +1372,13 @@ service cloud.firestore {
         && request.resource.data.image is string
         && request.resource.data.image.size() > 12000
         && request.resource.data.image.size() <= 700000
-        && request.resource.data.image.matches('^data:image/(webp|jpeg);base64,[A-Za-z0-9+/=]+$')
+        && request.resource.data.image.matches('^data:image/(webp|jpeg);base64,[A-Za-z0-9+/=]+
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+})
         && !exists(/databases/$(database)/documents/sags_radio_events_v1/$(eventId))
         && existsAfter(/databases/$(database)/documents/sags_radio_events_v1/$(eventId))
         && getAfter(/databases/$(database)/documents/sags_radio_events_v1/$(eventId)).data.actorUid == request.auth.uid
