@@ -1,13 +1,13 @@
 {
-  "version": "V1.7",
-  "displayVersion": "V1.7",
-  "label": "V1.7 - QUẢN LÝ KHO BỘ ĐÀM",
-  "build": "V1.7-20261127-RADIO-STOCK-01",
+  "version": "V1.8",
+  "displayVersion": "V1.8",
+  "label": "V1.8 - SỬA ĐĂNG KÝ TÀI KHOẢN QUẢN LÝ BỘ ĐÀM",
+  "build": "V1.8-20261127-RADIO-MANAGER-ACCOUNT-01",
   "releasedAt": "2026-11-27",
-  "type": "radio-stock-management",
+  "type": "radio-manager-account-activation",
   "base": "Giữ nguyên toàn bộ dữ liệu và chức năng đã ổn định từ E-REPORT-SAGS V2.2; chỉ đặt lại dãy số phiên bản hiển thị",
   "updatePolicy": "required",
-  "notes": "AD/RADIO_MANAGER quản lý cất kho và xuất kho bộ đàm có lịch sử Firebase; máy đang giữ/thất lạc không thể điều chuyển. Chỉ phát hành client sau khi Firestore Rules production đã cập nhật và kiểm tra thành công.",
-  "message": "V1.7: Quản lý xuất kho / cất kho bộ đàm.",
-  "previousBuild": "V1.6-20261127-WINTER-APRON-01"
+  "notes": "Cho phép AD tạo tài khoản RADIO_MANAGER sau khi Firestore Rules V1.7 đã được Publish; mở allowlist Firebase login và giữ chặn toàn bộ nghiệp vụ chuyến bay. Sửa hiển thị mật khẩu ban đầu cũ sai 123456 thành ghi chú cấp mật khẩu ngẫu nhiên an toàn. Không thay đổi quyền radio, ký nhận, báo cáo, roster, form hoặc dữ liệu cũ.",
+  "message": "V1.8: AD có thể tạo tài khoản Quản lý bộ đàm; Firebase login và mật khẩu khởi tạo đồng bộ.",
+  "previousBuild": "V1.7-20261127-RADIO-STOCK-01"
 }
