@@ -22,8 +22,8 @@
       "bytes": 306709
     },
     "./app/boot/06-legacy.js": {
-      "sha256": "a543602169ed73871f7e161d2479ed08b1de20a4a208f231668096cd90816c56",
-      "bytes": 397715
+      "sha256": "69ac6df3e3a7d88d4db3fc771c4d135e43df22513d8df0854209a17bb1b74cc3",
+      "bytes": 397729
     },
     "./app/boot/07-legacy.js": {
       "sha256": "f08b12c510ccd4c0a537806995959c9b2a75891e2b8795308158b44ddce7d641",
@@ -834,8 +834,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "8744aa45437da0e3e6706047da4b12f3a84fceb876ce7d5a238d28acd10ffe15",
-      "bytes": 143144
+      "sha256": "503f62a6466831c2cc84452fdbe6490ba5ad757a0ea7ec37733232955f44fa8b",
+      "bytes": 143154
     },
     "./manifest.webmanifest": {
       "sha256": "37bed2c9d467c863170a40049ca253d38862ef43a67b4d3d6a939d93302ba721",
