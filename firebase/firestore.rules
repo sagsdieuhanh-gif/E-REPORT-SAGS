@@ -1322,7 +1322,9 @@ service cloud.firestore {
         && d.version == old.version + 1
         && d.lastEventId != old.lastEventId
         && radioEventLink(code, d, old.status)
-        && radioEventShape(e)
+        // The linked immutable event is schema-validated by its own CREATE rule,
+        // in the same atomic transaction. Avoid evaluating that costly shape twice
+        // (one Firestore rules request is limited to 1000 expressions).
         && (e.action in ['STORE','DEPLOY']
           ? radioStockTransition(old, d, e)
           : (d.get('stockStatus','IN_SERVICE') == old.get('stockStatus','IN_SERVICE')
