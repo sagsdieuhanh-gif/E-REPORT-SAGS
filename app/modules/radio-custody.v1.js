@@ -28,7 +28,8 @@ const RETURN_REASONS=Object.freeze({
 });
 // Advisory shift in Vietnam time: AM 08:30–19:00; PM 19:01–08:29 next day.
 const STATUSES={READY:'Sẵn sàng',OUT:'Đang sử dụng',CHARGING:'Đang sạc / có cảnh báo (vẫn được nhận)',FAULT:'Đã ghi nhận lỗi (vẫn được nhận)',LOST:'Thất lạc'};
-const radioIssueable=d=>!!d&&['READY','CHARGING','FAULT'].includes(d.status)&&!d.holderUid&&d.faultCode!=='LOST';
+const stockState=d=>d?.stockStatus==='IN_STORE'?'IN_STORE':'IN_SERVICE';
+const radioIssueable=d=>!!d&&stockState(d)==='IN_SERVICE'&&['READY','CHARGING','FAULT'].includes(d.status)&&!d.holderUid&&d.faultCode!=='LOST';
 const hasRadioWarning=d=>!!d.faultCode||['CHARGING','FAULT','LOST'].includes(d.status);
 // Battery is no longer collected at signing. Preserve the most recently
 // recorded value or the explicit fault code; UNKNOWN on never-checked legacy
@@ -47,11 +48,11 @@ function radioBatteryForFaultReport(device,reason){
 }
 
 const radioHeldSince=d=>d.heldSince||d.updatedAt;
-const ACTS={INIT:'Khởi tạo',ISSUE:'Nhận máy',RETURN:'Trả máy',REPORT:'Báo sự cố',SWAP_OUT:'Đổi – trả máy cũ',SWAP_IN:'Đổi – nhận máy mới',RELEASE:'Đã xử lý thông tin lỗi'};
+const ACTS={INIT:'Khởi tạo',ISSUE:'Nhận máy',RETURN:'Trả máy',REPORT:'Báo sự cố',SWAP_OUT:'Đổi – trả máy cũ',SWAP_IN:'Đổi – nhận máy mới',RELEASE:'Đã xử lý thông tin lỗi',STORE:'Cất kho',DEPLOY:'Xuất kho sử dụng'};
 let unsubs=[],devices=[],events=[],busy=false,connected=false,choice=null,mode='ISSUE',canvasDirty=false,strokes=[],drawing=false,dateFilter='all';
 // Staff see only available radios, or exactly the devices they currently hold.
 // Full inventory remains an explicit admin-only view, never the default signing list.
-let adminAllDevices=false,radioOnlyUnreturned=false,radioLiveClock=null;
+let adminAllDevices=false,radioOnlyUnreturned=false,radioLiveClock=null,stockChoice=null;
 let cameraStream=null,cameraToken=0,cameraLeg='old',photos={old:null,new:null},historyStop=null,historyVerified=false;
 const radioScriptUrl=document.currentScript?.src;
 // Supabase original-photo helper is lazy: no extra download on the main menu.
@@ -102,10 +103,11 @@ function tpl(){
  '<div class="radioStats" id="radioStats"></div>'+ 
  '<section id="radioOverdueAlert" class="radioOverdueAlert" role="status" aria-live="polite" hidden></section>'+
  '<details id="radioAdminDisclosure" class="radioAdminDisclosure" hidden><summary>Quản trị bộ đàm · Giám sát & đối soát ca</summary><section id="radioAdminOverview" class="radioAdminOverview" hidden><div class="radioAdminHeading"><div><small>QUẢN TRỊ THIẾT BỊ · TRẠNG THÁI TRỰC TUYẾN</small><h3>Giám sát bàn giao bộ đàm</h3><p>Người giữ máy, máy cần xử lý và đối soát theo ca ở một nơi.</p></div><button type="button" data-radio-go="summary" class="radioPrimary">Báo cáo ngày / ca</button></div><div id="radioAdminDashboard" class="radioAdminDashboard"></div><div id="radioRosterMonitor" class="radioRosterMonitor"><div class="radioRosterHeader"><b>📋 Đối chiếu roster và ký nhận</b><div class="radioRosterFilters"><label>Ngày<input type="date" id="radioRosterDate"></label><label>Ca<select id="radioRosterShift"><option value="AM">Sáng</option><option value="PM">Tối</option></select></label><button id="radioRosterReload" type="button">↻ Kiểm tra</button></div></div><div id="radioRosterAlert" role="status" aria-live="polite"></div></div></section></details>'+
- '<div class="radioTabs"><button type="button" data-radio-tab="devices" class="selected">Ký nhận / Trả máy</button><button type="button" data-radio-tab="history">Lịch sử ký nhận</button><button type="button" data-radio-tab="summary">Tổng hợp</button></div>'+
+ '<div class="radioTabs"><button type="button" data-radio-tab="devices" class="selected">Ký nhận / Trả máy</button><button type="button" data-radio-tab="history">Lịch sử ký nhận</button><button type="button" data-radio-tab="summary">Tổng hợp</button><button type="button" data-radio-tab="stock" id="radioStockTabButton" hidden>📦 Kho bộ đàm</button></div>'+
  '<section id="radioReportControl" class="radioReportControl" hidden><div class="radioReportTitle"><strong>📅 Báo cáo ký nhận bộ đàm</strong><small>Chọn phạm vi → Tải dữ liệu Firebase → Xuất PDF có hoặc không kèm ảnh</small></div><label class="radioReportModeWrap" id="radioReportModeWrap" hidden>Phạm vi báo cáo (AD)<select id="radioReportMode"><option value="SHIFT">Một ngày / một ca</option><option value="RANGE">Khoảng ngày / cả ca sáng và tối</option></select></label><div class="radioReportInputs" id="radioShiftInputs"><label>Ngày cần báo cáo<input id="radioReportDate" type="date"></label><label>Ca trực<select id="radioReportShift"><option value="AM">Ca sáng (AM)</option><option value="PM">Ca tối (PM)</option></select></label><button type="button" id="radioReportLoad" class="radioPrimary">🔎 Tải báo cáo ca</button><button type="button" id="radioReportReset">Lịch sử gần đây</button></div><div class="radioReportInputs radioRangeInputs" id="radioRangeInputs" hidden><div class="radioRangePresets"><button type="button" data-radio-range-preset="7">7 ngày qua</button><button type="button" data-radio-range-preset="30">30 ngày qua</button><button type="button" data-radio-range-preset="month">Tháng này</button></div><label>Từ ngày<input id="radioRangeFrom" type="date"></label><label>Đến ngày<input id="radioRangeTo" type="date"></label><button type="button" id="radioRangeLoad" class="radioPrimary">🔎 Tải toàn bộ ca trong khoảng</button><button type="button" id="radioRangeReset">Lịch sử gần đây</button><small class="radioRangeNote">Tính cả 2 ca mỗi ngày; ca tối kết thúc 08:29 hôm sau. Tối đa 31 ngày mỗi lần.</small></div><div id="radioPdfChoice" class="radioPdfChoice" hidden><label><input type="checkbox" id="radioPdfIncludePhotos"><span>Kèm ảnh chụp và chữ ký trong PDF</span></label><small>AD / Quản lý bộ đàm: Bật để xuất báo cáo kèm ảnh từng lần nhận/trả.</small></div><p id="radioReportState" class="radioReportState" role="status" aria-live="polite">Chọn ngày và ca để lấy đúng dữ liệu, không giới hạn ở lịch sử gần nhất.</p><small>Mốc nhận máy: sáng 08:00–18:30, tối 18:31–07:59 hôm sau. Phải tự chọn ca khi ký. Hạn kết thúc ca giữ 19:00 và 08:29; báo cáo theo ca đã xác nhận, giờ Firebase giữ nguyên.</small></section>'+ 
  '<section id="radioDevicesTab"><div class="radioTools radioDeviceTools"><strong id="radioDevicesTitle">Máy còn trống</strong><div class="radioDeviceToolActions"><button type="button" id="radioOnlyUnreturned" hidden aria-pressed="false">🚩 Chỉ xem chưa trả</button><button type="button" id="radioAdminAll" hidden aria-pressed="false">Quản lý tất cả (AD)</button><button type="button" id="radioSeed" hidden>+ Khởi tạo máy</button></div></div><div id="radioDraftControls" class="radioTools" hidden><span>Ảnh và chữ ký đang lưu trên máy, chờ xác nhận Firebase.</span><button type="button" id="radioResumeDraft">Tiếp tục ký nhận/trả</button><button type="button" id="radioDiscardDraft">Bỏ bản nháp</button></div><div id="radioDeviceList" class="radioDeviceList"></div></section>'+
- '<section id="radioHistoryTab" hidden><div class="radioTools"><span>Danh sách sự kiện của ca đã chọn (AD) hoặc lịch sử cá nhân</span><button type="button" id="radioExport" class="radioPrimary">📄 Xuất PDF ca</button></div><div class="radioHistoryFilters"><label>Mã máy<select id="radioHistoryDevice"><option value="">Tất cả máy</option></select></label><label>Thao tác<select id="radioHistoryAction"><option value="">Tất cả</option><option value="ISSUE">Nhận máy</option><option value="RETURN">Trả máy</option><option value="SWAP_OUT">Đổi máy</option><option value="REPORT">Báo lỗi</option></select></label><label>Tìm kiếm<input id="radioHistorySearch" type="search" placeholder="Tên, UID hoặc ghi chú" autocomplete="off"></label></div><div id="radioHistoryMeta" class="radioHistoryMeta"></div><div id="radioHistoryList"></div></section>'+
+ '<section id="radioStockTab" class="radioStockTab" hidden><header class="radioStockHeading"><h3>📦 Danh sách kho bộ đàm</h3><p>AD và Quản lý bộ đàm điều chuyển thiết bị giữa kho và khu vực sử dụng. Ký nhận/trả máy là nghiệp vụ riêng.</p></header><div id="radioStockStats" class="radioStockStats"></div><div class="radioStockFilters"><label>Tìm mã máy<input id="radioStockSearch" type="search" placeholder="DH01, TBDH02..." autocomplete="off"></label><label>Trạng thái kho<select id="radioStockFilter"><option value="ALL">Toàn bộ danh mục</option><option value="IN_SERVICE">Đã xuất kho</option><option value="IN_STORE">Trong kho</option><option value="OUT">Đang có người giữ</option><option value="LOST">Thất lạc</option></select></label></div><div id="radioStockList" class="radioStockList"></div><section id="radioStockAction" class="radioStockAction" hidden><h4 id="radioStockActionTitle">Điều chuyển bộ đàm</h4><p id="radioStockActionDesc"></p><label>Ghi chú / lý do điều chuyển<textarea id="radioStockNote" rows="2" maxlength="500" placeholder="Ví dụ: Dư máy trong ca nên cất kho, hoặc thiếu máy nên xuất bổ sung" required></textarea></label><div class="radioStockActions"><button id="radioStockCancel" type="button">Hủy</button><button id="radioStockConfirm" type="button" class="radioPrimary">Xác nhận trên Firebase</button></div></section><p class="radioHint">Máy đang có người giữ phải ký trả trước. Máy thất lạc không được điều chuyển. Máy báo lỗi vẫn được sử dụng sau khi xuất kho; sự cố chỉ là thông tin theo dõi.</p></section>'+
+ '<section id="radioHistoryTab" hidden><div class="radioTools"><span>Danh sách sự kiện của ca đã chọn (AD) hoặc lịch sử cá nhân</span><button type="button" id="radioExport" class="radioPrimary">📄 Xuất PDF ca</button></div><div class="radioHistoryFilters"><label>Mã máy<select id="radioHistoryDevice"><option value="">Tất cả máy</option></select></label><label>Thao tác<select id="radioHistoryAction"><option value="">Tất cả</option><option value="ISSUE">Nhận máy</option><option value="RETURN">Trả máy</option><option value="SWAP_OUT">Đổi máy</option><option value="REPORT">Báo lỗi</option><option value="STORE">Cất kho</option><option value="DEPLOY">Xuất kho sử dụng</option></select></label><label>Tìm kiếm<input id="radioHistorySearch" type="search" placeholder="Tên, UID hoặc ghi chú" autocomplete="off"></label></div><div id="radioHistoryMeta" class="radioHistoryMeta"></div><div id="radioHistoryList"></div></section>'+
  '<section id="radioSummaryTab" hidden><div class="radioTools"><span>Tổng hợp ca trực · theo ngày đã chọn</span><button type="button" id="radioSummaryExport" class="radioPrimary">📄 Xuất PDF ca</button></div><div id="radioSummary"></div><p class="radioHint">Tổng hợp dữ liệu đã tải trên màn hình; không gửi email.</p></section>'+
  '<section id="radioAction" class="radioAction" hidden><div class="radioActionHeader"><h3 id="radioActionTitle">Ký nhận</h3><button type="button" id="radioActionCancel">✕</button></div><div class="radioFields"><label>Mã máy<input id="radioActionCode" readonly></label><label>Người thực hiện<input id="radioPerson" readonly></label><label>Ca nhận bộ đàm (bắt buộc)<select id="radioShift" required><option value="">— Bắt buộc chọn ca —</option><option value="AM">Ca sáng · mốc nhận 08:00–18:30</option><option value="PM">Ca tối · mốc nhận 18:31–07:59 hôm sau</option></select><small id="radioShiftHint">Mốc nhận: sáng 08:00–18:30; tối 18:31–07:59 hôm sau. Bắt buộc chọn ca; giờ ký thực tế vẫn được Firebase ghi độc lập.</small></label><label id="radioReasonWrap">Lý do<select id="radioReason">'+REASONS.map(([v,n])=>'<option value="'+v+'">'+esc(n)+'</option>').join('')+'</select></label><label id="radioReturnReasonWrap" hidden>Lý do trả<select id="radioReturnReason"><option value="END_SHIFT">Hết ca</option><option value="HANDOVER">Bàn giao ca tiếp theo</option><option value="STOP_USE">Không tiếp tục sử dụng</option><option value="OTHER">Lý do khác (ghi cụ thể)</option></select></label><label id="radioSwapWrap">Máy thay thế<select id="radioSwapTarget"></select></label><label class="wide">Ghi chú hiện trạng<textarea id="radioDetail" rows="2" placeholder="Ghi cụ thể hiện tượng, thời gian, vị trí..."></textarea></label></div><section id="radioPhotoArea" class="radioPhotoArea" hidden><div class="radioPhotoHeading"><strong id="radioPhotoStep">1 · Ảnh bộ đàm thực tế</strong><small>Camera trực tiếp · không chọn thư viện</small></div><div class="radioCameraView"><input id="radioNativeCamera" type="file" accept="image/*" capture="environment" hidden><video id="radioCameraVideo" playsinline autoplay muted></video><img id="radioCameraPhoto" alt="Ảnh chụp mã máy và thời gian" hidden></div><div id="radioPhotoChips" class="radioPhotoChips"></div><div class="radioPhotoActions"><button id="radioTakePhoto" type="button" class="radioPrimary">📷 Chụp ảnh</button><button id="radioRetakePhoto" type="button" hidden>Chụp lại</button><button id="radioInspectPhoto" type="button" hidden>🔎 Phóng to kiểm tra ảnh</button><button id="radioRetryPhoto" type="button" hidden>Mở camera</button></div><small class="radioHint">Giờ trên ảnh là giờ của điện thoại; Firebase ghi riêng thời điểm xác nhận trên máy chủ.</small></section><div id="radioSigWrap"><p>Chữ ký xác nhận của tài khoản đang đăng nhập</p><canvas id="radioSignature" width="540" height="150" aria-label="Ký bằng ngón tay hoặc chuột"></canvas><button type="button" id="radioClearSignature">Xóa nét ký</button></div><p id="radioActionMessage" class="radioActionMessage" role="status" aria-live="polite"></p><div class="radioActions"><button type="button" id="radioCancel">Hủy</button><button class="radioPrimary" type="button" id="radioConfirm">Xác nhận và lưu lịch sử</button></div></section>'+
  '<div class="radioProofViewer" id="radioProofViewer" hidden><div><header><strong id="radioProofName">Ảnh và chữ ký</strong><button type="button" id="radioProofClose">✕</button><button id="radioProofZoom" type="button">🔎 Phóng to</button></header><div class="radioProofScroll"><img id="radioProofImage" alt="Bằng chứng ảnh có giờ và chữ ký"></div><p id="radioProofQuality"></p><p id="radioProofTimestamp"></p></div></div><footer>Giờ trên ảnh do thiết bị cung cấp; giờ xác nhận chính thức theo Firebase.</footer></div>';
@@ -125,6 +127,10 @@ function tpl(){
  $('radioProofViewer').onclick=e=>{if(e.target.id==='radioProofViewer')closeProof()};
   $('radioProofZoom').onclick=()=>{const box=$('radioProofViewer');box.classList.toggle('radioProofZoomed');$('radioProofZoom').textContent=box.classList.contains('radioProofZoomed')?'↩ Thu vừa':'🔎 Phóng to'};
  $('radioSeed').onclick=()=>void seed();
+ $('radioStockSearch').oninput=renderStock;
+ $('radioStockFilter').onchange=renderStock;
+ $('radioStockCancel').onclick=cancelStock;
+ $('radioStockConfirm').onclick=()=>void commitStock();
  $('radioAdminAll').onclick=()=>{
   if(!canMonitor(currentUser()))return;
   adminAllDevices=!adminAllDevices;if(adminAllDevices)radioOnlyUnreturned=false;render();
@@ -165,7 +171,7 @@ function tpl(){
   c.addEventListener('touchmove',e=>{if(!e.touches.length)return;e.preventDefault();move(mapped(e))},{passive:false});
   c.addEventListener('touchend',up,{passive:true});c.addEventListener('touchcancel',up,{passive:true});
  }
- p.addEventListener('click',e=>{const go=e.target.closest('[data-radio-go]');if(go){tab(go.dataset.radioGo);$('radioReportControl')?.scrollIntoView({behavior:'smooth',block:'start'});return}const b=e.target.closest('[data-radio-act]');if(b)start(b.dataset.radioAct,b.dataset.radioCode);const el=e.target.closest('[data-radio-proof]');if(el)viewProof(el.dataset.radioProof)});
+ p.addEventListener('click',e=>{const go=e.target.closest('[data-radio-go]');if(go){tab(go.dataset.radioGo);$('radioReportControl')?.scrollIntoView({behavior:'smooth',block:'start'});return}const b=e.target.closest('[data-radio-act]');if(b)start(b.dataset.radioAct,b.dataset.radioCode);const sb=e.target.closest('[data-radio-stock-action]');if(sb)startStock(sb.dataset.radioStockAction,sb.dataset.radioCode);const el=e.target.closest('[data-radio-proof]');if(el)viewProof(el.dataset.radioProof)});
  $('radioSwapTarget').onchange=()=>{if(mode==='SWAP_OUT'&&choice){photos.new=null;clearSignature();updatePhotoUI();void startCamera('new')}};
 }
 
@@ -776,11 +782,22 @@ function mark(e){const c=$('radioSignature'),r=c.getBoundingClientRect(),x=Math.
 function paintSignature(c,points,x,y){const ctx=c.getContext('2d');ctx.strokeStyle='#123f66';ctx.lineWidth=2.8;ctx.lineCap='round';if(points.length===1){ctx.fillStyle='#123f66';ctx.beginPath();ctx.arc(x,y,1.4,0,Math.PI*2);ctx.fill()}else{const prev=points[points.length-2];ctx.beginPath();ctx.moveTo(prev[0],prev[1]);ctx.lineTo(x,y);ctx.stroke()}}
 function clearSignature(){strokes=[];canvasDirty=false;const c=$('radioSignature');if(c)c.getContext('2d').clearRect(0,0,c.width,c.height)}
 function signature(){if(!canvasDirty||!strokes.some(a=>a.length>=2))throw Error('Vui lòng ký xác nhận trực tiếp trên màn hình.');const c=$('radioSignature');let v=c.toDataURL('image/webp',0.45);if(!v.startsWith('data:image/webp;base64,')){v=c.toDataURL('image/png')}if(v.length>45000)throw Error('Chữ ký quá lớn. Xóa và ký lại nét ngắn gọn.');return v}
-function tab(t){for(const id of ['devices','history','summary']){$('radio'+id[0].toUpperCase()+id.slice(1)+'Tab').hidden=id!==t;const btn=document.querySelector('[data-radio-tab="'+id+'"]');btn?.classList.toggle('selected',t===id)}$('radioPdfChoice').hidden=!canMonitor(currentUser())||t==='devices';$('radioReportControl').hidden=!isAdmin(currentUser())||t==='devices';cancel();if(t==='history'||t==='summary')subscribeHistory();else stopHistory();if(t==='summary')renderSummary()}
+function tab(t){
+ if(t==='stock'&&!canMonitor(currentUser()))t='devices';
+ for(const id of ['devices','history','summary','stock']){
+  $('radio'+id[0].toUpperCase()+id.slice(1)+'Tab').hidden=id!==t;
+  const btn=document.querySelector('[data-radio-tab="'+id+'"]');btn?.classList.toggle('selected',t===id);
+ }
+ $('radioPdfChoice').hidden=!canMonitor(currentUser())||t==='devices'||t==='stock';
+ $('radioReportControl').hidden=!isAdmin(currentUser())||t==='devices'||t==='stock';
+ cancel();if(t!=='stock')cancelStock();
+ if(t==='history'||t==='summary')subscribeHistory();else stopHistory();
+ if(t==='summary')renderSummary();if(t==='stock')renderStock();
+}
 function close(){
  if(busy)return;
  // Re-open on the employee-focused view even after AD inspected all devices.
- adminAllDevices=false;radioOnlyUnreturned=false;
+ adminAllDevices=false;radioOnlyUnreturned=false;cancelStock();
  if(radioLiveClock){clearInterval(radioLiveClock);radioLiveClock=null}
  if($('radioAdminDisclosure'))$('radioAdminDisclosure').open=false;
  stopRosterWatch();
@@ -857,6 +874,7 @@ async function start(action,code){
  const u=currentUser(),d=devices.find(x=>x.code===code);
  if(!u.uid||!d)return notify('Cần đăng nhập và chọn máy hợp lệ.',true);
  if(!connected||!navigator.onLine)return notify('Chưa kết nối Firebase. Không thể ký nhận khi chưa đồng bộ trạng thái máy.',true);
+ if(action==='ISSUE'&&!radioIssueable(d))return notify('Máy trong kho, đang sử dụng hoặc thất lạc; AD / Quản lý bộ đàm phải xuất kho trước.',true);
  if(action==='ISSUE'&&heldBy(u.uid).length)return notify('Bạn đang giữ '+heldBy(u.uid).map(x=>label(x.code)).join(', ')+'. Phải ký trả máy đang giữ trước khi nhận máy khác.',true);
  if(action==='SWAP_OUT'&&heldBy(u.uid).some(x=>x.code!==code))return notify('Bạn đang giữ bộ đàm khác. Phải trả máy đó trước khi đổi máy.',true);
  if(action==='RELEASE'&&!isAdmin(u))return notify('Chỉ AD được xác nhận đã xử lý thông tin lỗi.',true);
@@ -1039,6 +1057,68 @@ function renderOverdueAlert(nowMs=Date.now()){
    (overdue.length>5?'<small class="radioLiveNotice">Còn '+(overdue.length-5)+' máy quá ca, bấm để xem đầy đủ.</small>':''):'');
 }
 
+// Stock location is independent from a device's custody status and advisory faults.
+function cancelStock(){stockChoice=null;const box=$('radioStockAction');if(box)box.hidden=true;const note=$('radioStockNote');if(note)note.value=''}
+function renderStock(){
+ const box=$('radioStockTab'),stats=$('radioStockStats'),list=$('radioStockList');
+ if(!box||!stats||!list)return;
+ const monitor=canMonitor(currentUser()),stored=devices.filter(d=>stockState(d)==='IN_STORE').length,
+  held=devices.filter(d=>d.status==='OUT').length,lost=devices.filter(d=>d.status==='LOST'||d.faultCode==='LOST').length,
+  available=devices.filter(radioIssueable).length;
+ stats.innerHTML=[['Tổng số',devices.length],['Trong kho',stored],['Có thể ký nhận',available],['Đang có người giữ',held],['Thất lạc',lost]]
+  .map(([title,count])=>'<div><strong>'+count+'</strong><small>'+esc(title)+'</small></div>').join('');
+ if(!monitor){box.hidden=true;list.replaceChildren();return}
+ const search=S($('radioStockSearch')?.value).toLocaleUpperCase('vi-VN'),filter=$('radioStockFilter')?.value||'ALL';
+ const rows=devices.filter(d=>(!search||S(d.code).toLocaleUpperCase('vi-VN').includes(search)||S(d.label).toLocaleUpperCase('vi-VN').includes(search))&&
+  (filter==='ALL'||(filter==='OUT'?d.status==='OUT':filter==='LOST'?(d.status==='LOST'||d.faultCode==='LOST'):stockState(d)===filter)));
+ list.innerHTML=!connected?'<p class="radioEmpty">Đang xác minh Firebase; chưa thể điều chuyển thiết bị.</p>':rows.length?rows.map(d=>{
+   const state=stockState(d),blocked=d.status==='OUT'||!!d.holderUid||d.status==='LOST'||d.faultCode==='LOST',
+    action=state==='IN_SERVICE'?'STORE':'DEPLOY',text=action==='STORE'?'📦 Cất kho':'↗ Xuất kho sử dụng';
+   const who=d.status==='OUT'?'Đang giữ: '+(d.holderName||d.holderUid):d.status==='LOST'||d.faultCode==='LOST'?'Máy thất lạc':'Chưa có người giữ';
+   const warning=d.faultCode?' · Lỗi ghi nhận: '+(REASON_TEXT[d.faultCode]||d.faultCode):'';
+   return '<article class="radioStockCard"><div><strong>'+esc(label(d.code))+'</strong><span class="radioStockChip '+(state==='IN_STORE'?'inStore':'inService')+'">'+
+    (state==='IN_STORE'?'TRONG KHO':'ĐÃ XUẤT KHO')+'</span><small>'+esc(who)+' · '+esc(STATUSES[d.status]||d.status)+esc(warning)+'</small></div>'+
+    '<button type="button" data-radio-stock-action="'+action+'" data-radio-code="'+esc(d.code)+'"'+(blocked?' disabled title="Ký trả máy hoặc xác minh máy thất lạc trước"':'')+'>'+text+'</button></article>';
+  }).join(''):'<p class="radioEmpty">Không tìm thấy bộ đàm phù hợp.</p>';
+}
+function startStock(action,code){
+ if(busy||!canMonitor(currentUser()))return notify('Chỉ AD và Quản lý bộ đàm được điều chuyển kho.',true);
+ if(!connected||!navigator.onLine)return notify('Cần dữ liệu trực tuyến từ Firebase trước khi điều chuyển.',true);
+ const d=devices.find(x=>x.code===code);
+ if(!d||!['STORE','DEPLOY'].includes(action))return notify('Mã máy hoặc thao tác không hợp lệ.',true);
+ if(d.status==='OUT'||d.holderUid)return notify('Máy đang có người giữ. Phải ký trả trước khi cất kho.',true);
+ if(d.status==='LOST'||d.faultCode==='LOST')return notify('Máy thất lạc không thể điều chuyển.',true);
+ if((action==='STORE'&&stockState(d)!=='IN_SERVICE')||(action==='DEPLOY'&&stockState(d)!=='IN_STORE'))return notify('Trạng thái kho đã thay đổi. Hãy tải lại.',true);
+ stockChoice={code,action};
+ $('radioStockActionTitle').textContent=(action==='STORE'?'📦 Cất kho ':'↗ Xuất kho sử dụng ')+label(code);
+ $('radioStockActionDesc').textContent=action==='STORE'?'Chỉ cất sau khi kiểm tra máy thực tế và xác nhận không có ai đang giữ.':'Máy sẽ xuất hiện trong danh sách nhân viên ký nhận; cảnh báo lỗi vẫn được theo dõi bình thường.';
+ $('radioStockNote').value='';$('radioStockAction').hidden=false;
+ $('radioStockAction').scrollIntoView({behavior:'smooth',block:'nearest'});$('radioStockNote').focus();
+}
+async function commitStock(){
+ if(busy||!stockChoice||!canMonitor(currentUser()))return notify('Bạn không có quyền điều chuyển kho.',true);
+ if(!connected||!navigator.onLine)return notify('Chưa có xác nhận Firebase trực tuyến; không ghi nhận.',true);
+ const user=currentUser(),{code,action}=stockChoice,note=S($('radioStockNote').value),target=action==='STORE'?'IN_STORE':'IN_SERVICE';
+ if(note.length<10||note.length>500)return notify('Ghi chú điều chuyển phải từ 10 đến 500 ký tự.',true);
+ if(!root.confirm((action==='STORE'?'CẤT KHO ':'XUẤT KHO SỬ DỤNG ')+label(code)+'?\n\n'+note+'\n\nHệ thống ghi lịch sử không thể sửa.'))return;
+ setBusy(true);notify('Đang điều chuyển kho trên Firebase…');
+ try{
+  const db=fs(),ref=db.collection(COLLECTION).doc(code);
+  await db.runTransaction(async tx=>{
+   const snap=await tx.get(ref);if(!snap.exists)throw Error('Mã máy không còn trong danh mục.');
+   const old=snap.data(),state=stockState(old);
+   if(old.status==='OUT'||old.holderUid)throw Error('Máy đang có người giữ. Phải ký trả trước.');
+   if(old.status==='LOST'||old.faultCode==='LOST')throw Error('Máy đang báo thất lạc.');
+   if((action==='STORE'&&state!=='IN_SERVICE')||(action==='DEPLOY'&&state!=='IN_STORE'))throw Error('Máy đã được điều chuyển bởi người khác.');
+   const evRef=db.collection(EVENTS).doc();
+   tx.set(evRef,eventData(action,{code,...old},old,user,'','',note,''));
+   tx.update(ref,{stockStatus:target,heldSince:null,version:old.version+1,lastEventId:evRef.id,updatedAt:fv()});
+  });
+  cancelStock();notify('✓ Firebase đã xác nhận '+(action==='STORE'?'cất kho ':'xuất kho ')+label(code)+'.');
+ }catch(e){notify('Chưa điều chuyển '+label(code)+': '+errText(e),true)}
+ finally{setBusy(false)}
+}
+
 function render(){
  if(!$('radioDeviceList'))return;
  const u=currentUser(),admin=canMonitor(u),administrator=isAdmin(u),held=heldBy(u.uid),
@@ -1053,13 +1133,15 @@ function render(){
  adminToggle.textContent=allDevices?'Ẩn danh mục đầy đủ':'Xem toàn bộ máy';
  adminToggle.setAttribute('aria-pressed',String(allDevices));
  const adminDisclosure=$('radioAdminDisclosure');if(adminDisclosure)adminDisclosure.hidden=!admin;
+ const stockButton=$('radioStockTabButton');if(stockButton)stockButton.hidden=!admin;
+ renderStock();
  const title=$('radioDevicesTitle');
  title.textContent=active?'Những máy chưa trả · '+liveHolds.length+' máy':allDevices?'Danh mục quản lý · '+devices.length+' máy':
   held.length?'Máy tôi đang sử dụng · '+held.length+' máy':
   'Máy còn trống · '+free.length+' máy';
  $('radioStats').innerHTML=
   '<div><strong>'+free.length+'</strong><small>Máy còn trống</small></div>'+
-  '<div><strong>'+held.length+'</strong><small>Tôi đang giữ</small></div>';
+  '<div><strong>'+held.length+'</strong><small>Tôi đang giữ</small></div>'+(admin?'<div><strong>'+devices.filter(d=>stockState(d)==='IN_STORE').length+'</strong><small>Trong kho</small></div>':'');
  renderAdminOverview();renderRosterAlert();renderOverdueAlert();
  const list=$('radioDeviceList');
  list.classList.toggle('radioManageAll',!!(allDevices||active));
@@ -1076,7 +1158,7 @@ function render(){
    const nowMs=Date.now(),heldAtMs=radioHeldSince(d)?.toMillis?.()||0;
    const {dueMs=0}=liveHolds.find(x=>x.deviceCode===d.code)||{};
    const overText=active&&heldAtMs?(dueMs&&nowMs>=dueMs?' · <strong class="radioOverdue">QUÁ CA '+esc(radioDelayText(nowMs-dueMs))+'</strong>':' · Đang trong ca')+( ' · Nhận: '+esc(fmt(new Date(heldAtMs)))):'';
-   const status=(d.status==='OUT'?'Đang giữ: '+esc(d.holderName||d.holderUid?.slice(0,8)||'—')+(d.shift==='PM'?' · Ca tối':d.shift==='AM'?' · Ca sáng':' · Chưa xác nhận ca')+overText:'')+
+   const status=(stockState(d)==='IN_STORE'?'📦 TRONG KHO · Không cho ký nhận':'Đã xuất kho')+' · '+(d.status==='OUT'?'Đang giữ: '+esc(d.holderName||d.holderUid?.slice(0,8)||'—')+(d.shift==='PM'?' · Ca tối':d.shift==='AM'?' · Ca sáng':' · Chưa xác nhận ca')+overText:'')+
     (d.faultCode?' · Lỗi ghi nhận: '+esc(REASON_TEXT[d.faultCode]||d.faultCode):'')+
     (d.faultDetail?' · '+esc(d.faultDetail):'');
    return '<article class="radioDevice'+(mine?' radioDeviceMine':'')+'"><div><strong>'+
