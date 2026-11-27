@@ -1620,6 +1620,26 @@ if (typeof define === 'function' && define.amd) {
 <script src="./app/generated/core-performance.js?v=V1.9-20261127-ACCOUNT-INITIAL-PASSWORD-01" data-phase="performance"></script>
 <script src="./app/modules/firebase-read-coalescer.v1.js?v=V1.9-20261127-ACCOUNT-INITIAL-PASSWORD-01"></script>
 <script src="./app/modules/daily-roster.v502.js?v=V1.9-20261127-ACCOUNT-INITIAL-PASSWORD-01" id="dailyRosterCleanV11102"></script>
+<script id="sags-admin-423-lazy-loader">
+(function(root){
+"use strict";
+var pending=null;
+root.sagsAdmin423Open=async function(){
+ try{
+  if(root.SAGSAdmin423Replacement)return await root.SAGSAdmin423Replacement.open();
+  if(!pending)pending=new Promise(function(resolve,reject){
+   var el=document.createElement("script");
+   el.src="./app/modules/admin-423-replacement.v1.js?v=V1.10-20261127-ADMIN-423-REPLACEMENT-01";
+   el.async=true;
+   el.onload=function(){root.SAGSAdmin423Replacement?resolve(root.SAGSAdmin423Replacement):reject(Error("Không khởi tạo được chức năng 42.3."))};
+   el.onerror=function(){reject(Error("Không tải được chức năng 42.3. Hãy cập nhật trang và thử lại."))};
+   document.head.appendChild(el);
+  }).catch(function(e){pending=null;throw e});
+  await(await pending).open();
+ }catch(e){alert("Không mở được chức năng ADMIN 42.3: "+String(e?.message||e))}
+};
+})(window);
+</script>
 <!-- Named-person handover remains removed; self-accept only restores the supported self/roster workflow. -->
 <script id="v644SafeStorageCleanup" src="./app/boot/26-v644SafeStorageCleanup.js?v=V1.9-20261127-ACCOUNT-INITIAL-PASSWORD-01"></script>
 <script src="./app/generated/runtime-1.js?v=V1.9-20261127-ACCOUNT-INITIAL-PASSWORD-01"></script>
