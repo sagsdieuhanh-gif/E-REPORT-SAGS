@@ -402,3 +402,43 @@
  .radioLiveTop button{width:100%}
  .radioStaffReport{padding:10px}
 }
+
+/* Radio stock location management; scoped to the radio panel on all devices. */
+.sagsRadioPanel .radioStockTab{color:#f0f8fc}
+.sagsRadioPanel .radioStockHeading{padding:13px 15px;background:#0e2b41;border:1px solid #426c82;border-radius:13px}
+.sagsRadioPanel .radioStockHeading h3{margin:0 0 5px;font-size:19px;color:#e9fbff}
+.sagsRadioPanel .radioStockHeading p{margin:0;font-size:12px;line-height:1.5;color:#bcd7e5}
+.sagsRadioPanel .radioStockStats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:12px 0}
+.sagsRadioPanel .radioStockStats>div{min-width:0;padding:12px;background:#102d43;border:1px solid #456e82;border-radius:12px}
+.sagsRadioPanel .radioStockStats strong{font-size:25px;color:#e6fcfc;display:block;font-variant-numeric:tabular-nums}
+.sagsRadioPanel .radioStockStats small{color:#bdd5e2;font-size:11px}
+.sagsRadioPanel .radioStockFilters{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}
+.sagsRadioPanel .radioStockFilters label,.sagsRadioPanel .radioStockAction label{display:grid;gap:6px;color:#d8f0fa;font-size:12px;font-weight:750}
+.sagsRadioPanel .radioStockFilters :is(input,select),.sagsRadioPanel .radioStockAction textarea{
+ min-width:0;width:100%;min-height:43px;background:#102c41;color:#f5fbff;border:1px solid #628296;
+ border-radius:10px;padding:10px;font-size:15px;box-sizing:border-box;
+}
+.sagsRadioPanel .radioStockList{display:grid;gap:9px}
+.sagsRadioPanel .radioStockCard{border:1px solid #456b80;background:#0b2538;border-radius:11px;padding:13px;display:flex;gap:12px;justify-content:space-between;align-items:center}
+.sagsRadioPanel .radioStockCard>div{min-width:0;display:flex;flex-wrap:wrap;gap:7px;align-items:center}
+.sagsRadioPanel .radioStockCard strong{color:#f0fcff;font-size:16px}
+.sagsRadioPanel .radioStockCard small{display:block;flex-basis:100%;color:#bbd4e1;font-size:11px;overflow-wrap:anywhere}
+.sagsRadioPanel .radioStockChip{font-size:10px;font-weight:800;border-radius:999px;padding:4px 7px}
+.sagsRadioPanel .radioStockChip.inStore{background:#6a4e22;color:#fff1cb;border:1px solid #b9964a}
+.sagsRadioPanel .radioStockChip.inService{background:#104f3c;color:#d9ffe8;border:1px solid #369a72}
+.sagsRadioPanel .radioStockCard button,.sagsRadioPanel .radioStockActions button{min-height:41px;border-radius:9px;border:1px solid #70a9bb;background:#123c55;color:#e6faff;font-weight:800;font-size:12px;padding:9px 12px;cursor:pointer}
+.sagsRadioPanel .radioStockCard button:disabled{opacity:.45;cursor:not-allowed}
+.sagsRadioPanel .radioStockAction{margin:16px 0;padding:14px;border:1px solid #d0aa70;border-radius:12px;background:#162e44}
+.sagsRadioPanel .radioStockAction h4{font-size:17px;color:#ffdfae;margin:0 0 7px}
+.sagsRadioPanel .radioStockAction p{color:#d3e7f0;font-size:12px;margin:0 0 12px}
+.sagsRadioPanel .radioStockActions{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:8px;margin-top:11px}
+.sagsRadioPanel .radioStockActions .radioPrimary{border-color:#e0c08a;background:#ddb36e;color:#112537}
+@media(max-width:700px){
+ .sagsRadioPanel .radioStockStats{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .sagsRadioPanel .radioStockFilters{grid-template-columns:minmax(0,1fr)}
+ .sagsRadioPanel .radioStockCard{flex-direction:column;align-items:stretch}
+ .sagsRadioPanel .radioStockCard button{width:100%}
+ .sagsRadioPanel .radioStockActions{display:grid;grid-template-columns:1fr 1.4fr}
+ .sagsRadioPanel .radioTabs{flex-wrap:wrap}
+ .sagsRadioPanel .radioTabs button{flex:1 1 calc(50% - 8px)}
+}
