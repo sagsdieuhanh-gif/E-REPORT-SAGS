@@ -31,7 +31,7 @@ const V18_POSITION_CODES=Object.freeze({"Trưởng phòng":"TRUONG_PHONG","Phó 
  secApp=firebase.initializeApp(firebase.app().options,"sags-create-"+Date.now()+"-"+Math.random().toString(36).slice(2,7));
  secAuth=secApp.auth();
  try{await secAuth.setPersistence(firebase.auth.Auth.Persistence.NONE)}catch(_){}
- const initialPassword=v18SecureInitialPassword();
+ const initialPassword='123456';
  cred=await secAuth.createUserWithEmailAndPassword(email,initialPassword);
  const uid=String(cred?.user?.uid||"");if(!uid)throw new Error("Firebase không trả UID tài khoản mới.");
  const now=Date.now(),actor=currentActor();
