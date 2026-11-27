@@ -1,15 +1,16 @@
 'use strict';
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
-const src=fs.readFileSync('app/boot/06-legacy.js','utf8');
+const src=fs.readFileSync('app/modules/password-change-recovery.v110.js','utf8');
+const boot=fs.readFileSync('app/boot/06-legacy.js','utf8');
 const html=fs.readFileSync('index.html','utf8');
 const rules=fs.readFileSync('firebase/firestore.rules','utf8');
-const start=src.indexOf('async function sagsSavePasswordChangeConfirmation('),end=src.indexOf('function setAuditManagerStatus(',start);
-assert(start>0&&end>start,'Password module boundaries must exist');
-assert(src.includes('syncBtn.hidden=!forcePasswordChangeOpen'),'Recovery button must appear only on mandatory password change');
+assert(src.includes('root.SAGSPasswordChangeV110=Object.freeze'),'Password module must export a safe API');
+assert(boot.includes('function sagsPasswordFixReady()'),'Password module should load only when requested');
+assert(boot.includes('syncBtn.hidden=!forcePasswordChangeOpen'),'Recovery button must appear only on mandatory password change');
 assert(html.includes('id="ownConfirmChangedPassword"'),'Recovery button must exist in HTML');
 assert(rules.includes('(activeUser() || radioManager())\n          && request.auth.uid == uid'),'Manager may update only their own password confirmation');
 assert(rules.includes("request.resource.data.diff(resource.data).affectedKeys()\n               .hasOnly([\n                 'mustChangePassword',\n                 'passwordChangedAtMs'"),'Password update remains field-limited');
-const fragment=src.slice(start,end);
+const fragment=src;
 function scenario(){
  let password='123456',deny=false,changes=0,updates=0,authCalls=0;
  const inputs=Object.fromEntries(['ownCurrentPassword','ownNewPassword','ownConfirmPassword'].map(id=>[id,{value:''}]));
@@ -26,8 +27,11 @@ function scenario(){
   firebase:{auth:{EmailAuthProvider:{credential:(email,p)=>({email,password:p})}},
     firestore:()=>({collection:()=>({doc:()=>({async set(payload){updates++;if(deny)throw {code:'permission-denied'};assert.equal(payload.mustChangePassword,false)}})})})}
  };
+ ctx.window=ctx;
  vm.createContext(ctx);
- vm.runInContext(fragment+';this.change=changeOwnPassword;this.recover=confirmOwnChangedPassword;',ctx);
+ vm.runInContext(fragment,ctx);
+ ctx.change=ctx.SAGSPasswordChangeV110.change;
+ ctx.recover=ctx.SAGSPasswordChangeV110.confirm;
  return {ctx,inputs,statuses,get password(){return password},get changes(){return changes},get updates(){return updates},get authCalls(){return authCalls},setDeny:v=>{deny=v}};
 }
 (async()=>{
