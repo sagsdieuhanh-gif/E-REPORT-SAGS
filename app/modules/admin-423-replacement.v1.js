@@ -135,6 +135,7 @@ async function create(){
   if(manifest?.admin423Replacements?.[oldAid])throw Error("42.1 này đã được tạo 42.3 thay thế. Không thể tạo trùng.");
   const items=Object.values(manifest.items||{}).filter(x=>x&&x.active!==false);
   if(items.some(x=>is423(x)&&sameFlight(x,old)))throw Error("Chuyến đã có biểu mẫu 42.3 hoạt động. Không tạo trùng.");
+  if(items.some(x=>U(x.formGroup)==="FSAGS551"&&sameFlight(x,old)))throw Error("Chuyến vẫn có biểu mẫu 55.1 đang hoạt động. Không thể đồng thời tạo 42.3 để tránh trùng công việc. ADMIN cần kiểm tra/xử lý 55.1 trước; dữ liệu 55.1 không bị thay đổi.");
   if(items.some(x=>is421(x)&&sameFlight(x,old)&&owner(x)===owner(old)&&S(x.assignmentId)!==oldAid))throw Error("A có nhiều phân công 42.1 trong cùng chuyến. Cần kiểm tra từng phần việc trước khi chuyển.");
   const fid=S(old.flightId);if(!fid)throw Error("42.1 thiếu flightId.");
   const flight=await read("flight_records/"+safe(date)+"/"+safe(fid));
@@ -150,10 +151,10 @@ async function create(){
   const patch=buildPatch(result,old,st,mail);
   status("Đang lưu phân công 42.3 và lưu lịch sử 42.1...");
   await db("").update(patch);
-  status("✓ Đã tạo 42.3 cho "+owner(old)+". 42.1 đã được lưu vào lịch sử.");
   try{root.dailyRosterRestartMailbox?.()}catch(_){}
   try{root.dailyRosterLoadAssignments?.()}catch(_){}
   await load();
+  status("✓ Đã tạo 42.3 cho "+owner(old)+". 42.1 và dữ liệu gốc đã được lưu vào lịch sử.");
  }catch(e){status("Không thể tạo 42.3: "+S(e?.message||e),true)}
  finally{busy=false;if(button)button.disabled=false}
 }
