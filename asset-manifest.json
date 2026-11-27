@@ -701,6 +701,10 @@
       "sha256": "05639d17b55774af6604c4875ece4961a206cad4a9c1e88f88b4f7cab525536c",
       "bytes": 26420
     },
+    "./assets/holiday/login-scene.webp": {
+      "sha256": "32a39a36d42da63386598a5b784042c6a450459fd46059b87bd098e44b11223d",
+      "bytes": 295966
+    },
     "./assets/holiday/mobile.webp": {
       "sha256": "d32d7e9a2c1897123f714abfb1c203bc16d9c4c21453713b1c2f574b8e6293bd",
       "bytes": 66212
@@ -826,8 +830,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "442109c6a1a06b528eb29696454ca88c655c78fa272a2e88e912d39e01335b5c",
-      "bytes": 139464
+      "sha256": "ac85ddfd2dd7392700691dcab68e771f0c1d39d96c0c7eb00f467c117d6ca1bc",
+      "bytes": 141141
     },
     "./manifest.webmanifest": {
       "sha256": "37bed2c9d467c863170a40049ca253d38862ef43a67b4d3d6a939d93302ba721",

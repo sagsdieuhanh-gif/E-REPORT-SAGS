@@ -1691,7 +1691,7 @@ html[data-sags-season] {--sags-gold:#efd09a;--sags-champagne:#caa265;--sags-gold
 html:not([data-sags-season]) :is(.sagsFestiveLoginGreet,.sagsFestiveHomeBanner,.sagsFestiveTree){display:none!important}
 html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #roleLoginModal{
   --season-art:url('./assets/holiday/apron.webp');
-  background:linear-gradient(90deg,transparent 50%,#122239 56%,transparent 65%),var(--season-art) right center/46% 100% no-repeat,linear-gradient(100deg,#0c192ce6,#192d46a8),url('./assets/branding/apron-night-v6494.webp') left center/cover no-repeat!important;
+  background:linear-gradient(110deg,#112038dd,#16274199),url('./assets/branding/apron-night-v6494.webp') center/cover no-repeat!important;
   isolation:isolate;overflow-x:hidden!important;color:#f6f6fa!important;
 }
 html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #roleLoginModal::before{
@@ -1713,7 +1713,7 @@ html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #roleLoginModal .opsRe
 html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #roleLoginModal .roleLoginCard{
   width:min(100%,438px)!important;max-width:438px!important;min-width:0!important;
   border:1px solid rgba(236,197,128,.58)!important;border-radius:26px!important;
-  background:linear-gradient(145deg,rgba(74,84,107,.85),rgba(19,36,61,.90) 55%,rgba(57,64,83,.87))!important;
+  background:linear-gradient(140deg,#616778ef,#24334bea 30%,#14223bf5 62%,#515263ef)!important;
   color:#fff7e8!important;padding:30px 31px!important;margin:0!important;
   box-shadow:0 25px 65px rgba(0,5,18,.68),inset 0 1px 0 rgba(255,245,220,.12),0 0 36px rgba(229,170,85,.10)!important;
   backdrop-filter:none!important;-webkit-backdrop-filter:none!important;position:relative;z-index:3;
@@ -1896,7 +1896,11 @@ html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #fwcModal.show :is(.fw
 }
 @media(min-width:768px){
  html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #roleLoginModal{justify-content:flex-start!important;padding:70px clamp(26px,10vw,175px)!important}
- html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #roleLoginModal .roleLoginCard{translate:min(0px,calc(465px - 81vw)) 0}
+ html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #roleLoginModal .roleLoginCard{width:40.6vw!important;max-width:650px!important;translate:-38.3vw 0;padding:clamp(22px,3.5vh,42px) clamp(24px,3.6vw,60px)!important}
+ html.new-ui-v1[data-sags-season=christmas] #roleLoginModal .seasonScenery{display:block;position:absolute;inset:0;pointer-events:none;background:url('./assets/holiday/login-scene.webp') center/100% 100% no-repeat;clip-path:polygon(0 0,100% 0,100% 100%,0 100%,0 0,8% 3%,8% 11%,49% 11%,49% 3%,8% 3%,0 0,15% 15%,15% 83.6%,56.3% 83.6%,56.3% 15%,15% 15%,0 0)}
+ html.new-ui-v1[data-sags-season=christmas] body #roleLoginModal::before{visibility:hidden}
+ html[data-sags-season] .sagsFestiveLoginGreet{left:8.5%;top:3.5%}
+
  html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #v6494AviationHome .v6494Side{width:255px!important;flex-basis:255px!important}
  html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #v6494AviationHome .v6494Brand{display:flex!important}
 }
@@ -1979,8 +1983,20 @@ html.new-ui-v1[data-sags-season=newyear] body #roleLoginModal{--season-art:url('
 html[data-sags-season=christmas] #v6494AviationHome .sagsFestiveHomeBanner--mobile{background:url('./assets/holiday/banner.webp') center/cover no-repeat!important;aspect-ratio:549/167}
 html[data-sags-season=christmas] #v6494AviationHome .sagsFestiveHomeBanner--mobile>*{visibility:hidden}
 html[data-sags-season] .sagsFestiveHomeBanner{font:italic 500 clamp(15px,1.8vw,26px)/1.3 Georgia,serif}
+.seasonScenery{display:none}
+@media(min-width:768px){html.new-ui-v1[data-sags-season=newyear] body #roleLoginModal{background:linear-gradient(90deg,#121e34e6,transparent),url('./assets/holiday/apron-detail.webp') center/cover no-repeat!important}}
+html[data-sags-season] #roleLoginModal .seasonHeading{letter-spacing:-.035em;margin:4px 0 10px}
+html[data-sags-season] #roleLoginModal .roleLoginCard h2{font-size:18px!important;color:#e9d7b5!important;letter-spacing:.08em!important}
+
+html[data-sags-season] .seasonHeading::before{content:"✈";display:block;color:#f5d99e;font:32px/1.15 Georgia,serif;margin-bottom:8px}
 html[data-sags-season] .seasonHeading{font:800 clamp(25px,3vw,44px)/1.12 system-ui;text-align:center;color:#fff4dd}
 html:not([data-sags-season]) .seasonHeading{display:none}
+}
+@media screen and (max-width:767px){
+ html.new-ui-v1[data-sags-season] body #roleLoginModal .seasonHeading::before{display:none}
+ html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #roleLoginModal .roleLoginLogo{width:65px!important;padding:3px!important;margin-bottom:0!important}
+ html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #roleLoginModal .roleLoginLogo img{max-height:32px!important}
+ html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #roleLoginModal .seasonHeading{font-size:28px;margin:2px 0 4px}
 }
 @media print{.seasonHeading{display:none}.sagsFestiveLoginGreet,.sagsFestiveHomeBanner,.sagsFestiveToggle,.sagsFestiveTree{display:none!important}}
 </style>
@@ -2052,6 +2068,7 @@ function ensure(){
   var label=make('div','');label.appendChild(make('b','','SAGS – CXR'));label.appendChild(make('small','','SAI GON CAM RANH GROUND SERVICES'));
   brand.appendChild(logo);brand.appendChild(label);
   g.appendChild(brand);
+  login.appendChild(make('div','seasonScenery'));
   login.appendChild(g);
  }
  if(card&&!card.querySelector('.seasonHeading'))card.insertBefore(make('div','seasonHeading','E-REPORT SAGS'),card.querySelector('h2'));
