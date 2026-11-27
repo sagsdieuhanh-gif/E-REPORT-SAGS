@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V1.5",
-  "build": "V1.5-20261127-CHRISTMAS-REFERENCE-01",
+  "version": "V1.6",
+  "build": "V1.6-20261127-WINTER-APRON-01",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -686,8 +686,8 @@
       "bytes": 249729
     },
     "./assets/branding/logo.png": {
-      "sha256": "15f7035ba48363ef36ac7a5794427e6107c48f1353a1d2e6ae263148ed660950",
-      "bytes": 46976
+      "sha256": "2ed2e7742b009748a595effd05a67b8c26970ac65ca616590bf32920c0cbb962",
+      "bytes": 21725
     },
     "./assets/holiday/apron-detail.webp": {
       "sha256": "be428ca692f910f641f81788fe21d3e557a1059a3b6e97e8c8f19f34839db981",
@@ -709,25 +709,29 @@
       "sha256": "d32d7e9a2c1897123f714abfb1c203bc16d9c4c21453713b1c2f574b8e6293bd",
       "bytes": 66212
     },
+    "./assets/holiday/winter-apron.webp": {
+      "sha256": "67fd70735183e63491745cc627b1a2e1d2ce7cadd1de7bcf5100023afff60be0",
+      "bytes": 268144
+    },
     "./assets/icons/apple-touch-icon.png": {
-      "sha256": "a190c19f9a52a40f43379917b11f84f99a2ab2fb4a3cdaedd1dad936a67c8e78",
-      "bytes": 17275
+      "sha256": "d4be0ee5d9c1087e586859a0a74ba3778f7b42ea6e03379a3244642cd6a2ec66",
+      "bytes": 23964
     },
     "./assets/icons/favicon-16.png": {
-      "sha256": "bb74deb45be89aca360f6b6f9b7d6293c14b1d7efa5f1e4fe21f4804fb05ce58",
-      "bytes": 437
+      "sha256": "9b38207a23d3ea11c78073ac7118f8d6ed661dc16c69a21511f6c92404b7a75a",
+      "bytes": 510
     },
     "./assets/icons/favicon-32.png": {
-      "sha256": "1a1fd13fb978fc5422843286feeb16b821aa52f3eb15665bdc717b034b9fb613",
-      "bytes": 1151
+      "sha256": "8809319f4e6fd2dfc3522969d7c464092c1ebfbcc8a7c83351bd6eb90c268055",
+      "bytes": 1607
     },
     "./assets/icons/icon-192.png": {
-      "sha256": "6fe324b47572ae37d711aac8affc9d7e9bf60c36e2fb810f3e948497a2981ca3",
-      "bytes": 19146
+      "sha256": "093e8c33e476c3bbc905a1816fac118e8786bf9d78d9504c457b4297f9ade29d",
+      "bytes": 26057
     },
     "./assets/icons/icon-512.png": {
-      "sha256": "90aa4e4ece11944460015926ca2aaf4271b439c06d3f808aeaaa9ba7b71f33b7",
-      "bytes": 104295
+      "sha256": "664715978fb581cada7c08c6f5d12e45c7a6b63f783ddba40fdfff0722aef245",
+      "bytes": 123134
     },
     "./assets/mh/AS_RM_F27_Iss1Rev4_2026-04-30.pdf": {
       "sha256": "f7e5a31e9e78c523cfb28dc4824c95d1b49d4a79dd4681c8133bbf3cea396699",
@@ -830,8 +834,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "6dfe31ffa5d02d4d507b363f0a0f3b3fde2fa95fa62f5a7993e441e9c917ac42",
-      "bytes": 140621
+      "sha256": "7a0e0b8cbda74621db35a50f1cc9d78b6006a074423abcf24f17e331cfca0f01",
+      "bytes": 142242
     },
     "./manifest.webmanifest": {
       "sha256": "37bed2c9d467c863170a40049ca253d38862ef43a67b4d3d6a939d93302ba721",
@@ -882,16 +886,16 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "f1bfe5ccd9f156908ab91d86b67545a3764b761d259bc5a0101fd083cc9a9bfb",
-      "bytes": 22726
+      "sha256": "751757d18a580226bc55a3452d9d073da22f912196227429ce6ece7f79347cc4",
+      "bytes": 22705
     },
     "./storage-recovery.html": {
       "sha256": "08817204a946fbdfa404e8c083dd0c2016e935fb8fe56ff8ef99f405978d3df6",
       "bytes": 26106
     },
     "./version.json": {
-      "sha256": "5d1393a107d908b09bf4d2b93e1e5112fd7fb938f5df9a770cb670956bb56a1b",
-      "bytes": 694
+      "sha256": "2b6643f147ccd887e20c97902234db56009c4f64e26781840838d995b0c6e48b",
+      "bytes": 614
     }
   },
   "mutableAssets": [
