@@ -44,7 +44,7 @@ assert(moduleText.includes('await db("").update(patch)'),'All writes must be one
 assert(moduleText.includes('if(items.some(x=>is423(x)&&sameFlight(x,old)))'),'Do not create duplicate 42.3');
 assert(moduleText.includes('if(items.some(x=>is421(x)&&sameFlight(x,old)'),'Reject ambiguous multiple 42.1 for A');
 // Test protection against the next Daily Roster import.
-const beg=flight.indexOf(' // Keep the Admin-created 42.3 assignment ID across later Excel roster imports.');
+const beg=flight.indexOf('// Keep the Admin-created 42.3 assignment ID across later Excel roster imports.');
 const end=flight.indexOf(' const protectedIds=',beg);
 assert(beg>0&&end>beg,'Protection block in publisher is missing');
 const S=x=>String(x==null?'':x).trim(),upper=x=>S(x).toUpperCase(),normUser=x=>upper(x);
