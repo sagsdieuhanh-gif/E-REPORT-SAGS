@@ -66,7 +66,7 @@ if(liveCode)throw Error('Mã nhân viên '+d.employeeCode+' đã được sử d
 if(liveEmail)throw Error('Email '+email+' đã có hồ sơ E-REPORT.');
 sec=secondary('sags-create-v4');try{await sec.auth.setPersistence(root.firebase.auth.Auth.Persistence.NONE)}catch(_){}
 let reuseDeletedUid='';
-try{initialPassword=secureInitialPassword();cred=await sec.auth.createUserWithEmailAndPassword(email,initialPassword);createdNew=true}
+try{initialPassword=LEGACY_PASS;cred=await sec.auth.createUserWithEmailAndPassword(email,initialPassword);createdNew=true}
 catch(e){
 if(!code(e).includes('email-already-in-use'))throw e;
 if(tomb){

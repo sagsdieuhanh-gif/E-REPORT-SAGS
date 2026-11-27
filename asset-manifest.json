@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V1.8",
-  "build": "V1.8-20261127-RADIO-MANAGER-ACCOUNT-01",
+  "version": "V1.9",
+  "build": "V1.9-20261127-ACCOUNT-INITIAL-PASSWORD-01",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -54,8 +54,8 @@
       "bytes": 13565
     },
     "./app/boot/14-v18CanonicalAccountHierarchy.js": {
-      "sha256": "cff51cdfba4463756c61a6ecf447ba6e544e0d08153ae7e4aff4cd098ea1e7a3",
-      "bytes": 23817
+      "sha256": "3c5428611a26c30f205ce32387445ec106abfc915e2dcf52b35a08744debd122",
+      "bytes": 23799
     },
     "./app/boot/15-v116-account-name-search.js": {
       "sha256": "5eb9396b3634fd49e8c49e33a58d72093bcb96990d15e0adca0cd8d1ddfcffb7",
@@ -170,8 +170,8 @@
       "bytes": 27738
     },
     "./app/modules/admin-account-actions.v2.js": {
-      "sha256": "fa47ea710914250177e741601b42a87c79e485524ad18a016ffd2f2d3799f9a5",
-      "bytes": 16853
+      "sha256": "d9ffe9b60d0e10a8e30b039150b7040b44084ec3e713f8ed0ecc5fdc5ef94537",
+      "bytes": 16841
     },
     "./app/modules/admin-all-form-viewer.v1.js": {
       "sha256": "3c9f8e889b99cbc261d58acd62e10a57d3270ea8e7e92a8e8a3e140517e17365",
@@ -834,8 +834,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "503f62a6466831c2cc84452fdbe6490ba5ad757a0ea7ec37733232955f44fa8b",
-      "bytes": 143154
+      "sha256": "ea46d2db1f6d45620eae101dc2dbfa725efff15aac30ed1500453b16a3b71360",
+      "bytes": 143356
     },
     "./manifest.webmanifest": {
       "sha256": "37bed2c9d467c863170a40049ca253d38862ef43a67b4d3d6a939d93302ba721",
@@ -886,16 +886,16 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "66d38dcf738f7898277671668d7e1a0d74a4cffcce8632ae313aafdea833560f",
-      "bytes": 22732
+      "sha256": "272514da6ac26bd114bc3c5a870f120a5b854476f3c08b92ff7cf1efb67d8842",
+      "bytes": 22741
     },
     "./storage-recovery.html": {
       "sha256": "08817204a946fbdfa404e8c083dd0c2016e935fb8fe56ff8ef99f405978d3df6",
       "bytes": 26106
     },
     "./version.json": {
-      "sha256": "6a222b14a0ccce83e95f175826effad5dd259f86dec2b69dc38d647cfe35a1a3",
-      "bytes": 1045
+      "sha256": "bbaad2f5cc61b8a449ba9a8434b8d496f8a7c94c3cc78ab9b3f3c7d857df0f26",
+      "bytes": 1039
     }
   },
   "mutableAssets": [

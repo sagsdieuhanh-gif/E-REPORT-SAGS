@@ -16,6 +16,9 @@ assert(account.includes("if(!isAdmin())return alert('Chỉ AD được tạo tà
 assert(rules.includes("data.role == 'RADIO_MANAGER'"),'Firebase must validate radio manager role');
 assert(rules.includes("data.role != 'RADIO_MANAGER'"),'Manager must not inherit flight workspace permissions');
 assert(rules.includes("function radioMonitor()"),'Radio monitor authorization must exist');
-assert(!html.includes('value="123456" readonly aria-label="Mật khẩu mặc định 123456"'),'UI must not falsely claim the temporary password is 123456');
-assert(html.includes('Mật khẩu ngẫu nhiên được cấp sau khi tạo'),'Account UI must explain how to retrieve temporary password');
+assert(html.includes('value="123456" readonly aria-label="Mật khẩu khởi tạo 123456'),'UI must display the initial password used in the Firebase create flow');
+assert(account.includes("initialPassword=LEGACY_PASS;cred=await sec.auth.createUserWithEmailAndPassword(email,initialPassword)"),'Account creation must use confirmed initial password');
+assert(account.includes('mustChangePassword:reuseDeletedUid?!!tombData?.mustChangePassword:true'),'New account requires password change');
+assert(account.includes('const password=secureInitialPassword();'),'Password resets remain random');
+assert(html.includes('bắt buộc đổi khi đăng nhập lần đầu'),'UI must warn that the initial password must be changed');
 console.log('RADIO_MANAGER account creation, Firebase login and isolation, password UI PASS');
