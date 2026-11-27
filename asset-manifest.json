@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V1.8",
-  "build": "V1.8-20261127-RADIO-MANAGER-ACCOUNT-01",
+  "version": "V1.9",
+  "build": "V1.9-20261127-ACCOUNT-INITIAL-PASSWORD-01",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
