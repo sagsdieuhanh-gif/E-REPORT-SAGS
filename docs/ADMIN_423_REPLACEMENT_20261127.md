@@ -12,7 +12,7 @@
 - Lần import Roster sau ưu tiên ID 42.3 do AD tạo, giữ phiên đã nhập và **không xóa lịch sử 42.1**. Nếu roster mới đổi người/phần việc làm mất tính duy nhất, ngừng publish và yêu cầu AD kiểm tra, không tự ghi đè.
 
 ## Giới hạn
-- Không thay thế 55.1; nếu chuyến có 55.1 độc lập, AD phải kiểm tra lại phạm vi công việc trước khi sử dụng 42.3.
+- Không thay thế 55.1. Nếu chuyến có 55.1 đang hoạt động, thao tác tạo 42.3 **bị chặn** để tránh trùng nghiệp vụ. AD cần xử lý phân công 55.1 trước; hồ sơ cũ không bị tự thu hồi.
 - Nếu nhiều phần việc 42.1 cùng người trong một chuyến, chức năng từ chối để tránh mất bất kỳ phần việc nào.
 - Không mở quyền CBTT/FINAL, không sửa bảng tải, không di chuyển chữ ký từ 42.1 sang 42.3.
 - Do việc ghi roster nằm trong RTDB, ứng dụng dựa trên cùng rào quyền RTDB hiện có như thao tác ADMIN Daily Roster; cần kiểm chứng quyền trên môi trường production bằng một chuyến thử.

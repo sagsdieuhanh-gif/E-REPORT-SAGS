@@ -42,6 +42,7 @@ assert(moduleText.includes('root.firebase?.auth?.().currentUser'),'Require curre
 assert(moduleText.includes('admin423Replacements?.[oldAid]'),'Must check duplicate replacement');
 assert(moduleText.includes('await db("").update(patch)'),'All writes must be one atomic RTDB multi-location update');
 assert(moduleText.includes('if(items.some(x=>is423(x)&&sameFlight(x,old)))'),'Do not create duplicate 42.3');
+assert(moduleText.includes('Chuyến vẫn có biểu mẫu 55.1 đang hoạt động'),'Do not overlap active 55.1 with replacement 42.3');
 assert(moduleText.includes('if(items.some(x=>is421(x)&&sameFlight(x,old)'),'Reject ambiguous multiple 42.1 for A');
 // Test protection against the next Daily Roster import.
 const beg=flight.indexOf('// Keep the Admin-created 42.3 assignment ID across later Excel roster imports.');
