@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V1.5",
-  "build": "V1.5-20261127-CHRISTMAS-REFERENCE-01",
+  "version": "V1.6",
+  "build": "V1.6-20261127-WINTER-APRON-01",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -709,6 +709,10 @@
       "sha256": "d32d7e9a2c1897123f714abfb1c203bc16d9c4c21453713b1c2f574b8e6293bd",
       "bytes": 66212
     },
+    "./assets/holiday/winter-apron.webp": {
+      "sha256": "67fd70735183e63491745cc627b1a2e1d2ce7cadd1de7bcf5100023afff60be0",
+      "bytes": 268144
+    },
     "./assets/icons/apple-touch-icon.png": {
       "sha256": "a190c19f9a52a40f43379917b11f84f99a2ab2fb4a3cdaedd1dad936a67c8e78",
       "bytes": 17275
@@ -830,8 +834,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "6dfe31ffa5d02d4d507b363f0a0f3b3fde2fa95fa62f5a7993e441e9c917ac42",
-      "bytes": 140621
+      "sha256": "90c61bf870f72f7337c767022d1dc4991829543c87e6a96d27ff268422494011",
+      "bytes": 142198
     },
     "./manifest.webmanifest": {
       "sha256": "37bed2c9d467c863170a40049ca253d38862ef43a67b4d3d6a939d93302ba721",
@@ -882,16 +886,16 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "f1bfe5ccd9f156908ab91d86b67545a3764b761d259bc5a0101fd083cc9a9bfb",
-      "bytes": 22726
+      "sha256": "751757d18a580226bc55a3452d9d073da22f912196227429ce6ece7f79347cc4",
+      "bytes": 22705
     },
     "./storage-recovery.html": {
       "sha256": "08817204a946fbdfa404e8c083dd0c2016e935fb8fe56ff8ef99f405978d3df6",
       "bytes": 26106
     },
     "./version.json": {
-      "sha256": "5d1393a107d908b09bf4d2b93e1e5112fd7fb938f5df9a770cb670956bb56a1b",
-      "bytes": 694
+      "sha256": "2b6643f147ccd887e20c97902234db56009c4f64e26781840838d995b0c6e48b",
+      "bytes": 614
     }
   },
   "mutableAssets": [
