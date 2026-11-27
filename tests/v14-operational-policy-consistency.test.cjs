@@ -7,7 +7,7 @@ const badge=read('app/modules/stability.v6-core.js');
 const primary=JSON.parse(read('form-configuration.json')),copy=JSON.parse(read('data/form-configuration.json'));
 assert.deepEqual(copy,primary,'Duplicate form configuration must be kept byte-equivalent semantically');
 assert.equal(primary.carriers.TW.label,'T’way Air');
-assert(login.includes('["AD","DH","CBTT","PVHK","KH","VIEWER"].includes(normalizeFirebaseOperationalRole(r))'),'PVHK login should match Firestore active-user policy');
+assert(login.includes('["AD","DH","CBTT","PVHK","KH","VIEWER","RADIO_MANAGER"].includes(normalizeFirebaseOperationalRole(r))'),'PVHK and RADIO_MANAGER login must be recognized; role isolation belongs to Firestore');
 assert(!roles.includes('Phòng Phục Vụ Hành Khách · TẠM ẨN'),'PVHK UI must not claim hidden after role is enabled');
 assert(perm.includes('Object.keys(SAGS_FEATURES_V485);'),'FSAGS09 must be a first-class key for AD and PVHK');
 assert(perm.includes('else if(r==="PVHK")on("FSAGS09","FINAL")'),'PVHK should retain FSAGS09 and FINAL workflow permission');
