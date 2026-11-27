@@ -1,13 +1,13 @@
 {
-  "version": "V1.3",
-  "displayVersion": "V1.3",
-  "label": "V1.3 - SAGS-CXR PREMIUM HOLIDAY UI",
-  "build": "V1.3-20261127-PREMIUM-CHRISTMAS-UNIFIED-01",
+  "version": "V1.4",
+  "displayVersion": "V1.4",
+  "label": "V1.4 - CHRISTMAS & NEW YEAR PREMIUM",
+  "build": "V1.4-20261127-CHRISTMAS-NEWYEAR-PREMIUM-01",
   "releasedAt": "2026-11-27",
   "type": "holiday-unified-ui",
   "base": "Giữ nguyên toàn bộ dữ liệu và chức năng đã ổn định từ E-REPORT-SAGS V2.2; chỉ đặt lại dãy số phiên bản hiển thị",
   "updatePolicy": "required",
-  "notes": "Thay hoàn toàn lớp giao diện lễ hội V1.2 bằng một bộ giao diện thống nhất navy/champagne-gold cho đăng nhập và trang chủ PC/mobile, bảo toàn logo chuẩn SAGS-CXR, bố cục My Flight và chức năng nghiệp vụ. Xóa chồng lớp cũ, sửa thứ tự banner, đồng bộ nút bật/tắt riêng từng trình duyệt; giữ chế độ đổi Noel sang Năm mới rồi tự tắt ngày 04/01/2027.",
-  "message": "V1.3: Giao diện lễ hội SAGS–CXR đồng bộ; có nút về giao diện thường; cập nhật bắt buộc.",
-  "previousBuild": "V1.2-20261127-CHRISTMAS-NEWYEAR-01"
+  "notes": "Giao diện đăng nhập và trang chủ mùa lễ hội, lưu tùy chọn theo tài khoản trên thiết bị.",
+  "message": "V1.4 · Christmas & New Year Premium. Cập nhật bắt buộc.",
+  "previousBuild": "V1.3-20261127-PREMIUM-CHRISTMAS-UNIFIED-01"
 }

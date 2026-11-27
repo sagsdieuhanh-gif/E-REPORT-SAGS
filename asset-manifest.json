@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V1.3",
-  "build": "V1.3-20261127-PREMIUM-CHRISTMAS-UNIFIED-01",
+  "version": "V1.4",
+  "build": "V1.4-20261127-CHRISTMAS-NEWYEAR-PREMIUM-01",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -689,6 +689,22 @@
       "sha256": "15f7035ba48363ef36ac7a5794427e6107c48f1353a1d2e6ae263148ed660950",
       "bytes": 46976
     },
+    "./assets/holiday/apron-detail.webp": {
+      "sha256": "be428ca692f910f641f81788fe21d3e557a1059a3b6e97e8c8f19f34839db981",
+      "bytes": 52958
+    },
+    "./assets/holiday/apron.webp": {
+      "sha256": "ff3d3619ccf87b901b82ae7d46db64275eafba1c98ee8b956d07dbe459071b90",
+      "bytes": 85026
+    },
+    "./assets/holiday/banner.webp": {
+      "sha256": "05639d17b55774af6604c4875ece4961a206cad4a9c1e88f88b4f7cab525536c",
+      "bytes": 26420
+    },
+    "./assets/holiday/mobile.webp": {
+      "sha256": "d32d7e9a2c1897123f714abfb1c203bc16d9c4c21453713b1c2f574b8e6293bd",
+      "bytes": 66212
+    },
     "./assets/icons/apple-touch-icon.png": {
       "sha256": "a190c19f9a52a40f43379917b11f84f99a2ab2fb4a3cdaedd1dad936a67c8e78",
       "bytes": 17275
@@ -810,8 +826,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "1a92a72e0623a644f885f6cac99721c5f8ad666ac355e58614685170891ed42d",
-      "bytes": 139566
+      "sha256": "442109c6a1a06b528eb29696454ca88c655c78fa272a2e88e912d39e01335b5c",
+      "bytes": 139464
     },
     "./manifest.webmanifest": {
       "sha256": "37bed2c9d467c863170a40049ca253d38862ef43a67b4d3d6a939d93302ba721",
@@ -862,7 +878,7 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "e61ec0a58783005fcd644ecef73b3282a4f5579bfceb5499d00be302043b4af6",
+      "sha256": "5d394fa57e0a8cdba3384225eb746cefacbacad282462349397d5035535da917",
       "bytes": 22744
     },
     "./storage-recovery.html": {
@@ -870,8 +886,8 @@
       "bytes": 26106
     },
     "./version.json": {
-      "sha256": "10b44f5918fa686f8e94006006bd16a646efc9b977df6f58cab96be1d0918be2",
-      "bytes": 1059
+      "sha256": "b0e62ed68e527e7d5321fc0d0f022c1df17315c0fc7103b8440d5c89233c0bf3",
+      "bytes": 690
     }
   },
   "mutableAssets": [
