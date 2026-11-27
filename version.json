@@ -1,13 +1,13 @@
 {
-  "version": "V1.4",
-  "displayVersion": "V1.4",
-  "label": "V1.4 - CHRISTMAS & NEW YEAR PREMIUM",
-  "build": "V1.4-20261127-CHRISTMAS-NEWYEAR-PREMIUM-01",
+  "version": "V1.5",
+  "displayVersion": "V1.5",
+  "label": "V1.5 - CHRISTMAS & NEW YEAR PREMIUM",
+  "build": "V1.5-20261127-CHRISTMAS-REFERENCE-01",
   "releasedAt": "2026-11-27",
   "type": "holiday-unified-ui",
   "base": "Giữ nguyên toàn bộ dữ liệu và chức năng đã ổn định từ E-REPORT-SAGS V2.2; chỉ đặt lại dãy số phiên bản hiển thị",
   "updatePolicy": "required",
-  "notes": "Giao diện đăng nhập và trang chủ mùa lễ hội, lưu tùy chọn theo tài khoản trên thiết bị.",
-  "message": "V1.4 · Christmas & New Year Premium. Cập nhật bắt buộc.",
-  "previousBuild": "V1.3-20261127-PREMIUM-CHRISTMAS-UNIFIED-01"
+  "notes": "Điều chỉnh bố cục đăng nhập theo mẫu đã duyệt. Ẩn logo ở màn hình đăng nhập lễ hội trên mobile.",
+  "message": "V1.5 · Cập nhật giao diện đăng nhập lễ hội.",
+  "previousBuild": "V1.4-20261127-CHRISTMAS-NEWYEAR-PREMIUM-01"
 }
