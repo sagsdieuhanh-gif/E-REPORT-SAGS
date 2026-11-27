@@ -1290,22 +1290,26 @@ service cloud.firestore {
           && next.shift == (old.status == 'OUT' ? old.shift : '')
           && next.faultCode == '' && next.faultDetail == ''
           && next.battery == old.battery
-          && (old.status != 'OUT' || next.get('heldSince', null) == oldHeldSince))
-        // Stock is a separate location from operational and defect status.
-        || (action in ['STORE','DEPLOY'] && radioMonitor()
-          && old.status in ['READY','FAULT','CHARGING']
-          && old.holderUid == '' && old.holderName == '' && old.faultCode != 'LOST'
-          && next.status == old.status && next.holderUid == old.holderUid
-          && next.holderName == old.holderName && next.shift == old.shift
-          && next.faultCode == old.faultCode && next.faultDetail == old.faultDetail
-          && next.battery == old.battery && next.get('heldSince',null) == null
-          && e.personUid == '' && e.personName == '' && e.shift == ''
-          && e.reasonCode == '' && e.signature == ''
-          && (action == 'STORE'
-            ? old.get('stockStatus','IN_SERVICE') == 'IN_SERVICE'
-              && next.get('stockStatus','IN_SERVICE') == 'IN_STORE'
-            : old.get('stockStatus','IN_SERVICE') == 'IN_STORE'
-              && next.get('stockStatus','IN_SERVICE') == 'IN_SERVICE'));
+          && (old.status != 'OUT' || next.get('heldSince', null) == oldHeldSince));
+    }
+    // Separate stock transitions from normal custody to avoid expensive rule evaluation.
+    function radioStockTransition(old, next, e) {
+      let a = e.action;
+      return a in ['STORE','DEPLOY']
+        && radioMonitor()
+        && old.status in ['READY','FAULT','CHARGING']
+        && old.holderUid == '' && old.holderName == '' && old.faultCode != 'LOST'
+        && next.status == old.status && next.holderUid == old.holderUid
+        && next.holderName == old.holderName && next.shift == old.shift
+        && next.faultCode == old.faultCode && next.faultDetail == old.faultDetail
+        && next.battery == old.battery && next.get('heldSince',null) == null
+        && e.personUid == '' && e.personName == '' && e.shift == ''
+        && e.reasonCode == '' && e.signature == ''
+        && (a == 'STORE'
+          ? old.get('stockStatus','IN_SERVICE') == 'IN_SERVICE'
+            && next.get('stockStatus','IN_SERVICE') == 'IN_STORE'
+          : old.get('stockStatus','IN_SERVICE') == 'IN_STORE'
+            && next.get('stockStatus','IN_SERVICE') == 'IN_SERVICE');
     }
     function radioDeviceUpdate(code) {
       let old = resource.data;
@@ -1319,9 +1323,10 @@ service cloud.firestore {
         && d.lastEventId != old.lastEventId
         && radioEventLink(code, d, old.status)
         && radioEventShape(e)
-        && (e.action in ['STORE','DEPLOY'] ||
-          d.get('stockStatus','IN_SERVICE') == old.get('stockStatus','IN_SERVICE'))
-        && radioTransition(old, d, e);
+        && (e.action in ['STORE','DEPLOY']
+          ? radioStockTransition(old, d, e)
+          : (d.get('stockStatus','IN_SERVICE') == old.get('stockStatus','IN_SERVICE')
+             && radioTransition(old, d, e)));
     }
     match /sags_radio_devices_v1/{code} {
       allow read: if radioMember();
