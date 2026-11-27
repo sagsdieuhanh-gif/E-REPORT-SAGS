@@ -1,13 +1,13 @@
 {
-  "version": "V1.6",
-  "displayVersion": "V1.6",
-  "label": "V1.6 - CHRISTMAS & NEW YEAR PREMIUM",
-  "build": "V1.6-20261127-WINTER-APRON-01",
+  "version": "V1.7",
+  "displayVersion": "V1.7",
+  "label": "V1.7 - QUẢN LÝ KHO BỘ ĐÀM",
+  "build": "V1.7-20261127-RADIO-STOCK-01",
   "releasedAt": "2026-11-27",
-  "type": "holiday-unified-ui",
+  "type": "radio-stock-management",
   "base": "Giữ nguyên toàn bộ dữ liệu và chức năng đã ổn định từ E-REPORT-SAGS V2.2; chỉ đặt lại dãy số phiên bản hiển thị",
   "updatePolicy": "required",
-  "notes": "Thay nền sân đỗ và điều chỉnh khung đăng nhập lễ hội.",
-  "message": "V1.6 · Cập nhật giao diện đăng nhập.",
-  "previousBuild": "V1.5-20261127-CHRISTMAS-REFERENCE-01"
+  "notes": "AD/RADIO_MANAGER quản lý cất kho và xuất kho bộ đàm có lịch sử Firebase; máy đang giữ/thất lạc không thể điều chuyển. Chỉ phát hành client sau khi Firestore Rules production đã cập nhật và kiểm tra thành công.",
+  "message": "V1.7: Quản lý xuất kho / cất kho bộ đàm.",
+  "previousBuild": "V1.6-20261127-WINTER-APRON-01"
 }

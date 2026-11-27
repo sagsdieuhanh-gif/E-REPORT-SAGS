@@ -5,7 +5,7 @@ const rules=fs.readFileSync('firebase/firestore.rules','utf8');
 const fragment=fs.readFileSync('firebase/radio-custody.rules.snippet','utf8').trimEnd();
 const gate=fs.readFileSync('app/modules/radio-work-gate.v1.js','utf8');
 assert(rules.includes(fragment),'Complete, current radio security snippet must be deployed together');
-assert(app.includes("const radioIssueable=d=>!!d&&['READY','CHARGING','FAULT'].includes(d.status)"),'Previously blocked faulted/charging radio must be receivable');
+assert(app.includes("stockState(d)==='IN_SERVICE'&&['READY','CHARGING','FAULT'].includes(d.status)"),'Faulted and charging radios remain receivable after explicit stock deployment');
 assert(app.includes("if(radioIssueable(d)&&!held.length)buttons.push(['ISSUE','Ký nhận máy'])"),'Filtered signing view retains issue action for unheld faulty/charging radios');
 assert(app.includes("const available=devices.filter(x=>radioIssueable(x)"),'Swap-in list must include defective but unheld devices');
 assert(app.includes("if(!radioIssueable(d))throw Error"),'Transaction should reject only held or actually lost devices');

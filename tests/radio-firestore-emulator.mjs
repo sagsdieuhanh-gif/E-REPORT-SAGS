@@ -21,7 +21,7 @@ const baseDevice=(code,eventId)=>({
 });
 const event=(uid,action,deviceCode,beforeStatus,afterStatus,version,extra={})=>({
  schemaVersion:1,action,deviceCode,actorUid:uid,actorName:names[uid],personUid:'',personName:'',
- shift:'AM',reasonCode:'',details:'',signature:action==='INIT'||action==='RELEASE'?'':sig,
+ shift:'AM',reasonCode:'',details:'',signature:['INIT','RELEASE','STORE','DEPLOY'].includes(action)?'':sig,
  beforeStatus,afterStatus,deviceVersion:version,relatedDeviceCode:'',swapId:'',at:serverTimestamp(),...extra
 });
 function actor(uid){return getDb(uid)}
@@ -298,6 +298,57 @@ async function main(){
  assert.equal(contenders.filter(result=>result.status==='fulfilled').length,1);
  assert.equal(contenders.find(result=>result.status==='rejected').reason.code,'permission-denied');
 
- console.log('Firebase emulator PASS: private signed custody, advisory faults and low battery, atomic swaps, real lost-device handling, full-colour photo, immutable audit');
+
+// AD/RADIO_MANAGER may move only unheld, non-lost stock. All moves are immutable.
+ console.log('[STOCK-PHASE] before positive #1: '+"await assertSucceeds(createRadio('admin','DH51'));");
+ await assertSucceeds(createRadio('admin','DH51'));
+ await assertFails(transition('alice','DH51','STORE',{stockStatus:'IN_STORE'},
+  {shift:'',reasonCode:'',details:'Nhân viên không được cất kho',personUid:'',personName:''}));
+ console.log('[STOCK-PHASE] before positive #2: '+"await assertSucceeds(transition('radioManager','DH51','STORE',{stockStatus:'IN_STORE'},");
+ await assertSucceeds(transition('radioManager','DH51','STORE',{stockStatus:'IN_STORE'},
+  {shift:'',reasonCode:'',details:'Dư máy, đưa vào kho dự phòng',personUid:'',personName:''}));
+ assert.equal((await getDoc(d('DH51'))).data().stockStatus,'IN_STORE');
+ await assertFails(transition('alice','DH51','ISSUE',{
+  status:'OUT',holderUid:'alice',holderName:names.alice,shift:'AM',faultCode:'',faultDetail:'',battery:'GOOD'
+ }));
+ await assertFails(transition('bob','DH51','DEPLOY',{stockStatus:'IN_SERVICE'},
+  {shift:'',reasonCode:'',details:'Nhân viên không được xuất kho',personUid:'',personName:''}));
+ await assertFails(transition('radioManager','DH51','DEPLOY',{
+  stockStatus:'IN_SERVICE',status:'OUT',holderUid:'radioManager',holderName:names.radioManager,shift:'AM'
+ },{shift:'',reasonCode:'',details:'Không thể vừa xuất kho vừa nhận máy',personUid:'',personName:''}));
+ console.log('[STOCK-PHASE] before positive #3: '+"await assertSucceeds(transition('admin','DH51','DEPLOY',{stockStatus:'IN_SERVICE'},");
+ await assertSucceeds(transition('admin','DH51','DEPLOY',{stockStatus:'IN_SERVICE'},
+  {shift:'',reasonCode:'',details:'Thiếu máy trực ca, xuất bổ sung',personUid:'',personName:''}));
+ console.log('[STOCK-PHASE] before positive #4: '+"await assertSucceeds(transition('alice','DH51','ISSUE',{");
+ await assertSucceeds(transition('alice','DH51','ISSUE',{
+  status:'OUT',holderUid:'alice',holderName:names.alice,shift:'AM',faultCode:'',faultDetail:'',battery:'GOOD'
+ }));
+ await assertFails(transition('radioManager','DH51','STORE',{stockStatus:'IN_STORE'},
+  {shift:'',reasonCode:'',details:'Không được cất máy đang có người giữ',personUid:'',personName:''}));
+ console.log('[STOCK-PHASE] before positive #5: '+"await assertSucceeds(transition('alice','DH51','RETURN',{");
+ await assertSucceeds(transition('alice','DH51','RETURN',{
+  status:'READY',holderUid:'',holderName:'',shift:'',faultCode:'',faultDetail:'',battery:'GOOD'
+ }));
+ console.log('[STOCK-PHASE] before positive #6: '+"await assertSucceeds(transition('radioManager','DH51','STORE',{stockStatus:'IN_STORE'},");
+ await assertSucceeds(transition('radioManager','DH51','STORE',{stockStatus:'IN_STORE'},
+  {shift:'',reasonCode:'',details:'Dư máy sau ca, nhập kho an toàn',personUid:'',personName:''}));
+ console.log('[STOCK-PHASE] before positive #7: '+"await assertSucceeds(createRadio('admin','DH52'));");
+ await assertSucceeds(createRadio('admin','DH52'));
+ console.log('[STOCK-PHASE] before positive #8: '+"await assertSucceeds(transition('alice','DH52','REPORT',{status:'READY',faultCode:'MIC',faultDe");
+ await assertSucceeds(transition('alice','DH52','REPORT',{status:'READY',faultCode:'MIC',faultDetail:'Micro rè trong ca',battery:'GOOD'},
+  {details:'Micro rè trong ca'}));
+ console.log('[STOCK-PHASE] before positive #9: '+"await assertSucceeds(transition('radioManager','DH52','STORE',{stockStatus:'IN_STORE'},");
+ await assertSucceeds(transition('radioManager','DH52','STORE',{stockStatus:'IN_STORE'},
+  {shift:'',reasonCode:'',details:'Dư máy có ghi lỗi, cất kho',personUid:'',personName:''}));
+ assert.equal((await getDoc(d('DH52'))).data().faultCode,'MIC');
+ console.log('[STOCK-PHASE] before positive #10: '+"await assertSucceeds(transition('radioManager','DH52','DEPLOY',{stockStatus:'IN_SERVICE'},");
+ await assertSucceeds(transition('radioManager','DH52','DEPLOY',{stockStatus:'IN_SERVICE'},
+  {shift:'',reasonCode:'',details:'Xuất máy ghi nhận lỗi để tiếp tục sử dụng',personUid:'',personName:''}));
+ assert.equal((await getDoc(d('DH52'))).data().faultCode,'MIC');
+ const stockEvents=await getDocs(query(collection(getDb('radioManager'),audit),where('action','==','STORE')));
+ assert(stockEvents.size>=1);
+ await assertFails(deleteDoc(stockEvents.docs[0].ref));
+
+ console.log('Firebase emulator PASS: signed custody, roles, stock moves, immutable audit');
 }
 try{await main()}finally{await env.cleanup()}
