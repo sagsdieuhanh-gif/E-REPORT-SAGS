@@ -349,7 +349,7 @@ service cloud.firestore {
 
       allow update: if isAdmin()
         || (
-          activeUser()
+          (activeUser() || radioManager())
           && request.auth.uid == uid
           && request.resource.data.diff(resource.data).affectedKeys()
                .hasOnly([
