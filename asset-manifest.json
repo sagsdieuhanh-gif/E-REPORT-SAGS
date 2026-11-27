@@ -689,6 +689,22 @@
       "sha256": "15f7035ba48363ef36ac7a5794427e6107c48f1353a1d2e6ae263148ed660950",
       "bytes": 46976
     },
+    "./assets/holiday/apron-detail.webp": {
+      "sha256": "be428ca692f910f641f81788fe21d3e557a1059a3b6e97e8c8f19f34839db981",
+      "bytes": 52958
+    },
+    "./assets/holiday/apron.webp": {
+      "sha256": "ff3d3619ccf87b901b82ae7d46db64275eafba1c98ee8b956d07dbe459071b90",
+      "bytes": 85026
+    },
+    "./assets/holiday/banner.webp": {
+      "sha256": "05639d17b55774af6604c4875ece4961a206cad4a9c1e88f88b4f7cab525536c",
+      "bytes": 26420
+    },
+    "./assets/holiday/mobile.webp": {
+      "sha256": "d32d7e9a2c1897123f714abfb1c203bc16d9c4c21453713b1c2f574b8e6293bd",
+      "bytes": 66212
+    },
     "./assets/icons/apple-touch-icon.png": {
       "sha256": "a190c19f9a52a40f43379917b11f84f99a2ab2fb4a3cdaedd1dad936a67c8e78",
       "bytes": 17275
@@ -810,8 +826,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "1a92a72e0623a644f885f6cac99721c5f8ad666ac355e58614685170891ed42d",
-      "bytes": 139566
+      "sha256": "8d9b20ce3de8b668e0a878c4394e4074a9752d7e7a44c9d6821bf6d2cefcc922",
+      "bytes": 139464
     },
     "./manifest.webmanifest": {
       "sha256": "37bed2c9d467c863170a40049ca253d38862ef43a67b4d3d6a939d93302ba721",

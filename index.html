@@ -1690,10 +1690,8 @@ async function sagsResetSignatureSample(){
 html[data-sags-season] {--sags-gold:#efd09a;--sags-champagne:#caa265;--sags-gold-line:rgba(231,191,121,.35);--sags-festive-panel:#0b1f36;--sags-festive-ink:#f6f8ff;}
 html:not([data-sags-season]) :is(.sagsFestiveLoginGreet,.sagsFestiveHomeBanner,.sagsFestiveTree){display:none!important}
 html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #roleLoginModal{
-  background:
-    radial-gradient(circle at 17% 12%,rgba(238,192,120,.16),transparent 33%),
-    linear-gradient(100deg,rgba(3,12,30,.88),rgba(5,20,38,.60) 48%,rgba(3,12,27,.88)),
-    url('./assets/branding/apron-night-v6494.webp') center center/cover no-repeat!important;
+  --season-art:url('./assets/holiday/apron.webp');
+  background:linear-gradient(90deg,transparent 50%,#122239 56%,transparent 65%),var(--season-art) right center/46% 100% no-repeat,linear-gradient(100deg,#0c192ce6,#192d46a8),url('./assets/branding/apron-night-v6494.webp') left center/cover no-repeat!important;
   isolation:isolate;overflow-x:hidden!important;color:#f6f6fa!important;
 }
 html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #roleLoginModal::before{
@@ -1714,8 +1712,8 @@ html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #roleLoginModal::after
 html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #roleLoginModal .opsReferenceBrand{display:none!important}
 html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #roleLoginModal .roleLoginCard{
   width:min(100%,438px)!important;max-width:438px!important;min-width:0!important;
-  border:1px solid rgba(236,197,128,.58)!important;border-radius:20px!important;
-  background:linear-gradient(145deg,rgba(10,28,51,.97),rgba(6,17,34,.96))!important;
+  border:1px solid rgba(236,197,128,.58)!important;border-radius:26px!important;
+  background:linear-gradient(145deg,rgba(74,84,107,.85),rgba(19,36,61,.90) 55%,rgba(57,64,83,.87))!important;
   color:#fff7e8!important;padding:30px 31px!important;margin:0!important;
   box-shadow:0 25px 65px rgba(0,5,18,.68),inset 0 1px 0 rgba(255,245,220,.12),0 0 36px rgba(229,170,85,.10)!important;
   backdrop-filter:none!important;-webkit-backdrop-filter:none!important;position:relative;z-index:3;
@@ -1736,7 +1734,7 @@ html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #roleLoginModal .roleL
 html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #roleLoginModal .roleLoginCard input{
   min-height:49px!important;height:49px!important;padding:0 13px!important;
   border:1px solid rgba(198,166,120,.38)!important;border-radius:11px!important;
-  background:#101f34!important;color:#fff!important;-webkit-text-fill-color:#fff!important;
+  background:#35425b!important;color:#fff!important;-webkit-text-fill-color:#fff!important;
   box-shadow:inset 0 1px 3px rgba(0,0,0,.16)!important;font-size:16px!important;
 }
 html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #roleLoginModal .roleLoginCard input::placeholder{color:#9caec2!important;-webkit-text-fill-color:#9caec2!important}
@@ -1752,23 +1750,10 @@ html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #roleLoginModal #roleL
 html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #roleLoginModal .opsLoginStrap{color:#c4a477!important;margin-top:15px!important}
 html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #roleLoginModal .roleLoginCard::after{color:#8f9caf!important;opacity:1!important}
 html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #roleLoginModal .roleLoginLogo{display:none!important}
-html[data-sags-season] .sagsFestiveLoginGreet{
-  position:absolute;z-index:2;left:clamp(30px,5vw,100px);top:23%;
-  width:min(42vw,570px);padding:20px 24px 20px 0;
-  color:#f6f7fa;text-align:left;pointer-events:none;
-  text-shadow:0 4px 32px rgba(0,0,0,.6);
-}
-html[data-sags-season] .sagsFestiveIdentity{display:flex;gap:14px;align-items:center;margin-bottom:20px}
-html[data-sags-season] .sagsFestiveIdentity img{display:block;width:74px;max-height:62px;object-fit:contain;flex:0 0 auto;background:#fff;border-radius:12px;padding:7px}
-html[data-sags-season] .sagsFestiveIdentity b{display:block;font:800 21px/1.3 system-ui,sans-serif;letter-spacing:.06em;color:#fff}
-html[data-sags-season] .sagsFestiveIdentity small{display:block;font:650 10px/1.4 system-ui,sans-serif;letter-spacing:.06em;margin-top:2px;color:#f2d8a7}
-html[data-sags-season] .sagsFestiveEyebrow{display:block;color:#d8b784;font:800 12px/1.3 system-ui,sans-serif;letter-spacing:.22em;margin:0 0 12px}
-html[data-sags-season] .sagsFestiveLoginGreet strong{display:block;color:#f6d49b;font:italic 400 clamp(38px,3.75vw,59px)/1.16 Georgia,serif;letter-spacing:-.025em}
-html[data-sags-season] .sagsFestiveLoginGreet .sagsFestiveSub{display:block;margin-top:15px;color:#f1f5ff;font:600 clamp(14px,1.4vw,19px)/1.5 Georgia,serif}
-html[data-sags-season] .sagsFestiveLoginGreet .sagsFestiveUnit{display:block;margin-top:19px;font:650 10px/1.5 system-ui,sans-serif;color:#d8cdbb;letter-spacing:.12em}
-html[data-sags-season] .sagsFestiveTree{position:relative;width:132px;height:145px;margin:22px 0 0 25%;filter:drop-shadow(0 0 12px rgba(238,190,112,.20))}
-html[data-sags-season] .sagsFestiveTree::before{content:"";position:absolute;left:0;top:0;width:128px;height:129px;clip-path:polygon(50% 0%,67% 27%,61% 27%,82% 51%,74% 51%,100% 88%,0 88%,26% 51%,18% 51%,39% 27%,33% 27%);background:linear-gradient(130deg,#125149,#1a705d 44%,#073d3b);border-bottom:4px solid #ca9c57}
-html[data-sags-season] .sagsFestiveTree::after{content:"";position:absolute;left:12px;top:12px;width:106px;height:102px;background:radial-gradient(circle,#f9db8b 0 2px,transparent 4px) 8px 12px/30px 26px,radial-gradient(circle,#ffffff 0 1px,transparent 3px) 6px 5px/28px 34px;filter:drop-shadow(0 0 4px #e9b653)}
+html[data-sags-season] .sagsFestiveLoginGreet{position:absolute;left:5%;top:3%;z-index:2}
+html[data-sags-season] .sagsFestiveIdentity{display:flex;align-items:center;gap:12px;color:white}
+html[data-sags-season] .sagsFestiveIdentity img{width:58px;padding:4px;background:white;border-radius:8px}
+html[data-sags-season] .sagsFestiveIdentity small{display:block;color:#efd4a7;font-size:10px}
 html[data-sags-season] .sagsFestiveToggle{
   min-height:41px!important;padding:8px 13px!important;border-radius:11px!important;
   border:1px solid rgba(236,195,125,.55)!important;background:#172940!important;
@@ -1829,7 +1814,7 @@ html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #v6494AviationHome .v6
  position:relative!important;isolation:isolate;min-height:226px!important;height:auto!important;
  padding:30px 34px!important;border:1px solid rgba(235,195,123,.53)!important;border-radius:16px!important;
  background:linear-gradient(90deg,rgba(3,13,30,.91) 0%,rgba(5,20,38,.74) 47%,rgba(7,24,44,.24)),
- url('./assets/branding/apron-night-v6494.webp') center center/cover no-repeat!important;
+ url('./assets/holiday/apron-detail.webp') center 55%/cover no-repeat!important;
  box-shadow:0 14px 32px rgba(0,8,22,.28),inset 0 0 28px rgba(242,194,106,.04)!important;
 }
 html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #v6494AviationHome .v6494Hero::before{
@@ -1864,7 +1849,7 @@ html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #v6494AviationHome .v6
 html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #v6494AviationHome .v6494QuickHead h2{color:#fff0d2!important}
 html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #v6494AviationHome :is(#opsHomeMetrics>.opsMetricCard,#opsHomeMetrics>div){
  border:1px solid rgba(231,190,121,.32)!important;border-radius:13px!important;
- background:linear-gradient(145deg,#122a42,#0b2035)!important;color:#f5f7ff!important;
+ background:linear-gradient(145deg,#3b4962,#1b2b43 68%,#2e3748)!important;color:#f5f7ff!important;
  box-shadow:0 6px 15px rgba(0,8,20,.17)!important;
 }
 html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #v6494AviationHome #opsHomeMetrics :is(.opsMetricIcon,.opsMetricLabel){color:#f2d098!important}
@@ -1876,7 +1861,7 @@ html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #v6494AviationHome #op
  background:#132c44!important;border-color:rgba(231,189,119,.26)!important;
 }
 html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #v6494AviationHome #opsHomeQueue{
- background:#0c2238!important;border:1px solid rgba(235,194,126,.32)!important;border-radius:14px!important;
+ background:linear-gradient(145deg,#253650,#101f33)!important;border:1px solid rgba(235,194,126,.32)!important;border-radius:14px!important;
  box-shadow:0 10px 25px rgba(0,7,20,.2)!important;
 }
 html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #v6494AviationHome #opsHomeQueue .opsQueueHead h2{color:#fff0d4!important}
@@ -1910,7 +1895,8 @@ html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #fwcModal.show :is(.fw
  background:#18374b!important;border-color:rgba(233,190,126,.35)!important;color:#f3d4a1!important;
 }
 @media(min-width:768px){
- html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #roleLoginModal{justify-content:flex-end!important;padding:40px clamp(34px,7vw,130px)!important}
+ html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #roleLoginModal{justify-content:flex-start!important;padding:70px clamp(26px,10vw,175px)!important}
+ html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #roleLoginModal .roleLoginCard{translate:min(0px,calc(465px - 81vw)) 0}
  html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #v6494AviationHome .v6494Side{width:255px!important;flex-basis:255px!important}
  html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #v6494AviationHome .v6494Brand{display:flex!important}
 }
@@ -1918,8 +1904,8 @@ html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #fwcModal.show :is(.fw
  html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #roleLoginModal{
   padding:calc(12px + env(safe-area-inset-top)) 14px calc(15px + env(safe-area-inset-bottom))!important;
   justify-content:flex-end!important;align-items:stretch!important;
-  background:linear-gradient(180deg,rgba(5,16,32,.54),rgba(4,17,32,.55) 38%,#061729 86%),
-  url('./assets/branding/apron-night-v6494.webp') center top/auto 85% no-repeat #061729!important;
+  --season-art:url('./assets/holiday/mobile.webp');
+  background:var(--season-art) center top/100% auto no-repeat,#0b192c!important;
  }
  html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #roleLoginModal::before{height:51px;opacity:.75}
  html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #roleLoginModal::after{opacity:.15;animation-duration:40s}
@@ -1988,12 +1974,26 @@ html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #fwcModal.show :is(.fw
  html.new-ui-v1.new-ui-v1.new-ui-v1[data-sags-season] body #roleLoginModal::after{animation:none!important}
 }
 }
-@media print{.sagsFestiveLoginGreet,.sagsFestiveHomeBanner,.sagsFestiveToggle,.sagsFestiveTree{display:none!important}}
+@media screen{
+html.new-ui-v1[data-sags-season=newyear] body #roleLoginModal{--season-art:url('./assets/holiday/apron-detail.webp')}
+html[data-sags-season=christmas] #v6494AviationHome .sagsFestiveHomeBanner--mobile{background:url('./assets/holiday/banner.webp') center/cover no-repeat!important;aspect-ratio:549/167}
+html[data-sags-season=christmas] #v6494AviationHome .sagsFestiveHomeBanner--mobile>*{visibility:hidden}
+html[data-sags-season] .sagsFestiveHomeBanner{font:italic 500 clamp(15px,1.8vw,26px)/1.3 Georgia,serif}
+html[data-sags-season] .seasonHeading{font:800 clamp(25px,3vw,44px)/1.12 system-ui;text-align:center;color:#fff4dd}
+html:not([data-sags-season]) .seasonHeading{display:none}
+}
+@media print{.seasonHeading{display:none}.sagsFestiveLoginGreet,.sagsFestiveHomeBanner,.sagsFestiveToggle,.sagsFestiveTree{display:none!important}}
 </style>
 <script id="sags-seasonal-premium-boot-v13">
 (function(){
 'use strict';
-var key='sags:seasonal-theme:2026',root=document.documentElement;
+var root=document.documentElement;
+function preferenceKey(){
+ var profile=window.currentUserProfile;
+ var id=profile&&(profile.firebaseUid||profile.employeeCode||profile.username);
+ return 'sags:seasonal-theme:2026'+(id?':'+id:'');
+}
+var key=preferenceKey();
 function today(){return new Date(Date.now()+7*60*60*1000).toISOString().slice(0,10)}
 function mode(){var d=today();return d>='2026-11-27'&&d<='2026-12-26'?'christmas':d>='2026-12-27'&&d<='2027-01-03'?'newyear':''}
 var current=mode(),enabled=true;
@@ -2040,6 +2040,10 @@ function banner(kind){
  return box;
 }
 function ensure(){
+ if(!current)return;
+ var nextKey=preferenceKey();
+ if(key!==nextKey){key=nextKey;try{enabled=localStorage.getItem(key)!=='off'}catch(_){enabled=true}}
+
  var login=document.getElementById('roleLoginModal'),card=login&&login.querySelector('.roleLoginCard');
  if(login&&!login.querySelector('.sagsFestiveLoginGreet')){
   var g=make('div','sagsFestiveLoginGreet');g.setAttribute('aria-hidden','true');
@@ -2047,12 +2051,10 @@ function ensure(){
   var logo=document.createElement('img');logo.src='./assets/branding/logo.png';logo.alt='';
   var label=make('div','');label.appendChild(make('b','','SAGS – CXR'));label.appendChild(make('small','','SAI GON CAM RANH GROUND SERVICES'));
   brand.appendChild(logo);brand.appendChild(label);
-  g.appendChild(brand);g.appendChild(make('span','sagsFestiveEyebrow','E-REPORT SAGS · HOLIDAY SEASON 2026'));
-  g.appendChild(make('strong','',title));g.appendChild(make('span','sagsFestiveSub',subtitle));
-  g.appendChild(make('span','sagsFestiveUnit','CHUYÊN NGHIỆP · AN TOÀN · HIỆU QUẢ'));
-  g.appendChild(make('div','sagsFestiveTree'));
+  g.appendChild(brand);
   login.appendChild(g);
  }
+ if(card&&!card.querySelector('.seasonHeading'))card.insertBefore(make('div','seasonHeading','E-REPORT SAGS'),card.querySelector('h2'));
  if(card&&!card.querySelector('.sagsFestiveToggle--login'))card.appendChild(toggleButton('login'));
  var home=document.getElementById('v6494AviationHome');
  if(home){
@@ -2071,7 +2073,22 @@ function ensure(){
 paint();
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ensure,{once:true});else ensure();
 window.addEventListener('sags:home-shown',ensure,{passive:true});
-window.addEventListener('pageshow',ensure,{passive:true});
+function refreshSeason(){
+ var next=mode();
+ if(next!==current){
+  current=next;
+  document.querySelectorAll('.sagsFestiveHomeBanner').forEach(function(el){el.remove()});
+  if(!current){
+   enabled=false;updateBrand();root.removeAttribute('data-sags-season');root.removeAttribute('data-sags-season-window');
+   document.querySelectorAll('.sagsFestiveToggle').forEach(function(el){el.remove()});return;
+  }
+  title='Happy New Year 2027';subtitle='Chúc năm mới bình an · thành công';
+ }
+ if(current)ensure();
+}
+window.addEventListener('pageshow',refreshSeason,{passive:true});
+document.addEventListener('visibilitychange',function(){if(!document.hidden)refreshSeason()});
+setInterval(function(){if(current!==mode())refreshSeason()},30000);
 })();
 </script>
 </body>
