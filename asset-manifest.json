@@ -686,8 +686,8 @@
       "bytes": 249729
     },
     "./assets/branding/logo.png": {
-      "sha256": "15f7035ba48363ef36ac7a5794427e6107c48f1353a1d2e6ae263148ed660950",
-      "bytes": 46976
+      "sha256": "2ed2e7742b009748a595effd05a67b8c26970ac65ca616590bf32920c0cbb962",
+      "bytes": 21725
     },
     "./assets/holiday/apron-detail.webp": {
       "sha256": "be428ca692f910f641f81788fe21d3e557a1059a3b6e97e8c8f19f34839db981",
@@ -714,24 +714,24 @@
       "bytes": 268144
     },
     "./assets/icons/apple-touch-icon.png": {
-      "sha256": "a190c19f9a52a40f43379917b11f84f99a2ab2fb4a3cdaedd1dad936a67c8e78",
-      "bytes": 17275
+      "sha256": "d4be0ee5d9c1087e586859a0a74ba3778f7b42ea6e03379a3244642cd6a2ec66",
+      "bytes": 23964
     },
     "./assets/icons/favicon-16.png": {
-      "sha256": "bb74deb45be89aca360f6b6f9b7d6293c14b1d7efa5f1e4fe21f4804fb05ce58",
-      "bytes": 437
+      "sha256": "9b38207a23d3ea11c78073ac7118f8d6ed661dc16c69a21511f6c92404b7a75a",
+      "bytes": 510
     },
     "./assets/icons/favicon-32.png": {
-      "sha256": "1a1fd13fb978fc5422843286feeb16b821aa52f3eb15665bdc717b034b9fb613",
-      "bytes": 1151
+      "sha256": "8809319f4e6fd2dfc3522969d7c464092c1ebfbcc8a7c83351bd6eb90c268055",
+      "bytes": 1607
     },
     "./assets/icons/icon-192.png": {
-      "sha256": "6fe324b47572ae37d711aac8affc9d7e9bf60c36e2fb810f3e948497a2981ca3",
-      "bytes": 19146
+      "sha256": "093e8c33e476c3bbc905a1816fac118e8786bf9d78d9504c457b4297f9ade29d",
+      "bytes": 26057
     },
     "./assets/icons/icon-512.png": {
-      "sha256": "90aa4e4ece11944460015926ca2aaf4271b439c06d3f808aeaaa9ba7b71f33b7",
-      "bytes": 104295
+      "sha256": "664715978fb581cada7c08c6f5d12e45c7a6b63f783ddba40fdfff0722aef245",
+      "bytes": 123134
     },
     "./assets/mh/AS_RM_F27_Iss1Rev4_2026-04-30.pdf": {
       "sha256": "f7e5a31e9e78c523cfb28dc4824c95d1b49d4a79dd4681c8133bbf3cea396699",
@@ -834,8 +834,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "90c61bf870f72f7337c767022d1dc4991829543c87e6a96d27ff268422494011",
-      "bytes": 142198
+      "sha256": "7a0e0b8cbda74621db35a50f1cc9d78b6006a074423abcf24f17e331cfca0f01",
+      "bytes": 142242
     },
     "./manifest.webmanifest": {
       "sha256": "37bed2c9d467c863170a40049ca253d38862ef43a67b4d3d6a939d93302ba721",
