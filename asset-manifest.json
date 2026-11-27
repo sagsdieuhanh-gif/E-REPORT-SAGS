@@ -22,8 +22,8 @@
       "bytes": 306709
     },
     "./app/boot/06-legacy.js": {
-      "sha256": "69ac6df3e3a7d88d4db3fc771c4d135e43df22513d8df0854209a17bb1b74cc3",
-      "bytes": 397729
+      "sha256": "77fe92c83d662f7479e320d469fb12f4677d7166e1520f9e3a25279fd1894472",
+      "bytes": 397160
     },
     "./app/boot/07-legacy.js": {
       "sha256": "f08b12c510ccd4c0a537806995959c9b2a75891e2b8795308158b44ddce7d641",
@@ -294,8 +294,8 @@
       "bytes": 12286
     },
     "./app/modules/password-change-recovery.v110.js": {
-      "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
-      "bytes": 0
+      "sha256": "444fac59bd7e9b69a1c166a9541e2c74fbe2a419e72aa50983a8f58840bbd9d5",
+      "bytes": 5642
     },
     "./app/modules/quick-entry.v1.js": {
       "sha256": "ac86b01fb60710f396812728df03ec28e1755192aeac62ecb334db00fd3cf013",
@@ -838,8 +838,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "ea46d2db1f6d45620eae101dc2dbfa725efff15aac30ed1500453b16a3b71360",
-      "bytes": 143356
+      "sha256": "8f5dd8dd3851acfaec7a2b8afddcb7537529820192ad77e655994cb7483f7a92",
+      "bytes": 143490
     },
     "./manifest.webmanifest": {
       "sha256": "37bed2c9d467c863170a40049ca253d38862ef43a67b4d3d6a939d93302ba721",
@@ -890,16 +890,16 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "272514da6ac26bd114bc3c5a870f120a5b854476f3c08b92ff7cf1efb67d8842",
-      "bytes": 22741
+      "sha256": "2fbe2d7872eb6cdfa7a9304fb8a29282022fe9e5ce05886e9de2fc8825186909",
+      "bytes": 22779
     },
     "./storage-recovery.html": {
       "sha256": "08817204a946fbdfa404e8c083dd0c2016e935fb8fe56ff8ef99f405978d3df6",
       "bytes": 26106
     },
     "./version.json": {
-      "sha256": "bbaad2f5cc61b8a449ba9a8434b8d496f8a7c94c3cc78ab9b3f3c7d857df0f26",
-      "bytes": 1039
+      "sha256": "1e093697634ee09098417c6067dc350ae03e267fe2d290fee8bdd9fcbdc3b02f",
+      "bytes": 1119
     }
   },
   "mutableAssets": [
