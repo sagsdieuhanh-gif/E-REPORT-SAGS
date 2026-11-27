@@ -1,13 +1,13 @@
 {
-  "version": "V1.1",
-  "displayVersion": "V1.1",
-  "label": "V1.1 - MY FLIGHT FORM OVERVIEW",
-  "build": "V1.1-20261126-MYFLIGHT-FORM-OVERVIEW-01",
-  "releasedAt": "2026-11-26",
-  "type": "myflight-form-overview-fix",
+  "version": "V1.2",
+  "displayVersion": "V1.2",
+  "label": "V1.2 - CHRISTMAS & NEW YEAR 2027",
+  "build": "V1.2-20261127-CHRISTMAS-NEWYEAR-01",
+  "releasedAt": "2026-11-27",
+  "type": "seasonal-visual-theme",
   "base": "Giữ nguyên toàn bộ dữ liệu và chức năng đã ổn định từ E-REPORT-SAGS V2.2; chỉ đặt lại dãy số phiên bản hiển thị",
   "updatePolicy": "required",
-  "notes": "Sửa tổng hợp biểu mẫu My Flight khi DAILY ROSTER và Flight Hub có flightId khác nhau nhưng cùng cặp số chuyến, ngày và tàu bay, chỉ ghép khi nhận diện duy nhất; kiểm tra chính sách hãng với thông tin hồ sơ chuyến nếu phân công thiếu trường; hiển thị lỗi phân công thay vì im lặng ẩn biểu mẫu. Giữ nguyên dữ liệu Firebase, phân quyền và thao tác nhận/hoàn tất. Cập nhật V1.1 bắt buộc.",
-  "message": "V1.1: sửa thiếu biểu mẫu trên My Flight; cập nhật bắt buộc.",
-  "previousBuild": "V1.0-20261126-MANDATORY-UPDATE-01"
+  "notes": "Trang trí Giáng sinh sang trọng SAGS-CXR trên PC/mobile: nền navy, ánh vàng champagne, tuyết chuyển động chỉ ở đăng nhập, banner trang chủ; giữ logo SAGS chuẩn từ assets/branding/logo.png; tự chuyển Tết Dương lịch 27/12/2026 và tắt sau 03/01/2027. Không đổi nghiệp vụ, biểu mẫu, PDF, quyền, lưu nháp hay dữ liệu.",
+  "message": "V1.2: Giao diện Giáng sinh và Tết Dương lịch 2027; cập nhật bắt buộc.",
+  "previousBuild": "V1.1-20261126-MYFLIGHT-FORM-OVERVIEW-01"
 }

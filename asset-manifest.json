@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V1.1",
-  "build": "V1.1-20261126-MYFLIGHT-FORM-OVERVIEW-01",
+  "version": "V1.2",
+  "build": "V1.2-20261127-CHRISTMAS-NEWYEAR-01",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
@@ -810,8 +810,8 @@
       "bytes": 284127
     },
     "./index.html": {
-      "sha256": "a406563e2391dbb801624edecd740b0f394aecc7b89dcf996ec5c4b264a7ed60",
-      "bytes": 108031
+      "sha256": "13a7a7ba01a366e50c88275f5d7a08abf21dbcf44bd5812372ed3451ffcafb45",
+      "bytes": 119687
     },
     "./manifest.webmanifest": {
       "sha256": "37bed2c9d467c863170a40049ca253d38862ef43a67b4d3d6a939d93302ba721",
@@ -862,16 +862,16 @@
       "bytes": 8901
     },
     "./service-worker.js": {
-      "sha256": "d3ef29abdc006ce5d723958af4dcaeb37fd47518031b381ecbe30c520bcfe271",
-      "bytes": 22735
+      "sha256": "98af9180029216c864b157c317e3e7b7a2a9aee7b4bc70ae2dbc660357cf5735",
+      "bytes": 22720
     },
     "./storage-recovery.html": {
       "sha256": "08817204a946fbdfa404e8c083dd0c2016e935fb8fe56ff8ef99f405978d3df6",
       "bytes": 26106
     },
     "./version.json": {
-      "sha256": "76b09dabce4a6818cabe76d1dc17d003562ff07be290fa69818acc6cd579f005",
-      "bytes": 1060
+      "sha256": "f8a01a4f269b03f1aecc67c508ad0cce7eb5444a478331434ef9a2c8b10f82d7",
+      "bytes": 966
     }
   },
   "mutableAssets": [
