@@ -90,6 +90,16 @@ async function atomicSwap(uid,oldCode,newCode){
 }
 async function main(){
  await seedUsers();
+ // A RADIO_MANAGER is excluded from flight activeUser(), but MUST still be able
+ // to confirm a successful Firebase Auth password change in their own profile.
+ const ownChanged={mustChangePassword:false,passwordChangedAtMs:Date.now()};
+ await assertSucceeds(updateDoc(doc(getDb('radioManager'),'users','radioManager'),ownChanged));
+ await assertSucceeds(updateDoc(doc(getDb('alice'),'users','alice'),ownChanged));
+ await assertFails(updateDoc(doc(getDb('radioInactive'),'users','radioInactive'),ownChanged));
+ await assertFails(updateDoc(doc(getDb('radioManager'),'users','admin'),ownChanged));
+ await assertFails(updateDoc(doc(getDb('radioManager'),'users','radioManager'),{role:'ADMIN'}));
+ await assertFails(updateDoc(doc(getDb('radioManager'),'users','radioManager'),{active:false}));
+ await assertFails(updateDoc(doc(getDb('radioManager'),'users','radioManager'),{mustChangePassword:false,jobTitle:'Quản trị'}));
  await assertFails(getDoc(doc(getDb(),root,'DH01')));
  await assertFails(getDoc(doc(getDb('inactive'),root,'DH01')));
  await assertFails(createRadio('alice','DH02')); // staff must not initialize asset master

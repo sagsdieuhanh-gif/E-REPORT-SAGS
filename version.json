@@ -1,13 +1,13 @@
 {
-  "version": "V1.9",
-  "displayVersion": "V1.9",
-  "label": "V1.9 - CHUẨN HÓA MẬT KHẨU KHỞI TẠO",
-  "build": "V1.9-20261127-ACCOUNT-INITIAL-PASSWORD-01",
+  "version": "V1.10",
+  "displayVersion": "V1.10",
+  "label": "V1.10 - SỬA ĐỔI MẬT KHẨU RADIO_MANAGER",
+  "build": "V1.10-20261127-PASSWORD-CHANGE-FIX-01",
   "releasedAt": "2026-11-27",
-  "type": "initial-password-policy",
+  "type": "auth-password-change-recovery",
   "base": "Giữ nguyên toàn bộ dữ liệu và chức năng đã ổn định từ E-REPORT-SAGS V2.2; chỉ đặt lại dãy số phiên bản hiển thị",
   "updatePolicy": "required",
-  "notes": "Tài khoản Firebase mới được AD tạo dùng mật khẩu khởi tạo 123456 theo yêu cầu; bắt buộc đổi mật khẩu khi đăng nhập đầu tiên. Tài khoản đã tồn tại không bị reset mật khẩu, chức năng reset tiếp tục sinh mật khẩu mạnh ngẫu nhiên. Giữ quyền RADIO_MANAGER và các luồng chuyến bay, ký nhận, báo cáo, Firebase Rules như V1.8.",
-  "message": "V1.9: Mật khẩu khởi tạo tài khoản mới 123456, yêu cầu đổi sau đăng nhập lần đầu.",
-  "previousBuild": "V1.8-20261127-RADIO-MANAGER-ACCOUNT-01"
+  "notes": "Sửa quyền để RADIO_MANAGER tự ghi nhận đã đổi mật khẩu trong chính hồ sơ Firebase, không cấp quyền chuyến bay hoặc chỉnh quyền. Phân biệt thành công Authentication với lỗi đồng bộ Firestore và hỗ trợ xác nhận lại khi Auth đã đổi nhưng Firestore còn chặn. Giữ mật khẩu khởi tạo 123456 theo yêu cầu, bắt buộc đổi ở lần đầu; giữ toàn bộ chức năng nghiệp vụ và dữ liệu.",
+  "message": "V1.10: Khắc phục đổi mật khẩu sau đăng nhập, hỗ trợ đồng bộ lại hồ sơ Firebase.",
+  "previousBuild": "V1.9-20261127-ACCOUNT-INITIAL-PASSWORD-01"
 }
