@@ -2157,5 +2157,30 @@ document.addEventListener('visibilitychange',function(){if(!document.hidden)refr
 setInterval(function(){if(current!==mode())refreshSeason()},30000);
 })();
 </script>
+
+<script id="sags-admin-grant-lazy-v111">
+(function(root){
+"use strict";
+var loading=null;
+function load(){
+ if(root.SAGSAdminAccountGrantV111)return Promise.resolve(root.SAGSAdminAccountGrantV111);
+ if(!loading)loading=new Promise(function(resolve,reject){
+  var el=document.createElement("script");
+  el.src="./app/modules/admin-account-grant.v111.js?v=V1.11-20261128-ADMIN-ACCOUNT-PERMISSIONS-01";
+  el.async=true;
+  el.onload=function(){root.SAGSAdminAccountGrantV111?resolve(root.SAGSAdminAccountGrantV111):reject(Error("Chưa tải được mô-đun quyền."))};
+  el.onerror=function(){reject(Error("Không tải được mô-đun quyền. Hãy cập nhật ứng dụng."))};
+  document.head.appendChild(el);
+ }).catch(function(e){loading=null;throw e});
+ return loading;
+}
+root.v485OpenPermissionEditor=async function(id){try{await(await load()).open(id)}catch(e){alert("Không mở được THÊM QUYỀN: "+(e.message||e))}};
+root.v485SavePermissionEditor=async function(){try{await(await load()).save()}catch(e){alert("Không lưu được quyền: "+(e.message||e))}};
+try{firebase.auth().onAuthStateChanged(function(user){
+ if(!user){root.SAGSAdminAccountGrantV111?.stop();return}
+ load().then(function(mod){mod.ensureListener()}).catch(function(e){console.info("Permission module lazy",e.message||e)})
+})}catch(e){}
+})(window);
+</script>
 </body>
 </html>
