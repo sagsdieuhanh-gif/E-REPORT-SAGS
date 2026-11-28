@@ -25,12 +25,12 @@ assert(html.includes('onAuthStateChanged(function(user)'),'listeners must start 
 assert(p.includes('permissionRevV485:rev'),'permissions must carry new revision');
 assert(p.includes('if(JSON.stringify(clean(stored))!==JSON.stringify(clean(overrides))'),'grant must verify persisted values');
 const startOpen=p.indexOf('async function v485OpenPermissionEditor(id){');
-const endOpen=p.indexOf('window.v485OpenPermissionEditor=v485OpenPermissionEditor;',startOpen);
+const endOpen=p.indexOf('async function v485SavePermissionEditor(){',startOpen);
 const startSave=p.indexOf('async function v485SavePermissionEditor(){');
-const endSave=p.indexOf('window.v485SavePermissionEditor=v485SavePermissionEditor;',startSave);
+const endSave=p.indexOf('let liveUid=',startSave);
 assert(startOpen>=0&&endOpen>startOpen&&startSave>=0&&endSave>startSave,'grant/open functions must be present');
 const openFn=p.slice(startOpen,endOpen);
-const saveFn=p.slice(startSave,endSave).replace('setTimeout(()=>{v485PermEditing=null;root.v485ClosePermissionEditor?.()},1300);','setTimeout(()=>{},1300);');
+const saveFn=p.slice(startSave,endSave);
 const doc={role:'DH',active:true,deleted:false,username:'KIENNT',name:'KIEN',permissionRevV485:1,featureOverridesV485:{},updatedAtMs:1};
 const actor={role:'ADMIN',active:true,deleted:false,username:'AD'};
 let updates=[],rtSignals=[],txReads=0,verifiedReads=0;
