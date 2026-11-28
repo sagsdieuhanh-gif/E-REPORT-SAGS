@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "version": "V1.10",
-  "build": "V1.10-20261127-ADMIN-423-REPLACEMENT-01",
+  "version": "V1.11",
+  "build": "V1.11-20261128-ADMIN-ACCOUNT-PERMISSIONS-01",
   "strategy": "V2.4.8 · strict worker roster mailbox completeness and publish verification",
   "mutableMetadata": [
     "./forms/forms.registry.json",
