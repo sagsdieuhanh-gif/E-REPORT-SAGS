@@ -1,13 +1,13 @@
 {
-  "version": "V1.10",
-  "displayVersion": "V1.10",
-  "label": "V1.10 - ADMIN TẠO 42.3 THAY THẾ 42.1",
-  "build": "V1.10-20261127-ADMIN-423-REPLACEMENT-01",
-  "releasedAt": "2026-11-27",
-  "type": "admin-423-replacement",
+  "version": "V1.11",
+  "displayVersion": "V1.11",
+  "label": "V1.11 - SỬA THÊM QUYỀN TÀI KHOẢN ADMIN",
+  "build": "V1.11-20261128-ADMIN-ACCOUNT-PERMISSIONS-01",
+  "releasedAt": "2026-11-28",
+  "type": "admin-account-permissions",
   "base": "Giữ nguyên toàn bộ dữ liệu và chức năng đã ổn định từ E-REPORT-SAGS V2.2; chỉ đặt lại dãy số phiên bản hiển thị",
   "updatePolicy": "required",
-  "notes": "Cho phép ADMIN tạo riêng 42.3 thay thế 42.1 đã có dữ liệu bằng Daily Roster, giữ nguyên phiên biểu mẫu và chữ ký cũ trong lịch sử, bắt buộc nhập lý do/audit. Chặn trùng, bảo vệ mã 42.3 qua lần import roster tiếp theo. Không cấp quyền FINAL, không thay dữ liệu chuyến bay ngoài phân công 42.1/42.3.",
-  "message": "V1.10: ADMIN tạo 42.3 thay 42.1 đã nhập; bảo toàn hồ sơ và lịch sử.",
-  "previousBuild": "V1.9-20261127-ACCOUNT-INITIAL-PASSWORD-01"
+  "notes": "Sửa ADMIN Thêm / Sửa quyền chức năng cho tài khoản Firebase; server-read UID, chỉ active non-AD, non-RADIO_MANAGER; lưu trong transaction, kiểm tra quyền sau lưu; listener Firestore sau đăng nhập để nhận cập nhật; giữ nguyên vai trò chính, lịch sử nghiệp vụ và chức năng 42.3 V1.10.",
+  "message": "V1.11: ADMIN Thêm / Sửa quyền tài khoản hoạt động ổn định, đồng bộ quyền sau đăng nhập.",
+  "previousBuild": "V1.10-20261127-ADMIN-423-REPLACEMENT-01"
 }
